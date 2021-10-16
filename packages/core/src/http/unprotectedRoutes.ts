@@ -7,5 +7,4 @@ const unprotectedRouter = new Router();
 // Hello World route
 unprotectedRouter.get('/', general.helloWorld);
 
-
 export { unprotectedRouter };

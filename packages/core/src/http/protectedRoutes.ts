@@ -12,12 +12,12 @@ protectedRouter.get('/users', user.getUsers);
 
 // Swagger endpoint
 protectedRouter.swagger({
-    title: 'Takaro',
-    description: 'Game server manager',
-    version: packageJson.version,
+  title: 'Takaro',
+  description: 'Game server manager',
+  version: packageJson.version,
 });
 
 // mapDir will scan the input dir, and automatically call router.map to all Router Class
-protectedRouter.mapDir(__dirname, {ignore: ['./**/*.test.ts']});
+protectedRouter.mapDir(__dirname, { ignore: ['./**/*.test.ts'] });
 
 export { protectedRouter };

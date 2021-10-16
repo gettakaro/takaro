@@ -3,39 +3,34 @@ import winston from 'winston';
 
 import { config } from './config';
 
-const { simple, colorize, timestamp, printf } = winston.format;
+const { simple, colorize, timestamp, printf,combine,json } = winston.format;
 
 const myFormat = printf(({ level, message, namespace, timestamp }) => {
   return `${timestamp} [${namespace}] ${level}: ${message}`;
 });
 
-const simpleFormat = winston.format.combine(
+const simpleFormat = combine(
   timestamp(),
   colorize(),
   simple(),
   myFormat
 );
 
-const jsonFormat = winston.format.combine(
-  winston.format.json()
-);
-
+const jsonFormat = combine(json());
 
 const transports = [
   new winston.transports.Console({
     level: config.logging.level,
-    format: config.logging.json ? simpleFormat : jsonFormat,
+    format: config.logging.json ? jsonFormat : simpleFormat,
   }),
 ];
-
-
 
 export function logger(namespace: string): winston.Logger {
   return winston.createLogger({
     transports,
     defaultMeta: {
-      namespace
-    }
+      namespace,
+    },
   });
 }
 
@@ -43,7 +38,6 @@ export function httpLogger(): Middleware {
   const httpLogger = logger('http');
 
   return async (ctx: Context, next: () => Promise<never>): Promise<void> => {
-
     const start = new Date().getTime();
     try {
       await next();
@@ -69,8 +63,7 @@ export function httpLogger(): Middleware {
       url: ctx.originalUrl,
       status: ctx.status,
       ip: ctx.ip,
-      ms
+      ms,
     });
   };
 }
-

@@ -5,10 +5,7 @@
   "main": "dist/main.js",
   "types": "src/main.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"T.B.D.\"",
-    "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
-    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix"
+    "test": "echo \"T.B.D.\""
   },
   "keywords": [],
   "author": "Niek Candaele",
@@ -18,7 +15,5 @@
     "dotenv": "^10.0.0",
     "winston": "^3.3.3"
   },
-  "devDependencies": {
-    "typescript": "4.4.3"
-  }
+  "devDependencies": {}
 }
