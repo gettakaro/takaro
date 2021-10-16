@@ -6,8 +6,8 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 import { config } from '../config';
 
 /**
- * With the reflect-metadata package you can do runtime reflection on types. 
- * Since TypeORM mostly works with decorators (like @Entity or @Column), 
+ * With the reflect-metadata package you can do runtime reflection on types.
+ * Since TypeORM mostly works with decorators (like @Entity or @Column),
  * this package is used to parse these decorators and use it for building sql queries.
  */
 const log = logger('db');
@@ -20,9 +20,9 @@ export async function getDatabase(): Promise<Connection> {
     logging: false,
     entities: config.database.entitiesPath,
     ssl: config.database.ssl, // if not development, will use SSL
-    extra: {}
+    extra: {},
   };
-  
+
   const connection = await createConnection(connectionOptions);
   log.info('Connected to database');
 

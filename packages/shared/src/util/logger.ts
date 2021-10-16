@@ -16,10 +16,7 @@ const simpleFormat = winston.format.combine(
   myFormat
 );
 
-const jsonFormat = winston.format.combine(
-  winston.format.json()
-);
-
+const jsonFormat = winston.format.combine(winston.format.json());
 
 const transports = [
   new winston.transports.Console({
@@ -28,14 +25,12 @@ const transports = [
   }),
 ];
 
-
-
 export function logger(namespace: string): winston.Logger {
   return winston.createLogger({
     transports,
     defaultMeta: {
-      namespace
-    }
+      namespace,
+    },
   });
 }
 
@@ -43,7 +38,6 @@ export function httpLogger(): Middleware {
   const httpLogger = logger('http');
 
   return async (ctx: Context, next: () => Promise<never>): Promise<void> => {
-
     const start = new Date().getTime();
     try {
       await next();
@@ -69,8 +63,7 @@ export function httpLogger(): Middleware {
       url: ctx.originalUrl,
       status: ctx.status,
       ip: ctx.ip,
-      ms
+      ms,
     });
   };
 }
-
