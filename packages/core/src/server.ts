@@ -1,4 +1,4 @@
-import { logger } from '@csmm/shared';
+import { logger } from '@takaro/shared';
 
 import { getDatabase } from './database';
 import { getHttpServer } from './http';

@@ -1,12 +1,12 @@
 {
-  "name": "csmmv2",
+  "name": "takarov2",
   "version": "0.0.0",
   "description": "",
   "scripts": {
     "start": "npm --workspaces run-script start",
     "start:dev": "nodemon",
     "build": "npm --workspaces run-script build",
-    "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint": "npm --workspaces run-script lint",
     "lint:fix": "npm run lint -- --fix"
   },
   "engines": {
@@ -15,7 +15,7 @@
   },
   "author": "Niek Candaele",
   "license": "MIT",
-  "homepage": "https://csmm.app",
+  "homepage": "https://takaro.app",
   "devDependencies": {
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",

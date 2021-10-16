@@ -1,15 +1,15 @@
+import 'reflect-metadata';
+
+import { logger } from '@takaro/shared';
+import { Connection, ConnectionOptions, createConnection } from 'typeorm';
+
+import { config } from '../config';
+
 /**
  * With the reflect-metadata package you can do runtime reflection on types. 
  * Since TypeORM mostly works with decorators (like @Entity or @Column), 
  * this package is used to parse these decorators and use it for building sql queries.
  */
-import 'reflect-metadata';
-
-import { logger } from '@csmm/shared';
-import { Connection, ConnectionOptions, createConnection } from 'typeorm';
-
-import { config } from '../config';
-
 const log = logger('db');
 
 export async function getDatabase(): Promise<Connection> {

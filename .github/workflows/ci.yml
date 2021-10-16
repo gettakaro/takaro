@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -17,6 +17,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci --workspaces
-      - run: npm run lint --workspaces
+#      - run: npm run lint --workspaces
       - run: npm run build --workspaces
       - run: npm run test --workspaces

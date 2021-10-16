@@ -1,5 +1,5 @@
 {
-  "name": "@csmm/shared",
+  "name": "@takaro/shared",
   "version": "1.0.0",
   "description": "Shared modules",
   "main": "dist/main.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"T.B.D.\"",
-    "postinstall": "npm run build"
+    "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix"
   },
   "keywords": [],
   "author": "Niek Candaele",

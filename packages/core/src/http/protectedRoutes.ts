@@ -12,7 +12,7 @@ protectedRouter.get('/users', user.getUsers);
 
 // Swagger endpoint
 protectedRouter.swagger({
-    title: 'CSMM',
+    title: 'Takaro',
     description: 'Game server manager',
     version: packageJson.version,
 });

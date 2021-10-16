@@ -30,17 +30,13 @@ ARG PACKAGE
 WORKDIR /app
 
 
-COPY --from=builder /app/packages/shared/dist /app/packages/shared/dist
 COPY --from=builder /app/packages/shared/package*.json /app/packages/shared/
-
-COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
 COPY --from=builder /app/packages/${PACKAGE}/package*.json /app/packages/${PACKAGE}/
-
 COPY --from=builder /app/package*.json /app/
-
-RUN ls -la /app/packages/shared
 
 RUN npm ci --only=production --workspaces
 
+COPY --from=builder /app/packages/shared/dist /app/packages/shared/dist
+COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
 
 CMD [ "npm", "start", "--if-present" ]

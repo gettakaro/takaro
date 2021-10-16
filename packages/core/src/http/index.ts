@@ -1,5 +1,5 @@
-import { httpLogger, logger } from '@csmm/shared';
 import cors from '@koa/cors';
+import { httpLogger, logger } from '@takaro/shared';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import helmet from 'koa-helmet';

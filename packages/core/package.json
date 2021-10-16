@@ -1,5 +1,5 @@
 {
-  "name": "@csmm/core",
+  "name": "@takaro/core",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
@@ -7,17 +7,16 @@
     "start": "npm run serve",
     "start:dev": "ts-node src/server.ts",
     "build": "tsc -p tsconfig.build.json",
-    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
+    "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "serve": "node dist/server.js",
-    "test": "jest",
-    "test:coverage": "jest --collect-coverage",
-    "test:watch": "jest --watch"
+    "test": "echo \"T.B.D.\""
   },
   "keywords": [],
   "author": "Niek Candaele",
   "license": "MIT",
   "dependencies": {
-    "@csmm/shared": "^1.0.0",
+    "@takaro/shared": "^1.0.0",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.0.0",
     "class-validator": "^0.13.1",
