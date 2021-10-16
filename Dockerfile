@@ -1,7 +1,7 @@
 FROM node:16-alpine as builder
 
 ARG PACKAGE
-
+ENV NODE_ENV=development
 
 WORKDIR /app
 
@@ -25,7 +25,9 @@ FROM node:16-alpine as runner
 # Temporarily lock to this version
 # See https://github.com/npm/cli/issues/3847
 RUN npm install -g npm@7.18.1
+
 ARG PACKAGE
+ENV NODE_ENV=production
 
 WORKDIR /app
 
