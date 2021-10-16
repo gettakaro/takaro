@@ -1,5 +1,5 @@
 {
-  "name": "@csmm/core",
+  "name": "@takaro/core",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
@@ -16,7 +16,7 @@
   "author": "Niek Candaele",
   "license": "MIT",
   "dependencies": {
-    "@csmm/shared": "^1.0.0",
+    "@takaro/shared": "^1.0.0",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.0.0",
     "class-validator": "^0.13.1",

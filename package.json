@@ -1,5 +1,5 @@
 {
-  "name": "csmmv2",
+  "name": "takarov2",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "author": "Niek Candaele",
   "license": "MIT",
-  "homepage": "https://csmm.app",
+  "homepage": "https://takaro.app",
   "devDependencies": {
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",

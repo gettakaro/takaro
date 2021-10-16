@@ -1,5 +1,5 @@
 {
-  "name": "@csmm/shared",
+  "name": "@takaro/shared",
   "version": "1.0.0",
   "description": "Shared modules",
   "main": "dist/main.js",
