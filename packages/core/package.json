@@ -9,9 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
     "serve": "node dist/server.js",
-    "test": "jest",
-    "test:coverage": "jest --collect-coverage",
-    "test:watch": "jest --watch"
+    "test": "echo \"T.B.D.\""
   },
   "keywords": [],
   "author": "Niek Candaele",
