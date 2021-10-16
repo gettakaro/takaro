@@ -6,7 +6,7 @@
     "start": "npm --workspaces run-script start",
     "start:dev": "nodemon",
     "build": "npm --workspaces run-script build",
-    "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint": "npm --workspaces run-script lint",
     "lint:fix": "npm run lint -- --fix"
   },
   "engines": {

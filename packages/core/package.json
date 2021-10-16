@@ -7,7 +7,8 @@
     "start": "npm run serve",
     "start:dev": "ts-node src/server.ts",
     "build": "tsc -p tsconfig.build.json",
-    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
+    "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "serve": "node dist/server.js",
     "test": "echo \"T.B.D.\""
   },
