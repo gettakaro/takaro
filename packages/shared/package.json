@@ -8,8 +8,7 @@
     "build": "tsc",
     "test": "echo \"T.B.D.\"",
     "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
-    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",    
-    "postinstall": "npm run build"
+    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix"
   },
   "keywords": [],
   "author": "Niek Candaele",

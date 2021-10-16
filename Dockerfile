@@ -38,9 +38,6 @@ COPY --from=builder /app/packages/${PACKAGE}/package*.json /app/packages/${PACKA
 
 COPY --from=builder /app/package*.json /app/
 
-RUN ls -la /app/packages/shared
-
 RUN npm ci --only=production --workspaces
-
 
 CMD [ "npm", "start", "--if-present" ]
