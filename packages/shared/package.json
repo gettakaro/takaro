@@ -18,7 +18,5 @@
     "dotenv": "^10.0.0",
     "winston": "^3.3.3"
   },
-  "devDependencies": {
-    "typescript": "4.4.3"
-  }
+  "devDependencies": {}
 }
