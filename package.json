@@ -10,8 +10,8 @@
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
-    "clean": "npx --workspaces rimraf node_modules dist",
-    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; link-parent-bin"
+    "clean": "npx --workspaces rimraf node_modules dist && npx rimraf node_modules",
+    "postinstall": "[ \"$NODE_ENV\" = production ] && exit 0; npx link-parent-bin"
   },
   "engines": {
     "node": "16.x.x",
