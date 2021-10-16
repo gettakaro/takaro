@@ -6,9 +6,7 @@
   "types": "src/main.ts",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"T.B.D.\"",
-    "lint": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
-    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix"
+    "test": "echo \"T.B.D.\""
   },
   "keywords": [],
   "author": "Niek Candaele",

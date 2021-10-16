@@ -1,13 +1,13 @@
 {
-  "name": "takarov2",
+  "name": "takaro",
   "version": "0.0.0",
   "description": "",
   "scripts": {
     "start": "npm --workspaces run-script start",
     "start:dev": "nodemon",
     "build": "npm --workspaces run-script build",
-    "lint": "npm --workspaces run-script lint",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
+    "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
     "postinstall": "link-parent-bin"
