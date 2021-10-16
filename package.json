@@ -5,12 +5,13 @@
   "scripts": {
     "start": "npm --workspaces run-script start",
     "start:dev": "nodemon",
-    "build": "npm --workspaces run-script build",
+    "build": "npx --workspaces tsc -p tsconfig.build.json",
     "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
-    "postinstall": "link-parent-bin"
+    "clean": "npx --workspaces rimraf node_modules dist",
+    "prepare": "[ \"$NODE_ENV\" = production ] && exit 0; link-parent-bin"
   },
   "engines": {
     "node": "16.x.x",
@@ -35,6 +36,7 @@
     "mocha": "^9.1.3",
     "nodemon": "^2.0.13",
     "prettier": "2.4.1",
+    "rimraf": "^3.0.2",
     "sinon": "^11.1.2",
     "ts-node": "^10.3.0",
     "typescript": "^4.4.4"

@@ -6,7 +6,6 @@
   "scripts": {
     "start": "npm run serve",
     "start:dev": "ts-node src/server.ts",
-    "build": "tsc -p tsconfig.build.json",
     "serve": "node dist/server.js",
     "test": "echo \"T.B.D.\""
   },
