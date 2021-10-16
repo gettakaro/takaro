@@ -1,0 +1,40 @@
+{
+  "name": "@csmm/core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "npm run serve",
+    "start:dev": "ts-node src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint \"**/*.{js,ts}\" --quiet --fix",
+    "serve": "node dist/server.js",
+    "test": "jest",
+    "test:coverage": "jest --collect-coverage",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [],
+  "author": "Niek Candaele",
+  "license": "MIT",
+  "dependencies": {
+    "@csmm/shared": "^1.0.0",
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.0.0",
+    "class-validator": "^0.13.1",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-helmet": "^6.1.0",
+    "koa-jwt": "^4.0.0",
+    "koa-swagger-decorator": "^1.6.4",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.32"
+  },
+  "devDependencies": {
+    "@types/koa": "2.13.1",
+    "@types/koa__cors": "^3.0.2",
+    "@types/koa__router": "^8.0.4",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-helmet": "^6.0.2"
+  }
+}

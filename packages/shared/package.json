@@ -1,0 +1,23 @@
+{
+  "name": "@csmm/shared",
+  "version": "1.0.0",
+  "description": "Shared modules",
+  "main": "dist/main.js",
+  "types": "src/main.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"T.B.D.\"",
+    "postinstall": "npm run build"
+  },
+  "keywords": [],
+  "author": "Niek Candaele",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^14.11.8",
+    "dotenv": "^10.0.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "typescript": "4.4.3"
+  }
+}

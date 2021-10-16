@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/nodemon.json",
+  "verbose": true,
+  "ignore": [
+    "src/**/*.test.ts"
+  ],
+  "exec": "npm run start:dev --workspaces --if-present",
+  "watch": [
+    "src"
+  ],
+  "ext": "ts"
+}
