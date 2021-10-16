@@ -3,25 +3,25 @@ import winston from 'winston';
 
 import { config } from './config';
 
-const { simple, colorize, timestamp, printf } = winston.format;
+const { simple, colorize, timestamp, printf,combine,json } = winston.format;
 
 const myFormat = printf(({ level, message, namespace, timestamp }) => {
   return `${timestamp} [${namespace}] ${level}: ${message}`;
 });
 
-const simpleFormat = winston.format.combine(
+const simpleFormat = combine(
   timestamp(),
   colorize(),
   simple(),
   myFormat
 );
 
-const jsonFormat = winston.format.combine(winston.format.json());
+const jsonFormat = combine(json());
 
 const transports = [
   new winston.transports.Console({
     level: config.logging.level,
-    format: config.logging.json ? simpleFormat : jsonFormat,
+    format: config.logging.json ? jsonFormat : simpleFormat,
   }),
 ];
 

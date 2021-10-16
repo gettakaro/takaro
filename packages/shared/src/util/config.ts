@@ -7,7 +7,6 @@ export interface Config {
     port: number;
   };
   database: {
-    ssl: boolean;
     url: string;
     entitiesPath: string[];
   };
@@ -25,7 +24,6 @@ const config: Config = {
     port: +(process.env.PORT || 3000),
   },
   database: {
-    ssl: !isDevMode,
     url:
       process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
     entitiesPath: [
@@ -36,9 +34,10 @@ const config: Config = {
   },
   logging: {
     level: isDevMode ? 'debug' : 'info',
-    json: isDevMode,
+    json: !isDevMode,
   },
   jwtSecret: process.env.JWT_SECRET || 'your-secret-whatever',
 };
+
 
 export { config };

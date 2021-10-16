@@ -19,7 +19,6 @@ export async function getDatabase(): Promise<Connection> {
     synchronize: true,
     logging: false,
     entities: config.database.entitiesPath,
-    ssl: config.database.ssl, // if not development, will use SSL
     extra: {},
   };
 
