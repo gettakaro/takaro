@@ -16,7 +16,10 @@ services :
       args:
         PACKAGE: core
     environment:
+      NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: ${DATABASE_URL}
     ports:
       - 3000:3000
+
+ 
