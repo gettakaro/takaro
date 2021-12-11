@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
-import { logger } from '@takaro/shared';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { config } from '../config';
+import { config } from '../util/config';
+import { logger } from '../util/logger';
 
 /**
  * With the reflect-metadata package you can do runtime reflection on types.
@@ -27,3 +27,4 @@ export async function getDatabase(): Promise<Connection> {
 
   return connection;
 }
+

@@ -10,6 +10,9 @@ export interface Config {
     url: string;
     entitiesPath: string[];
   };
+  cache: {
+    url: string;
+  }
   logging: {
     level: string;
     json: boolean;
@@ -31,6 +34,9 @@ const config: Config = {
         ? ['src/database/entity/**/!(*.test.ts)']
         : ['dist/database/entity/**/*.!(*.test.js)']),
     ],
+  },
+  cache: {
+    url: process.env.CACHE_URL || 'redis://localhost:6379',
   },
   logging: {
     level: isDevMode ? 'debug' : 'info',

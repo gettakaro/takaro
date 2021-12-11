@@ -5,7 +5,7 @@ services :
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: takaro
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: apidb
   admin:
@@ -23,7 +23,7 @@ services :
     depends_on:
       - "db"
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://user:pass@db:5432/apidb
+      HASURA_GRAPHQL_DATABASE_URL: postgres://takaro:pass@db:5432/apidb
       ## enable the console served by server
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
       ## enable debugging mode. It is recommended to disable this in production
@@ -32,3 +32,21 @@ services :
 #      HASURA_GRAPHQL_AUTH_HOOK_MODE: "POST"
 #      HASURA_GRAPHQL_AUTH_HOOK: "http://127.0.0.1:3000/auth/webhook/hasura"
       HASURA_GRAPHQL_ADMIN_SECRET: "secret"           
+
+  cache:
+    image: redis
+    ports:
+      - 6379:6379      
+
+  insight:
+    image: 'redislabs/redisinsight'
+    ports:
+      - 8001:8001
+    depends_on: 
+      - cache
+    volumes:
+      - redisinsight:/db
+
+
+volumes:
+  redisinsight:
