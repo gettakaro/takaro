@@ -14,7 +14,8 @@
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
-    "postinstall": "[ \"$NODE_ENV\" = production ] && exit 0; npx link-parent-bin"
+    "postinstall": "[ \"$NODE_ENV\" = production ] && exit 0; npx link-parent-bin",
+    "prepare": "husky install"
   },
   "engines": {
     "node": "16.x.x",
@@ -37,6 +38,7 @@
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
+    "husky": "^7.0.4",
     "link-parent-bin": "^2.0.0",
     "mocha": "^8.4.0",
     "nodemon": "^2.0.13",
