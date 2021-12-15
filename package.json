@@ -15,7 +15,7 @@
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
     "postinstall": "[ \"$NODE_ENV\" = production ] && exit 0; npx link-parent-bin",
-    "prepare": "husky install"
+    "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
     "node": "16.x.x",
