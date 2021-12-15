@@ -10,7 +10,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: takaro
+          POSTGRES_PASSWORD: supersecret
+          POSTGRES_DB: takaro
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -45,3 +47,5 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test
+        env:
+          DATABASE_URL: postgres://takaro:supersecret@127.0.0.1:5432/takaro
