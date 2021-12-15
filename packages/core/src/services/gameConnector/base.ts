@@ -1,9 +1,6 @@
 import { database, EVENTS, Producer } from '@takaro/shared';
-import { GameServer } from '@takaro/shared/src/database';
 
 import { IngameCommandResult } from '../ingameCommands';
-import { SevenDaysToDieGameConnector } from './7daystodie';
-import { MockConnector } from './mockConnector.test';
 
 export interface IChatMessage extends GameEvent {
   player: database.Player
@@ -60,16 +57,5 @@ export abstract class GameConnector {
     }
   }
 
-  static async getConnectorClass(server: GameServer) {
-    switch (server.type) {
-      case database.GameServerTypes.SDTD:
-        return SevenDaysToDieGameConnector;
-      case database.GameServerTypes.MOCK:
-        return MockConnector;
-      default:
-        throw new Error(`Server type not implemented: ${server.type}`);
-    }
 
-
-  }
 }
