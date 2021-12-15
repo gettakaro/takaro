@@ -8,7 +8,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres
+        image: postgres:${{ matrix.postgres-version }}
         env:
           POSTGRES_USER: takaro
           POSTGRES_PASSWORD: supersecret
@@ -22,7 +22,7 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: redis
+        image: redis:${{ matrix.redis-version }}
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
@@ -36,6 +36,8 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
+        postgres-version: [14]
+        redis-version: [6]
 
     steps:
       - uses: actions/checkout@v2
