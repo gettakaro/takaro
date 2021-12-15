@@ -5,7 +5,9 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "hasura": "hasura --project ./hasura --envfile ../../../.env --skip-update-check",
+    "hasura:metadata:apply": "npm run hasura metadata apply --from-file",
+    "hasura:migrate:apply": "npm run hasura migrate apply --from-file"
   },
   "repository": {
     "type": "git",
@@ -17,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/niekcandaele/Takaro/issues"
   },
-  "homepage": "https://github.com/niekcandaele/Takaro#readme"
+  "homepage": "https://github.com/niekcandaele/Takaro#readme",
+  "dependencies": {
+    "hasura-cli": "^2.0.9"
+  }
 }

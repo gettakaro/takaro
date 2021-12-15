@@ -16,6 +16,7 @@
     "bullmq": "^1.57.2",
     "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
     "ioredis": "^4.28.2",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
@@ -23,7 +24,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@types/ioredis": "^4.28.3",
-    "@takaro/test": "^1.0.0"
+    "@takaro/test": "^1.0.0",
+    "@types/ioredis": "^4.28.3"
   }
 }

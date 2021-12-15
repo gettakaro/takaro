@@ -1,9 +1,6 @@
 import { Config, config } from '@takaro/shared';
-import dotenv from 'dotenv';
 
 import { CoordinatorModes, modeMapper } from './services/coordinator';
-
-dotenv.config({ path: '.env' });
 
 export interface CoreConfig extends Config {
   coordinator: {
