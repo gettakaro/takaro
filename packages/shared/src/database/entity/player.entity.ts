@@ -21,6 +21,8 @@ export class Player extends TakaroBase {
   @Column()
   steamId?: string;
 
+  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @ManyToOne(type => GameServer)
   server: string;
 
