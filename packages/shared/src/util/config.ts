@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 
 const myEnv = dotenvExpand(dotenv.config({ path: '../../.env' })).parsed;
+process.env = Object.assign(process.env, myEnv);
 
 export interface Config {
   http: {
@@ -21,14 +22,14 @@ export interface Config {
   jwtSecret: string;
 }
 
-const isDevMode = myEnv.NODE_ENV !== 'production';
+const isDevMode = process.env.NODE_ENV !== 'production';
 
 const config: Config = {
   http: {
-    port: +(myEnv.PORT || 3000),
+    port: +(process.env.PORT || 3000),
   },
   database: {
-    url: myEnv.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
+    url: process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
     entitiesPath: [
       ...(isDevMode
         ? ['src/database/entity/**/!(*.test.ts)']
@@ -36,13 +37,13 @@ const config: Config = {
     ],
   },
   cache: {
-    url: myEnv.CACHE_URL || 'redis://localhost:6379',
+    url: process.env.CACHE_URL || 'redis://localhost:6379',
   },
   logging: {
     level: isDevMode ? 'debug' : 'info',
     json: !isDevMode,
   },
-  jwtSecret: myEnv.JWT_SECRET || 'your-secret-whatever',
+  jwtSecret: process.env.JWT_SECRET || 'your-secret-whatever',
 };
 
 export { config };
