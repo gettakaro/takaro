@@ -3,18 +3,13 @@ import winston from 'winston';
 
 import { config } from './config';
 
-const { simple, colorize, timestamp, printf,combine,json } = winston.format;
+const { simple, colorize, timestamp, printf, combine, json } = winston.format;
 
 const myFormat = printf(({ level, message, namespace, timestamp }) => {
   return `${timestamp} [${namespace}] ${level}: ${message}`;
 });
 
-const simpleFormat = combine(
-  timestamp(),
-  colorize(),
-  simple(),
-  myFormat
-);
+const simpleFormat = combine(timestamp(), colorize(), simple(), myFormat);
 
 const jsonFormat = combine(json());
 

@@ -2,12 +2,12 @@ import { config } from '../../config';
 
 export enum CoordinatorModes {
   SIMPLE,
-  CLUSTER
+  CLUSTER,
 }
 
 export const modeMapper: Record<string, CoordinatorModes> = {
-  'simple': CoordinatorModes.SIMPLE,
-  'cluster': CoordinatorModes.CLUSTER
+  simple: CoordinatorModes.SIMPLE,
+  cluster: CoordinatorModes.CLUSTER,
 };
 
 export abstract class Coordinator {
@@ -17,10 +17,6 @@ export abstract class Coordinator {
     this.mode = config.coordinator.mode;
   }
 
-  abstract start(): Promise<void> 
-  abstract stop(): Promise<void>
-
-
-
-
+  abstract start(): Promise<void>;
+  abstract stop(): Promise<void>;
 }

@@ -3,30 +3,33 @@ import { database, EVENTS, Producer } from '@takaro/shared';
 import { IngameCommandResult } from '../ingameCommands';
 
 export interface IChatMessage extends GameEvent {
-  player: database.Player
-  message: string
+  player: database.Player;
+  message: string;
 }
 
 export interface IPlayerConnected extends GameEvent {
-  player: database.Player
+  player: database.Player;
 }
 
 export interface IPlayerDisconnected extends GameEvent {
-  player: database.Player
+  player: database.Player;
 }
 
 export interface ILogLine extends GameEvent {
-  msg: string
+  msg: string;
 }
 
 export interface GameEvent {
-  type: EVENTS,
+  type: EVENTS;
 }
 
 export abstract class GameConnector {
-  private ingameCommandProducer = new Producer<IChatMessage, IngameCommandResult>(EVENTS.CHAT_MESSAGE);
+  private ingameCommandProducer = new Producer<
+    IChatMessage,
+    IngameCommandResult
+  >(EVENTS.CHAT_MESSAGE);
 
-  constructor(public id: string) { }
+  constructor(public id: string) {}
 
   public async start(): Promise<void> {
     await this.startListening();
@@ -56,6 +59,4 @@ export abstract class GameConnector {
         break;
     }
   }
-
-
 }

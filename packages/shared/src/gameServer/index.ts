@@ -1,1 +1,1 @@
-export {SevenDaysToDie} from './games/7daystodie';
+export { SevenDaysToDie } from './games/7daystodie';

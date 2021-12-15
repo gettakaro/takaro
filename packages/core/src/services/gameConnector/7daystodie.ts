@@ -9,8 +9,8 @@ interface I7DaysToDieEvent {
 
 const connectedRegex = /(Player connected,)/;
 const disconnectedRegex = /(Player disconnected: )/;
-const chatRegex = /Chat \(from '(?<steamId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<playerName>.+)':(?<messageText>.+)/;
-
+const chatRegex =
+  /Chat \(from '(?<steamId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<playerName>.+)':(?<messageText>.+)/;
 
 export class SevenDaysToDieGameConnector extends GameConnector {
   private eventSource: EventSource;
@@ -23,13 +23,12 @@ export class SevenDaysToDieGameConnector extends GameConnector {
     this.gameServer = new games.SevenDaysToDie(this.id);
   }
 
-
   protected async startListening(): Promise<void> {
     this.eventSource = new EventSource('this needs to be the server URL');
 
     this.eventSource.addEventListener('logLine', this.listener);
 
-    this.eventSource.onerror = e => {
+    this.eventSource.onerror = (e) => {
       this.logger.error(e);
     };
     this.eventSource.onopen = () => {
@@ -43,7 +42,6 @@ export class SevenDaysToDieGameConnector extends GameConnector {
   }
 
   async parseMessage(logLine: IJsonMap) {
-
     if (!logLine.msg || typeof logLine.msg !== 'string') {
       throw new Error('Invalid logLine');
     }
@@ -53,22 +51,25 @@ export class SevenDaysToDieGameConnector extends GameConnector {
     }
 
     if (disconnectedRegex.test(logLine.msg)) {
-      return this.handlePlayerDisconnected(logLine as unknown as I7DaysToDieEvent);
+      return this.handlePlayerDisconnected(
+        logLine as unknown as I7DaysToDieEvent
+      );
     }
 
     if (chatRegex.test(logLine.msg)) {
       return this.handleChatMessage(logLine as unknown as I7DaysToDieEvent);
     }
 
-
     return {
       type: EVENTS.LOG_LINE,
-      data: logLine
+      data: logLine,
     };
   }
 
   private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
-    const steamIdMatches = /pltfmid=Steam_(\d{17})|steamid=(\d{17})/.exec(logLine.msg);
+    const steamIdMatches = /pltfmid=Steam_(\d{17})|steamid=(\d{17})/.exec(
+      logLine.msg
+    );
     const steamId = steamIdMatches[1] || steamIdMatches[2];
     const playerName = /name=(.+), (pltfmid=|steamid=)/.exec(logLine.msg)[1];
     const entityId = /entityid=(\d+)/.exec(logLine.msg)[1];
@@ -85,7 +86,7 @@ export class SevenDaysToDieGameConnector extends GameConnector {
       type: EVENTS.PLAYER_CONNECTED,
       data: {
         player,
-      }
+      },
     };
   }
   private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
@@ -99,7 +100,9 @@ export class SevenDaysToDieGameConnector extends GameConnector {
   "type": "Log"
 }
 */
-    const steamIdMatches = /PltfmId='Steam_(\d{17})|PlayerID='(\d{17})/.exec(logLine.msg);
+    const steamIdMatches = /PltfmId='Steam_(\d{17})|PlayerID='(\d{17})/.exec(
+      logLine.msg
+    );
     const playerNameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
     const entityIDMatch = /EntityID=(\d+)/.exec(logLine.msg);
 
@@ -121,7 +124,7 @@ export class SevenDaysToDieGameConnector extends GameConnector {
       type: EVENTS.PLAYER_DISCONNECTED,
       data: {
         player,
-      }
+      },
     };
   }
   private async handleChatMessage(logLine: I7DaysToDieEvent) {
@@ -136,8 +139,9 @@ export class SevenDaysToDieGameConnector extends GameConnector {
 }
 */
 
-
-    const { groups: { steamId, entityId, channel, playerName, messageText } } = chatRegex.exec(logLine.msg);
+    const {
+      groups: { steamId, entityId, channel, playerName, messageText },
+    } = chatRegex.exec(logLine.msg);
 
     const data = {
       msg: logLine.msg,
@@ -145,19 +149,22 @@ export class SevenDaysToDieGameConnector extends GameConnector {
       entityId,
       channel,
       playerName,
-      messageText: messageText.trim()
+      messageText: messageText.trim(),
     };
 
     // Filter out chatmessages that have been handled by some API mod already
-    if ((data.steamId === '-non-player-' && data.playerName !== 'Server') || data.entityId === '-1') {
+    if (
+      (data.steamId === '-non-player-' && data.playerName !== 'Server') ||
+      data.entityId === '-1'
+    ) {
       return {
         type: EVENTS.LOG_LINE,
-        data: logLine
+        data: logLine,
       };
     } else {
       return {
         type: EVENTS.CHAT_MESSAGE,
-        data: data
+        data: data,
       };
     }
   }

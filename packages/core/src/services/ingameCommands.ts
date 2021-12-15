@@ -2,13 +2,14 @@ import { Consumer, EVENTS, IJsonMap } from '@takaro/shared';
 
 import { IChatMessage } from './gameConnector/base';
 
-
-
 export interface IngameCommandResult {
-  result: IJsonMap
+  result: IJsonMap;
 }
 
-export class IngameCommandConsumer extends Consumer<IChatMessage, IngameCommandResult> {
+export class IngameCommandConsumer extends Consumer<
+  IChatMessage,
+  IngameCommandResult
+> {
   constructor() {
     super(EVENTS.CHAT_MESSAGE, async (job) => {
       const { data } = job;
@@ -18,12 +19,11 @@ export class IngameCommandConsumer extends Consumer<IChatMessage, IngameCommandR
       // actual commands
       // ... everything :)
 
-      const result = {msg: `"Executed command" ${message} for ${player}`};
+      const result = { msg: `"Executed command" ${message} for ${player}` };
       this.onError(new Error('Ingame command consumer not implemented'));
       return {
         result,
       };
-    }
-    );
+    });
   }
 }

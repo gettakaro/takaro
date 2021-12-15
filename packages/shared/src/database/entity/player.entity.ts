@@ -21,9 +21,8 @@ export class Player extends TakaroBase {
   @Column()
   steamId?: string;
 
-  
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @ManyToOne(type => GameServer)
+  @ManyToOne((type) => GameServer)
   server: string;
 
   static async findOrCreate(data: Partial<Player>) {
@@ -39,7 +38,5 @@ export class Player extends TakaroBase {
     Object.assign(newPlayer, data);
     await newPlayer.save();
     return newPlayer;
-
   }
 }
-

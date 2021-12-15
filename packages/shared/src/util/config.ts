@@ -13,13 +13,12 @@ export interface Config {
   };
   cache: {
     url: string;
-  }
+  };
   logging: {
     level: string;
     json: boolean;
   };
   jwtSecret: string;
-
 }
 
 const isDevMode = myEnv.NODE_ENV !== 'production';
@@ -29,8 +28,7 @@ const config: Config = {
     port: +(myEnv.PORT || 3000),
   },
   database: {
-    url:
-      myEnv.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
+    url: myEnv.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
     entitiesPath: [
       ...(isDevMode
         ? ['src/database/entity/**/!(*.test.ts)']
@@ -46,6 +44,5 @@ const config: Config = {
   },
   jwtSecret: myEnv.JWT_SECRET || 'your-secret-whatever',
 };
-
 
 export { config };

@@ -19,7 +19,7 @@ export class Producer<T_DATA, T_RETURN> {
   }
 
   public async add(data: T_DATA, opts: JobsOptions = {}) {
-    const result = await this.bullQueue.add('job name',data, opts);
+    const result = await this.bullQueue.add('job name', data, opts);
     this.logger.info(`Added to bull queue: ${JSON.stringify(data)}`);
     return result;
   }

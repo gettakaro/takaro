@@ -17,5 +17,4 @@ export class User extends TakaroBase {
   @Length(10, 100)
   @IsEmail()
   email: string;
-
 }

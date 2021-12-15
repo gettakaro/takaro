@@ -1,4 +1,10 @@
-import { BaseEntity, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  BaseEntity,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class TakaroBase extends BaseEntity {
@@ -11,4 +17,3 @@ export class TakaroBase extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

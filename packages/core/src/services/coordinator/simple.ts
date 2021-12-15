@@ -21,6 +21,6 @@ export class SimpleCoordinator extends Coordinator {
   }
 
   async stop(): Promise<void> {
-    await Promise.all(this.connectors.map(c => c.stop()));
+    await Promise.all(this.connectors.map((c) => c.stop()));
   }
 }

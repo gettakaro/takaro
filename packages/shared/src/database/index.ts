@@ -31,4 +31,3 @@ export async function getDatabase(): Promise<Connection> {
 
   return connection;
 }
-

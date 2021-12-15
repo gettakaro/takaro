@@ -19,10 +19,9 @@ export abstract class Consumer<T_DATA, T_RETURN> {
     this.bullWorker.on('error', this.onError);
   }
 
-
   onFail(job: Job, failedReason: string) {
     this.logger.error(`Job failed: ${failedReason}`, { jobId: job.id });
-  };
+  }
 
   onComplete(job: Job, returnvalue: T_RETURN) {
     this.logger.info(`Job completed: ${returnvalue}`, { jobId: job.id });
@@ -37,8 +36,4 @@ export abstract class Consumer<T_DATA, T_RETURN> {
     const result = await this.fn(job);
     return result;
   }
-
 }
-
-
-

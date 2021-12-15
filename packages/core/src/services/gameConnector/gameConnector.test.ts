@@ -11,22 +11,23 @@ describe('gameConnector', function () {
     await connector.stop();
   });
 
-  this.afterEach(async() => {
+  this.afterEach(async () => {
     await connector.stop();
   });
 
   it('Sends out appropriate messages', async function () {
-    const mockData : IChatMessage = { 
-      message: 'hello world!', 
+    const mockData: IChatMessage = {
+      message: 'hello world!',
       player: new database.Player(),
-      type: EVENTS.CHAT_MESSAGE
+      type: EVENTS.CHAT_MESSAGE,
     };
 
-    const stub = sandbox.stub(connector['ingameCommandProducer'], 'add').resolves();
-    
+    const stub = sandbox
+      .stub(connector['ingameCommandProducer'], 'add')
+      .resolves();
+
     await connector.parseMessage(mockData);
 
     expect(stub).to.have.been.calledWith(mockData);
   });
-
 });

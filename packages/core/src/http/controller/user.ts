@@ -2,7 +2,6 @@ import { database } from '@takaro/shared';
 import { Context } from 'koa';
 import { request, responsesAll, summary, tagsAll } from 'koa-swagger-decorator';
 
-
 @responsesAll({
   200: { description: 'success' },
   400: { description: 'bad request' },

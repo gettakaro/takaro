@@ -11,19 +11,17 @@ export enum GameServerTypes {
 
 @Entity()
 export class GameServer extends TakaroBase {
-  @Column({ length: 80, })
+  @Column({ length: 80 })
   @Length(1, 80)
   name: string;
 
   @Column({
-    type: 'json'
+    type: 'json',
   })
   connectionInfo: Record<string, string>;
 
-
-  @ManyToOne(() => Tenant, tenant => tenant.servers)
+  @ManyToOne(() => Tenant, (tenant) => tenant.servers)
   tenant: Tenant;
-
 
   @Column({
     type: 'enum',
@@ -31,4 +29,3 @@ export class GameServer extends TakaroBase {
   })
   type: GameServerTypes;
 }
-
