@@ -29,7 +29,8 @@ const config: Config = {
     port: +(process.env.PORT || 3000),
   },
   database: {
-    url: process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
+    url:
+      process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/apidb',
     entitiesPath: [
       ...(isDevMode
         ? ['src/database/entity/**/!(*.test.ts)']
