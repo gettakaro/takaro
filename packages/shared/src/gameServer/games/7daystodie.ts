@@ -6,8 +6,10 @@ import { GameServer } from './base';
 
 export class SevenDaysToDie implements GameServer {
 
+  constructor(public id: string) {}
+
   async executeRawCommand(input: string) {
-    const { command, result } = await SdtdApi.executeConsoleCommand(this.getAPIConfig(), input);
+    const { command, result } = await SdtdApi.executeConsoleCommand(await this.getConnectionInfo(), input);
     return {
       input: command,
       output: result,
@@ -15,12 +17,11 @@ export class SevenDaysToDie implements GameServer {
   }
 
   async fetchOnlinePlayers(): Promise<Player[]> {
-      const onlinePlayers = await SdtdApi.getOnlinePlayers(this.getAPIConfig());
+      const onlinePlayers = await SdtdApi.getOnlinePlayers(await this.getConnectionInfo());
       return Promise.all(onlinePlayers.map(player => Player.findOrCreate(player)));
   }
 
-
-  private getAPIConfig() {
+  async getConnectionInfo() {
     return {
       ip: '192.168.1.100',
       port: '8082',
@@ -28,6 +29,7 @@ export class SevenDaysToDie implements GameServer {
       adminToken: 'secret'
     };
   }
+
 
 }
 

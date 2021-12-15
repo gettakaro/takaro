@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '../../.env' });
-
 export interface Config {
   http: {
     port: number;
@@ -18,6 +17,7 @@ export interface Config {
     json: boolean;
   };
   jwtSecret: string;
+
 }
 
 const isDevMode = process.env.NODE_ENV !== 'production';

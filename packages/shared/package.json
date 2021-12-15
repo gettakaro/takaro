@@ -13,6 +13,7 @@
   "dependencies": {
     "@types/node": "^14.11.8",
     "7daystodie-api-wrapper": "^2.1.0",
+    "bullmq": "^1.57.2",
     "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",
     "ioredis": "^4.28.2",
@@ -22,6 +23,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@types/ioredis": "^4.28.3"
+    "@types/ioredis": "^4.28.3",
+    "@takaro/test": "^1.0.0"
   }
 }

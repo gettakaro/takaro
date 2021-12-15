@@ -1,13 +1,12 @@
-import { logger } from '@takaro/shared';
+import { database, logger } from '@takaro/shared';
 
-import { getDatabase } from './database';
 import { getHttpServer } from './http';
 
 const log = logger('main');
 
 async function main() {
   try {
-    await getDatabase();
+    await database.getDatabase();
   } catch (error) {
     log.error('Cannot connect to database, aborting.');
     log.error(error);

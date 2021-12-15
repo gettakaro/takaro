@@ -1,0 +1,14 @@
+{
+  "name": "@takaro/test",
+  "version": "1.0.0",
+  "description": "Test modules",
+  "main": "dist/main.js",
+  "types": "src/main.ts",
+  "scripts": {},
+  "keywords": [],
+  "author": "Niek Candaele",
+  "license": "MIT",
+  "devDependencies": {
+    "@takaro/shared": "^1.0.0"
+  }
+}

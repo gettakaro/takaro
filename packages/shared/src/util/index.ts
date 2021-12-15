@@ -1,2 +1,3 @@
 export { logger, httpLogger } from './logger';
-export { config } from './config';
+export { config, Config } from './config';
+export { getRedis } from './getRedis';

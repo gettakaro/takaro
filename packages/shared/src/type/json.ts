@@ -1,3 +1,3 @@
-export type AnyJson =  boolean | number | string | null | JsonArray | JsonMap;
-export interface JsonMap {  [key: string]: AnyJson; }
+export type AnyJson =  boolean | number | string | null | JsonArray | IJsonMap;
+export interface IJsonMap {  [key: string]: AnyJson; }
 export type JsonArray = Array<AnyJson>

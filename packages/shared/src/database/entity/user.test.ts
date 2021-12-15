@@ -1,4 +1,5 @@
-import { expect } from '../../test/expect';
+import { expect } from '@takaro/test';
+
 import { User } from './user.entity';
 
 describe('Entity - User', () => {

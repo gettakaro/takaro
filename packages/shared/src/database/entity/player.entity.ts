@@ -22,17 +22,15 @@ export class Player extends TakaroBase {
   steamId?: string;
 
   @ManyToOne(type => GameServer)
-  server: GameServer;
+  server: string;
 
-  static async  findOrCreate(data: Partial<Player>) {
+  static async findOrCreate(data: Partial<Player>) {
     const player = await Player.findOne({
-      where: {
-        gameId: data.gameId,
-      },
+      where: { ...data },
     });
 
     if (player) {
-      return player;
+      return player as Player;
     }
 
     const newPlayer = new Player();
