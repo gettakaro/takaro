@@ -1,4 +1,4 @@
-import { AnyJson } from '@takaro/shared';
+import { AnyJson, errors } from '@takaro/shared';
 import jwt from 'jsonwebtoken';
 
 import { config } from '../config';
@@ -12,7 +12,7 @@ export async function verifyJwt(token: string): Promise<IJWT> {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.jwt.secret, (err, decoded) => {
       if (err) {
-        return reject(err);
+        reject(new errors.NotAuthorized(err));
       }
       resolve(decoded as IJWT);
     });
