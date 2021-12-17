@@ -22,7 +22,7 @@
     "npm": "7.x.x"
   },
   "author": "Niek Candaele",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "homepage": "https://takaro.app",
   "devDependencies": {
     "@types/chai": "^4.2.22",

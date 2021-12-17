@@ -7,7 +7,7 @@
   "scripts": {},
   "keywords": [],
   "author": "Niek Candaele",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@takaro/shared": "^1.0.0"
   }

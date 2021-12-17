@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "Niek Candaele",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@types/node": "^14.11.8",
     "7daystodie-api-wrapper": "^2.1.0",
