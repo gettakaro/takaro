@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx --workspaces tsc -p tsconfig.build.json",
     "clean": "npx --workspaces rimraf node_modules dist && npx rimraf node_modules",
-    "start": "npm --workspaces run-script start",
+    "start": "npm --workspaces run-script --if-present start",
     "start:dev": "nodemon",
     "test": "npx --workspaces ts-mocha -p ./tsconfig.json src/**/*.test.ts",
     "test:style": "npm run lint && npm run prettier",
