@@ -1,9 +1,13 @@
 import 'reflect-metadata';
 
-import { logger } from '@takaro/shared';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { config } from '../config';
+import { config } from '../util/config';
+import { logger } from '../util/logger';
+
+export { Player } from './entity/player.entity';
+export { GameServer, GameServerTypes } from './entity/gameServer.entity';
+export { User } from './entity/user.entity';
 
 /**
  * With the reflect-metadata package you can do runtime reflection on types.

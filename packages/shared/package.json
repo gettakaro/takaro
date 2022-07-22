@@ -9,11 +9,24 @@
   },
   "keywords": [],
   "author": "Niek Candaele",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@types/node": "^14.11.8",
+    "7daystodie-api-wrapper": "^2.1.0",
+    "bullmq": "^1.57.2",
+    "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
+    "http-errors": "^1.8.1",
+    "ioredis": "^4.28.2",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.32",
     "winston": "^3.3.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@takaro/test": "^1.0.0",
+    "@types/http-errors": "^1.8.1",
+    "@types/ioredis": "^4.28.3"
+  }
 }

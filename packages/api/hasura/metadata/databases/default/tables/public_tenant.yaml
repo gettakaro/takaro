@@ -1,0 +1,11 @@
+table:
+  name: tenant
+  schema: public
+array_relationships:
+- name: game_servers
+  using:
+    foreign_key_constraint_on:
+      column: tenantId
+      table:
+        name: game_server
+        schema: public

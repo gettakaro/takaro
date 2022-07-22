@@ -5,10 +5,29 @@ services :
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: apidb
-
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+  api:
+    image: hasura/graphql-engine:v2.0.9
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "db"
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: ${HASURA_GRAPHQL_DATABASE_URL}
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+#      HASURA_GRAPHQL_AUTH_HOOK_MODE: "POST"
+#      HASURA_GRAPHQL_AUTH_HOOK: "http://127.0.0.1:3000/auth/webhook/hasura"
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}           
+  cache:
+    image: redis
+    ports:
+      - 6379:6379    
   core:
     build:
       context: .
@@ -16,7 +35,9 @@ services :
       args:
         PACKAGE: core
     environment:
+      NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: ${DATABASE_URL}
     ports:
       - 3000:3000
+

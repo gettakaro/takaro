@@ -11,22 +11,22 @@
   },
   "keywords": [],
   "author": "Niek Candaele",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "@takaro/shared": "^1.0.0",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.0.0",
+    "@takaro/shared": "^1.0.0",
     "class-validator": "^0.13.1",
+    "eventsource": "^1.1.0",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "koa-helmet": "^6.1.0",
     "koa-jwt": "^4.0.0",
-    "koa-swagger-decorator": "^1.6.4",
-    "pg": "^8.5.1",
-    "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.32"
+    "koa-swagger-decorator": "^1.6.4"
   },
   "devDependencies": {
+    "@takaro/test": "^1.0.0",
+    "@types/eventsource": "^1.1.7",
     "@types/koa": "2.13.1",
     "@types/koa__cors": "^3.0.2",
     "@types/koa__router": "^8.0.4",

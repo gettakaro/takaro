@@ -1,0 +1,18 @@
+{
+  "name": "@takaro/idp",
+  "version": "1.0.0",
+  "description": "Identity provider",
+  "main": "dist/main.js",
+  "types": "src/main.ts",
+  "scripts": {},
+  "keywords": [],
+  "author": "Niek Candaele",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@takaro/shared": "^1.0.0",
+    "@types/jsonwebtoken": "^8.5.6"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
+}

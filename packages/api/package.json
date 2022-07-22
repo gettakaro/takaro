@@ -1,0 +1,26 @@
+{
+  "name": "@takaro/api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "hasura": "hasura --project ./hasura --envfile ../../../.env --skip-update-check",
+    "hasura:metadata:apply": "npm run hasura metadata apply --from-file",
+    "hasura:migrate:apply": "npm run hasura migrate apply --from-file"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niekcandaele/Takaro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niekcandaele/Takaro/issues"
+  },
+  "homepage": "https://github.com/niekcandaele/Takaro#readme",
+  "dependencies": {
+    "hasura-cli": "^2.0.9"
+  }
+}

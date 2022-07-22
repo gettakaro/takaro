@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 
-dotenv.config({ path: '../../.env' });
+const myEnv = dotenvExpand(dotenv.config({ path: '../../.env' })).parsed;
+process.env = Object.assign(process.env, myEnv);
 
 export interface Config {
   http: {
@@ -9,6 +11,9 @@ export interface Config {
   database: {
     url: string;
     entitiesPath: string[];
+  };
+  cache: {
+    url: string;
   };
   logging: {
     level: string;
@@ -32,12 +37,14 @@ const config: Config = {
         : ['dist/database/entity/**/*.!(*.test.js)']),
     ],
   },
+  cache: {
+    url: process.env.CACHE_URL || 'redis://localhost:6379',
+  },
   logging: {
     level: isDevMode ? 'debug' : 'info',
     json: !isDevMode,
   },
   jwtSecret: process.env.JWT_SECRET || 'your-secret-whatever',
 };
-
 
 export { config };
