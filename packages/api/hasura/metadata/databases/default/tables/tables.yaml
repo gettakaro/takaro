@@ -1,4 +1,0 @@
-- "!include public_game_server.yaml"
-- "!include public_player.yaml"
-- "!include public_tenant.yaml"
-- "!include public_user.yaml"
