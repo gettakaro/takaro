@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "ES2020",
+    "lib": [ "esnext", "dom", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "strict":true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noErrorTruncation": false,
+    "allowJs": true,
+    "declaration": true,
+    "composite": true,
+    "types": ["node", "react", "react-dom", "jest"],
+  },
+  "exclude": ["**/build/", "**/node_modules/", "**/dist/", "**/**/jest.config.js"]
+}

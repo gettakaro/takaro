@@ -1,9 +1,14 @@
 # API keys and secrets
 .env
 
+# Kubectl used for local kind cluster
+.kubeconfig.yml
+
 # Dependency directory
-node_modules
-bower_components
+**/node_modules
+**/bower_components
+**/.pnp
+**/.pnp.js
 
 # Editors
 .idea
@@ -13,9 +18,22 @@ bower_components
 .DS_Store
 Thumbs.db
 
-# Ignore built ts files
-dist
+# Ignore built files
+**/build
+**/dist
+**/storybook-static
+
 
 # Logging files
 *.log
 *.pyc
+
+# testing
+coverage
+**/.eslintcache
+.eslintcache
+.stylelintcache
+
+# typescript
+tsconfig.*.tsbuildinfo
+

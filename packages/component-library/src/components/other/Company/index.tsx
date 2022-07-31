@@ -1,0 +1,100 @@
+import { FC } from 'react';
+import { Link } from 'react-router-dom';
+import { Color, Size, styled } from '../../../styled';
+
+export interface CompanyProps {
+  iconVisible?: boolean;
+  iconColor?: Color;
+  textColor?: Color;
+  textVisible?: boolean;
+  size?: Size;
+  to?: string;
+}
+
+const Container = styled.div<{ size: Size }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  svg {
+    margin-right: 1rem;
+  }
+  div {
+    font-weight: 800;
+    font-size: ${({ size }) => {
+      switch (size) {
+        case 'tiny':
+          return '1.5rem';
+        case 'small':
+          return '2rem';
+        case 'medium':
+          return '3rem';
+        case 'large':
+          return '4rem';
+        case 'huge':
+          return '5rem';
+      }
+    }};
+    color: ${({ theme, color }): string => theme.colors.text};
+  }
+`;
+
+const Svg = styled.svg<{ size: Size; color: Color }>`
+  ${({ size }) => {
+    switch (size) {
+      case 'tiny':
+        return 'width: 15px; height: 15px;';
+      case 'small':
+        return 'width: 20px; height: 20px';
+      case 'medium':
+        return 'width: 30px; height: 30px;';
+      case 'large':
+        return 'width: 45px; height: 45px;';
+      case 'huge':
+        return 'width: 75px; height: 75px;';
+    }
+  }};
+  fill: ${({ theme, color }): string => theme.colors[color]};
+`;
+
+export const Company: FC<CompanyProps> = ({
+  iconColor = 'primary',
+  iconVisible = true,
+  textVisible = true,
+  to,
+  size = 'medium'
+}) => {
+  if (to) {
+    return (
+      <Container size={size}>
+        <Link to={to}>
+          {iconVisible && (
+            <Svg color={iconColor} size={size} viewBox="0 0 512 512">
+              <path d="M512 165.4c0 127.9-70.05 235.3-175.3 270.1c-20.04 7.938-41.83 12.46-64.69 12.46c-64.9 0-125.2-36.51-155.7-94.47c-54.13 49.93-68.71 107-68.96 108.1C44.72 472.6 34.87 480 24.02 480c-1.844 0-3.727-.2187-5.602-.6562c-12.89-3.098-20.84-16.08-17.75-28.96c9.598-39.5 90.47-226.4 335.3-226.4C344.8 224 352 216.8 352 208S344.8 192 336 192C228.6 192 151 226.6 96.29 267.6c.1934-10.82 1.242-21.84 3.535-33.05c13.47-65.81 66.04-119 131.4-134.2c28.33-6.562 55.68-6.013 80.93-.0054c56 13.32 118.2-7.412 149.3-61.24c5.664-9.828 20.02-9.516 24.66 .8282C502.7 76.76 512 121.9 512 165.4z" />
+            </Svg>
+          )}
+          {textVisible && <div>Takaro</div>}
+        </Link>
+      </Container>
+    );
+  }
+
+  return (
+    <Container size={size}>
+      {iconVisible && (
+        <Svg color={iconColor} size={size} viewBox="0 0 512 512">
+          <path d="M512 165.4c0 127.9-70.05 235.3-175.3 270.1c-20.04 7.938-41.83 12.46-64.69 12.46c-64.9 0-125.2-36.51-155.7-94.47c-54.13 49.93-68.71 107-68.96 108.1C44.72 472.6 34.87 480 24.02 480c-1.844 0-3.727-.2187-5.602-.6562c-12.89-3.098-20.84-16.08-17.75-28.96c9.598-39.5 90.47-226.4 335.3-226.4C344.8 224 352 216.8 352 208S344.8 192 336 192C228.6 192 151 226.6 96.29 267.6c.1934-10.82 1.242-21.84 3.535-33.05c13.47-65.81 66.04-119 131.4-134.2c28.33-6.562 55.68-6.013 80.93-.0054c56 13.32 118.2-7.412 149.3-61.24c5.664-9.828 20.02-9.516 24.66 .8282C502.7 76.76 512 121.9 512 165.4z" />
+        </Svg>
+      )}
+      {textVisible && <div>Takaro</div>}
+    </Container>
+  );
+};

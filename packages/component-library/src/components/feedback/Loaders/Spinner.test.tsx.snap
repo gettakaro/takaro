@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should render <Spinner/> 1`] = `
+.c0 {
+  width: 15px;
+  height: 15px;
+  background-color: #ffffff;
+  width: 6px;
+  height: 6px;
+}
+
+<div>
+  <div
+    class="c0"
+    color="white"
+  />
+</div>
+`;
