@@ -1,7 +1,9 @@
 import { Config, IBaseConfig } from '@takaro/config';
 
 interface IHttpConfig extends IBaseConfig {
-  test: string;
+  http: {
+    port: number;
+  };
 }
 
 const configSchema = {

@@ -4,7 +4,7 @@
   "ignore": [
     "src/**/*.test.ts"
   ],
-  "exec": "npm run start:dev --workspaces --if-present",
+  "exec": "node -r ts-node/register",
   "watch": [
     "src"
   ],
