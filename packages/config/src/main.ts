@@ -1,28 +1,18 @@
 import convict, { Path, PathValue, Schema } from 'convict';
 
 export interface IBaseConfig {
-  http: {
-    port: number;
+  app: {
+    name: string;
   };
 }
 
 const baseConfigConvict: Schema<IBaseConfig> = {
-  http: {
-    port: {
-      doc: 'The port to bind.',
-      format: (value) => {
-        if (process.env.NODE_ENV === 'test') {
-          return value;
-        }
-        value = parseInt(value, 10);
-
-        // Check if the value is between 0 - 65535
-        if (value < 0 || value > 65535) {
-          throw new Error('ports must be within range 0 - 65535');
-        }
-      },
-      default: 3000,
-      env: 'PORT',
+  app: {
+    name: {
+      doc: 'Name of the running package',
+      format: String,
+      default: 'UNNAMED_PACKAGE',
+      env: 'APP_NAME',
     },
   },
 };

@@ -1,11 +1,13 @@
 import { HTTP } from './app';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
+import { config } from './config';
 
 describe('app', () => {
   let http: HTTP;
   before(async () => {
-    http = new HTTP({ port: 7897 });
+    config.load({ http: { port: undefined } });
+    http = new HTTP();
     await http.start();
   });
 

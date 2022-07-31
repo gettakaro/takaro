@@ -17,7 +17,7 @@ const testConfigSchema = {
 describe('config', () => {
   it('Allows loading one config', () => {
     const config = new Config<ITestConfig>();
-    expect(config.get('http.port')).to.equal(3000);
+    expect(config.get('app.name')).to.equal('UNNAMED_PACKAGE');
   });
   it('Throws an error when validating', () => {
     const config = new Config<ITestConfig>([testConfigSchema]);

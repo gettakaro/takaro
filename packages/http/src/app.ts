@@ -1,18 +1,14 @@
 import express, { Application } from 'express';
 import { Server } from 'http';
+import { config } from './config';
 import { healthHandler } from './routes/health';
-
-interface IAppOptions {
-  port: number;
-}
 
 export class HTTP {
   private app: Application;
   private httpServer: Server;
-  /**
-   *
-   */
-  constructor(private readonly options: IAppOptions) {
+
+  constructor() {
+    config.validate();
     this.app = express();
     this.app.use('/health', healthHandler);
   }
@@ -22,7 +18,7 @@ export class HTTP {
   }
 
   async start() {
-    this.httpServer = this.app.listen(this.options.port);
+    this.httpServer = this.app.listen(config.get('http.port'));
   }
 
   async stop() {

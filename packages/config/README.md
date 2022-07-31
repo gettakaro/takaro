@@ -21,7 +21,7 @@ const exampleSchema = {
   }
 };
 
-const config = new Config<ITestConfig>([testConfigSchema]);
+const config = new Config<IExampleConfig>([exampleSchema]);
 
 // ---
 

@@ -2,8 +2,7 @@
   "name": "@takaro/config",
   "version": "1.0.0",
   "description": "An opinionated config handler",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
+  "main": "src/main.ts",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
