@@ -1,0 +1,21 @@
+{
+  "name": "@takaro/config",
+  "version": "1.0.0",
+  "description": "An opinionated config handler",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "convict": "^6.2.3"
+  },
+  "devDependencies": {
+    "@takaro/test": "1.0.0",
+    "@types/convict": "^6.1.1"
+  }
+}
