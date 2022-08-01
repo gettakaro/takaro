@@ -1,6 +1,6 @@
 {
   "name": "@takaro/api",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "REST API for Takaro",
   "main": "dist/main.js",
   "types": "main.ts",
@@ -14,6 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/http": "1.0.0"
+    "@takaro/http": "0.0.1"
   }
 }

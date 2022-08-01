@@ -1,6 +1,6 @@
 {
   "name": "@takaro/logger",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "An opinionated logger",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -13,10 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/config": "1.0.0",
+    "@takaro/config": "0.0.1",
     "winston": "^3.8.1"
   },
   "devDependencies": {
-    "@takaro/test": "1.0.0"
+    "@takaro/test": "0.0.1"
   }
 }
