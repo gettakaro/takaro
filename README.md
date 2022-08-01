@@ -1,7 +1,5 @@
 # Takaro
 
-# Getting started
-
 ## Requirements
 
 - Node 18.x
