@@ -8,9 +8,12 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig*.json ./
 
+COPY scripts/dev-init.sh ./scripts/dev-init.sh
+
 COPY packages ./packages
 
-RUN npm ci
+RUN ./scripts/dev-init.sh
+
 RUN npm run -w packages/${PACKAGE} build
 
 # NPM workspaces work by symlinking internal packages in node_nodules

@@ -14,3 +14,11 @@ printHeader() {
 printHeader "Installing node dependencies"
 
 npm ci
+
+
+printHeader "Building packages"
+
+# These require a specific order...
+npm run-script -w packages/lib-config build
+npm run-script -w packages/lib-logger build
+npm run-script -w packages/lib-http build
