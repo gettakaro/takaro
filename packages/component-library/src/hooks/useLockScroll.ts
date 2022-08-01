@@ -13,7 +13,9 @@ export function useLockBodyScroll(lock = true): void {
   }, []); // Empty array ensures effect is only run on mount and unmount.
 }
 
-export function useLockRefScroll(ref: React.MutableRefObject<HTMLElement>): void {
+export function useLockRefScroll(
+  ref: React.MutableRefObject<HTMLElement>
+): void {
   useLayoutEffect(() => {
     if (ref) {
       const originalStyle = ref.current.style.overflow;

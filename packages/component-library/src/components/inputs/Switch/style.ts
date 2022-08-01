@@ -25,7 +25,9 @@ export const Line = styled.span<{ isChecked: boolean; disabled: boolean }>`
   height: 9px;
   transition: background 0.2s ease-in-out;
   background: ${({ theme, disabled, isChecked }): string => {
-    let color = isChecked ? lighten(0.2, theme.colors.primary) : theme.colors.gray;
+    let color = isChecked
+      ? lighten(0.2, theme.colors.primary)
+      : theme.colors.gray;
     if (disabled) {
       color = darken(0.2, theme.colors.gray);
     }
@@ -41,7 +43,8 @@ export const Dot = styled(motion.span)<{
   width: 18px;
   height: 18px;
   border: 1px solid
-    ${({ theme, isChecked }) => (isChecked ? theme.colors.primary : theme.colors.gray)};
+    ${({ theme, isChecked }) =>
+      isChecked ? theme.colors.primary : theme.colors.gray};
   background-color: ${({ theme, disabled, isChecked }) => {
     let color = isChecked ? theme.colors.primary : theme.colors.white;
     if (disabled) {

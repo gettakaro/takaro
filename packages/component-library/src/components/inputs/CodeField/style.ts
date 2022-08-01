@@ -27,7 +27,8 @@ export const Input = styled.input<{ hasError: boolean }>`
   border-radius: 1rem;
   text-align: center;
   border: 2px solid
-    ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.background)};
+    ${({ theme, hasError }) =>
+      hasError ? theme.colors.error : theme.colors.background};
 
   /* Disable arrow up and down */
   -moz-appearance: textfield;
@@ -42,7 +43,8 @@ export const Input = styled.input<{ hasError: boolean }>`
 
   &:focus {
     border: 2px solid
-      ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
+      ${({ theme, hasError }) =>
+        hasError ? theme.colors.error : theme.colors.primary};
   }
 `;
 

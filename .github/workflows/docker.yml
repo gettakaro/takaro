@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: ["core"]   
+        package: ["app-api"]
 
     steps:
       - name: Checkout code
@@ -65,12 +65,12 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile
+          file: ./containers/generic-app.Dockerfile
           platforms: linux/amd64
           push: ${{ !startsWith(github.actor, 'dependabot') }}
           tags: ${{ steps.prep.outputs.tags }}
           build-args: |
-            PACKAGE=${{ matrix.PACKAGE }}          
+            PACKAGE=${{ matrix.PACKAGE }}
           labels: |
             org.opencontainers.image.title=${{ fromJson(steps.repo.outputs.result).name }}
             org.opencontainers.image.description=${{ fromJson(steps.repo.outputs.result).description }}
@@ -80,5 +80,3 @@ jobs:
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.licenses=${{ fromJson(steps.repo.outputs.result).license.spdx_id }}
-
-

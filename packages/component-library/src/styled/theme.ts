@@ -17,16 +17,16 @@ export const theme = {
     info: '#664DE5',
     success: '#3CCD6A',
     warning: '#f57c00',
-    error: '#FF4252'
+    error: '#FF4252',
   },
   shadows: {
-    default: 'rgb(0 0 0 / 5%) 0px 15px 30px 0px'
+    default: 'rgb(0 0 0 / 5%) 0px 15px 30px 0px',
   },
 
   spacing: {
     small: '1rem',
     medium: '1.5rem',
-    large: '2rem'
+    large: '2rem',
   },
   fontSize: {
     tiny: '1rem',
@@ -34,8 +34,8 @@ export const theme = {
     medium: '1.825rem',
     mediumLarge: '2.825rem',
     large: '4.25rem',
-    huge: '6rem'
-  }
+    huge: '6rem',
+  },
 };
 
 export type ThemeType = typeof theme;

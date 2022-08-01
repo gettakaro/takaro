@@ -6,5 +6,5 @@ export const device = {
   md: '(max-width: 992px)',
   sm: '(max-width: 768px)',
   xs: '(max-width: 576px)',
-  xxs: '(max-width: 450px)'
+  xxs: '(max-width: 450px)',
 };

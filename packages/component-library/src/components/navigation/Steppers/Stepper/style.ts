@@ -80,9 +80,13 @@ export const StepCounter = styled.div<{
   border-radius: 50%;
   border: 2px solid
     ${({ theme, stepState }) =>
-      stepState !== StepStates.OTHER ? theme.colors.primary : theme.colors.background};
+      stepState !== StepStates.OTHER
+        ? theme.colors.primary
+        : theme.colors.background};
   background-color: ${({ stepState, theme }) =>
-    stepState === StepStates.CURRENT ? theme.colors.primary : theme.colors.white};
+    stepState === StepStates.CURRENT
+      ? theme.colors.primary
+      : theme.colors.white};
   transition: all 0.2s ease-in-out;
   margin-bottom: 1rem;
   color: ${({ theme, stepState }) =>

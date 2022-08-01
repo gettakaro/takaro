@@ -15,7 +15,8 @@ export const RadioContainer = styled.div<{ readOnly: boolean }>`
   align-items: center;
   justify-content: center;
   border: 3px solid
-    ${({ theme, readOnly }): string => (readOnly ? theme.colors.gray : theme.colors.primary)};
+    ${({ theme, readOnly }): string =>
+      readOnly ? theme.colors.gray : theme.colors.primary};
   border-radius: 50%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   z-index: 1;

@@ -31,13 +31,21 @@ export const Container = styled.button<{
   cursor: pointer;
   line-height: 19px;
   letter-spacing: 0;
-  box-shadow: ${({ white, theme }): string => (white ? 'none' : theme.shadows.default)};
+  box-shadow: ${({ white, theme }): string =>
+    white ? 'none' : theme.shadows.default};
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   span {
-    margin-left: ${({ icon, isLoading }): string => (icon || isLoading ? '10px' : '0px')};
+    margin-left: ${({ icon, isLoading }): string =>
+      icon || isLoading ? '10px' : '0px'};
     color: ${({ color, theme, outline, white }) =>
-      outline ? (white ? 'white' : theme.colors[color]) : white ? 'black' : 'white'};
+      outline
+        ? white
+          ? 'white'
+          : theme.colors[color]
+        : white
+        ? 'black'
+        : 'white'};
     font-size: 1.25rem;
     font-weight: 800;
     &:hover {
@@ -60,8 +68,10 @@ export const Container = styled.button<{
   }
   &:disabled {
     cursor: default;
-    background: ${({ theme, outline }) => (outline ? 'transparent' : theme.colors.gray)};
-    border-color: ${({ theme, outline }) => (outline ? theme.colors.gray : 'transparent')};
+    background: ${({ theme, outline }) =>
+      outline ? 'transparent' : theme.colors.gray};
+    border-color: ${({ theme, outline }) =>
+      outline ? theme.colors.gray : 'transparent'};
     color: ${({ theme, outline }) => (outline ? theme.colors.gray : 'white')};
 
     span {
@@ -69,18 +79,26 @@ export const Container = styled.button<{
     }
     &:hover {
       span {
-        color: ${({ theme, outline }): string => (outline ? theme.colors.gray : 'white')};
+        color: ${({ theme, outline }): string =>
+          outline ? theme.colors.gray : 'white'};
       }
     }
   }
 
   svg {
-    display: ${({ icon, isLoading }): string => (icon || isLoading ? 'block' : 'none')};
+    display: ${({ icon, isLoading }): string =>
+      icon || isLoading ? 'block' : 'none'};
     cursor: pointer;
     fill: ${({ color, theme, outline, white }): string =>
       outline ? theme.colors[color] : white ? theme.colors[color] : 'white'};
     stroke: ${({ color, theme, outline, white }): string =>
-      outline ? (white ? 'white' : theme.colors[color]) : white ? theme.colors[color] : 'white'};
+      outline
+        ? white
+          ? 'white'
+          : theme.colors[color]
+        : white
+        ? theme.colors[color]
+        : 'white'};
   }
 
   ${({ size }) => {

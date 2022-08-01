@@ -8,10 +8,10 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build:storybook": "build-storybook",
-    "start": "start-storybook -p 6006 --no-manager-cache",
+    "build": "build-storybook",
+    "start:dev": "start-storybook -p 6006 --no-manager-cache",
     "debug": "start-storybook -p 6006 --debug-webpack --no-manager-cache",
-    "test": "jest",
+    "_test": "jest",
     "test:watch": "jest --watch",
     "test:update": "jest --updateSnapshot",
     "sort-package": "sort-package-json"

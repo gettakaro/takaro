@@ -76,11 +76,13 @@ export const ButtonContainer = styled.div<{
     margin-right: 2rem;
     padding: 0.8rem 0.5rem 0.8rem 0.5rem;
     border-radius: 0.5rem;
-    background-color: ${({ theme, variant }): string => lighten('0.2', theme.colors[variant])};
+    background-color: ${({ theme, variant }): string =>
+      lighten('0.2', theme.colors[variant])};
     font-size: 1.3rem;
     border: none;
     cursor: pointer;
     font-weight: 700;
-    color: ${({ theme, variant }): string => darken('0.2', theme.colors[variant])};
+    color: ${({ theme, variant }): string =>
+      darken('0.2', theme.colors[variant])};
   }
 `;

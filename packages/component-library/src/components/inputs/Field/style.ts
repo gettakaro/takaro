@@ -12,7 +12,8 @@ export const LabelContainer = styled.div`
 `;
 
 export const Label = styled.label<{ showError: boolean }>`
-  color: ${({ theme, showError }): string => (showError ? theme.colors.error : theme.colors.text)};
+  color: ${({ theme, showError }): string =>
+    showError ? theme.colors.error : theme.colors.text};
   width: 100%;
   user-select: none;
   font-size: 1.4rem;
@@ -90,23 +91,30 @@ export const Input = styled.input<{
   hasSuffix: boolean;
 }>`
   width: 100%;
-  padding-left: ${({ hasIcon }): string => (hasIcon ? '60px' : '15px') /* 15 is the standard */};
+  padding-left: ${
+    ({ hasIcon }): string =>
+      hasIcon ? '60px' : '15px' /* 15 is the standard */
+  };
   background-color: transparent;
   font-size: 1.5rem;
   border: 2px solid
-    ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.background)};
+    ${({ theme, hasError }): string =>
+      hasError ? theme.colors.error : theme.colors.background};
   font-weight: 600;
   ::selection {
     background-color: ${({ theme }) => theme.colors.primary};
     color: white;
   }
 
-  ${({ hasPrefix }) => hasPrefix && 'border-top-left-radius: 0; border-bottom-left-radius: 0;'}
-  ${({ hasSuffix }) => hasSuffix && 'border-top-right-radius: 0; border-bottom-right-radius: 0;'}
+  ${({ hasPrefix }) =>
+    hasPrefix && 'border-top-left-radius: 0; border-bottom-left-radius: 0;'}
+  ${({ hasSuffix }) =>
+    hasSuffix && 'border-top-right-radius: 0; border-bottom-right-radius: 0;'}
 
   &:focus {
     border: 2px solid
-      ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
+      ${({ theme, hasError }): string =>
+        hasError ? theme.colors.error : theme.colors.primary};
   }
   ::placeholder {
     text-transform: capitalize;
@@ -131,7 +139,8 @@ export const ErrorContainer = styled.div<{ showError: boolean }>`
   transition: width 0.2s ease-in-out, transform 0.3s ease-in-out;
   overflow: hidden;
   border-radius: 0.5rem;
-  transform: ${({ showError }): string => `translate(${showError ? '0' : '.5rem'})`};
+  transform: ${({ showError }): string =>
+    `translate(${showError ? '0' : '.5rem'})`};
   z-index: 5;
 `;
 

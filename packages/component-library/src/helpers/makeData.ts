@@ -16,17 +16,22 @@ const newPerson = () => {
     age: Math.floor(Math.random() * 30),
     visits: Math.floor(Math.random() * 100),
     progress: Math.floor(Math.random() * 100),
-    status: statusChance > 0.66 ? 'relationship' : statusChance > 0.33 ? 'complicated' : 'single'
+    status:
+      statusChance > 0.66
+        ? 'relationship'
+        : statusChance > 0.33
+        ? 'complicated'
+        : 'single',
   };
 };
 
 export function makeData(...lens: number[]) {
   const makeDataLevel: any = (depth = 0) => {
     const len = lens[depth];
-    return range(len).map((d) => {
+    return range(len).map(() => {
       return {
         ...newPerson(),
-        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined
+        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
       };
     });
   };

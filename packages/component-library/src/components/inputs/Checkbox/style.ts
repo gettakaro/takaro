@@ -10,7 +10,8 @@ export const Container = styled.div`
 `;
 
 export const Label = styled.label<{ position: 'left' | 'right' }>`
-  margin: ${({ position }) => (position === 'left' ? '0 2.5rem 0 0' : '0 0 0 2.5rem')};
+  margin: ${({ position }) =>
+    position === 'left' ? '0 2.5rem 0 0' : '0 0 0 2.5rem'};
   cursor: pointer;
   font-size: 1.5rem;
   user-select: none;
@@ -40,7 +41,8 @@ export const CheckboxContainer = styled.div<{
   align-items: center;
   justify-content: center;
   border: 3px solid
-    ${({ theme, readOnly }): string => (readOnly ? theme.colors.gray : theme.colors.primary)};
+    ${({ theme, readOnly }): string =>
+      readOnly ? theme.colors.gray : theme.colors.primary};
   border-radius: 4px;
   transition: box-shadow 0.125s linear, border-color 0.15s linear;
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};

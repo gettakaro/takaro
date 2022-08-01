@@ -41,7 +41,8 @@ export const Header = styled.div<{ type: AlertVariants }>`
   padding-bottom: 30px;
   user-select: none;
   svg {
-    fill: ${({ theme, type }) => (type === 'info' ? theme.colors.primary : theme.colors.error)};
+    fill: ${({ theme, type }) =>
+      type === 'info' ? theme.colors.primary : theme.colors.error};
   }
 
   h2 {

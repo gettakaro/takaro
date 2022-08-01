@@ -3,5 +3,5 @@ export {
   ResponseClientError,
   ResponseValidationError,
   FailedLogOutError,
-  NotAuthorizedError
+  NotAuthorizedError,
 } from './errors';

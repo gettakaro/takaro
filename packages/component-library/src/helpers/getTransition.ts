@@ -2,6 +2,6 @@ export function getTransition() {
   return {
     type: 'spring',
     stiffness: 700,
-    damping: 30
+    damping: 30,
   };
 }

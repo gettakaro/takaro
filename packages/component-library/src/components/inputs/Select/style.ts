@@ -30,9 +30,11 @@ export const SelectedContainer = styled.div<{
 }>`
   position: relative;
   display: inline-block;
-  padding: 0.75rem 3.5rem 0.75rem ${({ hasIcon }): string => (hasIcon ? '3.5rem' : '1.225rem')};
+  padding: 0.75rem 3.5rem 0.75rem
+    ${({ hasIcon }): string => (hasIcon ? '3.5rem' : '1.225rem')};
   border: 2px solid
-    ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.gray)};
+    ${({ theme, hasError }): string =>
+      hasError ? theme.colors.error : theme.colors.gray};
   border-radius: 0.2rem;
   background-color: white;
   color: white;

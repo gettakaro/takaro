@@ -2,8 +2,10 @@
   "name": "@takaro/config",
   "version": "1.0.0",
   "description": "An opinionated config handler",
-  "main": "src/main.ts",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
   "scripts": {
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
   },

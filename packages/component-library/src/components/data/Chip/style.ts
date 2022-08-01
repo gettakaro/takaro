@@ -61,5 +61,6 @@ export const Dot = styled.div<{ color: ChipColor; outline: boolean }>`
   height: 6px;
   border-radius: 50%;
   margin-right: 8px;
-  background-color: ${({ outline, theme, color }) => (outline ? theme.colors[color] : 'white')};
+  background-color: ${({ outline, theme, color }) =>
+    outline ? theme.colors[color] : 'white'};
 `;

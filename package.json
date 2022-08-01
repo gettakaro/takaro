@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "build": "npx --workspaces tsc -p tsconfig.build.json",
+    "build": "npm --workspaces run-script --if-present build",
     "clean": "npx --workspaces rimraf node_modules dist && npx rimraf node_modules",
-    "start": "npm --workspaces run-script --if-present start",
-    "start:dev": "nodemon",
+    "start": "find packages -type d -name 'app-*' -exec sh -c 'echo npm -w {} run-script start' \\; | sed -r 's/(^npm -w.*start$)/\"\\1\" /g' | xargs -t npx concurrently",
+    "start:dev": "find packages -maxdepth 1 -type d -wholename '*/*'  -exec sh -c 'echo npm -w {} run-script start:dev' \\; | sed -r 's/(^npm -w.*start:dev$)/\"\\1 --if-present\" /g' | xargs -t npx concurrently",
     "test": "npm --workspaces run-script --if-present test",
     "test:style": "npm run lint && npm run prettier",
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
@@ -14,7 +14,6 @@
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
-    "postinstall": "[ \"$NODE_ENV\" = production ] && exit 0; npx link-parent-bin",
     "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
@@ -36,19 +35,20 @@
     "@typescript-eslint/parser": "^5.0.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
+    "concurrently": "^7.3.0",
+    "deepmerge": "^4.2.2",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
-    "link-parent-bin": "^2.0.0",
     "mocha": "^8.4.0",
     "nodemon": "^2.0.13",
     "prettier": "2.4.1",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.7.0",
+    "ts-loader": "^9.3.1",
     "ts-mocha": "^8.0.0",
     "ts-node": "^10.3.0",
-    "tsconfig-paths-webpack-plugin": "^4.0.0",
     "typescript": "^4.4.4"
   },
   "keywords": [],
@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "convict": "^6.2.3",
+    "tsconfig-paths-webpack-plugin": "^4.0.0",
     "type-fest": "^2.18.0"
   }
 }
