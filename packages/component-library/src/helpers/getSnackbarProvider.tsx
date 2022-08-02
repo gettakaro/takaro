@@ -30,3 +30,12 @@ const snackbarOptions: Partial<SnackbarProviderProps> = {
 export const SnackbarProvider: FC = ({ children }) => (
   <Provider {...snackbarOptions}>{children}</Provider>
 );
+
+declare module 'notistack' {
+  interface VariantOverrides { 
+    drawer: true;    
+    cookieConsent: true;
+    networkDetectorOffline: true;
+    networkDetectorOnline: true;
+  }
+}

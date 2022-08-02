@@ -8,10 +8,10 @@ services :
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}        
-  cache:
-    image: redis
-    ports:
-      - 6379:6379    
+#  cache:
+#    image: redis
+#    ports:
+#      - 6379:6379    
   takaro:
     build:
       context: .
@@ -22,6 +22,8 @@ services :
     volumes:
       - ./packages:/app/packages
     ports:
+    # api
       - 13000:3000
       - 12001:12000
-
+    # web-main
+      - 13001:13001
