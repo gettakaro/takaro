@@ -8,6 +8,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY packages ./packages
+COPY scripts ./scripts
 
 RUN npm ci
 
@@ -29,6 +30,7 @@ ENV NODE_ENV=development
 WORKDIR /app
 
 COPY --from=builder /app/package*.json /app/
+COPY scripts /app/scripts
 
 # Copy over the prebuilt internal library packages
 COPY --from=builder /app/libraries /app/
