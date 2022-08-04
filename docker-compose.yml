@@ -27,3 +27,5 @@ services :
       - 12001:12000
     # web-main
       - 13001:13001
+    # lib-components
+      - 13002:13002

@@ -9,8 +9,8 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "build-storybook",
-    "start:dev": "start-storybook -p 6006 --no-manager-cache",
-    "debug": "start-storybook -p 6006 --debug-webpack --no-manager-cache",
+    "start:dev": "start-storybook -p 13002 --no-manager-cache",
+    "debug": "start-storybook -p 13002 --debug-webpack --no-manager-cache",
     "_test": "jest",
     "test:watch": "jest --watch",
     "test:update": "jest --updateSnapshot",

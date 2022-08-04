@@ -1,24 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { ThemeProvider } from 'styled-components';
+import { MemoryRouter } from 'react-router-dom';
 
-import {Loading} from '@takaro/component-library'
+import {
+  Divider,
+  GlobalStyle,
+  Loading,
+  SnackbarProvider,
+  StepperProvider,
+  styled,
+  theme,
+} from '@takaro/component-library';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <Loading/>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <MemoryRouter initialEntries={['/']}>
+        <SnackbarProvider>
+          <StepperProvider>
+          <GlobalStyle />
+
+            <Container className="App">
+                <Loading />
+                <Divider spacing='huge'/>
+                <p>
+                  Coming soon...
+                </p>
+            </Container>
+          </StepperProvider>
+        </SnackbarProvider>
+      </MemoryRouter>
+    </ThemeProvider>
   );
 }
 
