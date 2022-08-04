@@ -10,7 +10,7 @@
   "scripts": {
     "start:dev": "PORT=13001 craco start",
     "build": "BUILD_PATH='./dist' craco build",
-    "test": "craco test",
+    "test": "echo 'no tests :('",
     "eject": "craco eject"
   },
   "eslintConfig": {
