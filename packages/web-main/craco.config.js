@@ -1,7 +1,7 @@
 const path = require('path');
 const { getLoader, loaderByName } = require('@craco/craco');
 
-const uiPath = path.join(__dirname, '../component-library');
+const uiPath = path.join(__dirname, '../lib-components');
 
 module.exports = {
   webpack: {

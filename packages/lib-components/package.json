@@ -1,5 +1,5 @@
 {
-  "name": "@takaro/component-library",
+  "name": "@takaro/lib-components",
   "version": "0.0.1",
   "private": false,
   "description": "Takaro UI is a simple and customizable component library to build React apps faster within the Takaro eco system",

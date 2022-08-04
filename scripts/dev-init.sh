@@ -22,3 +22,4 @@ printHeader "Building packages"
 npm run-script -w packages/lib-config build
 npm run-script -w packages/lib-logger build
 npm run-script -w packages/lib-http build
+npm run-script -w packages/lib-components build

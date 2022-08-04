@@ -9,7 +9,7 @@ import {
   StepperProvider,
   styled,
   theme,
-} from '@takaro/component-library';
+} from '@takaro/lib-components';
 
 const Container = styled.div`
   display: flex;

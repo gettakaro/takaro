@@ -1,6 +1,6 @@
 import { FC, ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { theme, GlobalStyle } from '@takaro/component-library';
+import { theme, GlobalStyle } from '@takaro/lib-components';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider } from '../helpers';
 import { MemoryRouter } from 'react-router-dom';
