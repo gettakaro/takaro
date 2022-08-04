@@ -8,7 +8,3 @@ export interface IGamePlayer {
    */
   name: string;
 }
-
-export interface IGameServer {
-  getPlayers(): Promise<IGamePlayer[]>;
-}
