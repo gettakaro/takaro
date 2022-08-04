@@ -1,0 +1,34 @@
+{
+  "name": "web-main",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@takaro/lib-components": "0.0.1",
+    "typescript": "^4.7.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start:dev": "PORT=13001 craco start",
+    "build": "BUILD_PATH='./dist' craco build",
+    "test": "echo 'no tests :('",
+    "eject": "craco eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

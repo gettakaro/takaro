@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "exclude": ["dist", "node_modules","src/**/*.stories.tsx", "src/**/*.stories.mdx", "jest.config.js"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "paths": {
+      "test-utils": ["test/testUtils.tsx"]
+    }
+  }
+}

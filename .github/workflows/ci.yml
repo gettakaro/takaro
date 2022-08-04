@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   node-ci:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:${{ matrix.postgres-version }}
@@ -32,10 +32,9 @@ jobs:
         ports:
           - 6379:6379
 
-
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
         postgres-version: [14]
         redis-version: [6]
 
@@ -45,7 +44,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
+      - run: ./scripts/dev-init.sh
       - run: npm run test:style
       - run: npm run build
       - run: npm run test

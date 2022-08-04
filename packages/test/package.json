@@ -1,15 +1,16 @@
 {
   "name": "@takaro/test",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Test modules",
-  "main": "dist/main.js",
-  "types": "src/main.ts",
-  "scripts": {},
+  "main": "src/main.ts",
+  "scripts": {
+    "start:dev": "tsc -w -p ./tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json"
+  },
   "keywords": [],
-  "author": "Niek Candaele",
+  "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@takaro/shared": "^1.0.0",
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^9.0.0",

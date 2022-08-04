@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should render <Alert/> 1`] = `
+.c0 {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  margin: 1.5rem auto 1.5rem auto;
+  background-color: #d9d2f9;
+}
+
+.c0 h2 {
+  font-size: 1.825rem;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-weight: 700;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+
+.c0 p {
+  margin-top: 1.5rem;
+}
+
+.c0 p,
+.c0 li {
+  font-size: 1.325rem;
+}
+
+.c0 ul {
+  margin-left: 15px;
+}
+
+.c0 ul li {
+  list-style-type: disc;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.c0 h2 {
+  color: #331ab2;
+}
+
+.c0 p,
+.c0 li {
+  color: #331ab2;
+}
+
+.c0::marker {
+  color: #331ab2;
+}
+
+.c1 {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-right: 1.4rem;
+}
+
+.c2 svg {
+  fill: #664DE5;
+}
+
+.c3 {
+  display: none;
+}
+
+.c3 button {
+  margin-top: 2rem;
+  margin-right: 2rem;
+  padding: 0.8rem 0.5rem 0.8rem 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #b2a6f2;
+  font-size: 1.3rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  color: #331ab2;
+}
+
+<div>
+  <div
+    class="c0"
+    style="opacity: 0;"
+  >
+    <div
+      class="c1"
+    >
+      <div
+        class="c2"
+      >
+        <svg
+          fill="currentColor"
+          height="24"
+          stroke="currentColor"
+          stroke-width="0"
+          viewBox="0 0 1024 1024"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm32 664c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V456c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v272zm-32-344a48.01 48.01 0 0 1 0-96 48.01 48.01 0 0 1 0 96z"
+          />
+        </svg>
+      </div>
+      <h2>
+        Alert title
+      </h2>
+      <div />
+      <p>
+        Alert text
+      </p>
+      <div />
+      <div
+        class="c3"
+      />
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,21 @@
+FROM node:16-alpine as build
+
+ENV NODE_ENV=development
+WORKDIR /app
+
+# root
+COPY package*.json ./
+COPY tsconfig.react.json ./
+
+# ui
+COPY packages/ui/*.json ./packages/ui/
+
+# Install before src changes so it does not need to be rebuilt so often.
+RUN npm ci
+
+COPY packages/ui/.storybook ./packages/ui/.storybook
+COPY packages/ui/public ./packages/ui/public
+COPY packages/ui/src ./packages/ui/src
+
+WORKDIR /app/packages/ui
+CMD ["npm", "run", "start"]

@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should render <Button/> 1`] = `
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 0.8rem;
+  background: #664DE5;
+  background-size: 200% auto;
+  font-weight: 900;
+  border: 2px solid none;
+  cursor: pointer;
+  line-height: 19px;
+  -webkit-letter-spacing: 0;
+  -moz-letter-spacing: 0;
+  -ms-letter-spacing: 0;
+  letter-spacing: 0;
+  box-shadow: rgb(0 0 0 / 5%) 0px 15px 30px 0px;
+  -webkit-transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+  transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+  padding: 11px 18px;
+}
+
+.c0 span {
+  margin-left: 0px;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.c0 span:hover {
+  color: white;
+}
+
+.c0:focus {
+  outline: 0;
+}
+
+.c0:hover {
+  background-position: right center;
+}
+
+.c0:disabled {
+  cursor: default;
+  background: #d3d3d3;
+  border-color: transparent;
+  color: white;
+}
+
+.c0:disabled span {
+  color: white;
+}
+
+.c0:disabled:hover span {
+  color: white;
+}
+
+.c0 svg {
+  display: none;
+  cursor: pointer;
+  fill: white;
+  stroke: white;
+}
+
+<div>
+  <button
+    class="c0"
+    color="primary"
+    type="button"
+  >
+    <span>
+      button text
+    </span>
+  </button>
+</div>
+`;

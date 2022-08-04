@@ -1,0 +1,19 @@
+{
+  "name": "@takaro/api",
+  "version": "0.0.1",
+  "description": "REST API for Takaro",
+  "main": "dist/main.js",
+  "types": "main.ts",
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:dev": "nodemon  --config ../../nodemon.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@takaro/http": "0.0.1"
+  }
+}

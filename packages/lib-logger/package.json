@@ -1,0 +1,22 @@
+{
+  "name": "@takaro/logger",
+  "version": "0.0.1",
+  "description": "An opinionated logger",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@takaro/config": "0.0.1",
+    "winston": "^3.8.1"
+  },
+  "devDependencies": {
+    "@takaro/test": "0.0.1"
+  }
+}

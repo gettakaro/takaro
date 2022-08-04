@@ -7,37 +7,25 @@ services :
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-  api:
-    image: hasura/graphql-engine:v2.0.9
-    ports:
-      - "8080:8080"
-    depends_on:
-      - "db"
-    environment:
-      HASURA_GRAPHQL_DATABASE_URL: ${HASURA_GRAPHQL_DATABASE_URL}
-      ## enable the console served by server
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
-      ## enable debugging mode. It is recommended to disable this in production
-      HASURA_GRAPHQL_DEV_MODE: "true"
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-#      HASURA_GRAPHQL_AUTH_HOOK_MODE: "POST"
-#      HASURA_GRAPHQL_AUTH_HOOK: "http://127.0.0.1:3000/auth/webhook/hasura"
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}           
-  cache:
-    image: redis
-    ports:
-      - 6379:6379    
-  core:
+      POSTGRES_DB: ${POSTGRES_DB}        
+#  cache:
+#    image: redis
+#    ports:
+#      - 6379:6379    
+  takaro:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        PACKAGE: core
-    environment:
-      NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
+      dockerfile: containers/generic-app.Dockerfile.dev
+#      args:
+#       NODE_ENV: development
+#    command: "npm run start:dev"
+    volumes:
+      - ./packages:/app/packages
     ports:
-      - 3000:3000
-
+    # api
+      - 13000:3000
+      - 12001:12000
+    # web-main
+      - 13001:13001
+    # lib-components
+      - 13002:13002

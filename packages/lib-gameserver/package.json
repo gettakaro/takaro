@@ -1,0 +1,22 @@
+{
+  "name": "@takaro/gameserver",
+  "version": "0.0.1",
+  "description": "Handles abstraction between Takaro and game servers",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eventsource": "^2.0.2"
+  },
+  "devDependencies": {
+    "@takaro/test": "0.0.1",
+    "@types/eventsource": "^1.1.9"
+  }
+}
