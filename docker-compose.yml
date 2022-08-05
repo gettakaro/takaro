@@ -21,6 +21,8 @@ services :
 #    command: "npm run start:dev"
     volumes:
       - ./packages:/app/packages
+    environment:
+      LOGGING_LEVEL: debug
     ports:
     # api
       - 13000:3000

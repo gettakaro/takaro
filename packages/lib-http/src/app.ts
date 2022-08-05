@@ -8,6 +8,8 @@ import {
   RoutingControllersOptions,
 } from 'routing-controllers';
 import { MetaController } from './controllers/meta';
+import { LoggingMiddleware } from './middleware/logger';
+import { ErrorHandler } from './middleware/errorHandler';
 
 export class HTTP {
   private app: Application;
@@ -28,7 +30,9 @@ export class HTTP {
     } else {
       this.app = createExpressServer({
         ...options,
+        defaultErrorHandler: false,
         controllers: [MetaController],
+        middlewares: [LoggingMiddleware, ErrorHandler],
       });
     }
   }
