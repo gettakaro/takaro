@@ -19,7 +19,7 @@ export class SevenDaysToDieEmitter
   implements IGameEventEmitter
 {
   private SSERegex = /\d+-\d+-\d+T\d+:\d+:\d+ \d+\.\d+ INF (.+)/;
-  private eventSource: EventSource;
+  private eventSource!: EventSource;
   private logger = logger('7D2D:SSE');
 
   constructor() {
@@ -133,7 +133,7 @@ export class SevenDaysToDieEmitter
 
       await this.parseMessage(parsed);
     } catch (error) {
-      this.logger.error(error.stack);
+      this.logger.error('Error handling message from game server', { error });
     }
   }
 }
