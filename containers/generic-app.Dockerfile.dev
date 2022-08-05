@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:18 as builder
 
 ENV NODE_ENV=development
 
@@ -8,6 +8,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY packages ./packages
+COPY scripts ./scripts
 
 RUN npm ci
 
@@ -17,7 +18,7 @@ RUN npm ci
 
 RUN find packages -maxdepth 1 -type d -wholename '*/*' -exec sh -c 'mkdir -p libraries/{} && cp -r {}/package*.json libraries/{}/' \;
 
-FROM node:18-alpine as runner
+FROM node:18 as runner
 
 # Temporarily lock to this version :(
 # See https://github.com/npm/cli/issues/3847
@@ -37,5 +38,7 @@ COPY tsconfig*.json ./
 COPY nodemon.json ./
 
 RUN npm ci
+
+COPY --from=builder /app/scripts/* /app/scripts/
 
 CMD [ "npm", "run", "start:dev"]
