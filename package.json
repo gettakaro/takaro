@@ -27,11 +27,14 @@
   "homepage": "https://takaro.app",
   "devDependencies": {
     "@craco/craco": "7.0.0-alpha.7",
+    "@types/body-parser": "^1.19.2",
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",
     "@types/expect": "^24.3.0",
+    "@types/express": "^4.17.13",
     "@types/jest": "^27.5.2",
     "@types/mocha": "^9.0.0",
+    "@types/multer": "^1.4.7",
     "@types/node": "^16.11.47",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.5",
@@ -69,10 +72,17 @@
     ]
   },
   "dependencies": {
+    "body-parser": "^1.20.0",
+    "class-transformer": "0.3.1",
+    "class-validator": "0.12.2",
     "convict": "^6.2.3",
+    "express": "^4.18.1",
+    "multer": "^1.4.5-lts.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.1",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.9.0",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
     "type-fest": "^2.18.0"
   }

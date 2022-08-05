@@ -1,24 +1,35 @@
-import express, { Application } from 'express';
+import 'reflect-metadata';
+import { Application } from 'express';
 import { logger } from '@takaro/logger';
 import { Server } from 'http';
 import { config } from './config';
-import { getHealth } from './routes/health';
-import { Route } from './routes/Route';
+import {
+  createExpressServer,
+  RoutingControllersOptions,
+} from 'routing-controllers';
+import { MetaController } from './controllers/meta';
 
 export class HTTP {
   private app: Application;
-  private httpServer: Server;
+  private httpServer: Server | null = null;
   private logger;
 
-  constructor(routes: Route[] = []) {
+  constructor(options: RoutingControllersOptions = {}) {
     this.logger = logger('http');
     config.validate();
-    this.app = express();
 
-    getHealth.load(this.app);
-
-    for (const route of routes) {
-      route.load(this.app);
+    if (options.controllers) {
+      this.app = createExpressServer({
+        ...options,
+        validation: { forbidNonWhitelisted: true, whitelist: true },
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        controllers: [MetaController, ...(options.controllers as Function[])],
+      });
+    } else {
+      this.app = createExpressServer({
+        ...options,
+        controllers: [MetaController],
+      });
     }
   }
 
@@ -35,6 +46,9 @@ export class HTTP {
   }
 
   async stop() {
-    this.httpServer.close();
+    if (this.httpServer) {
+      this.httpServer.close();
+      this.logger.info('HTTP server stopped');
+    }
   }
 }
