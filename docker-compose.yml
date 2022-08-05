@@ -15,12 +15,14 @@ services :
   takaro:
     build:
       context: .
-      dockerfile: containers/generic-app.Dockerfile.dev
+      dockerfile: containers/dev.Dockerfile
 #      args:
 #       NODE_ENV: development
 #    command: "npm run start:dev"
     volumes:
       - ./packages:/app/packages
+    environment:
+      LOGGING_LEVEL: debug
     ports:
     # api
       - 13000:3000

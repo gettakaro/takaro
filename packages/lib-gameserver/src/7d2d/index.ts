@@ -7,7 +7,7 @@ import { SevenDaysToDieEmitter } from './emitter';
 export class SevenDaysToDie implements IGameServer {
   private logger = logger('7D2D');
 
-  async getPlayer(id: string): Promise<IGamePlayer> {
+  async getPlayer(id: string): Promise<IGamePlayer | null> {
     this.logger.debug('getPlayer', id);
     return null;
   }

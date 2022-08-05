@@ -1,15 +1,34 @@
 import { config } from './config';
 import winston from 'winston';
 import { JsonObject } from 'type-fest';
+import { omit } from 'lodash';
 
 const { colorize, timestamp, printf, combine, json, errors } = winston.format;
 
 config.validate();
 
-const myFormat = printf((a) => {
-  const { level, message, namespace, timestamp, error } = a;
+const myFormat = printf((info) => {
+  const { level, message, namespace, timestamp } = info;
+  const cleanMeta = omit(
+    info,
+    'level',
+    'message',
+    'namespace',
+    'timestamp',
+    'service',
+    'labels'
+  );
+
+  let metaString = '';
+
+  try {
+    metaString = `| ${JSON.stringify(cleanMeta)}`;
+  } catch (e) {
+    metaString = '| Invalid Meta Information';
+  }
+
   return `${timestamp} [${namespace}] ${level}: ${message} ${
-    error ? error.stack : ''
+    metaString ? metaString : ''
   }`;
 });
 

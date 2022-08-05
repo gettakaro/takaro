@@ -20,6 +20,8 @@ RUN find packages -maxdepth 1 -type d -wholename '*/*' -exec sh -c 'mkdir -p lib
 
 FROM node:18 as runner
 
+RUN apt-get install git -y
+
 # Temporarily lock to this version :(
 # See https://github.com/npm/cli/issues/3847
 RUN npm install -g npm@7.18.1
@@ -36,6 +38,7 @@ COPY --from=builder /app/libraries /app/
 
 COPY tsconfig*.json ./
 COPY nodemon.json ./
+COPY jest.config.js ./
 
 RUN npm ci
 

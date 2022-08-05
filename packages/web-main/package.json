@@ -11,6 +11,7 @@
     "start:dev": "PORT=13001 craco start",
     "build": "BUILD_PATH='./dist' craco build",
     "test": "echo 'no tests :('",
+    "test:watch": "echo 'no tests :('",
     "eject": "craco eject"
   },
   "eslintConfig": {

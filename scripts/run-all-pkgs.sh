@@ -3,8 +3,6 @@
 # Runs an arbitrary command **concurrently** in all packages in the monorepo.
 # Allows specifying a regex to only run in select packages
 
-set -e
-
 COMMAND=$COMMAND
 REGEX=$REGEX
 
@@ -35,7 +33,19 @@ COMMANDS=$(echo "$FILTERED_PACKAGES" | sed -r -E "s/(packages\/.+)/\"npm run -w 
 NAMES=$(echo "$FILTERED_PACKAGES" | sed -r 's/(packages\/)(\w-.*)/\2/g' ) 
 
 echo '----------------------'
-echo npx concurrently --names $(echo $NAMES | tr ' ' ',') --kill-others-on-fail $COMMANDS
+echo npx concurrently --kill-others-on-fail --names $(echo $NAMES | tr ' ' ',') --kill-others-on-fail $COMMANDS
 echo '----------------------'
 
-eval npx concurrently --names $(echo $NAMES | tr ' ' ',') --kill-others-on-fail $COMMANDS
+eval npx concurrently --kill-others-on-fail --names $(echo $NAMES | tr ' ' ',') --kill-others-on-fail $COMMANDS
+
+SUCCESS=$?
+
+echo ''
+echo ''
+echo ''
+
+if [ $SUCCESS -eq 0 ]; then
+  echo "All commands succeeded 🎉"
+else
+  echo "Some commands failed 😢"
+fi
