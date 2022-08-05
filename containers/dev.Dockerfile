@@ -36,6 +36,7 @@ COPY --from=builder /app/libraries /app/
 
 COPY tsconfig*.json ./
 COPY nodemon.json ./
+COPY jest.config.js ./
 
 RUN npm ci
 

@@ -15,7 +15,7 @@ services :
   takaro:
     build:
       context: .
-      dockerfile: containers/generic-app.Dockerfile.dev
+      dockerfile: containers/dev.Dockerfile
 #      args:
 #       NODE_ENV: development
 #    command: "npm run start:dev"
