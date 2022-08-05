@@ -2,18 +2,24 @@ import express, { Application } from 'express';
 import { logger } from '@takaro/logger';
 import { Server } from 'http';
 import { config } from './config';
-import { healthHandler } from './routes/health';
+import { getHealth } from './routes/health';
+import { Route } from './routes/Route';
 
 export class HTTP {
   private app: Application;
   private httpServer: Server;
   private logger;
 
-  constructor() {
+  constructor(routes: Route[] = []) {
     this.logger = logger('http');
     config.validate();
     this.app = express();
-    this.app.use('/health', healthHandler);
+
+    getHealth.load(this.app);
+
+    for (const route of routes) {
+      route.load(this.app);
+    }
   }
 
   get expressInstance() {
