@@ -21,7 +21,7 @@ mkdir _data
 
 printHeader "Building packages"
 
-npx prisma generate
+npm run db:generate
 
 # These require a specific order for the first build...
 npm run-script -w packages/lib-config build

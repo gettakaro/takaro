@@ -25,6 +25,4 @@ COPY jest.config.js ./
 
 RUN ./scripts/dev-init.sh
 
-RUN npm run db:generate
-
 CMD [ "npm", "run", "start:dev"]

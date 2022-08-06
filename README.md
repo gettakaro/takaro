@@ -58,6 +58,7 @@ erDiagram
     
     player {
       string id PK
+      string platformId
       string name
       string gameServerId FK
     }

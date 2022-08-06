@@ -33,6 +33,7 @@ model GameServer {
 
 model Player {
   id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  platformId   String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   name         String
