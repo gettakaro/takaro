@@ -1,5 +1,5 @@
 import { MockDomain } from './mockModels.test';
-import { QueryBuilder } from './queryParams';
+import { QueryBuilder } from './queryBuilder';
 import { expect } from '@takaro/test';
 import { db } from './main';
 
