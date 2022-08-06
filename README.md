@@ -68,6 +68,7 @@ erDiagram
       string id PK
       string name
       string domainId FK
+      string code
     }
 
     hook {
