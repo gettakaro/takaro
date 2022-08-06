@@ -17,12 +17,11 @@ npm ci
 
 printHeader "Initializing database"
 
-
 mkdir _data
-DATABASE_URL="file:../_data/dev.db" npm run db:migrate
-
 
 printHeader "Building packages"
+
+npx prisma generate
 
 # These require a specific order for the first build...
 npm run-script -w packages/lib-config build

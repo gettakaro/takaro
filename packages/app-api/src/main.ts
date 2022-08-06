@@ -1,8 +1,8 @@
 import { HTTP } from '@takaro/http';
-import { UserController } from './controllers/UserController';
+import { DomainController } from './controllers/DomainController';
 
 async function main() {
-  const server = new HTTP({ controllers: [UserController] });
+  const server = new HTTP({ controllers: [DomainController] });
   await server.start();
 }
 

@@ -1,9 +1,11 @@
 version: '3.1'
 services :
-  db:
-    image: postgres:10-alpine
+  postgresql:
+    image: postgres:14
     ports:
       - "5432:5432"
+    volumes:
+      - ./_data/db:/var/lib/postgresql      
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -21,10 +23,11 @@ services :
 #    command: "npm run start:dev"
     volumes:
       - ./packages:/app/packages
+      - ./prisma:/app/prisma
       - ./_data:/app/_data
     environment:
       LOGGING_LEVEL: debug
-      DATABASE_URL: "file:../_data/dev.db"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
     ports:
     # api
       - 13000:3000
@@ -33,3 +36,5 @@ services :
       - 13001:13001
     # lib-components
       - 13002:13002
+    # lib-db prisma studio
+      - 13003:13003

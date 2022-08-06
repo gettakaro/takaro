@@ -6,22 +6,67 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Domain {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  gameServers GameServer[]
+  cronJobs    CronJob[]
+  functions   Function[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model GameServer {
+  id        String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  name      String
+  domain    Domain                @relation(fields: [domainId], references: [id])
+  domainId  String                @db.Uuid
+  players   Player[]
+  cronJobs  CronJobOnGameServer[]
+}
+
+model Player {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServerId String     @db.Uuid
+}
+
+model CronJob {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  name        String
+  domain      Domain                @relation(fields: [domainId], references: [id])
+  domainId    String                @db.Uuid
+  gameServers CronJobOnGameServer[]
+}
+
+model CronJobOnGameServer {
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  cronJob      CronJob    @relation(fields: [cronJobId], references: [id])
+  cronJobId    String     @db.Uuid
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServerId String     @db.Uuid
+
+  @@id([cronJobId, gameServerId])
+}
+
+model Function {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  domain    Domain   @relation(fields: [domainId], references: [id])
+  domainId  String   @db.Uuid
+  code      String
 }
