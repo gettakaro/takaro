@@ -17,7 +17,7 @@ npm ci
 
 printHeader "Initializing database"
 
-mkdir _data
+mkdir -p _data
 
 printHeader "Building packages"
 
