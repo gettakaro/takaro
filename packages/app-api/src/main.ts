@@ -1,7 +1,11 @@
 import { HTTP } from '@takaro/http';
-import { UserController } from './controllers/UserController';
+import { DomainController } from './controllers/DomainController';
+import { config } from './config';
 
-const server = new HTTP({ controllers: [UserController] });
+export const server = new HTTP(
+  { controllers: [DomainController] },
+  { port: config.get('http.port') }
+);
 
 async function main() {
   await server.start();

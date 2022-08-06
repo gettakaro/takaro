@@ -1,0 +1,23 @@
+{
+  "name": "@takaro/db",
+  "version": "0.0.1",
+  "description": "An opinionated data layer",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "start:dev": "npx concurrently \"BROWSER=none prisma studio --port 13003 --schema=../../prisma/schema.prisma\" \"tsc --watch --preserveWatchOutput -p ./tsconfig.build.json\"",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
+    "test:watch": "npm run test -- --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "convict": "^6.2.3"
+  },
+  "devDependencies": {
+    "@takaro/test": "0.0.1",
+    "@types/convict": "^6.1.1"
+  }
+}

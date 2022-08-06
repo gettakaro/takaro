@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/http": "0.0.1"
+    "@takaro/http": "0.0.1",
+    "@takaro/db": "0.0.1"
   }
 }

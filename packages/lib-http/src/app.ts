@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { Application } from 'express';
 import { logger } from '@takaro/logger';
 import { Server } from 'http';
-import { config } from './config';
 import {
   createExpressServer,
   RoutingControllersOptions,
@@ -11,14 +10,20 @@ import { MetaController } from './controllers/meta';
 import { LoggingMiddleware } from './middleware/logger';
 import { ErrorHandler } from './middleware/errorHandler';
 
+interface IHTTPOptions {
+  port?: number;
+}
+
 export class HTTP {
   private app: Application;
   private httpServer: Server | null = null;
   private logger;
 
-  constructor(options: RoutingControllersOptions = {}) {
+  constructor(
+    options: RoutingControllersOptions = {},
+    private httpOptions: IHTTPOptions = {}
+  ) {
     this.logger = logger('http');
-    config.validate();
 
     if (options.controllers) {
       this.app = createExpressServer({
@@ -42,9 +47,9 @@ export class HTTP {
   }
 
   async start() {
-    this.httpServer = this.app.listen(config.get('http.port'), () => {
+    this.httpServer = this.app.listen(this.httpOptions.port, () => {
       this.logger.info(
-        `HTTP server listening on port ${config.get('http.port')}`
+        `HTTP server listening on port ${this.httpOptions.port}`
       );
     });
   }

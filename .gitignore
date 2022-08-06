@@ -37,3 +37,4 @@ coverage
 # typescript
 tsconfig.*.tsbuildinfo
 
+_data/

@@ -1,0 +1,36 @@
+import { PrismaClient } from '@prisma/client';
+import { logger } from '@takaro/logger';
+
+const log = logger('db');
+
+export const db = new PrismaClient({
+  log: [
+    {
+      emit: 'event',
+      level: 'query',
+    },
+    {
+      emit: 'stdout',
+      level: 'error',
+    },
+    {
+      emit: 'stdout',
+      level: 'info',
+    },
+    {
+      emit: 'stdout',
+      level: 'warn',
+    },
+  ],
+});
+
+db.$on('query', (e) => {
+  log.debug(`📖 [${e.duration} ms] ${e.query}`, {
+    duration: e.duration,
+    query: e.query,
+  });
+});
+
+process.on('beforeExit', async () => {
+  await db.$disconnect();
+});

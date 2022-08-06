@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Domain {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  gameServers GameServer[]
+  cronJobs    CronJob[]
+  functions   Function[]
+}
+
+model GameServer {
+  id        String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  name      String
+  domain    Domain                @relation(fields: [domainId], references: [id])
+  domainId  String                @db.Uuid
+  players   Player[]
+  cronJobs  CronJobOnGameServer[]
+}
+
+model Player {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  platformId   String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServerId String     @db.Uuid
+}
+
+model CronJob {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  name        String
+  domain      Domain                @relation(fields: [domainId], references: [id])
+  domainId    String                @db.Uuid
+  gameServers CronJobOnGameServer[]
+}
+
+model CronJobOnGameServer {
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  cronJob      CronJob    @relation(fields: [cronJobId], references: [id])
+  cronJobId    String     @db.Uuid
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServerId String     @db.Uuid
+
+  @@id([cronJobId, gameServerId])
+}
+
+model Function {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  domain    Domain   @relation(fields: [domainId], references: [id])
+  domainId  String   @db.Uuid
+  code      String
+}

@@ -2,7 +2,7 @@ import { Controller, Get } from 'routing-controllers';
 
 @Controller()
 export class MetaController {
-  @Get('/health')
+  @Get('/healthz')
   getHealth() {
     return 'OK!';
   }
