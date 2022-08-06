@@ -4,9 +4,10 @@
   "description": "",
   "scripts": {
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
-    "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
+    "start:dev": "npm run db:migrate && COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
     "shell": "docker-compose exec takaro bash",
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
+    "postinstall": "npm run db:generate",
     "clean": "npx --workspaces rimraf dist && npx rimraf node_modules",
     "test": "COMMAND=\"--if-present test\"  ./scripts/run-all-pkgs.sh",
     "test:watch": "COMMAND=\"--if-present test:watch\"  ./scripts/run-all-pkgs.sh",
@@ -16,6 +17,8 @@
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
     "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
@@ -53,6 +56,7 @@
     "mocha": "^8.4.0",
     "nodemon": "^2.0.13",
     "prettier": "2.4.1",
+    "prisma": "^4.1.1",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.7.0",
@@ -72,6 +76,7 @@
     ]
   },
   "dependencies": {
+    "@prisma/client": "^4.1.1",
     "body-parser": "^1.20.0",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",

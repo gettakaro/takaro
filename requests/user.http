@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:13000
+
+GET {{baseUrl}}/users
+Content-Type: application/json 
+
+###
+
+POST {{baseUrl}}/users
+Content-Type: application/json 
+
+{
+    "name": "John Doe",
+    "email": "john@doe.com"
+}
+
+###
+
+DELETE {{baseUrl}}/users/3
+Content-Type: application/json

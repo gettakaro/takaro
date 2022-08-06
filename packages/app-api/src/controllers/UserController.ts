@@ -1,4 +1,6 @@
-import { Length } from 'class-validator';
+import { IsEmail, Length } from 'class-validator';
+import { db } from '@takaro/db';
+
 import {
   Param,
   Body,
@@ -11,36 +13,43 @@ import {
 
 export class UserDTO {
   @Length(3, 20)
-  username!: string;
+  name!: string;
+
+  @IsEmail()
+  email!: string;
 }
 
 @JsonController()
 export class UserController {
   @Get('/users')
-  getAll() {
-    return 'This action returns all users';
+  async getAll() {
+    const users = await db.user.findMany();
+    return users;
   }
 
   @Get('/users/:id')
-  getOne(@Param('id') id: number) {
-    return 'This action returns user #' + id;
-  }
-
-  @Post('/users')
-  post(@Body() user: UserDTO) {
+  async getOne(@Param('id') id: number) {
+    const user = await db.user.findFirstOrThrow({
+      where: { id: { equals: id } },
+    });
     return user;
   }
 
+  @Post('/users')
+  async post(@Body() user: UserDTO) {
+    const createdUser = await db.user.create({ data: user });
+    return createdUser;
+  }
+
   @Put('/users/:id')
-  put(@Param('id') id: number, @Body() user: UserDTO) {
-    return {
-      id,
-      ...user,
-    };
+  async put(@Param('id') id: number, @Body() user: UserDTO) {
+    const updatedUser = await db.user.update({ where: { id }, data: user });
+    return updatedUser;
   }
 
   @Delete('/users/:id')
-  remove(@Param('id') id: number) {
-    return { id };
+  async remove(@Param('id') id: number) {
+    const deletedUser = await db.user.delete({ where: { id } });
+    return deletedUser;
   }
 }

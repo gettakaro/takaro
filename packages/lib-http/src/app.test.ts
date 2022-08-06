@@ -16,7 +16,7 @@ describe('app', () => {
   });
 
   it('Serves a health status', async () => {
-    const response = await supertest(http.expressInstance).get('/health');
+    const response = await supertest(http.expressInstance).get('/healthz');
     expect(response.status).to.be.equal(200);
   });
 });

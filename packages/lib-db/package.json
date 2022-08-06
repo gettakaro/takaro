@@ -1,12 +1,11 @@
 {
-  "name": "@takaro/api",
+  "name": "@takaro/db",
   "version": "0.0.1",
-  "description": "REST API for Takaro",
+  "description": "An opinionated data layer",
   "main": "dist/main.js",
-  "types": "main.ts",
+  "types": "dist/main.d.ts",
   "scripts": {
-    "start": "node dist/main.js",
-    "start:dev": "nodemon  --config ../../nodemon.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
     "test:watch": "npm run test -- --watch"
@@ -15,7 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/http": "0.0.1",
-    "@takaro/db": "0.0.1"
+    "convict": "^6.2.3"
+  },
+  "devDependencies": {
+    "@takaro/test": "0.0.1",
+    "@types/convict": "^6.1.1"
   }
 }
