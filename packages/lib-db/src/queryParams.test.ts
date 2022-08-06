@@ -1,22 +1,22 @@
-import { MockUser } from './mockModels.test';
+import { MockDomain } from './mockModels.test';
 import { QueryBuilder } from './queryParams';
 import { expect } from '@takaro/test';
 import { db } from './main';
 
 describe('Query builder', () => {
   it('Can create a simple exact filter query', async () => {
-    const user = await MockUser();
+    const domain = await MockDomain();
 
     const query = new QueryBuilder({
       filters: {
-        id: user.id,
+        id: domain.id,
       },
     });
 
     const params = query.build();
 
-    const foundUser = await db.user.findMany({ where: params.filters });
+    const foundUser = await db.domain.findMany({ where: params.filters });
 
-    expect(foundUser).to.deep.equal([user]);
+    expect(foundUser).to.deep.equal([domain]);
   });
 });

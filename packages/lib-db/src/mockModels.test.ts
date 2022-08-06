@@ -1,12 +1,12 @@
-import { db, User } from './main';
+import { db } from './main';
 import { faker } from '@faker-js/faker';
+import { Domain } from '@prisma/client';
 
-export function MockUser(user: Partial<User> = {}) {
-  return db.user.create({
+export function MockDomain(domain: Partial<Domain> = {}) {
+  return db.domain.create({
     data: {
-      email: faker.internet.email(),
       name: faker.name.findName(),
-      ...user,
+      ...domain,
     },
   });
 }
