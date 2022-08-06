@@ -24,8 +24,11 @@ export const db = new PrismaClient({
   ],
 });
 
-db.$on('query', e => {
-  log.debug(`📖 [${e.duration} ms] ${e.query}`, { duration: e.duration, query: e.query });
+db.$on('query', (e) => {
+  log.debug(`📖 [${e.duration} ms] ${e.query}`, {
+    duration: e.duration,
+    query: e.query,
+  });
 });
 
 process.on('beforeExit', async () => {

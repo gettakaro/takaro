@@ -40,7 +40,10 @@ export class DomainController {
 
   @Put('/domain/:id')
   async put(@Param('id') id: string, @Body() domain: DomainDTO) {
-    const updatedDomain = await db.domain.update({ where: { id }, data: domain });
+    const updatedDomain = await db.domain.update({
+      where: { id },
+      data: domain,
+    });
     return updatedDomain;
   }
 

@@ -34,7 +34,7 @@ services :
       - 12001:12000
     # web-main
       - 13001:13001
-    # lib-components
+    # lib-components storybook
       - 13002:13002
     # lib-db prisma studio
       - 13003:13003
