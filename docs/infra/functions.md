@@ -1,0 +1,60 @@
+# Takaro functions infrastructure
+
+Takaro uses Kata containers to run containers isolated by VMs. 
+
+TODO: This needs to be packaged up somehow. Maybe we can create an image with Packer?
+
+TODO: I used the CentOS Stream 8 image from Hetzner. I think this is the same/similar as Rocky Linux? We can also use the snapd install method if we want to stick with Ubuntu servers.
+
+TODO: Using Qemu as a backend now. If we switch to Firecracker, creating containers should become a lot faster.
+
+## Installing Kata containers on Hetzner
+
+Kata containers has some specific requirements to be installed. At time of writing, I (Cata) have a machine setup on Hetzner. These are the steps I took:
+
+Start with a CentOS 8 machine. 
+
+Install Kata containers:
+
+```bash
+dnf update -y
+
+sudo -E dnf install -y centos-release-advanced-virtualization
+sudo -E dnf module disable -y virt:rhel
+source /etc/os-release
+cat <<EOF | sudo -E tee /etc/yum.repos.d/kata-containers.repo
+[kata-containers]
+name=Kata Containers
+baseurl=http://mirror.centos.org/\$contentdir/\$releasever/virt/\$basearch/kata-containers
+enabled=1
+gpgcheck=1
+skip_if_unavailable=1
+EOF
+sudo -E dnf install -y kata-containers
+```
+
+Install Docker (containerd)
+
+```bash
+sudo yum install -y yum-utils
+
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin    
+
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Check if docker is working:
+docker run hello-world
+```
+
+Check if Kata is working:
+
+`kata-runtime check`
+
+Run a test container:
+
+`ctr run --runtime "io.containerd.kata.v2" --rm -t "docker.io/library/busybox:latest" test-kata sh`
