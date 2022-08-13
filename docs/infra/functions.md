@@ -2,13 +2,18 @@
 
 Takaro uses Kata containers to run containers isolated by VMs. 
 
-TODO: This needs to be packaged up somehow. Maybe we can create an image with Packer?
+![](./functions-infra.png)
 
-TODO: I used the CentOS Stream 8 image from Hetzner. I think this is the same/similar as Rocky Linux? We can also use the snapd install method if we want to stick with Ubuntu servers.
+## containerd communications
 
-TODO: Using Qemu as a backend now. If we switch to Firecracker, creating containers should become a lot faster.
+We can use the [Docker Engine API](https://docs.docker.com/engine/api/v1.41/) to manage container instances. Kata containers works here since Kata is "just" a container runtime.
 
 ## Installing Kata containers on Hetzner
+
+
+- TODO: This needs to be packaged up somehow. Maybe we can create an image with Packer?
+- TODO: I used the CentOS Stream 8 image from Hetzner. I think this is the same/similar as Rocky Linux? We can also use the snapd install method if we want to stick with Ubuntu servers.
+- TODO: Using Qemu as a backend now. If we switch to Firecracker, creating containers should become a lot faster.
 
 Kata containers has some specific requirements to be installed. At time of writing, I (Cata) have a machine setup on Hetzner. These are the steps I took:
 
