@@ -15,7 +15,7 @@ interface IAgentConfig extends IBaseConfig {
     tlsCa: string;
   };
   containerd: {
-    socketPath: string;
+    executablePath: string;
     namespace: string;
   };
 }
@@ -83,11 +83,11 @@ const configSchema = {
     },
   },
   containerd: {
-    socketPath: {
-      doc: 'The path to the Docker unix socket',
+    executablePath: {
+      doc: 'The path to the nerdctl executable',
       format: String,
-      default: 'unix:///run/containerd/containerd.sock',
-      env: 'CONTAINERD_SOCKET_PATH',
+      default: '/home/catalysm/.local/bin/nerdctl',
+      env: 'CONTAINERD_EXECUTABLE_PATH',
     },
     namespace: {
       doc: 'The namespace to use for containerd',
