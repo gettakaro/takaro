@@ -29,10 +29,11 @@ services :
       LOGGING_LEVEL: debug
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
       REDIS_HOST: "redis"
+      ADMIN_SECRET: "abc123"
     ports:
     # api
       - 13000:3000
-      - 12001:12000
+      - 12001:12001
     # web-main
       - 13001:13001
     # lib-components storybook

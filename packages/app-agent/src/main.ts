@@ -6,6 +6,7 @@ import { worker } from './service/queue/worker';
 export const server = new HTTP({}, { port: config.get('http.port') });
 
 async function main() {
+  config.validate();
   server.expressInstance.use('/queues', BullBoardRouter);
 
   await server.start();

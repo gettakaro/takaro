@@ -4,6 +4,9 @@ interface IHttpConfig extends IBaseConfig {
   http: {
     port: number;
   };
+  auth: {
+    adminSecret: string;
+  };
 }
 
 const configSchema = {
@@ -26,6 +29,14 @@ const configSchema = {
       },
       default: 3000,
       env: 'PORT',
+    },
+  },
+  auth: {
+    adminSecret: {
+      doc: 'The secret used to authenticate admin requests',
+      format: String,
+      default: null,
+      env: 'ADMIN_SECRET',
     },
   },
 };
