@@ -47,6 +47,6 @@ jobs:
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
       - run: npm run build
-      - run: npm run test
+      - run: npm run test:unit
         env:
           DATABASE_URL: postgres://takaro:supersecret@127.0.0.1:5432/takaro
