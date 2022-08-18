@@ -8,9 +8,7 @@ const log = logger('worker');
 
 export const worker = new Worker(
   config.get('queue.name'),
-  async (job) => {
-    console.log('hierrrrrrrrrrrrrrrrrrrrrrrrrrr', { name: job.name });
-
+  async () => {
     const containerd = new ContainerdService();
     await containerd.pullImage('hello-world');
     const images = await containerd.listImages();
