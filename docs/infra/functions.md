@@ -38,7 +38,7 @@ EOF
 sudo -E dnf install -y kata-containers
 ```
 
-Install Docker (containerd)
+Install Docker (containerd) **(NOTE: not needed anymore since containerd is included in nerdctl I think...)**
 
 ```bash
 sudo yum install -y yum-utils
@@ -63,3 +63,16 @@ Check if Kata is working:
 Run a test container:
 
 `ctr run --runtime "io.containerd.kata.v2" --rm -t "docker.io/library/busybox:latest" test-kata sh`
+
+Install [nerdctl](https://github.com/containerd/nerdctl)
+
+Use the full install package from the releases page so you have the CNI plugins
+
+```bash
+curl -L -o nerdctl.tar.gz https://github.com/containerd/nerdctl/releases/download/v0.22.2/nerdctl-full-0.22.2-linux-amd64.tar.gz
+sudo tar xzf nerdctl.tar.gz --directory=/usr/local
+
+```
+
+
+`nerdctl run --runtime "io.containerd.kata.v2" hello-world`

@@ -21,6 +21,19 @@ Start the development environment:
 docker-compose up --build
 ```
 
+### Working on app-agent
+
+app-agent needs to execute nerdctl to talk to containerd. I haven't been able to get this properly setup in the docker-compose file.. :(
+
+
+```
+# install https://github.com/containerd/nerdctl
+
+# Install rootless
+sudo apt install uidmap
+containerd-rootless-setuptool.sh install
+```
+
 ## Repo setup
 
 This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).

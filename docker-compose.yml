@@ -10,10 +10,10 @@ services :
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}        
-#  cache:
-#    image: redis
-#    ports:
-#      - 6379:6379    
+  redis:
+    image: redis
+    ports:
+      - 6379:6379    
   takaro:
     build:
       context: .
@@ -28,6 +28,7 @@ services :
     environment:
       LOGGING_LEVEL: debug
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
+      REDIS_HOST: "redis"
     ports:
     # api
       - 13000:3000
@@ -38,3 +39,5 @@ services :
       - 13002:13002
     # lib-db prisma studio
       - 13003:13003
+    # agent  
+      - 13004:3001
