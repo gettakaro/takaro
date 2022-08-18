@@ -21,6 +21,16 @@ Start the development environment:
 docker-compose up --build
 ```
 
+### Working on app-agent
+
+app-agent needs to talk to containerd over gRPC. I haven't been able to get this properly setup in the docker-compose file.. :(
+
+Make sure you have permissions to interact with the socket. If your current user is part of the docker group, you can use the following command but other options are also possible depending on your system.
+
+```
+sudo chgrp docker /var/run/containerd/containerd.sock
+```
+
 ## Repo setup
 
 This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).

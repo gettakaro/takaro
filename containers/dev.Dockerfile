@@ -22,7 +22,7 @@ COPY prisma ./prisma
 COPY nodemon.json ./
 COPY jest.config.js ./
 
-
 RUN ./scripts/dev-init.sh
+
 
 CMD [ "npm", "run", "start:dev"]

@@ -1,0 +1,25 @@
+{
+  "name": "@takaro/agent",
+  "version": "0.0.1",
+  "description": "Takaro agent handles running of functions inside isolated environments",
+  "main": "dist/main.js",
+  "types": "main.ts",
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:dev": "echo 'Disabled for regular dev env, you should run this on your host directly!'",
+    "_start:dev": "nodemon  --config ../../nodemon.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
+    "test:watch": "npm run test -- --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@bull-board/express": "^4.2.2",
+    "@takaro/db": "0.0.1",
+    "@takaro/http": "0.0.1",
+    "@takaro/containerd": "0.0.1",
+    "bullmq": "^1.87.2"
+  }
+}

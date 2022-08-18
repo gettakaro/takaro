@@ -9,5 +9,5 @@
   "watch": [
     "src"
   ],
-  "ext": "ts js"
+  "ext": "ts"
 }
