@@ -1,10 +1,6 @@
 import { EventEmitter } from 'node:stream';
 import { logger } from '@takaro/logger';
-import EventSource from 'eventsource';
-import { JsonObject } from 'type-fest';
 import { IGameEventEmitter } from '../interfaces/eventEmitter';
-import { GameEvents } from '../interfaces/events';
-
 
 export class MockEmitter extends EventEmitter implements IGameEventEmitter {
   private logger = logger('Mock');
@@ -13,8 +9,11 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     super();
   }
 
-  async start(): Promise<void> { }
+  async start(): Promise<void> {
+    console.log('start');
+  }
 
-  async stop(): Promise<void> { }
-
+  async stop(): Promise<void> {
+    console.log('stop');
+  }
 }

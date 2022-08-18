@@ -9,6 +9,5 @@ export function getRedisConnectionOptions() {
     /*     tls: {
           ca: config.get('redis.tlsCa') ? [config.get('redis.tlsCa')] : undefined,
         }, */
-
   };
 }

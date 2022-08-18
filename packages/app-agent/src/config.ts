@@ -12,12 +12,12 @@ interface IAgentConfig extends IBaseConfig {
     port: number;
     username: string;
     password: string;
-    tlsCa: string
-  },
+    tlsCa: string;
+  };
   containerd: {
     socketPath: string;
     namespace: string;
-  }
+  };
 }
 
 const configSchema = {
@@ -95,7 +95,7 @@ const configSchema = {
       default: 'takaro',
       env: 'CONTAINERD_NAMESPACE',
     },
-  }
+  },
 };
 
 export const config = new Config<IAgentConfig>([configSchema]);

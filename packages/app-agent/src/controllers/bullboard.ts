@@ -12,4 +12,3 @@ createBullBoard({
 });
 
 export const BullBoardRouter = serverAdapter.getRouter();
-
