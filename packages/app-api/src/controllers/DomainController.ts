@@ -1,5 +1,7 @@
 import { Length } from 'class-validator';
 import { db } from '@takaro/db';
+import { config } from '../config';
+import { createAdminAuthMiddleware, apiResponse } from '@takaro/http';
 
 import {
   Param,
@@ -9,6 +11,7 @@ import {
   Put,
   Delete,
   JsonController,
+  UseBefore,
 } from 'routing-controllers';
 
 export class DomainDTO {
@@ -16,12 +19,13 @@ export class DomainDTO {
   name!: string;
 }
 
+@UseBefore(createAdminAuthMiddleware(config.get('auth.adminSecret')))
 @JsonController()
 export class DomainController {
   @Get('/domain')
   async getAll() {
     const domains = await db.domain.findMany();
-    return domains;
+    return apiResponse(domains);
   }
 
   @Get('/domain/:id')
@@ -29,13 +33,13 @@ export class DomainController {
     const domain = await db.domain.findFirstOrThrow({
       where: { id: { equals: id } },
     });
-    return domain;
+    return apiResponse(domain);
   }
 
   @Post('/domain')
   async post(@Body() domain: DomainDTO) {
     const createdDomain = await db.domain.create({ data: domain });
-    return createdDomain;
+    return apiResponse(createdDomain);
   }
 
   @Put('/domain/:id')
@@ -44,12 +48,12 @@ export class DomainController {
       where: { id },
       data: domain,
     });
-    return updatedDomain;
+    return apiResponse(updatedDomain);
   }
 
   @Delete('/domain/:id')
   async remove(@Param('id') id: string) {
     const deletedDomain = await db.domain.delete({ where: { id } });
-    return deletedDomain;
+    return apiResponse(deletedDomain);
   }
 }

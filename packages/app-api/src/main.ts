@@ -8,6 +8,7 @@ export const server = new HTTP(
 );
 
 async function main() {
+  config.validate();
   await server.start();
 }
 

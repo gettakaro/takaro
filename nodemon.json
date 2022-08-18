@@ -1,11 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/nodemon.json",
   "verbose": true,
-  "exec": "node -r ts-node/register src/main.ts",
-  "nodeArgs": [
-    "-inspect=0.0.0.0:12001",
-    "--trace-warnings"
-  ],
+  "exec": "node --inspect=0.0.0.0:12001 -r ts-node/register src/main.ts",
   "watch": [
     "src"
   ],

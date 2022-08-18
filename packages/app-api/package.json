@@ -15,7 +15,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@takaro/db": "0.0.1",
     "@takaro/http": "0.0.1",
-    "@takaro/db": "0.0.1"
+    "basic-auth": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/basic-auth": "^1.1.3"
   }
 }
