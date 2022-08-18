@@ -46,6 +46,8 @@ echo ''
 
 if [ $SUCCESS -eq 0 ]; then
   echo "All commands succeeded 🎉"
+  exit 0
 else
   echo "Some commands failed 😢"
+  exit $SUCCESS
 fi
