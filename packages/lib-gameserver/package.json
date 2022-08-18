@@ -8,6 +8,8 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
+    "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
+    "test:integration": "ts-mocha -p ./tsconfig.json src/**/*.integration.test.ts",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
