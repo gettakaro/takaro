@@ -41,7 +41,7 @@ export class QueryBuilder<T> {
   private sorting() {
     if (!this.query.sortBy) {
       return {
-        id: this.query.sortDirection,
+        id: this.query.sortDirection ?? SortDirection.asc,
       };
     }
     return {
