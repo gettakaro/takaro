@@ -1,19 +1,25 @@
-export interface ITakaroQuery {
+export interface ITakaroQuery<T> {
   filters: {
-    [key: string]: unknown;
+    [key in keyof T]?: string | number;
   };
   page: number;
   limit: number;
-  sortBy: string;
-  sortDirection: string;
+  sortBy?: keyof T;
+  sortDirection?: SortDirection;
 }
 
-export class QueryBuilder {
-  constructor(private query: Partial<ITakaroQuery> = {}) {}
+export enum SortDirection {
+  asc = 'asc',
+  desc = 'desc',
+}
+
+export class QueryBuilder<T> {
+  constructor(private readonly query: Partial<ITakaroQuery<T>> = {}) {}
 
   build() {
     return {
-      filters: this.filters(),
+      where: this.filters(),
+      orderBy: this.sorting(),
     };
   }
 
@@ -29,6 +35,17 @@ export class QueryBuilder {
 
     return {
       AND: filters,
+    };
+  }
+
+  private sorting() {
+    if (!this.query.sortBy) {
+      return {
+        id: this.query.sortDirection,
+      };
+    }
+    return {
+      [this.query.sortBy]: this.query.sortDirection,
     };
   }
 }
