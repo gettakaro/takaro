@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { logger } from '@takaro/logger';
 
+export { ITakaroQuery, QueryBuilder, SortDirection } from './queryBuilder';
+export { DANGEROUS_cleanDatabase } from './util';
+
 const log = logger('db');
 
 export const db = new PrismaClient({

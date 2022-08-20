@@ -1,5 +1,5 @@
 import { Length } from 'class-validator';
-import { db } from '@takaro/db';
+import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { config } from '../config';
 import { createAdminAuthMiddleware, apiResponse } from '@takaro/http';
 
@@ -12,6 +12,7 @@ import {
   Delete,
   JsonController,
   UseBefore,
+  QueryParams,
 } from 'routing-controllers';
 
 export class DomainDTO {
@@ -23,8 +24,9 @@ export class DomainDTO {
 @JsonController()
 export class DomainController {
   @Get('/domain')
-  async getAll() {
-    const domains = await db.domain.findMany();
+  async getAll(@QueryParams() query: Partial<ITakaroQuery<DomainDTO>>) {
+    const params = new QueryBuilder<DomainDTO>(query).build();
+    const domains = await db.domain.findMany(params);
     return apiResponse(domains);
   }
 

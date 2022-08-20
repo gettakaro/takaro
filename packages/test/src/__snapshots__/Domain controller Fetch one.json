@@ -1,0 +1,18 @@
+{
+  "data": {
+    "meta": {
+      "serverTime": "2022-08-20T18:02:05.793Z"
+    },
+    "data": {
+      "id": "b14957e4-869f-4149-b386-4aef875c777d",
+      "createdAt": "2022-08-20T18:02:05.783Z",
+      "updatedAt": "2022-08-20T18:02:05.784Z",
+      "name": "auto-test-one"
+    }
+  },
+  "test": {
+    "name": "Domain controller Fetch one",
+    "url": "/domain/b14957e4-869f-4149-b386-4aef875c777d",
+    "method": "get"
+  }
+}

@@ -22,10 +22,17 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
       return res.end();
     }
 
-    log.warn('Unknown error, this should be a Takaro error...', { error });
-    res.status(500).json({
-      error: 'Internal server error',
+    log.warn('Unknown error, this should be a Takaro error...', {
+      error,
+      message: error.message,
+      stack: error.stack,
     });
-    res.end();
+    if (!res.headersSent) {
+      res.status(500);
+      res.json({
+        error: 'Internal server error',
+      });
+    }
+    return res.end();
   }
 }

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "meta": {
+      "serverTime": "2022-08-20T14:14:01.998Z"
+    },
+    "data": {
+      "id": "b14957e4-869f-4149-b386-4aef875c777e",
+      "createdAt": "2022-08-20T14:14:01.988Z",
+      "updatedAt": "2022-08-20T14:14:01.989Z",
+      "name": "auto-test-delete"
+    }
+  },
+  "test": {
+    "name": "Domain controller Delete domain",
+    "url": "/domain/b14957e4-869f-4149-b386-4aef875c777e",
+    "method": "delete"
+  }
+}

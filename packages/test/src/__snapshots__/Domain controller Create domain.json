@@ -1,0 +1,21 @@
+{
+  "data": {
+    "meta": {
+      "serverTime": "2022-08-20T13:49:06.938Z"
+    },
+    "data": {
+      "id": "45df2c2e-a284-4758-996d-7403b2cfbd7d",
+      "createdAt": "2022-08-20T13:49:06.934Z",
+      "updatedAt": "2022-08-20T13:49:06.935Z",
+      "name": "auto-test-create"
+    }
+  },
+  "test": {
+    "name": "Domain controller Create domain",
+    "url": "/domain",
+    "method": "post",
+    "body": {
+      "name": "auto-test-create"
+    }
+  }
+}
