@@ -1,6 +1,7 @@
 import { Length } from 'class-validator';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { ITakaroQuery } from '@takaro/db';
 import { config } from '../config';
+import { DomainService } from '../service/DomainService';
 import { createAdminAuthMiddleware, apiResponse } from '@takaro/http';
 
 import {
@@ -24,38 +25,32 @@ export class DomainDTO {
 @JsonController()
 export class DomainController {
   @Get('/domain')
-  async getAll(@QueryParams() query: Partial<ITakaroQuery<DomainDTO>>) {
-    const params = new QueryBuilder<DomainDTO>(query).build();
-    const domains = await db.domain.findMany(params);
-    return apiResponse(domains);
+  async getAll(@QueryParams() query: ITakaroQuery<DomainDTO>) {
+    const service = new DomainService();
+    return apiResponse(await service.get(query));
   }
 
   @Get('/domain/:id')
   async getOne(@Param('id') id: string) {
-    const domain = await db.domain.findFirstOrThrow({
-      where: { id: { equals: id } },
-    });
-    return apiResponse(domain);
+    const service = new DomainService();
+    return apiResponse(await service.getOne(id));
   }
 
   @Post('/domain')
   async post(@Body() domain: DomainDTO) {
-    const createdDomain = await db.domain.create({ data: domain });
-    return apiResponse(createdDomain);
+    const service = new DomainService();
+    return apiResponse(await service.create(domain));
   }
 
   @Put('/domain/:id')
   async put(@Param('id') id: string, @Body() domain: DomainDTO) {
-    const updatedDomain = await db.domain.update({
-      where: { id },
-      data: domain,
-    });
-    return apiResponse(updatedDomain);
+    const service = new DomainService();
+    return apiResponse(await service.update(id, domain));
   }
 
   @Delete('/domain/:id')
   async remove(@Param('id') id: string) {
-    const deletedDomain = await db.domain.delete({ where: { id } });
-    return apiResponse(deletedDomain);
+    const service = new DomainService();
+    return apiResponse(await service.delete(id));
   }
 }
