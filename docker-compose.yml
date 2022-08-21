@@ -30,8 +30,8 @@ services :
       #LOGGING_MINIMAL: "true"
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
       REDIS_HOST: "redis"
-      ADMIN_SECRET: "abc123"
-      JWT_SECRET: "def456"
+      ADMIN_SECRET: "${ADMIN_SECRET}"
+      JWT_SECRET: "${JWT_SECRET}"
       FUNCTIONS_EXECUTION_MODE: "local"
     ports:
     # api

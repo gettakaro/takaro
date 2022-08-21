@@ -10,6 +10,7 @@ printHeader() {
     printf '%s\n' ""
 }
 
+cp --no-clobber .env.example .env
 
 printHeader "Installing node dependencies"
 
