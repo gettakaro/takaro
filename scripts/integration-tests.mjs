@@ -1,6 +1,6 @@
-import { upMany, logs, exec } from 'docker-compose';
+import { upOne, upMany, logs, exec } from 'docker-compose';
 
-const composeOpts = { log: true };
+const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose-test.yml'] };
 
 async function main() {
   // First, start the datastores
@@ -10,14 +10,27 @@ async function main() {
   await countdown(30);
 
   // Once all data stores are initialized, we can start the app itself
-  await upMany(['takaro'], composeOpts);
+  await upOne('takaro', composeOpts);
 
-  console.log('Waiting 30 seconds for app to start');
-  await countdown(30);
+  console.log('Waiting 60 seconds for app to start');
+  await countdown(60);
 
-  await exec('takaro', 'npm run test', composeOpts);
+  let failed = false;
+
+  try {
+    await exec(['takaro'], 'npm run db:migrate', composeOpts);
+    await exec(['takaro'], 'npm test', composeOpts);
+  } catch (error) {
+    console.error('Tests failed');
+    console.error(error);
+    failed = true;
+  }
 
   await logs(['postgresql', 'redis', 'takaro'], composeOpts);
+
+  if (failed) {
+    process.exit(1);
+  }
 }
 
 

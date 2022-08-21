@@ -1,5 +1,10 @@
 import { Config, IBaseConfig } from '@takaro/config';
 
+export enum EXECUTION_MODE {
+  CONTAINERD = 'containerd',
+  LOCAL = 'local',
+}
+
 interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
@@ -13,6 +18,9 @@ interface IAgentConfig extends IBaseConfig {
     username: string;
     password: string;
     tlsCa: string;
+  };
+  functions: {
+    executionMode: EXECUTION_MODE;
   };
   containerd: {
     executablePath: string;
@@ -80,6 +88,14 @@ const configSchema = {
       format: String,
       default: '',
       env: 'REDIS_TLS_CA',
+    },
+  },
+  functions: {
+    executionMode: {
+      doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
+      format: [EXECUTION_MODE.CONTAINERD, EXECUTION_MODE.LOCAL],
+      default: EXECUTION_MODE.CONTAINERD,
+      env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
   containerd: {
