@@ -20,3 +20,7 @@ jobs:
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
       - run: node scripts/integration-tests.mjs
+        env:
+          POSTGRES_USER: takaro-user
+          POSTGRES_PASSWORD: takaro-pw
+          POSTGRES_DB: takaro-db
