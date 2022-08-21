@@ -13,17 +13,22 @@ export enum SortDirection {
   desc = 'desc',
 }
 
-export class QueryBuilder<T> {
-  constructor(private readonly query: Partial<ITakaroQuery<T>> = {}) {}
+type CombineOpts = 'AND' | 'OR' | null;
 
-  build() {
+export class QueryBuilder<T> {
+  constructor(
+    public domainId: string | null,
+    private readonly query: Partial<ITakaroQuery<T>> = {}
+  ) {}
+
+  build(combineOpts: CombineOpts = 'AND') {
     return {
-      where: this.filters(),
+      where: this.filters(combineOpts),
       orderBy: this.sorting(),
     };
   }
 
-  private filters() {
+  private filters(type: CombineOpts) {
     const filters: Record<string, Record<string, unknown>> = {};
 
     for (const filter in this.query.filters) {
@@ -33,9 +38,22 @@ export class QueryBuilder<T> {
       }
     }
 
-    return {
-      AND: filters,
-    };
+    if (this.domainId) {
+      filters.domainId = { equals: this.domainId };
+    }
+
+    switch (type) {
+      case 'AND':
+        return {
+          AND: filters,
+        };
+      case 'OR':
+        return {
+          OR: filters,
+        };
+      default:
+        return filters;
+    }
   }
 
   private sorting() {

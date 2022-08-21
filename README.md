@@ -68,6 +68,19 @@ erDiagram
       json connectionInfo 
       string domainId FK
     }
+
+    user {
+      string id PK
+      string name
+      string email
+      string domainId FK
+    }
+
+    role {
+      string id PK
+      string name
+      string domainId FK
+    }
     
     player {
       string id PK
@@ -106,6 +119,9 @@ erDiagram
     }
 
     domain ||--|{ gameServer : contains
+    domain ||--|{ user : contains
+    domain ||--|{ role : contains
+    user ||--|{ role : has
     domain ||--|{ hook : contains
     domain ||--|{ command : contains
     domain ||--|{ cron : contains

@@ -1,0 +1,41 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T18:04:13.303Z",
+      "error": {
+        "message": "Validation error",
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "capabilities": [
+                "READ_ROLES"
+              ]
+            },
+            "property": "name",
+            "children": [],
+            "constraints": {
+              "length": "name must be longer than or equal to 3 characters"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RolesController",
+    "name": "POST Create with no name",
+    "standardEnvironment": true,
+    "url": "/role",
+    "method": "post",
+    "body": {
+      "capabilities": [
+        "READ_ROLES"
+      ]
+    },
+    "expectedStatus": 400,
+    "filteredFields": []
+  }
+}

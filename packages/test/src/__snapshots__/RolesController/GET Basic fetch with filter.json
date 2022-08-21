@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T18:04:12.243Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": [
+      {
+        "id": "74fd4144-0142-4918-ba15-095e6fe954d4",
+        "createdAt": "2022-08-21T18:04:12.182Z",
+        "updatedAt": "2022-08-21T18:04:12.183Z",
+        "name": "filter-name",
+        "domainId": "150d8d90-bca4-41ae-9210-43438b1acf13",
+        "capabilities": [
+          "ROOT"
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "RolesController",
+    "name": "GET Basic fetch with filter",
+    "standardEnvironment": true,
+    "url": "/role?filters[name]=filter-name",
+    "method": "get",
+    "expectedStatus": 200,
+    "filteredFields": []
+  }
+}

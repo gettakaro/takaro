@@ -1,0 +1,36 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T18:04:12.598Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": {
+      "id": "2299712c-92bf-473d-972b-27f13c784492",
+      "createdAt": "2022-08-21T18:04:12.596Z",
+      "updatedAt": "2022-08-21T18:04:12.597Z",
+      "name": "auto-test-create",
+      "domainId": "b6b20776-e6ea-4a8d-835e-9b6c6f263839",
+      "capabilities": [
+        "READ_ROLES"
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "RolesController",
+    "name": "POST Basic create",
+    "standardEnvironment": true,
+    "url": "/role",
+    "method": "post",
+    "body": {
+      "name": "auto-test-create",
+      "capabilities": [
+        "READ_ROLES"
+      ]
+    },
+    "expectedStatus": 200,
+    "filteredFields": []
+  }
+}

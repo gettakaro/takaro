@@ -1,0 +1,39 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:35.772Z",
+      "error": {
+        "message": "Validation error",
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "name": "a"
+            },
+            "value": "a",
+            "property": "name",
+            "children": [],
+            "constraints": {
+              "length": "name must be longer than or equal to 3 characters"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "DomainController",
+    "name": "POST create with too short name",
+    "standardEnvironment": true,
+    "url": "/domain",
+    "method": "post",
+    "body": {
+      "name": "a"
+    },
+    "expectedStatus": 400,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}

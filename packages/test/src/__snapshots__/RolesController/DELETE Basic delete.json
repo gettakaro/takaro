@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T18:04:14.032Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "RolesController",
+    "name": "DELETE Basic delete",
+    "standardEnvironment": true,
+    "url": "/role/969a79db-2d63-4c47-b058-6fd09554f7d6",
+    "method": "delete",
+    "expectedStatus": 200,
+    "filteredFields": []
+  }
+}

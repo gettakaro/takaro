@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:34.223Z",
+      "error": {
+        "message": "Not authorized",
+        "code": "UnauthorizedError",
+        "details": {}
+      }
+    },
+    "data": {}
+  },
+  "status": 401,
+  "test": {
+    "group": "DomainController",
+    "name": "GET no auth",
+    "standardEnvironment": true,
+    "url": "/domain",
+    "method": "get",
+    "expectedStatus": 401,
+    "filteredFields": []
+  }
+}

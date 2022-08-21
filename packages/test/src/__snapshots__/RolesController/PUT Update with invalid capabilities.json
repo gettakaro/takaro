@@ -1,0 +1,46 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T18:04:13.846Z",
+      "error": {
+        "message": "Validation error",
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "name": "auto-test-update",
+              "capabilities": [
+                "invalid-capability"
+              ]
+            },
+            "value": [
+              "invalid-capability"
+            ],
+            "property": "capabilities",
+            "children": [],
+            "constraints": {
+              "IsCapabilityArray": "Invalid capabilities"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RolesController",
+    "name": "PUT Update with invalid capabilities",
+    "standardEnvironment": true,
+    "url": "/role/9cca21e2-4b92-4d56-ac3b-cdeff5a6c7ec",
+    "method": "put",
+    "body": {
+      "name": "auto-test-update",
+      "capabilities": [
+        "invalid-capability"
+      ]
+    },
+    "expectedStatus": 400,
+    "filteredFields": []
+  }
+}

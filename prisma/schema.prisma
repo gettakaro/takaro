@@ -14,10 +14,12 @@ model Domain {
   id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  name        String
+  name        String       @unique
   gameServers GameServer[]
   cronJobs    CronJob[]
   functions   Function[]
+  users       User[]
+  roles       Role[]
 }
 
 model GameServer {
@@ -25,10 +27,44 @@ model GameServer {
   createdAt DateTime              @default(now())
   updatedAt DateTime              @updatedAt
   name      String
-  domain    Domain                @relation(fields: [domainId], references: [id])
+  domain    Domain                @relation(fields: [domainId], references: [id], onDelete: Cascade)
   domainId  String                @db.Uuid
   players   Player[]
   cronJobs  CronJobOnGameServer[]
+}
+
+model User {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  name         String
+  email        String       @unique
+  passwordHash String
+  roles        RoleOnUser[]
+  domain       Domain       @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  domainId     String       @db.Uuid
+}
+
+model Role {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  name         String
+  domain       Domain         @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  domainId     String         @db.Uuid
+  capabilities CAPABILITIES[]
+  users        RoleOnUser[]
+}
+
+model RoleOnUser {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @db.Uuid
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId    String   @db.Uuid
+
+  @@id([userId, roleId])
 }
 
 model Player {
@@ -37,7 +73,7 @@ model Player {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   name         String
-  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
   gameServerId String     @db.Uuid
 }
 
@@ -46,7 +82,7 @@ model CronJob {
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
   name        String
-  domain      Domain                @relation(fields: [domainId], references: [id])
+  domain      Domain                @relation(fields: [domainId], references: [id], onDelete: Cascade)
   domainId    String                @db.Uuid
   gameServers CronJobOnGameServer[]
 }
@@ -54,9 +90,9 @@ model CronJob {
 model CronJobOnGameServer {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  cronJob      CronJob    @relation(fields: [cronJobId], references: [id])
+  cronJob      CronJob    @relation(fields: [cronJobId], references: [id], onDelete: Cascade)
   cronJobId    String     @db.Uuid
-  gameServer   GameServer @relation(fields: [gameServerId], references: [id])
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
   gameServerId String     @db.Uuid
 
   @@id([cronJobId, gameServerId])
@@ -67,7 +103,15 @@ model Function {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
-  domain    Domain   @relation(fields: [domainId], references: [id])
+  domain    Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
   domainId  String   @db.Uuid
   code      String
+}
+
+enum CAPABILITIES {
+  ROOT
+  MANAGE_USERS
+  READ_USERS
+  MANAGE_ROLES
+  READ_ROLES
 }

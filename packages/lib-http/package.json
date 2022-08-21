@@ -18,6 +18,7 @@
   "dependencies": {
     "@takaro/config": "0.0.1",
     "@takaro/logger": "0.0.1",
+    "body-parser": "^1.20.0",
     "express": "^4.18.1",
     "i": "^0.3.7",
     "zod": "^3.17.10"

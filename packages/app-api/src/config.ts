@@ -6,6 +6,8 @@ interface IHttpConfig extends IBaseConfig {
   };
   auth: {
     adminSecret: string;
+    saltRounds: number;
+    jwtSecret: string;
   };
 }
 
@@ -37,6 +39,18 @@ const configSchema = {
       format: String,
       default: null,
       env: 'ADMIN_SECRET',
+    },
+    saltRounds: {
+      doc: 'The number of rounds to use when salting passwords',
+      format: Number,
+      default: 10,
+      env: 'SALT_ROUNDS',
+    },
+    jwtSecret: {
+      doc: 'The secret used to sign JWTs',
+      format: String,
+      default: null,
+      env: 'JWT_SECRET',
     },
   },
 };

@@ -1,0 +1,29 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:34.937Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": [
+      {
+        "id": "a38506f8-8476-428f-a3ee-b4d82991b9b7",
+        "createdAt": "2022-08-21T17:54:34.776Z",
+        "updatedAt": "2022-08-21T17:54:34.777Z",
+        "name": "test-domain"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "GET Basic list",
+    "standardEnvironment": true,
+    "url": "/domain",
+    "method": "get",
+    "expectedStatus": 200,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:35.407Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": {
+      "domain": {
+        "id": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4",
+        "createdAt": "2022-08-21T17:54:35.355Z",
+        "updatedAt": "2022-08-21T17:54:35.355Z",
+        "name": "auto-test-create"
+      },
+      "rootUser": {
+        "id": "2440f354-dbb7-4f51-86f4-3f06346576f9",
+        "createdAt": "2022-08-21T17:54:35.405Z",
+        "updatedAt": "2022-08-21T17:54:35.406Z",
+        "name": "root",
+        "email": "root@auto-test-create",
+        "passwordHash": "$2b$10$JmH/e2yxzF.Aq6KKyPPi3uOsIwPnsuGOQR2shnCYiz.SRJnwCh.Ry",
+        "domainId": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4"
+      },
+      "rootRole": {
+        "id": "c6c51ee2-cd90-4a16-bfb2-100647a7cc23",
+        "createdAt": "2022-08-21T17:54:35.357Z",
+        "updatedAt": "2022-08-21T17:54:35.358Z",
+        "name": "root",
+        "domainId": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4",
+        "capabilities": [
+          "ROOT"
+        ]
+      },
+      "password": "4de5afb08034288ccdb69bfabd34560d3e9719a7"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "POST create",
+    "standardEnvironment": true,
+    "filteredFields": [
+      "password",
+      "passwordHash"
+    ],
+    "url": "/domain",
+    "method": "post",
+    "body": {
+      "name": "auto-test-create"
+    },
+    "expectedStatus": 200,
+    "adminAuth": true
+  }
+}

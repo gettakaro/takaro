@@ -1,3 +1,5 @@
+import { ValidationError as CValidationError } from 'class-validator';
+
 export class TakaroError extends Error {
   public http: number;
   constructor(message: string) {
@@ -7,8 +9,22 @@ export class TakaroError extends Error {
   }
 }
 
+export class InternalServerError extends TakaroError {
+  constructor() {
+    super('Internal server error');
+    this.http = 500;
+  }
+}
+
+export class ValidationError extends TakaroError {
+  constructor(message: string, public details?: CValidationError[]) {
+    super(message);
+    this.http = 400;
+  }
+}
+
 export class BadRequestError extends TakaroError {
-  constructor(message: string) {
+  constructor(message: string = 'Bad request') {
     super(message);
     this.http = 400;
   }
@@ -33,5 +49,19 @@ export class ForbiddenError extends TakaroError {
   constructor() {
     super('Forbidden');
     this.http = 403;
+  }
+}
+
+export class NotFoundError extends TakaroError {
+  constructor(message = 'Not found') {
+    super(message);
+    this.http = 404;
+  }
+}
+
+export class ConflictError extends TakaroError {
+  constructor(message = 'Conflict') {
+    super(message);
+    this.http = 409;
   }
 }

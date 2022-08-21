@@ -27,7 +27,13 @@ const myFormat = printf((info) => {
     metaString = '| Invalid Meta Information';
   }
 
-  return `${timestamp} [${namespace}] ${level}: ${message} ${
+  const paddedNamespace = `[${namespace}]`.padEnd(10);
+
+  if (config.get('logging.minimal')) {
+    return `${paddedNamespace} ${level} ${message}`;
+  }
+
+  return `${timestamp} ${paddedNamespace} ${level}: ${message} ${
     metaString ? metaString : ''
   }`;
 });
@@ -55,3 +61,5 @@ const mainLogger = winston.createLogger({
 export function logger(namespace: string, meta?: JsonObject): winston.Logger {
   return mainLogger.child({ namespace, meta });
 }
+
+export * as errors from './errors';

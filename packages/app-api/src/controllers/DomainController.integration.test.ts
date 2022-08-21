@@ -1,127 +1,136 @@
-import supertest from 'supertest';
-import { integrationConfig, snapshot, expect } from '@takaro/test';
-import { DANGEROUS_cleanDatabase } from '@takaro/db';
-import { MockDomain } from '../test/mockModels';
+import { IntegrationTest } from '@takaro/test';
 
-const tests: snapshot.ITestWithSnapshot[] = [
-  {
-    name: 'Basic fetch',
-    setup: async () => {
-      await MockDomain({
-        name: 'auto-test',
-      });
-    },
+const tests: IntegrationTest[] = [
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'GET no auth',
+    standardEnvironment: true,
     url: '/domain',
     method: 'get',
-  },
-  {
-    name: 'Basic fetch with filter',
-    setup: async () => {
-      await MockDomain({
-        name: 'auto-test-filter',
-      });
-    },
-    url: '/domain?filters[name]=auto-test-filter',
-    method: 'get',
-  },
-  {
-    name: 'Fetch one',
-    setup: async () => {
-      await MockDomain({
-        id: 'b14957e4-869f-4149-b386-4aef875c777d',
-        name: 'auto-test-one',
-      });
-    },
-    url: '/domain/b14957e4-869f-4149-b386-4aef875c777d',
-    method: 'get',
-  },
-  {
-    name: 'Basic fetch sort asc',
-    setup: async () => {
-      await MockDomain({
-        name: 'auto-test-filter-sort-aaa',
-      });
-      await MockDomain({
-        name: 'auto-test-filter-sort-bbb',
-      });
-    },
-    url: '/domain?sortBy=name&sortDirection=asc',
-    method: 'get',
-  },
-  {
-    name: 'Basic fetch sort desc',
-    setup: async () => {
-      await MockDomain({
-        name: 'auto-test-filter-sort-aaa',
-      });
-      await MockDomain({
-        name: 'auto-test-filter-sort-bbb',
-      });
-    },
-    url: '/domain?sortBy=name&sortDirection=desc',
-    method: 'get',
-  },
-  {
-    name: 'Create domain',
+    expectedStatus: 401,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'POST no auth',
+    standardEnvironment: true,
     url: '/domain',
     method: 'post',
+    expectedStatus: 401,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'PUT no auth',
+    standardEnvironment: true,
+    url: '/domain/aaa',
+    method: 'put',
+    expectedStatus: 401,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'DELETE no auth',
+    standardEnvironment: true,
+    url: '/domain/aaa',
+    method: 'delete',
+    expectedStatus: 401,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'GET Basic list',
+    standardEnvironment: true,
+    url: '/domain',
+    method: 'get',
+    expectedStatus: 200,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'GET Basic list with filters',
+    standardEnvironment: true,
+    setup: async function () {
+      this.data = await this.apiUtils.createDomain('filter-name');
+    },
+    url: '/domain?filters[name]=filter-name',
+    method: 'get',
+    expectedStatus: 200,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'POST create',
+    standardEnvironment: true,
+    filteredFields: ['password', 'passwordHash'],
+    url: '/domain',
+    method: 'post',
+    teardown: async function () {
+      if (this.response.body) {
+        await this.apiUtils.deleteDomain(this.response.body.data.domain.id);
+      }
+    },
     body: {
       name: 'auto-test-create',
     },
-  },
-  {
-    name: 'Update domain',
-    setup: async () => {
-      await MockDomain({
-        id: 'b14957e4-869f-4149-b386-4aef875c777d',
-        name: 'auto-test-update',
-      });
+    expectedStatus: 200,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'POST create with too long name',
+    standardEnvironment: true,
+    url: '/domain',
+    method: 'post',
+    body: {
+      name: 'this name is way too long - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     },
-    url: '/domain/b14957e4-869f-4149-b386-4aef875c777d',
+    expectedStatus: 400,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'POST create with too short name',
+    standardEnvironment: true,
+    url: '/domain',
+    method: 'post',
+    body: {
+      name: 'a',
+    },
+    expectedStatus: 400,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'PUT update',
+    standardEnvironment: true,
+    setup: async function () {
+      this.data = await this.apiUtils.createDomain('auto-test-update');
+    },
+    url: function () {
+      return `/domain/${this.data.id}`;
+    },
     method: 'put',
     body: {
-      name: 'auto-test-update',
+      name: 'auto-test-update2',
     },
-  },
-  {
-    name: 'Delete domain',
-    setup: async () => {
-      await MockDomain({
-        id: 'b14957e4-869f-4149-b386-4aef875c777e',
-        name: 'auto-test-delete',
-      });
+    expectedStatus: 200,
+    adminAuth: true,
+  }),
+  new IntegrationTest({
+    group: 'DomainController',
+    name: 'DELETE',
+    standardEnvironment: true,
+    setup: async function () {
+      this.data = await this.apiUtils.createDomain('auto-test-delete');
     },
-    url: '/domain/b14957e4-869f-4149-b386-4aef875c777e',
+    url: function () {
+      return `/domain/${this.data.id}`;
+    },
     method: 'delete',
-  },
+    expectedStatus: 200,
+    adminAuth: true,
+  }),
 ];
 
 describe('Domain controller', function () {
-  beforeEach(async () => {
-    await DANGEROUS_cleanDatabase();
-  });
-
   tests.forEach((test) => {
-    it(test.name, async function () {
-      if (test.setup) {
-        await test.setup();
-      }
-
-      const req = supertest(integrationConfig.get('host'))
-        [test.method](test.url)
-        .auth('admin', integrationConfig.get('auth.adminSecret'));
-
-      if (test.body) {
-        req.send(test.body);
-      }
-
-      const response = await req;
-
-      expect([200, 201]).to.include(response.statusCode);
-      await snapshot.matchSnapshot(
-        { ...test, name: this.test.fullTitle() },
-        response.body
-      );
-    });
+    test.run();
   });
 });

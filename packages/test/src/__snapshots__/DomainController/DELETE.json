@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:55:36.815Z",
+      "error": {
+        "details": {}
+      }
+    },
+    "data": {
+      "id": "95f1f70a-1b01-462c-9a72-33eea583d844",
+      "createdAt": "2022-08-21T17:55:36.698Z",
+      "updatedAt": "2022-08-21T17:55:36.698Z",
+      "name": "auto-test-delete"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "DELETE",
+    "standardEnvironment": true,
+    "url": "/domain/95f1f70a-1b01-462c-9a72-33eea583d844",
+    "method": "delete",
+    "expectedStatus": 200,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}

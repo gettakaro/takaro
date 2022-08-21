@@ -6,14 +6,14 @@ import { Domain } from '@prisma/client';
 import { DANGEROUS_cleanDatabase } from './util';
 
 describe('Query builder', () => {
-  beforeEach(async () => {
+  afterEach(async () => {
     await DANGEROUS_cleanDatabase();
   });
 
   it('Can create a simple exact filter query', async () => {
     const domain = await MockDomain();
 
-    const query = new QueryBuilder<Domain>({
+    const query = new QueryBuilder<Domain>(null, {
       filters: {
         id: domain.id,
       },
@@ -30,7 +30,7 @@ describe('Query builder', () => {
     const domain = await MockDomain({ name: 'aaa' });
     const domain2 = await MockDomain({ name: 'bbb' });
 
-    const query = new QueryBuilder<Domain>({
+    const query = new QueryBuilder<Domain>(null, {
       sortBy: 'name',
       sortDirection: SortDirection.asc,
     });
@@ -41,7 +41,7 @@ describe('Query builder', () => {
 
     expect(data).to.deep.equal([domain, domain2]);
 
-    const query2 = new QueryBuilder<Domain>({
+    const query2 = new QueryBuilder<Domain>(null, {
       sortBy: 'name',
       sortDirection: SortDirection.desc,
     });
