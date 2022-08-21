@@ -10,7 +10,9 @@ printHeader() {
     printf '%s\n' ""
 }
 
-cp --no-clobber .env.example .env
+if test -f ".env.example"; then
+    cp --no-clobber .env.example .env
+fi
 
 printHeader "Installing node dependencies"
 
