@@ -75,7 +75,6 @@ export async function matchSnapshot(
   } catch (error) {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
-    console.error(error);
     throw new Error('No snapshot exists, created a new one');
   }
 

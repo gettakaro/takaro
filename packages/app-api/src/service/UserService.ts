@@ -47,10 +47,16 @@ export class UserService extends DomainScoped {
   }
 
   async update(id: string, user: Prisma.UserUpdateInput): Promise<User> {
-    return db.user.update({
-      where: { id },
+    const { where } = new QueryBuilder<User>(this.domainId, {
+      filters: { id },
+    }).build();
+
+    await db.role.updateMany({
+      where,
       data: user,
     });
+
+    return this.getOne(id);
   }
 
   async delete(id: string): Promise<User> {

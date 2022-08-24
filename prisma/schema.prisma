@@ -23,14 +23,15 @@ model Domain {
 }
 
 model GameServer {
-  id        String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  name      String
-  domain    Domain                @relation(fields: [domainId], references: [id], onDelete: Cascade)
-  domainId  String                @db.Uuid
-  players   Player[]
-  cronJobs  CronJobOnGameServer[]
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  name           String
+  connectionInfo Json
+  domain         Domain                @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  domainId       String                @db.Uuid
+  players        Player[]
+  cronJobs       CronJobOnGameServer[]
 }
 
 model User {

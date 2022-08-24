@@ -1,17 +1,17 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T18:04:13.664Z",
+      "serverTime": "2022-08-24T18:51:06.495Z",
       "error": {
         "details": {}
       }
     },
     "data": {
-      "id": "48508403-64e5-4bcf-8efc-5642130c57bd",
-      "createdAt": "2022-08-21T18:04:13.601Z",
-      "updatedAt": "2022-08-21T18:04:13.663Z",
+      "id": "35f052d0-e9ee-4c6c-aa49-9174b34d8db3",
+      "createdAt": "2022-08-24T18:51:06.433Z",
+      "updatedAt": "2022-08-24T18:51:06.492Z",
       "name": "auto-test-update",
-      "domainId": "41fbb651-023b-40d4-9c72-d6f4d4be3a3c",
+      "domainId": "309d34ce-c2f0-497c-8f45-f99abceed0d5",
       "capabilities": [
         "READ_ROLES"
       ]
@@ -22,7 +22,7 @@
     "group": "RolesController",
     "name": "PUT Basic update",
     "standardEnvironment": true,
-    "url": "/role/48508403-64e5-4bcf-8efc-5642130c57bd",
+    "url": "/role/35f052d0-e9ee-4c6c-aa49-9174b34d8db3",
     "method": "put",
     "body": {
       "name": "auto-test-update",

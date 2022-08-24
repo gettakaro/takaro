@@ -1,5 +1,6 @@
 import { Role } from '@prisma/client';
 import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { errors } from '@takaro/logger';
 import { CreateRoleDTO, UpdateRoleDTO } from '../controllers/Rolecontroller';
 import { DomainScoped } from '../lib/DomainScoped';
 
@@ -30,13 +31,27 @@ export class RoleService extends DomainScoped {
   }
 
   async update(id: string, role: UpdateRoleDTO): Promise<Role> {
-    return db.role.update({
-      where: { id },
+    const { where } = new QueryBuilder<Role>(this.domainId, {
+      filters: { id },
+    }).build();
+
+    await db.role.updateMany({
+      where,
       data: role,
     });
+
+    return this.getOne(id);
   }
 
   async delete(id: string): Promise<void> {
-    await db.role.delete({ where: { id } });
+    const { where } = new QueryBuilder<Role>(this.domainId, {
+      filters: { id },
+    }).build(null);
+
+    const res = await db.role.deleteMany({ where });
+
+    if (res.count === 0) {
+      throw new errors.NotFoundError();
+    }
   }
 }
