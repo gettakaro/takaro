@@ -1,14 +1,15 @@
 import 'reflect-metadata';
-import { Application } from 'express';
+import express, { Application } from 'express';
 import { logger } from '@takaro/logger';
 import { Server } from 'http';
 import {
-  createExpressServer,
   RoutingControllersOptions,
+  useExpressServer,
 } from 'routing-controllers';
 import { MetaController } from './controllers/meta';
 import { LoggingMiddleware } from './middleware/logger';
 import { ErrorHandler } from './middleware/errorHandler';
+import bodyParser from 'body-parser';
 
 interface IHTTPOptions {
   port?: number;
@@ -24,16 +25,18 @@ export class HTTP {
     private httpOptions: IHTTPOptions = {}
   ) {
     this.logger = logger('http');
-
+    this.app = express();
+    this.app.use(bodyParser.json());
     if (options.controllers) {
-      this.app = createExpressServer({
+      useExpressServer(this.app, {
         ...options,
+        defaultErrorHandler: false,
         validation: { forbidNonWhitelisted: true, whitelist: true },
         // eslint-disable-next-line @typescript-eslint/ban-types
         controllers: [MetaController, ...(options.controllers as Function[])],
       });
     } else {
-      this.app = createExpressServer({
+      useExpressServer(this.app, {
         ...options,
         defaultErrorHandler: false,
         controllers: [MetaController],

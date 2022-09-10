@@ -4,9 +4,10 @@ export interface IBaseConfig {
   app: {
     name: string;
   };
+  mode: 'development' | 'production';
 }
 
-const baseConfigConvict: Schema<IBaseConfig> = {
+export const baseConfigConvict: Schema<IBaseConfig> = {
   app: {
     name: {
       doc: 'Name of the running package',
@@ -14,6 +15,12 @@ const baseConfigConvict: Schema<IBaseConfig> = {
       default: 'UNNAMED_PACKAGE',
       env: 'APP_NAME',
     },
+  },
+  mode: {
+    doc: 'The application mode',
+    format: ['development', 'production'],
+    default: 'production',
+    env: 'NODE_ENV',
   },
 };
 

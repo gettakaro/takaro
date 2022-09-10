@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { logger } from '@takaro/logger';
+import { logger, errors } from '@takaro/logger';
 import basicAuth from 'basic-auth';
-import { UnauthorizedError } from '../util/errors';
 
 const log = logger('middleware:authAdmin');
 
@@ -15,17 +14,17 @@ export function createAdminAuthMiddleware(adminSecret: string) {
 
     if (!credentials) {
       log.warn('No credentials provided');
-      return next(new UnauthorizedError());
+      return next(new errors.UnauthorizedError());
     }
 
     if (credentials.name !== 'admin') {
       log.warn(`Invalid username: ${credentials.name}`);
-      return next(new UnauthorizedError());
+      return next(new errors.UnauthorizedError());
     }
 
     if (credentials.pass !== adminSecret) {
       log.warn('Invalid password');
-      return next(new UnauthorizedError());
+      return next(new errors.UnauthorizedError());
     }
 
     return next();

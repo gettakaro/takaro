@@ -4,7 +4,7 @@
   "description": "Test modules",
   "main": "src/main.ts",
   "scripts": {
-    "start:dev": "tsc -w -p ./tsconfig.build.json",
+    "start:dev": "tsc -w --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p tsconfig.build.json"
   },
   "keywords": [],

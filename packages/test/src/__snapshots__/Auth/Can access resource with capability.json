@@ -1,0 +1,51 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-10T11:10:36.679Z"
+    },
+    "data": [
+      {
+        "createdAt": "2022-09-10T11:10:36.287Z",
+        "updatedAt": "2022-09-10T11:10:36.287Z",
+        "id": "34346717-222b-43c6-ba44-6c309a24593f",
+        "name": "root",
+        "capabilities": [
+          {
+            "createdAt": "2022-09-10T11:10:36.290Z",
+            "updatedAt": "2022-09-10T11:10:36.290Z",
+            "id": "1812689f-2a13-412e-9961-917e4b56b1a1",
+            "roleId": "34346717-222b-43c6-ba44-6c309a24593f",
+            "capability": "ROOT"
+          }
+        ]
+      },
+      {
+        "createdAt": "2022-09-10T11:10:36.498Z",
+        "updatedAt": "2022-09-10T11:10:36.498Z",
+        "id": "69c598a4-9d0b-4d4b-bc93-92d9e6505a1b",
+        "name": "auto-test-role",
+        "capabilities": [
+          {
+            "createdAt": "2022-09-10T11:10:36.502Z",
+            "updatedAt": "2022-09-10T11:10:36.503Z",
+            "id": "f1f0e512-be4b-4e1d-a8f9-d2fede4f6d6b",
+            "roleId": "69c598a4-9d0b-4d4b-bc93-92d9e6505a1b",
+            "capability": "READ_ROLES"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "Auth",
+    "name": "Can access resource with capability",
+    "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
+    "url": "/role?sortBy=name&sortDirection=asc",
+    "method": "get",
+    "expectedStatus": 200
+  }
+}

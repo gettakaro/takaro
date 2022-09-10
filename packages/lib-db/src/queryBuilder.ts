@@ -1,9 +1,9 @@
 export interface ITakaroQuery<T> {
-  filters: {
+  filters?: {
     [key in keyof T]?: string | number;
   };
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   sortBy?: keyof T;
   sortDirection?: SortDirection;
 }
@@ -14,7 +14,7 @@ export enum SortDirection {
 }
 
 export class QueryBuilder<T> {
-  constructor(private readonly query: Partial<ITakaroQuery<T>> = {}) {}
+  constructor(private readonly query: ITakaroQuery<T> = {}) {}
 
   build() {
     return {
@@ -24,24 +24,22 @@ export class QueryBuilder<T> {
   }
 
   private filters() {
-    const filters: Record<string, Record<string, unknown>> = {};
+    const filters: Record<string, any> = {};
 
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
-        filters[filter] = { equals: searchVal };
+        filters[filter] = searchVal;
       }
     }
 
-    return {
-      AND: filters,
-    };
+    return filters;
   }
 
   private sorting() {
     if (!this.query.sortBy) {
       return {
-        id: this.query.sortDirection,
+        id: this.query.sortDirection ?? SortDirection.asc,
       };
     }
     return {

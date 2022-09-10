@@ -1,0 +1,40 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-10T10:53:51.733Z"
+    },
+    "data": {
+      "createdAt": "2022-09-10T10:53:51.726Z",
+      "updatedAt": "2022-09-10T10:53:51.726Z",
+      "id": "a5fadfab-be9c-4b2d-a0f6-2a48646c6864",
+      "name": "auto-test-create",
+      "capabilities": [
+        {
+          "createdAt": "2022-09-10T10:53:51.730Z",
+          "updatedAt": "2022-09-10T10:53:51.730Z",
+          "id": "1ac75a50-a58d-40b1-b220-9e5abf186ebd",
+          "roleId": "a5fadfab-be9c-4b2d-a0f6-2a48646c6864",
+          "capability": "READ_ROLES"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "RolesController",
+    "name": "POST Basic create",
+    "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
+    "url": "/role",
+    "method": "post",
+    "body": {
+      "name": "auto-test-create",
+      "capabilities": [
+        "READ_ROLES"
+      ]
+    },
+    "expectedStatus": 200
+  }
+}

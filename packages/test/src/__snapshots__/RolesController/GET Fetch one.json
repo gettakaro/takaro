@@ -1,0 +1,34 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-10T10:53:51.389Z"
+    },
+    "data": {
+      "createdAt": "2022-09-10T10:53:51.330Z",
+      "updatedAt": "2022-09-10T10:53:51.330Z",
+      "id": "906689f3-0133-4996-beef-37b2fbc5e6e1",
+      "name": "cool-name",
+      "capabilities": [
+        {
+          "createdAt": "2022-09-10T10:53:51.331Z",
+          "updatedAt": "2022-09-10T10:53:51.331Z",
+          "id": "c7ed543b-0a08-4bae-9361-3e1e2872c755",
+          "roleId": "906689f3-0133-4996-beef-37b2fbc5e6e1",
+          "capability": "ROOT"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "RolesController",
+    "name": "GET Fetch one",
+    "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
+    "url": "/role/906689f3-0133-4996-beef-37b2fbc5e6e1",
+    "method": "get",
+    "expectedStatus": 200
+  }
+}

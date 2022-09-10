@@ -1,6 +1,6 @@
-import { Length } from 'class-validator';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { ITakaroQuery } from '@takaro/db';
 import { config } from '../config';
+import { CreateDomainDTO, DomainService } from '../service/DomainService';
 import { createAdminAuthMiddleware, apiResponse } from '@takaro/http';
 
 import {
@@ -14,48 +14,39 @@ import {
   UseBefore,
   QueryParams,
 } from 'routing-controllers';
-
-export class DomainDTO {
-  @Length(3, 20)
-  name!: string;
-}
+import { DomainModel } from '../db/domain';
 
 @UseBefore(createAdminAuthMiddleware(config.get('auth.adminSecret')))
 @JsonController()
 export class DomainController {
   @Get('/domain')
-  async getAll(@QueryParams() query: Partial<ITakaroQuery<DomainDTO>>) {
-    const params = new QueryBuilder<DomainDTO>(query).build();
-    const domains = await db.domain.findMany(params);
-    return apiResponse(domains);
+  async getAll(@QueryParams() query: ITakaroQuery<DomainModel>) {
+    const service = new DomainService();
+    return apiResponse(await service.find(query));
   }
 
   @Get('/domain/:id')
   async getOne(@Param('id') id: string) {
-    const domain = await db.domain.findFirstOrThrow({
-      where: { id: { equals: id } },
-    });
-    return apiResponse(domain);
+    const service = new DomainService();
+    return apiResponse(await service.findOne(id));
   }
 
   @Post('/domain')
-  async post(@Body() domain: DomainDTO) {
-    const createdDomain = await db.domain.create({ data: domain });
-    return apiResponse(createdDomain);
+  async post(@Body() domain: CreateDomainDTO) {
+    const service = new DomainService();
+    return apiResponse(await service.initDomain(domain));
   }
 
   @Put('/domain/:id')
-  async put(@Param('id') id: string, @Body() domain: DomainDTO) {
-    const updatedDomain = await db.domain.update({
-      where: { id },
-      data: domain,
-    });
-    return apiResponse(updatedDomain);
+  async put(@Param('id') id: string, @Body() domain: CreateDomainDTO) {
+    const service = new DomainService();
+    return apiResponse(await service.update(id, domain));
   }
 
   @Delete('/domain/:id')
   async remove(@Param('id') id: string) {
-    const deletedDomain = await db.domain.delete({ where: { id } });
-    return apiResponse(deletedDomain);
+    const service = new DomainService();
+    await service.removeDomain(id);
+    return apiResponse();
   }
 }

@@ -9,16 +9,25 @@
 
 ## Development setup
 
-Run the init script from the root of the repo:
+Run the init script from the root of the repo. This will install all development dependencies, it can take a while...
 
 ```bash
 ./scripts/dev-init.sh 
+
+# While this is running, take a look at the generated .env file and adjust as needed
 ```
 
 Start the development environment:
 
 ```bash
 docker-compose up --build
+```
+
+Optionally (but recommended!), you can set up some testing data automatically.
+
+```bash
+# Take a look at the .env file and adjust as needed
+./scripts/dev-data.sh
 ```
 
 ### Working on app-agent
@@ -68,6 +77,19 @@ erDiagram
       json connectionInfo 
       string domainId FK
     }
+
+    user {
+      string id PK
+      string name
+      string email
+      string domainId FK
+    }
+
+    role {
+      string id PK
+      string name
+      string domainId FK
+    }
     
     player {
       string id PK
@@ -106,6 +128,9 @@ erDiagram
     }
 
     domain ||--|{ gameServer : contains
+    domain ||--|{ user : contains
+    domain ||--|{ role : contains
+    user ||--|{ role : has
     domain ||--|{ hook : contains
     domain ||--|{ command : contains
     domain ||--|{ cron : contains

@@ -1,0 +1,39 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:35.593Z",
+      "error": {
+        "message": "Validation error",
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "name": "this name is way too long - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "value": "this name is way too long - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "property": "name",
+            "children": [],
+            "constraints": {
+              "length": "name must be shorter than or equal to 20 characters"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "DomainController",
+    "name": "POST create with too long name",
+    "standardEnvironment": true,
+    "url": "/domain",
+    "method": "post",
+    "body": {
+      "name": "this name is way too long - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "expectedStatus": 400,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}

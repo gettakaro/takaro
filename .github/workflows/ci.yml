@@ -1,37 +1,10 @@
 name: Node.js CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   node-ci:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:${{ matrix.postgres-version }}
-        env:
-          POSTGRES_USER: takaro
-          POSTGRES_PASSWORD: supersecret
-          POSTGRES_DB: takaro
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-      redis:
-        image: redis:${{ matrix.redis-version }}
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
     strategy:
       matrix:
         node-version: [18.x]
@@ -46,7 +19,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
-      - run: npm run build
-      - run: npm run test:unit
+      - run: node scripts/integration-tests.mjs
         env:
-          DATABASE_URL: postgres://takaro:supersecret@127.0.0.1:5432/takaro
+          POSTGRES_USER: takaro-user
+          POSTGRES_PASSWORD: takaro-pw
+          POSTGRES_DB: takaro-db

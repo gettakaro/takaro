@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:59:40.536Z"
+    },
+    "data": {
+      "id": "94927e1b-0dee-4c03-982f-adad55e0d52d",
+      "createdAt": "2022-08-21T17:59:40.419Z",
+      "updatedAt": "2022-08-21T17:59:40.535Z",
+      "name": "auto-test-update2"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "PUT update",
+    "standardEnvironment": true,
+    "url": "/domain/94927e1b-0dee-4c03-982f-adad55e0d52d",
+    "method": "put",
+    "body": {
+      "name": "auto-test-update2"
+    },
+    "expectedStatus": 200,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}

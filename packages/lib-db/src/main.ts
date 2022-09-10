@@ -1,39 +1,13 @@
-import { PrismaClient } from '@prisma/client';
-import { logger } from '@takaro/logger';
+export { TakaroCRUDRepository as TakaroRepository } from './TakaroCRUDRepo';
+export { TakaroModel } from './TakaroModel';
 
-export { ITakaroQuery, QueryBuilder, SortDirection } from './queryBuilder';
-export { DANGEROUS_cleanDatabase } from './util';
+export { ITakaroQuery, QueryBuilder } from './queryBuilder';
 
-const log = logger('db');
+export {
+  getKnex,
+  NOT_DOMAIN_SCOPED_getKnex,
+  getDomainSchemaName,
+  disconnectKnex,
+} from './knex';
 
-export const db = new PrismaClient({
-  log: [
-    {
-      emit: 'event',
-      level: 'query',
-    },
-    {
-      emit: 'stdout',
-      level: 'error',
-    },
-    {
-      emit: 'stdout',
-      level: 'info',
-    },
-    {
-      emit: 'stdout',
-      level: 'warn',
-    },
-  ],
-});
-
-db.$on('query', (e) => {
-  log.debug(`📖 [${e.duration} ms] ${e.query}`, {
-    duration: e.duration,
-    query: e.query,
-  });
-});
-
-process.on('beforeExit', async () => {
-  await db.$disconnect();
-});
+export { migrateDomain, migrateSystem } from './migrations';

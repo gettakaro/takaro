@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-08-21T17:54:35.174Z"
+    },
+    "data": [
+      {
+        "id": "10e9773a-61b9-4949-8f73-754ecac04bb8",
+        "createdAt": "2022-08-21T17:54:35.061Z",
+        "updatedAt": "2022-08-21T17:54:35.062Z",
+        "name": "filter-name"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "GET Basic list with filters",
+    "standardEnvironment": true,
+    "url": "/domain?filters[name]=filter-name",
+    "method": "get",
+    "expectedStatus": 200,
+    "adminAuth": true,
+    "filteredFields": []
+  }
+}
