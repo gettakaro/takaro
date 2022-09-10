@@ -1,7 +1,7 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T18:04:13.127Z",
+      "serverTime": "2022-09-10T10:53:52.745Z",
       "error": {
         "message": "Validation error",
         "code": "ValidationError",
@@ -30,6 +30,9 @@
     "group": "RolesController",
     "name": "POST Create with too short name",
     "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
     "url": "/role",
     "method": "post",
     "body": {
@@ -38,7 +41,6 @@
         "READ_ROLES"
       ]
     },
-    "expectedStatus": 400,
-    "filteredFields": []
+    "expectedStatus": 400
   }
 }

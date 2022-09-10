@@ -1,55 +1,45 @@
-import { MockDomain } from './mockModels.test';
-import { QueryBuilder, SortDirection } from './queryBuilder';
+import {
+  NOT_DOMAIN_SCOPED_getKnex,
+  NOT_DOMAIN_SCOPED_disconnectKnex,
+} from './knex';
+import { QueryBuilder } from './queryBuilder';
 import { expect } from '@takaro/test';
-import { db } from './main';
-import { Domain } from '@prisma/client';
-import { DANGEROUS_cleanDatabase } from './util';
 
-describe('Query builder', () => {
+const TEST_TABLE_NAME = 'test_users';
+
+describe('QueryBuilder', () => {
+  beforeEach(async () => {
+    const knex = await NOT_DOMAIN_SCOPED_getKnex();
+    await knex.schema.dropTableIfExists(TEST_TABLE_NAME);
+    await knex.schema.createTable(TEST_TABLE_NAME, (table) => {
+      table.timestamps(true, true, true);
+      table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
+      table.string('name');
+      table.string('email');
+      table.string('password');
+    });
+  });
+
   afterEach(async () => {
-    await DANGEROUS_cleanDatabase();
+    const knex = await NOT_DOMAIN_SCOPED_getKnex();
+    await knex.schema.dropTableIfExists(TEST_TABLE_NAME);
+    await NOT_DOMAIN_SCOPED_disconnectKnex();
   });
 
-  it('Can create a simple exact filter query', async () => {
-    const domain = await MockDomain();
+  it('Can create basic filters', async () => {
+    const knex = await NOT_DOMAIN_SCOPED_getKnex();
 
-    const query = new QueryBuilder<Domain>(null, {
-      filters: {
-        id: domain.id,
-      },
-    });
+    await knex
+      .insert({ name: 'joske', email: 'joske@gmail.com', password: 'secret' })
+      .into(TEST_TABLE_NAME);
+    await knex
+      .insert({ name: 'jefke', email: 'jefke@gmail.com', password: 'secret' })
+      .into(TEST_TABLE_NAME);
 
-    const params = query.build();
+    const params = new QueryBuilder({ filters: { name: 'jefke' } }).build();
+    const res = await knex.select().from(TEST_TABLE_NAME).where(params.where);
 
-    const foundUser = await db.domain.findMany(params);
-
-    expect(foundUser).to.deep.equal([domain]);
-  });
-
-  it('Can create sorting parameters', async () => {
-    const domain = await MockDomain({ name: 'aaa' });
-    const domain2 = await MockDomain({ name: 'bbb' });
-
-    const query = new QueryBuilder<Domain>(null, {
-      sortBy: 'name',
-      sortDirection: SortDirection.asc,
-    });
-
-    const params = query.build();
-
-    const data = await db.domain.findMany(params);
-
-    expect(data).to.deep.equal([domain, domain2]);
-
-    const query2 = new QueryBuilder<Domain>(null, {
-      sortBy: 'name',
-      sortDirection: SortDirection.desc,
-    });
-
-    const params2 = query2.build();
-
-    const data2 = await db.domain.findMany(params2);
-
-    expect(data2).to.deep.equal([domain2, domain]);
+    expect(res).to.have.lengthOf(1);
+    expect(res[0].name).to.equal('jefke');
   });
 });

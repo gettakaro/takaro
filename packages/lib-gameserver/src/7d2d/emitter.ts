@@ -32,7 +32,7 @@ export class SevenDaysToDieEmitter
     this.eventSource.addEventListener('logLine', this.listener);
 
     this.eventSource.onerror = (e) => {
-      this.logger.error(e);
+      this.logger.error('Event source error', e);
     };
     this.eventSource.onopen = () => {
       this.logger.debug('Opened a SSE channel for server');
@@ -133,7 +133,7 @@ export class SevenDaysToDieEmitter
 
       await this.parseMessage(parsed);
     } catch (error) {
-      this.logger.error('Error handling message from game server', { error });
+      this.logger.error('Error handling message from game server', error);
     }
   }
 }

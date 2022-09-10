@@ -1,57 +1,90 @@
-import { Role } from '@prisma/client';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors } from '@takaro/logger';
-import { CreateRoleDTO, UpdateRoleDTO } from '../controllers/Rolecontroller';
-import { DomainScoped } from '../lib/DomainScoped';
+import {
+  Length,
+  IsArray,
+  ArrayMinSize,
+  Validate,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
+import { CAPABILITIES, RoleModel, RoleRepo } from '../db/role';
+import { TakaroService } from './Base';
 
-export class RoleService extends DomainScoped {
-  async get(query: Partial<ITakaroQuery<Role>>): Promise<Role[]> {
-    const params = new QueryBuilder<Role>(this.domainId, query).build();
-    return db.role.findMany(params);
+@ValidatorConstraint()
+export class IsCapabilityArray implements ValidatorConstraintInterface {
+  public async validate(capabilities: CAPABILITIES[]) {
+    return (
+      Array.isArray(capabilities) &&
+      capabilities.every((capability) =>
+        Object.values(CAPABILITIES).includes(capability)
+      )
+    );
+  }
+}
+
+export class CreateRoleDTO {
+  @Length(3, 20)
+  name!: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @Validate(IsCapabilityArray, { message: 'Invalid capabilities' })
+  capabilities!: CAPABILITIES[];
+}
+
+export class UpdateRoleDTO {
+  @Length(3, 20)
+  name!: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @Validate(IsCapabilityArray, { message: 'Invalid capabilities' })
+  capabilities!: CAPABILITIES[];
+}
+
+export class GetRoleDTO {
+  @Length(3, 20)
+  name!: string;
+}
+
+export class RoleService extends TakaroService<RoleModel> {
+  get repo() {
+    return new RoleRepo(this.domainId);
   }
 
-  async getOne(id: string): Promise<Role> {
-    const { where } = new QueryBuilder<Role>(this.domainId, {
-      filters: { id },
-    }).build();
+  async createWithCapabilities(
+    roleName: string,
+    capabilities: CAPABILITIES[]
+  ): Promise<RoleModel> {
+    const createdRole = await this.repo.create({ name: roleName });
+    await Promise.all(
+      capabilities.map((capability) => {
+        return this.repo.addCapabilityToRole(createdRole.id, capability);
+      })
+    );
 
-    return db.role.findFirstOrThrow({
-      where,
+    return this.repo.findOne(createdRole.id);
+  }
+
+  async setCapabilities(roleId: string, capabilities: CAPABILITIES[]) {
+    const role = await this.repo.findOne(roleId);
+
+    const toRemove = role.capabilities.filter(
+      (capability) => !capabilities.includes(capability.capability)
+    );
+    const toAdd = capabilities.filter(
+      (capability) =>
+        !role.capabilities.map((cap) => cap.capability).includes(capability)
+    );
+
+    const removePromises = toRemove.map((capability) => {
+      return this.repo.removeCapabilityFromRole(roleId, capability.capability);
     });
-  }
-
-  async create(role: CreateRoleDTO): Promise<Role> {
-    return db.role.create({
-      data: {
-        name: role.name,
-        capabilities: role.capabilities,
-        domainId: this.domainId,
-      },
-    });
-  }
-
-  async update(id: string, role: UpdateRoleDTO): Promise<Role> {
-    const { where } = new QueryBuilder<Role>(this.domainId, {
-      filters: { id },
-    }).build();
-
-    await db.role.updateMany({
-      where,
-      data: role,
+    const addPromises = toAdd.map((capability) => {
+      return this.repo.addCapabilityToRole(roleId, capability);
     });
 
-    return this.getOne(id);
-  }
+    await Promise.all([...removePromises, ...addPromises]);
 
-  async delete(id: string): Promise<void> {
-    const { where } = new QueryBuilder<Role>(this.domainId, {
-      filters: { id },
-    }).build(null);
-
-    const res = await db.role.deleteMany({ where });
-
-    if (res.count === 0) {
-      throw new errors.NotFoundError();
-    }
+    return this.repo.findOne(roleId);
   }
 }

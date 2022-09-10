@@ -1,5 +1,5 @@
 import { IsEmail, Length } from 'class-validator';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { ITakaroQuery } from '@takaro/db';
 import { apiResponse } from '@takaro/http';
 import { UserService } from '../service/UserService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
@@ -15,7 +15,8 @@ import {
   Req,
   Put,
 } from 'routing-controllers';
-import { CAPABILITIES, User } from '@prisma/client';
+import { CAPABILITIES } from '../db/role';
+import { DomainService } from '../service/DomainService';
 
 export class CreateUserDTO {
   @Length(3, 50)
@@ -50,7 +51,7 @@ export class LoginDTO {
 export class UserController {
   @Post('/login')
   async login(@Body() loginReq: LoginDTO) {
-    const domainId = await UserService.getDomainId(loginReq.username);
+    const domainId = await new DomainService().resolveDomain(loginReq.username);
     const service = new AuthService(domainId);
     return apiResponse(
       await service.login(loginReq.username, loginReq.password)
@@ -61,24 +62,24 @@ export class UserController {
   @Get('/user')
   async getAll(
     @Req() req: AuthenticatedRequest,
-    @QueryParams() query: Partial<ITakaroQuery<GetUserDTO>>
+    @QueryParams() query: ITakaroQuery<GetUserDTO>
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.get(query));
+    return apiResponse(await service.find(query));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
   @Get('/user/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.getOne(id));
+    return apiResponse(await service.findOne(id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
   @Post('/user')
   async post(@Req() req: AuthenticatedRequest, @Body() data: CreateUserDTO) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.create(data));
+    return apiResponse(await service.init(data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
@@ -95,10 +96,8 @@ export class UserController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
-    const { where } = new QueryBuilder<User>(req.domainId, {
-      filters: { id },
-    }).build(null);
-    const deletedDomain = await db.user.delete({ where });
+    const service = new UserService(req.domainId);
+    const deletedDomain = await service.delete(id);
     return apiResponse(deletedDomain);
   }
 
@@ -114,7 +113,7 @@ export class UserController {
     @Param('id') id: string,
     @Param('roleId') roleId: string
   ) {
-    const service = new AuthService(req.domainId);
+    const service = new UserService(req.domainId);
     return apiResponse(await service.assignRole(id, roleId));
   }
 
@@ -130,7 +129,7 @@ export class UserController {
     @Param('id') id: string,
     @Param('roleId') roleId: string
   ) {
-    const service = new AuthService(req.domainId);
+    const service = new UserService(req.domainId);
     return apiResponse(await service.removeRole(id, roleId));
   }
 }

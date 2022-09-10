@@ -35,15 +35,6 @@ const tests: IntegrationTest[] = [
   }),
   new IntegrationTest({
     group: 'DomainController',
-    name: 'GET Basic list',
-    standardEnvironment: true,
-    url: '/domain',
-    method: 'get',
-    expectedStatus: 200,
-    adminAuth: true,
-  }),
-  new IntegrationTest({
-    group: 'DomainController',
     name: 'GET Basic list with filters',
     standardEnvironment: true,
     setup: async function () {
@@ -58,7 +49,7 @@ const tests: IntegrationTest[] = [
     group: 'DomainController',
     name: 'POST create',
     standardEnvironment: true,
-    filteredFields: ['password', 'passwordHash'],
+    filteredFields: ['password', 'passwordHash', 'roleId'],
     url: '/domain',
     method: 'post',
     teardown: async function () {

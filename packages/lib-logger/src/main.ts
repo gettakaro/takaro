@@ -22,7 +22,10 @@ const myFormat = printf((info) => {
   let metaString = '';
 
   try {
-    metaString = `| ${JSON.stringify(cleanMeta)}`;
+    metaString = `| ${JSON.stringify(
+      cleanMeta,
+      Object.getOwnPropertyNames(cleanMeta)
+    )}`;
   } catch (e) {
     metaString = '| Invalid Meta Information';
   }

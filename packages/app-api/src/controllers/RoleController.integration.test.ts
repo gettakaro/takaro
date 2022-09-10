@@ -1,21 +1,12 @@
-import { CAPABILITIES } from '@prisma/client';
 import { IntegrationTest } from '@takaro/test';
+import { CAPABILITIES } from '../db/role';
 
 const tests: IntegrationTest[] = [
   new IntegrationTest({
     group: 'RolesController',
-    name: 'GET Basic fetch',
-    standardEnvironment: true,
-    setup: async function () {
-      await this.apiUtils.createRole();
-    },
-    url: '/role?sortBy=name&sortDirection=asc',
-    method: 'get',
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
     name: 'GET Basic fetch with filter',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       await this.apiUtils.createRole('filter-name');
     },
@@ -26,6 +17,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'GET Fetch one',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       this.data = await this.apiUtils.createRole('cool-name');
     },
@@ -38,6 +30,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Basic create',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -49,6 +42,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Create with invalid capabilities',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -61,6 +55,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Create with too long name',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -73,6 +68,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Create with too short name',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -85,6 +81,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Create with no name',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -96,6 +93,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'POST Create with no capabilities',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role',
     method: 'post',
     body: {
@@ -107,6 +105,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'PUT Basic update',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       this.data = await this.apiUtils.createRole('update-name');
     },
@@ -123,6 +122,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'PUT Update with invalid capabilities',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       this.data = await this.apiUtils.createRole('update-name');
     },
@@ -140,6 +140,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'DELETE Basic delete',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       this.data = await this.apiUtils.createRole('delete-name');
     },
@@ -152,6 +153,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'DELETE Delete with invalid id',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role/invalid-id',
     method: 'delete',
     expectedStatus: 400,
@@ -160,6 +162,7 @@ const tests: IntegrationTest[] = [
     group: 'RolesController',
     name: 'DELETE Delete with non-existing id',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     url: '/role/f2357510-6f18-4177-a7ad-109c11d485f9',
     method: 'delete',
     expectedStatus: 404,

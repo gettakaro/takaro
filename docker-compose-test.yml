@@ -33,7 +33,5 @@ services :
       - 13001:13001
     # lib-components storybook
       - 13002:13002
-    # lib-db prisma studio
-      - 13003:13003
     # agent  
       - 13004:3001

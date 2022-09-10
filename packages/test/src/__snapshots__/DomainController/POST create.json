@@ -1,38 +1,38 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T17:54:35.407Z",
-      "error": {
-        "details": {}
-      }
+      "serverTime": "2022-08-28T19:36:55.451Z"
     },
     "data": {
       "domain": {
-        "id": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4",
-        "createdAt": "2022-08-21T17:54:35.355Z",
-        "updatedAt": "2022-08-21T17:54:35.355Z",
+        "createdAt": "2022-08-28T19:36:55.397Z",
+        "updatedAt": "2022-08-28T19:36:55.397Z",
+        "id": "ripe-ears-occur",
         "name": "auto-test-create"
       },
       "rootUser": {
-        "id": "2440f354-dbb7-4f51-86f4-3f06346576f9",
-        "createdAt": "2022-08-21T17:54:35.405Z",
-        "updatedAt": "2022-08-21T17:54:35.406Z",
+        "createdAt": "2022-08-28T19:36:55.449Z",
+        "updatedAt": "2022-08-28T19:36:55.449Z",
+        "id": "e402236d-200d-4964-be61-ef5309ed3970",
         "name": "root",
         "email": "root@auto-test-create",
-        "passwordHash": "$2b$10$JmH/e2yxzF.Aq6KKyPPi3uOsIwPnsuGOQR2shnCYiz.SRJnwCh.Ry",
-        "domainId": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4"
+        "password": "$2b$10$17CTuYUMnYSx.8hxBPsvlOcK8KllgPEEwxdqgGll3JePx6szIMJ4q"
       },
       "rootRole": {
-        "id": "c6c51ee2-cd90-4a16-bfb2-100647a7cc23",
-        "createdAt": "2022-08-21T17:54:35.357Z",
-        "updatedAt": "2022-08-21T17:54:35.358Z",
+        "createdAt": "2022-08-28T19:36:55.400Z",
+        "updatedAt": "2022-08-28T19:36:55.400Z",
+        "id": "b2d3faac-76bd-45a1-bffa-e5fa477d09df",
         "name": "root",
-        "domainId": "8b7ca49b-5fd2-40a4-af6e-11a6feb293c4",
         "capabilities": [
-          "ROOT"
+          {
+            "createdAt": "2022-08-28T19:36:55.401Z",
+            "updatedAt": "2022-08-28T19:36:55.401Z",
+            "roleId": "b2d3faac-76bd-45a1-bffa-e5fa477d09df",
+            "capability": "ROOT"
+          }
         ]
       },
-      "password": "4de5afb08034288ccdb69bfabd34560d3e9719a7"
+      "password": "4df630c3ff6d6c3be419825a6dfedafe83fdb2d7"
     }
   },
   "status": 200,
@@ -42,7 +42,8 @@
     "standardEnvironment": true,
     "filteredFields": [
       "password",
-      "passwordHash"
+      "passwordHash",
+      "roleId"
     ],
     "url": "/domain",
     "method": "post",

@@ -1,7 +1,16 @@
-export function apiResponse(
-  data: Record<string, unknown> | Array<Record<string, unknown>> = {},
-  error?: Error
-) {
+function parseData(data: any) {
+  if (!data) return null;
+
+  if (data.toJson instanceof Function) {
+    return data.toJson();
+  }
+
+  return data;
+}
+
+export function apiResponse(data: unknown = {}, error?: Error) {
+  const parsedData = parseData(data);
+
   const errorDetails = {
     message: error?.message,
     code: error?.name,
@@ -12,8 +21,8 @@ export function apiResponse(
   return {
     meta: {
       serverTime: new Date().toISOString(),
-      error: errorDetails,
+      error: error ? errorDetails : undefined,
     },
-    data,
+    data: parsedData,
   };
 }

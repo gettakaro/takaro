@@ -4,10 +4,9 @@
   "description": "",
   "scripts": {
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
-    "start:dev": "npm run db:migrate && COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
+    "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
     "shell": "docker-compose exec takaro bash",
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
-    "postinstall": "npm run db:generate",
     "clean": "npx --workspaces rimraf dist && npx rimraf node_modules",
     "test": "npm --workspaces run --if-present test",
     "test:unit": "COMMAND=\"--if-present test:unit\"  ./scripts/run-all-pkgs.sh",
@@ -18,8 +17,6 @@
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
     "prettier": "npx --workspaces prettier --check 'src/**/*.ts'",
     "prettier:fix": "npx --workspaces prettier --write 'src/**/*.ts'",
-    "db:migrate": "npx prisma migrate dev",
-    "db:generate": "npx prisma generate",
     "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
@@ -45,8 +42,8 @@
     "@types/sinon": "^10.0.6",
     "@types/sinon-chai": "^3.2.6",
     "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "concurrently": "^7.3.0",
@@ -58,14 +55,13 @@
     "mocha": "^8.4.0",
     "nodemon": "^2.0.13",
     "prettier": "2.4.1",
-    "prisma": "^4.1.1",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.7.0",
     "ts-loader": "^9.3.1",
     "ts-mocha": "^8.0.0",
     "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.8.2"
   },
   "keywords": [],
   "workspaces": [
@@ -78,7 +74,6 @@
     ]
   },
   "dependencies": {
-    "@prisma/client": "^4.1.1",
     "body-parser": "^1.20.0",
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",

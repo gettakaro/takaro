@@ -1,55 +1,74 @@
-import { CAPABILITIES, Domain, Role, User } from '@prisma/client';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { migrateDomain } from '@takaro/db';
+import { errors } from '@takaro/logger';
 import { UserService } from './UserService';
 import { randomBytes } from 'crypto';
 import { RoleService } from './RoleService';
+import { NOT_DOMAIN_SCOPED_TakaroService } from './Base';
+import { Length } from 'class-validator';
+import { DomainModel, DomainRepo } from '../db/domain';
+import humanId from 'human-id';
+import { CAPABILITIES, RoleModel } from '../db/role';
+import { UserModel } from '../db/user';
 
-export class DomainService {
-  async get(query: Partial<ITakaroQuery<Domain>>): Promise<Domain[]> {
-    const params = new QueryBuilder<Domain>(null, query).build();
-    return db.domain.findMany(params);
+export class CreateDomainDTO {
+  @Length(3, 20)
+  name!: string;
+}
+
+export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> {
+  get repo() {
+    return new DomainRepo();
   }
 
-  async getOne(id: string): Promise<Domain> {
-    const params = new QueryBuilder<Domain>(null, { filters: { id } }).build();
-    return db.domain.findFirstOrThrow(params);
-  }
-
-  async create(input: { name: string }): Promise<{
-    domain: Domain;
-    rootUser: User;
-    rootRole: Role;
+  async initDomain(input: CreateDomainDTO): Promise<{
+    domain: DomainModel;
+    rootUser: UserModel;
+    rootRole: RoleModel;
     password: string;
   }> {
-    const domain = await db.domain.create({ data: input });
+    const id = humanId({
+      separator: '-',
+      capitalize: false,
+    });
+    await migrateDomain(id);
+
+    const domain = await this.repo.create({ ...input, id });
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
 
-    const rootRole = await roleService.create({
-      name: 'root',
-      capabilities: [CAPABILITIES.ROOT],
-    });
+    const rootRole = await roleService.createWithCapabilities('root', [
+      CAPABILITIES.ROOT,
+    ]);
 
     const password = randomBytes(20).toString('hex');
-    const rootUser = await userService.create({
+    const rootUser = await userService.init({
       name: 'root',
       password: password,
       email: `root@${input.name}`,
-      roles: [rootRole.id],
     });
+
+    await userService.assignRole(rootUser.id, rootRole.id);
 
     return { domain, rootUser, rootRole, password };
   }
 
-  async update(id: string, domain: Partial<Domain>): Promise<Domain> {
-    return db.domain.update({
-      where: { id },
-      data: domain,
-    });
+  async removeDomain(id: string) {
+    await this.repo.delete(id);
   }
 
-  async delete(id: string): Promise<Domain> {
-    return db.domain.delete({ where: { id } });
+  async addLogin(user: UserModel, domainId: string) {
+    await this.repo.addLogin(user.id, user.email, domainId);
+  }
+
+  async resolveDomain(email: string): Promise<string> {
+    const domain = await this.repo.resolveDomain(email);
+    if (!domain) {
+      this.log.warn(
+        `Tried to lookup an email that is not in any domain: ${email}`
+      );
+      throw new errors.UnauthorizedError();
+    }
+    return domain;
   }
 }

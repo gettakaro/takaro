@@ -1,7 +1,8 @@
-import { Domain, Role, User } from '@prisma/client';
-import { DANGEROUS_cleanDatabase } from '@takaro/db';
 import { expect, integrationConfig } from '@takaro/test';
 import supertest from 'supertest';
+import { DomainModel } from '../db/domain';
+import { RoleModel } from '../db/role';
+import { UserModel } from '../db/user';
 
 async function setupEnv() {
   const domain1 = await supertest(integrationConfig.get('host'))
@@ -46,15 +47,15 @@ describe('Multitenancy', () => {
     rootToken1: string;
     rootToken2: string;
     domain1: {
-      domain: Domain;
-      rootUser: User;
-      rootRole: Role;
+      domain: DomainModel;
+      rootUser: UserModel;
+      rootRole: RoleModel;
       password: string;
     };
     domain2: {
-      domain: Domain;
-      rootUser: User;
-      rootRole: Role;
+      domain: DomainModel;
+      rootUser: UserModel;
+      rootRole: RoleModel;
       password: string;
     };
   };
@@ -64,7 +65,15 @@ describe('Multitenancy', () => {
   });
 
   afterEach(async () => {
-    await DANGEROUS_cleanDatabase();
+    await supertest(integrationConfig.get('host'))
+      .delete(`/domain/${session.domain1.domain.id}`)
+      .expect(200)
+      .auth('admin', integrationConfig.get('auth.adminSecret'));
+
+    await supertest(integrationConfig.get('host'))
+      .delete(`/domain/${session.domain2.domain.id}`)
+      .expect(200)
+      .auth('admin', integrationConfig.get('auth.adminSecret'));
   });
 
   it('Does not leak items from a different domain', async () => {

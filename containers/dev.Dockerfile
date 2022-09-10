@@ -17,12 +17,10 @@ COPY tsconfig*.json ./
 
 COPY packages ./packages
 COPY scripts ./scripts
-COPY prisma ./prisma
 
 COPY nodemon.json ./
 COPY jest.config.js ./
 
 RUN ./scripts/dev-init.sh
-
 
 CMD [ "npm", "run", "start:dev"]

@@ -24,8 +24,6 @@ mkdir -p _data
 
 printHeader "Building packages"
 
-npm run db:generate
-
 # These require a specific order for the first build...
 npm run-script -w packages/lib-config build
 npm run-script -w packages/lib-logger build
@@ -34,5 +32,5 @@ npm run-script -w packages/lib-db build
 npm run-script -w packages/lib-gameserver build
 npm run-script -w packages/test build
 
-npm run-script -w packages/app-api build
-npm run-script -w packages/app-agent build
+# npm run-script -w packages/app-api build
+# npm run-script -w packages/app-agent build

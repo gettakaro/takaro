@@ -4,7 +4,6 @@ import {
   ExpressErrorMiddlewareInterface,
 } from 'routing-controllers';
 import { logger, errors } from '@takaro/logger';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { apiResponse } from '../main';
 import { ValidationError } from 'class-validator';
 
@@ -31,24 +30,15 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
       err = error;
     }
 
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        err = new errors.ConflictError('Unique constraint violation');
-      }
-      if (error.code === 'P2025') {
-        err = new errors.NotFoundError();
-      }
-    }
-
     if (err instanceof errors.TakaroError) {
       status = err.http;
     }
 
     if (status >= 500) {
       log.error(error);
-      log.error(`🔴 FAIL ${req.method} ${req.originalUrl}`, { err });
+      log.error(`🔴 FAIL ${req.method} ${req.originalUrl}`, err);
     } else {
-      log.warn(`⚠️ FAIL ${req.method} ${req.originalUrl}`, { err });
+      log.warn(`⚠️ FAIL ${req.method} ${req.originalUrl}`, err);
     }
 
     res.status(status).json(apiResponse({}, err));

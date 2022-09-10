@@ -1,19 +1,21 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T18:04:12.598Z",
-      "error": {
-        "details": {}
-      }
+      "serverTime": "2022-09-10T10:53:51.733Z"
     },
     "data": {
-      "id": "2299712c-92bf-473d-972b-27f13c784492",
-      "createdAt": "2022-08-21T18:04:12.596Z",
-      "updatedAt": "2022-08-21T18:04:12.597Z",
+      "createdAt": "2022-09-10T10:53:51.726Z",
+      "updatedAt": "2022-09-10T10:53:51.726Z",
+      "id": "a5fadfab-be9c-4b2d-a0f6-2a48646c6864",
       "name": "auto-test-create",
-      "domainId": "b6b20776-e6ea-4a8d-835e-9b6c6f263839",
       "capabilities": [
-        "READ_ROLES"
+        {
+          "createdAt": "2022-09-10T10:53:51.730Z",
+          "updatedAt": "2022-09-10T10:53:51.730Z",
+          "id": "1ac75a50-a58d-40b1-b220-9e5abf186ebd",
+          "roleId": "a5fadfab-be9c-4b2d-a0f6-2a48646c6864",
+          "capability": "READ_ROLES"
+        }
       ]
     }
   },
@@ -22,6 +24,9 @@
     "group": "RolesController",
     "name": "POST Basic create",
     "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
     "url": "/role",
     "method": "post",
     "body": {
@@ -30,7 +35,6 @@
         "READ_ROLES"
       ]
     },
-    "expectedStatus": 200,
-    "filteredFields": []
+    "expectedStatus": 200
   }
 }

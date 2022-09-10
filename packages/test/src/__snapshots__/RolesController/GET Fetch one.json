@@ -1,19 +1,21 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T18:04:12.424Z",
-      "error": {
-        "details": {}
-      }
+      "serverTime": "2022-09-10T10:53:51.389Z"
     },
     "data": {
-      "id": "d1498722-5993-4fe7-8d18-48d2f22520b9",
-      "createdAt": "2022-08-21T18:04:12.362Z",
-      "updatedAt": "2022-08-21T18:04:12.362Z",
+      "createdAt": "2022-09-10T10:53:51.330Z",
+      "updatedAt": "2022-09-10T10:53:51.330Z",
+      "id": "906689f3-0133-4996-beef-37b2fbc5e6e1",
       "name": "cool-name",
-      "domainId": "cc2fb094-b296-48fd-9489-aa342003fdf3",
       "capabilities": [
-        "ROOT"
+        {
+          "createdAt": "2022-09-10T10:53:51.331Z",
+          "updatedAt": "2022-09-10T10:53:51.331Z",
+          "id": "c7ed543b-0a08-4bae-9361-3e1e2872c755",
+          "roleId": "906689f3-0133-4996-beef-37b2fbc5e6e1",
+          "capability": "ROOT"
+        }
       ]
     }
   },
@@ -22,9 +24,11 @@
     "group": "RolesController",
     "name": "GET Fetch one",
     "standardEnvironment": true,
-    "url": "/role/d1498722-5993-4fe7-8d18-48d2f22520b9",
+    "filteredFields": [
+      "roleId"
+    ],
+    "url": "/role/906689f3-0133-4996-beef-37b2fbc5e6e1",
     "method": "get",
-    "expectedStatus": 200,
-    "filteredFields": []
+    "expectedStatus": 200
   }
 }

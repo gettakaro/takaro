@@ -1,9 +1,9 @@
 export interface ITakaroQuery<T> {
-  filters: {
+  filters?: {
     [key in keyof T]?: string | number;
   };
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   sortBy?: keyof T;
   sortDirection?: SortDirection;
 }
@@ -13,47 +13,27 @@ export enum SortDirection {
   desc = 'desc',
 }
 
-type CombineOpts = 'AND' | 'OR' | null;
-
 export class QueryBuilder<T> {
-  constructor(
-    public domainId: string | null,
-    private readonly query: Partial<ITakaroQuery<T>> = {}
-  ) {}
+  constructor(private readonly query: ITakaroQuery<T> = {}) {}
 
-  build(combineOpts: CombineOpts = 'AND') {
+  build() {
     return {
-      where: this.filters(combineOpts),
+      where: this.filters(),
       orderBy: this.sorting(),
     };
   }
 
-  private filters(type: CombineOpts) {
-    const filters: Record<string, Record<string, unknown>> = {};
+  private filters() {
+    const filters: Record<string, any> = {};
 
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
-        filters[filter] = { equals: searchVal };
+        filters[filter] = searchVal;
       }
     }
 
-    if (this.domainId) {
-      filters.domainId = { equals: this.domainId };
-    }
-
-    switch (type) {
-      case 'AND':
-        return {
-          AND: filters,
-        };
-      case 'OR':
-        return {
-          OR: filters,
-        };
-      default:
-        return filters;
-    }
+    return filters;
   }
 
   private sorting() {

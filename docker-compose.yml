@@ -1,5 +1,5 @@
 version: '3.1'
-services :
+services:
   postgresql:
     image: postgres:14
     ports:
@@ -10,6 +10,19 @@ services :
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}        
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    logging:
+      driver: none
+
   redis:
     image: redis
     ports:
@@ -23,7 +36,6 @@ services :
 #    command: "npm run start:dev"
     volumes:
       - ./packages:/app/packages
-      - ./prisma:/app/prisma
       - ./_data:/app/_data
     environment:
       LOGGING_LEVEL: debug
@@ -33,6 +45,11 @@ services :
       ADMIN_SECRET: "${ADMIN_SECRET}"
       JWT_SECRET: "${JWT_SECRET}"
       FUNCTIONS_EXECUTION_MODE: "local"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE}  
+      POSTGRES_HOST: "postgresql"      
+
     ports:
     # api
       - 13000:3000
@@ -41,7 +58,7 @@ services :
       - 13001:13001
     # lib-components storybook
       - 13002:13002
-    # lib-db prisma studio
-      - 13003:13003
     # agent  
       - 13004:3001
+volumes:
+    pgadmin:      

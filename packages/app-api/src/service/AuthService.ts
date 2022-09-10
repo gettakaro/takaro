@@ -5,7 +5,7 @@ import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
-import { CAPABILITIES, User } from '@prisma/client';
+import { CAPABILITIES } from '../db/role';
 
 interface IJWTPayload {
   sub: string;
@@ -26,7 +26,7 @@ const log = logger('AuthService');
 export class AuthService extends DomainScoped {
   async login(email: string, password: string) {
     const service = new UserService(this.domainId);
-    const users = await service.get({ filters: { email } });
+    const users = await service.find({ filters: { email } });
 
     if (!users.length) {
       this.log.warn('User not found');
@@ -38,7 +38,7 @@ export class AuthService extends DomainScoped {
       throw new errors.UnauthorizedError();
     }
 
-    const passwordMatches = await compare(password, users[0].passwordHash);
+    const passwordMatches = await compare(password, users[0].password);
 
     if (passwordMatches) {
       return { token: await this.signJwt({ user: { id: users[0].id } }) };
@@ -79,27 +79,6 @@ export class AuthService extends DomainScoped {
     });
   }
 
-  async assignRole(userId: string, roleId: string): Promise<User> {
-    const userService = new UserService(this.domainId);
-    const user = await userService.update(userId, {
-      roles: {
-        create: { roleId },
-      },
-    });
-    return user;
-  }
-
-  async removeRole(userId: string, roleId: string): Promise<User> {
-    const userService = new UserService(this.domainId);
-    const user = await userService.update(userId, {
-      roles: {
-        delete: { userId_roleId: { roleId: roleId, userId: userId } },
-      },
-    });
-
-    return user;
-  }
-
   static async verifyJwt(token?: string): Promise<IJWTPayload> {
     return new Promise((resolve, reject) => {
       if (!token) {
@@ -133,14 +112,14 @@ export class AuthService extends DomainScoped {
         const token = req.headers['authorization']?.replace('Bearer ', '');
         const payload = await AuthService.verifyJwt(token);
         const service = new UserService(payload.domainId);
-        const user = await service.getOne(payload.sub);
+        const user = await service.findOne(payload.sub);
 
         if (!user) {
           return next(new errors.UnauthorizedError());
         }
 
         const allUserCapabilities = user.roles.reduce((acc, role) => {
-          return [...acc, ...role.role.capabilities];
+          return [...acc, ...role.capabilities.map((c) => c.capability)];
         }, [] as CAPABILITIES[]);
 
         const hasAllCapabilities = capabilities.every((capability) =>
@@ -160,7 +139,7 @@ export class AuthService extends DomainScoped {
         req.domainId = payload.domainId;
         next();
       } catch (error) {
-        log.error(error);
+        log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());
       }
     };

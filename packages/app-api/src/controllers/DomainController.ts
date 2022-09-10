@@ -1,7 +1,6 @@
-import { Length } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { config } from '../config';
-import { DomainService } from '../service/DomainService';
+import { CreateDomainDTO, DomainService } from '../service/DomainService';
 import { createAdminAuthMiddleware, apiResponse } from '@takaro/http';
 
 import {
@@ -15,35 +14,31 @@ import {
   UseBefore,
   QueryParams,
 } from 'routing-controllers';
-
-export class DomainDTO {
-  @Length(3, 20)
-  name!: string;
-}
+import { DomainModel } from '../db/domain';
 
 @UseBefore(createAdminAuthMiddleware(config.get('auth.adminSecret')))
 @JsonController()
 export class DomainController {
   @Get('/domain')
-  async getAll(@QueryParams() query: ITakaroQuery<DomainDTO>) {
+  async getAll(@QueryParams() query: ITakaroQuery<DomainModel>) {
     const service = new DomainService();
-    return apiResponse(await service.get(query));
+    return apiResponse(await service.find(query));
   }
 
   @Get('/domain/:id')
   async getOne(@Param('id') id: string) {
     const service = new DomainService();
-    return apiResponse(await service.getOne(id));
+    return apiResponse(await service.findOne(id));
   }
 
   @Post('/domain')
-  async post(@Body() domain: DomainDTO) {
+  async post(@Body() domain: CreateDomainDTO) {
     const service = new DomainService();
-    return apiResponse(await service.create(domain));
+    return apiResponse(await service.initDomain(domain));
   }
 
   @Put('/domain/:id')
-  async put(@Param('id') id: string, @Body() domain: DomainDTO) {
+  async put(@Param('id') id: string, @Body() domain: CreateDomainDTO) {
     const service = new DomainService();
     return apiResponse(await service.update(id, domain));
   }
@@ -51,6 +46,7 @@ export class DomainController {
   @Delete('/domain/:id')
   async remove(@Param('id') id: string) {
     const service = new DomainService();
-    return apiResponse(await service.delete(id));
+    await service.removeDomain(id);
+    return apiResponse();
   }
 }

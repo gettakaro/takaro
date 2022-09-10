@@ -1,30 +1,37 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-08-21T19:29:23.170Z",
-      "error": {
-        "details": {}
-      }
+      "serverTime": "2022-09-10T11:10:36.679Z"
     },
     "data": [
       {
-        "id": "59306737-2ae9-4e03-802d-88dfdbedccd2",
-        "createdAt": "2022-08-21T19:29:22.982Z",
-        "updatedAt": "2022-08-21T19:29:22.982Z",
-        "name": "auto-test-role",
-        "domainId": "c2820a11-16c8-46cb-b795-489a5bf8056a",
+        "createdAt": "2022-09-10T11:10:36.287Z",
+        "updatedAt": "2022-09-10T11:10:36.287Z",
+        "id": "34346717-222b-43c6-ba44-6c309a24593f",
+        "name": "root",
         "capabilities": [
-          "READ_ROLES"
+          {
+            "createdAt": "2022-09-10T11:10:36.290Z",
+            "updatedAt": "2022-09-10T11:10:36.290Z",
+            "id": "1812689f-2a13-412e-9961-917e4b56b1a1",
+            "roleId": "34346717-222b-43c6-ba44-6c309a24593f",
+            "capability": "ROOT"
+          }
         ]
       },
       {
-        "id": "4fa0a3cb-85f8-40a2-98f3-e834823a4047",
-        "createdAt": "2022-08-21T19:29:22.808Z",
-        "updatedAt": "2022-08-21T19:29:22.809Z",
-        "name": "root",
-        "domainId": "c2820a11-16c8-46cb-b795-489a5bf8056a",
+        "createdAt": "2022-09-10T11:10:36.498Z",
+        "updatedAt": "2022-09-10T11:10:36.498Z",
+        "id": "69c598a4-9d0b-4d4b-bc93-92d9e6505a1b",
+        "name": "auto-test-role",
         "capabilities": [
-          "ROOT"
+          {
+            "createdAt": "2022-09-10T11:10:36.502Z",
+            "updatedAt": "2022-09-10T11:10:36.503Z",
+            "id": "f1f0e512-be4b-4e1d-a8f9-d2fede4f6d6b",
+            "roleId": "69c598a4-9d0b-4d4b-bc93-92d9e6505a1b",
+            "capability": "READ_ROLES"
+          }
         ]
       }
     ]
@@ -34,9 +41,11 @@
     "group": "Auth",
     "name": "Can access resource with capability",
     "standardEnvironment": true,
+    "filteredFields": [
+      "roleId"
+    ],
     "url": "/role?sortBy=name&sortDirection=asc",
     "method": "get",
-    "expectedStatus": 200,
-    "filteredFields": []
+    "expectedStatus": 200
   }
 }

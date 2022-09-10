@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "start:dev": "npx concurrently \"BROWSER=none prisma studio --port 13003 --schema=../../prisma/schema.prisma\" \"tsc --watch --preserveWatchOutput -p ./tsconfig.build.json\"",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
@@ -16,7 +16,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convict": "^6.2.3"
+    "convict": "^6.2.3",
+    "knex": "^2.2.0",
+    "objection": "^3.0.1",
+    "pg": "^8.8.0"
   },
   "devDependencies": {
     "@takaro/test": "0.0.1",

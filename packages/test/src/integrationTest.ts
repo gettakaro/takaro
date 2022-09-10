@@ -1,20 +1,20 @@
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
+import { Response } from 'supertest';
 import supertest from 'supertest';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
-import { CAPABILITIES, Domain, User } from '@prisma/client';
 import { logger } from '@takaro/logger';
 import { faker } from '@faker-js/faker';
 
 export class IntegrationTest {
-  private domain: Domain | null = null;
-  private rootUser: User | null = null;
+  private domain: any = null;
+  private rootUser: any = null;
   private rootPassword: string | null = null;
   private rootToken: string | null = null;
   private userToken: string | null = null;
-  public response: supertest.Response | null = null;
+  public response: Response | null = null;
 
-  private createdDomains: Domain[] = [];
+  private createdDomains: any[] = [];
 
   public data: Record<string, unknown> = {};
 
@@ -31,6 +31,7 @@ export class IntegrationTest {
       deleteDomain: this.deleteDomain.bind(this),
       createUser: this.createUser.bind(this),
       createRole: this.createRole.bind(this),
+      createGameServer: this.createGameServer.bind(this),
       login: this.login.bind(this),
     };
   }
@@ -58,7 +59,7 @@ export class IntegrationTest {
             this.createdDomains.map((d) => this.deleteDomain(d.id))
           );
         } catch (error) {
-          this.log.warn('Error deleting domains', { error });
+          this.log.warn('Error deleting domains', error);
         }
       });
 
@@ -120,7 +121,7 @@ export class IntegrationTest {
       .auth('admin', integrationConfig.get('auth.adminSecret'));
   }
 
-  private async login(capabilities: CAPABILITIES[] | CAPABILITIES = []) {
+  private async login(capabilities: string[] | string = []) {
     if (!this.rootUser || !this.rootPassword) {
       throw new Error('No root user or password');
     }
@@ -193,12 +194,9 @@ export class IntegrationTest {
     return res.body;
   }
 
-  private async createRole(
-    name = 'auto-test-role',
-    capabilities = [CAPABILITIES.ROOT]
-  ) {
+  private async createRole(name = 'auto-test-role', capabilities = ['ROOT']) {
     if (!this.domain) {
-      throw new Error('No domain to create role in');
+      throw new Error('No domain to create record in');
     }
 
     if (!this.rootToken) {
@@ -210,6 +208,24 @@ export class IntegrationTest {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.rootToken}`)
       .send({ name, capabilities });
+
+    return res.body;
+  }
+
+  private async createGameServer(name = 'auto-test-gameServer') {
+    if (!this.domain) {
+      throw new Error('No domain to create record in');
+    }
+
+    if (!this.rootToken) {
+      throw new Error('Not logged in yet');
+    }
+
+    const res = await supertest(integrationConfig.get('host'))
+      .post('/gameserver')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', `Bearer ${this.rootToken}`)
+      .send({ name, connectionInfo: { ip: '127.0.0.1', port: 1337 } });
 
     return res.body;
   }

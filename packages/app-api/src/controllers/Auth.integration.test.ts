@@ -1,5 +1,5 @@
-import { CAPABILITIES } from '@prisma/client';
 import { IntegrationTest } from '@takaro/test';
+import { CAPABILITIES } from '../db/role';
 
 const tests: IntegrationTest[] = [
   new IntegrationTest({
@@ -17,6 +17,7 @@ const tests: IntegrationTest[] = [
     group: 'Auth',
     name: 'Can access resource with capability',
     standardEnvironment: true,
+    filteredFields: ['roleId'],
     setup: async function () {
       await this.apiUtils.login(CAPABILITIES.READ_ROLES);
     },

@@ -1,82 +1,42 @@
-import { Prisma, User } from '@prisma/client';
-import { db, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors, logger } from '@takaro/logger';
-import { DomainScoped } from '../lib/DomainScoped';
 import { genSalt, hash } from 'bcrypt';
 import { config } from '../config';
 import { CreateUserDTO } from '../controllers/UserController';
+import { TakaroService } from './Base';
 
-type UserWithRoles = Prisma.UserGetPayload<{
-  include: { roles: { include: { role: true } } };
-}>;
+import { UserModel, UserRepo } from '../db/user';
+import { DomainService } from './DomainService';
 
-export class UserService extends DomainScoped {
-  static log = logger(this.name);
-  async get(query: Partial<ITakaroQuery<User>>): Promise<User[]> {
-    const params = new QueryBuilder<User>(this.domainId, query).build();
-    return db.user.findMany(params);
+export class UserService extends TakaroService<UserModel> {
+  get repo() {
+    return new UserRepo(this.domainId);
   }
 
-  async getOne(id: string): Promise<UserWithRoles> {
-    const params = new QueryBuilder<User>(this.domainId, {
-      filters: { id },
-    }).build();
-    return db.user.findFirstOrThrow({
-      ...params,
-      include: { roles: { include: { role: true } } },
-    });
+  findOne(id: string) {
+    return this.repo.findOne(id);
   }
 
-  async create(user: CreateUserDTO & { roles?: string[] }): Promise<User> {
+  async init(user: CreateUserDTO): Promise<UserModel> {
     const salt = await genSalt(config.get('auth.saltRounds'));
     const passwordHash = await hash(user.password, salt);
 
-    return db.user.create({
-      data: {
-        passwordHash,
-        name: user.name,
-        email: user.email,
-        roles: {
-          create: user.roles
-            ? user.roles.map((roleId) => ({ roleId }))
-            : undefined,
-        },
-        domainId: this.domainId,
-      },
-    });
-  }
+    const domainService = new DomainService();
 
-  async update(id: string, user: Prisma.UserUpdateInput): Promise<User> {
-    const { where } = new QueryBuilder<User>(this.domainId, {
-      filters: { id },
-    }).build();
-
-    await db.role.updateMany({
-      where,
-      data: user,
+    const createdUser = await this.repo.create({
+      password: passwordHash,
+      name: user.name,
+      email: user.email,
     });
 
-    return this.getOne(id);
+    await domainService.addLogin(createdUser, this.domainId);
+
+    return createdUser;
   }
 
-  async delete(id: string): Promise<User> {
-    const { where } = new QueryBuilder<User>(this.domainId, {
-      filters: { id },
-    }).build();
-    return db.user.delete({ where });
+  async assignRole(userId: string, roleId: string): Promise<void> {
+    return this.repo.assignRole(userId, roleId);
   }
 
-  static async getDomainId(email?: string, id?: string): Promise<string> {
-    const user = await db.user.findFirst({
-      where: { OR: { email, id } },
-      select: { domainId: true },
-    });
-    if (!user) {
-      UserService.log.warn(
-        `User with email ${email} or ID ${id} not found in any domain`
-      );
-      throw new errors.UnauthorizedError();
-    }
-    return user.domainId;
+  async removeRole(userId: string, roleId: string): Promise<void> {
+    return this.repo.removeRole(userId, roleId);
   }
 }
