@@ -18,7 +18,6 @@ async function main() {
   let failed = false;
 
   try {
-    await exec(['takaro'], 'npm run db:migrate', composeOpts);
     await exec(['takaro'], 'npm test', composeOpts);
   } catch (error) {
     console.error('Tests failed');

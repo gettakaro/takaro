@@ -44,7 +44,7 @@ const configSchema = {
       doc: 'The Postgres database to use',
       format: String,
       default: 'postgres',
-      env: 'POSTGRES_DATABASE',
+      env: 'POSTGRES_DB',
     },
   },
   systemSchema: {
