@@ -45,7 +45,7 @@ export class UserRepo extends ITakaroRepo<UserModel> {
   }
 
   async find(filters: ITakaroQuery<UserModel>): Promise<UserModel[]> {
-    const params = new QueryBuilder(filters).build();
+    const params = new QueryBuilder(filters).build(TABLE_NAME);
     const model = await this.getModel();
     return await model
       .query()

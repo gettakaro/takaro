@@ -1,4 +1,4 @@
-import { HTTP } from './app';
+import { HTTP } from '../app';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
 
@@ -15,6 +15,11 @@ describe('app', () => {
 
   it('Serves a health status', async () => {
     const response = await supertest(http.expressInstance).get('/healthz');
+    expect(response.status).to.be.equal(200);
+  });
+
+  it('Serves a open api spec', async () => {
+    const response = await supertest(http.expressInstance).get('/openapi.json');
     expect(response.status).to.be.equal(200);
   });
 });

@@ -59,7 +59,9 @@ export class RoleRepo extends ITakaroRepo<RoleModel> {
       .withGraphJoined('capabilities');
   }
 
-  async findOne(id: string): Promise<RoleModel & { roles: RoleModel[] }> {
+  async findOne(
+    id: string
+  ): Promise<RoleModel & { capabilities: CapabilityModel[] }> {
     const model = await this.getModel();
     const data = await model
       .query()
@@ -70,7 +72,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel> {
       throw new errors.NotFoundError();
     }
 
-    return data as RoleModel & { roles: RoleModel[] };
+    return data as RoleModel & { capabilities: CapabilityModel[] };
   }
 
   async create(item: PartialModelObject<RoleModel>): Promise<RoleModel> {

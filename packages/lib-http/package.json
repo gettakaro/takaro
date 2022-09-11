@@ -19,8 +19,10 @@
     "@takaro/config": "0.0.1",
     "@takaro/logger": "0.0.1",
     "body-parser": "^1.20.0",
+    "class-validator-jsonschema": "^3.1.1",
     "express": "^4.18.1",
     "i": "^0.3.7",
+    "routing-controllers-openapi": "^3.1.0",
     "zod": "^3.17.10"
   },
   "devDependencies": {

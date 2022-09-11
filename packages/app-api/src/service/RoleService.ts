@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   Length,
   IsArray,
@@ -5,6 +6,9 @@ import {
   Validate,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  IsString,
+  IsUUID,
+  IsEnum,
 } from 'class-validator';
 import { CAPABILITIES, RoleModel, RoleRepo } from '../db/role';
 import { TakaroService } from './Base';
@@ -21,7 +25,7 @@ export class IsCapabilityArray implements ValidatorConstraintInterface {
   }
 }
 
-export class CreateRoleDTO {
+export class RoleCreateInputDTO {
   @Length(3, 20)
   name!: string;
 
@@ -31,7 +35,7 @@ export class CreateRoleDTO {
   capabilities!: CAPABILITIES[];
 }
 
-export class UpdateRoleDTO {
+export class RoleUpdateInputDTO {
   @Length(3, 20)
   name!: string;
 
@@ -41,9 +45,29 @@ export class UpdateRoleDTO {
   capabilities!: CAPABILITIES[];
 }
 
-export class GetRoleDTO {
+export class SearchRoleInputDTO {
   @Length(3, 20)
   name!: string;
+}
+
+export class CapabilityOutputDTO {
+  @IsUUID()
+  id!: string;
+
+  @IsEnum(CAPABILITIES)
+  @IsString()
+  capability!: CAPABILITIES;
+}
+
+export class RoleOutputDTO {
+  @IsUUID()
+  id!: string;
+  @IsString()
+  name!: string;
+
+  @IsArray()
+  @Type(() => CapabilityOutputDTO)
+  capabilities!: CapabilityOutputDTO[];
 }
 
 export class RoleService extends TakaroService<RoleModel> {

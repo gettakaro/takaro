@@ -1,10 +1,30 @@
 import { genSalt, hash } from 'bcrypt';
 import { config } from '../config';
-import { CreateUserDTO } from '../controllers/UserController';
 import { TakaroService } from './Base';
 
 import { UserModel, UserRepo } from '../db/user';
 import { DomainService } from './DomainService';
+import { IsEmail, IsString, IsUUID, Length } from 'class-validator';
+
+export class UserOutputDTO {
+  @IsUUID()
+  id!: string;
+  @IsString()
+  name!: string;
+  @IsString()
+  email!: string;
+}
+
+export class UserCreateInputDTO {
+  @Length(3, 50)
+  name!: string;
+
+  @IsEmail()
+  email!: string;
+
+  @Length(8, 50)
+  password!: string;
+}
 
 export class UserService extends TakaroService<UserModel> {
   get repo() {
@@ -15,7 +35,7 @@ export class UserService extends TakaroService<UserModel> {
     return this.repo.findOne(id);
   }
 
-  async init(user: CreateUserDTO): Promise<UserModel> {
+  async init(user: UserCreateInputDTO): Promise<UserModel> {
     const salt = await genSalt(config.get('auth.saltRounds'));
     const passwordHash = await hash(user.password, salt);
 

@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/logger';
 import { migrateSystem } from '@takaro/db';

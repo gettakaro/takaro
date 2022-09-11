@@ -35,7 +35,20 @@ services:
 #       NODE_ENV: development
 #    command: "npm run start:dev"
     volumes:
-      - ./packages:/app/packages
+      - ./packages/app-api/src:/app/packages/app-api/src
+
+      - ./packages/lib-apiclient/src:/app/packages/lib-apiclient/src
+      - ./packages/lib-config/src:/app/packages/lib-config/src
+      - ./packages/lib-db/src:/app/packages/lib-db/src
+      - ./packages/lib-gameserver/src:/app/packages/lib-gameserver/src
+      - ./packages/lib-http/src:/app/packages/lib-http/src
+      - ./packages/lib-logger/src:/app/packages/lib-logger/src
+
+      - ./packages/web-main/src:/app/packages/web-main/src
+      - ./packages/lib-components/src:/app/packages/lib-components/src
+
+      - ./packages/test/src:/app/packages/test/src
+
       - ./_data:/app/_data
     environment:
       LOGGING_LEVEL: debug
@@ -48,7 +61,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}  
-      POSTGRES_HOST: "postgresql"      
+      POSTGRES_HOST: "postgresql"   
+      TAKARO_HOST: "http://localhost:3000"   
 
     ports:
     # api

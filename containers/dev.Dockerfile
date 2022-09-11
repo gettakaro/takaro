@@ -1,4 +1,4 @@
-FROM node:18 as builder
+FROM node:18
 
 ENV NODE_ENV=development
 
@@ -10,8 +10,6 @@ RUN apt-get install git -y
 # See https://github.com/npm/cli/issues/3847
 RUN npm install -g npm@7.18.1
 
-WORKDIR /app
-
 COPY package*.json ./
 COPY tsconfig*.json ./
 
@@ -21,6 +19,10 @@ COPY scripts ./scripts
 COPY nodemon.json ./
 COPY jest.config.js ./
 
-RUN ./scripts/dev-init.sh
+RUN chown -R node:node /app
 
-CMD [ "npm", "run", "start:dev"]
+USER node
+
+WORKDIR /app
+
+CMD ["bash", "-c", "./scripts/dev-init.sh && npm run start:dev"]
