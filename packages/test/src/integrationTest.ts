@@ -1,51 +1,66 @@
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
-import { Response } from 'supertest';
-import supertest from 'supertest';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
 import { logger } from '@takaro/logger';
-import { faker } from '@faker-js/faker';
+import { AdminClient, Client, AxiosError } from '@takaro/apiclient';
 
-export class IntegrationTest {
-  private domain: any = null;
-  private rootUser: any = null;
-  private rootPassword: string | null = null;
-  private rootToken: string | null = null;
-  private userToken: string | null = null;
-  public response: Response | null = null;
+export class IntegrationTest<SetupData> {
+  protected log = logger('IntegrationTest');
 
-  private createdDomains: any[] = [];
+  public readonly adminClient: AdminClient;
+  public readonly client: Client;
 
-  public data: Record<string, unknown> = {};
+  public standardDomainId: string | null = null;
+  public setupData!: Awaited<SetupData>;
+  public standardLogin: { username: string; password: string } = {
+    username: '',
+    password: '',
+  };
 
-  private log = logger('IntegrationTest');
-
-  constructor(public test: ITestWithSnapshot) {
+  constructor(public test: ITestWithSnapshot<SetupData>) {
     this.test.expectedStatus = this.test.expectedStatus ?? 200;
     this.test.filteredFields = this.test.filteredFields ?? [];
+    this.test.standardEnvironment = this.test.standardEnvironment ?? true;
+
+    this.adminClient = new AdminClient({
+      url: integrationConfig.get('host'),
+      auth: {
+        adminSecret: integrationConfig.get('auth.adminSecret'),
+      },
+    });
+
+    this.client = new Client({
+      url: integrationConfig.get('host'),
+      auth: {},
+    });
   }
 
-  get apiUtils() {
-    return {
-      createDomain: this.createDomain.bind(this),
-      deleteDomain: this.deleteDomain.bind(this),
-      createUser: this.createUser.bind(this),
-      createRole: this.createRole.bind(this),
-      createGameServer: this.createGameServer.bind(this),
-      login: this.login.bind(this),
+  private async setupStandardEnvironment() {
+    const createdDomain = await this.adminClient.domain.domainControllerCreate({
+      name: 'standard-integration-test-domain',
+    });
+    this.standardDomainId = createdDomain.data.data.domain.id;
+
+    this.client.username = createdDomain.data.data.rootUser.email;
+    this.client.password = createdDomain.data.data.password;
+
+    this.standardLogin = {
+      username: createdDomain.data.data.rootUser.email,
+      password: createdDomain.data.data.password,
     };
+
+    await this.client.login();
   }
 
   run() {
     describe(this.test.name, () => {
       before(async () => {
         if (this.test.standardEnvironment) {
-          this.domain = await this.createDomain();
-          await this.login();
+          await this.setupStandardEnvironment();
         }
 
         if (this.test.setup) {
-          await this.test.setup.bind(this)();
+          this.setupData = await this.test.setup.bind(this)();
         }
       });
 
@@ -54,179 +69,68 @@ export class IntegrationTest {
           await this.test.teardown.bind(this)();
         }
 
-        try {
-          await Promise.all(
-            this.createdDomains.map((d) => this.deleteDomain(d.id))
-          );
-        } catch (error) {
-          this.log.warn('Error deleting domains', error);
+        if (this.standardDomainId) {
+          try {
+            await this.adminClient.domain.domainControllerRemove(
+              this.standardDomainId
+            );
+          } catch (error) {
+            if (!(error instanceof AxiosError)) {
+              throw error;
+            }
+            if (error.response?.status !== 404) {
+              throw error;
+            }
+          }
         }
       });
 
       it(this.test.name, async () => {
-        const token = await this.login();
+        let response;
 
-        const url =
-          typeof this.test.url === 'function'
-            ? this.test.url.bind(this)()
-            : this.test.url;
-
-        const req = supertest(integrationConfig.get('host'))[this.test.method](
-          url
-        );
-
-        if (this.test.body) {
-          req.send(this.test.body);
+        try {
+          response = await this.test.test.bind(this)();
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            response = error.response;
+          } else {
+            throw error;
+          }
         }
 
-        if (this.test.adminAuth) {
-          req.auth('admin', integrationConfig.get('auth.adminSecret'));
-        } else {
-          req.set('Authorization', `Bearer ${token}`);
+        if (!response) {
+          throw new Error('No response returned from test');
         }
 
-        const response = await req;
-        this.response = response;
-
-        await matchSnapshot(
-          { ...this.test, name: this.test.name, url },
-          response
-        );
-        expect(response.statusCode).to.equal(this.test.expectedStatus);
+        await matchSnapshot(this.test, response);
+        expect(response.status).to.equal(this.test.expectedStatus);
       });
     });
   }
+}
 
-  private async createDomain(name = 'test-domain') {
-    const res = await supertest(integrationConfig.get('host'))
-      .post('/domain')
-      .auth('admin', integrationConfig.get('auth.adminSecret'))
-      .send({ name });
+export async function logInWithCapabilities(
+  client: Client,
+  capabilities: string[]
+): Promise<Client> {
+  const role = await client.role.roleControllerCreate({
+    name: 'Test role',
+    capabilities,
+  });
+  const user = await client.user.userControllerCreate({
+    email: integrationConfig.get('auth.username'),
+    password: integrationConfig.get('auth.password'),
+    name: 'Test User',
+  });
 
-    this.rootUser = res.body.data.rootUser;
-    this.rootPassword = res.body.data.password;
-    this.createdDomains.push(res.body.data.domain);
-    return res.body.data.domain;
-  }
+  await client.user.userControllerAssignRole(
+    user.data.data.id,
+    role.data.data.id
+  );
 
-  private async deleteDomain(id?: string) {
-    if (!id) {
-      this.log.warn('No domain to delete, returning anyway');
-      return;
-    }
+  client.username = user.data.data.email;
+  client.password = integrationConfig.get('auth.password');
+  await client.login();
 
-    await supertest(integrationConfig.get('host'))
-      .delete(`/domain/${id}`)
-      .expect(200)
-      .auth('admin', integrationConfig.get('auth.adminSecret'));
-  }
-
-  private async login(capabilities: string[] | string = []) {
-    if (!this.rootUser || !this.rootPassword) {
-      throw new Error('No root user or password');
-    }
-
-    const rootLoginRes = await supertest(integrationConfig.get('host'))
-      .post('/login')
-      .set('Content-Type', 'application/json')
-      .expect(200)
-      .send({ username: this.rootUser.email, password: this.rootPassword });
-    this.rootToken = rootLoginRes.body.data.token;
-
-    if (
-      capabilities &&
-      (Array.isArray(capabilities) ? capabilities.length : capabilities)
-    ) {
-      const roleRes = await supertest(integrationConfig.get('host'))
-        .post('/role')
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${this.rootToken}`)
-        .expect(200)
-        .send({
-          name: 'auto-test-role',
-          capabilities: Array.isArray(capabilities)
-            ? capabilities
-            : [capabilities],
-        });
-
-      const password = faker.internet.password();
-      const userRes = await supertest(integrationConfig.get('host'))
-        .post('/user')
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${this.rootToken}`)
-        .expect(200)
-        .send({
-          name: faker.internet.userName(),
-          email: faker.internet.email(),
-          password,
-        });
-
-      await supertest(integrationConfig.get('host'))
-        .post(`/user/${userRes.body.data.id}/role/${roleRes.body.data.id}`)
-        .set('Content-Type', 'application/json')
-        .set('Authorization', `Bearer ${this.rootToken}`)
-        .expect(200);
-
-      const loginRes = await supertest(integrationConfig.get('host'))
-        .post('/login')
-        .set('Content-Type', 'application/json')
-        .expect(200)
-        .send({ username: userRes.body.data.email, password });
-
-      this.userToken = loginRes.body.data.token;
-    }
-
-    return this.userToken ?? this.rootToken;
-  }
-
-  private async createUser(name = 'auto-test-user') {
-    if (!this.domain) {
-      throw new Error('No domain to create user in');
-    }
-
-    const res = await supertest(integrationConfig.get('host'))
-      .post('/user')
-      .set('Content-Type', 'application/json')
-      .auth('admin', integrationConfig.get('auth.adminSecret'))
-      .expect(200)
-      .send({ name, domainId: this.domain.id });
-
-    return res.body;
-  }
-
-  private async createRole(name = 'auto-test-role', capabilities = ['ROOT']) {
-    if (!this.domain) {
-      throw new Error('No domain to create record in');
-    }
-
-    if (!this.rootToken) {
-      throw new Error('Not logged in yet');
-    }
-
-    const res = await supertest(integrationConfig.get('host'))
-      .post('/role')
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${this.rootToken}`)
-      .send({ name, capabilities });
-
-    return res.body;
-  }
-
-  private async createGameServer(name = 'auto-test-gameServer') {
-    if (!this.domain) {
-      throw new Error('No domain to create record in');
-    }
-
-    if (!this.rootToken) {
-      throw new Error('Not logged in yet');
-    }
-
-    const res = await supertest(integrationConfig.get('host'))
-      .post('/gameserver')
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${this.rootToken}`)
-      .send({ name, connectionInfo: { ip: '127.0.0.1', port: 1337 } });
-
-    return res.body;
-  }
+  return client;
 }

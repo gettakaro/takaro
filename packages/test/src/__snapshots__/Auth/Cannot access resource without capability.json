@@ -1,9 +1,8 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-10T11:10:36.137Z",
+      "serverTime": "2022-09-11T21:20:41.481Z",
       "error": {
-        "message": "Forbidden",
         "code": "ForbiddenError",
         "details": {}
       }
@@ -14,10 +13,8 @@
   "test": {
     "group": "Auth",
     "name": "Cannot access resource without capability",
-    "standardEnvironment": true,
-    "url": "/role",
-    "method": "get",
     "expectedStatus": 403,
-    "filteredFields": []
+    "filteredFields": [],
+    "standardEnvironment": true
   }
 }

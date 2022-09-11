@@ -1,0 +1,34 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T21:03:57.743Z"
+    },
+    "data": [
+      {
+        "createdAt": "2022-09-11T21:03:57.720Z",
+        "updatedAt": "2022-09-11T21:03:57.721Z",
+        "id": "dfbe12bb-a875-4dbb-bf3d-54eaa403beba",
+        "name": "Test role",
+        "capabilities": [
+          {
+            "createdAt": "2022-09-11T21:03:57.723Z",
+            "updatedAt": "2022-09-11T21:03:57.724Z",
+            "id": "374e6c3c-fe49-4f89-ad09-8e1020ba89da",
+            "roleId": "dfbe12bb-a875-4dbb-bf3d-54eaa403beba",
+            "capability": "MANAGE_ROLES"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "RoleController",
+    "name": "Filter by name",
+    "filteredFields": [
+      "roleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

@@ -56,7 +56,6 @@ export class BaseApiClient {
 
   private addLoggers(axios: AxiosInstance): AxiosInstance {
     axios.interceptors.request.use((request) => {
-      console.log('Starting Request');
       this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
         method: request.method,
         url: request.url,

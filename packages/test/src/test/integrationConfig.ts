@@ -4,6 +4,8 @@ interface IIntegrationTestConfig extends IBaseConfig {
   host: string;
   auth: {
     adminSecret: string;
+    username: string;
+    password: string;
   };
 }
 
@@ -20,6 +22,18 @@ const configSchema = {
       format: String,
       default: null,
       env: 'ADMIN_SECRET',
+    },
+    username: {
+      doc: 'The username used to authenticate requests',
+      format: String,
+      default: 'takaro-integration-test@test.takaro.io',
+      env: 'TEST_USERNAME',
+    },
+    password: {
+      doc: 'The password used to authenticate requests',
+      format: String,
+      default: 'takaro-test-password',
+      env: 'TEST_PASSWORD',
     },
   },
 };

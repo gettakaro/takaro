@@ -3,7 +3,7 @@ import { UserOutputDTO, UserService } from './UserService';
 import { randomBytes } from 'crypto';
 import { RoleOutputDTO, RoleService } from './RoleService';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base';
-import { IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain';
 import humanId from 'human-id';
 import { CAPABILITIES } from '../db/role';
@@ -11,12 +11,12 @@ import { UserModel } from '../db/user';
 import { Type } from 'class-transformer';
 
 export class DomainCreateInputDTO {
-  @Length(3, 20)
+  @Length(3, 200)
   name!: string;
 }
 
 export class DomainOutputDTO {
-  @IsUUID()
+  @IsString()
   id!: string;
 
   @IsString()

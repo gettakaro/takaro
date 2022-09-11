@@ -81,6 +81,9 @@ export class RoleRepo extends ITakaroRepo<RoleModel> {
   }
 
   async delete(id: string): Promise<boolean> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const model = await this.getModel();
     const data = await model.query().deleteById(id);
 
@@ -95,6 +98,9 @@ export class RoleRepo extends ITakaroRepo<RoleModel> {
     id: string,
     data: PartialModelObject<RoleModel>
   ): Promise<RoleModel> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const model = await this.getModel();
     await model.query().updateAndFetchById(id, data).returning('*');
     return this.findOne(id);

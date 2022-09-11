@@ -1,9 +1,8 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-10T10:53:54.740Z",
+      "serverTime": "2022-09-11T20:36:46.226Z",
       "error": {
-        "message": "Validation error",
         "code": "ValidationError",
         "details": [
           {
@@ -14,7 +13,7 @@
             "property": "id",
             "children": [],
             "constraints": {
-              "isUuid": "id must be an UUID"
+              "isUuid": "id must be a UUID"
             }
           }
         ]
@@ -24,14 +23,10 @@
   },
   "status": 400,
   "test": {
-    "group": "RolesController",
-    "name": "DELETE Delete with invalid id",
-    "standardEnvironment": true,
-    "filteredFields": [
-      "roleId"
-    ],
-    "url": "/role/invalid-id",
-    "method": "delete",
-    "expectedStatus": 400
+    "group": "RoleController",
+    "name": "Delete with invalid ID",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
   }
 }

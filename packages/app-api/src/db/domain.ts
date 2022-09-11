@@ -42,7 +42,7 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
     const data = await model.query().findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError();
     }
 
     return data;
@@ -57,6 +57,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
   }
 
   async delete(id: string): Promise<boolean> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const knex = await this.getKnex();
     await knex.schema.dropSchemaIfExists(getDomainSchemaName(id), true);
 
@@ -70,6 +73,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
     id: string,
     data: PartialModelObject<DomainModel>
   ): Promise<DomainModel> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const model = await this.getModel();
     return model.query().updateAndFetchById(id, data).returning('*');
   }

@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T20:36:44.960Z",
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "id": "invalid-id"
+            },
+            "value": "invalid-id",
+            "property": "id",
+            "children": [],
+            "constraints": {
+              "isUuid": "id must be a UUID"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RoleController",
+    "name": "Get by ID with invalid ID",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

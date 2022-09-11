@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T21:22:43.500Z"
+    },
+    "data": {
+      "createdAt": "2022-09-11T21:22:43.163Z",
+      "updatedAt": "2022-09-11T21:22:43.164Z",
+      "id": "slick-socks-jam",
+      "name": "standard-integration-test-domain"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "Get by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

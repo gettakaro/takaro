@@ -29,31 +29,31 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
+export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
   @ValidateNested()
   data!: DomainCreateOutputDTO;
 }
 
-class DomainOutputDTOAPI extends APIOutput<DomainOutputDTO> {
+export class DomainOutputDTOAPI extends APIOutput<DomainOutputDTO> {
   @Type(() => DomainOutputDTO)
   @ValidateNested()
   data!: DomainOutputDTO;
 }
 
-class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
+export class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => DomainOutputDTO)
   data!: DomainOutputDTO[];
 }
 
-class DomainSearchInputAllowedFilters {
+export class DomainSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
 }
 
-class DomainSearchInputDTO extends ITakaroQuery<DomainModel> {
+export class DomainSearchInputDTO extends ITakaroQuery<DomainModel> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
   filters!: DomainSearchInputAllowedFilters;

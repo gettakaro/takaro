@@ -1,96 +1,61 @@
-import { expect, integrationConfig } from '@takaro/test';
-import supertest from 'supertest';
-import { DomainModel } from '../db/domain';
-import { RoleModel } from '../db/role';
-import { UserModel } from '../db/user';
+import { IntegrationTest, expect } from '@takaro/test';
+import { CAPABILITIES } from '../db/role';
+import { DomainCreateOutputDTOAPI } from './DomainController';
 
-async function setupEnv() {
-  const domain1 = await supertest(integrationConfig.get('host'))
-    .post('/domain')
-    .auth('admin', integrationConfig.get('auth.adminSecret'))
-    .send({ name: 'domain1' });
-  const rootLogin1 = await supertest(integrationConfig.get('host'))
-    .post('/login')
-    .set('Content-Type', 'application/json')
-    .expect(200)
-    .send({
-      username: domain1.body.data.rootUser.email,
-      password: domain1.body.data.password,
-    });
+const group = 'Multitenancy';
 
-  const domain2 = await supertest(integrationConfig.get('host'))
-    .post('/domain')
-    .auth('admin', integrationConfig.get('auth.adminSecret'))
-    .send({ name: 'domain2' });
-  const rootLogin2 = await supertest(integrationConfig.get('host'))
-    .post('/login')
-    .set('Content-Type', 'application/json')
-    .expect(200)
-    .send({
-      username: domain2.body.data.rootUser.email,
-      password: domain2.body.data.password,
-    });
+const tests: IntegrationTest<any>[] = [
+  new IntegrationTest<DomainCreateOutputDTOAPI>({
+    group,
+    name: 'Cannot read data from other domains',
+    setup: async function () {
+      // Create a role in standard domain
+      await this.client.role.roleControllerCreate({
+        name: 'Test role',
+        capabilities: [CAPABILITIES.READ_ROLES],
+      });
 
-  return {
-    rootToken1: rootLogin1.body.data.token,
-    rootToken2: rootLogin2.body.data.token,
-    domain1: domain1.body.data,
-    domain2: domain2.body.data,
-  };
-}
+      // Create a new domain and login to that
+      const newDomain = await this.adminClient.domain.domainControllerCreate({
+        name: 'new domain',
+      });
+      this.client.username = newDomain.data.data.rootUser.email;
+      this.client.password = newDomain.data.data.password;
+      await this.client.login();
 
-// TODO: Expand this test to something more generic that covers more ground maybe?
-// Currently do not want to invest time into this but it will be good to have in the future
-// Perhaps when there is an openapi spec of the API so we can generate this test?
-describe('Multitenancy', () => {
-  let session: {
-    rootToken1: string;
-    rootToken2: string;
-    domain1: {
-      domain: DomainModel;
-      rootUser: UserModel;
-      rootRole: RoleModel;
-      password: string;
-    };
-    domain2: {
-      domain: DomainModel;
-      rootUser: UserModel;
-      rootRole: RoleModel;
-      password: string;
-    };
-  };
+      return newDomain.data;
+    },
+    test: async function () {
+      const res = await this.client.role.roleControllerSearch({
+        filters: { name: 'Test role' },
+      });
 
-  beforeEach(async () => {
-    session = await setupEnv();
-  });
+      expect(res.data.data).to.have.length(0);
 
-  afterEach(async () => {
-    await supertest(integrationConfig.get('host'))
-      .delete(`/domain/${session.domain1.domain.id}`)
-      .expect(200)
-      .auth('admin', integrationConfig.get('auth.adminSecret'));
+      // Login to standard env again
+      this.client.username = this.standardLogin.username;
+      this.client.password = this.standardLogin.password;
+      await this.client.login();
 
-    await supertest(integrationConfig.get('host'))
-      .delete(`/domain/${session.domain2.domain.id}`)
-      .expect(200)
-      .auth('admin', integrationConfig.get('auth.adminSecret'));
-  });
+      const res2 = await this.client.role.roleControllerSearch({
+        filters: { name: 'Test role' },
+      });
 
-  it('Does not leak items from a different domain', async () => {
-    const res = await supertest(integrationConfig.get('host'))
-      .get('/user')
-      .set('Authorization', `Bearer ${session.rootToken1}`)
-      .expect(200);
+      expect(res2.data.data).to.have.length(1);
 
-    expect(res.body.data).to.have.length(1);
-    expect(res.body.data[0].id).to.equal(session.domain1.rootUser.id);
+      return res;
+    },
+    teardown: async function () {
+      if (!this.standardDomainId) throw new Error('No domain ID');
+      await this.adminClient.domain.domainControllerRemove(
+        this.setupData.data.domain.id
+      );
+    },
+  }),
+];
 
-    const res2 = await supertest(integrationConfig.get('host'))
-      .get('/user')
-      .set('Authorization', `Bearer ${session.rootToken2}`)
-      .expect(200);
-
-    expect(res2.body.data).to.have.length(1);
-    expect(res2.body.data[0].id).to.equal(session.domain2.rootUser.id);
+describe(group, function () {
+  tests.forEach((test) => {
+    test.run();
   });
 });

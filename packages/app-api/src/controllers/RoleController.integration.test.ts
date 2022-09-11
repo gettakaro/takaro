@@ -1,175 +1,111 @@
 import { IntegrationTest } from '@takaro/test';
 import { CAPABILITIES } from '../db/role';
+import { RoleOutputDTO } from '../service/RoleService';
 
-const tests: IntegrationTest[] = [
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'GET Basic fetch with filter',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
+const group = 'RoleController';
+
+const tests: IntegrationTest<any>[] = [
+  new IntegrationTest<RoleOutputDTO>({
+    group,
+    name: 'Get by ID',
     setup: async function () {
-      await this.apiUtils.createRole('filter-name');
+      return (
+        await this.client.role.roleControllerCreate({
+          name: 'Test role',
+          capabilities: [CAPABILITIES.MANAGE_ROLES],
+        })
+      ).data.data;
     },
-    url: '/role?filters[name]=filter-name',
-    method: 'get',
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'GET Fetch one',
-    standardEnvironment: true,
+    test: async function () {
+      return this.client.role.roleControllerGetOne(this.setupData.id);
+    },
     filteredFields: ['roleId'],
+  }),
+  new IntegrationTest<void>({
+    group,
+    name: 'Get by ID with invalid ID',
+    test: async function () {
+      return this.client.role.roleControllerGetOne('invalid-id');
+    },
+    expectedStatus: 400,
+  }),
+  new IntegrationTest<RoleOutputDTO>({
+    group,
+    name: 'Update by ID',
     setup: async function () {
-      this.data = await this.apiUtils.createRole('cool-name');
+      return (
+        await this.client.role.roleControllerCreate({
+          name: 'Test role',
+          capabilities: [CAPABILITIES.MANAGE_ROLES],
+        })
+      ).data.data;
     },
-    url: function () {
-      return `/role/${this.data.data.id}`;
+    test: async function () {
+      return this.client.role.roleControllerUpdate(this.setupData.id, {
+        name: 'New name',
+        capabilities: [CAPABILITIES.MANAGE_ROLES, CAPABILITIES.MANAGE_USERS],
+      });
     },
-    method: 'get',
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Basic create',
-    standardEnvironment: true,
     filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      name: 'auto-test-create',
-      capabilities: [CAPABILITIES.READ_ROLES],
-    },
   }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Create with invalid capabilities',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      name: 'auto-test-create',
-      capabilities: ['invalid-capability'],
+  new IntegrationTest<void>({
+    group,
+    name: 'Update by ID with invalid ID',
+    test: async function () {
+      return this.client.role.roleControllerUpdate('invalid-id', {
+        name: 'New name',
+        capabilities: [CAPABILITIES.MANAGE_ROLES, CAPABILITIES.MANAGE_USERS],
+      });
     },
     expectedStatus: 400,
   }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Create with too long name',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      name: 'this name is way too long - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      capabilities: [CAPABILITIES.READ_ROLES],
-    },
-    expectedStatus: 400,
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Create with too short name',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      name: 'a',
-      capabilities: [CAPABILITIES.READ_ROLES],
-    },
-    expectedStatus: 400,
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Create with no name',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      capabilities: [CAPABILITIES.READ_ROLES],
-    },
-    expectedStatus: 400,
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'POST Create with no capabilities',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role',
-    method: 'post',
-    body: {
-      name: 'auto-test-create',
-    },
-    expectedStatus: 400,
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'PUT Basic update',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
+
+  new IntegrationTest<RoleOutputDTO>({
+    group,
+    name: 'Delete',
     setup: async function () {
-      this.data = await this.apiUtils.createRole('update-name');
+      return (
+        await this.client.role.roleControllerCreate({
+          name: 'Test role',
+          capabilities: [CAPABILITIES.MANAGE_ROLES],
+        })
+      ).data.data;
     },
-    url: function () {
-      return `/role/${this.data.data.id}`;
-    },
-    method: 'put',
-    body: {
-      name: 'auto-test-update',
-      capabilities: [CAPABILITIES.READ_ROLES],
+    test: async function () {
+      return this.client.role.roleControllerRemove(this.setupData.id);
     },
   }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'PUT Update with invalid capabilities',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    setup: async function () {
-      this.data = await this.apiUtils.createRole('update-name');
-    },
-    url: function () {
-      return `/role/${this.data.data.id}`;
-    },
-    method: 'put',
-    body: {
-      name: 'auto-test-update',
-      capabilities: ['invalid-capability'],
+
+  new IntegrationTest<void>({
+    group,
+    name: 'Delete with invalid ID',
+    test: async function () {
+      return this.client.role.roleControllerRemove('invalid-id');
     },
     expectedStatus: 400,
   }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'DELETE Basic delete',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
+
+  new IntegrationTest<RoleOutputDTO>({
+    group,
+    name: 'Filter by name',
     setup: async function () {
-      this.data = await this.apiUtils.createRole('delete-name');
+      return (
+        await this.client.role.roleControllerCreate({
+          name: 'Test role',
+          capabilities: [CAPABILITIES.MANAGE_ROLES],
+        })
+      ).data.data;
     },
-    url: function () {
-      return `/role/${this.data.data.id}`;
+    test: async function () {
+      return this.client.role.roleControllerSearch({
+        filters: { name: 'Test role' },
+      });
     },
-    method: 'delete',
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'DELETE Delete with invalid id',
-    standardEnvironment: true,
     filteredFields: ['roleId'],
-    url: '/role/invalid-id',
-    method: 'delete',
-    expectedStatus: 400,
-  }),
-  new IntegrationTest({
-    group: 'RolesController',
-    name: 'DELETE Delete with non-existing id',
-    standardEnvironment: true,
-    filteredFields: ['roleId'],
-    url: '/role/f2357510-6f18-4177-a7ad-109c11d485f9',
-    method: 'delete',
-    expectedStatus: 404,
   }),
 ];
 
-describe('Role controller', function () {
+describe(group, function () {
   tests.forEach((test) => {
     test.run();
   });

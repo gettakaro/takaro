@@ -6,6 +6,18 @@ export class Client extends BaseApiClient {
     super(config);
   }
 
+  set username(username: string) {
+    this.config.auth.username = username;
+  }
+
+  set password(password: string) {
+    this.config.auth.password = password;
+  }
+
+  set token(token: string) {
+    this.config.auth.token = token;
+  }
+
   public async login() {
     if (!this.config.auth.username || !this.config.auth.password) {
       throw new Error('No username or password provided');
@@ -19,6 +31,10 @@ export class Client extends BaseApiClient {
     this.axios.defaults.headers.common[
       'Authorization'
     ] = `Bearer ${loginRes.data.data.token}`;
+  }
+
+  public logout() {
+    delete this.axios.defaults.headers.common['Authorization'];
   }
 
   get user() {
