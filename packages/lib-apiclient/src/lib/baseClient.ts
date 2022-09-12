@@ -83,12 +83,8 @@ export class BaseApiClient {
         let details = {};
 
         if (error.response?.data) {
-          if (
-            error.response.data instanceof Object &&
-            'meta' in error.response.data
-          ) {
-            details = JSON.stringify(error.response.data['meta']);
-          }
+          const data = error.response.data as Record<string, unknown>;
+          details = JSON.stringify(data.meta);
         }
 
         this.log.error(`☠️ Request errored: ${error.message}`, {
