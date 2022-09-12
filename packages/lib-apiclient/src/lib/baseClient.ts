@@ -104,6 +104,30 @@ export class BaseApiClient {
     return axios;
   }
 
+  /**
+   * Wait until the API reports that it is healthy
+   * @param timeout in seconds
+   */
+  async waitUntilHealthy(timeout = 600) {
+    const start = Date.now();
+    while (true) {
+      try {
+        const { data } = await this.meta.metaGetHealth();
+        if (data.healthy) {
+          return;
+        }
+      } catch {
+        // ignore
+      }
+
+      if (Date.now() - start > timeout * 1000) {
+        throw new Error('API did not become healthy in time');
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
   get meta() {
     return new MetaApi(
       {

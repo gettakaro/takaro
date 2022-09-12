@@ -19,8 +19,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
-      - run: node scripts/integration-tests.mjs
+      - run: npm -w packages/test run integration-tests
         env:
           POSTGRES_USER: takaro-user
           POSTGRES_PASSWORD: takaro-pw
           POSTGRES_DB: takaro-db
+          TEST_HTTP_TARGET: http://localhost:13000
