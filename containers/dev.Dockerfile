@@ -25,4 +25,6 @@ USER node
 
 WORKDIR /app
 
-CMD ["bash", "-c", "./scripts/dev-init.sh && npm run start:dev"]
+RUN npm ci
+
+CMD ["npm", "run", "start:dev"]
