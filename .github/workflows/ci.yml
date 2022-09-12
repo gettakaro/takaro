@@ -13,13 +13,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: chown -R 1000:1000 packages/
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
-      - run: chown -R 1000:1000 packages/
       - run: npm -w packages/test run integration-tests
         env:
           POSTGRES_USER: takaro-user
