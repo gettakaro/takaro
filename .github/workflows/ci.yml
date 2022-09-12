@@ -19,6 +19,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
+      - run: chown -R 1000:1000 packages/
       - run: npm -w packages/test run integration-tests
         env:
           POSTGRES_USER: takaro-user
