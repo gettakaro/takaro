@@ -106,9 +106,9 @@ export class BaseApiClient {
 
   /**
    * Wait until the API reports that it is healthy
-   * @param timeout in seconds
+   * @param timeout in milliseconds
    */
-  async waitUntilHealthy(timeout = 600) {
+  async waitUntilHealthy(timeout = 600000) {
     const start = Date.now();
     while (true) {
       try {
@@ -120,7 +120,7 @@ export class BaseApiClient {
         // ignore
       }
 
-      if (Date.now() - start > timeout * 1000) {
+      if (Date.now() - start > timeout) {
         throw new Error('API did not become healthy in time');
       }
 

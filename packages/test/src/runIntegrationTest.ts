@@ -27,7 +27,7 @@ async function composeApiTest() {
 
   try {
     console.log('Waiting for app to be healthy');
-    await client.waitUntilHealthy(600);
+    await client.waitUntilHealthy(ms('30 minutes'));
     await exec('takaro', 'npm test', composeOpts);
   } catch (error) {
     console.error('Tests failed');
