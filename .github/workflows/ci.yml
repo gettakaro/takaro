@@ -24,4 +24,4 @@ jobs:
           POSTGRES_USER: takaro-user
           POSTGRES_PASSWORD: takaro-pw
           POSTGRES_DB: takaro-db
-          TEST_HTTP_TARGET: http://localhost:13000
+          TEST_HTTP_TARGET: http://127.0.0.1:13000
