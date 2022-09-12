@@ -1,18 +1,43 @@
-import { migrateDomain } from '@takaro/db';
 import { errors } from '@takaro/logger';
-import { UserService } from './UserService';
+import { UserOutputDTO, UserService } from './UserService';
 import { randomBytes } from 'crypto';
-import { RoleService } from './RoleService';
+import { RoleOutputDTO, RoleService } from './RoleService';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base';
-import { Length } from 'class-validator';
+import { IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain';
 import humanId from 'human-id';
-import { CAPABILITIES, RoleModel } from '../db/role';
+import { CAPABILITIES } from '../db/role';
 import { UserModel } from '../db/user';
+import { Type } from 'class-transformer';
 
-export class CreateDomainDTO {
-  @Length(3, 20)
+export class DomainCreateInputDTO {
+  @Length(3, 200)
   name!: string;
+}
+
+export class DomainOutputDTO {
+  @IsString()
+  id!: string;
+
+  @IsString()
+  name!: string;
+}
+
+export class DomainCreateOutputDTO {
+  @Type(() => DomainOutputDTO)
+  @ValidateNested()
+  domain!: DomainOutputDTO;
+
+  @Type(() => UserOutputDTO)
+  @ValidateNested()
+  rootUser!: UserOutputDTO;
+
+  @Type(() => RoleOutputDTO)
+  @ValidateNested()
+  rootRole!: RoleOutputDTO;
+
+  @IsString()
+  password!: string;
 }
 
 export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> {
@@ -20,17 +45,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> 
     return new DomainRepo();
   }
 
-  async initDomain(input: CreateDomainDTO): Promise<{
-    domain: DomainModel;
-    rootUser: UserModel;
-    rootRole: RoleModel;
-    password: string;
-  }> {
+  async initDomain(
+    input: DomainCreateInputDTO
+  ): Promise<DomainCreateOutputDTO> {
     const id = humanId({
       separator: '-',
       capitalize: false,
     });
-    await migrateDomain(id);
 
     const domain = await this.repo.create({ ...input, id });
 

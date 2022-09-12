@@ -1,4 +1,3 @@
-export { TakaroCRUDRepository as TakaroRepository } from './TakaroCRUDRepo';
 export { TakaroModel } from './TakaroModel';
 
 export { ITakaroQuery, QueryBuilder } from './queryBuilder';

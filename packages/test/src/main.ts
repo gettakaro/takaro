@@ -3,4 +3,4 @@ export { sandbox } from './test/sandbox';
 export { integrationConfig } from './test/integrationConfig';
 
 export * as snapshot from './snapshots';
-export { IntegrationTest } from './integrationTest';
+export { IntegrationTest, logInWithCapabilities } from './integrationTest';

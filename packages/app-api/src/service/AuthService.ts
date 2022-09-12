@@ -6,6 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
 import { CAPABILITIES } from '../db/role';
+import { IsString } from 'class-validator';
 
 interface IJWTPayload {
   sub: string;
@@ -21,10 +22,15 @@ export interface AuthenticatedRequest extends Request {
   user: { id: string };
 }
 
+export class LoginOutputDTO {
+  @IsString()
+  token!: string;
+}
+
 const log = logger('AuthService');
 
 export class AuthService extends DomainScoped {
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<LoginOutputDTO> {
     const service = new UserService(this.domainId);
     const users = await service.find({ filters: { email } });
 

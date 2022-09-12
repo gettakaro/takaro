@@ -1,33 +1,35 @@
-import { IntegrationTest } from '@takaro/test';
+import { IntegrationTest, logInWithCapabilities } from '@takaro/test';
 import { CAPABILITIES } from '../db/role';
 
-const tests: IntegrationTest[] = [
+const group = 'Auth';
+
+const tests: IntegrationTest<any>[] = [
   new IntegrationTest({
-    group: 'Auth',
+    group,
     name: 'Cannot access resource without capability',
-    standardEnvironment: true,
     setup: async function () {
-      await this.apiUtils.login(CAPABILITIES.READ_USERS);
+      await logInWithCapabilities(this.client, [CAPABILITIES.READ_USERS]);
     },
-    url: '/role',
-    method: 'get',
+    test: async function () {
+      return this.client.role.roleControllerSearch();
+    },
     expectedStatus: 403,
   }),
   new IntegrationTest({
-    group: 'Auth',
+    group,
     name: 'Can access resource with capability',
-    standardEnvironment: true,
     filteredFields: ['roleId'],
     setup: async function () {
-      await this.apiUtils.login(CAPABILITIES.READ_ROLES);
+      await logInWithCapabilities(this.client, [CAPABILITIES.READ_ROLES]);
     },
-    url: '/role?sortBy=name&sortDirection=asc',
-    method: 'get',
+    test: async function () {
+      return this.client.role.roleControllerSearch();
+    },
     expectedStatus: 200,
   }),
 ];
 
-describe('Auth integration tests', function () {
+describe(group, function () {
   tests.forEach((test) => {
     test.run();
   });

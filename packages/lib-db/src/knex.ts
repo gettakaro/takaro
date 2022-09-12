@@ -46,10 +46,10 @@ export async function NOT_DOMAIN_SCOPED_getKnex(
 }
 
 export async function NOT_DOMAIN_SCOPED_disconnectKnex(): Promise<void> {
-  log.info('Disconnecting non-domain scoped knex');
-  const knex = await NOT_DOMAIN_SCOPED_getKnex();
-  await knex.destroy();
+  if (!NON_DOMAIN_SCOPED_cachedKnex) return;
+  await NON_DOMAIN_SCOPED_cachedKnex.destroy();
   NON_DOMAIN_SCOPED_cachedKnex = null;
+  log.info('Disconnected non-domain scoped knex');
 }
 
 export async function getKnex(domainId: string): Promise<IKnex> {
@@ -70,10 +70,10 @@ export async function getKnex(domainId: string): Promise<IKnex> {
 }
 
 export async function disconnectKnex(domainId: string): Promise<void> {
-  log.info(`Disconnecting knex for domain ${domainId}`);
-  const knex = await getKnex(domainId);
-  await knex.destroy();
+  if (!knexCache.has(domainId)) return;
+  await knexCache.get(domainId).destroy();
   knexCache.delete(domainId);
+  log.info(`Disconnected knex for domain ${domainId}`);
 }
 
 function addLoggingMiddle(knex: IKnex) {

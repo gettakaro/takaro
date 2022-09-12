@@ -1,3 +1,7 @@
+import { Type } from 'class-transformer';
+import { IsISO8601, ValidateNested } from 'class-validator';
+import { IsString } from 'class-validator';
+
 function parseData(data: any) {
   if (!data) return null;
 
@@ -12,7 +16,6 @@ export function apiResponse(data: unknown = {}, error?: Error) {
   const parsedData = parseData(data);
 
   const errorDetails = {
-    message: error?.message,
     code: error?.name,
     // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
     details: error?.hasOwnProperty('details') ? error?.details : {},
@@ -25,4 +28,26 @@ export function apiResponse(data: unknown = {}, error?: Error) {
     },
     data: parsedData,
   };
+}
+
+class ErrorOutput {
+  @IsString()
+  code!: string;
+}
+
+class MetadataOutput {
+  @IsString()
+  @IsISO8601()
+  serverTime!: string;
+
+  @Type(() => ErrorOutput)
+  @ValidateNested()
+  error?: ErrorOutput;
+}
+export class APIOutput<T> {
+  @Type(() => MetadataOutput)
+  @ValidateNested()
+  metadata!: MetadataOutput;
+
+  data!: T;
 }

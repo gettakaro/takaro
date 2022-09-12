@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T21:22:44.182Z"
+    },
+    "data": {
+      "name": "New name",
+      "updatedAt": "2022-09-11T21:22:44.174Z",
+      "createdAt": "2022-09-11T21:22:43.876Z",
+      "id": "slow-lies-sink"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "Update by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

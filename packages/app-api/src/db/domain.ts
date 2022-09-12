@@ -4,6 +4,7 @@ import {
   ITakaroQuery,
   QueryBuilder,
   disconnectKnex,
+  migrateDomain,
 } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
 import { errors } from '@takaro/logger';
@@ -41,7 +42,7 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
     const data = await model.query().findById(id);
 
     if (!data) {
-      throw new errors.NotFoundError(`Record with id ${id} not found`);
+      throw new errors.NotFoundError();
     }
 
     return data;
@@ -49,10 +50,16 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
 
   async create(item: PartialModelObject<DomainModel>): Promise<DomainModel> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    const domain = await model.query().insert(item).returning('*');
+
+    await migrateDomain(domain.id);
+    return domain;
   }
 
   async delete(id: string): Promise<boolean> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const knex = await this.getKnex();
     await knex.schema.dropSchemaIfExists(getDomainSchemaName(id), true);
 
@@ -66,6 +73,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
     id: string,
     data: PartialModelObject<DomainModel>
   ): Promise<DomainModel> {
+    const existing = await this.findOne(id);
+    if (!existing) throw new errors.NotFoundError();
+
     const model = await this.getModel();
     return model.query().updateAndFetchById(id, data).returning('*');
   }

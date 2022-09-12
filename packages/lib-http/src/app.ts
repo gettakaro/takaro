@@ -6,7 +6,7 @@ import {
   RoutingControllersOptions,
   useExpressServer,
 } from 'routing-controllers';
-import { MetaController } from './controllers/meta';
+import { Meta } from './controllers/meta';
 import { LoggingMiddleware } from './middleware/logger';
 import { ErrorHandler } from './middleware/errorHandler';
 import bodyParser from 'body-parser';
@@ -31,15 +31,16 @@ export class HTTP {
       useExpressServer(this.app, {
         ...options,
         defaultErrorHandler: false,
-        validation: { forbidNonWhitelisted: true, whitelist: true },
+        validation: { whitelist: true, forbidNonWhitelisted: true },
         // eslint-disable-next-line @typescript-eslint/ban-types
-        controllers: [MetaController, ...(options.controllers as Function[])],
+        controllers: [Meta, ...(options.controllers as Function[])],
       });
     } else {
       useExpressServer(this.app, {
         ...options,
         defaultErrorHandler: false,
-        controllers: [MetaController],
+        controllers: [Meta],
+        validation: { whitelist: true, forbidNonWhitelisted: true },
         middlewares: [LoggingMiddleware, ErrorHandler],
       });
     }

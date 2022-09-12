@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T21:22:43.848Z",
+      "error": {
+        "code": "NotFoundError",
+        "details": {}
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "DomainController",
+    "name": "Get by ID with invalid ID",
+    "expectedStatus": 404,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

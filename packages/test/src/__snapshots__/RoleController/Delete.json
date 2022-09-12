@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T20:36:45.932Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "RoleController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

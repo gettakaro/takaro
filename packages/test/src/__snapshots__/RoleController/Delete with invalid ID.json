@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T20:36:46.226Z",
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "id": "invalid-id"
+            },
+            "value": "invalid-id",
+            "property": "id",
+            "children": [],
+            "constraints": {
+              "isUuid": "id must be a UUID"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RoleController",
+    "name": "Delete with invalid ID",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

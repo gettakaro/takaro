@@ -1,8 +1,16 @@
-import { IsEmail, Length } from 'class-validator';
+import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { apiResponse } from '@takaro/http';
-import { UserService } from '../service/UserService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+import { APIOutput, apiResponse } from '@takaro/http';
+import {
+  UserCreateInputDTO,
+  UserOutputDTO,
+  UserService,
+} from '../service/UserService';
+import {
+  AuthenticatedRequest,
+  AuthService,
+  LoginOutputDTO,
+} from '../service/AuthService';
 import {
   Param,
   Body,
@@ -11,23 +19,13 @@ import {
   Delete,
   JsonController,
   UseBefore,
-  QueryParams,
   Req,
   Put,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
 import { DomainService } from '../service/DomainService';
-
-export class CreateUserDTO {
-  @Length(3, 50)
-  name!: string;
-
-  @IsEmail()
-  email!: string;
-
-  @Length(8, 50)
-  password!: string;
-}
+import { ResponseSchema } from 'routing-controllers-openapi';
+import { Type } from 'class-transformer';
 
 export class UpdateUserDTO {
   @Length(3, 50)
@@ -47,9 +45,40 @@ export class LoginDTO {
   password!: string;
 }
 
+class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
+  @Type(() => LoginOutputDTO)
+  @ValidateNested()
+  data!: LoginOutputDTO;
+}
+
+class UserOutputDTOAPI extends APIOutput<UserOutputDTO> {
+  @Type(() => UserOutputDTO)
+  @ValidateNested()
+  data!: UserOutputDTO;
+}
+
+class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
+  @ValidateNested({ each: true })
+  @Type(() => UserOutputDTO)
+  data!: UserOutputDTO[];
+}
+
+class UserSearchInputAllowedFilters {
+  @IsOptional()
+  @IsString()
+  name!: string;
+}
+
+class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedFilters)
+  filters!: UserSearchInputAllowedFilters;
+}
+
 @JsonController()
 export class UserController {
   @Post('/login')
+  @ResponseSchema(LoginOutputDTOAPI)
   async login(@Body() loginReq: LoginDTO) {
     const domainId = await new DomainService().resolveDomain(loginReq.username);
     const service = new AuthService(domainId);
@@ -59,16 +88,18 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
-  @Get('/user')
-  async getAll(
+  @ResponseSchema(UserOutputArrayDTOAPI)
+  @Post('/user/search')
+  async search(
     @Req() req: AuthenticatedRequest,
-    @QueryParams() query: ITakaroQuery<GetUserDTO>
+    @Body() query: UserSearchInputDTO
   ) {
     const service = new UserService(req.domainId);
     return apiResponse(await service.find(query));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @ResponseSchema(UserOutputDTOAPI)
   @Get('/user/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const service = new UserService(req.domainId);
@@ -76,15 +107,20 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
-  async post(@Req() req: AuthenticatedRequest, @Body() data: CreateUserDTO) {
+  async create(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: UserCreateInputDTO
+  ) {
     const service = new UserService(req.domainId);
     return apiResponse(await service.init(data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
-  async put(
+  async update(
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() data: UpdateUserDTO
@@ -94,6 +130,7 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const service = new UserService(req.domainId);
@@ -108,7 +145,8 @@ export class UserController {
     ])
   )
   @Post('/user/:id/role/:roleId')
-  async addRole(
+  @ResponseSchema(APIOutput)
+  async assignRole(
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('roleId') roleId: string
@@ -124,6 +162,7 @@ export class UserController {
     ])
   )
   @Delete('/user/:id/role/:roleId')
+  @ResponseSchema(APIOutput)
   async removeRole(
     @Req() req: AuthenticatedRequest,
     @Param('id') id: string,

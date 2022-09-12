@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-11T21:22:44.883Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

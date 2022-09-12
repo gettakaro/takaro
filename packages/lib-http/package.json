@@ -7,9 +7,9 @@
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "ts-mocha -p ./tsconfig.json src/**/*.test.ts",
+    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json src/**/*.integration.test.ts",
+    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
@@ -19,8 +19,10 @@
     "@takaro/config": "0.0.1",
     "@takaro/logger": "0.0.1",
     "body-parser": "^1.20.0",
+    "class-validator-jsonschema": "^3.1.1",
     "express": "^4.18.1",
     "i": "^0.3.7",
+    "routing-controllers-openapi": "^3.1.0",
     "zod": "^3.17.10"
   },
   "devDependencies": {

@@ -3,21 +3,19 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { JsonObject } from 'type-fest';
 import { expect } from './test/expect';
 import { omit } from 'lodash';
+import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
 import { IntegrationTest } from './main';
-import { Response } from 'supertest';
 
-export interface ITestWithSnapshot {
-  group: string;
-  name: string;
-  standardEnvironment?: boolean;
-  setup?: () => Promise<void>;
-  teardown?: () => Promise<void>;
-  run?(): Promise<void>;
-  url: string | ((this: IntegrationTest) => string);
-  method: 'get' | 'post' | 'put' | 'delete';
-  body?: JsonObject;
-  adminAuth?: boolean;
-  expectedStatus?: number;
+export class ITestWithSnapshot<SetupData> {
+  group!: string;
+  name!: string;
+  standardEnvironment?: boolean = true;
+  setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
+  teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
+  test!: (
+    this: IntegrationTest<SetupData>
+  ) => Promise<ITakaroAPIAxiosResponse<unknown>>;
+  expectedStatus?: number = 200;
   filteredFields?: string[];
 }
 
@@ -53,8 +51,8 @@ function filterFields(
 }
 
 export async function matchSnapshot(
-  test: ITestWithSnapshot,
-  response: Response
+  test: ITestWithSnapshot<any>,
+  response: ITakaroAPIAxiosResponse<unknown>
 ) {
   const snapshotPath = path.resolve(
     __dirname,
@@ -65,9 +63,9 @@ export async function matchSnapshot(
   let file = '';
 
   const fullData = {
-    body: response.body,
+    body: response.data,
     status: response.status,
-    test: omit(test, 'setup', 'teardown', 'run'),
+    test: omit(test, 'setup', 'teardown', 'test'),
   };
 
   try {
