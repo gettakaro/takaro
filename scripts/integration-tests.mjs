@@ -1,6 +1,6 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
 
-const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.yml'] };
+const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'] };
 
 async function main() {
   // First, start the datastores
