@@ -54,6 +54,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
+    table.enu('type', ['MOCK', 'SEVENDAYSTODIE', 'RUST']).notNullable();
     table.json('connectionInfo').notNullable();
   });
 

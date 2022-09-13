@@ -36,3 +36,7 @@ CREATED_USER_ID=$(echo $CREATE_USER_RES | jq -r .data.id)
 ASSIGN_ROLE_RES=$(curl -s -X POST "${TAKARO_HOST}/user/${CREATED_USER_ID}/role/${ROOT_ROLE_ID}" -H "Content-Type: application/json" -H 'Authorization: Bearer '${ROOT_TOKEN}'')
 
 printHeader "Created user ${USER_EMAIL} with password '$USER_PASSWORD'"
+
+
+curl -X POST "${TAKARO_HOST}/gameserver" -H "Content-Type: application/json" -H "Authorization: Bearer $ROOT_TOKEN" --data '{"name": "test-gameserver", "type": "MOCK", "connectionInfo": "{}"}'
+

@@ -9,6 +9,7 @@ import humanId from 'human-id';
 import { CAPABILITIES } from '../db/role';
 import { UserModel } from '../db/user';
 import { Type } from 'class-transformer';
+import { GameServerService } from './GameServerService';
 
 export class DomainCreateInputDTO {
   @Length(3, 200)
@@ -75,6 +76,8 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> 
   }
 
   async removeDomain(id: string) {
+    const gameServerService = new GameServerService(id);
+    await gameServerService.manager.remove(id);
     await this.repo.delete(id);
   }
 

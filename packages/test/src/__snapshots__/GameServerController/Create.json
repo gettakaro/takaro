@@ -1,7 +1,7 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-13T19:03:31.923Z"
+      "serverTime": "2022-09-13T19:27:39.651Z"
     },
     "data": {
       "name": "Test gameserver",
@@ -9,9 +9,10 @@
         "host": "localhost",
         "port": 1234
       },
-      "createdAt": "2022-09-13T19:03:31.920Z",
-      "updatedAt": "2022-09-13T19:03:31.921Z",
-      "id": "9aaee3a9-214d-4de9-bb41-e24bc61053ef"
+      "type": "MOCK",
+      "createdAt": "2022-09-13T19:27:39.649Z",
+      "updatedAt": "2022-09-13T19:27:39.650Z",
+      "id": "abc10e29-6aee-48c0-b0cf-4ff1f6017770"
     }
   },
   "status": 200,

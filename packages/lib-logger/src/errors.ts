@@ -16,6 +16,13 @@ export class InternalServerError extends TakaroError {
   }
 }
 
+export class NotImplementedError extends TakaroError {
+  constructor() {
+    super('Not implemented');
+    this.http = 500;
+  }
+}
+
 export class ValidationError extends TakaroError {
   constructor(message: string, public details?: CValidationError[]) {
     super(message);

@@ -1,5 +1,10 @@
 import { Config, IBaseConfig } from '@takaro/config';
 
+enum CLUSTER_MODE {
+  SINGLE = 'single',
+  CLUSTER = 'cluster',
+}
+
 interface IHttpConfig extends IBaseConfig {
   http: {
     port: number;
@@ -9,6 +14,7 @@ interface IHttpConfig extends IBaseConfig {
     saltRounds: number;
     jwtSecret: string;
   };
+  clusterMode: CLUSTER_MODE;
 }
 
 const configSchema = {
@@ -52,6 +58,12 @@ const configSchema = {
       default: null,
       env: 'JWT_SECRET',
     },
+  },
+  clusterMode: {
+    doc: 'The mode to run the app in',
+    format: ['single', 'cluster'],
+    default: CLUSTER_MODE.SINGLE,
+    env: 'CLUSTER_MODE',
   },
 };
 

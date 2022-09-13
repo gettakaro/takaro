@@ -1,7 +1,7 @@
 import { logger } from '@takaro/logger';
-import { IGameEventEmitter } from '../interfaces/eventEmitter';
-import { IGamePlayer } from '../interfaces/GamePlayer';
-import { IGameServer } from '../interfaces/GameServer';
+import { IGameEventEmitter } from '../../interfaces/eventEmitter';
+import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGameServer } from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
 
 export class Mock implements IGameServer {

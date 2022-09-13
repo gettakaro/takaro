@@ -8,6 +8,8 @@ import { config } from './config';
 import { UserController } from './controllers/UserController';
 import { RoleController } from './controllers/Rolecontroller';
 import { GameServerController } from './controllers/GameServerController';
+import { DomainService } from './service/DomainService';
+import { GameServerService } from './service/GameServerService';
 
 export const server = new HTTP(
   {
@@ -35,6 +37,17 @@ async function main() {
   await server.start();
 
   log.info('🚀 Server started');
+
+  log.info('🔌 Starting all game servers');
+
+  const domainService = new DomainService();
+  const domains = await domainService.find({});
+
+  for (const domain of domains) {
+    const gameServerService = new GameServerService(domain.id);
+    const gameServers = await gameServerService.find({});
+    await gameServerService.manager.init(gameServers);
+  }
 }
 
 main();

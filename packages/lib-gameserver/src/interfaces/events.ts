@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+import { IsString, ValidateNested } from 'class-validator';
 import { IGamePlayer } from './GamePlayer';
 
 export enum GameEvents {
@@ -6,22 +8,27 @@ export enum GameEvents {
   PLAYER_DISCONNECTED = 'player-disconnected',
 }
 
-interface BaseEvent {
-  timestamp: Date;
-  type: string;
+class BaseEvent {
+  timestamp: Date = new Date();
+  type!: string;
 }
 
-export interface IEventLogLine extends BaseEvent {
-  type: GameEvents.LOG_LINE;
-  msg: string;
+export class EventLogLine extends BaseEvent {
+  type = GameEvents.LOG_LINE;
+  @IsString()
+  msg!: string;
 }
 
-export interface IEventPlayerConnected extends BaseEvent {
-  type: GameEvents.PLAYER_CONNECTED;
-  player: IGamePlayer;
+export class EventPlayerConnected extends BaseEvent {
+  type = GameEvents.PLAYER_CONNECTED;
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  player!: IGamePlayer;
 }
 
-export interface IEventPlayerDisconnected extends BaseEvent {
-  type: GameEvents.PLAYER_DISCONNECTED;
-  player: IGamePlayer;
+export class EventPlayerDisconnected extends BaseEvent {
+  type = GameEvents.PLAYER_DISCONNECTED;
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  player!: IGamePlayer;
 }

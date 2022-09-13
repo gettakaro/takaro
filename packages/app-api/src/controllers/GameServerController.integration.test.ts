@@ -1,5 +1,8 @@
 import { IntegrationTest } from '@takaro/test';
-import { GameServerOutputDTO } from '../service/GameServerService';
+import {
+  GameServerCreateDTOTypeEnum,
+  GameServerOutputDTO,
+} from '@takaro/apiclient';
 
 const group = 'GameServerController';
 
@@ -9,6 +12,7 @@ const mockGameServer = {
     host: 'localhost',
     port: 1234,
   }),
+  type: GameServerCreateDTOTypeEnum.Mock,
 };
 
 const tests: IntegrationTest<any>[] = [
@@ -50,6 +54,7 @@ const tests: IntegrationTest<any>[] = [
             host: 'somewhere.else',
             port: 9876,
           }),
+          type: GameServerCreateDTOTypeEnum.Mock,
         }
       );
     },

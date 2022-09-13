@@ -282,6 +282,45 @@ export interface ErrorOutput {
 /**
  *
  * @export
+ * @interface EventLogLine
+ */
+export interface EventLogLine {
+  /**
+   *
+   * @type {string}
+   * @memberof EventLogLine
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
+ * @interface EventPlayerConnected
+ */
+export interface EventPlayerConnected {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerConnected
+   */
+  player: IGamePlayer;
+}
+/**
+ *
+ * @export
+ * @interface EventPlayerDisconnected
+ */
+export interface EventPlayerDisconnected {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerDisconnected
+   */
+  player: IGamePlayer;
+}
+/**
+ *
+ * @export
  * @interface GameServerCreateDTO
  */
 export interface GameServerCreateDTO {
@@ -297,7 +336,23 @@ export interface GameServerCreateDTO {
    * @memberof GameServerCreateDTO
    */
   connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  type: GameServerCreateDTOTypeEnum;
 }
+
+export const GameServerCreateDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerCreateDTOTypeEnum =
+  typeof GameServerCreateDTOTypeEnum[keyof typeof GameServerCreateDTOTypeEnum];
+
 /**
  *
  * @export
@@ -322,7 +377,23 @@ export interface GameServerOutputDTO {
    * @memberof GameServerOutputDTO
    */
   connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  type: GameServerOutputDTOTypeEnum;
 }
+
+export const GameServerOutputDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerOutputDTOTypeEnum =
+  typeof GameServerOutputDTOTypeEnum[keyof typeof GameServerOutputDTOTypeEnum];
+
 /**
  *
  * @export
@@ -426,6 +497,25 @@ export interface HealthOutputDTO {
    * @memberof HealthOutputDTO
    */
   healthy: boolean;
+}
+/**
+ *
+ * @export
+ * @interface IGamePlayer
+ */
+export interface IGamePlayer {
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  platformId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  name: string;
 }
 /**
  *
@@ -753,7 +843,23 @@ export interface UpdateGameServerDTO {
    * @memberof UpdateGameServerDTO
    */
   connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  type: UpdateGameServerDTOTypeEnum;
 }
+
+export const UpdateGameServerDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type UpdateGameServerDTOTypeEnum =
+  typeof UpdateGameServerDTOTypeEnum[keyof typeof UpdateGameServerDTOTypeEnum];
+
 /**
  *
  * @export

@@ -1,16 +1,11 @@
-import {
-  IsJSON,
-  IsOptional,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerService,
+  UpdateGameServerDTO,
 } from '../service/GameServerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -27,14 +22,6 @@ import {
 import { CAPABILITIES } from '../db/role';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-
-export class UpdateGameServerDTO {
-  @Length(3, 50)
-  name!: string;
-
-  @IsJSON()
-  connectionInfo!: string;
-}
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -89,7 +76,12 @@ export class GameServerController {
     @Body() data: GameServerCreateDTO
   ) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(await service.create(data));
+    return apiResponse(
+      await service.create({
+        ...data,
+        connectionInfo: JSON.parse(data.connectionInfo),
+      })
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
@@ -101,7 +93,12 @@ export class GameServerController {
     @Body() data: UpdateGameServerDTO
   ) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(await service.update(id, data));
+    return apiResponse(
+      await service.update(id, {
+        ...data,
+        connectionInfo: JSON.parse(data.connectionInfo),
+      })
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
