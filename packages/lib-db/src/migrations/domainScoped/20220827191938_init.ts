@@ -46,6 +46,8 @@ export async function up(knex: Knex): Promise<void> {
       .references('roles.id')
       .onDelete('CASCADE')
       .notNullable();
+
+    table.primary(['userId', 'roleId']);
   });
 
   await knex.schema.createTable('gameservers', (table) => {
@@ -59,8 +61,24 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').notNullable();
-    table.string('platformId').notNullable();
-    table.uuid('gameserver').references('gameservers.id').onDelete('CASCADE');
+  });
+
+  await knex.schema.createTable('playerOnGameServer', (table) => {
+    table.timestamps(true, true, true);
+    table
+      .uuid('playerId')
+      .references('players.id')
+      .onDelete('CASCADE')
+      .notNullable();
+    table
+      .uuid('gameServerId')
+      .references('gameservers.id')
+      .onDelete('CASCADE')
+      .notNullable();
+
+    table.string('gameId').notNullable();
+
+    table.primary(['playerId', 'gameServerId']);
   });
 
   await knex.schema.createTable('functions', (table) => {

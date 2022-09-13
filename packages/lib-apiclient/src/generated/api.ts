@@ -282,6 +282,128 @@ export interface ErrorOutput {
 /**
  *
  * @export
+ * @interface GameServerCreateDTO
+ */
+export interface GameServerCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  connectionInfo: string;
+}
+/**
+ *
+ * @export
+ * @interface GameServerOutputDTO
+ */
+export interface GameServerOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  connectionInfo: string;
+}
+/**
+ *
+ * @export
+ * @interface GameServerOutputDTOAPI
+ */
+export interface GameServerOutputDTOAPI {
+  /**
+   *
+   * @type {GameServerOutputDTO}
+   * @memberof GameServerOutputDTOAPI
+   */
+  data: GameServerOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GameServerOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface GameServerSearchInputAllowedFilters
+ */
+export interface GameServerSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  name?: string;
+}
+/**
+ *
+ * @export
+ * @interface GameServerSearchInputDTO
+ */
+export interface GameServerSearchInputDTO {
+  /**
+   *
+   * @type {GameServerSearchInputAllowedFilters}
+   * @memberof GameServerSearchInputDTO
+   */
+  filters?: GameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof GameServerSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GameServerSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
+}
+
+export const GameServerSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type GameServerSearchInputDTOSortDirectionEnum =
+  typeof GameServerSearchInputDTOSortDirectionEnum[keyof typeof GameServerSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
  * @interface GetUserDTO
  */
 export interface GetUserDTO {
@@ -616,6 +738,25 @@ export interface SearchRoleInputDTO {
 /**
  *
  * @export
+ * @interface UpdateGameServerDTO
+ */
+export interface UpdateGameServerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  connectionInfo: string;
+}
+/**
+ *
+ * @export
  * @interface UpdateUserDTO
  */
 export interface UpdateUserDTO {
@@ -659,10 +800,10 @@ export interface UserCreateInputDTO {
 export interface UserOutputArrayDTOAPI {
   /**
    *
-   * @type {Array<UserOutputDTO>}
+   * @type {Array<GameServerOutputDTO>}
    * @memberof UserOutputArrayDTOAPI
    */
-  data: Array<UserOutputDTO>;
+  data: Array<GameServerOutputDTO>;
   /**
    *
    * @type {MetadataOutput}
@@ -1364,6 +1505,585 @@ export class DomainApi extends BaseAPI {
   ) {
     return DomainApiFp(this.configuration)
       .domainControllerUpdate(id, domainCreateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * GameServerApi - axios parameter creator
+ * @export
+ */
+export const GameServerApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate: async (
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetOne', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerRemove', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch: async (
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate: async (
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerUpdate', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        updateGameServerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * GameServerApi - functional programming interface
+ * @export
+ */
+export const GameServerApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator =
+    GameServerApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerCreate(
+          gameServerCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<UserOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerSearch(
+          gameServerSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUpdate(
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerUpdate(
+          id,
+          updateGameServerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * GameServerApi - factory interface
+ * @export
+ */
+export const GameServerApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = GameServerApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerCreate(gameServerCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: any
+    ): AxiosPromise<UserOutputArrayDTOAPI> {
+      return localVarFp
+        .gameServerControllerSearch(gameServerSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate(
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerUpdate(id, updateGameServerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * GameServerApi - object-oriented interface
+ * @export
+ * @class GameServerApi
+ * @extends {BaseAPI}
+ */
+export class GameServerApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerCreate(
+    gameServerCreateDTO?: GameServerCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerCreate(gameServerCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerSearch(
+    gameServerSearchInputDTO?: GameServerSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerSearch(gameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUpdate(
+    id: string,
+    updateGameServerDTO?: UpdateGameServerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUpdate(id, updateGameServerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

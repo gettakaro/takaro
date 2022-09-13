@@ -106,7 +106,7 @@ export class UserController {
     return apiResponse(await service.findOne(id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
   async create(
@@ -117,7 +117,7 @@ export class UserController {
     return apiResponse(await service.init(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
   async update(
@@ -129,7 +129,7 @@ export class UserController {
     return apiResponse(await service.update(id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {

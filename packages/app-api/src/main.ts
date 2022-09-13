@@ -7,9 +7,17 @@ import { DomainController } from './controllers/DomainController';
 import { config } from './config';
 import { UserController } from './controllers/UserController';
 import { RoleController } from './controllers/Rolecontroller';
+import { GameServerController } from './controllers/GameServerController';
 
 export const server = new HTTP(
-  { controllers: [DomainController, UserController, RoleController] },
+  {
+    controllers: [
+      DomainController,
+      UserController,
+      RoleController,
+      GameServerController,
+    ],
+  },
   { port: config.get('http.port') }
 );
 

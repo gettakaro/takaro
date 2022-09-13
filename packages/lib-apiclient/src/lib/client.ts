@@ -1,4 +1,4 @@
-import { RoleApi, UserApi } from '../generated';
+import { GameServerApi, RoleApi, UserApi } from '../generated';
 import { BaseApiClient, IApiClientConfig } from './baseClient';
 
 export class Client extends BaseApiClient {
@@ -49,6 +49,16 @@ export class Client extends BaseApiClient {
 
   get role() {
     return new RoleApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get gameserver() {
+    return new GameServerApi(
       {
         isJsonMime: this.isJsonMime,
       },

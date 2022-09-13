@@ -1,0 +1,25 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-13T19:03:32.260Z"
+    },
+    "data": {
+      "name": "Test gameserver 2",
+      "connectionInfo": {
+        "host": "somewhere.else",
+        "port": 9876
+      },
+      "updatedAt": "2022-09-13T19:03:32.258Z",
+      "createdAt": "2022-09-13T19:03:32.249Z",
+      "id": "bb01163f-1412-49db-8230-9c8d055cdb2f"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "GameServerController",
+    "name": "Update",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
