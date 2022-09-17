@@ -20,7 +20,7 @@ import {
   Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 
@@ -52,6 +52,9 @@ class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilter
   filters!: CronJobSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class CronJobController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_CRONJOBS]))

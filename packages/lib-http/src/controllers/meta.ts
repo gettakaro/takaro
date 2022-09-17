@@ -45,11 +45,15 @@ export class Meta {
           schemas,
           securitySchemes: {
             adminAuth: {
+              description:
+                'Used for system administration, like creating or deleting domains',
               type: 'http',
               scheme: 'bearer',
               bearerFormat: 'JWT',
             },
             domainAuth: {
+              description:
+                'Used for anything inside a domain. Players, GameServers, etc.',
               type: 'http',
               scheme: 'bearer',
               bearerFormat: 'JWT',

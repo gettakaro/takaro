@@ -20,7 +20,7 @@ import {
   Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 
@@ -48,6 +48,9 @@ class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   filters!: GameServerSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))

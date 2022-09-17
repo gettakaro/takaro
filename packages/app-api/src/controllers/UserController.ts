@@ -30,7 +30,7 @@ import {
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
 import { DomainService } from '../service/DomainService';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 
@@ -87,6 +87,9 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   filters!: UserSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class UserController {
   @Post('/login')
