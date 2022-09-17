@@ -124,4 +124,24 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
         break;
     }
   }
+
+  async getRelatedFunctions(itemId: string, onlyIds = true) {
+    const knex = await this.getKnex();
+    const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
+    const functionModel = FunctionModel.bindKnex(knex);
+
+    const data = await functionAssignmentModel
+      .query()
+      .orWhere({ cronJob: itemId })
+      .orWhere({ command: itemId })
+      .orWhere({ hook: itemId });
+
+    const functionIds = data.map((item) => item.function);
+
+    if (onlyIds) {
+      return functionIds;
+    }
+
+    return functionModel.query().findByIds(functionIds);
+  }
 }

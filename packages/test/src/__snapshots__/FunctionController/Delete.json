@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T21:12:20.851Z"
+    },
+    "data": true
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -43,4 +43,8 @@ export class FunctionService extends TakaroService<FunctionModel> {
   async assign(data: AssignFunctionDTO) {
     await this.repo.assign(data.type, data.itemId, data.functionId);
   }
+
+  async getRelatedFunctions(itemId: string, onlyIds = true) {
+    return this.repo.getRelatedFunctions(itemId, onlyIds);
+  }
 }

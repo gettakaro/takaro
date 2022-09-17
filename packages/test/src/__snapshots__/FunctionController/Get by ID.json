@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T21:14:59.888Z"
+    },
+    "data": {
+      "createdAt": "2022-09-17T21:14:59.878Z",
+      "updatedAt": "2022-09-17T21:14:59.878Z",
+      "id": "cfb4d91d-1b0c-4bb2-855b-0091767688fc",
+      "code": "console.log(\"Hello world\")"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "name": "Get by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

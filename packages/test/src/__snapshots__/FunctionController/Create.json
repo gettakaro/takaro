@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T21:12:20.155Z"
+    },
+    "data": {
+      "code": "console.log(\"Hello world\")",
+      "createdAt": "2022-09-17T21:12:20.153Z",
+      "updatedAt": "2022-09-17T21:12:20.153Z",
+      "id": "84369313-5fb9-403e-bb9c-2362a72a14e4"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "name": "Create",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

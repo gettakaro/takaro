@@ -51,6 +51,9 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   filters!: FunctionSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
@@ -70,6 +73,21 @@ export class FunctionController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.findOne(params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @ResponseSchema(FunctionOutputDTOAPI)
+  @OpenAPI({
+    description:
+      'Get functions that will be executed when an item (cronjob, command or hook) is executed',
+  })
+  @Get('/function/related/:id')
+  async getRelated(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new FunctionService(req.domainId);
+    return apiResponse(await service.getRelatedFunctions(params.id, false));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
