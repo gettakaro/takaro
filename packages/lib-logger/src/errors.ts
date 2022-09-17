@@ -4,7 +4,7 @@ export class TakaroError extends Error {
   public http: number;
   constructor(message: string) {
     super(message);
-    this.http = 80;
+    this.http = 500;
     this.name = this.constructor.name;
   }
 }
@@ -12,6 +12,13 @@ export class TakaroError extends Error {
 export class InternalServerError extends TakaroError {
   constructor() {
     super('Internal server error');
+    this.http = 500;
+  }
+}
+
+export class NotImplementedError extends TakaroError {
+  constructor() {
+    super('Not implemented');
     this.http = 500;
   }
 }

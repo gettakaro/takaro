@@ -1,10 +1,14 @@
-export interface IGamePlayer {
+import { IsString } from 'class-validator';
+
+export class IGamePlayer {
   /**
    * Unique identifier for this player, as used by the game
    */
-  platformId: string;
+  @IsString()
+  platformId!: string;
   /**
    * The players username
    */
-  name: string;
+  @IsString()
+  name!: string;
 }

@@ -3,7 +3,7 @@ import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 export class ITakaroQuery<T> {
   @IsOptional()
   filters?: {
-    [key in keyof T]?: string | number;
+    [key in keyof T]?: unknown;
   };
 
   @IsOptional()

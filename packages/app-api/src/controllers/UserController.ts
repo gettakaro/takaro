@@ -1,4 +1,10 @@
-import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -12,7 +18,6 @@ import {
   LoginOutputDTO,
 } from '../service/AuthService';
 import {
-  Param,
   Body,
   Get,
   Post,
@@ -21,11 +26,13 @@ import {
   UseBefore,
   Req,
   Put,
+  Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
 import { DomainService } from '../service/DomainService';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
+import { ParamId } from '../lib/validators';
 
 export class UpdateUserDTO {
   @Length(3, 50)
@@ -43,6 +50,11 @@ export class LoginDTO {
 
   @Length(8, 50)
   password!: string;
+}
+
+export class ParamIdAndRoleId extends ParamId {
+  @IsUUID('4')
+  roleId!: string;
 }
 
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
@@ -101,12 +113,12 @@ export class UserController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Get('/user/:id')
-  async getOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.findOne(id));
+    return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
   async create(
@@ -117,24 +129,24 @@ export class UserController {
     return apiResponse(await service.init(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
   async update(
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
+    @Params() params: ParamId,
     @Body() data: UpdateUserDTO
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.update(id, data));
+    return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
   @ResponseSchema(APIOutput)
   @Delete('/user/:id')
-  async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+  async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new UserService(req.domainId);
-    const deletedDomain = await service.delete(id);
+    const deletedDomain = await service.delete(params.id);
     return apiResponse(deletedDomain);
   }
 
@@ -148,11 +160,10 @@ export class UserController {
   @ResponseSchema(APIOutput)
   async assignRole(
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
-    @Param('roleId') roleId: string
+    @Params() params: ParamIdAndRoleId
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.assignRole(id, roleId));
+    return apiResponse(await service.assignRole(params.id, params.roleId));
   }
 
   @UseBefore(
@@ -165,10 +176,9 @@ export class UserController {
   @ResponseSchema(APIOutput)
   async removeRole(
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
-    @Param('roleId') roleId: string
+    @Params() params: ParamIdAndRoleId
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.removeRole(id, roleId));
+    return apiResponse(await service.removeRole(params.id, params.roleId));
   }
 }

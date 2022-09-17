@@ -1,24 +1,25 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { JsonObject } from 'type-fest';
 import {
   GameEvents,
-  IEventLogLine,
-  IEventPlayerConnected,
-  IEventPlayerDisconnected,
+  EventLogLine,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
 } from './events';
 
 export interface IEventMap {
-  [GameEvents.LOG_LINE]: (log: IEventLogLine) => Promise<void>;
+  [GameEvents.LOG_LINE]: (log: EventLogLine) => Promise<void>;
   [GameEvents.PLAYER_CONNECTED]: (
-    player: IEventPlayerConnected
+    player: EventPlayerConnected
   ) => Promise<void>;
   [GameEvents.PLAYER_DISCONNECTED]: (
-    player: IEventPlayerDisconnected
+    player: EventPlayerDisconnected
   ) => Promise<void>;
 }
 
 export interface IGameEventEmitter {
   stop(): Promise<void>;
-  start(): Promise<void>;
+  start(config: JsonObject): Promise<void>;
 
   addListener<E extends keyof IEventMap>(
     event: E,

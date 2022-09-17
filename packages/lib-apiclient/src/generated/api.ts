@@ -57,6 +57,41 @@ export interface APIOutput {
 /**
  *
  * @export
+ * @interface AssignFunctionDTO
+ */
+export interface AssignFunctionDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionDTO
+   */
+  type: AssignFunctionDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionDTO
+   */
+  itemId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionDTO
+   */
+  functionId: string;
+}
+
+export const AssignFunctionDTOTypeEnum = {
+  Cronjob: 'cronjob',
+  Hook: 'hook',
+  Command: 'command',
+} as const;
+
+export type AssignFunctionDTOTypeEnum =
+  typeof AssignFunctionDTOTypeEnum[keyof typeof AssignFunctionDTOTypeEnum];
+
+/**
+ *
+ * @export
  * @interface CapabilityOutputDTO
  */
 export interface CapabilityOutputDTO {
@@ -82,10 +117,173 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ReadRoles: 'READ_ROLES',
   ManageGameservers: 'MANAGE_GAMESERVERS',
   ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
 } as const;
 
 export type CapabilityOutputDTOCapabilityEnum =
   typeof CapabilityOutputDTOCapabilityEnum[keyof typeof CapabilityOutputDTOCapabilityEnum];
+
+/**
+ *
+ * @export
+ * @interface CronJobCreateDTO
+ */
+export interface CronJobCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobCreateDTO
+   */
+  enabled?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobCreateDTO
+   */
+  temporalValue: string;
+}
+/**
+ *
+ * @export
+ * @interface CronJobOutputArrayDTOAPI
+ */
+export interface CronJobOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<CronJobOutputDTO>}
+   * @memberof CronJobOutputArrayDTOAPI
+   */
+  data: Array<CronJobOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CronJobOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CronJobOutputDTO
+ */
+export interface CronJobOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CronJobOutputDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  temporalValue: string;
+}
+/**
+ *
+ * @export
+ * @interface CronJobOutputDTOAPI
+ */
+export interface CronJobOutputDTOAPI {
+  /**
+   *
+   * @type {CronJobOutputDTO}
+   * @memberof CronJobOutputDTOAPI
+   */
+  data: CronJobOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CronJobOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CronJobSearchInputAllowedFilters
+ */
+export interface CronJobSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputAllowedFilters
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputAllowedFilters
+   */
+  enabled?: string;
+}
+/**
+ *
+ * @export
+ * @interface CronJobSearchInputDTO
+ */
+export interface CronJobSearchInputDTO {
+  /**
+   *
+   * @type {CronJobSearchInputAllowedFilters}
+   * @memberof CronJobSearchInputDTO
+   */
+  filters?: CronJobSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof CronJobSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CronJobSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputDTO
+   */
+  sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
+}
+
+export const CronJobSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type CronJobSearchInputDTOSortDirectionEnum =
+  typeof CronJobSearchInputDTOSortDirectionEnum[keyof typeof CronJobSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -282,6 +480,347 @@ export interface ErrorOutput {
 /**
  *
  * @export
+ * @interface EventLogLine
+ */
+export interface EventLogLine {
+  /**
+   *
+   * @type {string}
+   * @memberof EventLogLine
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
+ * @interface EventPlayerConnected
+ */
+export interface EventPlayerConnected {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerConnected
+   */
+  player: IGamePlayer;
+}
+/**
+ *
+ * @export
+ * @interface EventPlayerDisconnected
+ */
+export interface EventPlayerDisconnected {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerDisconnected
+   */
+  player: IGamePlayer;
+}
+/**
+ *
+ * @export
+ * @interface FunctionCreateDTO
+ */
+export interface FunctionCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionCreateDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
+ * @interface FunctionOutputArrayDTOAPI
+ */
+export interface FunctionOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<FunctionOutputDTO>}
+   * @memberof FunctionOutputArrayDTOAPI
+   */
+  data: Array<FunctionOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof FunctionOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface FunctionOutputDTO
+ */
+export interface FunctionOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
+ * @interface FunctionOutputDTOAPI
+ */
+export interface FunctionOutputDTOAPI {
+  /**
+   *
+   * @type {FunctionOutputDTO}
+   * @memberof FunctionOutputDTOAPI
+   */
+  data: FunctionOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof FunctionOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface FunctionSearchInputAllowedFilters
+ */
+export interface FunctionSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionSearchInputAllowedFilters
+   */
+  id: string;
+}
+/**
+ *
+ * @export
+ * @interface FunctionSearchInputDTO
+ */
+export interface FunctionSearchInputDTO {
+  /**
+   *
+   * @type {FunctionSearchInputAllowedFilters}
+   * @memberof FunctionSearchInputDTO
+   */
+  filters?: FunctionSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof FunctionSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof FunctionSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionSearchInputDTO
+   */
+  sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
+}
+
+export const FunctionSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type FunctionSearchInputDTOSortDirectionEnum =
+  typeof FunctionSearchInputDTOSortDirectionEnum[keyof typeof FunctionSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface GameServerCreateDTO
+ */
+export interface GameServerCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  type: GameServerCreateDTOTypeEnum;
+}
+
+export const GameServerCreateDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerCreateDTOTypeEnum =
+  typeof GameServerCreateDTOTypeEnum[keyof typeof GameServerCreateDTOTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface GameServerOutputArrayDTOAPI
+ */
+export interface GameServerOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<GameServerOutputDTO>}
+   * @memberof GameServerOutputArrayDTOAPI
+   */
+  data: Array<GameServerOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GameServerOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface GameServerOutputDTO
+ */
+export interface GameServerOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  type: GameServerOutputDTOTypeEnum;
+}
+
+export const GameServerOutputDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerOutputDTOTypeEnum =
+  typeof GameServerOutputDTOTypeEnum[keyof typeof GameServerOutputDTOTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface GameServerOutputDTOAPI
+ */
+export interface GameServerOutputDTOAPI {
+  /**
+   *
+   * @type {GameServerOutputDTO}
+   * @memberof GameServerOutputDTOAPI
+   */
+  data: GameServerOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GameServerOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface GameServerSearchInputAllowedFilters
+ */
+export interface GameServerSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  name?: string;
+}
+/**
+ *
+ * @export
+ * @interface GameServerSearchInputDTO
+ */
+export interface GameServerSearchInputDTO {
+  /**
+   *
+   * @type {GameServerSearchInputAllowedFilters}
+   * @memberof GameServerSearchInputDTO
+   */
+  filters?: GameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof GameServerSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GameServerSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
+}
+
+export const GameServerSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type GameServerSearchInputDTOSortDirectionEnum =
+  typeof GameServerSearchInputDTOSortDirectionEnum[keyof typeof GameServerSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
  * @interface GetUserDTO
  */
 export interface GetUserDTO {
@@ -304,6 +843,25 @@ export interface HealthOutputDTO {
    * @memberof HealthOutputDTO
    */
   healthy: boolean;
+}
+/**
+ *
+ * @export
+ * @interface IGamePlayer
+ */
+export interface IGamePlayer {
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  platformId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  name: string;
 }
 /**
  *
@@ -437,6 +995,25 @@ export interface ParamId {
    *
    * @type {string}
    * @memberof ParamId
+   */
+  id: string;
+}
+/**
+ *
+ * @export
+ * @interface ParamIdAndRoleId
+ */
+export interface ParamIdAndRoleId {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndRoleId
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndRoleId
    */
   id: string;
 }
@@ -616,6 +1193,79 @@ export interface SearchRoleInputDTO {
 /**
  *
  * @export
+ * @interface UpdateCronJobDTO
+ */
+export interface UpdateCronJobDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateCronJobDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UpdateCronJobDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateCronJobDTO
+   */
+  temporalValue: string;
+}
+/**
+ *
+ * @export
+ * @interface UpdateFunctionDTO
+ */
+export interface UpdateFunctionDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateFunctionDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
+ * @interface UpdateGameServerDTO
+ */
+export interface UpdateGameServerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateGameServerDTO
+   */
+  type: UpdateGameServerDTOTypeEnum;
+}
+
+export const UpdateGameServerDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type UpdateGameServerDTOTypeEnum =
+  typeof UpdateGameServerDTOTypeEnum[keyof typeof UpdateGameServerDTOTypeEnum];
+
+/**
+ *
+ * @export
  * @interface UpdateUserDTO
  */
 export interface UpdateUserDTO {
@@ -772,6 +1422,584 @@ export const UserSearchInputDTOSortDirectionEnum = {
 
 export type UserSearchInputDTOSortDirectionEnum =
   typeof UserSearchInputDTOSortDirectionEnum[keyof typeof UserSearchInputDTOSortDirectionEnum];
+
+/**
+ * CronJobApi - axios parameter creator
+ * @export
+ */
+export const CronJobApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerCreate: async (
+      cronJobCreateDTO?: CronJobCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        cronJobCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerGetOne', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerRemove', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerSearch: async (
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        cronJobSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUpdate: async (
+      id: string,
+      updateCronJobDTO?: UpdateCronJobDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerUpdate', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        updateCronJobDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * CronJobApi - functional programming interface
+ * @export
+ */
+export const CronJobApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerCreate(
+      cronJobCreateDTO?: CronJobCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerCreate(
+          cronJobCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerSearch(
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerSearch(
+          cronJobSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerUpdate(
+      id: string,
+      updateCronJobDTO?: UpdateCronJobDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerUpdate(
+          id,
+          updateCronJobDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * CronJobApi - factory interface
+ * @export
+ */
+export const CronJobApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = CronJobApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerCreate(
+      cronJobCreateDTO?: CronJobCreateDTO,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerCreate(cronJobCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .cronJobControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerSearch(
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options?: any
+    ): AxiosPromise<CronJobOutputArrayDTOAPI> {
+      return localVarFp
+        .cronJobControllerSearch(cronJobSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUpdate(
+      id: string,
+      updateCronJobDTO?: UpdateCronJobDTO,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerUpdate(id, updateCronJobDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * CronJobApi - object-oriented interface
+ * @export
+ * @class CronJobApi
+ * @extends {BaseAPI}
+ */
+export class CronJobApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerCreate(
+    cronJobCreateDTO?: CronJobCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerCreate(cronJobCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerSearch(
+    cronJobSearchInputDTO?: CronJobSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerSearch(cronJobSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerUpdate(
+    id: string,
+    updateCronJobDTO?: UpdateCronJobDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerUpdate(id, updateCronJobDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
 
 /**
  * DomainApi - axios parameter creator
@@ -1364,6 +2592,1268 @@ export class DomainApi extends BaseAPI {
   ) {
     return DomainApiFp(this.configuration)
       .domainControllerUpdate(id, domainCreateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * FunctionApi - axios parameter creator
+ * @export
+ */
+export const FunctionApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Assign
+     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerAssign: async (
+      assignFunctionDTO?: AssignFunctionDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/function/assign`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        assignFunctionDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerCreate: async (
+      functionCreateDTO?: FunctionCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/function`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        functionCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerGetOne', 'id', id);
+      const localVarPath = `/function/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerRemove', 'id', id);
+      const localVarPath = `/function/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerSearch: async (
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/function/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        functionSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerUpdate: async (
+      id: string,
+      updateFunctionDTO?: UpdateFunctionDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerUpdate', 'id', id);
+      const localVarPath = `/function/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        updateFunctionDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * FunctionApi - functional programming interface
+ * @export
+ */
+export const FunctionApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = FunctionApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Assign
+     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerAssign(
+      assignFunctionDTO?: AssignFunctionDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerAssign(
+          assignFunctionDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerCreate(
+      functionCreateDTO?: FunctionCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<FunctionOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerCreate(
+          functionCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<FunctionOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerSearch(
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<FunctionOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerSearch(
+          functionSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerUpdate(
+      id: string,
+      updateFunctionDTO?: UpdateFunctionDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<FunctionOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerUpdate(
+          id,
+          updateFunctionDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * FunctionApi - factory interface
+ * @export
+ */
+export const FunctionApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = FunctionApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Assign
+     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerAssign(
+      assignFunctionDTO?: AssignFunctionDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .functionControllerAssign(assignFunctionDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerCreate(
+      functionCreateDTO?: FunctionCreateDTO,
+      options?: any
+    ): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp
+        .functionControllerCreate(functionCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp
+        .functionControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .functionControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerSearch(
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options?: any
+    ): AxiosPromise<FunctionOutputArrayDTOAPI> {
+      return localVarFp
+        .functionControllerSearch(functionSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerUpdate(
+      id: string,
+      updateFunctionDTO?: UpdateFunctionDTO,
+      options?: any
+    ): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp
+        .functionControllerUpdate(id, updateFunctionDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * FunctionApi - object-oriented interface
+ * @export
+ * @class FunctionApi
+ * @extends {BaseAPI}
+ */
+export class FunctionApi extends BaseAPI {
+  /**
+   *
+   * @summary Assign
+   * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerAssign(
+    assignFunctionDTO?: AssignFunctionDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerAssign(assignFunctionDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Create
+   * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerCreate(
+    functionCreateDTO?: FunctionCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerCreate(functionCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerSearch(
+    functionSearchInputDTO?: FunctionSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerSearch(functionSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerUpdate(
+    id: string,
+    updateFunctionDTO?: UpdateFunctionDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerUpdate(id, updateFunctionDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * GameServerApi - axios parameter creator
+ * @export
+ */
+export const GameServerApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate: async (
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetOne', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerRemove', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch: async (
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate: async (
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerUpdate', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        updateGameServerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * GameServerApi - functional programming interface
+ * @export
+ */
+export const GameServerApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator =
+    GameServerApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerCreate(
+          gameServerCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerSearch(
+          gameServerSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUpdate(
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerUpdate(
+          id,
+          updateGameServerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * GameServerApi - factory interface
+ * @export
+ */
+export const GameServerApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = GameServerApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerCreate(gameServerCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputArrayDTOAPI> {
+      return localVarFp
+        .gameServerControllerSearch(gameServerSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate(
+      id: string,
+      updateGameServerDTO?: UpdateGameServerDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerUpdate(id, updateGameServerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * GameServerApi - object-oriented interface
+ * @export
+ * @class GameServerApi
+ * @extends {BaseAPI}
+ */
+export class GameServerApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerCreate(
+    gameServerCreateDTO?: GameServerCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerCreate(gameServerCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerSearch(
+    gameServerSearchInputDTO?: GameServerSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerSearch(gameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUpdate(
+    id: string,
+    updateGameServerDTO?: UpdateGameServerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUpdate(id, updateGameServerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

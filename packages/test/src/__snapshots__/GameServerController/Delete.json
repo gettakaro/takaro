@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-13T19:27:40.290Z"
+    },
+    "data": true
+  },
+  "status": 200,
+  "test": {
+    "group": "GameServerController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

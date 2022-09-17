@@ -75,34 +75,35 @@ erDiagram
       string name
       enum type
       json connectionInfo 
-      string domainId FK
     }
 
     user {
       string id PK
       string name
       string email
-      string domainId FK
     }
 
     role {
       string id PK
       string name
-      string domainId FK
     }
     
     player {
       string id PK
       string platformId
       string name
-      string gameServerId FK
     }
 
+    playerOnGameServer {
+      string id PK
+      string playerId FK
+      string gameServerId FK
+      string gameId
+    }
     
     function {
       string id PK
       string name
-      string domainId FK
       string code
     }
 
@@ -127,15 +128,12 @@ erDiagram
       string functionId FK
     }
 
-    domain ||--|{ gameServer : contains
-    domain ||--|{ user : contains
-    domain ||--|{ role : contains
+
     user ||--|{ role : has
-    domain ||--|{ hook : contains
-    domain ||--|{ command : contains
-    domain ||--|{ cron : contains
     hook   ||--|| function : calls
     command   ||--|| function : calls
     cron   ||--|| function : calls
-    gameServer ||--|{ player : "plays in"
+
+    playerOnGameServer ||--|| player : "is"
+    playerOnGameServer ||--|| gameServer : "is"
 ```

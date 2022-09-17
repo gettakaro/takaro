@@ -1,4 +1,4 @@
-import { SevenDaysToDie } from './7d2d';
+import { SevenDaysToDie } from './gameservers/7d2d';
 import { expect, sandbox } from '@takaro/test';
 import { GameEvents } from './interfaces/events';
 
@@ -29,9 +29,8 @@ describe('GameEventEmitter', () => {
     emitter.on('player-connected', listenerSpy);
 
     emitter.emit(GameEvents.PLAYER_CONNECTED, {
-      // @ts-expect-error The type should be equal to GameEvents.PLAYER_CONNECTED
-      type: GameEvents.LOG_LINE,
       timestamp: new Date(),
+      // @ts-expect-error The type should be equal to GameEvents.PLAYER_CONNECTED
       person: {
         platformId: '1',
         name: 'test-user',

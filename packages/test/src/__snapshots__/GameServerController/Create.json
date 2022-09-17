@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-13T19:27:39.651Z"
+    },
+    "data": {
+      "name": "Test gameserver",
+      "connectionInfo": {
+        "host": "localhost",
+        "port": 1234
+      },
+      "type": "MOCK",
+      "createdAt": "2022-09-13T19:27:39.649Z",
+      "updatedAt": "2022-09-13T19:27:39.650Z",
+      "id": "abc10e29-6aee-48c0-b0cf-4ff1f6017770"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "GameServerController",
+    "name": "Create",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
