@@ -2,7 +2,6 @@ import { IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
-  AssignFunctionDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
@@ -120,17 +119,5 @@ export class FunctionController {
     const service = new FunctionService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
-  @ResponseSchema(APIOutput)
-  @Post('/function/assign')
-  async assign(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: AssignFunctionDTO
-  ) {
-    const service = new FunctionService(req.domainId);
-    await service.assign(data);
-    return apiResponse(null);
   }
 }

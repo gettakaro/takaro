@@ -1,12 +1,12 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-17T22:00:20.193Z"
+      "serverTime": "2022-09-17T22:23:36.172Z"
     },
     "data": {
-      "createdAt": "2022-09-17T22:00:20.158Z",
-      "updatedAt": "2022-09-17T22:00:20.169Z",
-      "id": "f6b80e9c-646f-4973-be3a-e02cd9ba7b04",
+      "createdAt": "2022-09-17T22:23:36.132Z",
+      "updatedAt": "2022-09-17T22:23:36.144Z",
+      "id": "c95ce0f2-37b2-4ebd-ba7b-db9e79857d6f",
       "name": "Test cronJob",
       "enabled": true,
       "temporalValue": "0 * * * *",
@@ -16,7 +16,7 @@
   "status": 200,
   "test": {
     "group": "CronJobController",
-    "name": "Get by ID",
+    "name": "Can unassign a function from a cronjob",
     "expectedStatus": 200,
     "filteredFields": [],
     "standardEnvironment": true

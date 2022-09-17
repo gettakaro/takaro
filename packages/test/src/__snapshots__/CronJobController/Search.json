@@ -1,16 +1,17 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-17T11:39:54.655Z"
+      "serverTime": "2022-09-17T22:00:21.681Z"
     },
     "data": [
       {
-        "createdAt": "2022-09-17T11:39:54.647Z",
-        "updatedAt": "2022-09-17T11:39:54.647Z",
-        "id": "5360e664-74b3-475e-910b-c6145447175d",
+        "createdAt": "2022-09-17T22:00:21.650Z",
+        "updatedAt": "2022-09-17T22:00:21.661Z",
+        "id": "0f1d1841-9dee-44a6-9ca6-16e7974d41d6",
         "name": "Test cronJob",
         "enabled": true,
-        "temporalValue": "0 * * * *"
+        "temporalValue": "0 * * * *",
+        "functions": []
       }
     ]
   },

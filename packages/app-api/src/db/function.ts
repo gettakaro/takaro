@@ -125,6 +125,19 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
     }
   }
 
+  async unAssign(itemId: string, functionId: string) {
+    const knex = await this.getKnex();
+    const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
+
+    return functionAssignmentModel
+      .query()
+      .delete()
+      .where({ function: functionId })
+      .andWhere({ cronJob: itemId })
+      .orWhere({ command: itemId })
+      .orWhere({ hook: itemId });
+  }
+
   async getRelatedFunctions(itemId: string, onlyIds = true) {
     const knex = await this.getKnex();
     const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
