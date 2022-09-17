@@ -10,6 +10,8 @@ import { RoleController } from './controllers/Rolecontroller';
 import { GameServerController } from './controllers/GameServerController';
 import { DomainService } from './service/DomainService';
 import { GameServerService } from './service/GameServerService';
+import { FunctionController } from './controllers/FunctionController';
+import { CronJobController } from './controllers/CronJobController';
 
 export const server = new HTTP(
   {
@@ -18,6 +20,8 @@ export const server = new HTTP(
       UserController,
       RoleController,
       GameServerController,
+      FunctionController,
+      CronJobController,
     ],
   },
   { port: config.get('http.port') }

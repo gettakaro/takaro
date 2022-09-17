@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-16T13:28:54.596Z"
+    },
+    "data": {
+      "createdAt": "2022-09-16T13:28:54.583Z",
+      "updatedAt": "2022-09-16T13:28:54.584Z",
+      "id": "27d4e6c2-5d63-4fc4-af21-130f986f3124",
+      "name": "Test cronJob",
+      "enabled": true,
+      "temporalValue": "0 * * * *"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "CronJobController",
+    "name": "Get by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

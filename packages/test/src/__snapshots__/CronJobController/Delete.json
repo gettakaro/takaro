@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T11:39:54.320Z"
+    },
+    "data": true
+  },
+  "status": 200,
+  "test": {
+    "group": "CronJobController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

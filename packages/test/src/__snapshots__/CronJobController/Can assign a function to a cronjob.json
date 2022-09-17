@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T13:30:34.200Z"
+    },
+    "data": null
+  },
+  "status": 200,
+  "test": {
+    "group": "CronJobController",
+    "name": "Can assign a function to a cronjob",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -28,6 +28,10 @@ export async function up(knex: Knex): Promise<void> {
         'READ_ROLES',
         'MANAGE_GAMESERVERS',
         'READ_GAMESERVERS',
+        'READ_FUNCTIONS',
+        'MANAGE_FUNCTIONS',
+        'READ_CRONJOBS',
+        'MANAGE_CRONJOBS',
       ])
       .notNullable();
 
@@ -85,7 +89,6 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('functions', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table.string('name').unique();
     table.string('code').notNullable();
   });
 
@@ -93,9 +96,42 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
+    table.boolean('enabled').notNullable().defaultTo(true);
     table.string('temporalValue').notNullable();
-    table.uuid('gameserver').references('gameservers.id').onDelete('CASCADE');
-    table.uuid('function').references('functions.id').onDelete('CASCADE');
+  });
+
+  await knex.schema.createTable('hooks', (table) => {
+    table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
+    table.string('name').unique();
+    table.boolean('enabled').notNullable().defaultTo(true);
+    table.string('trigger').notNullable();
+  });
+
+  await knex.schema.createTable('commands', (table) => {
+    table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
+    table.string('name').unique();
+    table.boolean('enabled').notNullable().defaultTo(true);
+  });
+
+  await knex.schema.createTable('functionAssignments', (table) => {
+    table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
+    table
+      .uuid('function')
+      .references('functions.id')
+      .onDelete('CASCADE')
+      .notNullable()
+      .unique();
+    table.uuid('cronJob').references('cronJobs.id').onDelete('CASCADE');
+    table.uuid('hook').references('hooks.id').onDelete('CASCADE');
+    table.uuid('command').references('commands.id').onDelete('CASCADE');
+    table.check('(?? IS NOT NULL) OR (?? IS NOT NULL) OR (?? IS NOT NULL)', [
+      'cronJob',
+      'hook',
+      'command',
+    ]);
   });
 }
 

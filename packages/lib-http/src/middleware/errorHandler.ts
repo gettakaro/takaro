@@ -43,8 +43,8 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
       parsedError = originalError;
     }
 
+    log.error(originalError);
     if (status >= 500) {
-      log.error(originalError);
       log.error(`🔴 FAIL ${req.method} ${req.originalUrl}`, parsedError);
     } else {
       log.warn(`⚠️ FAIL ${req.method} ${req.originalUrl}`, parsedError);

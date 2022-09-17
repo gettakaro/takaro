@@ -1,4 +1,10 @@
-import { GameServerApi, RoleApi, UserApi } from '../generated';
+import {
+  CronJobApi,
+  FunctionApi,
+  GameServerApi,
+  RoleApi,
+  UserApi,
+} from '../generated';
 import { BaseApiClient, IApiClientConfig } from './baseClient';
 
 export class Client extends BaseApiClient {
@@ -59,6 +65,26 @@ export class Client extends BaseApiClient {
 
   get gameserver() {
     return new GameServerApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get cronjob() {
+    return new CronJobApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get function() {
+    return new FunctionApi(
       {
         isJsonMime: this.isJsonMime,
       },

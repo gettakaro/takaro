@@ -9,7 +9,6 @@ import {
 } from '../service/GameServerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
-  Param,
   Body,
   Get,
   Post,
@@ -18,10 +17,12 @@ import {
   UseBefore,
   Req,
   Put,
+  Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
+import { ParamId } from '../lib/validators';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -29,7 +30,7 @@ class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   data!: GameServerOutputDTO;
 }
 
-class UserOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
+class GameServerOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => GameServerOutputDTO)
   data!: GameServerOutputDTO[];
@@ -50,7 +51,7 @@ class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
 @JsonController()
 export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
-  @ResponseSchema(UserOutputArrayDTOAPI)
+  @ResponseSchema(GameServerOutputArrayDTOAPI)
   @Post('/gameserver/search')
   async search(
     @Req() req: AuthenticatedRequest,
@@ -63,9 +64,9 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Get('/gameserver/:id')
-  async getOne(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(await service.findOne(id));
+    return apiResponse(await service.findOne(params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
@@ -89,12 +90,12 @@ export class GameServerController {
   @Put('/gameserver/:id')
   async update(
     @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
+    @Params() params: ParamId,
     @Body() data: UpdateGameServerDTO
   ) {
     const service = new GameServerService(req.domainId);
     return apiResponse(
-      await service.update(id, {
+      await service.update(params.id, {
         ...data,
         connectionInfo: JSON.parse(data.connectionInfo),
       })
@@ -104,9 +105,9 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Delete('/gameserver/:id')
-  async remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+  async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
-    const deletedDomain = await service.delete(id);
-    return apiResponse(deletedDomain);
+    const deletedRecord = await service.delete(params.id);
+    return apiResponse(deletedRecord);
   }
 }

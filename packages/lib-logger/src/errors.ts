@@ -4,7 +4,7 @@ export class TakaroError extends Error {
   public http: number;
   constructor(message: string) {
     super(message);
-    this.http = 80;
+    this.http = 500;
     this.name = this.constructor.name;
   }
 }

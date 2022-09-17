@@ -48,6 +48,10 @@ export class IGameServerInMemoryManager {
       await emitter.stop();
       this.emitterMap.delete(id);
       this.log.info(`Removed game server ${id}`);
+    } else {
+      this.log.warn(
+        'Tried to remove a GameServer from manager which does not exist'
+      );
     }
   }
 

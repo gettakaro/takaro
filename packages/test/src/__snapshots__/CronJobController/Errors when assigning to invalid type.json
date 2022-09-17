@@ -1,0 +1,37 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T13:38:42.137Z",
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "functionId": "67fd972c-03dd-4866-bcfa-6d5e7b3855da",
+              "itemId": "e6a25f6a-bdd1-4371-abad-90a5eb193a08",
+              "type": "not-existing"
+            },
+            "value": "not-existing",
+            "property": "type",
+            "children": [],
+            "constraints": {
+              "isEnum": "type must be a valid enum value"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "CronJobController",
+    "name": "Errors when assigning to invalid type",
+    "expectedStatus": 400,
+    "filteredFields": [
+      "functionId",
+      "itemId"
+    ],
+    "standardEnvironment": true
+  }
+}
