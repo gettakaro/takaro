@@ -33,6 +33,7 @@ npm run-script -w packages/lib-logger build
 npm run-script -w packages/lib-http build
 npm run-script -w packages/lib-db build
 npm run-script -w packages/lib-gameserver build
+npm run-script -w packages/lib-queues build
 
 npm run-script -w packages/lib-apiclient build
 npm run-script -w packages/test build

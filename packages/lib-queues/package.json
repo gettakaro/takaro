@@ -1,12 +1,11 @@
 {
-  "name": "@takaro/agent",
+  "name": "@takaro/queues",
   "version": "0.0.1",
-  "description": "Takaro agent handles running of functions inside isolated environments",
+  "description": "An opinionated BullMQ queues handler",
   "main": "dist/main.js",
-  "types": "main.ts",
+  "types": "dist/main.d.ts",
   "scripts": {
-    "start": "node dist/main.js",
-    "start:dev": "nodemon  --config ../../nodemon.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
@@ -16,10 +15,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@bull-board/express": "^4.2.2",
-    "@takaro/db": "0.0.1",
-    "@takaro/http": "0.0.1",
-    "bullmq": "^1.87.2"
+  "dependencies": {},
+  "devDependencies": {
+    "@takaro/test": "0.0.1"
   }
 }

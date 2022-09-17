@@ -1,13 +1,19 @@
 import { createBullBoard } from '@bull-board/api';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
-import { functionsQueue } from '../service/queue';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { QueuesService } from '@takaro/queues';
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/queues');
 
+const queuesService = QueuesService.getInstance();
+
+const queues = Object.values(queuesService.queues).map(
+  (queue) => new BullMQAdapter(queue.queue)
+);
+
 createBullBoard({
-  queues: [new BullMQAdapter(functionsQueue)],
+  queues,
   serverAdapter: serverAdapter,
 });
 
