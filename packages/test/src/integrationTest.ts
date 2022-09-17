@@ -53,7 +53,7 @@ export class IntegrationTest<SetupData> {
   }
 
   run() {
-    describe(this.test.name, () => {
+    describe(`${this.test.group} - ${this.test.name}`, () => {
       before(async () => {
         if (this.test.standardEnvironment) {
           await this.setupStandardEnvironment();
