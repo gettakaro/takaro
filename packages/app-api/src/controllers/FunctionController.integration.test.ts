@@ -1,6 +1,5 @@
 import { IntegrationTest } from '@takaro/test';
-import { CronJobOutputDTO } from '../service/CronJobService';
-import { FunctionOutputDTO } from '../service/FunctionService';
+import { CronJobOutputDTO, FunctionOutputDTO } from '@takaro/apiclient';
 
 const group = 'FunctionController';
 
@@ -78,17 +77,14 @@ const tests: IntegrationTest<any>[] = [
         fns.push(fn);
       }
 
-      await this.client.function.functionControllerAssign({
-        itemId: cronjobs[0].id,
-        functionId: fns[0].id,
-        type: 'cronjob',
-      });
-
-      await this.client.function.functionControllerAssign({
-        itemId: cronjobs[0].id,
-        functionId: fns[1].id,
-        type: 'cronjob',
-      });
+      await this.client.cronjob.cronJobControllerAssignFunction(
+        cronjobs[0].id,
+        fns[0].id
+      );
+      await this.client.cronjob.cronJobControllerAssignFunction(
+        cronjobs[0].id,
+        fns[1].id
+      );
 
       return { cronjobs, fns };
     },

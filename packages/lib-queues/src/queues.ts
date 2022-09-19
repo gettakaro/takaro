@@ -33,13 +33,19 @@ export abstract class TakaroWorker<T> extends Worker<T> {
     });
   }
 }
-
 export interface IJobData {
-  function: {
-    code: string;
-  };
+  functions: string[];
   domainId: string;
   token: string;
+  /**
+   * The id of the item that triggered this job (cronjobId, commandId or hookId)
+   */
+  itemId: string;
+  /**
+   * Additional data that can be passed to the job
+   * Typically, this depends on what triggered the job
+   */
+  data: Record<string, unknown>;
 }
 
 export class QueuesService {

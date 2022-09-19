@@ -75,7 +75,7 @@ export class FunctionController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
-  @ResponseSchema(FunctionOutputDTOAPI)
+  @ResponseSchema(FunctionOutputArrayDTOAPI)
   @OpenAPI({
     description:
       'Get functions that will be executed when an item (cronjob, command or hook) is executed',

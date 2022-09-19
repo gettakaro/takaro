@@ -87,13 +87,19 @@ export class CronJobService extends TakaroService<CronJobModel> {
   async assign(data: AssignFunctionDTO) {
     const functionsService = new FunctionService(this.domainId);
     await functionsService.assign(data);
-    return this.repo.findOne(data.itemId);
+    const cron = await this.repo.findOne(data.itemId);
+    await this.removeCronFromQueue(data.itemId);
+    await this.addCronToQueue(cron);
+    return cron;
   }
 
   async unAssign(itemId: string, functionId: string) {
     const functionsService = new FunctionService(this.domainId);
     await functionsService.unAssign(itemId, functionId);
-    return this.repo.findOne(itemId);
+    const cron = await this.repo.findOne(itemId);
+    await this.removeCronFromQueue(itemId);
+    await this.addCronToQueue(cron);
+    return cron;
   }
 
   private getRepeatableOpts(item: CronJobModel) {
@@ -118,6 +124,8 @@ export class CronJobService extends TakaroService<CronJobModel> {
         functions: relatedFunctions as string[],
         domainId: this.domainId,
         token: await authService.getAgentToken(),
+        itemId: item.id,
+        data: {},
       },
       {
         repeat: this.getRepeatableOpts(item),

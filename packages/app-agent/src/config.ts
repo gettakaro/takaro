@@ -9,6 +9,9 @@ interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
   };
+  takaro: {
+    url: string;
+  };
   queues: {
     commands: {
       name: string;
@@ -113,6 +116,14 @@ const configSchema = {
       format: String,
       default: 'takaro',
       env: 'CONTAINERD_NAMESPACE',
+    },
+  },
+  takaro: {
+    url: {
+      doc: 'The URL of the Takaro server',
+      format: String,
+      default: 'http://localhost:3000',
+      env: 'TAKARO_HOST',
     },
   },
   queues: {

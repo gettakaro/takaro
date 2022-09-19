@@ -1856,7 +1856,10 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       functionId: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.cronJobControllerAssignFunction(
@@ -1987,7 +1990,10 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       functionId: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.cronJobControllerUnassignFunction(
@@ -2059,7 +2065,7 @@ export const CronJobApiFactory = function (
       id: string,
       functionId: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<CronJobOutputDTOAPI> {
       return localVarFp
         .cronJobControllerAssignFunction(id, functionId, options)
         .then((request) => request(axios, basePath));
@@ -2136,7 +2142,7 @@ export const CronJobApiFactory = function (
       id: string,
       functionId: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<CronJobOutputDTOAPI> {
       return localVarFp
         .cronJobControllerUnassignFunction(id, functionId, options)
         .then((request) => request(axios, basePath));
@@ -3281,7 +3287,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string
-      ) => AxiosPromise<FunctionOutputDTOAPI>
+      ) => AxiosPromise<FunctionOutputArrayDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.functionControllerGetRelated(
@@ -3430,7 +3436,7 @@ export const FunctionApiFactory = function (
     functionControllerGetRelated(
       id: string,
       options?: any
-    ): AxiosPromise<FunctionOutputDTOAPI> {
+    ): AxiosPromise<FunctionOutputArrayDTOAPI> {
       return localVarFp
         .functionControllerGetRelated(id, options)
         .then((request) => request(axios, basePath));

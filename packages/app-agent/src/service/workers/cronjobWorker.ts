@@ -1,10 +1,8 @@
 import { Job } from 'bullmq';
-import { logger } from '@takaro/logger';
-import { config, EXECUTION_MODE } from '../../config';
-import { ContainerdService } from '../containerd';
+import { Client } from '@takaro/apiclient';
+import { config } from '../../config';
 import { TakaroWorker, IJobData } from '@takaro/queues';
-
-const log = logger('worker:cron');
+import { executeFunction } from './executeFunction';
 
 export class CronJobWorker extends TakaroWorker<IJobData> {
   constructor() {
@@ -12,19 +10,19 @@ export class CronJobWorker extends TakaroWorker<IJobData> {
   }
 }
 
-async function processCronJob(data: Job<IJobData>) {
-  console.log(data);
+async function processCronJob(job: Job<IJobData>) {
+  const client = new Client({
+    auth: {
+      token: job.data.token,
+    },
+    url: config.get('takaro.url'),
+  });
 
-  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
-    log.info('Running function locally');
-    return;
+  const functionsToExecuteRes =
+    await client.function.functionControllerGetRelated(job.data.itemId);
+  const functionsToExecute = functionsToExecuteRes.data.data;
+
+  for (const fn of functionsToExecute) {
+    await executeFunction(fn, client);
   }
-
-  const containerd = new ContainerdService();
-  await containerd.pullImage('hello-world');
-  const images = await containerd.listImages();
-  log.info(images);
-
-  const output = await containerd.runContainer({ image: 'hello-world' });
-  log.info(output);
 }

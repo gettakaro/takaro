@@ -13,6 +13,7 @@ interface IHttpConfig extends IBaseConfig {
     adminSecret: string;
     saltRounds: number;
     jwtSecret: string;
+    jwtExpiresIn: string;
   };
   clusterMode: CLUSTER_MODE;
 }
@@ -57,6 +58,12 @@ const configSchema = {
       format: String,
       default: null,
       env: 'JWT_SECRET',
+    },
+    jwtExpiresIn: {
+      doc: 'The time until a JWT expires',
+      format: String,
+      default: '1 day',
+      env: 'JWT_EXPIRES_IN',
     },
   },
   clusterMode: {
