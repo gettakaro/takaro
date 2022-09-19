@@ -1,6 +1,5 @@
 import { IntegrationTest } from '@takaro/test';
-import { CronJobOutputDTO } from '../service/CronJobService';
-import { FunctionOutputDTO } from '../service/FunctionService';
+import { CronJobOutputDTOAPI, FunctionOutputDTOAPI } from '@takaro/apiclient';
 
 const group = 'CronJobController';
 
@@ -10,20 +9,22 @@ const mockCronjob = {
 };
 
 interface ISetupCronJobAndFunction {
-  cronjob: CronJobOutputDTO;
-  fn: FunctionOutputDTO;
+  cronjob: CronJobOutputDTOAPI;
+  fn: FunctionOutputDTOAPI;
 }
 
 const tests: IntegrationTest<any>[] = [
-  new IntegrationTest<CronJobOutputDTO>({
+  new IntegrationTest<CronJobOutputDTOAPI>({
     group,
     name: 'Get by ID',
     setup: async function () {
       return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data.data;
+        .data;
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerGetOne(this.setupData.id);
+      return this.client.cronjob.cronJobControllerGetOne(
+        this.setupData.data.id
+      );
     },
   }),
   new IntegrationTest<void>({
@@ -33,38 +34,43 @@ const tests: IntegrationTest<any>[] = [
       return this.client.cronjob.cronJobControllerCreate(mockCronjob);
     },
   }),
-  new IntegrationTest<CronJobOutputDTO>({
+  new IntegrationTest<CronJobOutputDTOAPI>({
     group,
     name: 'Update',
     setup: async function () {
       return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data.data;
+        .data;
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerUpdate(this.setupData.id, {
-        name: 'Updated cronJob',
-        temporalValue: '0 * * * *',
-        enabled: false,
-      });
+      return this.client.cronjob.cronJobControllerUpdate(
+        this.setupData.data.id,
+        {
+          name: 'Updated cronJob',
+          temporalValue: '0 * * * *',
+          enabled: false,
+        }
+      );
     },
   }),
-  new IntegrationTest<CronJobOutputDTO>({
+  new IntegrationTest<CronJobOutputDTOAPI>({
     group,
     name: 'Delete',
     setup: async function () {
       return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data.data;
+        .data;
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerRemove(this.setupData.id);
+      return this.client.cronjob.cronJobControllerRemove(
+        this.setupData.data.id
+      );
     },
   }),
-  new IntegrationTest<CronJobOutputDTO>({
+  new IntegrationTest<CronJobOutputDTOAPI>({
     group,
     name: 'Search',
     setup: async function () {
       return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data.data;
+        .data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
@@ -78,13 +84,13 @@ const tests: IntegrationTest<any>[] = [
     setup: async function () {
       const cronjob = (
         await this.client.cronjob.cronJobControllerCreate(mockCronjob)
-      ).data.data;
+      ).data;
 
       const fn = (
         await this.client.function.functionControllerCreate({
           code: 'console.log("Hello world")',
         })
-      ).data.data;
+      ).data;
 
       return {
         cronjob,
@@ -92,26 +98,30 @@ const tests: IntegrationTest<any>[] = [
       };
     },
     test: async function () {
-      return this.client.function.functionControllerAssign({
-        functionId: this.setupData.fn.id,
-        itemId: this.setupData.cronjob.id,
-        type: 'cronjob',
-      });
+      return this.client.cronjob.cronJobControllerAssignFunction(
+        this.setupData.cronjob.data.id,
+        this.setupData.fn.data.id
+      );
     },
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
     group,
-    name: 'Errors when assigning to invalid type',
+    name: 'Can unassign a function from a cronjob',
     setup: async function () {
       const cronjob = (
         await this.client.cronjob.cronJobControllerCreate(mockCronjob)
-      ).data.data;
+      ).data;
 
       const fn = (
         await this.client.function.functionControllerCreate({
           code: 'console.log("Hello world")',
         })
-      ).data.data;
+      ).data;
+
+      await this.client.cronjob.cronJobControllerAssignFunction(
+        cronjob.data.id,
+        fn.data.id
+      );
 
       return {
         cronjob,
@@ -119,15 +129,11 @@ const tests: IntegrationTest<any>[] = [
       };
     },
     test: async function () {
-      // @ts-expect-error The client detects that this is faulty, but I want to see a validation error!
-      return this.client.function.functionControllerAssign({
-        functionId: this.setupData.fn.id,
-        itemId: this.setupData.cronjob.id,
-        type: 'not-existing',
-      });
+      return this.client.cronjob.cronJobControllerUnassignFunction(
+        this.setupData.cronjob.data.id,
+        this.setupData.fn.data.id
+      );
     },
-    expectedStatus: 400,
-    filteredFields: ['functionId', 'itemId'],
   }),
 ];
 

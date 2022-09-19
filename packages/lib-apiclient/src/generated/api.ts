@@ -92,6 +92,25 @@ export type AssignFunctionDTOTypeEnum =
 /**
  *
  * @export
+ * @interface AssignFunctionToCronJobDTO
+ */
+export interface AssignFunctionToCronJobDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionToCronJobDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionToCronJobDTO
+   */
+  functionId: string;
+}
+/**
+ *
+ * @export
  * @interface CapabilityOutputDTO
  */
 export interface CapabilityOutputDTO {
@@ -200,6 +219,12 @@ export interface CronJobOutputDTO {
    * @memberof CronJobOutputDTO
    */
   temporalValue: string;
+  /**
+   *
+   * @type {FunctionOutputDTO}
+   * @memberof CronJobOutputDTO
+   */
+  functions: FunctionOutputDTO;
 }
 /**
  *
@@ -1432,6 +1457,63 @@ export const CronJobApiAxiosParamCreator = function (
 ) {
   return {
     /**
+     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerAssignFunction: async (
+      id: string,
+      functionId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerAssignFunction', 'id', id);
+      // verify required parameter 'functionId' is not null or undefined
+      assertParamExists(
+        'cronJobControllerAssignFunction',
+        'functionId',
+        functionId
+      );
+      const localVarPath = `/cronjob/{id}/function/{functionId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *
      * @summary Create
      * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
@@ -1457,6 +1539,10 @@ export const CronJobApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -1511,6 +1597,10 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1557,6 +1647,10 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1598,6 +1692,10 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1613,6 +1711,63 @@ export const CronJobApiAxiosParamCreator = function (
         localVarRequestOptions,
         configuration
       );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * The function will not be executed when the cronjob is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUnassignFunction: async (
+      id: string,
+      functionId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerUnassignFunction', 'id', id);
+      // verify required parameter 'functionId' is not null or undefined
+      assertParamExists(
+        'cronJobControllerUnassignFunction',
+        'functionId',
+        functionId
+      );
+      const localVarPath = `/cronjob/{id}/function/{functionId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
 
       return {
         url: toPathString(localVarUrlObj),
@@ -1653,6 +1808,10 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1684,6 +1843,37 @@ export const CronJobApiAxiosParamCreator = function (
 export const CronJobApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration);
   return {
+    /**
+     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerAssignFunction(
+      id: string,
+      functionId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerAssignFunction(
+          id,
+          functionId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
     /**
      *
      * @summary Create
@@ -1788,6 +1978,37 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       );
     },
     /**
+     * The function will not be executed when the cronjob is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerUnassignFunction(
+      id: string,
+      functionId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CronJobOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerUnassignFunction(
+          id,
+          functionId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
      *
      * @summary Update
      * @param {string} id
@@ -1832,6 +2053,23 @@ export const CronJobApiFactory = function (
 ) {
   const localVarFp = CronJobApiFp(configuration);
   return {
+    /**
+     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerAssignFunction(
+      id: string,
+      functionId: string,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerAssignFunction(id, functionId, options)
+        .then((request) => request(axios, basePath));
+    },
     /**
      *
      * @summary Create
@@ -1893,6 +2131,23 @@ export const CronJobApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * The function will not be executed when the cronjob is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUnassignFunction(
+      id: string,
+      functionId: string,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerUnassignFunction(id, functionId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *
      * @summary Update
      * @param {string} id
@@ -1919,6 +2174,25 @@ export const CronJobApiFactory = function (
  * @extends {BaseAPI}
  */
 export class CronJobApi extends BaseAPI {
+  /**
+   * Assign a function to a cronjob. This function will execute when the cronjob is triggered
+   * @summary Assign function
+   * @param {string} id
+   * @param {string} functionId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerAssignFunction(
+    id: string,
+    functionId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerAssignFunction(id, functionId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @summary Create
@@ -1978,6 +2252,25 @@ export class CronJobApi extends BaseAPI {
   ) {
     return CronJobApiFp(this.configuration)
       .cronJobControllerSearch(cronJobSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * The function will not be executed when the cronjob is triggered anymore
+   * @summary Unassign function
+   * @param {string} id
+   * @param {string} functionId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerUnassignFunction(
+    id: string,
+    functionId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerUnassignFunction(id, functionId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -2606,54 +2899,6 @@ export const FunctionApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @summary Assign
-     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    functionControllerAssign: async (
-      assignFunctionDTO?: AssignFunctionDTO,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/function/assign`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        assignFunctionDTO,
-        localVarRequestOptions,
-        configuration
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @summary Create
      * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
      * @param {*} [options] Override http request option.
@@ -2678,6 +2923,10 @@ export const FunctionApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -2732,6 +2981,60 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Get functions that will be executed when an item (cronjob, command or hook) is executed
+     * @summary Get related
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetRelated: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerGetRelated', 'id', id);
+      const localVarPath = `/function/related/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2778,6 +3081,10 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2818,6 +3125,10 @@ export const FunctionApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -2874,6 +3185,10 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2905,31 +3220,6 @@ export const FunctionApiAxiosParamCreator = function (
 export const FunctionApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = FunctionApiAxiosParamCreator(configuration);
   return {
-    /**
-     *
-     * @summary Assign
-     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async functionControllerAssign(
-      assignFunctionDTO?: AssignFunctionDTO,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.functionControllerAssign(
-          assignFunctionDTO,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
     /**
      *
      * @summary Create
@@ -2976,6 +3266,34 @@ export const FunctionApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.functionControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     * Get functions that will be executed when an item (cronjob, command or hook) is executed
+     * @summary Get related
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerGetRelated(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<FunctionOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.functionControllerGetRelated(
+          id,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -3080,21 +3398,6 @@ export const FunctionApiFactory = function (
   return {
     /**
      *
-     * @summary Assign
-     * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    functionControllerAssign(
-      assignFunctionDTO?: AssignFunctionDTO,
-      options?: any
-    ): AxiosPromise<APIOutput> {
-      return localVarFp
-        .functionControllerAssign(assignFunctionDTO, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @summary Create
      * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
      * @param {*} [options] Override http request option.
@@ -3121,6 +3424,21 @@ export const FunctionApiFactory = function (
     ): AxiosPromise<FunctionOutputDTOAPI> {
       return localVarFp
         .functionControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Get functions that will be executed when an item (cronjob, command or hook) is executed
+     * @summary Get related
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetRelated(
+      id: string,
+      options?: any
+    ): AxiosPromise<FunctionOutputArrayDTOAPI> {
+      return localVarFp
+        .functionControllerGetRelated(id, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -3182,23 +3500,6 @@ export const FunctionApiFactory = function (
 export class FunctionApi extends BaseAPI {
   /**
    *
-   * @summary Assign
-   * @param {AssignFunctionDTO} [assignFunctionDTO] AssignFunctionDTO
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof FunctionApi
-   */
-  public functionControllerAssign(
-    assignFunctionDTO?: AssignFunctionDTO,
-    options?: AxiosRequestConfig
-  ) {
-    return FunctionApiFp(this.configuration)
-      .functionControllerAssign(assignFunctionDTO, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
    * @summary Create
    * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
    * @param {*} [options] Override http request option.
@@ -3225,6 +3526,23 @@ export class FunctionApi extends BaseAPI {
   public functionControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return FunctionApiFp(this.configuration)
       .functionControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get functions that will be executed when an item (cronjob, command or hook) is executed
+   * @summary Get related
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerGetRelated(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerGetRelated(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -3314,6 +3632,10 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3367,6 +3689,10 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3413,6 +3739,10 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3453,6 +3783,10 @@ export const GameServerApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3508,6 +3842,10 @@ export const GameServerApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4190,6 +4528,10 @@ export const RoleApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -4243,6 +4585,10 @@ export const RoleApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4289,6 +4635,10 @@ export const RoleApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4329,6 +4679,10 @@ export const RoleApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4384,6 +4738,10 @@ export const RoleApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4773,6 +5131,10 @@ export const UserApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4813,6 +5175,10 @@ export const UserApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4867,6 +5233,10 @@ export const UserApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4907,6 +5277,10 @@ export const UserApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4961,6 +5335,10 @@ export const UserApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -5010,6 +5388,10 @@ export const UserApiAxiosParamCreator = function (
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -5050,6 +5432,10 @@ export const UserApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5105,6 +5491,10 @@ export const UserApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 

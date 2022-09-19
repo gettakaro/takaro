@@ -2,7 +2,6 @@ import { IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
-  AssignFunctionDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
@@ -21,10 +20,13 @@ import {
   Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 class FunctionOutputDTOAPI extends APIOutput<FunctionOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
@@ -48,6 +50,9 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   filters!: FunctionSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
@@ -67,6 +72,21 @@ export class FunctionController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.findOne(params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @ResponseSchema(FunctionOutputArrayDTOAPI)
+  @OpenAPI({
+    description:
+      'Get functions that will be executed when an item (cronjob, command or hook) is executed',
+  })
+  @Get('/function/related/:id')
+  async getRelated(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new FunctionService(req.domainId);
+    return apiResponse(await service.getRelatedFunctions(params.id, false));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
@@ -99,17 +119,5 @@ export class FunctionController {
     const service = new FunctionService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
-  @ResponseSchema(APIOutput)
-  @Post('/function/assign')
-  async assign(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: AssignFunctionDTO
-  ) {
-    const service = new FunctionService(req.domainId);
-    await service.assign(data);
-    return apiResponse(null);
   }
 }

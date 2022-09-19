@@ -60,5 +60,6 @@ services:
       - 13002:13002
     # agent  
       - 13004:3001
+      - 12002:12001
 volumes:
     pgadmin:      

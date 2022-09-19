@@ -17,7 +17,7 @@ export class CronJobModel extends TakaroModel {
 
   static get relationMappings() {
     return {
-      function: {
+      functions: {
         relation: Model.ManyToManyRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
@@ -47,12 +47,12 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
   async find(filters: ITakaroQuery<CronJobModel>): Promise<CronJobModel[]> {
     const params = new QueryBuilder(filters).build(CRONJOB_TABLE_NAME);
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await model.query().where(params.where).withGraphJoined('functions');
   }
 
   async findOne(id: string): Promise<CronJobModel> {
     const model = await this.getModel();
-    const data = await model.query().findById(id);
+    const data = await model.query().findById(id).withGraphJoined('functions');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -63,7 +63,11 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
 
   async create(item: PartialModelObject<CronJobModel>): Promise<CronJobModel> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    return model
+      .query()
+      .insert(item)
+      .returning('*')
+      .withGraphJoined('functions');
   }
 
   async delete(id: string): Promise<boolean> {
@@ -77,6 +81,9 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
     data: PartialModelObject<CronJobModel>
   ): Promise<CronJobModel> {
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    return model
+      .query()
+      .updateAndFetchById(id, data)
+      .withGraphFetched('functions');
   }
 }

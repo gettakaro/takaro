@@ -1,0 +1,29 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T21:22:17.031Z"
+    },
+    "data": [
+      {
+        "createdAt": "2022-09-17T21:22:16.963Z",
+        "updatedAt": "2022-09-17T21:22:16.963Z",
+        "id": "8cf01207-2539-4f8e-a178-53b3a6493e1e",
+        "code": "console.log(\"Hello world 0\")"
+      },
+      {
+        "createdAt": "2022-09-17T21:22:16.984Z",
+        "updatedAt": "2022-09-17T21:22:16.984Z",
+        "id": "0f793afb-1dfc-4a5a-9348-406e4e2235b8",
+        "code": "console.log(\"Hello world 1\")"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "name": "Get related",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

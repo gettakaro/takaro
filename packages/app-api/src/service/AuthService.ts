@@ -7,6 +7,7 @@ import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
 import { CAPABILITIES } from '../db/role';
 import { IsString } from 'class-validator';
+import ms from 'ms';
 
 interface IJWTPayload {
   sub: string;
@@ -54,6 +55,27 @@ export class AuthService extends DomainScoped {
     }
   }
 
+  /**
+   * This is a token to be used by app-agent to execute functions
+   * For now, just the root token but in the future, we can have
+   * narrower scoped tokens (eg configurable capabilities?)
+   * // TODO: ^ ^
+   */
+  async getAgentToken() {
+    const userService = new UserService(this.domainId);
+
+    const rootUser = await userService.find({
+      filters: { name: 'root' },
+    });
+
+    if (!rootUser.length) {
+      this.log.error('No root user found');
+      throw new errors.InternalServerError();
+    }
+
+    return await this.signJwt({ user: { id: rootUser[0].id } });
+  }
+
   async signJwt(payload: IJWTSignOptions): Promise<string> {
     return new Promise((resolve, reject) => {
       const toSign: jwt.JwtPayload = {
@@ -61,7 +83,9 @@ export class AuthService extends DomainScoped {
         sub: payload.user.id,
         domainId: this.domainId,
         iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 60 * 10,
+        exp:
+          Math.floor(Date.now() / 1000) +
+          ms(config.get('auth.jwtExpiresIn')) / 1000,
       };
 
       jwt.sign(

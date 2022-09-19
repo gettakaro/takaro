@@ -20,7 +20,7 @@ import {
   Params,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
@@ -49,6 +49,9 @@ export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   filters!: RoleSearchInputAllowedFilters;
 }
 
+@OpenAPI({
+  security: [{ domainAuth: [] }],
+})
 @JsonController()
 export class RoleController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_ROLES]))

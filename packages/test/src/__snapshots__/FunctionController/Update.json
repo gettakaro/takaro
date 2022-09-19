@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-17T21:12:20.506Z"
+    },
+    "data": {
+      "code": "console.log(\"Bye world\")",
+      "updatedAt": "2022-09-17T21:12:20.502Z",
+      "createdAt": "2022-09-17T21:12:20.492Z",
+      "id": "b3a91182-14bb-4d54-8332-e6bbd45758c9"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "name": "Update",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
