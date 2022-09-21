@@ -8,7 +8,6 @@ import { GameEvents } from '../../interfaces/events';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { Object } from 'lodash';
 
-
 // TODO: should move to somewhere else
 export interface RustCombatLog {
   /// The recorded server time in which the combat round was initiated
@@ -54,14 +53,15 @@ enum RustEventType {
 }
 
 interface RustEvent {
-  message: string,
-  identifier: number,
-  type: RustEventType,
-  stacktrace: string,
+  message: string;
+  identifier: number;
+  type: RustEventType;
+  stacktrace: string;
 }
 
 const EventRegexMap = {
-  [GameEvents.PLAYER_CONNECTED]: /.* with steamid ([0-9]{17}) joined from ip .*/,
+  [GameEvents.PLAYER_CONNECTED]:
+    /.* with steamid ([0-9]{17}) joined from ip .*/,
   [GameEvents.PLAYER_DISCONNECTED]: /.* disconnecting\: disconnect/,
   [GameEvents.PLAYER_SPAWNED]: /.*\[\d{17}\] has spawned/,
   [GameEvents.PLAYER_KICKED]: /.*\/\d{17}\/.* kicked: .*/,
@@ -69,9 +69,7 @@ const EventRegexMap = {
   [GameEvents.PLAYER_MESSAGED]: /\[CHAT\].*\[\d{17}\] :.*/,
 };
 
-export class RustEmitter
-  extends EventEmitter
-  implements IGameEventEmitter {
+export class RustEmitter extends EventEmitter implements IGameEventEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
 
@@ -83,7 +81,9 @@ export class RustEmitter
     config.hostname = '195.201.91.127';
     config.port = '28016';
     config.password = 'docker';
-    this.ws = new WebSocket(`ws://${config.hostname}:${config.port}/${config.password}`);
+    this.ws = new WebSocket(
+      `ws://${config.hostname}:${config.port}/${config.password}`
+    );
 
     this.ws.on('message', (m: string) => {
       this.listener(m);
@@ -155,7 +155,9 @@ export class RustEmitter
 
   async listener(data: string) {
     try {
-      data.replace(/"([^"]+)":/g, (_, $1: string) => { return ('"' + $1.toLowerCase() + '":'); });
+      data.replace(/"([^"]+)":/g, (_, $1: string) => {
+        return '"' + $1.toLowerCase() + '":';
+      });
       const event = this.transform(JSON.parse(data));
       await this.parseMessage(event);
     } catch (error) {
@@ -166,8 +168,16 @@ export class RustEmitter
   private handlePlayerConnected(msg: string) {
     /// Example: Emiel with steamid 76561198035925898 joined from ip 178.118.188.46:55766
     const player = new IGamePlayer();
-    const expSearch = /(?<name>.+?) with steamid (?<platformId>\d{17}) joined from ip (?<ip>.*)/.exec(msg);
-    if (expSearch && expSearch.groups && expSearch.groups.name && expSearch.groups.platformId) {
+    const expSearch =
+      /(?<name>.+?) with steamid (?<platformId>\d{17}) joined from ip (?<ip>.*)/.exec(
+        msg
+      );
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.name &&
+      expSearch.groups.platformId
+    ) {
       player.name = expSearch.groups.name;
       player.platformId = expSearch.groups.platformId;
       return { player };
@@ -178,9 +188,17 @@ export class RustEmitter
 
   private handlePlayerDisconnected(msg: string) {
     // Example: 178.118.188.46:52210/76561198035925898/Emiel disconnecting: disconnect
-    const expSearch = /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(msg);
+    const expSearch =
+      /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(
+        msg
+      );
 
-    if (expSearch && expSearch.groups && expSearch.groups.platformId && expSearch.groups.name) {
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.platformId &&
+      expSearch.groups.name
+    ) {
       const player = new IGamePlayer();
       player.platformId = expSearch.groups.platformId;
       player.name = expSearch.groups.name;
@@ -188,14 +206,22 @@ export class RustEmitter
     }
     this.logger.error('Could not parse event correctly', msg, expSearch);
     throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
-
   }
 
   private handlePlayerMessaged(msg: string) {
     /// Example: [CHAT] Emiel[76561198035925898] : hallo
-    const expSearch = /(?<=\[CHAT\] )(?<name>.*)(?=\[(?<platformId>\d{17})\] : (?<message>.*))/.exec(msg);
+    const expSearch =
+      /(?<=\[CHAT\] )(?<name>.*)(?=\[(?<platformId>\d{17})\] : (?<message>.*))/.exec(
+        msg
+      );
 
-    if (expSearch && expSearch.groups && expSearch.groups.platformId && expSearch.groups.name && expSearch.groups.message) {
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.platformId &&
+      expSearch.groups.name &&
+      expSearch.groups.message
+    ) {
       const player = new IGamePlayer();
       player.name = expSearch.groups.name;
       player.platformId = expSearch.groups.platformId;
@@ -208,8 +234,15 @@ export class RustEmitter
 
   private handlePlayerSpawned(msg: string) {
     /// Example: Emiel[76561198035925898] has spawned
-    const expSearch = /(?<name>^.*?)\[(?<platformId>\d{17})\] has spawned/.exec(msg);
-    if (expSearch && expSearch.groups && expSearch.groups.name && expSearch.groups.platformId) {
+    const expSearch = /(?<name>^.*?)\[(?<platformId>\d{17})\] has spawned/.exec(
+      msg
+    );
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.name &&
+      expSearch.groups.platformId
+    ) {
       const player = new IGamePlayer();
       player.name = expSearch.groups.name;
       player.platformId = expSearch.groups.platformId;
@@ -221,8 +254,17 @@ export class RustEmitter
 
   private handlePlayerKicked(msg: string) {
     /// Example: 178.118.188.46:64115/76561198035925898/Emiel kicked: Steam: Invalid
-    const expSearch = /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) kicked: (?<reason>.*)/.exec(msg);
-    if (expSearch && expSearch.groups && expSearch.groups.platformId && expSearch.groups.name && expSearch.groups.reason) {
+    const expSearch =
+      /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) kicked: (?<reason>.*)/.exec(
+        msg
+      );
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.platformId &&
+      expSearch.groups.name &&
+      expSearch.groups.reason
+    ) {
       const player = new IGamePlayer();
       player.platformId = expSearch.groups.platformId;
       player.name = expSearch.groups.name;
@@ -235,8 +277,18 @@ export class RustEmitter
 
   private handleItemGivenTo(msg: string) {
     /// Example: [ServerVar] giving Emiel 10 x Small Neon Sign
-    const expSearch = /\[(?<sender>.*)] giving (?<receiver>.*) (?<amount>[0-9]+) x (?<itemName>.*)/.exec(msg);
-    if (expSearch && expSearch.groups && expSearch.groups.sender && expSearch.groups.receiver && expSearch.groups.amount && expSearch.groups.itemName) {
+    const expSearch =
+      /\[(?<sender>.*)] giving (?<receiver>.*) (?<amount>[0-9]+) x (?<itemName>.*)/.exec(
+        msg
+      );
+    if (
+      expSearch &&
+      expSearch.groups &&
+      expSearch.groups.sender &&
+      expSearch.groups.receiver &&
+      expSearch.groups.amount &&
+      expSearch.groups.itemName
+    ) {
       const sender = expSearch.groups.sender;
       const receiver = expSearch.groups.receiver;
       const amount = expSearch.groups.amount;
@@ -247,4 +299,3 @@ export class RustEmitter
     throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
   }
 }
-

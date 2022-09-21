@@ -16,7 +16,8 @@ const EventRegexMap = {
 
 export class SevenDaysToDieEmitter
   extends EventEmitter
-  implements IGameEventEmitter {
+  implements IGameEventEmitter
+{
   // TODO: also listen to other loglevels
   private SSERegex = /\d+-\d+-\d+T\d+:\d+:\d+ \d+\.\d+ INF (.+)/;
   private eventSource!: EventSource;
