@@ -6,7 +6,7 @@ import {
   GAME_SERVER_TYPE,
 } from '../db/gameserver';
 import { IsEnum, IsJSON, IsString, IsUUID, Length } from 'class-validator';
-import { Mock, SevenDaysToDie } from '@takaro/gameserver';
+import { Mock, SevenDaysToDie, Rust } from '@takaro/gameserver';
 import { errors } from '@takaro/logger';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { PartialModelObject } from 'objection';
@@ -82,15 +82,15 @@ export class GameServerService extends TakaroService<GameServerModel> {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:
         return new SevenDaysToDie();
-        break;
       case GAME_SERVER_TYPE.MOCK:
         if (config.get('mode') === 'production') {
           throw new errors.BadRequestError('Mock server is not allowed');
         }
         return new Mock();
+      case GAME_SERVER_TYPE.RUST:
+        return new Rust();
       default:
         throw new errors.NotImplementedError();
-        break;
     }
   }
 

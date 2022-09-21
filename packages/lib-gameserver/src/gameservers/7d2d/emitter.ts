@@ -16,8 +16,8 @@ const EventRegexMap = {
 
 export class SevenDaysToDieEmitter
   extends EventEmitter
-  implements IGameEventEmitter
-{
+  implements IGameEventEmitter {
+  // TODO: also listen to other loglevels
   private SSERegex = /\d+-\d+-\d+T\d+:\d+:\d+ \d+\.\d+ INF (.+)/;
   private eventSource!: EventSource;
   private logger = logger('7D2D:SSE');
@@ -103,11 +103,11 @@ export class SevenDaysToDieEmitter
         );
         const playerNameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
         const entityIDMatch = /EntityID=(\d+)/.exec(logLine.msg);
-    
+
         if (!steamIdMatches) {
           throw new Error('Could not find steamId');
         }
-    
+
         const steamId = steamIdMatches[1] || steamIdMatches[2]; */
     //const ownerID = /OwnerID='(Steam_)?(\d+)/.exec(logLine.msg)[2];
 

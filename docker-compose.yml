@@ -20,8 +20,8 @@ services:
        - pgadmin:/var/lib/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
-    logging:
-      driver: none
+    #logging:
+      #driver: none
 
   redis:
     image: redis
