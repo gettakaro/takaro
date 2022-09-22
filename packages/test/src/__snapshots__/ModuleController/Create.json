@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-22T13:11:05.125Z"
+    },
+    "data": {
+      "name": "Test module",
+      "createdAt": "2022-09-22T13:11:05.114Z",
+      "updatedAt": "2022-09-22T13:11:05.124Z",
+      "id": "7f839c79-aa6f-42c3-9321-a712d40f69b9",
+      "enabled": true,
+      "config": {},
+      "cronJobs": [
+        {}
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "name": "Create",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

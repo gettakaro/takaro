@@ -1,20 +1,21 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-17T22:18:09.056Z"
+      "serverTime": "2022-09-22T13:03:37.881Z"
     },
     "data": {
-      "createdAt": "2022-09-17T22:18:09.014Z",
-      "updatedAt": "2022-09-17T22:18:09.026Z",
-      "id": "6fa79b8c-d7ad-4668-91b9-969fa8f71d4d",
+      "createdAt": "2022-09-22T13:03:37.845Z",
+      "updatedAt": "2022-09-22T13:03:37.853Z",
+      "id": "5b9e0872-c93e-46a9-8b69-1bc4a67a4cf5",
       "name": "Test cronJob",
       "enabled": true,
       "temporalValue": "0 * * * *",
+      "moduleId": "d7fec1dc-79ab-458f-8a10-7b8921a4048b",
       "functions": [
         {
-          "createdAt": "2022-09-17T22:18:09.043Z",
-          "updatedAt": "2022-09-17T22:18:09.044Z",
-          "id": "88bb16ca-9291-46c7-b80d-fb9bb6b80c86",
+          "createdAt": "2022-09-22T13:03:37.866Z",
+          "updatedAt": "2022-09-22T13:03:37.867Z",
+          "id": "3e2fadda-1e76-4ff9-9ad2-72b054d80ea9",
           "code": "console.log(\"Hello world\")"
         }
       ]
@@ -24,8 +25,10 @@
   "test": {
     "group": "CronJobController",
     "name": "Can assign a function to a cronjob",
+    "filteredFields": [
+      "moduleId"
+    ],
     "expectedStatus": 200,
-    "filteredFields": [],
     "standardEnvironment": true
   }
 }
