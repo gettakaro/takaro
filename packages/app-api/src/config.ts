@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 enum CLUSTER_MODE {
   SINGLE = 'single',
@@ -88,4 +89,7 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHttpConfig>([configSchema]);
+export const config = new Config<IHttpConfig & IQueuesConfig>([
+  configSchema,
+  queuesConfigSchema,
+]);

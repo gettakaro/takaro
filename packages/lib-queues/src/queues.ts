@@ -8,6 +8,12 @@ import {
 } from 'bullmq';
 import { config } from './config';
 import { logger } from '@takaro/logger';
+import {
+  GameEvents,
+  EventLogLine,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
+} from '@takaro/gameserver';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions';
 
 const log = logger('queue');
@@ -48,6 +54,12 @@ export interface IJobData {
   data: Record<string, unknown>;
 }
 
+export interface IEventQueueData {
+  type: GameEvents;
+  domainId: string;
+  data: EventLogLine | EventPlayerConnected | EventPlayerDisconnected;
+}
+
 export class QueuesService {
   private static instance: QueuesService;
 
@@ -85,6 +97,15 @@ export class QueuesService {
         connection: getRedisConnectionOptions(),
       }),
       events: new QueueEvents(config.get('queues.hooks.name'), {
+        connection: getRedisConnectionOptions(),
+      }),
+    },
+    events: {
+      queue: new TakaroQueue<IEventQueueData>(config.get('queues.events.name')),
+      scheduler: new QueueScheduler(config.get('queues.events.name'), {
+        connection: getRedisConnectionOptions(),
+      }),
+      events: new QueueEvents(config.get('queues.events.name'), {
         connection: getRedisConnectionOptions(),
       }),
     },

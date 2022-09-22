@@ -13,6 +13,8 @@ import { GameServerService } from './service/GameServerService';
 import { FunctionController } from './controllers/FunctionController';
 import { CronJobController } from './controllers/CronJobController';
 import { ModuleController } from './controllers/ModuleController';
+import { EventsWorker } from './workers/eventWorker';
+import { QueuesService } from '@takaro/queues';
 
 export const server = new HTTP(
   {
@@ -55,8 +57,12 @@ async function main() {
   for (const domain of domains) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
-    await gameServerService.manager.init(gameServers);
+    await gameServerService.manager.init(
+      gameServers.map((g) => ({ ...g, domainId: domain.id }))
+    );
   }
+
+  await QueuesService.getInstance().registerWorker(new EventsWorker());
 }
 
 main();
