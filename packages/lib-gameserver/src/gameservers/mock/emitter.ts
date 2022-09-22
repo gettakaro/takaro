@@ -14,7 +14,7 @@ const allEvents = Object.keys(GameEvents);
 
 class IMockConfig {
   allowedEvents = allEvents;
-  interval = 1000;
+  interval = 60000;
 
   constructor(config?: Partial<IMockConfig>) {
     if (!config) return;
