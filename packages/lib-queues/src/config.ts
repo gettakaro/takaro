@@ -1,6 +1,6 @@
 import { Config, IBaseConfig } from '@takaro/config';
 
-interface IQueuesConfig extends IBaseConfig {
+export interface IQueuesConfig extends IBaseConfig {
   queues: {
     commands: {
       name: string;
@@ -14,6 +14,10 @@ interface IQueuesConfig extends IBaseConfig {
       name: string;
       concurrency: number;
     };
+    events: {
+      name: string;
+      concurrency: number;
+    };
   };
   redis: {
     host: string;
@@ -24,7 +28,7 @@ interface IQueuesConfig extends IBaseConfig {
   };
 }
 
-const configSchema = {
+export const queuesConfigSchema = {
   redis: {
     host: {
       doc: 'The host of the redis server',
@@ -100,7 +104,21 @@ const configSchema = {
         env: 'HOOKS_QUEUE_CONCURRENCY',
       },
     },
+    events: {
+      name: {
+        doc: 'The name of the queue to use for events',
+        format: String,
+        default: 'events',
+        env: 'EVENTS_QUEUE_NAME',
+      },
+      concurrency: {
+        doc: 'The number of events to run at once',
+        format: Number,
+        default: 1,
+        env: 'EVENTS_QUEUE_CONCURRENCY',
+      },
+    },
   },
 };
 
-export const config = new Config<IQueuesConfig>([configSchema]);
+export const config = new Config<IQueuesConfig>([queuesConfigSchema]);
