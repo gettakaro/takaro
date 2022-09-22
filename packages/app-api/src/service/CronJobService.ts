@@ -46,6 +46,9 @@ export class CronJobCreateDTO {
 
   @IsString()
   temporalValue!: string;
+
+  @IsUUID()
+  moduleId!: string;
 }
 
 export class UpdateCronJobDTO {
@@ -58,6 +61,10 @@ export class UpdateCronJobDTO {
 
   @IsString()
   temporalValue!: string;
+
+  @IsUUID()
+  @IsOptional()
+  moduleId?: string;
 }
 
 export class CronJobService extends TakaroService<CronJobModel> {

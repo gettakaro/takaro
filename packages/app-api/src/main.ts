@@ -12,6 +12,7 @@ import { DomainService } from './service/DomainService';
 import { GameServerService } from './service/GameServerService';
 import { FunctionController } from './controllers/FunctionController';
 import { CronJobController } from './controllers/CronJobController';
+import { ModuleController } from './controllers/ModuleController';
 
 export const server = new HTTP(
   {
@@ -22,6 +23,7 @@ export const server = new HTTP(
       GameServerController,
       FunctionController,
       CronJobController,
+      ModuleController,
     ],
   },
   {

@@ -59,6 +59,12 @@ const tests: IntegrationTest<any>[] = [
     group,
     name: 'Get related',
     setup: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
       const cronjobs = [];
       const fns = [];
       for (let i = 0; i < 3; i++) {
@@ -66,6 +72,7 @@ const tests: IntegrationTest<any>[] = [
           await this.client.cronjob.cronJobControllerCreate({
             name: `Test cronJob ${i}`,
             temporalValue: '0 * * * *',
+            moduleId: module.id,
           })
         ).data.data;
         cronjobs.push(cronjob);

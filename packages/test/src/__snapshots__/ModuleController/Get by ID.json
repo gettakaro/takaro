@@ -1,0 +1,24 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-22T13:07:38.132Z"
+    },
+    "data": {
+      "createdAt": "2022-09-22T13:07:38.105Z",
+      "updatedAt": "2022-09-22T13:07:38.115Z",
+      "id": "c52f6f2a-2383-4fb4-b23e-87ceb97280fa",
+      "name": "Test module",
+      "enabled": true,
+      "config": {},
+      "cronJobs": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "name": "Get by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
