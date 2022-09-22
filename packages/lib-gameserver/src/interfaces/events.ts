@@ -8,6 +8,12 @@ export enum GameEvents {
   PLAYER_DISCONNECTED = 'player-disconnected',
 }
 
+export type EventMapping = {
+  [GameEvents.LOG_LINE]: EventLogLine;
+  [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected;
+  [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
+};
+
 class BaseEvent {
   timestamp: Date = new Date();
   type!: string;

@@ -52,7 +52,7 @@ services:
 
       REACT_APP_API: "http://localhost:13000" 
 
-      CORS_ALLOWED_ORIGINS: "http://localhost:13000,http://localhost:13001"
+      CORS_ALLOWED_ORIGINS: "http://localhost:13000,http://localhost:13001,https://admin.socket.io"
 
     ports:
     # api

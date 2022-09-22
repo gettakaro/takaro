@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
 import { logger, errors } from '@takaro/logger';
-import { Server } from 'http';
+import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,
   useExpressServer,
@@ -20,7 +20,7 @@ interface IHTTPOptions {
 
 export class HTTP {
   private app: Application;
-  private httpServer: Server | null = null;
+  private httpServer: Server;
   private logger;
 
   constructor(
@@ -29,7 +29,7 @@ export class HTTP {
   ) {
     this.logger = logger('http');
     this.app = express();
-
+    this.httpServer = createServer(this.app);
     this.app.use(bodyParser.json());
     this.app.use(
       cors({
@@ -69,8 +69,12 @@ export class HTTP {
     return this.app;
   }
 
+  get server() {
+    return this.httpServer;
+  }
+
   async start() {
-    this.httpServer = this.app.listen(this.httpOptions.port, () => {
+    this.httpServer = this.httpServer.listen(this.httpOptions.port, () => {
       this.logger.info(
         `HTTP server listening on port ${this.httpOptions.port}`
       );
