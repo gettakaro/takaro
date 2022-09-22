@@ -66,6 +66,16 @@ export class IGameServerInMemoryManager {
       });
     });
 
+    emitter.on(GameEvents.PLAYER_SPAWNED, async (playerSpawnedEvent) => {
+      this.log.debug('Received a player spawned event', { playerSpawnedEvent });
+    });
+
+    emitter.on(GameEvents.PLAYER_MESSAGED, async (playerMessagedEvent) => {
+      this.log.debug('Received a player messaged event', {
+        playerMessagedEvent,
+      });
+    });
+
     emitter.on(
       GameEvents.PLAYER_DISCONNECTED,
       async (playerDisconnectedEvent) => {

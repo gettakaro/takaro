@@ -37,6 +37,19 @@ export class BadRequestError extends TakaroError {
   }
 }
 
+export class GameServerError extends TakaroError {
+  constructor(message: string = 'Game server error') {
+    super(message);
+    this.http = 500;
+  }
+}
+export class WsTimeOutError extends TakaroError {
+  constructor(message: string = 'Websocket timeout Error') {
+    super(message);
+    this.http = 500;
+  }
+}
+
 /**
  * Intentionally does not accept metadata.
  * log additional info and do not leak info to the client

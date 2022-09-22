@@ -6,10 +6,13 @@ import {
   IServerConnection,
   IServerInfo,
 } from '../../interfaces/GameServer';
+// import { RequestManager } from '../../requestManager';
 import { RustEmitter } from './emitter';
 
 export class Rust implements IGameServer {
   private logger = logger('Rust');
+  // private requestManager = new RequestManager();
+  //private requestManager: RequestManager | null = null;
 
   async getPlayer(id: string): Promise<IGamePlayer | null> {
     this.logger.debug('getPlayer', id);
@@ -26,7 +29,7 @@ export class Rust implements IGameServer {
   }
 
   async executeCommand(command: string): Promise<string> {
-    this.getEventEmitter().executeRawCommand(command);
+    // this.requestManager.executeRawCommand(command);
     return command;
   }
 

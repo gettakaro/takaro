@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:stream';
-import { logger } from '@takaro/logger';
+import { logger, errors } from '@takaro/logger';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import WebSocket from 'ws';
 import { JsonObject } from 'type-fest';
@@ -7,7 +7,10 @@ import { IsString } from 'class-validator';
 import { GameEvents } from '../../interfaces/events';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 
-// TODO: should move to somewhere else
+/*
+This is a specific log message used during fights between players.
+This will eventually be needed to parse these logs.
+
 export interface RustCombatLog {
   /// The recorded server time in which the combat round was initiated
   time: string;
@@ -29,9 +32,10 @@ export interface RustCombatLog {
   oldHp: number;
   /// The total health of the target after the combat round took place.
   newHp: number;
-  /// Additioanl information statuses and flags.
+  /// Additional information statuses and flags.
   info: string;
 }
+*/
 
 export class RustConfig {
   @IsString()
@@ -49,6 +53,7 @@ export class RustConfig {
 enum RustEventType {
   DEFAULT = 'generic',
   WARNING = 'warning',
+  // pretty sure chat messages have their own type as well.
 }
 
 interface RustEvent {
@@ -72,6 +77,7 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
 
+  //private requestManager: RequestManager:
   constructor() {
     super();
   }
@@ -90,7 +96,6 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
 
     this.ws.on('open', () => {
       this.logger.info('Connected to [RUST] gameserver.');
-      // this.ws!.send(JSON.stringify({ Message: 'serverinfo', Identifier: 42, Name: 'Takaro' }));
     });
   }
 
@@ -115,36 +120,30 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.message)) {
       const data = this.handlePlayerConnected(e.message);
       this.emit(GameEvents.PLAYER_CONNECTED, data);
-      return;
     }
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.message)) {
       const data = this.handlePlayerDisconnected(e.message);
       this.emit(GameEvents.PLAYER_DISCONNECTED, data);
-      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_SPAWNED].test(e.message)) {
       const data = this.handlePlayerSpawned(e.message);
       this.emit(GameEvents.PLAYER_SPAWNED, data);
-      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_KICKED].test(e.message)) {
       const data = this.handlePlayerKicked(e.message);
       this.emit(GameEvents.PLAYER_KICKED, data);
-      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_MESSAGED].test(e.message)) {
       const data = this.handlePlayerMessaged(e.message);
       this.emit(GameEvents.PLAYER_MESSAGED, data);
-      return;
     }
 
     if (EventRegexMap[GameEvents.ITEM_GIVEN_TO].test(e.message)) {
       const data = this.handleItemGivenTo(e.message);
       this.emit(GameEvents.ITEM_GIVEN_TO, data);
-      return;
     }
 
     this.emit(GameEvents.LOG_LINE, {
@@ -182,8 +181,12 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       player.platformId = expSearch.groups.platformId;
       return { player };
     }
-    this.logger.error('Could not parse event correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    this.logger.error(
+      'Could not parse `PlayerConnected` event correctly.',
+      msg,
+      expSearch
+    );
+    throw new errors.GameServerError();
   }
 
   private handlePlayerDisconnected(msg: string) {
@@ -204,8 +207,12 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       player.name = expSearch.groups.name;
       return { player };
     }
-    this.logger.error('Could not parse event correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    this.logger.error(
+      'Could not parse `playerDisconnected` event correctly.',
+      msg,
+      expSearch
+    );
+    throw new errors.GameServerError();
   }
 
   private handlePlayerMessaged(msg: string) {
@@ -229,7 +236,7 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       return { player, message };
     }
     this.logger.error('Could not parse event correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    throw new errors.GameServerError();
   }
 
   private handlePlayerSpawned(msg: string) {
@@ -248,8 +255,12 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       player.platformId = expSearch.groups.platformId;
       return { player };
     }
-    this.logger.error('Could parse messsage correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    this.logger.error(
+      'Could parse `PlayerSpawned` event correctly',
+      msg,
+      expSearch
+    );
+    throw new errors.GameServerError();
   }
 
   private handlePlayerKicked(msg: string) {
@@ -271,8 +282,12 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       const reason = expSearch.groups.reason;
       return { reason, player };
     }
-    this.logger.error('could not parse message correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    this.logger.error(
+      'Could not parse `Player` kicked correctly',
+      msg,
+      expSearch
+    );
+    throw new errors.GameServerError();
   }
 
   private handleItemGivenTo(msg: string) {
@@ -295,16 +310,21 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
       const itemName = expSearch.groups.itemName;
       return { sender, receiver, amount, itemName };
     }
-    this.logger.error('could not parse message correctly', msg, expSearch);
-    throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+    this.logger.error(
+      'Could not parse `ItemGivenTo` event correctly',
+      msg,
+      expSearch
+    );
+    throw new errors.GameServerError();
   }
 
   private async getPlayer(id: string): Promise<IGamePlayer | null> {
-    // TODO:
+    // TODO: not implemented.
     this.logger.debug(id);
     return null;
   }
   private async getPlayers(): Promise<IGamePlayer[]> {
+    // TODO: not implemented.
     return [];
   }
 
