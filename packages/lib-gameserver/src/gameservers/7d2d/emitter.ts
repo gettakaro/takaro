@@ -137,4 +137,8 @@ export class SevenDaysToDieEmitter
       this.logger.error('Error handling message from game server', error);
     }
   }
+  public executeRawCommand(command: string): string {
+    // TODO: implement
+    return command;
+  }
 }

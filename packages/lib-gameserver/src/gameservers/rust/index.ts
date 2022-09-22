@@ -1,7 +1,11 @@
 import { logger } from '@takaro/logger';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { IGameServer, IServerInfo } from '../../interfaces/GameServer';
+import {
+  IGameServer,
+  IServerConnection,
+  IServerInfo,
+} from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
 
 export class Rust implements IGameServer {
@@ -13,19 +17,29 @@ export class Rust implements IGameServer {
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
+    this.logger.debug('getPlayers');
     return [];
   }
 
-  async testReachability(): Promise<IServerInfo> {
-    return { connectable: true };
+  async testConnection(): Promise<IServerConnection> {
+    return { canConnect: true, error: null };
   }
 
   async executeCommand(command: string): Promise<string> {
+    this.getEventEmitter().executeRawCommand(command);
     return command;
   }
 
   getEventEmitter(): IGameEventEmitter {
     const emitter = new RustEmitter();
     return emitter;
+  }
+
+  async getServerInfo(): Promise<IServerInfo> {
+    return {
+      players: 0,
+      maxPlayers: 0,
+      uptime: '',
+    };
   }
 }

@@ -5,6 +5,9 @@ import {
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
+  EventPlayerKicked,
+  EventPlayerSpawned,
+  EventPlayerMessaged,
 } from './events';
 
 export interface IEventMap {
@@ -15,6 +18,10 @@ export interface IEventMap {
   [GameEvents.PLAYER_DISCONNECTED]: (
     player: EventPlayerDisconnected
   ) => Promise<void>;
+  [GameEvents.PLAYER_KICKED]: (player: EventPlayerKicked) => Promise<void>;
+  [GameEvents.PLAYER_SPAWNED]: (player: EventPlayerSpawned) => Promise<void>;
+  [GameEvents.PLAYER_MESSAGED]: (player: EventPlayerMessaged) => Promise<void>;
+  // TODO: not sure if this abstracts to 7d2d [GameEvents.ITEM_GIVEN_TO]: ...
 }
 
 export interface IGameEventEmitter {
@@ -52,7 +59,7 @@ export interface IGameEventEmitter {
   rawListeners<E extends keyof IEventMap>(event: E): Function[];
   listeners<E extends keyof IEventMap>(event: E): Function[];
   listenerCount<E extends keyof IEventMap>(event: E): number;
-
+  executeRawCommand(command: string): string;
   getMaxListeners(): number;
   setMaxListeners(maxListeners: number): this;
 }

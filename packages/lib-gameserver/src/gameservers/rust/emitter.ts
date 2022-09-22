@@ -6,7 +6,6 @@ import { JsonObject } from 'type-fest';
 import { IsString } from 'class-validator';
 import { GameEvents } from '../../interfaces/events';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { Object } from 'lodash';
 
 // TODO: should move to somewhere else
 export interface RustCombatLog {
@@ -19,18 +18,18 @@ export interface RustCombatLog {
   /// The player or object that was harmed by the Attacker
   target: string;
   /// The weapon type used in the combat round.
-  weapon: string; // TODO: probably should be an enum?
+  weapon: string;
   /// The ammo type used in the combat round.
-  ammo: string; // TODO: probably should be an enum?
+  ammo: string;
   /// The specific area in which the hit registered (head, neck, arm)
-  area: string; // TODO: probably should be an enum?
+  area: string;
   /// The distance in which the attack was initiated in meters.
   distance: string;
   /// The total health of the target before the combat round took place.
-  oldHp: number; // TODO: might be a string.
+  oldHp: number;
   /// The total health of the target after the combat round took place.
   newHp: number;
-  /// Additioanl information statuses and flags. TODO: define this better.
+  /// Additioanl information statuses and flags.
   info: string;
 }
 
@@ -90,13 +89,14 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
     });
 
     this.ws.on('open', () => {
-      this.logger.info('ws is opened');
+      this.logger.info('Connected to [RUST] gameserver.');
       // this.ws!.send(JSON.stringify({ Message: 'serverinfo', Identifier: 42, Name: 'Takaro' }));
     });
   }
 
   async stop(): Promise<void> {
     this.ws?.close();
+    this.logger.debug('Websocket connection has been closed');
     return;
   }
   private transform(obj: any): RustEvent {
@@ -110,7 +110,8 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
   }
 
   private async parseMessage(e: RustEvent) {
-    // TODO: we probably want to handle the stacktrace first, because in that case it might be an invalid message.
+    // TODO: We probably want to handle the stacktrace first, because in that case it might be an invalid message.
+    // TODO: Certain events have a different type. We could split the events based on these types to improve performance.
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.message)) {
       const data = this.handlePlayerConnected(e.message);
       this.emit(GameEvents.PLAYER_CONNECTED, data);
@@ -125,26 +126,25 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
     if (EventRegexMap[GameEvents.PLAYER_SPAWNED].test(e.message)) {
       const data = this.handlePlayerSpawned(e.message);
       this.emit(GameEvents.PLAYER_SPAWNED, data);
+      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_KICKED].test(e.message)) {
       const data = this.handlePlayerKicked(e.message);
       this.emit(GameEvents.PLAYER_KICKED, data);
-    }
-
-    if (EventRegexMap[GameEvents.ITEM_GIVEN_TO].test(e.message)) {
-      const data = this.handlePlayerKicked(e.message);
-      this.emit(GameEvents.PLAYER_KICKED, data);
+      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_MESSAGED].test(e.message)) {
       const data = this.handlePlayerMessaged(e.message);
       this.emit(GameEvents.PLAYER_MESSAGED, data);
+      return;
     }
 
     if (EventRegexMap[GameEvents.ITEM_GIVEN_TO].test(e.message)) {
       const data = this.handleItemGivenTo(e.message);
       this.emit(GameEvents.ITEM_GIVEN_TO, data);
+      return;
     }
 
     this.emit(GameEvents.LOG_LINE, {
@@ -297,5 +297,23 @@ export class RustEmitter extends EventEmitter implements IGameEventEmitter {
     }
     this.logger.error('could not parse message correctly', msg, expSearch);
     throw new Error('RUSTEVENTHANDLER_PARSING_FAILED');
+  }
+
+  private async getPlayer(id: string): Promise<IGamePlayer | null> {
+    // TODO:
+    this.logger.debug(id);
+    return null;
+  }
+  private async getPlayers(): Promise<IGamePlayer[]> {
+    return [];
+  }
+
+  public executeRawCommand(command: string): string {
+    const data = {
+      Message: command,
+      Name: 'Takaro',
+    };
+    this.ws?.send(data, (resp) => console.log(resp));
+    return '';
   }
 }

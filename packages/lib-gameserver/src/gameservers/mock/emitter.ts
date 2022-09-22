@@ -84,4 +84,8 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
 
     return event;
   }
+  public executeRawCommand(command: string): string {
+    // TODO: implement
+    return command;
+  }
 }

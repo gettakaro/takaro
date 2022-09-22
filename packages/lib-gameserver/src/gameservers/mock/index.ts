@@ -1,7 +1,11 @@
 import { logger } from '@takaro/logger';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { IGameServer, IServerInfo } from '../../interfaces/GameServer';
+import {
+  IGameServer,
+  IServerConnection,
+  IServerInfo,
+} from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
 
 export class Mock implements IGameServer {
@@ -11,9 +15,7 @@ export class Mock implements IGameServer {
     this.logger.debug('getPlayer', id);
     return null;
   }
-  async testReachability(): Promise<IServerInfo> {
-    return { connectable: true };
-  }
+
   async executeCommand(command: string): Promise<string> {
     return command;
   }
@@ -25,5 +27,18 @@ export class Mock implements IGameServer {
   getEventEmitter(): IGameEventEmitter {
     const emitter = new MockEmitter();
     return emitter;
+  }
+  async testConnection(): Promise<IServerConnection> {
+    return {
+      error: null,
+      canConnect: false,
+    };
+  }
+  async getServerInfo(): Promise<IServerInfo> {
+    return {
+      players: 0,
+      maxPlayers: 0,
+      uptime: '',
+    };
   }
 }

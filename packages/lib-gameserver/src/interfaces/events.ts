@@ -39,6 +39,13 @@ export class EventPlayerSpawned extends BaseEvent {
   player!: IGamePlayer;
 }
 
+export class EventPlayerKicked extends BaseEvent {
+  type = GameEvents.PLAYER_KICKED;
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  player!: IGamePlayer;
+}
+
 export class EventPlayerMessaged extends BaseEvent {
   type = GameEvents.PLAYER_MESSAGED;
   @ValidateNested()
