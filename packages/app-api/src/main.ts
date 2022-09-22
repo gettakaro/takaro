@@ -4,6 +4,7 @@ import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/logger';
 import { migrateSystem } from '@takaro/db';
 import { DomainController } from './controllers/DomainController';
+import { Server as HttpServer } from 'http';
 import { config } from './config';
 import { UserController } from './controllers/UserController';
 import { RoleController } from './controllers/Rolecontroller';
@@ -15,6 +16,7 @@ import { CronJobController } from './controllers/CronJobController';
 import { ModuleController } from './controllers/ModuleController';
 import { EventsWorker } from './workers/eventWorker';
 import { QueuesService } from '@takaro/queues';
+import { getSocketServer } from './lib/socketServer';
 
 export const server = new HTTP(
   {
@@ -45,6 +47,7 @@ async function main() {
   await migrateSystem();
   log.info('🦾 Database up to date');
 
+  getSocketServer(server.server as HttpServer);
   await server.start();
 
   log.info('🚀 Server started');
