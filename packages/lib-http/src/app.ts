@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger } from '@takaro/logger';
+import { logger, errors } from '@takaro/logger';
 import { Server } from 'http';
 import {
   RoutingControllersOptions,
@@ -10,9 +10,12 @@ import { Meta } from './controllers/meta';
 import { LoggingMiddleware } from './middleware/logger';
 import { ErrorHandler } from './middleware/errorHandler';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 interface IHTTPOptions {
   port?: number;
+  allowedOrigins?: string[];
 }
 
 export class HTTP {
@@ -26,7 +29,23 @@ export class HTTP {
   ) {
     this.logger = logger('http');
     this.app = express();
+
     this.app.use(bodyParser.json());
+    this.app.use(
+      cors({
+        credentials: true,
+        origin: (origin: string | undefined, callback: CallableFunction) => {
+          const allowedOrigins = this.httpOptions.allowedOrigins ?? [];
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new errors.BadRequestError('Not allowed by CORS'));
+          }
+        },
+      })
+    );
+    this.app.use(cookieParser());
+
     if (options.controllers) {
       useExpressServer(this.app, {
         ...options,

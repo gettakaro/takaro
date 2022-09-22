@@ -27,12 +27,14 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { CAPABILITIES } from '../db/role';
 import { DomainService } from '../service/DomainService';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { Response } from 'express';
 
 export class UpdateUserDTO {
   @Length(3, 50)
@@ -94,12 +96,26 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
 export class UserController {
   @Post('/login')
   @ResponseSchema(LoginOutputDTOAPI)
-  async login(@Body() loginReq: LoginDTO) {
+  async login(@Body() loginReq: LoginDTO, @Res() res: Response) {
     const domainId = await new DomainService().resolveDomain(loginReq.username);
     const service = new AuthService(domainId);
     return apiResponse(
-      await service.login(loginReq.username, loginReq.password)
+      await service.login(loginReq.username, loginReq.password, res)
     );
+  }
+
+  @Post('/logout')
+  @ResponseSchema(APIOutput)
+  async logout(@Res() res: Response) {
+    return apiResponse(await AuthService.logout(res));
+  }
+
+  @Get('/me')
+  @UseBefore(AuthService.getAuthMiddleware([]))
+  @ResponseSchema(UserOutputDTOAPI)
+  async me(@Req() req: AuthenticatedRequest) {
+    const user = await new UserService(req.domainId).findOne(req.user.id);
+    return apiResponse(user);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))

@@ -24,7 +24,10 @@ export const server = new HTTP(
       CronJobController,
     ],
   },
-  { port: config.get('http.port') }
+  {
+    port: config.get('http.port'),
+    allowedOrigins: config.get('http.allowedOrigins'),
+  }
 );
 
 const log = logger('main');

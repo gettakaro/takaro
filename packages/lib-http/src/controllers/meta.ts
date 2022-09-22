@@ -54,9 +54,9 @@ export class Meta {
             domainAuth: {
               description:
                 'Used for anything inside a domain. Players, GameServers, etc.',
-              type: 'http',
-              scheme: 'bearer',
-              bearerFormat: 'JWT',
+              type: 'apiKey',
+              in: 'cookie',
+              name: 'takaro-token',
             },
           },
         },

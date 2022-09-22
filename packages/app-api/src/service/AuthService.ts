@@ -31,7 +31,11 @@ export class LoginOutputDTO {
 const log = logger('AuthService');
 
 export class AuthService extends DomainScoped {
-  async login(email: string, password: string): Promise<LoginOutputDTO> {
+  async login(
+    email: string,
+    password: string,
+    res: Response
+  ): Promise<LoginOutputDTO> {
     const service = new UserService(this.domainId);
     const users = await service.find({ filters: { email } });
 
@@ -48,11 +52,21 @@ export class AuthService extends DomainScoped {
     const passwordMatches = await compare(password, users[0].password);
 
     if (passwordMatches) {
-      return { token: await this.signJwt({ user: { id: users[0].id } }) };
+      const token = await this.signJwt({ user: { id: users[0].id } });
+      res.cookie(config.get('auth.cookieName'), token, {
+        httpOnly: true,
+        maxAge: ms(config.get('auth.jwtExpiresIn')),
+      });
+
+      return { token };
     } else {
       this.log.warn('Password does not match');
       throw new errors.UnauthorizedError();
     }
+  }
+
+  static async logout(res: Response) {
+    res.clearCookie(config.get('auth.cookieName'));
   }
 
   /**
@@ -132,6 +146,15 @@ export class AuthService extends DomainScoped {
     });
   }
 
+  static getTokenFromRequest(req: AuthenticatedRequest) {
+    const tokenFromAuthHeader = req.headers['authorization']?.replace(
+      'Bearer ',
+      ''
+    );
+    const tokenFromCookie = req.cookies[config.get('auth.cookieName')];
+    return tokenFromAuthHeader || tokenFromCookie;
+  }
+
   static getAuthMiddleware(capabilities: CAPABILITIES[]) {
     return async (
       req: AuthenticatedRequest,
@@ -139,7 +162,7 @@ export class AuthService extends DomainScoped {
       next: NextFunction
     ) => {
       try {
-        const token = req.headers['authorization']?.replace('Bearer ', '');
+        const token = this.getTokenFromRequest(req);
         const payload = await AuthService.verifyJwt(token);
         const service = new UserService(payload.domainId);
         const user = await service.findOne(payload.sub);
