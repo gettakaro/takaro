@@ -27,11 +27,13 @@ export class IntegrationTest<SetupData> {
       auth: {
         adminSecret: integrationConfig.get('auth.adminSecret'),
       },
+      log: this.log,
     });
 
     this.client = new Client({
       url: integrationConfig.get('host'),
       auth: {},
+      log: this.log,
     });
   }
 

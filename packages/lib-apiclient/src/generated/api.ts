@@ -1496,8 +1496,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1541,8 +1539,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -1598,8 +1594,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1648,8 +1642,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1693,8 +1685,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -1757,8 +1747,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1809,8 +1797,6 @@ export const CronJobApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -2925,8 +2911,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -2982,8 +2966,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -3032,8 +3014,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -3082,8 +3062,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -3127,8 +3105,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3186,8 +3162,6 @@ export const FunctionApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3633,8 +3607,6 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3690,8 +3662,6 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -3740,8 +3710,6 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -3785,8 +3753,6 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3844,8 +3810,6 @@ export const GameServerApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4529,8 +4493,6 @@ export const RoleApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4586,8 +4548,6 @@ export const RoleApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -4636,8 +4596,6 @@ export const RoleApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -4681,8 +4639,6 @@ export const RoleApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4740,8 +4696,6 @@ export const RoleApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5132,8 +5086,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -5177,8 +5129,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5234,8 +5184,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -5279,8 +5227,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5297,6 +5243,88 @@ export const UserApiAxiosParamCreator = function (
         localVarRequestOptions,
         configuration
       );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Logout
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLogout: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/logout`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Me
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerMe: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/me`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
 
       return {
         url: toPathString(localVarUrlObj),
@@ -5336,8 +5364,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -5389,8 +5415,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -5434,8 +5458,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5493,8 +5515,6 @@ export const UserApiAxiosParamCreator = function (
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
-      // http bearer authentication required
-      await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5626,6 +5646,49 @@ export const UserApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.userControllerLogin(loginDTO, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Logout
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerLogout(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.userControllerLogout(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Me
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerMe(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<UserOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.userControllerMe(options);
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -5820,6 +5883,28 @@ export const UserApiFactory = function (
     },
     /**
      *
+     * @summary Logout
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLogout(options?: any): AxiosPromise<APIOutput> {
+      return localVarFp
+        .userControllerLogout(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Me
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerMe(options?: any): AxiosPromise<UserOutputDTOAPI> {
+      return localVarFp
+        .userControllerMe(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5953,6 +6038,32 @@ export class UserApi extends BaseAPI {
   ) {
     return UserApiFp(this.configuration)
       .userControllerLogin(loginDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Logout
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerLogout(options?: AxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerLogout(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Me
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerMe(options?: AxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerMe(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

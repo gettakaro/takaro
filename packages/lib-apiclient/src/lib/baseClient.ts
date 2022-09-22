@@ -1,9 +1,12 @@
 import { MetaApi } from '../generated';
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { logger } from '@takaro/logger';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore doing a workaround here specifically for package json
+import { version } from '../../package.json';
 export interface IApiClientConfig {
   url: string;
+  log?: Logger;
   auth: {
     token?: string;
     username?: string;
@@ -12,19 +15,36 @@ export interface IApiClientConfig {
   };
 }
 
+interface Logger {
+  info: (msg: string, meta?: any) => void;
+  warn: (msg: string, meta?: any) => void;
+  error: (msg: string, meta?: any) => void;
+  debug: (msg: string, meta?: any) => void;
+}
+
 export class BaseApiClient {
   protected axios: AxiosInstance;
-  private log = logger('ApiClient');
+  protected log: Logger = {
+    error: console.error,
+    info: console.log,
+    warn: console.warn,
+    debug: console.log,
+  };
+
   constructor(protected readonly config: IApiClientConfig) {
     const axiosConfig: AxiosRequestConfig = {
       baseURL: this.config.url,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': `Takaro-API-Client@${version}`,
       },
+      withCredentials: true,
     };
     this.axios = this.addAuthHeaders(
       this.addLoggers(axios.create(axiosConfig))
     );
+
+    if (this.config.log) this.log = this.config.log;
   }
 
   isJsonMime(mime: string) {
