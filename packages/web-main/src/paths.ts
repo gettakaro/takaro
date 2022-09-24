@@ -2,7 +2,10 @@ export const PATHS = {
   home: '/',
   login: '/login',
   settings: '/settings',
-  servers: '/servers',
+  gameServers: {
+    overview: '/servers',
+    create: '/servers/create',
+  },
   players: '/players',
   modules: '/modules',
   users: '/users',

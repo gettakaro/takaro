@@ -110,7 +110,7 @@ export const Navbar: FC = () => {
           <Dashboard size={24} />
           <p>Dashboard</p>
         </NavLink>
-        <NavLink to={PATHS.servers}>
+        <NavLink to={PATHS.gameServers.overview}>
           <GameServers size={24} />
           <p>Servers</p>
         </NavLink>
