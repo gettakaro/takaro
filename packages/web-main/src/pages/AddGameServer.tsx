@@ -31,6 +31,8 @@ interface IFormInputs {
 const Container = styled.div`
   display: flex;
   width: 100%;
+  background-color: ${({ theme }) => theme.colors.white};
+  border-radius: 1.5rem;
 `;
 
 const SubContainer = styled.div`

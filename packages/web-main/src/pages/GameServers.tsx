@@ -8,11 +8,13 @@ import { GameServerOutputArrayDTOAPI } from "@takaro/apiclient";
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from "paths";
 import { DeleteGameServerButton } from "components/gameserver/deleteButton";
+import { useSnackbar } from 'notistack';
 
-const GridContainer = styled.div`
+const TableContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: 2rem;
 `;
 
 
@@ -20,6 +22,7 @@ const GridContainer = styled.div`
 const GameServers: FC = () => {
   const client = useApiClient();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>(
     'gameServers',
@@ -32,13 +35,13 @@ const GameServers: FC = () => {
     {field: 'name', headerName: 'Name'},
     {field: 'type', headerName: 'Type'},
     {field: 'id', headerName: '', cellRenderer: (row) => {
-      // TODO: This will display a confirmation message
-      // But it's broken :( I think it's because it's being rendered inside the table
-      // return <DeleteGameServerButton/>
-      return <Button text={'Delete server'} onClick={async (field) => {
-        await client.gameserver.gameServerControllerRemove(row.value)
-        refetch()
-      }} color={'error'}/>
+      return <DeleteGameServerButton action={async () => {
+        await client.gameserver.gameServerControllerRemove(row.value);
+        refetch();
+        enqueueSnackbar('The server was deleted', {
+          variant: 'success',
+        });
+      }} />
     }},
   ]
 
@@ -51,7 +54,6 @@ const GameServers: FC = () => {
       <Helmet>
         <title>Gameservers - Takaro</title>
       </Helmet>
-      <GridContainer>
       <Button
       icon={<AiFillPlusCircle size={20} />}
       onClick={() => {
@@ -59,8 +61,9 @@ const GameServers: FC = () => {
       }}
       text="Add gameserver"
     />
+      <TableContainer>
         <Table columnDefs={columDefs} rowData={data.data} width={'100%'} height={'400px'} />
-      </GridContainer>
+      </TableContainer>
     </Fragment>
   );
 }
