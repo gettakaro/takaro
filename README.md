@@ -23,6 +23,8 @@ Start the development environment:
 docker-compose up --build
 ```
 
+There is a dashboard available where all the services are listed. You can access it at http://localhost:8080
+
 Optionally (but recommended!), you can set up some testing data automatically.
 
 ```bash
