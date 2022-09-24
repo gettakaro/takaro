@@ -36,6 +36,7 @@ services:
 #    command: "npm run start:dev"
     volumes:
       - ./packages:/app/packages  
+      - ./reports:/app/reports
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
