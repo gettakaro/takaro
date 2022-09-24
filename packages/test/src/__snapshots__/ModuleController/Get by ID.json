@@ -1,21 +1,23 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-22T13:07:38.132Z"
+      "serverTime": "2022-09-24T17:31:04.928Z"
     },
     "data": {
-      "createdAt": "2022-09-22T13:07:38.105Z",
-      "updatedAt": "2022-09-22T13:07:38.115Z",
-      "id": "c52f6f2a-2383-4fb4-b23e-87ceb97280fa",
+      "createdAt": "2022-09-24T17:31:04.887Z",
+      "updatedAt": "2022-09-24T17:31:04.915Z",
+      "id": "6ecd8302-af6f-4789-ad7d-0cd370f31ae7",
       "name": "Test module",
       "enabled": true,
       "config": {},
-      "cronJobs": []
+      "cronJobs": [],
+      "hooks": []
     }
   },
   "status": 200,
   "test": {
     "group": "ModuleController",
+    "snapshot": true,
     "name": "Get by ID",
     "expectedStatus": 200,
     "filteredFields": [],
