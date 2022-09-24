@@ -22,6 +22,7 @@ interface ISetupHookAndFunction {
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<HookOutputDTOAPI>({
     group,
+    snapshot: true,
     name: 'Get by ID',
     setup: async function () {
       const module = (
@@ -39,6 +40,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Create',
     test: async function () {
       const module = (
@@ -52,6 +54,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,
+    snapshot: true,
     name: 'Update',
     setup: async function () {
       const module = (
@@ -73,6 +76,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,
+    snapshot: true,
     name: 'Delete',
     setup: async function () {
       const module = (
@@ -89,6 +93,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<ISetupHookAndFunction>({
     group,
+    snapshot: true,
     name: 'Can assign a function to a hook',
     setup: async function () {
       const module = (
@@ -119,6 +124,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<ISetupHookAndFunction>({
     group,
+    snapshot: true,
     name: 'Can unassign a function from a hook',
     setup: async function () {
       const module = (
@@ -153,6 +159,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Rejects catastrophic exponential-time regexes',
     test: async function () {
       const module = (

@@ -4,6 +4,18 @@ import { expect } from './test/expect';
 import { logger } from '@takaro/logger';
 import { AdminClient, Client, AxiosError } from '@takaro/apiclient';
 
+export class IIntegrationTest<SetupData> {
+  snapshot!: boolean;
+  group!: string;
+  name!: string;
+  standardEnvironment?: boolean = true;
+  setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
+  teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
+  test!: (this: IntegrationTest<SetupData>) => Promise<any>;
+  expectedStatus?: number = 200;
+  filteredFields?: string[];
+}
+
 export class IntegrationTest<SetupData> {
   protected log = logger('IntegrationTest');
 
@@ -17,9 +29,13 @@ export class IntegrationTest<SetupData> {
     password: '',
   };
 
-  constructor(public test: ITestWithSnapshot<SetupData>) {
-    this.test.expectedStatus = this.test.expectedStatus ?? 200;
-    this.test.filteredFields = this.test.filteredFields ?? [];
+  constructor(
+    public test: IIntegrationTest<SetupData> | ITestWithSnapshot<SetupData>
+  ) {
+    if (test.snapshot) {
+      this.test.expectedStatus = this.test.expectedStatus ?? 200;
+      this.test.filteredFields = this.test.filteredFields ?? [];
+    }
     this.test.standardEnvironment = this.test.standardEnvironment ?? true;
 
     this.adminClient = new AdminClient({
@@ -104,8 +120,10 @@ export class IntegrationTest<SetupData> {
           throw new Error('No response returned from test');
         }
 
-        await matchSnapshot(this.test, response);
-        expect(response.status).to.equal(this.test.expectedStatus);
+        if (this.test.snapshot) {
+          await matchSnapshot(this.test, response);
+          expect(response.status).to.equal(this.test.expectedStatus);
+        }
       });
     });
   }
