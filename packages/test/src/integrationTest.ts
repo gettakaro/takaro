@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';

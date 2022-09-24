@@ -11,7 +11,6 @@ import { errors } from '@takaro/logger';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { PartialModelObject } from 'objection';
 import { config } from '../config';
-import { JsonObject } from 'type-fest';
 
 export class GameServerOutputDTO {
   @IsUUID()
@@ -19,7 +18,7 @@ export class GameServerOutputDTO {
   @IsString()
   name!: string;
   @IsJSON()
-  connectionInfo!: JsonObject;
+  connectionInfo!: Record<string, unknown>;
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type!: GAME_SERVER_TYPE;

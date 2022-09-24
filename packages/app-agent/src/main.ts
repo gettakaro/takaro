@@ -4,7 +4,13 @@ import { BullBoardRouter } from './controllers/bullboard';
 import { QueuesService } from '@takaro/queues';
 import { CronJobWorker } from './service/workers/cronjobWorker';
 
-export const server = new HTTP({}, { port: config.get('http.port') });
+export const server = new HTTP(
+  {},
+  {
+    port: config.get('http.port'),
+    allowedOrigins: config.get('http.allowedOrigins'),
+  }
+);
 
 async function main() {
   config.validate();

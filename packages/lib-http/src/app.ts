@@ -35,6 +35,7 @@ export class HTTP {
       cors({
         credentials: true,
         origin: (origin: string | undefined, callback: CallableFunction) => {
+          if (!origin) return callback(null, true);
           const allowedOrigins = this.httpOptions.allowedOrigins ?? [];
           if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);

@@ -132,7 +132,6 @@ export class CronJobService extends TakaroService<CronJobModel> {
         domainId: this.domainId,
         token: await authService.getAgentToken(),
         itemId: item.id,
-        data: {},
       },
       {
         repeat: this.getRepeatableOpts(item),

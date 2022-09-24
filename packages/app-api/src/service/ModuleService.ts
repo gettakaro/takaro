@@ -14,6 +14,7 @@ import {
 import { Type } from 'class-transformer';
 import { CronJobOutputDTO } from './CronJobService';
 import { JsonObject } from 'type-fest';
+import { HookOutputDTO } from './HookService';
 
 export class ModuleOutputDTO {
   @IsUUID()
@@ -30,6 +31,10 @@ export class ModuleOutputDTO {
   @Type(() => CronJobOutputDTO)
   @ValidateNested()
   cronJobs: CronJobOutputDTO[] = [];
+
+  @Type(() => HookOutputDTO)
+  @ValidateNested()
+  hooks: HookOutputDTO[] = [];
 }
 
 export class ModuleCreateDTO {
@@ -38,7 +43,7 @@ export class ModuleCreateDTO {
   name!: string;
 
   @IsOptional()
-  @IsString()
+  @IsBoolean()
   enabled!: boolean;
 
   @IsOptional()

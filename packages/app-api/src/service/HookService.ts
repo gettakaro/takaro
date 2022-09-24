@@ -53,7 +53,7 @@ export class HookCreateDTO {
   name!: string;
 
   @IsOptional()
-  @IsString()
+  @IsBoolean()
   enabled!: boolean;
 
   @Validate(IsSafeRegex, {

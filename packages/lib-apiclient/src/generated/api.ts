@@ -130,6 +130,19 @@ export interface AssignFunctionToHookDTO {
 /**
  *
  * @export
+ * @interface BaseEvent
+ */
+export interface BaseEvent {
+  /**
+   *
+   * @type {string}
+   * @memberof BaseEvent
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
  * @interface CapabilityOutputDTO
  */
 export interface CapabilityOutputDTO {
@@ -540,19 +553,6 @@ export interface ErrorOutput {
 /**
  *
  * @export
- * @interface EventLogLine
- */
-export interface EventLogLine {
-  /**
-   *
-   * @type {string}
-   * @memberof EventLogLine
-   */
-  msg: string;
-}
-/**
- *
- * @export
  * @interface EventPlayerConnected
  */
 export interface EventPlayerConnected {
@@ -562,6 +562,12 @@ export interface EventPlayerConnected {
    * @memberof EventPlayerConnected
    */
   player: IGamePlayer;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerConnected
+   */
+  msg: string;
 }
 /**
  *
@@ -575,6 +581,12 @@ export interface EventPlayerDisconnected {
    * @memberof EventPlayerDisconnected
    */
   player: IGamePlayer;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerDisconnected
+   */
+  msg: string;
 }
 /**
  *
@@ -1268,10 +1280,10 @@ export interface ModuleCreateDTO {
   name: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof ModuleCreateDTO
    */
-  enabled?: string;
+  enabled?: boolean;
   /**
    *
    * @type {object}
@@ -1334,6 +1346,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   cronJobs: CronJobOutputDTO;
+  /**
+   *
+   * @type {HookOutputDTO}
+   * @memberof ModuleOutputDTO
+   */
+  hooks: HookOutputDTO;
 }
 /**
  *
@@ -1374,10 +1392,10 @@ export interface ModuleSearchInputAllowedFilters {
   name?: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  enabled?: string;
+  enabled?: boolean;
 }
 /**
  *

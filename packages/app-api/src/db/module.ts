@@ -4,6 +4,7 @@ import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
 import { JsonObject } from 'type-fest';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob';
+import { HookModel, HOOKS_TABLE_NAME } from './hook';
 
 export const MODULE_TABLE_NAME = 'modules';
 
@@ -23,6 +24,14 @@ export class ModuleModel extends TakaroModel {
           to: `${CRONJOB_TABLE_NAME}.moduleId`,
         },
       },
+      hooks: {
+        relation: Model.HasManyRelation,
+        modelClass: HookModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: `${HOOKS_TABLE_NAME}.moduleId`,
+        },
+      },
     };
   }
 }
@@ -40,12 +49,20 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel> {
   async find(filters: ITakaroQuery<ModuleModel>): Promise<ModuleModel[]> {
     const params = new QueryBuilder(filters).build(MODULE_TABLE_NAME);
     const model = await this.getModel();
-    return await model.query().where(params.where).withGraphJoined('cronJobs');
+    return await model
+      .query()
+      .where(params.where)
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks');
   }
 
   async findOne(id: string): Promise<ModuleModel> {
     const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('cronJobs');
+    const data = await model
+      .query()
+      .findById(id)
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -60,7 +77,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel> {
       .query()
       .insert(item)
       .returning('*')
-      .withGraphJoined('cronJobs');
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks');
   }
 
   async delete(id: string): Promise<boolean> {
