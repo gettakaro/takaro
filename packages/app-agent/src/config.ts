@@ -9,6 +9,7 @@ export enum EXECUTION_MODE {
 interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
+    allowedOrigins: string[];
   };
   takaro: {
     url: string;
@@ -49,6 +50,12 @@ const configSchema = {
       },
       default: 3001,
       env: 'PORT',
+    },
+    allowedOrigins: {
+      doc: 'The origins that are allowed to access the API',
+      format: Array,
+      default: [],
+      env: 'CORS_ALLOWED_ORIGINS',
     },
   },
   redis: {

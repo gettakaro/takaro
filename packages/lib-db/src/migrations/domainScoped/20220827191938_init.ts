@@ -32,6 +32,8 @@ export async function up(knex: Knex): Promise<void> {
         'MANAGE_FUNCTIONS',
         'READ_CRONJOBS',
         'MANAGE_CRONJOBS',
+        'READ_HOOKS',
+        'MANAGE_HOOKS',
         'READ_MODULES',
         'MANAGE_MODULES',
       ])
@@ -120,7 +122,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.boolean('enabled').notNullable().defaultTo(true);
-    table.string('trigger').notNullable();
+    table
+      .enu('eventType', ['log', 'player-connected', 'player-disconnected'])
+      .notNullable();
+    table.string('regex').notNullable();
     table
       .uuid('moduleId')
       .references('modules.id')

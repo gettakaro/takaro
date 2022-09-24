@@ -5,8 +5,10 @@ import { expect } from './test/expect';
 import { omit } from 'lodash';
 import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
 import { IntegrationTest } from './main';
+import { IIntegrationTest } from './integrationTest';
 
-export class ITestWithSnapshot<SetupData> {
+export class ITestWithSnapshot<SetupData> extends IIntegrationTest<SetupData> {
+  snapshot = true;
   group!: string;
   name!: string;
   standardEnvironment?: boolean = true;
@@ -31,6 +33,7 @@ const DEFAULT_FILTERED_FIELDS = [
   'serverTime',
   'domainId',
   'url',
+  'snapshot',
 ];
 
 function filterFields(

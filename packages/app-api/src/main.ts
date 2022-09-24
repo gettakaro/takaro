@@ -17,6 +17,7 @@ import { ModuleController } from './controllers/ModuleController';
 import { EventsWorker } from './workers/eventWorker';
 import { QueuesService } from '@takaro/queues';
 import { getSocketServer } from './lib/socketServer';
+import { HookController } from './controllers/HookController';
 
 export const server = new HTTP(
   {
@@ -28,6 +29,7 @@ export const server = new HTTP(
       FunctionController,
       CronJobController,
       ModuleController,
+      HookController,
     ],
   },
   {

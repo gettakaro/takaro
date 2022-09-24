@@ -15,6 +15,7 @@ interface ISetupCronJobAndFunction {
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<FunctionOutputDTO>({
     group,
+    snapshot: true,
     name: 'Get by ID',
     setup: async function () {
       return (await this.client.function.functionControllerCreate(mockFunction))
@@ -26,6 +27,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Create',
     test: async function () {
       return this.client.function.functionControllerCreate(mockFunction);
@@ -33,6 +35,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<FunctionOutputDTO>({
     group,
+    snapshot: true,
     name: 'Update',
     setup: async function () {
       return (await this.client.function.functionControllerCreate(mockFunction))
@@ -46,6 +49,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<FunctionOutputDTO>({
     group,
+    snapshot: true,
     name: 'Delete',
     setup: async function () {
       return (await this.client.function.functionControllerCreate(mockFunction))
@@ -57,6 +61,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
     group,
+    snapshot: true,
     name: 'Get related',
     setup: async function () {
       const module = (

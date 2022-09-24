@@ -16,6 +16,7 @@ interface ISetupCronJobAndFunction {
 
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Get by ID',
     setup: async function () {
@@ -38,6 +39,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<void>({
+    snapshot: true,
     group,
     name: 'Create',
     test: async function () {
@@ -53,6 +55,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Update',
     setup: async function () {
@@ -80,6 +83,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Delete',
     setup: async function () {
@@ -102,6 +106,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Search',
     setup: async function () {
@@ -124,6 +129,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
+    snapshot: true,
     group,
     name: 'Can assign a function to a cronjob',
     setup: async function () {
@@ -159,6 +165,7 @@ const tests: IntegrationTest<any>[] = [
     filteredFields: ['moduleId'],
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
+    snapshot: true,
     group,
     name: 'Can unassign a function from a cronjob',
     setup: async function () {
