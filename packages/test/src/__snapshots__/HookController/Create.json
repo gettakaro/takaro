@@ -1,15 +1,16 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-24T10:54:44.309Z"
+      "serverTime": "2022-09-24T11:54:42.064Z"
     },
     "data": {
       "name": "Test hook",
-      "trigger": "/this (is) a [regex]/g",
-      "moduleId": "279072ea-ac3e-4ef9-ab7d-2ba66a0adc17",
-      "createdAt": "2022-09-24T10:54:44.300Z",
-      "updatedAt": "2022-09-24T10:54:44.308Z",
-      "id": "9037c79a-8067-4c5c-90ac-3265ed9a5a1c",
+      "regex": "/this (is) a [regex]/g",
+      "eventType": "log",
+      "moduleId": "f443e8b3-cfff-4cdd-bb6b-eac912d0000f",
+      "createdAt": "2022-09-24T11:54:42.054Z",
+      "updatedAt": "2022-09-24T11:54:42.062Z",
+      "id": "2aad3ad7-778b-402b-a60e-2d288c1c7ff1",
       "enabled": true,
       "functions": [
         {}

@@ -4,6 +4,8 @@ import { config } from '../config';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import { getSocketServer } from '../lib/socketServer';
 
+const log = logger('worker:events');
+
 export class EventsWorker extends TakaroWorker<IEventQueueData> {
   constructor() {
     super(config.get('queues.events.name'), processJob);
@@ -11,8 +13,6 @@ export class EventsWorker extends TakaroWorker<IEventQueueData> {
 }
 
 async function processJob(job: Job<IEventQueueData>) {
-  const log = logger('worker:events');
-
   log.info('Processing an event', job.data);
 
   const socketServer = getSocketServer();
@@ -22,3 +22,9 @@ async function processJob(job: Job<IEventQueueData>) {
     job.data.data,
   ]);
 }
+
+/* 
+async function getTriggeredHooks(data: IEventQueueData) {
+
+}
+ */

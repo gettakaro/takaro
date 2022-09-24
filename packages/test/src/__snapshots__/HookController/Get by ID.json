@@ -1,16 +1,17 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-24T09:47:58.543Z"
+      "serverTime": "2022-09-24T11:54:41.650Z"
     },
     "data": {
-      "createdAt": "2022-09-24T09:47:58.525Z",
-      "updatedAt": "2022-09-24T09:47:58.532Z",
-      "id": "8cf0076a-b893-4654-bede-f567dc9ecfcc",
+      "createdAt": "2022-09-24T11:54:41.627Z",
+      "updatedAt": "2022-09-24T11:54:41.635Z",
+      "id": "26a5f558-cf0d-4eba-9792-3a52f6b65b17",
       "name": "Test hook",
       "enabled": true,
-      "trigger": "/this (is) a [regex]/g",
-      "moduleId": "6edc79ee-6dab-42b0-bfcd-38ef4b316dda",
+      "eventType": "log",
+      "regex": "/this (is) a [regex]/g",
+      "moduleId": "1a5d42fe-5d27-4ac6-bc82-2cc57197fee5",
       "functions": []
     }
   },

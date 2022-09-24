@@ -1,11 +1,16 @@
 import { IntegrationTest } from '@takaro/test';
-import { HookOutputDTOAPI, FunctionOutputDTOAPI } from '@takaro/apiclient';
+import {
+  HookOutputDTOAPI,
+  FunctionOutputDTOAPI,
+  HookCreateDTOEventTypeEnum,
+} from '@takaro/apiclient';
 
 const group = 'HookController';
 
 const mockHook = (moduleId: string) => ({
   name: 'Test hook',
-  trigger: '/this (is) a [regex]/g',
+  regex: '/this (is) a [regex]/g',
+  eventType: HookCreateDTOEventTypeEnum.Log,
   moduleId,
 });
 
@@ -61,7 +66,7 @@ const tests: IntegrationTest<any>[] = [
       return this.client.hook.hookControllerUpdate(this.setupData.data.id, {
         name: 'Updated hook',
         enabled: false,
-        trigger: '/new [regex]/g',
+        regex: '/new [regex]/g',
       });
     },
     filteredFields: ['moduleId'],
@@ -144,6 +149,23 @@ const tests: IntegrationTest<any>[] = [
         this.setupData.fn.data.id
       );
     },
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<void>({
+    group,
+    name: 'Rejects catastrophic exponential-time regexes',
+    test: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return this.client.hook.hookControllerCreate({
+        ...mockHook(module.id),
+        regex: '/(x+x+)+y/',
+      });
+    },
+    expectedStatus: 400,
     filteredFields: ['moduleId'],
   }),
 ];

@@ -927,14 +927,30 @@ export interface HookCreateDTO {
    * @type {string}
    * @memberof HookCreateDTO
    */
-  trigger: string;
+  regex: string;
   /**
    *
    * @type {string}
    * @memberof HookCreateDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  eventType: HookCreateDTOEventTypeEnum;
 }
+
+export const HookCreateDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type HookCreateDTOEventTypeEnum =
+  typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
+
 /**
  *
  * @export
@@ -983,7 +999,7 @@ export interface HookOutputDTO {
    * @type {string}
    * @memberof HookOutputDTO
    */
-  trigger: string;
+  regex: string;
   /**
    *
    * @type {FunctionOutputDTO}
@@ -1034,7 +1050,23 @@ export interface HookSearchInputAllowedFilters {
    * @memberof HookSearchInputAllowedFilters
    */
   enabled?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  eventType?: HookSearchInputAllowedFiltersEventTypeEnum;
 }
+
+export const HookSearchInputAllowedFiltersEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type HookSearchInputAllowedFiltersEventTypeEnum =
+  typeof HookSearchInputAllowedFiltersEventTypeEnum[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
+
 /**
  *
  * @export
@@ -1700,7 +1732,7 @@ export interface UpdateHookDTO {
    * @type {string}
    * @memberof UpdateHookDTO
    */
-  trigger: string;
+  regex: string;
   /**
    *
    * @type {string}

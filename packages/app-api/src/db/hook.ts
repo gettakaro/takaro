@@ -6,6 +6,7 @@ import {
   FUNCTIONS_ASSIGNMENT_TABLE_NAME,
   FUNCTION_TABLE_NAME,
 } from './function';
+import { GameEvents } from '@takaro/gameserver';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -13,7 +14,8 @@ export class HookModel extends TakaroModel {
   static tableName = HOOKS_TABLE_NAME;
   name!: string;
   enabled!: boolean;
-  trigger!: string;
+  regex!: string;
+  eventType!: GameEvents;
 
   static get relationMappings() {
     return {

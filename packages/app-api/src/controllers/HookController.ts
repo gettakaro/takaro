@@ -1,6 +1,13 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
+import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,
   HookOutputDTO,
@@ -49,6 +56,10 @@ class HookSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   enabled!: string;
+
+  @IsOptional()
+  @IsEnum(GameEvents)
+  eventType!: GameEvents;
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {

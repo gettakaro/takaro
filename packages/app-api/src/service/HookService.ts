@@ -4,11 +4,15 @@ import { QueuesService } from '@takaro/queues';
 import { HookModel, HookRepo } from '../db/hook';
 import {
   IsBoolean,
+  IsEnum,
   IsOptional,
   IsString,
   IsUUID,
   Length,
+  Validate,
   ValidateNested,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from 'class-validator';
 import {
   AssignFunctionDTO,
@@ -16,6 +20,15 @@ import {
   FunctionService,
 } from './FunctionService';
 import { Type } from 'class-transformer';
+import { GameEvents } from '@takaro/gameserver';
+import safeRegex from 'safe-regex';
+
+@ValidatorConstraint()
+export class IsSafeRegex implements ValidatorConstraintInterface {
+  public async validate(regex: string) {
+    return safeRegex(regex);
+  }
+}
 
 export class HookOutputDTO {
   @IsUUID()
@@ -27,7 +40,7 @@ export class HookOutputDTO {
   enabled!: boolean;
 
   @IsString()
-  trigger!: string;
+  regex!: string;
 
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
@@ -43,11 +56,18 @@ export class HookCreateDTO {
   @IsString()
   enabled!: boolean;
 
+  @Validate(IsSafeRegex, {
+    message:
+      'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
+  })
   @IsString()
-  trigger!: string;
+  regex!: string;
 
   @IsUUID()
   moduleId!: string;
+
+  @IsEnum(GameEvents)
+  eventType!: GameEvents;
 }
 
 export class UpdateHookDTO {
@@ -58,8 +78,12 @@ export class UpdateHookDTO {
   @IsBoolean()
   enabled!: boolean;
 
+  @Validate(IsSafeRegex, {
+    message:
+      'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
+  })
   @IsString()
-  trigger!: string;
+  regex!: string;
 
   @IsUUID()
   @IsOptional()
