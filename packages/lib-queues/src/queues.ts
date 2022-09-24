@@ -8,13 +8,8 @@ import {
 } from 'bullmq';
 import { config } from './config';
 import { logger } from '@takaro/logger';
-import {
-  GameEvents,
-  EventLogLine,
-  EventPlayerConnected,
-  EventPlayerDisconnected,
-} from '@takaro/gameserver';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions';
+import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 const log = logger('queue');
 
@@ -51,13 +46,13 @@ export interface IJobData {
    * Additional data that can be passed to the job
    * Typically, this depends on what triggered the job
    */
-  data: Record<string, unknown>;
+  data?: EventMapping[GameEvents];
 }
 
 export interface IEventQueueData {
   type: GameEvents;
   domainId: string;
-  data: EventLogLine | EventPlayerConnected | EventPlayerDisconnected;
+  data: EventMapping[GameEvents];
 }
 
 export class QueuesService {

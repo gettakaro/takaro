@@ -7,6 +7,7 @@ const group = 'Multitenancy';
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<DomainCreateOutputDTOAPI>({
     group,
+    snapshot: true,
     name: 'Cannot read data from other domains',
     setup: async function () {
       // Create a role in standard domain

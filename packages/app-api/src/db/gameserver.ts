@@ -3,7 +3,6 @@ import { Model, PartialModelObject } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
 import { PlayerModel, PLAYER_TABLE_NAME } from './player';
-import { JsonObject } from 'type-fest';
 
 const TABLE_NAME = 'gameservers';
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
@@ -27,7 +26,7 @@ export class GameServerModel extends TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
 
-  connectionInfo!: JsonObject;
+  connectionInfo!: Record<string, unknown>;
 
   type!: GAME_SERVER_TYPE;
 

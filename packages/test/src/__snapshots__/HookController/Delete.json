@@ -1,14 +1,13 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-24T17:31:06.244Z"
+      "serverTime": "2022-09-24T11:54:42.843Z"
     },
     "data": true
   },
   "status": 200,
   "test": {
-    "group": "ModuleController",
-    "snapshot": true,
+    "group": "HookController",
     "name": "Delete",
     "expectedStatus": 200,
     "filteredFields": [],

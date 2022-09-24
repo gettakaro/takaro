@@ -7,6 +7,7 @@ const group = 'RoleController';
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<RoleOutputDTO>({
     group,
+    snapshot: true,
     name: 'Get by ID',
     setup: async function () {
       return (
@@ -23,6 +24,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Get by ID with invalid ID',
     test: async function () {
       return this.client.role.roleControllerGetOne('invalid-id');
@@ -31,6 +33,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<RoleOutputDTO>({
     group,
+    snapshot: true,
     name: 'Update by ID',
     setup: async function () {
       return (
@@ -50,6 +53,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Update by ID with invalid ID',
     test: async function () {
       return this.client.role.roleControllerUpdate('invalid-id', {
@@ -62,6 +66,7 @@ const tests: IntegrationTest<any>[] = [
 
   new IntegrationTest<RoleOutputDTO>({
     group,
+    snapshot: true,
     name: 'Delete',
     setup: async function () {
       return (
@@ -78,6 +83,7 @@ const tests: IntegrationTest<any>[] = [
 
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Delete with invalid ID',
     test: async function () {
       return this.client.role.roleControllerRemove('invalid-id');
@@ -87,6 +93,7 @@ const tests: IntegrationTest<any>[] = [
 
   new IntegrationTest<RoleOutputDTO>({
     group,
+    snapshot: true,
     name: 'Filter by name',
     setup: async function () {
       return (

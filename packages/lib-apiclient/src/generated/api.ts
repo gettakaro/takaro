@@ -111,6 +111,38 @@ export interface AssignFunctionToCronJobDTO {
 /**
  *
  * @export
+ * @interface AssignFunctionToHookDTO
+ */
+export interface AssignFunctionToHookDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionToHookDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AssignFunctionToHookDTO
+   */
+  functionId: string;
+}
+/**
+ *
+ * @export
+ * @interface BaseEvent
+ */
+export interface BaseEvent {
+  /**
+   *
+   * @type {string}
+   * @memberof BaseEvent
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
  * @interface CapabilityOutputDTO
  */
 export interface CapabilityOutputDTO {
@@ -140,6 +172,8 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ManageFunctions: 'MANAGE_FUNCTIONS',
   ReadCronjobs: 'READ_CRONJOBS',
   ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
 } as const;
@@ -519,19 +553,6 @@ export interface ErrorOutput {
 /**
  *
  * @export
- * @interface EventLogLine
- */
-export interface EventLogLine {
-  /**
-   *
-   * @type {string}
-   * @memberof EventLogLine
-   */
-  msg: string;
-}
-/**
- *
- * @export
  * @interface EventPlayerConnected
  */
 export interface EventPlayerConnected {
@@ -541,6 +562,12 @@ export interface EventPlayerConnected {
    * @memberof EventPlayerConnected
    */
   player: IGamePlayer;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerConnected
+   */
+  msg: string;
 }
 /**
  *
@@ -554,6 +581,12 @@ export interface EventPlayerDisconnected {
    * @memberof EventPlayerDisconnected
    */
   player: IGamePlayer;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerDisconnected
+   */
+  msg: string;
 }
 /**
  *
@@ -886,6 +919,215 @@ export interface HealthOutputDTO {
 /**
  *
  * @export
+ * @interface HookCreateDTO
+ */
+export interface HookCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  enabled?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  regex: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  eventType: HookCreateDTOEventTypeEnum;
+}
+
+export const HookCreateDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type HookCreateDTOEventTypeEnum =
+  typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface HookOutputArrayDTOAPI
+ */
+export interface HookOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<HookOutputDTO>}
+   * @memberof HookOutputArrayDTOAPI
+   */
+  data: Array<HookOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof HookOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface HookOutputDTO
+ */
+export interface HookOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof HookOutputDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  regex: string;
+  /**
+   *
+   * @type {FunctionOutputDTO}
+   * @memberof HookOutputDTO
+   */
+  functions: FunctionOutputDTO;
+}
+/**
+ *
+ * @export
+ * @interface HookOutputDTOAPI
+ */
+export interface HookOutputDTOAPI {
+  /**
+   *
+   * @type {HookOutputDTO}
+   * @memberof HookOutputDTOAPI
+   */
+  data: HookOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof HookOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface HookSearchInputAllowedFilters
+ */
+export interface HookSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  enabled?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  eventType?: HookSearchInputAllowedFiltersEventTypeEnum;
+}
+
+export const HookSearchInputAllowedFiltersEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type HookSearchInputAllowedFiltersEventTypeEnum =
+  typeof HookSearchInputAllowedFiltersEventTypeEnum[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface HookSearchInputDTO
+ */
+export interface HookSearchInputDTO {
+  /**
+   *
+   * @type {HookSearchInputAllowedFilters}
+   * @memberof HookSearchInputDTO
+   */
+  filters?: HookSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof HookSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof HookSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputDTO
+   */
+  sortDirection?: HookSearchInputDTOSortDirectionEnum;
+}
+
+export const HookSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type HookSearchInputDTOSortDirectionEnum =
+  typeof HookSearchInputDTOSortDirectionEnum[keyof typeof HookSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
  * @interface IGamePlayer
  */
 export interface IGamePlayer {
@@ -1038,10 +1280,10 @@ export interface ModuleCreateDTO {
   name: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof ModuleCreateDTO
    */
-  enabled?: string;
+  enabled?: boolean;
   /**
    *
    * @type {object}
@@ -1104,6 +1346,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   cronJobs: CronJobOutputDTO;
+  /**
+   *
+   * @type {HookOutputDTO}
+   * @memberof ModuleOutputDTO
+   */
+  hooks: HookOutputDTO;
 }
 /**
  *
@@ -1144,10 +1392,10 @@ export interface ModuleSearchInputAllowedFilters {
   name?: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  enabled?: string;
+  enabled?: boolean;
 }
 /**
  *
@@ -1479,6 +1727,37 @@ export const UpdateGameServerDTOTypeEnum = {
 export type UpdateGameServerDTOTypeEnum =
   typeof UpdateGameServerDTOTypeEnum[keyof typeof UpdateGameServerDTOTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface UpdateHookDTO
+ */
+export interface UpdateHookDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateHookDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UpdateHookDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateHookDTO
+   */
+  regex: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateHookDTO
+   */
+  moduleId?: string;
+}
 /**
  *
  * @export
@@ -4372,6 +4651,835 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerUpdate(id, updateGameServerDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * HookApi - axios parameter creator
+ * @export
+ */
+export const HookApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     * Assign a function to a hook. This function will execute when the hook is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerAssignFunction: async (
+      id: string,
+      functionId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerAssignFunction', 'id', id);
+      // verify required parameter 'functionId' is not null or undefined
+      assertParamExists(
+        'hookControllerAssignFunction',
+        'functionId',
+        functionId
+      );
+      const localVarPath = `/hook/{id}/function/{functionId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerCreate: async (
+      hookCreateDTO?: HookCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        hookCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerGetOne', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerRemove', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerSearch: async (
+      hookSearchInputDTO?: HookSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        hookSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * The function will not be executed when the hook is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUnassignFunction: async (
+      id: string,
+      functionId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerUnassignFunction', 'id', id);
+      // verify required parameter 'functionId' is not null or undefined
+      assertParamExists(
+        'hookControllerUnassignFunction',
+        'functionId',
+        functionId
+      );
+      const localVarPath = `/hook/{id}/function/{functionId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUpdate: async (
+      id: string,
+      updateHookDTO?: UpdateHookDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerUpdate', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        updateHookDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * HookApi - functional programming interface
+ * @export
+ */
+export const HookApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = HookApiAxiosParamCreator(configuration);
+  return {
+    /**
+     * Assign a function to a hook. This function will execute when the hook is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerAssignFunction(
+      id: string,
+      functionId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerAssignFunction(
+          id,
+          functionId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerCreate(
+      hookCreateDTO?: HookCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerCreate(
+          hookCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerSearch(
+      hookSearchInputDTO?: HookSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerSearch(
+          hookSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     * The function will not be executed when the hook is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerUnassignFunction(
+      id: string,
+      functionId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerUnassignFunction(
+          id,
+          functionId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerUpdate(
+      id: string,
+      updateHookDTO?: UpdateHookDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HookOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerUpdate(
+          id,
+          updateHookDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * HookApi - factory interface
+ * @export
+ */
+export const HookApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = HookApiFp(configuration);
+  return {
+    /**
+     * Assign a function to a hook. This function will execute when the hook is triggered
+     * @summary Assign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerAssignFunction(
+      id: string,
+      functionId: string,
+      options?: any
+    ): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp
+        .hookControllerAssignFunction(id, functionId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerCreate(
+      hookCreateDTO?: HookCreateDTO,
+      options?: any
+    ): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp
+        .hookControllerCreate(hookCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp
+        .hookControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp
+        .hookControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerSearch(
+      hookSearchInputDTO?: HookSearchInputDTO,
+      options?: any
+    ): AxiosPromise<HookOutputArrayDTOAPI> {
+      return localVarFp
+        .hookControllerSearch(hookSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * The function will not be executed when the hook is triggered anymore
+     * @summary Unassign function
+     * @param {string} id
+     * @param {string} functionId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUnassignFunction(
+      id: string,
+      functionId: string,
+      options?: any
+    ): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp
+        .hookControllerUnassignFunction(id, functionId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUpdate(
+      id: string,
+      updateHookDTO?: UpdateHookDTO,
+      options?: any
+    ): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp
+        .hookControllerUpdate(id, updateHookDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * HookApi - object-oriented interface
+ * @export
+ * @class HookApi
+ * @extends {BaseAPI}
+ */
+export class HookApi extends BaseAPI {
+  /**
+   * Assign a function to a hook. This function will execute when the hook is triggered
+   * @summary Assign function
+   * @param {string} id
+   * @param {string} functionId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerAssignFunction(
+    id: string,
+    functionId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerAssignFunction(id, functionId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Create
+   * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerCreate(
+    hookCreateDTO?: HookCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerCreate(hookCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerSearch(
+    hookSearchInputDTO?: HookSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerSearch(hookSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * The function will not be executed when the hook is triggered anymore
+   * @summary Unassign function
+   * @param {string} id
+   * @param {string} functionId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerUnassignFunction(
+    id: string,
+    functionId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerUnassignFunction(id, functionId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerUpdate(
+    id: string,
+    updateHookDTO?: UpdateHookDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerUpdate(id, updateHookDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

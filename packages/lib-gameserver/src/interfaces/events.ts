@@ -17,12 +17,13 @@ export type EventMapping = {
 class BaseEvent {
   timestamp: Date = new Date();
   type!: string;
+
+  @IsString()
+  msg!: string;
 }
 
 export class EventLogLine extends BaseEvent {
   type = GameEvents.LOG_LINE;
-  @IsString()
-  msg!: string;
 }
 
 export class EventPlayerConnected extends BaseEvent {
