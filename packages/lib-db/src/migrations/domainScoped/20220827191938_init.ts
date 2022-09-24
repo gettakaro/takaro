@@ -32,6 +32,10 @@ export async function up(knex: Knex): Promise<void> {
         'MANAGE_FUNCTIONS',
         'READ_CRONJOBS',
         'MANAGE_CRONJOBS',
+        'READ_HOOKS',
+        'MANAGE_HOOKS',
+        'READ_MODULES',
+        'MANAGE_MODULES',
       ])
       .notNullable();
 
@@ -92,12 +96,25 @@ export async function up(knex: Knex): Promise<void> {
     table.string('code').notNullable();
   });
 
+  await knex.schema.createTable('modules', (table) => {
+    table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
+    table.string('name').unique();
+    table.boolean('enabled').notNullable().defaultTo(true);
+    table.json('config').defaultTo('{}');
+  });
+
   await knex.schema.createTable('cronJobs', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.boolean('enabled').notNullable().defaultTo(true);
     table.string('temporalValue').notNullable();
+    table
+      .uuid('moduleId')
+      .references('modules.id')
+      .onDelete('CASCADE')
+      .notNullable();
   });
 
   await knex.schema.createTable('hooks', (table) => {
@@ -105,7 +122,15 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.boolean('enabled').notNullable().defaultTo(true);
-    table.string('trigger').notNullable();
+    table
+      .enu('eventType', ['log', 'player-connected', 'player-disconnected'])
+      .notNullable();
+    table.string('regex').notNullable();
+    table
+      .uuid('moduleId')
+      .references('modules.id')
+      .onDelete('CASCADE')
+      .notNullable();
   });
 
   await knex.schema.createTable('commands', (table) => {
@@ -113,6 +138,11 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.boolean('enabled').notNullable().defaultTo(true);
+    table
+      .uuid('moduleId')
+      .references('modules.id')
+      .onDelete('CASCADE')
+      .notNullable();
   });
 
   await knex.schema.createTable('functionAssignments', (table) => {

@@ -107,18 +107,28 @@ erDiagram
       string code
     }
 
+    functionAssignment {
+      string id PK
+      string functionId FK
+      string cronJob FK
+      string hook FK
+      string command FK
+    }
+
     hook {
       string id PK
       string name
       string functionId FK
       string searchString
       string regex
+      string moduleId FK
     }
 
     command {
       string id PK
       string name
       string functionId FK
+      string moduleId FK
     }
 
     cron {
@@ -126,13 +136,25 @@ erDiagram
       string name
       string temporalValue
       string functionId FK
+      string moduleId FK
     }
 
+    module {
+      string id PK
+      string name
+      boolean enabled
+    }
 
     user ||--|{ role : has
-    hook   ||--|| function : calls
-    command   ||--|| function : calls
-    cron   ||--|| function : calls
+
+    module ||--|{ cron : has
+    module ||--|{ hook : has
+    module ||--|{ command : has
+    hook   ||--|{ functionAssignment : assigned
+    command   ||--|{ functionAssignment : assigned
+    cron   ||--|{ functionAssignment : assigned
+    functionAssignment ||--|| function : "is"
+
 
     playerOnGameServer ||--|| player : "is"
     playerOnGameServer ||--|| gameServer : "is"

@@ -4,6 +4,8 @@ import {
   GameServerApi,
   RoleApi,
   UserApi,
+  ModuleApi,
+  HookApi,
 } from '../generated';
 import { BaseApiClient, IApiClientConfig } from './baseClient';
 
@@ -85,6 +87,26 @@ export class Client extends BaseApiClient {
 
   get function() {
     return new FunctionApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get module() {
+    return new ModuleApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get hook() {
+    return new HookApi(
       {
         isJsonMime: this.isJsonMime,
       },

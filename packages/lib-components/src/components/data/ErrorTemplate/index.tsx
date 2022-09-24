@@ -55,7 +55,7 @@ export const ErrorTemplate: FC<ErrorTemplateProps> = ({ title, description }) =>
       >
         {title}
       </motion.h2>
-      <Button onClick={() => navigate('/store/dashboard')} text="Go back to safety!" />
+      <Button onClick={() => navigate('/')} text="Go back to safety!" />
     </Container>
   );
 };

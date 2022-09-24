@@ -1,0 +1,37 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T11:54:43.995Z",
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "name": "Test hook",
+              "regex": "/(x+x+)+y/",
+              "eventType": "log",
+              "moduleId": "fae6c045-8f32-4cfd-9f7b-85b293fbfb8d"
+            },
+            "value": "/(x+x+)+y/",
+            "property": "regex",
+            "children": [],
+            "constraints": {
+              "IsSafeRegex": "Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "HookController",
+    "name": "Rejects catastrophic exponential-time regexes",
+    "expectedStatus": 400,
+    "filteredFields": [
+      "moduleId"
+    ],
+    "standardEnvironment": true
+  }
+}

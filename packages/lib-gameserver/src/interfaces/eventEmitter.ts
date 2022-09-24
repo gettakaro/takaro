@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { JsonObject } from 'type-fest';
 import {
   GameEvents,
   EventLogLine,
@@ -26,7 +25,7 @@ export interface IEventMap {
 
 export interface IGameEventEmitter {
   stop(): Promise<void>;
-  start(config: JsonObject): Promise<void>;
+  start(config: Record<string, unknown>): Promise<void>;
 
   addListener<E extends keyof IEventMap>(
     event: E,

@@ -14,15 +14,22 @@ export enum GameEvents {
   ITEM_GIVEN_TO = 'item-given-to',
 }
 
+export type EventMapping = {
+  [GameEvents.LOG_LINE]: EventLogLine;
+  [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected;
+  [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
+};
+
 class BaseEvent {
   timestamp: Date = new Date();
   type!: string;
+
+  @IsString()
+  msg!: string;
 }
 
 export class EventLogLine extends BaseEvent {
   type = GameEvents.LOG_LINE;
-  @IsString()
-  msg!: string;
 }
 
 export class EventPlayerConnected extends BaseEvent {

@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 enum CLUSTER_MODE {
   SINGLE = 'single',
@@ -8,12 +9,14 @@ enum CLUSTER_MODE {
 interface IHttpConfig extends IBaseConfig {
   http: {
     port: number;
+    allowedOrigins: string[];
   };
   auth: {
     adminSecret: string;
     saltRounds: number;
     jwtSecret: string;
     jwtExpiresIn: string;
+    cookieName: string;
   };
   clusterMode: CLUSTER_MODE;
 }
@@ -38,6 +41,12 @@ const configSchema = {
       },
       default: 3000,
       env: 'PORT',
+    },
+    allowedOrigins: {
+      doc: 'The origins that are allowed to access the API',
+      format: Array,
+      default: [],
+      env: 'CORS_ALLOWED_ORIGINS',
     },
   },
   auth: {
@@ -65,6 +74,12 @@ const configSchema = {
       default: '1 day',
       env: 'JWT_EXPIRES_IN',
     },
+    cookieName: {
+      doc: 'The name of the cookie used to store the JWT',
+      format: String,
+      default: 'takaro-token',
+      env: 'COOKIE_NAME',
+    },
   },
   clusterMode: {
     doc: 'The mode to run the app in',
@@ -74,4 +89,7 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHttpConfig>([configSchema]);
+export const config = new Config<IHttpConfig & IQueuesConfig>([
+  configSchema,
+  queuesConfigSchema,
+]);

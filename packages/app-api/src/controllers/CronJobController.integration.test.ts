@@ -3,10 +3,11 @@ import { CronJobOutputDTOAPI, FunctionOutputDTOAPI } from '@takaro/apiclient';
 
 const group = 'CronJobController';
 
-const mockCronjob = {
+const mockCronjob = (moduleId: string) => ({
   name: 'Test cronJob',
   temporalValue: '0 * * * *',
-};
+  moduleId,
+});
 
 interface ISetupCronJobAndFunction {
   cronjob: CronJobOutputDTOAPI;
@@ -15,31 +16,59 @@ interface ISetupCronJobAndFunction {
 
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Get by ID',
     setup: async function () {
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data;
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return (
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
+      ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerGetOne(
         this.setupData.data.id
       );
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<void>({
+    snapshot: true,
     group,
     name: 'Create',
     test: async function () {
-      return this.client.cronjob.cronJobControllerCreate(mockCronjob);
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return this.client.cronjob.cronJobControllerCreate(
+        mockCronjob(module.id)
+      );
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Update',
     setup: async function () {
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data;
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return (
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
+      ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerUpdate(
@@ -51,39 +80,69 @@ const tests: IntegrationTest<any>[] = [
         }
       );
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Delete',
     setup: async function () {
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data;
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return (
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
+      ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerRemove(
         this.setupData.data.id
       );
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
+    snapshot: true,
     group,
     name: 'Search',
     setup: async function () {
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob))
-        .data;
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      return (
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
+      ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
-        filters: { name: mockCronjob.name },
+        filters: { name: mockCronjob(module.id).name },
       });
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
+    snapshot: true,
     group,
     name: 'Can assign a function to a cronjob',
     setup: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
       const cronjob = (
-        await this.client.cronjob.cronJobControllerCreate(mockCronjob)
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
       ).data;
 
       const fn = (
@@ -103,13 +162,22 @@ const tests: IntegrationTest<any>[] = [
         this.setupData.fn.data.id
       );
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<ISetupCronJobAndFunction>({
+    snapshot: true,
     group,
     name: 'Can unassign a function from a cronjob',
     setup: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
       const cronjob = (
-        await this.client.cronjob.cronJobControllerCreate(mockCronjob)
+        await this.client.cronjob.cronJobControllerCreate(
+          mockCronjob(module.id)
+        )
       ).data;
 
       const fn = (
@@ -134,6 +202,7 @@ const tests: IntegrationTest<any>[] = [
         this.setupData.fn.data.id
       );
     },
+    filteredFields: ['moduleId'],
   }),
 ];
 

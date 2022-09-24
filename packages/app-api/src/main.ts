@@ -4,6 +4,7 @@ import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/logger';
 import { migrateSystem } from '@takaro/db';
 import { DomainController } from './controllers/DomainController';
+import { Server as HttpServer } from 'http';
 import { config } from './config';
 import { UserController } from './controllers/UserController';
 import { RoleController } from './controllers/Rolecontroller';
@@ -12,6 +13,11 @@ import { DomainService } from './service/DomainService';
 import { GameServerService } from './service/GameServerService';
 import { FunctionController } from './controllers/FunctionController';
 import { CronJobController } from './controllers/CronJobController';
+import { ModuleController } from './controllers/ModuleController';
+import { EventsWorker } from './workers/eventWorker';
+import { QueuesService } from '@takaro/queues';
+import { getSocketServer } from './lib/socketServer';
+import { HookController } from './controllers/HookController';
 
 export const server = new HTTP(
   {
@@ -22,9 +28,14 @@ export const server = new HTTP(
       GameServerController,
       FunctionController,
       CronJobController,
+      ModuleController,
+      HookController,
     ],
   },
-  { port: config.get('http.port') }
+  {
+    port: config.get('http.port'),
+    allowedOrigins: config.get('http.allowedOrigins'),
+  }
 );
 
 const log = logger('main');
@@ -38,6 +49,7 @@ async function main() {
   await migrateSystem();
   log.info('🦾 Database up to date');
 
+  getSocketServer(server.server as HttpServer);
   await server.start();
 
   log.info('🚀 Server started');
@@ -50,8 +62,12 @@ async function main() {
   for (const domain of domains) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
-    await gameServerService.manager.init(gameServers);
+    await gameServerService.manager.init(
+      gameServers.map((g) => ({ ...g, domainId: domain.id }))
+    );
   }
+
+  await QueuesService.getInstance().registerWorker(new EventsWorker());
 }
 
 main();

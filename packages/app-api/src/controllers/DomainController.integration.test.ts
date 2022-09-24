@@ -5,6 +5,7 @@ const group = 'DomainController';
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Get by ID',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
@@ -15,6 +16,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Get by ID with invalid ID',
     test: async function () {
       return this.adminClient.domain.domainControllerGetOne('invalid-id');
@@ -23,6 +25,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Update by ID',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
@@ -36,6 +39,7 @@ const tests: IntegrationTest<any>[] = [
   }),
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Update by ID with invalid ID',
     test: async function () {
       return this.adminClient.domain.domainControllerUpdate('invalid-id', {
@@ -47,6 +51,7 @@ const tests: IntegrationTest<any>[] = [
 
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Delete',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
@@ -58,6 +63,7 @@ const tests: IntegrationTest<any>[] = [
 
   new IntegrationTest<void>({
     group,
+    snapshot: true,
     name: 'Delete with invalid ID',
     test: async function () {
       return this.adminClient.domain.domainControllerRemove('invalid-id');

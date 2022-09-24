@@ -1,0 +1,25 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T17:31:05.788Z"
+    },
+    "data": {
+      "name": "Updated module",
+      "enabled": false,
+      "updatedAt": "2022-09-24T17:31:05.781Z",
+      "createdAt": "2022-09-24T17:31:05.752Z",
+      "id": "ae888439-4e7e-41b2-882a-f1b55709d9ee",
+      "config": {},
+      "cronJobs": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Update",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

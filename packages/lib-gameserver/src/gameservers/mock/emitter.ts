@@ -8,7 +8,7 @@ import {
   GameEvents,
 } from '../../interfaces/events';
 import { JsonObject } from 'type-fest';
-import { Faker } from '@faker-js/faker';
+import type { Faker } from '@faker-js/faker';
 
 const allEvents = Object.keys(GameEvents);
 
@@ -48,6 +48,7 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     const type = this.getRandomFromEnum();
     const data = this.getRandomEvent(faker, type);
     this.emit(type, data);
+
     this.logger.debug(`Emitted ${type}`, data);
   }
 

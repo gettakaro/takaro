@@ -11,7 +11,6 @@ import { errors } from '@takaro/logger';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { PartialModelObject } from 'objection';
 import { config } from '../config';
-import { JsonObject } from 'type-fest';
 
 export class GameServerOutputDTO {
   @IsUUID()
@@ -19,7 +18,7 @@ export class GameServerOutputDTO {
   @IsString()
   name!: string;
   @IsJSON()
-  connectionInfo!: JsonObject;
+  connectionInfo!: Record<string, unknown>;
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type!: GAME_SERVER_TYPE;
@@ -59,7 +58,7 @@ export class GameServerService extends TakaroService<GameServerModel> {
     item: PartialModelObject<GameServerModel>
   ): Promise<GameServerModel> {
     const createdServer = await this.repo.create(item);
-    await this.gameServerManager.add(createdServer);
+    await this.gameServerManager.add(this.domainId, createdServer);
     return createdServer;
   }
 
@@ -74,7 +73,7 @@ export class GameServerService extends TakaroService<GameServerModel> {
   ): Promise<GameServerModel | undefined> {
     const updatedServer = await this.repo.update(id, item);
     await this.gameServerManager.remove(id);
-    await this.gameServerManager.add(updatedServer);
+    await this.gameServerManager.add(this.domainId, updatedServer);
     return updatedServer;
   }
 
