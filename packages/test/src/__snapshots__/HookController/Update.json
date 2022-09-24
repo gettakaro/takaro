@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T10:54:44.706Z"
+    },
+    "data": {
+      "name": "Updated hook",
+      "enabled": false,
+      "trigger": "/new [regex]/g",
+      "updatedAt": "2022-09-24T10:54:44.699Z",
+      "createdAt": "2022-09-24T10:54:44.682Z",
+      "id": "d8867efa-e07f-4fd3-aaa2-c475ca6ef0fb",
+      "moduleId": "df463bae-6c9f-40e5-b221-b7094d3d6a48",
+      "functions": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Update",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

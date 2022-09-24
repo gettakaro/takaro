@@ -1,0 +1,29 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T10:54:44.309Z"
+    },
+    "data": {
+      "name": "Test hook",
+      "trigger": "/this (is) a [regex]/g",
+      "moduleId": "279072ea-ac3e-4ef9-ab7d-2ba66a0adc17",
+      "createdAt": "2022-09-24T10:54:44.300Z",
+      "updatedAt": "2022-09-24T10:54:44.308Z",
+      "id": "9037c79a-8067-4c5c-90ac-3265ed9a5a1c",
+      "enabled": true,
+      "functions": [
+        {}
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Create",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

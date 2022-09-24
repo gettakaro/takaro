@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T09:47:58.543Z"
+    },
+    "data": {
+      "createdAt": "2022-09-24T09:47:58.525Z",
+      "updatedAt": "2022-09-24T09:47:58.532Z",
+      "id": "8cf0076a-b893-4654-bede-f567dc9ecfcc",
+      "name": "Test hook",
+      "enabled": true,
+      "trigger": "/this (is) a [regex]/g",
+      "moduleId": "6edc79ee-6dab-42b0-bfcd-38ef4b316dda",
+      "functions": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Get by ID",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

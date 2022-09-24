@@ -1,0 +1,16 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T10:54:45.087Z"
+    },
+    "data": true
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

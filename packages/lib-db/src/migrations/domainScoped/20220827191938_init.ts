@@ -32,6 +32,8 @@ export async function up(knex: Knex): Promise<void> {
         'MANAGE_FUNCTIONS',
         'READ_CRONJOBS',
         'MANAGE_CRONJOBS',
+        'READ_HOOKS',
+        'MANAGE_HOOKS',
         'READ_MODULES',
         'MANAGE_MODULES',
       ])

@@ -1,0 +1,34 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T11:01:16.928Z"
+    },
+    "data": {
+      "createdAt": "2022-09-24T11:01:16.896Z",
+      "updatedAt": "2022-09-24T11:01:16.902Z",
+      "id": "e61ac21f-7dbf-4d6a-a565-dd892b4468c9",
+      "name": "Test hook",
+      "enabled": true,
+      "trigger": "/this (is) a [regex]/g",
+      "moduleId": "431bf0a7-7923-486a-a64e-d1f24bf1610d",
+      "functions": [
+        {
+          "createdAt": "2022-09-24T11:01:16.912Z",
+          "updatedAt": "2022-09-24T11:01:16.913Z",
+          "id": "38a84f8f-5e1c-473b-9ceb-746be831ee74",
+          "code": "console.log(\"Hello world\")"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Can assign a function to a hook",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
