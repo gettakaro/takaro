@@ -5,6 +5,7 @@ export const PATHS = {
   gameServers: {
     overview: '/servers',
     create: '/servers/create',
+    update: '/servers/update/:serverId',
   },
   players: '/players',
   modules: '/modules',

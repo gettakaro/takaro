@@ -17,8 +17,6 @@ const TableContainer = styled.div`
   margin-top: 2rem;
 `;
 
-
-
 const GameServers: FC = () => {
   const client = useApiClient();
   const navigate = useNavigate();
@@ -42,6 +40,9 @@ const GameServers: FC = () => {
           variant: 'success',
         });
       }} />
+    }},
+    {field: 'id', headerName: '', cellRenderer: (row) => {
+      return <Button onClick={() => navigate(PATHS.gameServers.update.replace(':serverId', row.value))} text="Edit"/>
     }},
   ]
 

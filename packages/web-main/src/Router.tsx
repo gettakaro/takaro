@@ -27,6 +27,7 @@ export const Router: FC = () => (
             <Route element={<Settings />} path={PATHS.settings} />
             <Route element={<GameServers />} path={PATHS.gameServers.overview} />
             <Route element={<AddGameServer />} path={PATHS.gameServers.create} />
+            <Route element={<AddGameServer />} path={PATHS.gameServers.update} />
           </Route>
 
           <Route element={<LogIn />} path={PATHS.login} />
