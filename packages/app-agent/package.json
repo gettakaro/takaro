@@ -9,8 +9,8 @@
     "start:dev": "nodemon --exec 'node --inspect=0.0.0.0:12002 -r ts-node/register src/main.ts'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "MOCHA_FILE=../../reports/mocha/app-agent-unit.xml ts-mocha --reporter mocha-junit-reporter -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "MOCHA_FILE=../../reports/mocha/app-agent-integration.xml ts-mocha --reporter mocha-junit-reporter -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
+    "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
+    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
