@@ -24,6 +24,8 @@ jobs:
           POSTGRES_USER: takaro-user
           POSTGRES_PASSWORD: takaro-pw
           POSTGRES_DB: takaro-db
+      - run: ls -la reports
+      - run: ls -la reports/mocha
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails
