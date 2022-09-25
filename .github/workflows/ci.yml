@@ -19,6 +19,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
+      - run: mkdir -p reports/mocha
       - run: node scripts/integration-tests.mjs
         env:
           POSTGRES_USER: takaro-user
