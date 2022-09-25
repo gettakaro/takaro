@@ -22,6 +22,8 @@ export enum CAPABILITIES {
   'MANAGE_HOOKS' = 'MANAGE_HOOKS',
   'READ_MODULES' = 'READ_MODULES',
   'MANAGE_MODULES' = 'MANAGE_MODULES',
+  'READ_PLAYERS' = 'READ_PLAYERS',
+  'MANAGE_PLAYERS' = 'MANAGE_PLAYERS',
 }
 
 export class CapabilityModel extends TakaroModel {

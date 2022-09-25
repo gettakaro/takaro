@@ -1,7 +1,6 @@
 import React from 'react';
 import { AgGridReact, AgGridColumnProps } from 'ag-grid-react';
 import { FC } from 'react';
-import { JsonArray} from 'type-fest';
 
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
