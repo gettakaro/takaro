@@ -92,9 +92,24 @@ export class SevenDaysToDieEmitter
   private handlePlayerConnected(logLine: I7DaysToDieEvent) {
     const nameMatches = /name=(.+), (pltfmid=|steamid=)/.exec(logLine.msg);
     const gameIdMatches = /entityid=([\d]+),/.exec(logLine.msg);
+    const platformIdMatches = /pltfmid=(.+), crossid=/.exec(logLine.msg);
+    const crossIdMatches = /crossid=(.+), steamOwner/.exec(logLine.msg);
 
     const name = nameMatches ? nameMatches[1] : 'Unknown name';
     const gameId = gameIdMatches ? gameIdMatches[1] : null;
+    const platformId = platformIdMatches ? platformIdMatches[1] : null;
+    const epicOnlineServicesId = crossIdMatches
+      ? crossIdMatches[1].replace('EOS_', '')
+      : undefined;
+
+    const steamId =
+      platformId && platformId.startsWith('Steam_')
+        ? platformId.replace('Steam_', '')
+        : undefined;
+    const xboxLiveId =
+      platformId && platformId.startsWith('XBL_')
+        ? platformId.replace('XBL_', '')
+        : undefined;
 
     if (!gameId) throw new Error('Could not find gameId');
 
@@ -102,6 +117,9 @@ export class SevenDaysToDieEmitter
       player: {
         name,
         gameId,
+        steamId,
+        xboxLiveId,
+        epicOnlineServicesId,
       },
     });
   }

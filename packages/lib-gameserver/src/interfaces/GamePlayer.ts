@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class IGamePlayer {
   /**
@@ -11,4 +11,16 @@ export class IGamePlayer {
    */
   @IsString()
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  steamId?: string;
+
+  @IsString()
+  @IsOptional()
+  epicOnlineServicesId?: string;
+
+  @IsString()
+  @IsOptional()
+  xboxLiveId?: string;
 }

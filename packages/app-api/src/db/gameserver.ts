@@ -2,10 +2,12 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model, PartialModelObject } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import { PlayerModel, PLAYER_TABLE_NAME } from './player';
+import {
+  PlayerOnGameServerModel,
+  PLAYER_ON_GAMESERVER_TABLE_NAME,
+} from './player';
 
-const TABLE_NAME = 'gameservers';
-export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
+export const GAMESERVER_TABLE_NAME = 'gameservers';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
@@ -13,17 +15,8 @@ export enum GAME_SERVER_TYPE {
   'RUST' = 'RUST',
 }
 
-export class PlayerOnGameServerModel extends TakaroModel {
-  static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
-
-  gameServerId!: string;
-  playerId!: string;
-
-  gameId!: string;
-}
-
 export class GameServerModel extends TakaroModel {
-  static tableName = TABLE_NAME;
+  static tableName = GAMESERVER_TABLE_NAME;
   name!: string;
 
   connectionInfo!: Record<string, unknown>;
@@ -32,15 +25,11 @@ export class GameServerModel extends TakaroModel {
 
   static relationMappings = {
     players: {
-      relation: Model.ManyToManyRelation,
-      modelClass: PlayerModel,
+      relation: Model.HasManyRelation,
+      modelClass: PlayerOnGameServerModel,
       join: {
-        from: `${TABLE_NAME}.id`,
-        through: {
-          from: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
-          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
-        },
-        to: `${PLAYER_TABLE_NAME}.id`,
+        from: `${GAMESERVER_TABLE_NAME}.id`,
+        to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
       },
     },
   };
@@ -59,7 +48,7 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
   async find(
     filters: ITakaroQuery<GameServerModel>
   ): Promise<GameServerModel[]> {
-    const params = new QueryBuilder(filters).build(TABLE_NAME);
+    const params = new QueryBuilder(filters).build(GAMESERVER_TABLE_NAME);
     const model = await this.getModel();
     return await model.query().where(params.where);
   }

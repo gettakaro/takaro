@@ -14,7 +14,7 @@ export type EventMapping = {
   [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
 };
 
-class BaseEvent {
+export class BaseEvent {
   [key: string]: unknown;
   timestamp: Date = new Date();
   type!: string;

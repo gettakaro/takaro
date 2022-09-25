@@ -38,5 +38,5 @@ ASSIGN_ROLE_RES=$(curl -s -X POST "${TAKARO_HOST}/user/${CREATED_USER_ID}/role/$
 printHeader "Created user ${USER_EMAIL} with password '$USER_PASSWORD'"
 
 
-curl -X POST "${TAKARO_HOST}/gameserver" -H "Content-Type: application/json" -H "Authorization: Bearer $ROOT_TOKEN" --data '{"name": "test-gameserver", "type": "MOCK", "connectionInfo": "{}"}'
+curl -X POST "${TAKARO_HOST}/gameserver" -H "Content-Type: application/json" -H "Authorization: Bearer $ROOT_TOKEN" --data '{"name": "test-gameserver", "type": "MOCK", "connectionInfo": "{\"eventInterval\": 10000}"}'
 

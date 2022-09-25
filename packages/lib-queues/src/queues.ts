@@ -52,6 +52,7 @@ export interface IJobData {
 export interface IEventQueueData {
   type: GameEvents;
   domainId: string;
+  gameServerId: string;
   data: EventMapping[GameEvents];
 }
 

@@ -42,7 +42,7 @@ export class IGameServerInMemoryManager {
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
     await emitter.start(gameServer.connectionInfo);
-    this.attachListeners(domainId, emitter);
+    this.attachListeners(domainId, gameServer.id, emitter);
 
     this.log.info(`Added game server ${gameServer.id}`);
   }
@@ -61,13 +61,18 @@ export class IGameServerInMemoryManager {
     }
   }
 
-  private attachListeners(domainId: string, emitter: IGameEventEmitter) {
+  private attachListeners(
+    domainId: string,
+    gameServerId: string,
+    emitter: IGameEventEmitter
+  ) {
     emitter.on(GameEvents.LOG_LINE, async (logLine) => {
       this.log.debug('Received a logline event', logLine);
       await this.eventsQueue.add(GameEvents.LOG_LINE, {
         type: GameEvents.LOG_LINE,
         data: logLine,
         domainId,
+        gameServerId,
       });
     });
 
@@ -77,6 +82,7 @@ export class IGameServerInMemoryManager {
         type: GameEvents.PLAYER_CONNECTED,
         data: playerConnectedEvent,
         domainId,
+        gameServerId,
       });
     });
 
@@ -91,6 +97,7 @@ export class IGameServerInMemoryManager {
           type: GameEvents.PLAYER_DISCONNECTED,
           data: playerDisconnectedEvent,
           domainId,
+          gameServerId,
         });
       }
     );

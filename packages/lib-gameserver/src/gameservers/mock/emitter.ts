@@ -7,14 +7,11 @@ import {
   EventPlayerDisconnected,
   GameEvents,
 } from '../../interfaces/events';
-import { JsonObject } from 'type-fest';
 import type { Faker } from '@faker-js/faker';
-
-const allEvents = Object.keys(GameEvents);
+import { IGamePlayer } from '../../interfaces/GamePlayer';
 
 class IMockConfig {
-  allowedEvents = allEvents;
-  interval = 60000;
+  eventInterval = 60000;
 
   constructor(config?: Partial<IMockConfig>) {
     if (!config) return;
@@ -22,19 +19,34 @@ class IMockConfig {
   }
 }
 
+const MockPlayers: IGamePlayer[] = [
+  {
+    gameId: '1',
+    name: 'Jefke',
+    steamId: '76561198000000000',
+  },
+  {
+    gameId: '2',
+    name: 'Jefke2',
+    xboxLiveId: '1234567890123456',
+  },
+];
+
 export class MockEmitter extends EventEmitter implements IGameEventEmitter {
   private logger = logger('Mock');
   private interval: NodeJS.Timer | null = null;
 
-  async start(config: JsonObject): Promise<void> {
-    const { faker } = await import('@faker-js/faker');
+  constructor(private config: IMockConfig) {
+    super();
+  }
 
-    const mockConfig = new IMockConfig(config);
+  async start(): Promise<void> {
+    const { faker } = await import('@faker-js/faker');
 
     setTimeout(() => this.fireEvent(faker), 1000);
     this.interval = setInterval(
       () => this.fireEvent(faker),
-      mockConfig.interval
+      this.config.eventInterval
     );
   }
 
@@ -52,11 +64,8 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     this.logger.debug(`Emitted ${type}`, data);
   }
 
-  private mockPlayer(faker: Faker) {
-    return {
-      name: faker.internet.userName(),
-      platformId: faker.random.words(),
-    };
+  private mockPlayer() {
+    return MockPlayers[Math.floor(Math.random() * MockPlayers.length)];
   }
 
   private getRandomFromEnum() {
@@ -69,11 +78,11 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     let event;
 
     if (type === GameEvents.PLAYER_CONNECTED) {
-      event = new EventPlayerConnected({ player: this.mockPlayer(faker) });
+      event = new EventPlayerConnected({ player: this.mockPlayer() });
     }
 
     if (type === GameEvents.PLAYER_DISCONNECTED) {
-      event = new EventPlayerDisconnected({ player: this.mockPlayer(faker) });
+      event = new EventPlayerDisconnected({ player: this.mockPlayer() });
     }
 
     if (type === GameEvents.LOG_LINE) {

@@ -31,7 +31,7 @@ export class Mock implements IGameServer {
   }
 
   async getEventEmitter(): Promise<IGameEventEmitter> {
-    const emitter = new MockEmitter();
+    const emitter = new MockEmitter(this.connectionInfo);
     return emitter;
   }
 }
