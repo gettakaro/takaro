@@ -7,7 +7,7 @@ import { MockEmitter } from './emitter';
 
 export class MockConnectionInfo {
   @IsNumber()
-  public readonly eventInterval!: number;
+  public readonly eventInterval = 10000;
 
   constructor(data: Record<string, unknown>) {
     Object.assign(this, data);
