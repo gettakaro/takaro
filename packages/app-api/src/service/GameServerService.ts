@@ -80,13 +80,13 @@ export class GameServerService extends TakaroService<GameServerModel> {
   static getGame(type: GAME_SERVER_TYPE) {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-        return new SevenDaysToDie();
+        return SevenDaysToDie;
         break;
       case GAME_SERVER_TYPE.MOCK:
         if (config.get('mode') === 'production') {
           throw new errors.BadRequestError('Mock server is not allowed');
         }
-        return new Mock();
+        return Mock;
       default:
         throw new errors.NotImplementedError();
         break;

@@ -120,10 +120,10 @@ const AddGameServer: FC = () => {
       <TextField
         control={control}
         label="IP (or FQDN), including port"
-        name="connectionInfo.ip"
-        error={formState.errors['connectionInfo.ip']}
+        name="connectionInfo.host"
+        error={formState.errors['connectionInfo.host']}
         placeholder="12.34.56.78:1234"
-        key={'ip'}
+        key={'host'}
       />,
       <TextField
         control={control}
@@ -162,10 +162,10 @@ const AddGameServer: FC = () => {
       <TextField
         control={control}
         label="IP (or FQDN), including port"
-        name="connectionInfo.ip"
-        error={formState.errors['connectionInfo.ip']}
+        name="connectionInfo.host"
+        error={formState.errors['connectionInfo.host']}
         placeholder="12.34.56.78:1234"
-        key={'ip'}
+        key={'host'}
       />,
       <TextField
         control={control}

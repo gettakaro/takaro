@@ -14,16 +14,28 @@ export type EventMapping = {
   [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
 };
 
-class BaseEvent {
+export class BaseEvent {
+  [key: string]: unknown;
   timestamp: Date = new Date();
   type!: string;
 
   @IsString()
   msg!: string;
+
+  constructor(data: Record<string, unknown>) {
+    const defaults = {
+      timestamp: new Date(),
+    };
+    Object.assign(this, { ...defaults, ...data });
+  }
 }
 
 export class EventLogLine extends BaseEvent {
   type = GameEvents.LOG_LINE;
+
+  constructor(data: Partial<EventLogLine>) {
+    super(data);
+  }
 }
 
 export class EventPlayerConnected extends BaseEvent {
@@ -31,6 +43,10 @@ export class EventPlayerConnected extends BaseEvent {
   @ValidateNested()
   @Type(() => IGamePlayer)
   player!: IGamePlayer;
+
+  constructor(data: Partial<EventPlayerConnected>) {
+    super(data);
+  }
 }
 
 export class EventPlayerDisconnected extends BaseEvent {
@@ -38,4 +54,8 @@ export class EventPlayerDisconnected extends BaseEvent {
   @ValidateNested()
   @Type(() => IGamePlayer)
   player!: IGamePlayer;
+
+  constructor(data: Partial<EventPlayerDisconnected>) {
+    super(data);
+  }
 }

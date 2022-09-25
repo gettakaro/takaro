@@ -1,6 +1,6 @@
-import { SevenDaysToDie } from './gameservers/7d2d';
 import { expect, sandbox } from '@takaro/test';
 import { GameEvents } from './interfaces/events';
+import { Mock } from './main';
 
 describe('GameEventEmitter', () => {
   /**
@@ -9,7 +9,7 @@ describe('GameEventEmitter', () => {
    * We use @ts-expect-error so that if the compiler fails to mark these as errors, we'll know instantly
    */
   it('Has a typed event emitter', async () => {
-    const gameServer = new SevenDaysToDie();
+    const gameServer = new Mock({});
     const emitter = await gameServer.getEventEmitter();
 
     const listenerSpy = sandbox.spy();
@@ -27,15 +27,6 @@ describe('GameEventEmitter', () => {
     // @ts-expect-error Should use the enum here
     // But the raw string will also work in runtime when ignoring the compilation error
     emitter.on('player-connected', listenerSpy);
-
-    emitter.emit(GameEvents.PLAYER_CONNECTED, {
-      timestamp: new Date(),
-      // @ts-expect-error The type should be equal to GameEvents.PLAYER_CONNECTED
-      person: {
-        platformId: '1',
-        name: 'test-user',
-      },
-    });
 
     expect(listenerSpy).to.have.been.calledTwice;
   });

@@ -48,7 +48,9 @@ export class QueryBuilder<T> {
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
-        filters[this.applyFilterTable(filter)] = searchVal;
+        if (searchVal) {
+          filters[this.applyFilterTable(filter)] = searchVal;
+        }
       }
     }
 

@@ -70,10 +70,14 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').notNullable();
+    table.string('steamId');
+    table.string('xboxLiveId');
+    table.string('epicOnlineServicesId');
   });
 
   await knex.schema.createTable('playerOnGameServer', (table) => {
     table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table
       .uuid('playerId')
       .references('players.id')
