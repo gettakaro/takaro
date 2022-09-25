@@ -4,6 +4,7 @@ import { GlobalStyle } from '../src/styled/GlobalStyle';
 import { MemoryRouter } from 'react-router-dom';
 import { SnackbarProvider } from '../src/helpers/getSnackbarProvider';
 import { StepperProvider } from '../src/components/navigation/Steppers/context';
+import 'simplebar-react/dist/simplebar.min.css';
 
 export const decorators = [
   (Story) => (
