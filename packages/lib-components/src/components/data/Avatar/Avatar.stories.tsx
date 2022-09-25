@@ -21,7 +21,9 @@ export default {
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
 } as Meta<AvatarProps>;
 
-export const Default: StoryFn<AvatarProps> = (args) => <Avatar alt="Harry Potter" {...args} src={placeholder01} />;
+export const Default: StoryFn<AvatarProps> = (args) => (
+  <Avatar alt="Harry Potter" {...args} src={placeholder01} />
+);
 
 export const Sizes: StoryFn = () => (
   <>
@@ -38,16 +40,16 @@ export const Initials: StoryFn = () => (
     <Avatar alt="Harry Potter" size="tiny">
       {getInitials('Harry Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="small">
+    <Avatar alt="Albus Severus Potter" size="small">
       {getInitials('Albus Severus Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter Vanmiet" size="medium">
+    <Avatar alt="James Sirius Potter" size="medium">
       {getInitials('James Sirius Potter ')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="large">
+    <Avatar alt="Lily Luna Potter" size="large">
       {getInitials('Lily Luna Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="huge">
+    <Avatar alt="Lily Luna Potter" size="huge">
       {getInitials('Lily Luna Potter')}
     </Avatar>
   </>
