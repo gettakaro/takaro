@@ -5,6 +5,7 @@ const group = 'Auth';
 
 const tests: IntegrationTest<any>[] = [
   new IntegrationTest({
+    snapshot: true,
     group,
     name: 'Cannot access resource without capability',
     setup: async function () {
@@ -16,6 +17,7 @@ const tests: IntegrationTest<any>[] = [
     expectedStatus: 403,
   }),
   new IntegrationTest({
+    snapshot: true,
     group,
     name: 'Can access resource with capability',
     filteredFields: ['roleId'],
