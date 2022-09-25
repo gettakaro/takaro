@@ -69,18 +69,17 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     let event;
 
     if (type === GameEvents.PLAYER_CONNECTED) {
-      event = new EventPlayerConnected();
-      event.player = this.mockPlayer(faker);
+      event = new EventPlayerConnected({ player: this.mockPlayer(faker) });
     }
 
     if (type === GameEvents.PLAYER_DISCONNECTED) {
-      event = new EventPlayerDisconnected();
-      event.player = this.mockPlayer(faker);
+      event = new EventPlayerDisconnected({ player: this.mockPlayer(faker) });
     }
 
     if (type === GameEvents.LOG_LINE) {
-      event = new EventLogLine();
-      event.msg = `This is a log line :) - ${faker.random.words()}`;
+      event = new EventLogLine({
+        msg: `This is a log line :) - ${faker.random.words()}`,
+      });
     }
 
     return event;

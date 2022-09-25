@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import EventEmitter from 'node:events';
 import {
   GameEvents,
   EventLogLine,
@@ -16,7 +17,16 @@ export interface IEventMap {
   ) => Promise<void>;
 }
 
-export interface IGameEventEmitter {
+export class TakaroEmitter extends EventEmitter {
+  emitGameEvent<E extends keyof IEventMap>(
+    event: E,
+    ...args: Parameters<IEventMap[E]>
+  ) {
+    this.emit(event, ...args);
+  }
+}
+
+export interface IGameEventEmitter extends EventEmitter {
   stop(): Promise<void>;
   start(config: Record<string, unknown>): Promise<void>;
 

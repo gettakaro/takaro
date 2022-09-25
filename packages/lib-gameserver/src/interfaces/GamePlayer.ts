@@ -5,7 +5,7 @@ export class IGamePlayer {
    * Unique identifier for this player, as used by the game
    */
   @IsString()
-  platformId!: string;
+  gameId!: string;
   /**
    * The players username
    */
