@@ -78,7 +78,7 @@ describe('7d2d event detection', () => {
   it('[PlayerDisconnected]: Can detect simple player disconnected', () => {
     new SevenDaysToDieEmitter(mockSdtdConnectionInfo).parseMessage({
       // eslint-disable-next-line quotes
-      msg: "Player disconnected: EntityID=549, PlayerID='76561198028175941', OwnerID='76561198028175941', PlayerName='Catalysm'",
+      msg: "Player disconnected: EntityID=549, PltfmId='Steam_76561198028175941', OwnerID='76561198028175941', PlayerName='Catalysm'",
     });
     expect(emitStub).to.have.been.calledTwice;
 
@@ -89,6 +89,7 @@ describe('7d2d event detection', () => {
       name: 'Catalysm',
       gameId: '549',
       steamId: '76561198028175941',
+      xboxLiveId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
