@@ -12,3 +12,6 @@ export type { ErrorTemplateProps } from './ErrorTemplate';
 
 export { Table } from './Table';
 export type { TableProps } from './Table';
+
+export { Console } from './Console';
+export type { ConsoleProps } from './Console';
