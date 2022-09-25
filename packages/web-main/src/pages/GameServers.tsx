@@ -1,21 +1,28 @@
-import { FC, Fragment } from "react";
+import {  FC, Fragment } from "react";
 import { Helmet } from "react-helmet";
-import { styled, Table, Loading } from "@takaro/lib-components";
+import { styled, Table, Loading, Button } from "@takaro/lib-components";
 import { useApiClient } from "hooks/useApiClient";
+import { AiFillPlusCircle } from "react-icons/ai";
 import { useQuery } from "react-query";
 import { GameServerOutputArrayDTOAPI } from "@takaro/apiclient";
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from "paths";
+import { DeleteGameServerButton } from "components/gameserver/deleteButton";
+import { useSnackbar } from 'notistack';
 
-const GridContainer = styled.div`
+const TableContainer = styled.div`
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  margin-top: 2rem;
 `;
-
 
 const GameServers: FC = () => {
   const client = useApiClient();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { data, isLoading } = useQuery<GameServerOutputArrayDTOAPI>(
+  const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>(
     'gameServers',
     async () => (await client.gameserver.gameServerControllerSearch()).data,
   );
@@ -25,6 +32,18 @@ const GameServers: FC = () => {
     {field: 'updatedAt', headerName: 'Updated'},
     {field: 'name', headerName: 'Name'},
     {field: 'type', headerName: 'Type'},
+    {field: 'id', headerName: '', cellRenderer: (row) => {
+      return <DeleteGameServerButton action={async () => {
+        await client.gameserver.gameServerControllerRemove(row.value);
+        refetch();
+        enqueueSnackbar('The server was deleted', {
+          variant: 'success',
+        });
+      }} />
+    }},
+    {field: 'id', headerName: '', cellRenderer: (row) => {
+      return <Button onClick={() => navigate(PATHS.gameServers.update.replace(':serverId', row.value))} text="Edit"/>
+    }},
   ]
 
   if (isLoading || data === undefined) {
@@ -36,9 +55,16 @@ const GameServers: FC = () => {
       <Helmet>
         <title>Gameservers - Takaro</title>
       </Helmet>
-      <GridContainer>
+      <Button
+      icon={<AiFillPlusCircle size={20} />}
+      onClick={() => {
+        navigate(PATHS.gameServers.create)
+      }}
+      text="Add gameserver"
+    />
+      <TableContainer>
         <Table columnDefs={columDefs} rowData={data.data} width={'100%'} height={'400px'} />
-      </GridContainer>
+      </TableContainer>
     </Fragment>
   );
 }
