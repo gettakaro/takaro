@@ -38,19 +38,19 @@ export const Initials = () => (
   /* I added a double last name to show that it takes up to 2 letters from their lastname */
   <>
     <Avatar alt="Harry Potter" size="tiny">
-      {getInitials('Harry', 'Potter ')}
+      {getInitials('Harry Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="small">
-      {getInitials('Albus', 'Severus Potter')}
+    <Avatar alt="Albus Severus Potter" size="small">
+      {getInitials('Albus Severus Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter Vanmiet" size="medium">
-      {getInitials('James ', 'Sirius Potter ')}
+    <Avatar alt="James Sirius Potter" size="medium">
+      {getInitials('James Sirius Potter ')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="large">
-      {getInitials('Lily', 'Luna Potter')}
+    <Avatar alt="Lily Luna Potter" size="large">
+      {getInitials('Lily Luna Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="huge">
-      {getInitials('Lily', 'Luna Potter')}
+    <Avatar alt="Lily Luna Potter" size="huge">
+      {getInitials('Lily Luna Potter')}
     </Avatar>
   </>
 );
