@@ -9,6 +9,16 @@ export class PlayerOutputDTO {
 
   @IsString()
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  steamId?: string;
+  @IsString()
+  @IsOptional()
+  xboxLiveId?: string;
+  @IsString()
+  @IsOptional()
+  epicOnlineServicesId?: string;
 }
 
 export class PlayerCreateDTO {

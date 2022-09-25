@@ -930,10 +930,10 @@ export interface HookCreateDTO {
   name: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof HookCreateDTO
    */
-  enabled?: string;
+  enabled?: boolean;
   /**
    *
    * @type {string}
@@ -1058,10 +1058,10 @@ export interface HookSearchInputAllowedFilters {
   name?: string;
   /**
    *
-   * @type {string}
+   * @type {boolean}
    * @memberof HookSearchInputAllowedFilters
    */
-  enabled?: string;
+  enabled?: boolean;
   /**
    *
    * @type {string}
@@ -1136,13 +1136,31 @@ export interface IGamePlayer {
    * @type {string}
    * @memberof IGamePlayer
    */
-  platformId: string;
+  gameId: string;
   /**
    *
    * @type {string}
    * @memberof IGamePlayer
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  xboxLiveId?: string;
 }
 /**
  *
@@ -1266,6 +1284,19 @@ export interface MetadataOutput {
  */
 export type MetadataOutputServerTime = string;
 
+/**
+ *
+ * @export
+ * @interface MockConnectionInfo
+ */
+export interface MockConnectionInfo {
+  /**
+   *
+   * @type {number}
+   * @memberof MockConnectionInfo
+   */
+  eventInterval: number;
+}
 /**
  *
  * @export
@@ -1478,6 +1509,195 @@ export interface ParamIdAndRoleId {
 /**
  *
  * @export
+ * @interface PlayerCreateDTO
+ */
+export interface PlayerCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  epicOnlineServicesId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOutputArrayDTOAPI
+ */
+export interface PlayerOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<PlayerOutputDTO>}
+   * @memberof PlayerOutputArrayDTOAPI
+   */
+  data: Array<PlayerOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOutputDTO
+ */
+export interface PlayerOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  epicOnlineServicesId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOutputDTOAPI
+ */
+export interface PlayerOutputDTOAPI {
+  /**
+   *
+   * @type {PlayerOutputDTO}
+   * @memberof PlayerOutputDTOAPI
+   */
+  data: PlayerOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface PlayerSearchInputAllowedFilters
+ */
+export interface PlayerSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  xboxLiveId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerSearchInputDTO
+ */
+export interface PlayerSearchInputDTO {
+  /**
+   *
+   * @type {PlayerSearchInputAllowedFilters}
+   * @memberof PlayerSearchInputDTO
+   */
+  filters?: PlayerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputDTO
+   */
+  sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
+}
+
+export const PlayerSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type PlayerSearchInputDTOSortDirectionEnum =
+  typeof PlayerSearchInputDTOSortDirectionEnum[keyof typeof PlayerSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
  * @interface RoleCreateInputDTO
  */
 export interface RoleCreateInputDTO {
@@ -1638,6 +1858,37 @@ export interface RoleUpdateInputDTO {
 /**
  *
  * @export
+ * @interface SdtdConnectionInfo
+ */
+export interface SdtdConnectionInfo {
+  /**
+   *
+   * @type {string}
+   * @memberof SdtdConnectionInfo
+   */
+  host: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SdtdConnectionInfo
+   */
+  adminUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SdtdConnectionInfo
+   */
+  adminToken: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SdtdConnectionInfo
+   */
+  useTls: boolean;
+}
+/**
+ *
+ * @export
  * @interface SearchRoleInputDTO
  */
 export interface SearchRoleInputDTO {
@@ -1782,6 +2033,19 @@ export interface UpdateModuleDTO {
    * @memberof UpdateModuleDTO
    */
   config?: object;
+}
+/**
+ *
+ * @export
+ * @interface UpdatePlayerDTO
+ */
+export interface UpdatePlayerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UpdatePlayerDTO
+   */
+  name: string;
 }
 /**
  *
@@ -6362,6 +6626,261 @@ export class ModuleApi extends BaseAPI {
   ) {
     return ModuleApiFp(this.configuration)
       .moduleControllerUpdate(id, updateModuleDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * PlayerApi - axios parameter creator
+ * @export
+ */
+export const PlayerApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerControllerGetOne', 'id', id);
+      const localVarPath = `/player/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerSearch: async (
+      playerSearchInputDTO?: PlayerSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/player/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * PlayerApi - functional programming interface
+ * @export
+ */
+export const PlayerApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = PlayerApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<PlayerOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.playerControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerSearch(
+      playerSearchInputDTO?: PlayerSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<PlayerOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.playerControllerSearch(
+          playerSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * PlayerApi - factory interface
+ * @export
+ */
+export const PlayerApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = PlayerApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<PlayerOutputDTOAPI> {
+      return localVarFp
+        .playerControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerSearch(
+      playerSearchInputDTO?: PlayerSearchInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOutputArrayDTOAPI> {
+      return localVarFp
+        .playerControllerSearch(playerSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * PlayerApi - object-oriented interface
+ * @export
+ * @class PlayerApi
+ * @extends {BaseAPI}
+ */
+export class PlayerApi extends BaseAPI {
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerSearch(
+    playerSearchInputDTO?: PlayerSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerSearch(playerSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

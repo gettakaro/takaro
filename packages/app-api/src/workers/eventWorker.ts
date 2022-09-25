@@ -28,7 +28,7 @@ async function processJob(job: Job<IEventQueueData>) {
   log.info('Processing an event', job.data);
 
   await syncPlayerData(job);
-  //await handleHooks(job.data);
+  await handleHooks(job.data);
 
   const socketServer = getSocketServer();
   socketServer.emit(job.data.domainId, 'gameEvent', [

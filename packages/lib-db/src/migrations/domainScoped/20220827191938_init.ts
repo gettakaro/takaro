@@ -36,6 +36,8 @@ export async function up(knex: Knex): Promise<void> {
         'MANAGE_HOOKS',
         'READ_MODULES',
         'MANAGE_MODULES',
+        'READ_PLAYERS',
+        'MANAGE_PLAYERS',
       ])
       .notNullable();
 

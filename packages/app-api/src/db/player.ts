@@ -24,7 +24,7 @@ export class PlayerModel extends TakaroModel {
   xboxLiveId?: string;
   epicOnlineServicesId?: string;
 
-  static relationMappings = {
+  static relationMappings = () => ({
     gameServers: {
       relation: Model.ManyToManyRelation,
       modelClass: GameServerModel,
@@ -37,7 +37,7 @@ export class PlayerModel extends TakaroModel {
         to: `${GAMESERVER_TABLE_NAME}.id`,
       },
     },
-  };
+  });
 }
 
 export class PlayerRepo extends ITakaroRepo<PlayerModel> {

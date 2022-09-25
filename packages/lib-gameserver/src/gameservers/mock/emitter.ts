@@ -8,35 +8,13 @@ import {
   GameEvents,
 } from '../../interfaces/events';
 import type { Faker } from '@faker-js/faker';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
-
-class IMockConfig {
-  eventInterval = 60000;
-
-  constructor(config?: Partial<IMockConfig>) {
-    if (!config) return;
-    Object.assign(this, config);
-  }
-}
-
-const MockPlayers: IGamePlayer[] = [
-  {
-    gameId: '1',
-    name: 'Jefke',
-    steamId: '76561198000000000',
-  },
-  {
-    gameId: '2',
-    name: 'Jefke2',
-    xboxLiveId: '1234567890123456',
-  },
-];
+import { MockConnectionInfo } from '.';
 
 export class MockEmitter extends EventEmitter implements IGameEventEmitter {
   private logger = logger('Mock');
   private interval: NodeJS.Timer | null = null;
 
-  constructor(private config: IMockConfig) {
+  constructor(private config: MockConnectionInfo) {
     super();
   }
 
@@ -65,7 +43,9 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
   }
 
   private mockPlayer() {
-    return MockPlayers[Math.floor(Math.random() * MockPlayers.length)];
+    return this.config.mockPlayers[
+      Math.floor(Math.random() * this.config.mockPlayers.length)
+    ];
   }
 
   private getRandomFromEnum() {
