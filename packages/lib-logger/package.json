@@ -8,8 +8,8 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "MOCHA_FILE=../../reports/mocha/lib-logger-unit.xml ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "MOCHA_FILE=../../reports/mocha/lib-logger-integration.xml ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
+    "test:unit": "MOCHA_FILE=../../reports/mocha/lib-logger-unit.xml ts-mocha --reporter mocha-junit-reporter -p ./tsconfig.json src/**/*.unit.test.ts",
+    "test:integration": "MOCHA_FILE=../../reports/mocha/lib-logger-integration.xml ts-mocha --reporter mocha-junit-reporter -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
