@@ -44,10 +44,12 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
     return CronJobModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<CronJobModel>): Promise<CronJobModel[]> {
-    const params = new QueryBuilder(filters).build(CRONJOB_TABLE_NAME);
+  async find(filters: ITakaroQuery<CronJobModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where).withGraphJoined('functions');
+    return await new QueryBuilder<CronJobModel>({
+      ...filters,
+      extend: ['functions'],
+    }).build(model.query());
   }
 
   async findOne(id: string): Promise<CronJobModel> {

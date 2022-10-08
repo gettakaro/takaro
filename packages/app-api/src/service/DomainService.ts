@@ -84,7 +84,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> 
 
     const gameServerService = new GameServerService(id);
     const allGameServers = await gameServerService.find({});
-    for (const gameServer of allGameServers) {
+    for (const gameServer of allGameServers.results) {
       await gameServerService.manager.remove(gameServer.id);
     }
     await this.repo.delete(id);

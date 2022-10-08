@@ -157,6 +157,15 @@ const AddGameServer: FC = () => {
         error={formState.errors['connectionInfo.eventInterval']}
         key={'eventInterval'}
       />,
+      <TextField
+      control={control}
+      label="Player pool size"
+      name="connectionInfo.playerPoolSize"
+      hint="How large is the pool of fake players"
+      placeholder="100"
+      error={formState.errors['connectionInfo.playerPoolSize']}
+      key={'playerPoolSize'}
+    />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
       <TextField

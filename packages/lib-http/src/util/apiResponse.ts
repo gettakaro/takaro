@@ -12,19 +12,25 @@ function parseData(data: any) {
   return data;
 }
 
-export function apiResponse(data: unknown = {}, error?: Error) {
+interface IApiResponseOptions {
+  error?: Error;
+  meta?: Record<string, string | number>;
+}
+
+export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
   const parsedData = parseData(data);
 
   const errorDetails = {
-    code: error?.name,
+    code: opts?.error?.name,
     // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
-    details: error?.hasOwnProperty('details') ? error?.details : {},
+    details: opts?.error?.hasOwnProperty('details') ? opts?.error?.details : {},
   };
 
   return {
     meta: {
       serverTime: new Date().toISOString(),
-      error: error ? errorDetails : undefined,
+      error: opts?.error ? errorDetails : undefined,
+      ...opts?.meta,
     },
     data: parsedData,
   };

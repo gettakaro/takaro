@@ -44,13 +44,12 @@ export class UserRepo extends ITakaroRepo<UserModel> {
     return UserModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<UserModel>): Promise<UserModel[]> {
-    const params = new QueryBuilder(filters).build(TABLE_NAME);
+  async find(filters: ITakaroQuery<UserModel>) {
     const model = await this.getModel();
-    return await model
-      .query()
-      .where(params.where)
-      .withGraphJoined('roles.capabilities');
+    return await new QueryBuilder<UserModel>({
+      ...filters,
+      extend: ['roles.capabilities'],
+    }).build(model.query());
   }
 
   async findOne(id: string): Promise<IUserFindOneOutput> {
