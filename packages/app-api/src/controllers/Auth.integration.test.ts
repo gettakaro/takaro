@@ -1,4 +1,5 @@
 import { IntegrationTest, logInWithCapabilities } from '@takaro/test';
+import { RoleSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { CAPABILITIES } from '../db/role';
 
 const group = 'Auth';
@@ -12,7 +13,10 @@ const tests: IntegrationTest<any>[] = [
       await logInWithCapabilities(this.client, [CAPABILITIES.READ_USERS]);
     },
     test: async function () {
-      return this.client.role.roleControllerSearch();
+      return this.client.role.roleControllerSearch({
+        sortBy: 'name',
+        sortDirection: RoleSearchInputDTOSortDirectionEnum.Asc,
+      });
     },
     expectedStatus: 403,
   }),
