@@ -15,7 +15,7 @@ const tests: IntegrationTest<any>[] = [
     test: async function () {
       return this.client.role.roleControllerSearch({
         sortBy: 'name',
-        sortDirection: RoleSearchInputDTOSortDirectionEnum.Asc,
+        sortDirection: RoleSearchInputDTOSortDirectionEnum.Desc,
       });
     },
     expectedStatus: 403,
