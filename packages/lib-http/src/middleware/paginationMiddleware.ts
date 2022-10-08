@@ -19,9 +19,8 @@ export interface PaginatedRequest extends Request {
 export class PaginationMiddleware implements ExpressMiddlewareInterface {
   async use(req: PaginatedRequest, res: Response, next: NextFunction) {
     const merged = { ...req.query, ...req.body };
-    const { page, limit } = merged;
     try {
-      const result = await paginationSchema.validate({ page, limit });
+      const result = await paginationSchema.validate(merged);
       req.page = result.page;
       req.limit = result.limit;
       next();

@@ -16,8 +16,8 @@ async function runPagination(page?: number, limit?: number) {
 describe('pagination middleware', () => {
   it('Handles setting defaults', async () => {
     const { req, next } = await runPagination();
-    expect(req.page).to.equal(1);
-    expect(req.limit).to.equal(10);
+    expect(req.page).to.equal(0);
+    expect(req.limit).to.equal(100);
     expect(next).to.have.been.calledOnce;
   });
   it('Works when pagination is passed', async () => {
@@ -41,7 +41,7 @@ describe('pagination middleware', () => {
     const callArg = next.getCalls()[0].args[0];
     expect(callArg).to.be.an.instanceOf(Error);
     expect(callArg.message).to.equal(
-      'Invalid pagination: page must be greater than or equal to 1'
+      'Invalid pagination: page must be greater than or equal to 0'
     );
   });
   it('Handles limit too high', async () => {
