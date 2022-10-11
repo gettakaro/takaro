@@ -45,12 +45,11 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
     return GameServerModel.bindKnex(knex);
   }
 
-  async find(
-    filters: ITakaroQuery<GameServerModel>
-  ): Promise<GameServerModel[]> {
-    const params = new QueryBuilder(filters).build(GAMESERVER_TABLE_NAME);
+  async find(filters: ITakaroQuery<GameServerModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await new QueryBuilder<GameServerModel>(filters).build(
+      model.query()
+    );
   }
 
   async findOne(id: string): Promise<GameServerModel> {

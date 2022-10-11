@@ -29,7 +29,7 @@ Optionally (but recommended!), you can set up some testing data automatically.
 
 ```bash
 # Take a look at the .env file and adjust as needed
-./scripts/dev-data.sh
+node ./scripts/dev-data.mjs
 ```
 
 ### Working on app-agent

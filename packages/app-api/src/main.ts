@@ -61,11 +61,11 @@ async function main() {
   const domainService = new DomainService();
   const domains = await domainService.find({});
 
-  for (const domain of domains) {
+  for (const domain of domains.results) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
     await gameServerService.manager.init(
-      gameServers.map((g) => ({ ...g, domainId: domain.id }))
+      gameServers.results.map((g) => ({ ...g, domainId: domain.id }))
     );
   }
 

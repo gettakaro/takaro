@@ -1,6 +1,6 @@
 import { IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse } from '@takaro/http';
+import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
@@ -59,11 +59,18 @@ export class FunctionController {
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @Post('/function/search')
   async search(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: AuthenticatedRequest & PaginatedRequest,
     @Body() query: FunctionSearchInputDTO
   ) {
     const service = new FunctionService(req.domainId);
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))

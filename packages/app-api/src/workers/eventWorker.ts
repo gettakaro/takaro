@@ -78,7 +78,7 @@ async function getTriggeredHooks(
     filters: { eventType: data.type },
   });
 
-  return hooksThatMatchType.filter((hook) => {
+  return hooksThatMatchType.results.filter((hook) => {
     const hookRegex = new RegExp(hook.regex);
     const hookRegexMatches = hookRegex.exec(data.msg);
     return hookRegexMatches;
@@ -108,7 +108,7 @@ async function syncPlayerData(job: Job<IEventQueueData>) {
         },
       });
 
-      if (!existingPlayers.length) {
+      if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
         player = await playerService.create({
           name: playerData.name,
@@ -117,7 +117,7 @@ async function syncPlayerData(job: Job<IEventQueueData>) {
           xboxLiveId: playerData.xboxLiveId,
         });
       } else {
-        player = existingPlayers[0];
+        player = existingPlayers.results[0];
       }
 
       await playerService.insertAssociation(
