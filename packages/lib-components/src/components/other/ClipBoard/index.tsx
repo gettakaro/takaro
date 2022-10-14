@@ -53,7 +53,7 @@ export const ClipBoard: FC<ClipBoardProps> = ({ text, maxWidth = 200 }) => {
   useEffect(() => {
     /* If it was copied, show a checkmark for 2.5s thn make it possible to copy again */
     if (copied) {
-      enqueueSnackbar('Successfully copied to clipboard', { variant: 'info' });
+      enqueueSnackbar('Copied to clipboard', { variant: 'default' });
       setTimeout(() => {
         setCopied(false);
       }, 2500);

@@ -3,9 +3,8 @@ import { TabSwitch } from '.';
 import { styled } from '../../../styled';
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto;
-  grid-gap: 2rem;
+  width: 50%;
+  margin: 0 auto;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
   border-radius: 1rem;
@@ -26,34 +25,19 @@ export const TabSwitchTwoItems = () => (
       <Tab label="Education">this is the first tabs content</Tab>
       <Tab label="Business">this is the second tabs content</Tab>
     </TabSwitch>
-
-    <TabSwitch color="secondary">
-      <Tab label="Education">this is the first tabs content</Tab>
-      <Tab label="Business">this is the second tabs content</Tab>
-    </TabSwitch>
-
-    <TabSwitch color="gradient">
-      <Tab label="Education">this is the first tabs content</Tab>
-      <Tab label="Business">this is the second tabs content</Tab>
-    </TabSwitch>
-
-    <TabSwitch color="white">
-      <Tab label="Education">this is the first tabs content</Tab>
-      <Tab label="Business">this is the second tabs content</Tab>
-    </TabSwitch>
   </>
 );
 
 export const TabSwitchThreeItems = () => (
   <TabSwitch>
-    <Tab label="Tab 1">this is the first tabs content</Tab>
-    <Tab label="Tab 2">this is the second tabs content</Tab>
-    <Tab label="Tab 3">this is the third tabs content</Tab>
+    <Tab label="Tab one">this is the first tabs content</Tab>
+    <Tab label="Tab two">this is the second tabs content</Tab>
+    <Tab label="Tab prev">this is the third tabs content</Tab>
   </TabSwitch>
 );
 
 export default {
-  title: 'Navigation/TabList',
+  title: 'Navigation/TabSwitch',
   component: TabSwitch,
   subcomponents: { TabSwitchTwoItems, TabSwitchThreeItems },
   decorators: [(story) => <Wrapper>{story()}</Wrapper>]

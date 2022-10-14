@@ -5,7 +5,7 @@ import { Color, Size, Variant, AlertVariants } from '../../../styled/types';
 
 export interface ButtonProps {
   disabled?: boolean;
-  onClick: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => any;
+  onClick?: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
   isLoading?: boolean;
   icon?: ReactNode;
   className?: string;
@@ -30,7 +30,7 @@ export const Button: FC<ButtonProps> = ({
   disabled = false,
   isWhite = false,
   variant = 'default',
-  onClick
+  onClick = null
 }) => {
   function content(): JSX.Element {
     return (
@@ -53,7 +53,7 @@ export const Button: FC<ButtonProps> = ({
       form={form}
       icon={!!icon}
       isLoading={isLoading}
-      onClick={disabled || isLoading ? undefined : onClick}
+      onClick={disabled || isLoading || !onClick ? undefined : onClick}
       outline={variant === 'outline'}
       size={size}
       type={type}
