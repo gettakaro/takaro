@@ -54,7 +54,7 @@ function filterFields(
 }
 
 export async function matchSnapshot(
-  test: ITestWithSnapshot<any>,
+  test: ITestWithSnapshot<unknown>,
   response: ITakaroAPIAxiosResponse<unknown>
 ) {
   const snapshotPath = path.resolve(

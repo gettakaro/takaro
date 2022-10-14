@@ -115,7 +115,7 @@ export class QueuesService {
     return this.queuesMap;
   }
 
-  async registerWorker(worker: TakaroWorker<any>) {
+  async registerWorker(worker: TakaroWorker<IJobData>) {
     this.workers.push(worker);
     log.info(`Registered worker ${worker.name}`);
   }
