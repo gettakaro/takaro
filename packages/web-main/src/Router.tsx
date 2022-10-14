@@ -9,6 +9,8 @@ import { AuthenticatedRoute } from 'components/AuthenticatedRoute';
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
+import Modules from 'pages/Modules';
+import { ModuleCreate } from 'pages/CreateModule';
 
 
 // Lazy load pages
@@ -30,6 +32,11 @@ export const Router: FC = () => (
             <Route element={<AddGameServer />} path={PATHS.gameServers.create} />
             <Route element={<AddGameServer />} path={PATHS.gameServers.update} />
             <Route element={<Players />} path={PATHS.players} />
+          </Route>
+
+          <Route element={<AuthenticatedRoute frame="workbench" />} path={PATHS.home}>
+            <Route element={<Modules />} path={PATHS.modules.main} />
+            <Route element={<ModuleCreate />} path={PATHS.modules.create} />
           </Route>
 
           <Route element={<LogIn />} path={PATHS.login} />

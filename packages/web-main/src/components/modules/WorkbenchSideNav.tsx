@@ -2,20 +2,10 @@ import { FC } from 'react';
 import { NavLink } from 'react-router-dom';
 import { darken } from 'polished';
 import { motion } from 'framer-motion';
-
+import { ModulesTreeView } from 'components/modules/treeView';
 
 import { Link } from 'react-router-dom';
-import {
-  AiOutlineAppstore as Dashboard,
-  AiOutlineSetting as Settings,
-  AiOutlineFunction as Modules,
-  AiOutlineDatabase as GameServers,
-  AiOutlineBook as Book,
-  AiOutlineUser as Users,
-  AiOutlineIdcard as Players,
-} from 'react-icons/ai';
-import { Company, styled } from '@takaro/lib-components';
-import { useUser } from 'hooks/useUser';
+import { Button, Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 
 const Nav = styled.nav`
@@ -95,7 +85,7 @@ const Container = styled(motion.div)<{ toTop: boolean }>`
   }
 `;
 
-export const Navbar: FC = () => {
+export const WorkbenchNavbar: FC = () => {
   return (
     <Container
       toTop={true}
@@ -105,36 +95,10 @@ export const Navbar: FC = () => {
       <Link className="company-icon" to={PATHS.home}>
         <Company />
       </Link>
-      <Nav>
-        <NavLink to={PATHS.home}>
-          <Dashboard size={24} />
-          <p>Dashboard</p>
-        </NavLink>
-        <NavLink to={PATHS.gameServers.overview}>
-          <GameServers size={24} />
-          <p>Servers</p>
-        </NavLink>
-        <NavLink to={PATHS.players}>
-          <Players size={24} />
-          <p>Players</p>
-        </NavLink>        
-        <NavLink to={PATHS.users}>
-          <Users size={24} />
-          <p>Users</p>
-        </NavLink>
-        <NavLink to={PATHS.modules.main}>
-          <Modules size={24} />
-          <p>Modules</p>
-        </NavLink>        
-        <NavLink to={PATHS.settings}>
-          <Settings size={24} />
-          <p>Settings</p>
-        </NavLink>
-        <a href="https://docs.csmm.app" rel="noopener noreferrer" target="_blank">
-          <Book size={24} />
-          <p>Documentation</p>
-        </a>
-      </Nav>
+
+      <ModulesTreeView />
+
+
     </Container>
   );
 };

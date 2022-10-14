@@ -7,8 +7,11 @@ export const PATHS = {
     create: '/servers/create',
     update: '/servers/update/:serverId',
   },
+  modules: {
+    main: '/modules',
+    create: '/modules/create',
+  },
   players: '/players',
-  modules: '/modules',
   users: '/users',
   profile: '/profile',
 };

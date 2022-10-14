@@ -12,3 +12,6 @@ export type { ErrorTemplateProps } from './ErrorTemplate';
 
 export { Table } from './Table';
 export type { TableProps } from './Table';
+
+export { Tree } from './Tree';
+export type { TreeProps } from './Tree';
