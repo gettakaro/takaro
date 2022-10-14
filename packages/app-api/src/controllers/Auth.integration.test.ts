@@ -29,7 +29,10 @@ const tests = [
       await logInWithCapabilities(this.client, [CAPABILITIES.READ_ROLES]);
     },
     test: async function () {
-      return this.client.role.roleControllerSearch();
+      return this.client.role.roleControllerSearch({
+        sortBy: 'name',
+        sortDirection: RoleSearchInputDTOSortDirectionEnum.Desc,
+      });
     },
     expectedStatus: 200,
   }),
