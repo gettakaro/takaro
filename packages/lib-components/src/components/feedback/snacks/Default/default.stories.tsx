@@ -51,7 +51,7 @@ export const Snacks: Story = () => {
       <button
         onClick={() => {
           enqueueSnackbar('file was uploaded successfully', {
-            type: 'success',
+            variant: 'default',
             title: ' Upload successful',
             button1: (
               <Button
