@@ -9,7 +9,7 @@ export default {
   component: Select
 } as Meta;
 
-export const SelectComponent: Story<SelectProps> = () => {
+export const Default: Story<SelectProps> = () => {
   type FormFields = { carBrand: string };
   const [result, setResult] = useState<string>('none');
   const { control, handleSubmit } = useForm<FormFields>();
