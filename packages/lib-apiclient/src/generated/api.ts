@@ -355,7 +355,7 @@ export interface CronJobSearchInputDTO {
    * @type {Array<string>}
    * @memberof CronJobSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const CronJobSearchInputDTOSortDirectionEnum = {
@@ -540,7 +540,7 @@ export interface DomainSearchInputDTO {
    * @type {Array<string>}
    * @memberof DomainSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -726,7 +726,7 @@ export interface FunctionSearchInputDTO {
    * @type {Array<string>}
    * @memberof FunctionSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const FunctionSearchInputDTOSortDirectionEnum = {
@@ -905,7 +905,7 @@ export interface GameServerSearchInputDTO {
    * @type {Array<string>}
    * @memberof GameServerSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const GameServerSearchInputDTOSortDirectionEnum = {
@@ -1146,7 +1146,7 @@ export interface HookSearchInputDTO {
    * @type {Array<string>}
    * @memberof HookSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const HookSearchInputDTOSortDirectionEnum = {
@@ -1235,7 +1235,7 @@ export interface ITakaroQuery {
    * @type {Array<string>}
    * @memberof ITakaroQuery
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const ITakaroQuerySortDirectionEnum = {
@@ -1507,7 +1507,7 @@ export interface ModuleSearchInputDTO {
    * @type {Array<string>}
    * @memberof ModuleSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const ModuleSearchInputDTOSortDirectionEnum = {
@@ -1734,7 +1734,7 @@ export interface PlayerSearchInputDTO {
    * @type {Array<string>}
    * @memberof PlayerSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const PlayerSearchInputDTOSortDirectionEnum = {
@@ -1881,7 +1881,7 @@ export interface RoleSearchInputDTO {
    * @type {Array<string>}
    * @memberof RoleSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const RoleSearchInputDTOSortDirectionEnum = {
@@ -2258,7 +2258,7 @@ export interface UserSearchInputDTO {
    * @type {Array<string>}
    * @memberof UserSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const UserSearchInputDTOSortDirectionEnum = {
