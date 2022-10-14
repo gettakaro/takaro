@@ -4,7 +4,7 @@ import { RoleOutputDTO } from '../service/RoleService';
 
 const group = 'RoleController';
 
-const tests: IntegrationTest<any>[] = [
+const tests: IntegrationTest<unknown>[] = [
   new IntegrationTest<RoleOutputDTO>({
     group,
     snapshot: true,

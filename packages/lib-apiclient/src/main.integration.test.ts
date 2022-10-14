@@ -43,7 +43,7 @@ describe('API client', () => {
   });
 
   describe('User controller', () => {
-    let domain: AxiosResponse<DomainCreateOutputDTOAPI, any> | null = null;
+    let domain: AxiosResponse<DomainCreateOutputDTOAPI, unknown> | null = null;
 
     beforeEach(async () => {
       domain = await adminClient.domain.domainControllerCreate({

@@ -19,7 +19,7 @@ interface ISetupHookAndFunction {
   fn: FunctionOutputDTOAPI;
 }
 
-const tests: IntegrationTest<any>[] = [
+const tests: IntegrationTest<unknown>[] = [
   new IntegrationTest<HookOutputDTOAPI>({
     group,
     snapshot: true,
