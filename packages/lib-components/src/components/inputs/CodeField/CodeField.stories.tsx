@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Story, Meta } from '@storybook/react';
+import { Button } from '../../../components';
 import { CodeField, CodeFieldProps } from './index';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import * as yup from 'yup';
@@ -60,7 +61,7 @@ export const AutoSubmit: Story = () => {
     setTimeout(() => {
       setLoading(false);
       setResult(code);
-    }, 4000);
+    }, 2000);
   };
 
   return (
