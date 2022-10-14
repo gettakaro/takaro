@@ -14,7 +14,7 @@ interface ISetupCronJobAndFunction {
   fn: FunctionOutputDTOAPI;
 }
 
-const tests: IntegrationTest<unknown>[] = [
+const tests = [
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
     group,

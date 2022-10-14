@@ -2,7 +2,7 @@ import { IntegrationTest } from '@takaro/test';
 
 const group = 'DomainController';
 
-const tests: IntegrationTest<unknown>[] = [
+const tests = [
   new IntegrationTest<void>({
     group,
     snapshot: true,

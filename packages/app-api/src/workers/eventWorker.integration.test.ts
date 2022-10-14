@@ -14,7 +14,7 @@ interface ISetupHooks {
   hooks: HookOutputDTOAPI[];
 }
 
-const tests: IntegrationTest<unknown>[] = [
+const tests = [
   new IntegrationTest<ISetupHooks>({
     group: groupHooks,
     name: 'Can handle a simple triggered hook (happy path)',

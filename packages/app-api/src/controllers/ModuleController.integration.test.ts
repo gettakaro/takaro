@@ -3,7 +3,7 @@ import { ModuleOutputDTO } from '@takaro/apiclient';
 
 const group = 'ModuleController';
 
-const tests: IntegrationTest<unknown>[] = [
+const tests = [
   new IntegrationTest<ModuleOutputDTO>({
     group,
     snapshot: true,

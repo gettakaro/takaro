@@ -4,7 +4,7 @@ import { CAPABILITIES } from '../db/role';
 
 const group = 'Auth';
 
-const tests: IntegrationTest<unknown>[] = [
+const tests = [
   new IntegrationTest({
     snapshot: true,
     group,
