@@ -75,5 +75,7 @@ services:
     # agent  
       - 13004:3001
       - 12002:12002
+    # Docs
+      - 13005:13005
 volumes:
     pgadmin:      

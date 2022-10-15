@@ -6,7 +6,7 @@ sidebar_position: 2
 
 This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).
 
-There are two types of packages; libraries (`lib-*`) and applications (`app-*`).
+There are three types of packages; libraries (`lib-*`), applications (`app-*`) and web apps (`web-*`).
 
 ## Libraries
 
@@ -19,3 +19,8 @@ There are two types of packages; libraries (`lib-*`) and applications (`app-*`).
 - Can NOT be imported by other packages.
 - Does have a `start` script, which runs the application in production mode.
 - Does have a `start:dev` script, which runs the application with auto-reloading functionality.
+
+## Web
+
+- Similar to apps, but are intended to be deployed to a web server.
+- Must contain a `build` script, that outputs static HTML, CSS and JS files.
