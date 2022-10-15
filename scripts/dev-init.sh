@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -10,7 +10,7 @@ printHeader() {
 	printf '%s\n' ""
 }
 
-if [[ -e ".env.example" && ! -e .env ]]; then
+if test -e ".env.example" && test -e ".env"; then
 	printHeader "Applying default config"
 	cp .env.example .env
 fi
