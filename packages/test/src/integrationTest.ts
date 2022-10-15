@@ -4,7 +4,12 @@ import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
 import { logger } from '@takaro/logger';
-import { AdminClient, Client, AxiosError } from '@takaro/apiclient';
+import {
+  AdminClient,
+  Client,
+  AxiosError,
+  AxiosResponse,
+} from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -13,7 +18,7 @@ export class IIntegrationTest<SetupData> {
   standardEnvironment?: boolean = true;
   setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
   teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
-  test!: (this: IntegrationTest<SetupData>) => Promise<any>;
+  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse>;
   expectedStatus?: number = 200;
   filteredFields?: string[];
 }
@@ -123,7 +128,10 @@ export class IntegrationTest<SetupData> {
         }
 
         if (this.test.snapshot) {
-          await matchSnapshot(this.test, response);
+          await matchSnapshot(
+            this.test as ITestWithSnapshot<unknown>,
+            response
+          );
           expect(response.status).to.equal(this.test.expectedStatus);
         }
       });

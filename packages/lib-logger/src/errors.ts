@@ -17,6 +17,13 @@ export class InternalServerError extends TakaroError {
   }
 }
 
+export class ConfigError extends TakaroError {
+  constructor(message: string) {
+    super(`ConfigError: ${message}`);
+    this.http = 500;
+  }
+}
+
 export class NotImplementedError extends TakaroError {
   constructor() {
     super('Not implemented');

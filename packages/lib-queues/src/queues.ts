@@ -66,7 +66,8 @@ export class QueuesService {
     return QueuesService.instance;
   }
 
-  private workers: TakaroWorker<IJobData>[] = [];
+  private workers: (TakaroWorker<IJobData> | TakaroWorker<IEventQueueData>)[] =
+    [];
 
   private queuesMap = {
     commands: {
@@ -115,7 +116,9 @@ export class QueuesService {
     return this.queuesMap;
   }
 
-  async registerWorker(worker: TakaroWorker<any>) {
+  async registerWorker(
+    worker: TakaroWorker<IJobData> | TakaroWorker<IEventQueueData>
+  ) {
     this.workers.push(worker);
     log.info(`Registered worker ${worker.name}`);
   }

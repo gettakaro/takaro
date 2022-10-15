@@ -23,7 +23,7 @@ class TakaroMigrationSource {
       .filter((file) => file.endsWith('.js'))
       .map((file) => {
         return this.dynamicImport(`${folderPath}/${file}`).then(
-          (migration: any) => {
+          (migration: IMigration) => {
             return {
               name: file,
               up: migration.up,
