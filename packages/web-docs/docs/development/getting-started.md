@@ -1,4 +1,17 @@
-# Takaro
+---
+sidebar_position: 1
+---
+
+# Getting started
+
+This document will guide you through installing Takaro locally for development. If you want to use Takaro in production, please refer to the [production setup guide](./production-setup.md).
+
+The Takaro development environment targets unix devices (with a focus on Linux)! If you are on Windows, you can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+## System diagram
+
+![Takaro](./img/system-diagram.png)
+
 
 ## Requirements
 
@@ -44,3 +57,4 @@ node ./scripts/dev-data.mjs
 sudo apt install uidmap
 containerd-rootless-setuptool.sh install
 ```
+

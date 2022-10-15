@@ -1,8 +1,12 @@
-# Takaro functions infrastructure
+---
+sidebar_position: 4
+---
+
+# Functions isolation
 
 Takaro uses Kata containers to run containers isolated by VMs. 
 
-![](./functions-infra.png)
+![](./img/functions-infra.png)
 
 ## containerd communications
 
