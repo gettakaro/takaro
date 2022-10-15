@@ -55,6 +55,10 @@ links:
     icon: "fab fa-github"
     url: "https://github.com/niekcandaele/takaro"
     target: "_blank" # optional html a tag target attribute
+  - name: "Docs"
+    icon: "fab fa-book"
+    url: "https://docs.takaro.io"
+    target: "_blank" # optional html a tag target attribute
 #  - name: "Wiki"
 #    icon: "fas fa-book"
 #    url: "https://www.wikipedia.org/"
@@ -101,4 +105,9 @@ services:
         logo: "assets/tools/sample.png"
         subtitle: "Bull queues dashboard"
         url: "http://localhost:13004/queues"
+        target: "_blank"
+      - name: "Docs"
+        logo: "assets/tools/sample.png"
+        subtitle: "Auto-reloading development version of documentation"
+        url: "http://localhost:13005"
         target: "_blank"
