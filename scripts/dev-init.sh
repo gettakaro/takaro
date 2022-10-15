@@ -10,9 +10,8 @@ printHeader() {
 	printf '%s\n' ""
 }
 
-printHeader "Applying default config, if not already applied"
-
 if [[ -e ".env.example" && ! -e .env ]]; then
+	printHeader "Applying default config"
 	cp .env.example .env
 fi
 
