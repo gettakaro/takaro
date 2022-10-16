@@ -1,7 +1,8 @@
-import { Knex as IKnex } from 'knex';
 import { config } from './config';
+import { NOT_DOMAIN_SCOPED_getKnex } from './knex';
 
-export async function encrypt(knex: IKnex, value: string): Promise<string> {
+export async function encrypt(value: string): Promise<string> {
+  const knex = await NOT_DOMAIN_SCOPED_getKnex();
   const res = await knex.raw('SELECT PGP_SYM_ENCRYPT(?,?) AS value', [
     value,
     config.get('encryptionKey'),
@@ -9,7 +10,8 @@ export async function encrypt(knex: IKnex, value: string): Promise<string> {
   return res.rows[0].value;
 }
 
-export async function decrypt(knex: IKnex, value: string): Promise<string> {
+export async function decrypt(value: string): Promise<string> {
+  const knex = await NOT_DOMAIN_SCOPED_getKnex();
   const res = await knex.raw('SELECT PGP_SYM_DECRYPT(?,?) AS value', [
     value,
     config.get('encryptionKey'),
@@ -17,7 +19,8 @@ export async function decrypt(knex: IKnex, value: string): Promise<string> {
   return res.rows[0].value;
 }
 
-export async function hash(knex: IKnex, value: string): Promise<string> {
+export async function hash(value: string): Promise<string> {
+  const knex = await NOT_DOMAIN_SCOPED_getKnex();
   const res = await knex.raw("SELECT crypt(?, gen_salt('bf')) as value", [
     value,
   ]);
@@ -25,10 +28,10 @@ export async function hash(knex: IKnex, value: string): Promise<string> {
 }
 
 export async function compareHashed(
-  knex: IKnex,
   value: string,
   hash: string
 ): Promise<boolean> {
+  const knex = await NOT_DOMAIN_SCOPED_getKnex();
   const res = await knex.raw('SELECT crypt(?, ?) = ? as result', [
     value,
     hash,
