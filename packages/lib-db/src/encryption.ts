@@ -21,6 +21,7 @@ export async function decrypt(value: string): Promise<string> {
 
 export async function hash(value: string): Promise<string> {
   const knex = await NOT_DOMAIN_SCOPED_getKnex();
+  // eslint-disable-next-line quotes
   const res = await knex.raw("SELECT crypt(?, gen_salt('bf')) as value", [
     value,
   ]);
