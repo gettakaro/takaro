@@ -10,3 +10,7 @@ export {
 } from './knex';
 
 export { migrateDomain, migrateSystem } from './migrations';
+
+export * from './encryption';
+
+export { configSchema, IDbConfig } from './config';
