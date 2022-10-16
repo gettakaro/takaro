@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { SliderComponent, SliderProps } from '.';
 import { useForm } from 'react-hook-form';
@@ -19,11 +19,10 @@ export default {
   title: 'Inputs/Slider',
   component: SliderComponent,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+} as Meta<SliderProps>;
 
-const Template: Story<SliderProps> = (args) => {
+const Template: StoryFn<SliderProps> = (args) => {
   const { control } = useForm();
-
   return <SliderComponent {...args} control={control} />;
 };
 
@@ -55,8 +54,3 @@ StepsWithDots.args = {
   step: 10,
   showDots: true
 };
-
-// Checked by default
-// Loading Checkbox (maybe the existing value has to be fetched);
-// Read Only Checkbox
-//export const ShowingDots = Template.bind({});

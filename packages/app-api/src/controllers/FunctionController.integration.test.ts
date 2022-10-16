@@ -12,7 +12,7 @@ interface ISetupCronJobAndFunction {
   fns: FunctionOutputDTO[];
 }
 
-const tests: IntegrationTest<any>[] = [
+const tests = [
   new IntegrationTest<FunctionOutputDTO>({
     group,
     snapshot: true,

@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Action, ActionMenu, ActionMenuProps } from '.';
 import { createRef, useEffect, useState } from 'react';
 import { styled } from '../../../styled';
@@ -8,7 +8,7 @@ import { useFloating } from '@floating-ui/react-dom';
 export default {
   title: 'Other/ActionMenu',
   component: ActionMenu
-} as Meta;
+} as Meta<ActionMenuProps>;
 
 const Reference = styled.div`
   width: 200px;
@@ -22,7 +22,7 @@ const ParentContainer = styled.div`
   height: 30vh;
 `;
 
-export const Default: Story<ActionMenuProps> = () => {
+export const Default: StoryFn<ActionMenuProps> = () => {
   const [visible, setVisible] = useState(false);
   const { x, y, reference, floating, strategy } = useFloating();
   const [selected, setSelected] = useState<number>(0);

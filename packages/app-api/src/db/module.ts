@@ -46,14 +46,12 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel> {
     return ModuleModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<ModuleModel>): Promise<ModuleModel[]> {
-    const params = new QueryBuilder(filters).build(MODULE_TABLE_NAME);
+  async find(filters: ITakaroQuery<ModuleModel>) {
     const model = await this.getModel();
-    return await model
-      .query()
-      .where(params.where)
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks');
+    return await new QueryBuilder<ModuleModel>({
+      ...filters,
+      extend: ['cronJobs', 'hooks'],
+    }).build(model.query());
   }
 
   async findOne(id: string): Promise<ModuleModel> {

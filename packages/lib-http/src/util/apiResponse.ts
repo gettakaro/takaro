@@ -2,31 +2,25 @@ import { Type } from 'class-transformer';
 import { IsISO8601, ValidateNested } from 'class-validator';
 import { IsString } from 'class-validator';
 
-function parseData(data: any) {
-  if (!data) return null;
-
-  if (data.toJson instanceof Function) {
-    return data.toJson();
-  }
-
-  return data;
+interface IApiResponseOptions {
+  error?: Error;
+  meta?: Record<string, string | number>;
 }
 
-export function apiResponse(data: unknown = {}, error?: Error) {
-  const parsedData = parseData(data);
-
+export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
   const errorDetails = {
-    code: error?.name,
+    code: opts?.error?.name,
     // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
-    details: error?.hasOwnProperty('details') ? error?.details : {},
+    details: opts?.error?.hasOwnProperty('details') ? opts?.error?.details : {},
   };
 
   return {
     meta: {
       serverTime: new Date().toISOString(),
-      error: error ? errorDetails : undefined,
+      error: opts?.error ? errorDetails : undefined,
+      ...opts?.meta,
     },
-    data: parsedData,
+    data,
   };
 }
 

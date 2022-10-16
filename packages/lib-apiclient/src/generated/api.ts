@@ -176,6 +176,8 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ManageHooks: 'MANAGE_HOOKS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
 } as const;
 
 export type CapabilityOutputDTOCapabilityEnum =
@@ -348,6 +350,12 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CronJobSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const CronJobSearchInputDTOSortDirectionEnum = {
@@ -527,6 +535,12 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   sortDirection?: DomainSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof DomainSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -707,6 +721,12 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof FunctionSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const FunctionSearchInputDTOSortDirectionEnum = {
@@ -880,6 +900,12 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const GameServerSearchInputDTOSortDirectionEnum = {
@@ -1115,6 +1141,12 @@ export interface HookSearchInputDTO {
    * @memberof HookSearchInputDTO
    */
   sortDirection?: HookSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof HookSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const HookSearchInputDTOSortDirectionEnum = {
@@ -1198,6 +1230,12 @@ export interface ITakaroQuery {
    * @memberof ITakaroQuery
    */
   sortDirection?: ITakaroQuerySortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ITakaroQuery
+   */
+  extend?: Array<string>;
 }
 
 export const ITakaroQuerySortDirectionEnum = {
@@ -1464,6 +1502,12 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const ModuleSearchInputDTOSortDirectionEnum = {
@@ -1685,6 +1729,12 @@ export interface PlayerSearchInputDTO {
    * @memberof PlayerSearchInputDTO
    */
   sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const PlayerSearchInputDTOSortDirectionEnum = {
@@ -1826,6 +1876,12 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   sortDirection?: RoleSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof RoleSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const RoleSearchInputDTOSortDirectionEnum = {
@@ -2197,6 +2253,12 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   sortDirection?: UserSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof UserSearchInputDTO
+   */
+  extend?: Array<string>;
 }
 
 export const UserSearchInputDTOSortDirectionEnum = {

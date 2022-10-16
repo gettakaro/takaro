@@ -46,10 +46,12 @@ export class HookRepo extends ITakaroRepo<HookModel> {
     return HookModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<HookModel>): Promise<HookModel[]> {
-    const params = new QueryBuilder(filters).build(HOOKS_TABLE_NAME);
+  async find(filters: ITakaroQuery<HookModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where).withGraphJoined('functions');
+    return await new QueryBuilder<HookModel>({
+      ...filters,
+      extend: ['functions'],
+    }).build(model.query());
   }
 
   async findOne(id: string): Promise<HookModel> {

@@ -1,6 +1,11 @@
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse } from '@takaro/http';
+import {
+  APIOutput,
+  apiResponse,
+  PaginatedRequest,
+  PaginationMiddleware,
+} from '@takaro/http';
 import { PlayerOutputDTO, PlayerService } from '../service/PlayerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -63,14 +68,22 @@ class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters>
 @JsonController()
 export class PlayerController {
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_PLAYERS]))
+  @UseBefore(PaginationMiddleware)
   @ResponseSchema(PlayerOutputArrayDTOAPI)
   @Post('/player/search')
   async search(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: AuthenticatedRequest & PaginatedRequest,
     @Body() query: PlayerSearchInputDTO
   ) {
     const service = new PlayerService(req.domainId);
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_PLAYERS]))

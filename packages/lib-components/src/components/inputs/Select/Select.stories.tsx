@@ -1,15 +1,15 @@
-import { Story, Meta } from '@storybook/react';
-import { Select, SelectProps } from '.';
+import { Meta, StoryFn } from '@storybook/react';
+import { Select as SelectComponent, SelectProps } from '.';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { AiOutlineWallet as Wallet } from 'react-icons/ai';
 
 export default {
   title: 'Inputs/Select',
-  component: Select
-} as Meta;
+  component: SelectComponent,
+} as Meta<SelectProps>;
 
-export const Default: Story<SelectProps> = () => {
+export const Select: StoryFn<SelectProps> = () => {
   type FormFields = { carBrand: string };
   const [result, setResult] = useState<string>('none');
   const { control, handleSubmit } = useForm<FormFields>();

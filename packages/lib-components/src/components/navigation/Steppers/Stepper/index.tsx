@@ -56,7 +56,7 @@ const StepperStep: FC<StepProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-interface StepperProps {
+export interface StepperProps {
   currentStepIsLoading?: boolean;
   canStepBack?: boolean; // disable step back via step header
 }

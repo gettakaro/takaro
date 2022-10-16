@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { ToggleButtonGroup, ToggleButton, ToggleButtonGroupProps } from '.';
 import { MdOutlineFormatAlignLeft, MdOutlineFormatAlignRight, MdOutlineFormatAlignJustify, MdOutlineFormatAlignCenter } from 'react-icons/md';
@@ -11,11 +11,12 @@ const WrapperDecorator = styled.div`
 
 export default {
   title: 'Inputs/ToggleButton',
-  component: ToggleButton,
-  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>]
-} as Meta;
+  component: ToggleButtonGroup,
+  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
+  subcomponents: { ToggleButton }
+} as Meta<ToggleButtonGroupProps>;
 
-export const Horizontal: Story<ToggleButtonGroupProps> = () => {
+export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
   const handleOnChange = (value: string) => {
     console.log('handleOnChange fired', value);
   };
@@ -33,7 +34,7 @@ export const Horizontal: Story<ToggleButtonGroupProps> = () => {
   );
 };
 
-export const Vertical: Story<ToggleButtonGroupProps> = () => {
+export const Vertical: StoryFn<ToggleButtonGroupProps> = () => {
   const handleOnChange = (value: string) => {
     console.log('handleOnChange fired', value);
   };
@@ -52,7 +53,7 @@ export const Vertical: Story<ToggleButtonGroupProps> = () => {
   );
 };
 
-export const FullWidth: Story<ToggleButtonGroupProps> = () => {
+export const FullWidth: StoryFn<ToggleButtonGroupProps> = () => {
   const handleOnChange = (value: string) => {
     console.log('handleOnChange fired', value);
   };
@@ -72,7 +73,7 @@ export const FullWidth: Story<ToggleButtonGroupProps> = () => {
   );
 };
 
-export const Text: Story<ToggleButtonGroupProps> = () => {
+export const Text: StoryFn<ToggleButtonGroupProps> = () => {
   const handleOnChange = (value: string) => {
     console.log('handleOnChange fired', value);
   };
@@ -91,7 +92,7 @@ export const Text: Story<ToggleButtonGroupProps> = () => {
   );
 };
 
-export const NonExclusive: Story<ToggleButtonGroupProps> = () => {
+export const NonExclusive: StoryFn<ToggleButtonGroupProps> = () => {
   const handleOnChange = (result: Map<string, boolean>) => {
     console.log('handleOnChange fired', result);
   };

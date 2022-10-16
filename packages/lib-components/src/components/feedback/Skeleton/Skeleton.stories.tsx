@@ -1,12 +1,15 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story, StoryFn, StoryObj } from '@storybook/react';
 import { Skeleton, SkeletonProps } from '.';
 
 export default {
   title: 'Feedback/Skeleton',
-  component: Skeleton
-} as Meta;
+  component: Skeleton,
+} as Meta<SkeletonProps>;
 
-export const Default: Story<SkeletonProps> = (args) => (
+export const Default: StoryFn<SkeletonProps> = (args) => <Skeleton {...args} />;
+
+
+export const Example = () => (
   <>
     <Skeleton variant="text" />
     <Skeleton height="40px" variant="circular" width="40px" />
@@ -14,7 +17,7 @@ export const Default: Story<SkeletonProps> = (args) => (
   </>
 );
 
-export const Text: Story<SkeletonProps> = (args) => (
+export const Example2 = () => (
   <>
     <Skeleton variant="text" />
     <Skeleton variant="text" />

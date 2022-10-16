@@ -15,7 +15,7 @@ const mockGameServer = {
   type: GameServerCreateDTOTypeEnum.Mock,
 };
 
-const tests: IntegrationTest<any>[] = [
+const tests = [
   new IntegrationTest<GameServerOutputDTO>({
     group,
     snapshot: true,

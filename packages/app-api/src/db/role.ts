@@ -60,13 +60,12 @@ export class RoleRepo extends ITakaroRepo<RoleModel> {
     return RoleModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<RoleModel>): Promise<RoleModel[]> {
-    const params = new QueryBuilder(filters).build();
+  async find(filters: ITakaroQuery<RoleModel>) {
     const model = await this.getModel();
-    return await model
-      .query()
-      .where(params.where)
-      .withGraphJoined('capabilities');
+    return await new QueryBuilder<RoleModel>({
+      ...filters,
+      extend: ['capabilities'],
+    }).build(model.query());
   }
 
   async findOne(

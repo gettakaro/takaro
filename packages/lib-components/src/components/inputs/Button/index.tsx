@@ -5,7 +5,7 @@ import { Color, Size, Variant, AlertVariants } from '../../../styled/types';
 
 export interface ButtonProps {
   disabled?: boolean;
-  onClick?: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
+  onClick: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
   isLoading?: boolean;
   icon?: ReactNode;
   className?: string;
@@ -15,6 +15,8 @@ export interface ButtonProps {
   color?: Color | AlertVariants | 'background';
   text: string;
   isWhite?: boolean;
+
+  /// When nesting forms a button can be linked to only fire the form with the given name.
   form?: string;
 }
 

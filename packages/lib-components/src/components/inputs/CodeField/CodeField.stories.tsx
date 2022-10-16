@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Story, Meta } from '@storybook/react';
-import { Button } from '../../../components';
+import { Meta, StoryFn } from '@storybook/react';
 import { CodeField, CodeFieldProps } from './index';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import * as yup from 'yup';
@@ -9,11 +8,11 @@ import { useValidationSchema } from '../../..';
 export default {
   title: 'Inputs/CodeField',
   component: CodeField
-} as Meta;
+} as Meta<CodeFieldProps>;
 
 type FormFields = { code: string };
 
-export const Default: Story<CodeFieldProps> = () => {
+export const Default: StoryFn<CodeFieldProps> = () => {
   const [result, setResult] = useState<string>();
 
   const validationSchema = useMemo(
@@ -43,7 +42,7 @@ export const Default: Story<CodeFieldProps> = () => {
   );
 };
 
-export const Loading: Story = () => {
+export const Loading: StoryFn = () => {
   const { control, formState } = useForm<FormFields>();
 
   return (
@@ -51,7 +50,7 @@ export const Loading: Story = () => {
   );
 };
 
-export const AutoSubmit: Story = () => {
+export const AutoSubmit: StoryFn = () => {
   const [result, setResult] = useState<string>();
   const { control, formState, handleSubmit } = useForm<FormFields>();
   const [loading, setLoading] = useState(false);
