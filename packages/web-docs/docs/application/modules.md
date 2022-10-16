@@ -29,3 +29,29 @@ Cronjobs are triggered based on time. This can be a simple repeating pattern lik
 Commands are triggered by a user. They are triggered when a player sends a chat message starting with the configured command prefix. Note that this means that commands are a *manual* action, unlike Hooks and Cronjobs which are triggered with any user-intervention.
 
 Commands support parameters, allowing you to pass data to the Function. For example, you can create a command that allows players to teleport to a specific location. The command could look like `/teleport homeBase`
+
+# Configuration
+
+Every Module can have a certain configuration, allowing you to customize it's behavior without having to edit any code. Every Hook, Cronjob and Command will be able to read this config. 
+
+As a contrived example, a config like the following exists
+
+```json
+{
+  "extraMessage": "Don't forget to read the rules :)"
+}
+```
+
+And a Hook on the event `playerConnected`, which fires whenever a Player connects to the Gameserver. The Function code:
+
+```js
+
+import { Client } from '@takaro/apiclient
+
+export default async function (config, data) {
+  await Client.executeCommandOnGameServer(`say "Welcome to the server, ${data.player.name}! ${config.extraMessage}"`)
+}
+
+```
+
+Would result in a message in-game saying `Welcome to the server, John Doe! Don't forget to read the rules :)`
