@@ -1,7 +1,12 @@
 import { compareHashed, decrypt, encrypt, hash } from './encryption';
 import { expect } from '@takaro/test';
+import { migrateSystem } from './migrations';
 
 describe('Database encryption', () => {
+  before(async () => {
+    await migrateSystem();
+  });
+
   describe('Encryption', () => {
     it('Can encrypt a simple string', async () => {
       const encrypted = await encrypt('test');
