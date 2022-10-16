@@ -5,7 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { SnackbarProvider } from '../src/helpers/getSnackbarProvider';
 import { StepperProvider } from '../src/components/navigation/Steppers/context';
 
-
 export const decorators = [
   (Story) => (
     <ThemeProvider theme={theme}>
@@ -23,4 +22,5 @@ export const decorators = [
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' }
+
 };

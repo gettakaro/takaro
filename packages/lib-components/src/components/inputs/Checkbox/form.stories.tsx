@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Button } from '../..';
 import { Checkbox, CheckboxProps } from '.';
@@ -12,10 +12,9 @@ const ResultContainer = styled.div`
 export default {
   title: 'Inputs/Checkbox/Form',
   component: Checkbox
-} as Meta;
+} as Meta<CheckboxProps>;
 
-// Example
-export const OnChange: Story<CheckboxProps> = () => {
+export const OnChange: StoryFn<CheckboxProps> = () => {
   type FormFields = {
     hasCar: boolean;
   };
@@ -30,8 +29,7 @@ export const OnChange: Story<CheckboxProps> = () => {
   );
 };
 
-// Example
-export const OnSubmit: Story<CheckboxProps> = () => {
+export const OnSubmit: StoryFn<CheckboxProps> = () => {
   const [result, setResult] = useState<boolean>(false);
 
   type FormFields = {

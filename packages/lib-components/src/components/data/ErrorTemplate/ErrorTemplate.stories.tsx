@@ -1,13 +1,13 @@
-import { Meta, Story } from '@storybook/react';
-import { ErrorTemplate } from '.';
+import { Meta, StoryFn } from '@storybook/react';
+import { ErrorTemplate, ErrorTemplateProps } from '.';
 
 export default {
   title: 'Data/ErrorTemplate',
-  component: ErrorTemplate
-} as Meta;
+  component: ErrorTemplate,
+  args: {
+    description: 'NOT FOUND',
+    title: '404',
+  }
+} as Meta<ErrorTemplateProps>;
 
-export const Default: Story = () => (
-  <div>
-    <ErrorTemplate description="NOT FOUND" title="404" />
-  </div>
-);
+export const Default: StoryFn<ErrorTemplateProps> = (args) => <ErrorTemplate {...args} />;

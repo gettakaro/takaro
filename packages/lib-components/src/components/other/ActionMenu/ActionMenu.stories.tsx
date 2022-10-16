@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { ActionMenu, ActionMenuProps } from '.';
 import { AiOutlineShopping as ShoppingCartIcon } from 'react-icons/ai';
 import { createRef, useState } from 'react';
@@ -9,7 +9,7 @@ import { useOutsideAlerter } from '../../../hooks';
 export default {
   title: 'Other/ActionMenu',
   component: ActionMenu
-} as Meta;
+} as Meta<ActionMenuProps>;
 
 const Reference = styled.div`
   width: 200px;
@@ -22,7 +22,7 @@ const ParentContainer = styled.div`
   height: 30vh;
 `;
 
-export const Default: Story<ActionMenuProps> = () => {
+export const Default: StoryFn<ActionMenuProps> = () => {
   const [visible, setVisible] = useState(false);
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);

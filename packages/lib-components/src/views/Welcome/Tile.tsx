@@ -1,4 +1,4 @@
-import { Divider } from 'components';
+import { Divider } from '../../components';
 import { FC } from 'react';
 import { styled } from '../../styled';
 

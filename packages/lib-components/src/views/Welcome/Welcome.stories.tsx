@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Welcome as WelcomeComponent } from '.';
 
 export default {
@@ -6,4 +6,4 @@ export default {
   component: WelcomeComponent
 } as Meta;
 
-export const Default: Story = () => <WelcomeComponent />;
+export const Default: StoryFn = (args) => <WelcomeComponent {...args} />;

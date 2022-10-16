@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Story, Meta } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { TextField, FieldProps } from '../../inputs';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -16,9 +16,9 @@ const Wrapper = styled.div`
 export default {
   title: 'Inputs/TextField',
   component: TextField
-} as Meta;
+} as Meta<FieldProps>;
 
-export const Default: Story<FieldProps> = () => {
+export const Default: StoryFn<FieldProps> = () => {
   type FormFields = { name: string };
   const [result, setResult] = useState<string>('none');
 
@@ -28,7 +28,7 @@ export const Default: Story<FieldProps> = () => {
     }
   });
 
-  const onSubmit: SubmitHandler<FormFields> = ({ name }) => {
+  const onSubmit: SubmitHandler<FormFields> = () => {
     setResult(result);
   };
 
