@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-export { AxiosError } from 'axios';
+export { AxiosError, AxiosResponse } from 'axios';
 
 export { AdminClient } from './lib/adminClient';
 export { Client } from './lib/client';

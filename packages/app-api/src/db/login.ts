@@ -18,10 +18,9 @@ export class LoginRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<LoginModel> {
     return LoginModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<LoginModel>): Promise<LoginModel[]> {
-    const params = new QueryBuilder(filters).build();
+  async find(filters: ITakaroQuery<LoginModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await new QueryBuilder<LoginModel>(filters).build(model.query());
   }
 
   async findOne(id: string): Promise<LoginModel> {

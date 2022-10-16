@@ -31,10 +31,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
     const knex = await this.getKnex();
     return DomainModel.bindKnex(knex);
   }
-  async find(filters: ITakaroQuery<DomainModel>): Promise<DomainModel[]> {
-    const params = new QueryBuilder(filters).build();
+  async find(filters: ITakaroQuery<DomainModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await new QueryBuilder<DomainModel>(filters).build(model.query());
   }
 
   async findOne(id: string): Promise<DomainModel> {
@@ -92,10 +91,10 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
   async resolveDomain(email: string): Promise<string | null> {
     const loginRepo = new LoginRepo();
     const login = await loginRepo.find({ filters: { email } });
-    if (!login.length) {
+    if (!login.results.length) {
       return null;
     }
 
-    return login[0].domain;
+    return login.results[0].domain;
   }
 }

@@ -1,4 +1,5 @@
 import { ValidationError as CValidationError } from 'class-validator';
+import { ValidationError as YValidationError } from 'yup';
 
 export class TakaroError extends Error {
   public http: number;
@@ -16,6 +17,13 @@ export class InternalServerError extends TakaroError {
   }
 }
 
+export class ConfigError extends TakaroError {
+  constructor(message: string) {
+    super(`ConfigError: ${message}`);
+    this.http = 500;
+  }
+}
+
 export class NotImplementedError extends TakaroError {
   constructor() {
     super('Not implemented');
@@ -24,8 +32,18 @@ export class NotImplementedError extends TakaroError {
 }
 
 export class ValidationError extends TakaroError {
-  constructor(message: string, public details?: CValidationError[]) {
+  constructor(
+    message: string,
+    public details?: CValidationError[] | YValidationError[]
+  ) {
     super(message);
+
+    if (details?.length) {
+      if (details[0] instanceof YValidationError) {
+        this.message = `${message}: ${details[0].message}`;
+      }
+    }
+
     this.http = 400;
   }
 }

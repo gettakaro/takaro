@@ -9,19 +9,12 @@ import { MockEmitter } from './emitter';
 export class MockConnectionInfo {
   @IsNumber()
   public readonly eventInterval = 10000;
+  public readonly playerPoolSize = 100;
 
-  public readonly mockPlayers: IGamePlayer[] = [
-    {
-      gameId: '1',
-    },
-    {
-      gameId: '2',
-    },
-    {
-      gameId: '3',
-    },
-  ].map((p) => ({
-    ...p,
+  public readonly mockPlayers: IGamePlayer[] = Array.from(
+    Array(this.playerPoolSize).keys()
+  ).map((p) => ({
+    gameId: p.toString(),
     name: faker.internet.userName(),
     epicOnlineServicesId: faker.random.alphaNumeric(16),
     steamId: faker.random.alphaNumeric(16),

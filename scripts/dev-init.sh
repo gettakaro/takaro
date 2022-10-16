@@ -3,18 +3,16 @@
 set -e
 
 printHeader() {
-    printf '%s\n' ""
-    printf '%s\n' "##################"
-    printf '%s\n' "$1"
-    printf '%s\n' "##################"
-    printf '%s\n' ""
+	printf '%s\n' ""
+	printf '%s\n' "##################"
+	printf '%s\n' "$1"
+	printf '%s\n' "##################"
+	printf '%s\n' ""
 }
 
-printHeader "Applying default config, if not already applied"
-
-
-if test -f ".env.example"; then
-    cp --no-clobber .env.example .env
+if test -e ".env.example" && ! test -e ".env"; then
+	printHeader "Applying default config"
+	cp .env.example .env
 fi
 
 printHeader "Installing node dependencies"

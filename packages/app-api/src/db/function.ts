@@ -54,10 +54,9 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
     return FunctionModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<FunctionModel>): Promise<FunctionModel[]> {
-    const params = new QueryBuilder(filters).build(FUNCTION_TABLE_NAME);
+  async find(filters: ITakaroQuery<FunctionModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await new QueryBuilder<FunctionModel>(filters).build(model.query());
   }
 
   async findOne(id: string): Promise<FunctionModel> {

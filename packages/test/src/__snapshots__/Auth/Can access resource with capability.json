@@ -1,36 +1,39 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-11T21:20:41.954Z"
+      "serverTime": "2022-10-08T14:02:57.414Z",
+      "page": 0,
+      "limit": 100,
+      "total": 2
     },
     "data": [
       {
-        "createdAt": "2022-09-11T21:20:41.654Z",
-        "updatedAt": "2022-09-11T21:20:41.655Z",
-        "id": "8ec5dac1-fa37-403e-b7ff-2133cd769c3f",
-        "name": "root",
+        "createdAt": "2022-10-08T14:02:57.280Z",
+        "updatedAt": "2022-10-08T14:02:57.280Z",
+        "id": "6b8a5bea-9daf-49e1-bec5-e5d05bb9e255",
+        "name": "Test role",
         "capabilities": [
           {
-            "createdAt": "2022-09-11T21:20:41.658Z",
-            "updatedAt": "2022-09-11T21:20:41.659Z",
-            "id": "9572b525-61b1-43ed-88ee-405083e9956b",
-            "roleId": "8ec5dac1-fa37-403e-b7ff-2133cd769c3f",
-            "capability": "ROOT"
+            "createdAt": "2022-10-08T14:02:57.282Z",
+            "updatedAt": "2022-10-08T14:02:57.282Z",
+            "id": "229f4705-8ae0-47bf-b26b-46b899d2d900",
+            "roleId": "6b8a5bea-9daf-49e1-bec5-e5d05bb9e255",
+            "capability": "READ_ROLES"
           }
         ]
       },
       {
-        "createdAt": "2022-09-11T21:20:41.824Z",
-        "updatedAt": "2022-09-11T21:20:41.825Z",
-        "id": "2eea4ce7-2669-41c3-8969-5b437a673098",
-        "name": "Test role",
+        "createdAt": "2022-10-08T14:02:57.114Z",
+        "updatedAt": "2022-10-08T14:02:57.114Z",
+        "id": "9856d277-3438-4b64-84de-be08df7ccbc4",
+        "name": "root",
         "capabilities": [
           {
-            "createdAt": "2022-09-11T21:20:41.826Z",
-            "updatedAt": "2022-09-11T21:20:41.826Z",
-            "id": "01abe0aa-841f-47e1-9329-a8e2bd210eab",
-            "roleId": "2eea4ce7-2669-41c3-8969-5b437a673098",
-            "capability": "READ_ROLES"
+            "createdAt": "2022-10-08T14:02:57.117Z",
+            "updatedAt": "2022-10-08T14:02:57.117Z",
+            "id": "3c8f3082-7de7-4e96-a3f3-cc90c44100c5",
+            "roleId": "9856d277-3438-4b64-84de-be08df7ccbc4",
+            "capability": "ROOT"
           }
         ]
       }
@@ -38,6 +41,7 @@
   },
   "status": 200,
   "test": {
+    "snapshot": true,
     "group": "Auth",
     "name": "Can access resource with capability",
     "filteredFields": [

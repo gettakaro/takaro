@@ -45,10 +45,9 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel> {
     const knex = await this.getKnex();
     return PlayerModel.bindKnex(knex);
   }
-  async find(filters: ITakaroQuery<PlayerModel>): Promise<PlayerModel[]> {
-    const params = new QueryBuilder(filters).build();
+  async find(filters: ITakaroQuery<PlayerModel>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    return await new QueryBuilder<PlayerModel>(filters).build(model.query());
   }
 
   async findOne(id: string): Promise<PlayerModel> {

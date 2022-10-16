@@ -1,14 +1,14 @@
 import { ITakaroQuery, TakaroModel } from '@takaro/db';
 import { ITakaroRepo, NOT_DOMAIN_SCOPED_ITakaroRepo } from '../db/base';
 import { logger } from '@takaro/logger';
-import { PartialModelObject } from 'objection';
+import { PartialModelObject, Page } from 'objection';
 
 export abstract class NOT_DOMAIN_SCOPED_TakaroService<T extends TakaroModel> {
   log = logger(this.constructor.name);
 
   abstract get repo(): NOT_DOMAIN_SCOPED_ITakaroRepo<T>;
 
-  find(filters: ITakaroQuery<T>): Promise<T[]> {
+  find(filters: ITakaroQuery<T>): Promise<Page<T>> {
     return this.repo.find(filters);
   }
   findOne(id: string | number): Promise<T | undefined> {

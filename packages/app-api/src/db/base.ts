@@ -4,7 +4,7 @@ import {
   NOT_DOMAIN_SCOPED_getKnex,
   TakaroModel,
 } from '@takaro/db';
-import { PartialModelObject, ModelClass } from 'objection';
+import { PartialModelObject, ModelClass, Page } from 'objection';
 
 export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<T extends TakaroModel> {
   async getKnex() {
@@ -16,7 +16,7 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<T extends TakaroModel> {
    */
   abstract getModel(): Promise<ModelClass<T>>;
 
-  abstract find(filters: ITakaroQuery<T>): Promise<T[]>;
+  abstract find(filters: ITakaroQuery<T>): Promise<Page<T>>;
   abstract findOne(id: string | number): Promise<T | undefined>;
   abstract create(item: PartialModelObject<T>): Promise<T>;
   abstract update(

@@ -50,7 +50,7 @@ export class ErrorHandler implements ExpressErrorMiddlewareInterface {
       log.warn(`⚠️ FAIL ${req.method} ${req.originalUrl}`, parsedError);
     }
 
-    res.status(status).json(apiResponse({}, parsedError));
+    res.status(status).json(apiResponse({}, { error: parsedError }));
     return res.end();
   }
 }
