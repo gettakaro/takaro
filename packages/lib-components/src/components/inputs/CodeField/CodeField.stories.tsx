@@ -42,7 +42,7 @@ export const Default: StoryFn<CodeFieldProps> = () => {
   );
 };
 
-export const Loading: Story = () => {
+export const Loading: StoryFn = () => {
   const { control, formState } = useForm<FormFields>();
 
   return (
@@ -50,7 +50,7 @@ export const Loading: Story = () => {
   );
 };
 
-export const AutoSubmit: Story = () => {
+export const AutoSubmit: StoryFn = () => {
   const [result, setResult] = useState<string>();
   const { control, formState, handleSubmit } = useForm<FormFields>();
   const [loading, setLoading] = useState(false);
@@ -60,7 +60,7 @@ export const AutoSubmit: Story = () => {
     setTimeout(() => {
       setLoading(false);
       setResult(code);
-    }, 4000);
+    }, 2000);
   };
 
   return (

@@ -3,14 +3,14 @@
 module.exports = {
   framework: {
     name: '@storybook/react-vite',
-    options: { fashRefresh: true }
+    options: { fashRefresh: true },
   },
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
     '@storybook/addon-storysource',
     '@storybook/addon-essentials',
     '@storybook/addon-links',
-    '@storybook/addon-a11y'
+    '@storybook/addon-a11y',
   ],
   features: {
     previewCsfV3: true,
