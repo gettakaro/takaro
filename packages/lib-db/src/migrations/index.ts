@@ -46,6 +46,7 @@ class TakaroMigrationSource {
 
 export async function migrateSystem() {
   const knex = await NOT_DOMAIN_SCOPED_getKnex();
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
   await knex.migrate.latest({
     migrationSource: new TakaroMigrationSource('system'),
   });
