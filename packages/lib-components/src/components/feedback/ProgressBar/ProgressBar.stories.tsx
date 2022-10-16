@@ -1,13 +1,19 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { ProgressBar, ProgressBarProps } from '.';
 
 export default {
   title: 'Feedback/ProgressBar',
-  component: ProgressBar
-} as Meta;
+  component: ProgressBar,
+  args: {
+    mode: 'indeterminate',
+    showValue: false,
+  }
+} as Meta<ProgressBarProps>;
 
-export const Determinate: Story<ProgressBarProps> = (args) => {
+export const Default: StoryFn<ProgressBarProps> = (args) => <ProgressBar {...args} />;
+
+export const Determinate: StoryFn<ProgressBarProps> = () => {
   const [value, setValue] = useState<number>(0);
 
   return (
@@ -19,6 +25,8 @@ export const Determinate: Story<ProgressBarProps> = (args) => {
   );
 };
 
-export const InDeterminate: Story<ProgressBarProps> = (args) => (
-  <ProgressBar mode="indeterminate" />
-);
+export const InDeterminate: StoryObj<ProgressBarProps> = {
+  args: {
+    mode: 'indeterminate'
+  }
+};

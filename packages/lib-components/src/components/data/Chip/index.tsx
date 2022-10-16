@@ -25,8 +25,8 @@ export const Chip: FC<ChipProps> = ({
   variant = 'default',
   label,
   disabled = false,
-  onClick,
-  onDelete,
+  onClick = undefined,
+  onDelete = undefined,
   dot
 }) => {
   return (

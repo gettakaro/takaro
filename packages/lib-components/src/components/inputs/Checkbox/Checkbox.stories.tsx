@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Checkbox, CheckboxProps } from '.';
 import { useForm } from 'react-hook-form';
@@ -15,24 +15,18 @@ const Wrapper = styled.div`
 export default {
   title: 'Inputs/Checkbox/Default',
   component: Checkbox,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  args: {
+    name: 'checkbox',
+    loading: false,
+    defaultValue: false,
+    readOnly: false,
+    label: 'this is the label',
+  }
+} as Meta<CheckboxProps>;
 
-const Template: Story<CheckboxProps> = (args) => {
+export const Default: StoryFn<CheckboxProps> = (args) => {
   const { control } = useForm();
-
   return <Checkbox {...args} control={control} />;
 };
 
-// Default Checkbox
-export const Default = Template.bind({});
-Default.args = { name: 'checkbox01' };
-// Checked by default
-export const DefaultChecked = Template.bind({});
-DefaultChecked.args = { name: 'checkbox02', defaultValue: true };
-// Loading Checkbox (maybe the existing value has to be fetched);
-export const Loading = Template.bind({});
-Loading.args = { name: 'checkbox03', loading: true };
-// Read Only Checkbox
-export const ReadOnly = Template.bind({});
-ReadOnly.args = { name: 'checkbox04', readOnly: true };

@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Toggle, ToggleProps } from '.';
 
@@ -14,12 +14,10 @@ const WrapperDecorator = styled.div`
 export default {
   title: 'Inputs/Toggle',
   component: Toggle,
-  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>]
-} as Meta;
+  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
+  args: {
+    items: ['true', 'false'],
+    size: 'medium'
+  }
+} as Meta<ToggleProps>;
 
-const Template: Story<ToggleProps> = (args) => <Toggle {...args} />;
-export const Basic = Template.bind({});
-Basic.args = {
-  items: ['true', 'false'],
-  size: 'medium'
-};
