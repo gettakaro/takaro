@@ -1,4 +1,10 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import {
+  TakaroModel,
+  ITakaroQuery,
+  QueryBuilder,
+  encrypt,
+  decrypt,
+} from '@takaro/db';
 import { Model, PartialModelObject } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
@@ -60,14 +66,26 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    const connectionInfo = JSON.parse(
+      await decrypt(data.connectionInfo as unknown as string)
+    );
+
+    return { ...data, connectionInfo } as GameServerModel;
   }
 
   async create(
     item: PartialModelObject<GameServerModel>
   ): Promise<GameServerModel> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    const encryptedConnectionInfo = await encrypt(
+      JSON.stringify(item.connectionInfo)
+    );
+    const data = {
+      ...item,
+      connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
+    } as unknown as Partial<GameServerModel>;
+    const res = await model.query().insert(data).returning('*');
+    return { ...res, connectionInfo: item.connectionInfo } as GameServerModel;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -78,9 +96,17 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
 
   async update(
     id: string,
-    data: PartialModelObject<GameServerModel>
+    item: PartialModelObject<GameServerModel>
   ): Promise<GameServerModel> {
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const encryptedConnectionInfo = await encrypt(
+      JSON.stringify(item.connectionInfo)
+    );
+    const data = {
+      ...item,
+      connectionInfo: encryptedConnectionInfo,
+    } as unknown as Partial<GameServerModel>;
+    const res = await model.query().updateAndFetchById(id, data).returning('*');
+    return { ...res, connectionInfo: item.connectionInfo } as GameServerModel;
   }
 }

@@ -58,6 +58,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}  
       POSTGRES_HOST: "postgresql"   
+      POSTGRES_ENCRYPTION_KEY: "${POSTGRES_ENCRYPTION_KEY}"
       TAKARO_HOST: "http://localhost:3000"  
 
       REACT_APP_API: "http://localhost:13000" 
