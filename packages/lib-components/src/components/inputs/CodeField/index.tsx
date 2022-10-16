@@ -23,13 +23,14 @@ export const CodeField: FC<CodeFieldProps> = ({
   allowedCharacters = /[0-9]/,
   control
 }) => {
-  const {
-    field: { ref, ...inputProps }
-  } = useController({ name, control });
+  const { field: { ...inputProps } } = useController({ name, control });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
-    fieldRefs.current[0].focus();
+    console.log(fieldRefs.current);
+    if (fieldRefs.current.length) {
+      fieldRefs.current[0].focus();
+    }
   }, []);
 
   const sendResult = () => {
@@ -95,8 +96,8 @@ export const CodeField: FC<CodeFieldProps> = ({
     return (
       <Container>
         <InputContainer fields={fields}>
-          {Array.from(Array(fields).keys()).map((_) => (
-            <LoadingField className="placeholder" />
+          {Array.from(Array(fields).keys()).map((_, idx) => (
+            <LoadingField key={`loading-field-array-${idx}`} className="placeholder" />
           ))}
         </InputContainer>
       </Container>
@@ -120,7 +121,9 @@ export const CodeField: FC<CodeFieldProps> = ({
             onKeyDown={handleKeyDown}
             onPaste={handleOnPaste}
             ref={(el) => {
-              fieldRefs.current[i] = el!;
+              if (el) {
+                fieldRefs.current[i] = el;
+              }
             }}
             type="text"
           />

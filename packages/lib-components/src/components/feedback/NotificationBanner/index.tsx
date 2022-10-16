@@ -48,6 +48,7 @@ export interface NotificationBannerProps {
   ------------------------------
   It is a sticky component that shows above the headerbar to show a notification and
   can be hidden by clicking the X in the upper right corner.
+  IMPORTANT: the component requires a separate div mounted outside of root callednotification-banner. 
 */
 
 export const NotificationBanner: FC<NotificationBannerProps> = ({ title, description }) => {

@@ -1,6 +1,16 @@
-import { Meta, StoryFn, StoryObj } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { useState } from 'react';
 import { ProgressBar, ProgressBarProps } from '.';
+import { styled } from '../../../styled';
+
+const ButtonContainer = styled.div`
+  display: flex;
+  button {
+    &:first-child {
+      margin: 0 1rem;
+    }
+  }
+`;
 
 export default {
   title: 'Feedback/ProgressBar',
@@ -19,14 +29,11 @@ export const Determinate: StoryFn<ProgressBarProps> = () => {
   return (
     <>
       <ProgressBar mode="determinate" showValue value={value} />
-      <button onClick={() => setValue(value + 5)}>+5</button>
-      <button onClick={() => setValue(value + 10)}>+10</button>
+      <ButtonContainer>
+        <button onClick={() => setValue(value + 5)}>+5</button>
+        <button onClick={() => setValue(value + 10)}>+10</button>
+      </ButtonContainer>
     </>
   );
 };
 
-export const InDeterminate: StoryObj<ProgressBarProps> = {
-  args: {
-    mode: 'indeterminate'
-  }
-};

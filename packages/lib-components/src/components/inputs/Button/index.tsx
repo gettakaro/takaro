@@ -32,7 +32,7 @@ export const Button: FC<ButtonProps> = ({
   disabled = false,
   isWhite = false,
   variant = 'default',
-  onClick
+  onClick = null
 }) => {
   function content(): JSX.Element {
     return (
@@ -55,7 +55,7 @@ export const Button: FC<ButtonProps> = ({
       form={form}
       icon={!!icon}
       isLoading={isLoading}
-      onClick={disabled || isLoading ? undefined : onClick}
+      onClick={disabled || isLoading || !onClick ? undefined : onClick}
       outline={variant === 'outline'}
       size={size}
       type={type}
