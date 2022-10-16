@@ -1,5 +1,6 @@
 import { Config, IBaseConfig } from '@takaro/config';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
+import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
 import { errors } from '@takaro/logger';
 
 enum CLUSTER_MODE {
@@ -14,7 +15,6 @@ interface IHttpConfig extends IBaseConfig {
   };
   auth: {
     adminSecret: string;
-    saltRounds: number;
     jwtSecret: string;
     jwtExpiresIn: string;
     cookieName: string;
@@ -62,12 +62,6 @@ const configSchema = {
       default: null,
       env: 'ADMIN_SECRET',
     },
-    saltRounds: {
-      doc: 'The number of rounds to use when salting passwords',
-      format: Number,
-      default: 10,
-      env: 'SALT_ROUNDS',
-    },
     jwtSecret: {
       doc: 'The secret used to sign JWTs',
       format: String,
@@ -95,7 +89,8 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHttpConfig & IQueuesConfig>([
+export const config = new Config<IHttpConfig & IQueuesConfig & IDbConfig>([
   configSchema,
   queuesConfigSchema,
+  dbConfigSchema,
 ]);

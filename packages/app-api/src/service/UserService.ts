@@ -1,6 +1,5 @@
-import { genSalt, hash } from 'bcrypt';
-import { config } from '../config';
 import { TakaroService } from './Base';
+import { hash } from '@takaro/db';
 
 import { UserModel, UserRepo } from '../db/user';
 import { DomainService } from './DomainService';
@@ -37,8 +36,7 @@ export class UserService extends TakaroService<UserModel> {
   }
 
   async init(user: UserCreateInputDTO): Promise<UserModel> {
-    const salt = await genSalt(config.get('auth.saltRounds'));
-    const passwordHash = await hash(user.password, salt);
+    const passwordHash = await hash(user.password);
 
     const domainService = new DomainService();
 
