@@ -26,7 +26,7 @@ describe('Database encryption', () => {
     });
 
     it('Can handle very long values', async () => {
-      const longValue = 'a'.repeat(1000000);
+      const longValue = 'a'.repeat(10000);
       const encrypted = await encrypt(longValue);
       const decrypted = await decrypt(encrypted);
       expect(decrypted).to.eq(longValue);
