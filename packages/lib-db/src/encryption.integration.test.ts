@@ -1,10 +1,11 @@
 import { compareHashed, decrypt, encrypt, hash } from './encryption';
 import { expect } from '@takaro/test';
-import { migrateSystem } from './migrations';
+import { NOT_DOMAIN_SCOPED_getKnex } from './knex';
 
 describe('Database encryption', () => {
   before(async () => {
-    await migrateSystem();
+    const knex = await NOT_DOMAIN_SCOPED_getKnex();
+    await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
   });
 
   describe('Encryption', () => {
