@@ -22,7 +22,8 @@ export class UserCreateInputDTO {
   @IsEmail()
   email!: string;
 
-  @Length(8, 50)
+  // We're using Blowfish based hashing in the database, which has a max length of 72 characters
+  @Length(8, 70)
   password!: string;
 }
 
