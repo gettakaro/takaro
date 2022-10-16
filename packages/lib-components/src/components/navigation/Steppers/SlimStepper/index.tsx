@@ -47,13 +47,13 @@ const StepperStep: FC<StepProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-interface StepperProps {
+export interface SlimStepperProps {
   canStepBack?: boolean; // disable step back via step header
   showTooltip?: 'never' | 'always' | 'hover';
 }
 
 // Main <Stepper/> component which contains subcomponents
-export const SlimStepper: FC<StepperProps> & {
+export const SlimStepper: FC<SlimStepperProps> & {
   Step: FC<StepProps>;
   Steps: any;
 } = ({ showTooltip = 'hover', canStepBack = true, children }) => {
@@ -87,7 +87,7 @@ export const SlimStepper: FC<StepperProps> & {
               stepState={getStepState(index, currentStep)}
             >
               {StepStates.CURRENT === getStepState(index, currentStep) &&
-              showTooltip !== 'never' ? (
+                showTooltip !== 'never' ? (
                 <Tooltip
                   overlay={name}
                   placement="bottom"

@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story, StoryFn } from '@storybook/react';
 import { useSnackbar } from 'notistack';
 import { styled } from '../../../../styled';
 import { Button } from '../../..';
@@ -12,10 +12,14 @@ const Wrapper = styled.div`
 
 export default {
   title: 'Feedback/Snacks/Default',
-  component: undefined
+  parameters: {
+    docs: {
+      inlineStories: false,
+    }
+  }
 } as Meta;
 
-export const Snacks: Story = () => {
+export const Snacks: StoryFn = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   return (

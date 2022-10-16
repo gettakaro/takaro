@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, Story, StoryFn, StoryObj } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Avatar, Chip, ChipProps } from '../../data';
 
@@ -20,54 +20,50 @@ const Wrapper = styled.div`
 export default {
   title: 'Data/Chip',
   component: Chip,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  args: {
+    label: 'Default chip',
+    color: 'secondary',
+    onDelete: undefined,
+    onClick: undefined,
+    disabled: false,
+    dot: false,
+    variant: 'default',
+  }
+} as Meta<ChipProps>;
 
-const Template: Story<ChipProps> = (args) => <Chip {...args} />;
-export const Default = Template.bind({});
-Default.args = {
-  label: 'basic',
-  color: 'gray',
-  variant: 'default',
-  onDelete: undefined,
-  onClick: undefined
+export const Default: StoryFn<ChipProps> = (args) => <Chip {...args} />;
+
+export const ClickableChip: StoryObj<ChipProps> = {
+  args: {
+    label: 'Clickable chip',
+    onClick: () => {/* */ },
+  }
+};
+export const DeletableChip: StoryObj<ChipProps> = {
+  args: {
+    label: 'Deletable chip',
+    onDelete: () => {/* */ },
+  }
+};
+
+export const AvatarChip: StoryObj<ChipProps> = {
+  args: {
+    label: 'Avatar chip',
+    avatar: <Avatar alt="avatar" size="tiny">NC</Avatar>
+  }
 };
 
 export const Examples = () => (
   <>
-    <Chip label="Default Chip" />
+    <Chip label="Default Chip" variant="default" />
     <Chip color="primary" label="Primary default Chip" />
-    <Chip color="secondary" label="Secondary default Chip" />
-    <Chip color="tertiary" label="Secondary default Chip" />
-    <Chip color="quaternary" label="Secondary default Chip" />
 
     <Chip label="Outlined Chip" variant="outline" />
-    <Chip color="primary" label="Primary outlined Chip" variant="outline" />
-    <Chip color="secondary" label="Secondary outlined Chip" variant="outline" />
+    <Chip color="secondary" label="secondary outlined Chip" variant="outline" />
 
-    <Chip
-      label="Clickable Chip"
-      onClick={() => {
-        /* */
-      }}
-    />
-    <Chip
-      label="Deletable Chip"
-      onDelete={() => {
-        /* */
-      }}
-    />
-    <Chip
-      avatar={
-        <Avatar alt="avatar" size="tiny">
-          NC
-        </Avatar>
-      }
-      label="Avatar Chip"
-    />
 
-    <Chip dot label="Chip with dot" />
-    <Chip color="primary" dot label="Chip with dot" />
-    <Chip color="secondary" dot label="Chip with dot" variant="outline" />
+    <Chip color="tertiary" dot label="Tertiary chip with dot" />
+    <Chip color="quaternary" dot label="Quaternary outlined Chip with dot" variant="outline" />
   </>
 );

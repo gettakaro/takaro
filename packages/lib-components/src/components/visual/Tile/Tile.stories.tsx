@@ -1,11 +1,15 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Tile, TileProps } from '.';
 
 export default {
   title: 'Layout/Tile',
-  component: Tile
-} as Meta;
+  component: Tile,
+  args: {
+    bgColor: 'primary',
+    description: 'description here',
+    textColor: 'white',
+    title: 'title here',
+  },
+} as Meta<TileProps>;
 
-export const Default: Story<TileProps> = () => (
-  <Tile bgColor="primary" description="description here" textColor="white" title="Title here" />
-);
+export const Default: StoryFn<TileProps> = (args) => <Tile {...args} />;

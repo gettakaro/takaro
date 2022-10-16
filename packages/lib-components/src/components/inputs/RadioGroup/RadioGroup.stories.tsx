@@ -1,18 +1,20 @@
 import { useMemo, useState } from 'react';
 import { Button } from '../..';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { RadioGroup, RadioGroupProps } from '.';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useValidationSchema } from '../../..';
 import { DevTool } from '@hookform/devtools';
 import * as yup from 'yup';
+import { Radio } from './Radio';
 
 export default {
   title: 'Inputs/RadioGroup/Default',
-  component: RadioGroup
-} as Meta;
+  component: RadioGroup,
+  subcomponents: { Radio }
+} as Meta<RadioGroupProps>;
 
-export const OnChange: Story<RadioGroupProps> = () => {
+export const OnChange: StoryFn<RadioGroupProps> = () => {
   type FormFields = {
     gender: string;
   };

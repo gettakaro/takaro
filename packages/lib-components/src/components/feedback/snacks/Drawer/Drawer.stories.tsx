@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Button } from '../../../';
 import { useSnackbar } from 'notistack';
 import { styled } from '../../../../';
@@ -22,7 +22,7 @@ export default {
   component: undefined
 } as Meta;
 
-export const Downloads: Story = () => {
+export const Downloads: StoryFn = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const showSnack = () => {

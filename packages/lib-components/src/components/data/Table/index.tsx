@@ -33,7 +33,7 @@ export const Table: FC<TableProps> = ({ columnDefs, rowData, height, width }: Ta
       ...defaultColumDef,
       ...col,
     };
-    });
+  });
 
   return (
     <div className="ag-theme-alpine" style={{ height, width }}>

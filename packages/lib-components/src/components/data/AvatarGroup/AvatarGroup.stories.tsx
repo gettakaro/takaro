@@ -1,6 +1,6 @@
-import { Meta } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Avatar, AvatarGroup } from '..';
+import { Avatar, AvatarGroup, AvatarGroupProps } from '..';
 
 const placeholder01 = 'images/placeholder-01.jpeg';
 const placeholder02 = 'images/placeholder-02.jpeg';
@@ -18,24 +18,21 @@ const Wrapper = styled.div`
 export default {
   title: 'Data/AvatarGroup',
   component: AvatarGroup,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  subcomponents: { Avatar },
+  args: {
+    max: 3,
+  }
+} as Meta<AvatarGroupProps>;
 
-export const MoreThanMax = () => (
-  <AvatarGroup>
+export const Default: StoryFn<AvatarGroupProps> = (args) => (
+  <AvatarGroup {...args}>
     <Avatar alt="Harry Potter" size="medium" src={placeholder01} />
     <Avatar alt="Ron Weasley" size="medium" src={placeholder02} />
     <Avatar alt="Hermione Granger" size="medium" src={placeholder03} />
+    { /* TODO: add different images for this user */}
     <Avatar alt="Tom Riddle" size="medium" src={placeholder03} />
     <Avatar alt="Tom Riddle" size="medium" src={placeholder03} />
   </AvatarGroup>
 );
 
-export const LessThanMax = () => (
-  <AvatarGroup max={5}>
-    <Avatar alt="Harry Potter" size="medium" src={placeholder01} />
-    <Avatar alt="Ron Weasley" size="medium" src={placeholder02} />
-    <Avatar alt="Hermione Granger" size="medium" src={placeholder03} />
-    <Avatar alt="Tom Riddle" size="medium" src={placeholder02} />
-  </AvatarGroup>
-);
