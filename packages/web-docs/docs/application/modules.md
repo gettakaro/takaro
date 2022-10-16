@@ -12,7 +12,7 @@ Each modules consists of one or more of the following components:
 - Cronjobs
 - Commands
 
-Each of these has a Function attached to it. The Function is the actual code that is executed when the Hook, Cronjob or Command is triggered. The main difference between Hooks, Cronjobs and Commands is how they are triggered.
+Each of these has a [Function](./functions.md) attached to it. The Function is the actual code that is executed when the Hook, Cronjob or Command is triggered. The main difference between Hooks, Cronjobs and Commands is how they are triggered.
 
 ## Hooks
 
