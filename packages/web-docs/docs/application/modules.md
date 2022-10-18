@@ -55,3 +55,7 @@ export default async function (config, data) {
 ```
 
 Would result in a message in-game saying `Welcome to the server, John Doe! Don't forget to read the rules :)`
+
+# Built-in modules
+
+Takaro comes with a set of built-in modules. When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. If you want to customize the code, you can eject the Module which will create a copy of the Module in your own project. You can then edit the code and customize it to your liking.
