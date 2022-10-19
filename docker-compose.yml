@@ -6,7 +6,7 @@ services:
     volumes:
       - ./containers/homer/assets:/www/assets
     ports:
-      - 8080:8080
+      - 13337:8080
     environment:
       - INIT_ASSETS=0
   postgresql:
