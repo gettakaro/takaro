@@ -5,11 +5,14 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('settings', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table.string('commandPrefix');
+    table.string('domainId').unique();
+    table.string('commandPrefix').defaultTo('/');
+    table.string('serverChatName').defaultTo('Takaro');
   });
 
   await knex.schema.createTable('gameServerSettings', (table) => {
     table.inherits('settings');
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table
       .uuid('gameServerId')
       .references('gameservers.id')
