@@ -18,7 +18,7 @@ export class IIntegrationTest<SetupData> {
   standardEnvironment?: boolean = true;
   setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
   teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
-  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse>;
+  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse | void>;
   expectedStatus?: number = 200;
   filteredFields?: string[];
 }
@@ -123,11 +123,10 @@ export class IntegrationTest<SetupData> {
           }
         }
 
-        if (!response) {
-          throw new Error('No response returned from test');
-        }
-
         if (this.test.snapshot) {
+          if (!response) {
+            throw new Error('No response returned from test');
+          }
           await matchSnapshot(
             this.test as ITestWithSnapshot<unknown>,
             response
