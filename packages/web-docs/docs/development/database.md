@@ -24,6 +24,17 @@ erDiagram
       json connectionInfo 
     }
 
+    settings {
+      string id PK
+      string commandPrefix
+    }
+
+    gameServerSettings {
+      string id PK
+      string gameServerId FK
+      string commandPrefix
+    }
+
     user {
       string id PK
       string name
@@ -100,9 +111,12 @@ erDiagram
     hook   ||--|{ functionAssignment : assigned
     command   ||--|{ functionAssignment : assigned
     cron   ||--|{ functionAssignment : assigned
-    functionAssignment ||--|| function : "is"
+    functionAssignment ||--|| function : is
 
 
-    playerOnGameServer ||--|| player : "is"
-    playerOnGameServer ||--|| gameServer : "is"
+    playerOnGameServer ||--|| player : is
+    playerOnGameServer ||--|| gameServer : is
+
+    settings ||--o{ gameServerSettings : inherits
+    gameServer ||--|| gameServerSettings : has
 ```
