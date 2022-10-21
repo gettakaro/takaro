@@ -23,7 +23,7 @@ export class SettingsService extends TakaroService<SettingsModel> {
   }
 
   get repo() {
-    return new SettingsRepo(this.domainId);
+    return new SettingsRepo(this.domainId, this.gameServerId);
   }
 
   init() {

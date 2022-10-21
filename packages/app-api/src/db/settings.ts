@@ -15,11 +15,29 @@ export class SettingsModel extends TakaroModel {
   serverChatName!: string;
 }
 
+export class GameServerSettingsModel extends SettingsModel {
+  static tableName = 'gameServerSettings';
+  gameServerId!: string;
+}
+
 export class SettingsRepo extends ITakaroRepo<SettingsModel> {
+  constructor(
+    public readonly domainId: string,
+    public readonly gameServerId?: string
+  ) {
+    super(domainId);
+  }
+
   async getModel() {
     const knex = await this.getKnex();
     return SettingsModel.bindKnex(knex);
   }
+
+  async getGameServerModel() {
+    const knex = await this.getKnex();
+    return GameServerSettingsModel.bindKnex(knex);
+  }
+
   async find(): Promise<Page<SettingsModel>> {
     // Use the "getAll" method instead
     throw new errors.NotImplementedError();
@@ -28,11 +46,6 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
   async findOne(): Promise<SettingsModel> {
     // Use the "get" method instead
     throw new errors.NotImplementedError();
-  }
-
-  async create(): Promise<SettingsModel> {
-    const model = await this.getModel();
-    return model.query().insert({ domainId: this.domainId }).returning('*');
   }
 
   async delete(): Promise<boolean> {
@@ -45,9 +58,41 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
     throw new errors.NotImplementedError();
   }
 
-  async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
+  async create(): Promise<SettingsModel> {
+    const defaultSettings = new Settings();
+
+    if (this.gameServerId) {
+      const model = await this.getGameServerModel();
+      const data = await model
+        .query()
+        .insert({
+          gameServerId: this.gameServerId,
+          ...defaultSettings,
+        })
+        .returning('*');
+      return data;
+    }
+
     const model = await this.getModel();
-    const data = await model.query().where({ domainId: this.domainId });
+    return model
+      .query()
+      .insert({
+        domainId: this.domainId,
+        ...defaultSettings,
+      })
+      .returning('*');
+  }
+
+  async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
+    let data: SettingsModel[] | GameServerSettingsModel[];
+
+    if (this.gameServerId) {
+      const model = await this.getGameServerModel();
+      data = await model.query().where({ gameServerId: this.gameServerId });
+    } else {
+      const model = await this.getModel();
+      data = await model.query().where({ domainId: this.domainId });
+    }
 
     if (!data.length) {
       throw new errors.NotFoundError();
@@ -57,9 +102,15 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
   }
 
   async getAll(): Promise<Settings> {
-    const model = await this.getModel();
-    const data = await model.query().where({ domainId: this.domainId });
+    let data: SettingsModel[] | GameServerSettingsModel[];
 
+    if (this.gameServerId) {
+      const model = await this.getGameServerModel();
+      data = await model.query().where({ gameServerId: this.gameServerId });
+    } else {
+      const model = await this.getModel();
+      data = await model.query().where({ domainId: this.domainId });
+    }
     if (!data.length) {
       throw new errors.NotFoundError();
     }
@@ -71,6 +122,15 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
   }
 
   async set(key: SETTINGS_KEYS, value: string): Promise<void> {
+    if (this.gameServerId) {
+      const model = await this.getGameServerModel();
+      await model
+        .query()
+        .where({ gameServerId: this.gameServerId })
+        .update({ [key]: value });
+      return;
+    }
+
     const model = await this.getModel();
     await model
       .query()

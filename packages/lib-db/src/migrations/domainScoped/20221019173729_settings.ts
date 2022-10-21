@@ -6,8 +6,8 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('domainId').unique();
-    table.string('commandPrefix').defaultTo('/');
-    table.string('serverChatName').defaultTo('Takaro');
+    table.string('commandPrefix');
+    table.string('serverChatName');
   });
 
   await knex.schema.createTable('gameServerSettings', (table) => {
@@ -17,7 +17,8 @@ export async function up(knex: Knex): Promise<void> {
       .uuid('gameServerId')
       .references('gameservers.id')
       .onDelete('CASCADE')
-      .notNullable();
+      .notNullable()
+      .unique();
   });
 
   await knex.raw(

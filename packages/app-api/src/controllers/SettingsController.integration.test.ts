@@ -1,5 +1,18 @@
 import { IntegrationTest, expect } from '@takaro/test';
+import {
+  GameServerOutputDTO,
+  GameServerCreateDTOTypeEnum,
+} from '@takaro/apiclient';
 const group = 'SettingsController';
+
+const mockGameServer = {
+  name: 'Test gameserver',
+  connectionInfo: JSON.stringify({
+    host: 'localhost',
+    port: 1234,
+  }),
+  type: GameServerCreateDTOTypeEnum.Mock,
+};
 
 const tests = [
   new IntegrationTest<void>({
@@ -74,6 +87,62 @@ const tests = [
       const res = await this.client.settings.settingsControllerGet([
         'commandPrefix',
       ]);
+      return res;
+    },
+  }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Gameservers can overwrite global settings',
+    setup: async function () {
+      return (
+        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
+      ).data.data;
+    },
+    test: async function () {
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: '!',
+        gameServerId: this.setupData.id,
+      });
+      const resGlobal = await this.client.settings.settingsControllerGetOne(
+        'commandPrefix'
+      );
+      expect(resGlobal.data.data).to.be.eq('/');
+
+      const resGameServer = await this.client.settings.settingsControllerGetOne(
+        'commandPrefix',
+        this.setupData.id
+      );
+      expect(resGameServer.data.data).to.be.eq('!');
+
+      return resGameServer;
+    },
+  }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Requesting game server settings merges with global settings',
+    setup: async function () {
+      return (
+        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
+      ).data.data;
+    },
+    test: async function () {
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: '!',
+        gameServerId: this.setupData.id,
+      });
+      const res = await this.client.settings.settingsControllerGet(
+        undefined,
+        this.setupData.id
+      );
+      expect(res.data.data.commandPrefix).to.be.eq('!');
+      expect(res.data.data.serverChatName).to.be.eq('Takaro');
+
+      const globalRes = await this.client.settings.settingsControllerGet();
+      expect(globalRes.data.data.commandPrefix).to.be.eq('/');
+      expect(globalRes.data.data.serverChatName).to.be.eq('Takaro');
+
       return res;
     },
   }),
