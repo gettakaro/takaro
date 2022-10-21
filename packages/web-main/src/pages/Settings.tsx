@@ -9,11 +9,13 @@ import {
 import * as yup from 'yup';
 import { AiFillSave } from 'react-icons/ai';
 import {
+  GameServerOutputDTOAPI,
   Settings,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
+import { useParams } from 'react-router-dom';
 
 interface IFormInputs {
   commandPrefix: string;
@@ -37,11 +39,12 @@ function mapSettings<T extends Promise<unknown>>(
 
 const SettingsPage: FC = () => {
   const apiClient = useApiClient();
+  const { serverId } = useParams();
 
   const { data, isLoading } = useQuery<
     SettingsOutputObjectDTOAPI['data']
   >(`settings`, async function () {
-    const data = (await apiClient.settings.settingsControllerGet()).data.data;
+    const data = (await apiClient.settings.settingsControllerGet(undefined, serverId)).data.data;
     await mapSettings(data, async (key, value) => setValue(key, value!!));
     return data;
   });
@@ -66,6 +69,7 @@ const SettingsPage: FC = () => {
     await mapSettings(formValues, async (key, value) =>
       apiClient.settings.settingsControllerSet(key, {
         value: value!!,
+        gameServerId: serverId,
       })
     );
   };

@@ -44,6 +44,9 @@ const GameServers: FC = () => {
     {field: 'id', headerName: '', cellRenderer: (row) => {
       return <Button onClick={() => navigate(PATHS.gameServers.update.replace(':serverId', row.value))} text="Edit"/>
     }},
+    {field: 'id', headerName: '', cellRenderer: (row) => {
+      return <Button onClick={() => navigate(PATHS.settingsGameserver.replace(':serverId', row.value))} text="Settings"/>
+    }},
   ]
 
   if (isLoading || data === undefined) {
