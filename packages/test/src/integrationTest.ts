@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
 
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
-import { logger } from '@takaro/logger';
 import {
   AdminClient,
   Client,
@@ -24,7 +24,12 @@ export class IIntegrationTest<SetupData> {
 }
 
 export class IntegrationTest<SetupData> {
-  protected log = logger('IntegrationTest');
+  protected log = {
+    info: () => {},
+    error: () => {},
+    warn: () => {},
+    debug: () => {},
+  };
 
   public readonly adminClient: AdminClient;
   public readonly client: Client;
