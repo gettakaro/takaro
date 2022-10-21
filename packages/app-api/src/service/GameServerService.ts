@@ -11,6 +11,7 @@ import { errors } from '@takaro/logger';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { PartialModelObject } from 'objection';
 import { config } from '../config';
+import { SettingsService } from './SettingsService';
 
 export class GameServerOutputDTO {
   @IsUUID()
@@ -58,6 +59,14 @@ export class GameServerService extends TakaroService<GameServerModel> {
     item: PartialModelObject<GameServerModel>
   ): Promise<GameServerModel> {
     const createdServer = await this.repo.create(item);
+
+    const settingsService = new SettingsService(
+      this.domainId,
+      createdServer.id
+    );
+
+    await settingsService.init();
+
     await this.gameServerManager.add(this.domainId, createdServer);
     return createdServer;
   }

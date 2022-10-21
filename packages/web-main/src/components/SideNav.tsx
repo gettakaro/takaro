@@ -130,7 +130,7 @@ export const Navbar: FC = () => {
           <Settings size={24} />
           <p>Settings</p>
         </NavLink>
-        <a href="https://docs.csmm.app" rel="noopener noreferrer" target="_blank">
+        <a href="https://docs.takaro.io" rel="noopener noreferrer" target="_blank">
           <Book size={24} />
           <p>Documentation</p>
         </a>

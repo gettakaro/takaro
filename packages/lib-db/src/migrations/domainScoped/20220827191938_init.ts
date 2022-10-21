@@ -172,5 +172,16 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTable('functionAssignments');
+  await knex.schema.dropTable('commands');
+  await knex.schema.dropTable('hooks');
+  await knex.schema.dropTable('cronJobs');
+  await knex.schema.dropTable('modules');
+  await knex.schema.dropTable('functions');
+  await knex.schema.dropTable('playerOnGameServer');
+  await knex.schema.dropTable('players');
+  await knex.schema.dropTable('gameservers');
+  await knex.schema.dropTable('roleOnUser');
+  await knex.schema.dropTable('roles');
   await knex.schema.dropTable('users');
 }

@@ -10,6 +10,7 @@ import { CAPABILITIES } from '../db/role';
 import { UserModel } from '../db/user';
 import { Type } from 'class-transformer';
 import { GameServerService } from './GameServerService';
+import { SettingsService } from './SettingsService';
 
 export class DomainCreateInputDTO {
   @Length(3, 200)
@@ -58,6 +59,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> 
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
+    const settingsService = new SettingsService(domain.id);
+
+    await settingsService.init();
 
     const rootRole = await roleService.createWithCapabilities('root', [
       CAPABILITIES.ROOT,
