@@ -23,7 +23,7 @@ class TakaroMigrationSource {
       .filter((file) => file.endsWith('.js'))
       .map((file) => {
         return this.dynamicImport(`${folderPath}/${file}`).then(
-          (migration: any) => {
+          (migration: IMigration) => {
             return {
               name: file,
               up: migration.up,
@@ -46,6 +46,7 @@ class TakaroMigrationSource {
 
 export async function migrateSystem() {
   const knex = await NOT_DOMAIN_SCOPED_getKnex();
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
   await knex.migrate.latest({
     migrationSource: new TakaroMigrationSource('system'),
   });

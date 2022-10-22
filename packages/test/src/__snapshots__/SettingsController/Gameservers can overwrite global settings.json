@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-21T17:24:32.535Z"
+    },
+    "data": "!"
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Gameservers can overwrite global settings",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

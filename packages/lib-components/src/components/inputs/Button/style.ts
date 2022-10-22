@@ -13,7 +13,7 @@ export const Container = styled.button<{
   align-items: center;
   justify-content: center;
   width: fit-content;
-  border-radius: 0.8rem;
+  border-radius: 0.5rem;
 
   background: ${({ theme, outline, white, color }): string => {
     if (outline) return 'transparent;';
@@ -21,7 +21,6 @@ export const Container = styled.button<{
     else return `${theme.colors[color]};`;
   }};
   background-size: 200% auto;
-  font-weight: 900;
   border: 2px solid
     ${({ theme, outline, white, color }) => {
       if (white) return 'white;';
@@ -47,7 +46,7 @@ export const Container = styled.button<{
         ? 'black'
         : 'white'};
     font-size: 1.25rem;
-    font-weight: 800;
+    font-weight: 600;
     &:hover {
       color: ${({ color, outline, theme, white }): string =>
         white
@@ -105,7 +104,7 @@ export const Container = styled.button<{
     switch (size) {
       case 'tiny':
         return `
-          padding: 4px 12px;
+          padding: 4px 8px;
         `;
       case 'small':
         return `

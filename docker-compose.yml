@@ -6,7 +6,7 @@ services:
     volumes:
       - ./containers/homer/assets:/www/assets
     ports:
-      - 8080:8080
+      - 13337:8080
     environment:
       - INIT_ASSETS=0
   postgresql:
@@ -58,6 +58,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}  
       POSTGRES_HOST: "postgresql"   
+      POSTGRES_ENCRYPTION_KEY: "${POSTGRES_ENCRYPTION_KEY}"
       TAKARO_HOST: "http://localhost:3000"  
 
       REACT_APP_API: "http://localhost:13000" 
@@ -75,5 +76,7 @@ services:
     # agent  
       - 13004:3001
       - 12002:12002
+    # Docs
+      - 13005:13005
 volumes:
     pgadmin:      

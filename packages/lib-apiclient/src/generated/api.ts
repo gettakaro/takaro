@@ -178,6 +178,8 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ManageModules: 'MANAGE_MODULES',
   ReadPlayers: 'READ_PLAYERS',
   ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
 } as const;
 
 export type CapabilityOutputDTOCapabilityEnum =
@@ -355,7 +357,7 @@ export interface CronJobSearchInputDTO {
    * @type {Array<string>}
    * @memberof CronJobSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const CronJobSearchInputDTOSortDirectionEnum = {
@@ -540,7 +542,7 @@ export interface DomainSearchInputDTO {
    * @type {Array<string>}
    * @memberof DomainSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const DomainSearchInputDTOSortDirectionEnum = {
@@ -726,7 +728,7 @@ export interface FunctionSearchInputDTO {
    * @type {Array<string>}
    * @memberof FunctionSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const FunctionSearchInputDTOSortDirectionEnum = {
@@ -905,7 +907,7 @@ export interface GameServerSearchInputDTO {
    * @type {Array<string>}
    * @memberof GameServerSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const GameServerSearchInputDTOSortDirectionEnum = {
@@ -916,6 +918,47 @@ export const GameServerSearchInputDTOSortDirectionEnum = {
 export type GameServerSearchInputDTOSortDirectionEnum =
   typeof GameServerSearchInputDTOSortDirectionEnum[keyof typeof GameServerSearchInputDTOSortDirectionEnum];
 
+/**
+ *
+ * @export
+ * @interface GetSettingsInput
+ */
+export interface GetSettingsInput {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GetSettingsInput
+   */
+  keys?: Array<GetSettingsInputKeysEnum>;
+  /**
+   *
+   * @type {string}
+   * @memberof GetSettingsInput
+   */
+  gameServerId?: string;
+}
+
+export const GetSettingsInputKeysEnum = {
+  CommandPrefix: 'commandPrefix',
+  ServerChatName: 'serverChatName',
+} as const;
+
+export type GetSettingsInputKeysEnum =
+  typeof GetSettingsInputKeysEnum[keyof typeof GetSettingsInputKeysEnum];
+
+/**
+ *
+ * @export
+ * @interface GetSettingsOneInput
+ */
+export interface GetSettingsOneInput {
+  /**
+   *
+   * @type {string}
+   * @memberof GetSettingsOneInput
+   */
+  gameServerId?: string;
+}
 /**
  *
  * @export
@@ -1146,7 +1189,7 @@ export interface HookSearchInputDTO {
    * @type {Array<string>}
    * @memberof HookSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const HookSearchInputDTOSortDirectionEnum = {
@@ -1235,7 +1278,7 @@ export interface ITakaroQuery {
    * @type {Array<string>}
    * @memberof ITakaroQuery
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const ITakaroQuerySortDirectionEnum = {
@@ -1507,7 +1550,7 @@ export interface ModuleSearchInputDTO {
    * @type {Array<string>}
    * @memberof ModuleSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const ModuleSearchInputDTOSortDirectionEnum = {
@@ -1550,6 +1593,28 @@ export interface ParamIdAndRoleId {
    */
   id: string;
 }
+/**
+ *
+ * @export
+ * @interface ParamKey
+ */
+export interface ParamKey {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamKey
+   */
+  key: ParamKeyKeyEnum;
+}
+
+export const ParamKeyKeyEnum = {
+  CommandPrefix: 'commandPrefix',
+  ServerChatName: 'serverChatName',
+} as const;
+
+export type ParamKeyKeyEnum =
+  typeof ParamKeyKeyEnum[keyof typeof ParamKeyKeyEnum];
+
 /**
  *
  * @export
@@ -1734,7 +1799,7 @@ export interface PlayerSearchInputDTO {
    * @type {Array<string>}
    * @memberof PlayerSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const PlayerSearchInputDTOSortDirectionEnum = {
@@ -1881,7 +1946,7 @@ export interface RoleSearchInputDTO {
    * @type {Array<string>}
    * @memberof RoleSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const RoleSearchInputDTOSortDirectionEnum = {
@@ -1954,6 +2019,82 @@ export interface SearchRoleInputDTO {
    * @memberof SearchRoleInputDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface Settings
+ */
+export interface Settings {
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  commandPrefix: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  serverChatName: string;
+}
+/**
+ *
+ * @export
+ * @interface SettingsOutputDTOAPI
+ */
+export interface SettingsOutputDTOAPI {
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsOutputDTOAPI
+   */
+  data: string;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof SettingsOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface SettingsOutputObjectDTOAPI
+ */
+export interface SettingsOutputObjectDTOAPI {
+  /**
+   *
+   * @type {Settings}
+   * @memberof SettingsOutputObjectDTOAPI
+   */
+  data: Settings;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof SettingsOutputObjectDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface SettingsSetDTO
+ */
+export interface SettingsSetDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsSetDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsSetDTO
+   */
+  value: string;
 }
 /**
  *
@@ -2258,7 +2399,7 @@ export interface UserSearchInputDTO {
    * @type {Array<string>}
    * @memberof UserSearchInputDTO
    */
-  extend: Array<string>;
+  extend?: Array<string>;
 }
 
 export const UserSearchInputDTOSortDirectionEnum = {
@@ -7528,6 +7669,414 @@ export class RoleApi extends BaseAPI {
   ) {
     return RoleApiFp(this.configuration)
       .roleControllerUpdate(id, roleUpdateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * SettingsApi - axios parameter creator
+ * @export
+ */
+export const SettingsApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Get
+     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerGet: async (
+      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      gameServerId?: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/settings`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (keys) {
+        localVarQueryParameter['keys'] = keys;
+      }
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} key
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerGetOne: async (
+      key: string,
+      gameServerId?: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'key' is not null or undefined
+      assertParamExists('settingsControllerGetOne', 'key', key);
+      const localVarPath = `/settings/{key}`.replace(
+        `{${'key'}}`,
+        encodeURIComponent(String(key))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Set
+     * @param {string} key
+     * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerSet: async (
+      key: string,
+      settingsSetDTO?: SettingsSetDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'key' is not null or undefined
+      assertParamExists('settingsControllerSet', 'key', key);
+      const localVarPath = `/settings/{key}`.replace(
+        `{${'key'}}`,
+        encodeURIComponent(String(key))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        settingsSetDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * SettingsApi - functional programming interface
+ * @export
+ */
+export const SettingsApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = SettingsApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Get
+     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async settingsControllerGet(
+      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      gameServerId?: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<SettingsOutputObjectDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.settingsControllerGet(
+          keys,
+          gameServerId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} key
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async settingsControllerGetOne(
+      key: string,
+      gameServerId?: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<SettingsOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.settingsControllerGetOne(
+          key,
+          gameServerId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Set
+     * @param {string} key
+     * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async settingsControllerSet(
+      key: string,
+      settingsSetDTO?: SettingsSetDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<SettingsOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.settingsControllerSet(
+          key,
+          settingsSetDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * SettingsApi - factory interface
+ * @export
+ */
+export const SettingsApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = SettingsApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Get
+     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerGet(
+      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      gameServerId?: string,
+      options?: any
+    ): AxiosPromise<SettingsOutputObjectDTOAPI> {
+      return localVarFp
+        .settingsControllerGet(keys, gameServerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} key
+     * @param {string} [gameServerId]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerGetOne(
+      key: string,
+      gameServerId?: string,
+      options?: any
+    ): AxiosPromise<SettingsOutputDTOAPI> {
+      return localVarFp
+        .settingsControllerGetOne(key, gameServerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Set
+     * @param {string} key
+     * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    settingsControllerSet(
+      key: string,
+      settingsSetDTO?: SettingsSetDTO,
+      options?: any
+    ): AxiosPromise<SettingsOutputDTOAPI> {
+      return localVarFp
+        .settingsControllerSet(key, settingsSetDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * SettingsApi - object-oriented interface
+ * @export
+ * @class SettingsApi
+ * @extends {BaseAPI}
+ */
+export class SettingsApi extends BaseAPI {
+  /**
+   *
+   * @summary Get
+   * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+   * @param {string} [gameServerId]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof SettingsApi
+   */
+  public settingsControllerGet(
+    keys?: Array<'commandPrefix' | 'serverChatName'>,
+    gameServerId?: string,
+    options?: AxiosRequestConfig
+  ) {
+    return SettingsApiFp(this.configuration)
+      .settingsControllerGet(keys, gameServerId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} key
+   * @param {string} [gameServerId]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof SettingsApi
+   */
+  public settingsControllerGetOne(
+    key: string,
+    gameServerId?: string,
+    options?: AxiosRequestConfig
+  ) {
+    return SettingsApiFp(this.configuration)
+      .settingsControllerGetOne(key, gameServerId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Set
+   * @param {string} key
+   * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof SettingsApi
+   */
+  public settingsControllerSet(
+    key: string,
+    settingsSetDTO?: SettingsSetDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return SettingsApiFp(this.configuration)
+      .settingsControllerSet(key, settingsSetDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

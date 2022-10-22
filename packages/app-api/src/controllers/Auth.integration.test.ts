@@ -4,7 +4,7 @@ import { CAPABILITIES } from '../db/role';
 
 const group = 'Auth';
 
-const tests: IntegrationTest<any>[] = [
+const tests = [
   new IntegrationTest({
     snapshot: true,
     group,
@@ -29,7 +29,10 @@ const tests: IntegrationTest<any>[] = [
       await logInWithCapabilities(this.client, [CAPABILITIES.READ_ROLES]);
     },
     test: async function () {
-      return this.client.role.roleControllerSearch();
+      return this.client.role.roleControllerSearch({
+        sortBy: 'name',
+        sortDirection: RoleSearchInputDTOSortDirectionEnum.Desc,
+      });
     },
     expectedStatus: 200,
   }),

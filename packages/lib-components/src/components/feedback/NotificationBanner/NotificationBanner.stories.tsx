@@ -1,11 +1,13 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { NotificationBanner, NotificationBannerProps } from '.';
 
 export default {
   title: 'Feedback/NotificationBanner',
-  component: NotificationBanner
-} as Meta;
+  component: NotificationBanner,
+  args: {
+    title: 'This is the notification banner title',
+    description: 'This is the notification banner description',
+  }
+} as Meta<NotificationBannerProps>;
 
-export const Default: Story<NotificationBannerProps> = (args) => (
-  <NotificationBanner description="this is the description" title="this is the title" />
-);
+export const Default: StoryFn<NotificationBannerProps> = (args) => (<NotificationBanner {...args} />);

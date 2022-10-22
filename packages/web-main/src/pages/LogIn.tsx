@@ -7,7 +7,7 @@ import {
   ErrorMessage,
   styled,
   errors,
-  Company
+  Company,
 } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FaDiscord as Discord, FaGoogle as Google } from 'react-icons/fa';
@@ -90,7 +90,6 @@ const Container = styled.div`
   }
 `;
 
-
 interface IFormInputs {
   email: string;
   password: string;
@@ -110,14 +109,14 @@ const LogIn: FC = () => {
           .string()
           .email('This is not a valid email address.')
           .required('Email is a required field.'),
-        password: yup.string().required('Password is a required field.')
+        password: yup.string().required('Password is a required field.'),
       }),
     []
   );
 
   const { control, handleSubmit, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema)
+    resolver: useValidationSchema(validationSchema),
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ email, password }) => {
@@ -150,7 +149,10 @@ const LogIn: FC = () => {
       </Helmet>
       <Wrapper>
         <Header>
-          <p>Don't have an account yet? Please contact your domain administrator to make one</p>
+          <p>
+            Don't have an account yet? Please contact your domain administrator
+            to make one
+          </p>
         </Header>
 
         <Container>
@@ -175,7 +177,10 @@ const LogIn: FC = () => {
             variant="default"
           />
 
-          <Divider label={{ labelPosition: 'center', text: 'or' }} spacing="huge" />
+          <Divider
+            label={{ labelPosition: 'center', text: 'or' }}
+            spacing="huge"
+          />
           <form onSubmit={handleSubmit(onSubmit)}>
             <ErrorMessage message={error} />
             <TextField
@@ -189,7 +194,7 @@ const LogIn: FC = () => {
             />
             <TextField
               control={control}
-              error={formState.errors.email}
+              error={formState.errors.password}
               label="Password"
               loading={loading}
               name="password"

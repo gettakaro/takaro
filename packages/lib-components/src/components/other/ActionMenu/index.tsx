@@ -1,36 +1,47 @@
-import { cloneElement, ReactElement, forwardRef } from 'react';
-import { Container, Action } from './style';
-
-interface IAction {
-  icon: ReactElement;
-  text: string;
-  onClick: () => any;
-}
+import { Children, forwardRef, Dispatch, FC, ReactElement, SetStateAction } from 'react';
+import { Container, Item } from './style';
+import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
 
 export interface ActionMenuProps {
-  title?: string;
-  actions: IAction[];
-  popperAttributes: any;
-  popperStyles: any;
+  attributes: {
+    x: number | null,
+    y: number | null,
+    strategy: 'absolute' | 'fixed'
+  };
+  selectedState: [number, Dispatch<SetStateAction<number>>];
+  children: ReactElement | ReactElement[];
 }
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
-  ({ title = '', actions, popperAttributes, popperStyles }, ref) => {
+  ({ attributes, children, selectedState }, ref) => {
+    const [selected, setSelected] = selectedState;
+
     return (
       <Container
-        transition={{ duration: 0.5 }}
-        {...popperAttributes.popper}
+        style={{
+          position: attributes.strategy,
+          top: attributes.y ? attributes.y + 5 : 0,
+          left: attributes.x ?? 0
+        }}
         ref={ref}
-        style={popperStyles.popper}
       >
-        {title && <h3>{title}</h3>}
-        {actions.map(({ icon, onClick, text }) => (
-          <Action onClick={onClick}>
-            {cloneElement(icon, { size: 20 })}
-            <p>{text}</p>
-          </Action>
+        {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
+          <Item onClick={() => setSelected(idx)}>
+            {selected === idx ? <div><CheckMarkIcon size={20} /></div> : <div className='checkmark-placeholder'></div>}
+            {child}
+          </Item>
         ))}
       </Container>
     );
   }
 );
+
+interface ActionProps {
+  onClick: () => unknown;
+  text: string;
+  // TODO: implement disabled when needed
+}
+export const Action: FC<ActionProps> = ({ children }) => {
+  return (<div>{children}</div>);
+};
+

@@ -1,0 +1,19 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-20T20:04:26.095Z"
+    },
+    "data": {
+      "commandPrefix": "/"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Can get all settings with a filter",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

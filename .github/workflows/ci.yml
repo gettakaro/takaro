@@ -24,3 +24,4 @@ jobs:
           POSTGRES_USER: takaro-user
           POSTGRES_PASSWORD: takaro-pw
           POSTGRES_DB: takaro-db
+          POSTGRES_ENCRYPTION_KEY: takaro-encryption-key

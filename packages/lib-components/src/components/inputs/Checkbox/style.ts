@@ -24,10 +24,11 @@ export const Input = styled.input`
 
 export const BackgroundContainer = styled(motion.div)`
   position: absolute;
-  width: 21px;
-  height: 21px;
+  width: 23px;
+  height: 23px;
   background-color: ${({ theme }) => theme.colors.primary};
   z-index: 0;
+  border-radius: 6px;
 `;
 
 export const CheckboxContainer = styled.div<{
@@ -36,14 +37,18 @@ export const CheckboxContainer = styled.div<{
 }>`
   display: flex;
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
   align-items: center;
   justify-content: center;
-  border: 3px solid
-    ${({ theme, readOnly }): string =>
-      readOnly ? theme.colors.gray : theme.colors.primary};
-  border-radius: 4px;
+  border: 1px solid
+    ${({ theme, readOnly, isChecked }): string =>
+      readOnly
+        ? theme.colors.lightGray
+        : isChecked
+        ? theme.colors.primary
+        : theme.colors.gray};
+  border-radius: 6px;
   transition: box-shadow 0.125s linear, border-color 0.15s linear;
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
   z-index: 1;

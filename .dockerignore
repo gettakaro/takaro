@@ -7,3 +7,5 @@ build
 *.env
 docker-compose.yml
 .husky
+
+.docusaurus

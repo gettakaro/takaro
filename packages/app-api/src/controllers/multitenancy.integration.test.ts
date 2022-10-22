@@ -4,7 +4,7 @@ import { DomainCreateOutputDTOAPI } from './DomainController';
 
 const group = 'Multitenancy';
 
-const tests: IntegrationTest<any>[] = [
+const tests = [
   new IntegrationTest<DomainCreateOutputDTOAPI>({
     group,
     snapshot: true,
