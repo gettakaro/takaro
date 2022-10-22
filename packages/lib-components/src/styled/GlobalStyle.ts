@@ -67,9 +67,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   h4 {
     font-size: 1.5rem;
   }
-  p, span, div {
-    font-size: 1.4rem;
-  }
 
   form {
     display: block;
