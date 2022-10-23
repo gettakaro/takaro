@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
 import { Size } from '../../../styled/types';
 
@@ -13,7 +13,9 @@ const Container = styled.div<{ src?: string; size: Size; isCircle: boolean }>`
   font-weight: 700;
 
   ${({ src, theme }): string => {
-    return src ? `background-image: url(${src});` : `background-color: ${theme.colors.primary};`;
+    return src
+      ? `background-image: url(${src});`
+      : `background-color: ${theme.colors.primary};`;
   }}
 
   ${({ size }) => {
@@ -56,21 +58,25 @@ export interface AvatarProps {
   alt: string;
   src?: string;
   size?: Size;
-  loading?: boolean;
   isCircle?: boolean;
 }
 
 // TODO: skeleton loading
-export const Avatar: FC<AvatarProps> = ({
+export const Avatar: FC<PropsWithChildren<AvatarProps>> = ({
   size = 'medium',
   alt,
   src = undefined,
-  loading,
   children,
-  isCircle = true
+  isCircle = true,
 }) => {
   return (
-    <Container aria-label={alt} isCircle={isCircle} role="img" size={size} src={src}>
+    <Container
+      aria-label={alt}
+      isCircle={isCircle}
+      role="img"
+      size={size}
+      src={src}
+    >
       {children}
     </Container>
   );
