@@ -202,16 +202,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   /* notistack snackbar styling */
   ${SnackBarStyles}
 
-  .rc-tooltip-inner {
-    color: white;
-    span {
-      color: white;
-    }
-  }
-  .tippy-arrow {
-    color: ${({ theme }): string => theme.colors.secondary};
-  }
-
   /* rc-slider */
   .rc-slider-tooltip-inner {
     background-color: ${({ theme }) => theme.colors.primary}!important;
