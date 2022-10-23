@@ -1,8 +1,9 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
 
 const Template = styled.div<{ gradient: boolean }>`
-  background: ${({ theme, gradient }) => (gradient ? theme.colors.primary : 'white')};
+  background: ${({ theme, gradient }) =>
+    gradient ? theme.colors.primary : 'white'};
   border-radius: 0.6rem;
   margin: 1rem;
   box-shadow: ${({ theme }) => theme.shadows.default};
@@ -16,7 +17,8 @@ const Template = styled.div<{ gradient: boolean }>`
   h6,
   p,
   div {
-    color: ${({ theme, gradient }) => (gradient ? 'white' : theme.colors.text)}!important;
+    color: ${({ theme, gradient }) =>
+      gradient ? 'white' : theme.colors.text}!important;
   }
 `;
 
@@ -33,15 +35,15 @@ const Large = styled(Template)`
 export interface CardProps {
   gradient?: boolean;
   size?: 'small' | 'medium' | 'large';
-  loading?: boolean;
+  // TODO: add skeleton loading
+  // loading?: boolean;
 }
 
 // TODO: implement skeleton loading
-export const Card: FC<CardProps> = ({
+export const Card: FC<PropsWithChildren<CardProps>> = ({
   children,
-  loading = false,
   gradient = false,
-  size = 'medium'
+  size = 'medium',
 }) => {
   switch (size) {
     case 'small':

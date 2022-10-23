@@ -1,21 +1,21 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { motion } from 'framer-motion';
 import { getTransition } from '@takaro/lib-components';
 
 const animations = {
   initial: { opacity: 0, x: 100 },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -100 }
+  exit: { opacity: 0, x: -100 },
 };
 
-export const Page: FC = ({ children }) => {
+export const Page: FC<PropsWithChildren<unknown>> = ({ children }) => {
   return (
     <motion.div
       animate="animate"
       initial="initial"
       transition={{
         ...getTransition(),
-        duration: 0.3
+        duration: 0.3,
       }}
       variants={animations}
     >

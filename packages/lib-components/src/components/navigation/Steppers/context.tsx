@@ -1,4 +1,12 @@
-import { FC, createContext, useContext, useReducer, useCallback } from 'react';
+import {
+  FC,
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import { reducer, StepperState, stepTypes } from './reducer';
 
 const StepperContext = createContext<any>(undefined);
@@ -7,15 +15,22 @@ interface StepperProviderProps {
   startStep?: number;
 }
 
-export const StepperProvider: FC<StepperProviderProps> = ({ startStep = 0, children }) => {
+export const StepperProvider: FC<PropsWithChildren<StepperProviderProps>> = ({
+  startStep = 0,
+  children,
+}) => {
   const defaultStepperState: StepperState = {
     steps: [],
-    currentStep: startStep
+    currentStep: startStep,
   };
 
   const [state, dispatch] = useReducer(reducer, defaultStepperState);
 
-  return <StepperContext.Provider value={[state, dispatch]}>{children}</StepperContext.Provider>;
+  return (
+    <StepperContext.Provider value={[state, dispatch]}>
+      {children}
+    </StepperContext.Provider>
+  );
 };
 
 export const useStepper = () => {
@@ -36,11 +51,13 @@ export const useStepper = () => {
     [dispatch]
   );
   const setSteps = useCallback(
-    (steps) => dispatch({ type: stepTypes.SET_STEPS, payload: { steps } }),
+    (steps: ReactNode[]) =>
+      dispatch({ type: stepTypes.SET_STEPS, payload: { steps } }),
     [dispatch]
   );
   const setCurrentStep = useCallback(
-    (amount) => dispatch({ type: stepTypes.SET_CURRENT_STEP, payload: { amount } }),
+    (amount: number) =>
+      dispatch({ type: stepTypes.SET_CURRENT_STEP, payload: { amount } }),
     [dispatch]
   );
 
@@ -50,6 +67,6 @@ export const useStepper = () => {
     setSteps,
     setCurrentStep,
     currentStep,
-    steps
+    steps,
   };
 };
