@@ -10,8 +10,8 @@ import { AiOutlineBook, AiOutlineMenu, AiOutlineWifi, AiOutlineShop } from 'reac
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
-import Modules from 'pages/Modules';
-import { ModuleCreate } from 'pages/CreateModule';
+import Studio from 'pages/Studio';
+import { Modules } from 'pages/Modules';
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -59,12 +59,12 @@ export const Router: FC = () => (
             <Route element={<GameServers />} path={PATHS.gameServers.overview} />
             <Route element={<AddGameServer />} path={PATHS.gameServers.create} />
             <Route element={<AddGameServer />} path={PATHS.gameServers.update} />
+            <Route element={<Modules />} path={PATHS.gameServers.modules} />
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 
-          <Route element={<AuthenticatedRoute frame="workbench" />} path={PATHS.home}>
-            <Route element={<Modules />} path={PATHS.modules.main} />
-            <Route element={<ModuleCreate />} path={PATHS.modules.create} />
+          <Route element={<AuthenticatedRoute frame="studio" />} path={PATHS.home}>
+            <Route element={<Studio />} path={PATHS.modules.main} />
           </Route>
 
           <Route element={<LogIn />} path={PATHS.login} />

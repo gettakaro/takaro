@@ -1,49 +1,102 @@
-import { FC, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
-import { styled, Table, Loading, Button } from '@takaro/lib-components';
-import { useApiClient } from 'hooks/useApiClient';
-import { useQuery } from 'react-query';
+import { FC, useMemo, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
-  ModuleOutputArrayDTOAPI,
-  PlayerOutputArrayDTOAPI,
+  Button,
+  Select,
+  TextField,
+  useValidationSchema,
+  styled,
+  Switch,
+  ErrorMessage,
+  Loading,
+} from '@takaro/lib-components';
+import * as yup from 'yup';
+import { AiFillPlusCircle, AiFillControl } from 'react-icons/ai';
+import {
+  GameServerCreateDTOTypeEnum,
+  GameServerOutputDTOAPI,
 } from '@takaro/apiclient';
+import { useApiClient } from 'hooks/useApiClient';
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from 'paths';
+import { useQuery } from 'react-query';
+import { useParams } from 'react-router-dom';
 
-import * as monaco from 'monaco-editor';
-import Editor, { loader } from '@monaco-editor/react';
-loader.config({ monaco });
+import { Helmet } from 'react-helmet';
 
-const Container = styled.div`
-  display: flex;
+interface IFormInputs {
+  name: string;
+}
+
+const Page = styled.div`
+  padding: 3rem 8rem;
 `;
 
-const Modules: FC = () => {
-  const client = useApiClient();
+export const Modules: FC = () => {
+  const apiClient = useApiClient();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string>();
 
-  const { data, isLoading, refetch } = useQuery<ModuleOutputArrayDTOAPI>(
-    'modules',
-    async () => (await client.module.moduleControllerSearch()).data
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        name: yup.string().required('Must provide a name for the module.'),
+      }),
+    []
   );
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  const { control, handleSubmit, formState, reset, watch } =
+    useForm<IFormInputs>({
+      mode: 'onSubmit',
+      resolver: useValidationSchema(validationSchema),
+    });
+
+    const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+      console.log(data);
+      try {
+        await apiClient.module.moduleControllerCreate({
+          name: data.name,
+          enabled: true,
+          config: {}
+        })
+        navigate(PATHS.modules.main)
+      } catch (error) {
+        setError(JSON.stringify(error));
+      }
+    };
 
   return (
-    <Fragment>
+    <>
       <Helmet>
-        <title>Modules - Takaro</title>
+        <title>Module create - Takaro</title>
       </Helmet>
+      <Page>
+        <h1>Module create</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
 
-      <Container>
-        <Editor
-          height="100vh"
-          defaultLanguage="javascript"
-          defaultValue="// some comment"
-          theme='vs-dark'
+        <TextField
+          control={control}
+          error={formState.errors.name}
+          label="Module name"
+          name="name"
+          placeholder="Super cool module"
+          required
         />
-      </Container>
-    </Fragment>
+
+<ErrorMessage message={error} />
+
+
+        <Button
+          icon={<AiFillPlusCircle />}
+          onClick={() => {
+            /* dummy */
+          }}
+          text="Save"
+          type="submit"
+          variant="default"
+        />
+        </form>
+      </Page>
+    </>
   );
 };
-
-export default Modules;

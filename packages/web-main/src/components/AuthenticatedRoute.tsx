@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { Loading,styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { ModuleWorkbenchFrame } from 'frames/moduleWorkbenchFrame';
+import { StudioFrame } from 'frames/studioFrame';
 
 
 const Container = styled.div`
@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 interface AuthenticatedRouteProps {
-  frame: 'dashboard' | 'workbench' | 'none';
+  frame: 'dashboard' | 'studio' | 'none';
 }
 
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
@@ -39,11 +39,11 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
             <Outlet />
           </DashboardFrame>
         );
-        case 'workbench':
+        case 'studio':
           return (
-            <ModuleWorkbenchFrame>
+            <StudioFrame>
               <Outlet />
-            </ModuleWorkbenchFrame>
+            </StudioFrame>
           );        
       case 'none':
         return <Outlet />;
