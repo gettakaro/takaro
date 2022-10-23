@@ -53,7 +53,7 @@ export interface IEventQueueData {
   type: GameEvents;
   domainId: string;
   gameServerId: string;
-  data: EventMapping[GameEvents];
+  event: EventMapping[GameEvents];
 }
 
 export class QueuesService {

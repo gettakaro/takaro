@@ -2,6 +2,7 @@ import { TakaroService } from './Base';
 
 import { PlayerModel, PlayerRepo } from '../db/player';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IGamePlayer } from '@takaro/gameserver';
 
 export class PlayerOutputDTO {
   @IsUUID()
@@ -70,5 +71,34 @@ export class PlayerService extends TakaroService<PlayerModel> {
     gameServerId: string
   ) {
     return this.repo.insertAssociation(gameId, playerId, gameServerId);
+  }
+
+  async sync(playerData: IGamePlayer, gameServerId: string) {
+    const existingAssociations = await this.findAssociations(playerData.gameId);
+    let player: PlayerOutputDTO;
+
+    if (!existingAssociations.length) {
+      const existingPlayers = await this.find({
+        filters: {
+          steamId: playerData.steamId,
+          epicOnlineServicesId: playerData.epicOnlineServicesId,
+          xboxLiveId: playerData.xboxLiveId,
+        },
+      });
+
+      if (!existingPlayers.results.length) {
+        // Main player profile does not exist yet!
+        player = await this.create({
+          name: playerData.name,
+          epicOnlineServicesId: playerData.epicOnlineServicesId,
+          steamId: playerData.steamId,
+          xboxLiveId: playerData.xboxLiveId,
+        });
+      } else {
+        player = existingPlayers.results[0];
+      }
+
+      await this.insertAssociation(playerData.gameId, player.id, gameServerId);
+    }
   }
 }
