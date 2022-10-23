@@ -19,6 +19,7 @@ import { QueuesService } from '@takaro/queues';
 import { getSocketServer } from './lib/socketServer';
 import { HookController } from './controllers/HookController';
 import { PlayerController } from './controllers/PlayerController';
+import { SettingsController } from './controllers/SettingsController';
 
 export const server = new HTTP(
   {
@@ -32,6 +33,7 @@ export const server = new HTTP(
       ModuleController,
       HookController,
       PlayerController,
+      SettingsController,
     ],
   },
   {

@@ -14,7 +14,7 @@ export interface RadioGroupProps {
   loading?: boolean;
   options: Option[];
   defaultValue?: string;
-  control: Control<any>;
+  control: Control<Record<string, unknown>>
   readOnly?: boolean;
   name: string;
 }

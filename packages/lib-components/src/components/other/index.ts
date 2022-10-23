@@ -7,5 +7,5 @@ export type { EmptyProps } from './Empty';
 export { Company } from './Company';
 export type { CompanyProps } from './Company';
 
-export { ActionMenu } from './ActionMenu';
+export { ActionMenu, Action } from './ActionMenu';
 export type { ActionMenuProps } from './ActionMenu';

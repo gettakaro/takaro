@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
 
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
-import { logger } from '@takaro/logger';
 import {
   AdminClient,
   Client,
@@ -18,13 +18,18 @@ export class IIntegrationTest<SetupData> {
   standardEnvironment?: boolean = true;
   setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
   teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
-  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse>;
+  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse | void>;
   expectedStatus?: number = 200;
   filteredFields?: string[];
 }
 
 export class IntegrationTest<SetupData> {
-  protected log = logger('IntegrationTest');
+  protected log = {
+    info: () => {},
+    error: () => {},
+    warn: () => {},
+    debug: () => {},
+  };
 
   public readonly adminClient: AdminClient;
   public readonly client: Client;
@@ -123,11 +128,10 @@ export class IntegrationTest<SetupData> {
           }
         }
 
-        if (!response) {
-          throw new Error('No response returned from test');
-        }
-
         if (this.test.snapshot) {
+          if (!response) {
+            throw new Error('No response returned from test');
+          }
           await matchSnapshot(
             this.test as ITestWithSnapshot<unknown>,
             response

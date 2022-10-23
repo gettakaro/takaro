@@ -1,22 +1,25 @@
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+//const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
+  framework: {
+    name: '@storybook/react-vite',
+    options: { fashRefresh: true },
+  },
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
+    '@storybook/addon-storysource',
     '@storybook/addon-essentials',
     '@storybook/addon-links',
-    '@storybook/preset-create-react-app',
-    '@storybook/addon-a11y'
+    '@storybook/addon-a11y',
   ],
   features: {
-    storyStoreV7: true // Optimize story loading with baabel mode 7
+    previewCsfV3: true,
   },
   staticDirs: ['../public'],
-  core: { builder: 'webpack5' },
+  core: { builder: '@storybook/builder-vite' },
   logLevel: 'debug',
-  reactOptions: {
-    fastRefresh: true
-  },
+
+  /*
   webpackFinal: async (config) => {
     config.resolve.plugins = [
       ...(config.resolve.plugins || []),
@@ -37,4 +40,5 @@ module.exports = {
       })
     };
   }
+  */
 };

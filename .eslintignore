@@ -2,5 +2,6 @@
 node_modules
 # don't lint build output
 dist
+build
 
 storybook-static

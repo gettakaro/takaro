@@ -14,7 +14,7 @@ export interface RadioProps {
   label?: string;
   value: string;
   labelPosition: 'left' | 'right';
-  onChange?: (e: React.MouseEvent<HTMLDivElement | HTMLLabelElement>) => void;
+  onChange?: (value: unknown) => void;
 }
 
 const variants = {
@@ -54,6 +54,12 @@ export const Radio: FC<RadioProps> = ({
     control,
     defaultValue: selected ? value : undefined
   });
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(value);
+    }
+  }, [selected]);
 
   /* todo: handle loading state */
   if (loading) {

@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-21T17:25:00.961Z"
+    },
+    "data": {
+      "commandPrefix": "!",
+      "serverChatName": "Takaro"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Requesting game server settings merges with global settings",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

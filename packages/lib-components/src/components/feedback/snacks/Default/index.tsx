@@ -19,7 +19,7 @@ import {
 import { useTheme } from '../../../../hooks';
 import { ButtonProps } from '../../../inputs';
 
-interface DefaultSnackProps extends CustomContentProps {
+export interface DefaultSnackProps extends CustomContentProps {
   title: string;
   button1?: FC<ButtonProps>;
   button2?: FC<ButtonProps>;

@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-20T20:07:35.915Z",
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "key": "invalidKey"
+            },
+            "value": "invalidKey",
+            "property": "key",
+            "children": [],
+            "constraints": {
+              "isEnum": "key must be one of: commandPrefix, serverChatName"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Set a value with invalid key",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

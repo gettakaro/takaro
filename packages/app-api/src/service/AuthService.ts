@@ -1,6 +1,6 @@
 import { DomainScoped } from '../lib/DomainScoped';
 import { errors, logger } from '@takaro/logger';
-import { compare } from 'bcrypt';
+import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
@@ -49,7 +49,10 @@ export class AuthService extends DomainScoped {
       throw new errors.UnauthorizedError();
     }
 
-    const passwordMatches = await compare(password, users.results[0].password);
+    const passwordMatches = await compareHashed(
+      password,
+      users.results[0].password
+    );
 
     if (passwordMatches) {
       const token = await this.signJwt({ user: { id: users.results[0].id } });

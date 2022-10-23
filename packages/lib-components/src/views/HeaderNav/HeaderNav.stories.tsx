@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { HeaderNav as HeaderNavComponent } from '.';
 
 export default {
@@ -6,4 +6,4 @@ export default {
   component: HeaderNavComponent
 } as Meta;
 
-export const Default: Story = () => <HeaderNavComponent />;
+export const Default: StoryFn = () => <HeaderNavComponent />;

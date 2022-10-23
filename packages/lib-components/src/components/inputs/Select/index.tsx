@@ -10,7 +10,7 @@ import {
   CheckMarkContainer
 } from './style';
 import { Control, FieldError, useController } from 'react-hook-form';
-import { usePopper } from 'react-popper';
+import { useFloating } from '@floating-ui/react-dom';
 import { useOutsideAlerter } from '../../../hooks';
 import { ErrorContainer, Error } from '../Field/style';
 import {
@@ -30,7 +30,7 @@ type OptionType = {
 export interface SelectProps {
   options: OptionType[];
   name: string;
-  control: Control<any>;
+  control: Control<any>
   icon?: JSX.Element;
   label?: string;
   placeholder?: string;
@@ -55,14 +55,10 @@ export const Select: FC<SelectProps> = ({
   const {
     field: { ref, ...inputProps }
   } = useController({ name, control });
-  const [referenceElement, setReferenceElement] = useState<any>(null);
-  const [popperElement, setPopperElement] = useState<any>(null);
+
+  const { x, y, strategy, reference, floating } = useFloating();
   const [showError, setShowError] = useState(false);
   const [selected, setSelected] = useState<OptionType | undefined>(defaultValue);
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [{ name: 'offset', options: { offset: [0, 10] } }]
-  });
 
   const [visible, setVisible] = useState<boolean>(false);
   const parentRef = createRef<HTMLDivElement>();
@@ -97,7 +93,7 @@ export const Select: FC<SelectProps> = ({
         onBlur={() => setShowError(false)}
         onClick={() => setVisible(!visible)}
         onFocus={() => setShowError(true)}
-        ref={setReferenceElement}
+        ref={reference}
       >
         <ArrowContainer>
           {visible ? <ArrowUpIcon size={18} /> : <ArrowDownIcon size={18} />}
@@ -105,7 +101,7 @@ export const Select: FC<SelectProps> = ({
         {icon && <IconContainer>{cloneElement(icon, { size: 20 })}</IconContainer>}
         <p>{selected?.label ? selected.label : placeholder}</p>
         {/* This is here to work with react-hook-form */}
-        <select {...inputProps}>
+        <select {...inputProps} ref={ref}>
           {options.map(({ label, value }) => {
             return (
               <option key={value} value={value}>
@@ -118,7 +114,10 @@ export const Select: FC<SelectProps> = ({
 
       {/* show dropdown with different options */}
       {visible && (
-        <DropDownContainer ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+        <DropDownContainer
+          ref={floating}
+          style={{ left: x ?? 0, top: y ? y + 5 : 0, position: strategy }}
+        >
           {/* Custom scrollbar */}
           <SimpleBar
             style={{

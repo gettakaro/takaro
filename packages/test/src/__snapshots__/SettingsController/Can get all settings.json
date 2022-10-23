@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-20T20:04:25.761Z"
+    },
+    "data": {
+      "commandPrefix": "/",
+      "serverChatName": "Takaro"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Can get all settings",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

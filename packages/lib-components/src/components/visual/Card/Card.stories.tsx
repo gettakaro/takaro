@@ -1,7 +1,7 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Card, CardProps } from '.';
-import { Empty } from '../../other';
+import { Button } from '../..';
 
 const WrapperDecorator = styled.div`
   padding: 5rem;
@@ -15,25 +15,85 @@ const WrapperDecorator = styled.div`
 export default {
   title: 'Layout/Card',
   component: Card,
-  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>]
-} as Meta;
+  decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
+  args: {
+    size: 'medium',
+  }
+} as Meta<CardProps>;
 
-const Template: Story<CardProps> = (args) => <Card {...args}>example card</Card>;
+export const Default: StoryFn<CardProps> = (args) => <Card {...args}>example card</Card>;
 
-// Default Button
-export const Default = Template.bind({});
-Default.args = { size: 'medium' };
+const Container = styled.div`
+  border-radius: 1rem;
+  background-color: white;
+  padding: 2rem;
+`;
 
-export const Sizes = () => (
-  <>
-    <Card size="small">
-      <Empty description="Small Card" />
+const ButtonContainer = styled.div`
+  display: flex;
+  margin-top: 2rem;
+  button {
+    margin: 0 1rem;
+    &:first-child {
+      margin: 0 1rem 0 0;
+    }
+  }
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+  }
+  p {
+    font-weight: 600;
+  }
+`;
+
+const ImageContainer = styled.div`
+  img {
+    width: 350px;
+    height: auto;
+  }
+`;
+
+export const Example = () => (
+  <Container>
+    <Card gradient size="large">
+      <FlexContainer>
+        <div>
+          <h2>Drink milk, it is good for you!</h2>
+          <p>
+            Reduced Fat and Low Fat Milk (also know as 2% or 1% milk) have the same amount of
+            calcium, protein, vitamins and minerals as whole milk, just less fat and fewer calories.
+          </p>
+          <ButtonContainer>
+            <Button
+              isWhite
+              onClick={() => {
+                /* */
+              }}
+              text="Drink Fat Milk"
+            />
+            <Button
+              isWhite
+              onClick={() => {
+                /* */
+              }}
+              text="Drink Low Fat Milk"
+              variant="outline"
+            />
+          </ButtonContainer>
+        </div>
+        <ImageContainer>
+          <img alt="milk" src="images/milk.png" />
+        </ImageContainer>
+      </FlexContainer>
     </Card>
-    <Card size="medium">
-      <Empty description="Medium Card" />
-    </Card>
-    <Card size="large">
-      <Empty description="Large Card" />
-    </Card>
-  </>
+  </Container>
 );
