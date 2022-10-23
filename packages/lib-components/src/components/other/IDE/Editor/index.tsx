@@ -38,7 +38,7 @@ export const Editor: FC = () => {
               lineNumbers: 'on',
               contextmenu: false,
               readOnly: false,
-              fontSize: 18,
+              fontSize: 16,
             }}
           />
         </div>

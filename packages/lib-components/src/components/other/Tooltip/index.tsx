@@ -32,6 +32,7 @@ const Container = styled(motion.div)`
   padding: .4rem .6rem;
   font-size: 1.4rem;
   width: max-content;
+  z-index: 100;
 `;
 
 
@@ -83,6 +84,7 @@ export const Tooltip: FC<TooltipProps> = ({ children, label, placement = 'top' }
                 ? { duration: 0.1 }
                 : { type: 'spring', damping: 20, stiffness: 300 }
             }
+            layoutId="tooltip"
             ref={floating}
             style={{
               position: strategy,

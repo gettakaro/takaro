@@ -1,4 +1,4 @@
-import { ActionMenu } from 'components/other';
+import { ActionMenu } from '../../../components';
 import { FC, useState, useEffect, createRef, ReactElement } from 'react';
 import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import type { SandpackBundlerFiles } from "@codesandbox/sandpack-client";
+import type { SandpackBundlerFiles } from '@codesandbox/sandpack-client';
 import type { SandpackOptions } from '@codesandbox/sandpack-react';
 import { fromPropsToModules } from './utils';
 import { FileExplorerProps } from '.';

@@ -2,15 +2,18 @@ import { FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
 import { lighten } from 'polished';
+import { FloatingDelayGroup } from '@floating-ui/react-dom-interactions';
+import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
-  width: 6rem;
+  min-width: 6rem;
   background-color: ${({ theme }) => theme.colors.white};
   height: 100vh;
   padding: .5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-right: 1px solid ${({ theme }) => theme.colors.background};
 
   a {
     display: flex;
@@ -32,12 +35,16 @@ export const IconNav: FC<IconNavProps> = ({ items }) => {
   // TODO: add tooltip with floating ui (after merge)
   return (
     <Container>
+      <FloatingDelayGroup delay={{ open: 2000, close: 200}}>
       { 
       items.map(({ to, icon, title }) => (
-        <Link to={to}>
-          { cloneElement(icon, { size: 25 })} 
-        </Link>
+          <Tooltip label={title} placement="right">
+            <Link key={`icon-nav-${title}`} to={to}>
+              { cloneElement(icon, { size: 25 })} 
+            </Link>
+        </Tooltip>
       ))}
+      </FloatingDelayGroup>
     </Container>
   );
 };

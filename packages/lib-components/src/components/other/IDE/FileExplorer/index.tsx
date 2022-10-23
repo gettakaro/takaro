@@ -8,7 +8,6 @@ export interface FileExplorerProps {
 
 export const FileExplorer: FC<FileExplorerProps> = ({ autoHiddenFiles = false }) => {
   const { sandpack } = useSandpack();
-
   return (
     <div>
       <ModuleList

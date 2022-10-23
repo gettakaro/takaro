@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { styled } from '../../../styled';
 import { Size } from '../../../styled/types';
 
@@ -58,6 +58,7 @@ export interface AvatarProps {
   size?: Size;
   loading?: boolean;
   isCircle?: boolean;
+  children?: ReactNode;
 }
 
 // TODO: skeleton loading

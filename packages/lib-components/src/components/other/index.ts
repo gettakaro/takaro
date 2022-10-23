@@ -14,3 +14,5 @@ export * from './IDE';
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
+
+export { CollapsableList } from './CollapsableList';

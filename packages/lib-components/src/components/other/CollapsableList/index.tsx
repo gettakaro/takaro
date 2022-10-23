@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 
 // this needs a waaaay better name
-export const CollapsableList: FC<any> & {
+export const CollapsableList: FC & {
   Item: FC<ItemProps>;
 }
 = ({children}) => {
@@ -24,17 +24,12 @@ interface ItemProps {
   title: string;
 }
 
-const Container = styled.div`
-  overflowY: hidden;
-`;
-
-
 const Header = styled.div<{ isCollapsed: boolean}>`
   display: flex;
   align-items: center;
   cursor: pointer;
-  background-color: orange;
   padding: .8rem 1rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.background};
   svg {
     transform: ${({ isCollapsed }) => isCollapsed ? 'rotate(0deg)': 'rotate(90deg)' };
     transition: transform 0.1s ease-in-out;
@@ -49,7 +44,7 @@ const Item: FC<ItemProps> = ({ collapsed = false, title, children }) => {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
 
   return (
-    <Container>
+    <div>
       <Header isCollapsed={isCollapsed} onClick={() => setIsCollapsed((prev)=>!prev)}>
         <ArrowRightIcon size={18} />
         <span>{title}</span>
@@ -64,7 +59,7 @@ const Item: FC<ItemProps> = ({ collapsed = false, title, children }) => {
         initial="collapsed"
           animate="open"
           exit="collapsed"
-        style={{ padding: '1rem', overflowY: 'hidden'}}
+        style={{ padding: '1rem', overflowX: 'hidden'}}
       >
         <motion.div
             variants={{
@@ -80,7 +75,7 @@ const Item: FC<ItemProps> = ({ collapsed = false, title, children }) => {
         )
       }
       </AnimatePresence>
-    </Container>
+    </div>
   );
 };
 
