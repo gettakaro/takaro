@@ -2,7 +2,11 @@ import { TakaroModel } from '@takaro/db';
 import { Page } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import { Settings, SETTINGS_KEYS } from '../service/SettingsService';
+import {
+  DEFAULT_SETTINGS,
+  Settings,
+  SETTINGS_KEYS,
+} from '../service/SettingsService';
 
 export const SETTINGS_TABLE_NAME = 'settings';
 
@@ -59,15 +63,13 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
   }
 
   async create(): Promise<SettingsModel> {
-    const defaultSettings = new Settings();
-
     if (this.gameServerId) {
       const model = await this.getGameServerModel();
       const data = await model
         .query()
         .insert({
           gameServerId: this.gameServerId,
-          ...defaultSettings,
+          ...DEFAULT_SETTINGS.toJSON(),
         })
         .returning('*');
       return data;
@@ -78,7 +80,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
       .query()
       .insert({
         domainId: this.domainId,
-        ...defaultSettings,
+        ...DEFAULT_SETTINGS.toJSON(),
       })
       .returning('*');
   }
@@ -115,10 +117,10 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
       throw new errors.NotFoundError();
     }
 
-    return {
+    return new Settings({
       commandPrefix: data[0].commandPrefix,
       serverChatName: data[0].serverChatName,
-    };
+    });
   }
 
   async set(key: SETTINGS_KEYS, value: string): Promise<void> {

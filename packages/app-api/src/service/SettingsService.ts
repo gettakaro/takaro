@@ -1,3 +1,4 @@
+import { TakaroDTO } from '@takaro/http';
 import { IsString } from 'class-validator';
 import { SettingsModel, SettingsRepo } from '../db/settings';
 import { TakaroService } from './Base';
@@ -6,13 +7,18 @@ export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
   serverChatName = 'serverChatName',
 }
+export class Settings extends TakaroDTO<Settings> {
+  @IsString()
+  commandPrefix: string;
 
-export class Settings {
   @IsString()
-  commandPrefix = '/';
-  @IsString()
-  serverChatName = 'Takaro';
+  serverChatName: string;
 }
+
+export const DEFAULT_SETTINGS: Settings = new Settings({
+  commandPrefix: '/',
+  serverChatName: 'Takaro',
+});
 
 export class SettingsService extends TakaroService<SettingsModel> {
   constructor(
@@ -56,6 +62,6 @@ export class SettingsService extends TakaroService<SettingsModel> {
 
   async getAll() {
     const all = await this.repo.getAll();
-    return all;
+    return new Settings(all);
   }
 }
