@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsISO8601, ValidateNested } from 'class-validator';
 import { IsString } from 'class-validator';
+import { isTakaroDTO, TakaroDTO } from './TakaroDTO';
 
 interface IApiResponseOptions {
   error?: Error;
@@ -14,13 +15,19 @@ export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
     details: opts?.error?.hasOwnProperty('details') ? opts?.error?.details : {},
   };
 
+  let parsed = data;
+
+  if (isTakaroDTO(data)) {
+    parsed = data.toJSON();
+  }
+
   return {
     meta: {
       serverTime: new Date().toISOString(),
       error: opts?.error ? errorDetails : undefined,
       ...opts?.meta,
     },
-    data,
+    data: parsed,
   };
 }
 
@@ -38,7 +45,7 @@ class MetadataOutput {
   @ValidateNested()
   error?: ErrorOutput;
 }
-export class APIOutput<T> {
+export class APIOutput<T> extends TakaroDTO<APIOutput<T>> {
   @Type(() => MetadataOutput)
   @ValidateNested()
   metadata!: MetadataOutput;
