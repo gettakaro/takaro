@@ -1,25 +1,36 @@
-#!/bin/bash
+#!/bin/node
 
-set -e 
+import { AdminClient, AxiosError } from '@takaro/apiclient';
+import { config } from 'dotenv';
 
-# Show a prompt, asking the user if they are sure
+config();
 
-read -p "This will delete all data in the database. Are you sure? (y/n) " -n 1 -r
+const adminClient = new AdminClient({
+  url: process.env.TAKARO_HOST,
+  auth: {
+    adminSecret: process.env.ADMIN_SECRET,
+  },
+});
 
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-echo "Aborting."
-exit 1
-fi
+async function main() {
+  const domains = await adminClient.domain.domainControllerSearch();
 
-# Delete all data in the database
+  const promises = domains.data.data.map(async (domain) => {
+    try {
+      await adminClient.domain.domainControllerRemove(domain.id);
+    } catch {
+      throw new Error(`Could not remove ${domain.name} - ${domain.id}`);
+    }
+  });
 
-echo "Deleting data..."
+  Promise.all(promises);
+}
 
-docker-compose down
-
-sudo rm -rf ./_data/db
-
-docker-compose up -d
-
-echo "Data deleted! You can recreate data via the dev-data script"
+main().catch((e) => {
+  if (e instanceof AxiosError) {
+    console.error(JSON.stringify(e.response.data, null, 2));
+  } else {
+    console.error(e);
+  }
+  process.exit(1);
+});
