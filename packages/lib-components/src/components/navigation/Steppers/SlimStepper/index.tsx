@@ -1,8 +1,9 @@
 import { FC, useEffect, Children, isValidElement } from 'react';
-import Tooltip from 'rc-tooltip';
+import  { Tooltip } from '../../../../components';
 import { useStepper } from '../context';
 import { Container, StepperBody, StepperHeader, StepperHeaderItem, Dot } from './style';
 import { StepStates } from '../stepStates';
+
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
 const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
@@ -40,6 +41,7 @@ const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
 
 // Single <step/> subcomponent
 interface StepProps {
+  /// used as tooltip content
   name: string;
   id: string;
 }
@@ -89,9 +91,8 @@ export const SlimStepper: FC<SlimStepperProps> & {
               {StepStates.CURRENT === getStepState(index, currentStep) &&
                 showTooltip !== 'never' ? (
                 <Tooltip
-                  overlay={name}
                   placement="bottom"
-                  {...(showTooltip === 'always' && { visible: true })}
+                  label={name}
                 >
                   <Dot stepState={getStepState(index, currentStep)} />
                 </Tooltip>
