@@ -25,7 +25,7 @@ FROM node:18-alpine as runner
 
 # Temporarily lock to this version :(
 # See https://github.com/npm/cli/issues/3847
-RUN npm install -g npm@7.18.1
+RUN npm install -g npm@8
 
 ARG PACKAGE
 ENV PACKAGE=${PACKAGE}
