@@ -71,7 +71,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<DomainModel> 
     const rootUser = await userService.init({
       name: 'root',
       password: password,
-      email: `root@${input.name}`,
+      email: `root@${domain.id}`,
     });
 
     await userService.assignRole(rootUser.id, rootRole.id);
