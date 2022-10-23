@@ -1,5 +1,5 @@
 import { SandpackProvider } from '@codesandbox/sandpack-react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Editor } from '.';
 
 export default {
@@ -7,7 +7,7 @@ export default {
   component: Editor
 } as Meta;
 
-export const Default: Story = () => {
+export const Default: StoryFn = () => {
   return (
     <SandpackProvider template="vanilla-ts" >
       <Editor />

@@ -1,5 +1,5 @@
 import { SandpackProvider } from '@codesandbox/sandpack-react';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { FileExplorer } from '.';
 import { styled } from '../../../../styled';
 
@@ -14,8 +14,7 @@ export default {
   component: FileExplorer 
 } as Meta;
 
-export const Default: Story = () => {
-  
+export const Default: StoryFn = () => {
   const files= {
     '/hooks/index.ts': {code: 'content here', active: true},
     '/cron/index.ts': {code: 'content here', },
