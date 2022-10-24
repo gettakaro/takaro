@@ -45,7 +45,10 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.2"
+    "web-vitals": "^2.1.2",
+    "@codesandbox/sandpack-client": "^1.12.1",
+    "@codesandbox/sandpack-react": "^1.15.1",
+    "@monaco-editor/react": "^4.4.6"
   },
   "dependencies": {
     "@floating-ui/react-dom": "^1.0.0",
