@@ -23,7 +23,7 @@ async function main() {
     }
   });
 
-  Promise.all(promises);
+  await Promise.all(promises);
 }
 
 main().catch((e) => {
