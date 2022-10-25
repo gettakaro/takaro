@@ -5,7 +5,7 @@ import {
   AiOutlineWarning as WarningIcon,
   AiOutlineInfo as InfoIcon,
   AiOutlineCheck as CheckMarkIcon,
-  AiOutlineMeh as ErrorIcon
+  AiOutlineMeh as ErrorIcon,
 } from 'react-icons/ai';
 
 import {
@@ -14,7 +14,7 @@ import {
   TextContainer,
   IconContainer,
   CloseContainer,
-  ButtonContainer
+  ButtonContainer,
 } from './style';
 import { useTheme } from '../../../../hooks';
 import { ButtonProps } from '../../../inputs';
@@ -49,14 +49,18 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
       <Wrapper ref={ref}>
         <ContentContainer>
           <IconContainer variant={type}>
-            {icon ? cloneElement(icon, { size: 18, fill: theme.colors[type] }) : getIcon()}
+            {icon
+              ? cloneElement(icon, { size: 18, fill: theme.colors[type] })
+              : getIcon()}
           </IconContainer>
           <TextContainer>
             {title ? <h3>{title}</h3> : <h5>{message}</h5>}
             {title && <h5>{message}</h5>}
             <ButtonContainer>
-              {button1 && button1}
-              {button2 && button2}
+              <>
+                {button1 && button1}
+                {button2 && button2}
+              </>
             </ButtonContainer>
           </TextContainer>
         </ContentContainer>

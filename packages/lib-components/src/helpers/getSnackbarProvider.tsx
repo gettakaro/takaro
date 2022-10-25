@@ -1,17 +1,17 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { SnackbarProvider as Provider, SnackbarProviderProps } from 'notistack';
 import {
   DefaultSnack,
   DrawerSnack,
   NetworkDetectorOnlineSnack,
   NetworkDetectorOfflineSnack,
-  CookieConsentSnack
+  CookieConsentSnack,
 } from '../components/feedback/snacks';
 
 const snackbarOptions: Partial<SnackbarProviderProps> = {
   anchorOrigin: {
     horizontal: 'center',
-    vertical: 'top'
+    vertical: 'top',
   },
   variant: 'default',
   autoHideDuration: 8000,
@@ -23,17 +23,17 @@ const snackbarOptions: Partial<SnackbarProviderProps> = {
     drawer: DrawerSnack,
     cookieConsent: CookieConsentSnack,
     networkDetectorOffline: NetworkDetectorOfflineSnack,
-    networkDetectorOnline: NetworkDetectorOnlineSnack
-  }
+    networkDetectorOnline: NetworkDetectorOnlineSnack,
+  },
 };
 
-export const SnackbarProvider: FC = ({ children }) => (
-  <Provider {...snackbarOptions}>{children}</Provider>
-);
+export const SnackbarProvider: FC<PropsWithChildren<unknown>> = ({
+  children,
+}) => <Provider {...snackbarOptions}>{children}</Provider>;
 
 declare module 'notistack' {
-  interface VariantOverrides { 
-    drawer: true;    
+  interface VariantOverrides {
+    drawer: true;
     cookieConsent: true;
     networkDetectorOffline: true;
     networkDetectorOnline: true;
