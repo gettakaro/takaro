@@ -1,49 +1,60 @@
+import { FC } from 'react';
 import type { SandpackBundlerFiles } from '@codesandbox/sandpack-client';
+import type { SandpackOptions } from '@codesandbox/sandpack-react';
+import { fromPropsToModules } from './utils';
+import { FileExplorerProps } from '.';
+import { Directory } from './Directory';
+import { File } from './File';
 
-export const fromPropsToModules = ({
-  autoHiddenFiles,
-  visibleFiles,
-  files,
-  prefixedPath,
-}: {
+export interface ModuleListProps extends FileExplorerProps {
   prefixedPath: string;
   files: SandpackBundlerFiles;
-  autoHiddenFiles?: boolean;
-  visibleFiles: string[];
-}): { directories: string[]; modules: string[] } => {
-  const hasVisibleFilesOption = visibleFiles.length > 0;
+  selectFile: (path: string) => void;
+  depth?: number;
+  visibleFiles: NonNullable<SandpackOptions['visibleFiles']>;
+  activeFile: NonNullable<SandpackOptions['activeFile']>;
+}
 
-  /**
-   * When visibleFiles or activeFile are set, the hidden and active flags on the files prop are ignored.
-   * @see: https://sandpack.codesandbox.io/docs/getting-started/custom-content#visiblefiles-and-activefile
-   */
-  const filterByHiddenProperty = autoHiddenFiles && !hasVisibleFilesOption;
-  const filterByVisibleFilesOption = autoHiddenFiles && !!hasVisibleFilesOption;
+export const ModuleList: FC<ModuleListProps> = ({
+  depth = 0,
+  activeFile,
+  selectFile,
+  prefixedPath,
+  files,
+  autoHiddenFiles,
+  visibleFiles,
+}) => {
+  const { directories, modules } = fromPropsToModules({
+    visibleFiles,
+    autoHiddenFiles,
+    prefixedPath,
+    files,
+  });
 
-  const fileListWithoutPrefix = Object.keys(files)
-    .filter((filePath) => {
-      const isValidatedPath = filePath.startsWith(prefixedPath);
-      if (filterByVisibleFilesOption) {
-        return isValidatedPath && visibleFiles.includes(filePath);
-      }
+  return (
+    <div>
+      {directories.map((dir) => (
+        <Directory
+          key={dir}
+          activeFile={activeFile}
+          autoHiddenFiles={autoHiddenFiles}
+          depth={depth}
+          files={files}
+          prefixedPath={dir}
+          selectFile={selectFile}
+          visibleFiles={visibleFiles}
+        />
+      ))}
 
-      if (filterByHiddenProperty) {
-        return isValidatedPath && !files[filePath]?.hidden;
-      }
-
-      return isValidatedPath;
-    })
-    .map((file) => file.substring(prefixedPath.length));
-
-  const directories = new Set(
-    fileListWithoutPrefix
-      .filter((file) => file.includes('/'))
-      .map((file) => `${prefixedPath}${file.split('/')[0]}/`)
+      {modules.map((file) => (
+        <File
+          key={file}
+          active={activeFile === file}
+          depth={depth}
+          path={file}
+          selectFile={selectFile}
+        />
+      ))}
+    </div>
   );
-
-  const modules = fileListWithoutPrefix
-    .filter((file) => !file.includes('/'))
-    .map((file) => `${prefixedPath}${file}`);
-
-  return { directories: Array.from(directories), modules };
 };
