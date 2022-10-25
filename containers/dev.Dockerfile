@@ -6,9 +6,7 @@ WORKDIR /app
 
 RUN apt-get install git -y
 
-# Temporarily lock to this version :(
-# See https://github.com/npm/cli/issues/3847
-RUN npm install -g npm@7.18.1
+RUN npm install -g npm@8
 
 COPY package*.json ./
 COPY tsconfig*.json ./
