@@ -14,6 +14,7 @@ module.exports = {
   ],
   features: {
     previewCsfV3: true,
+    previewMdx2: true,
   },
   staticDirs: ['../public'],
   core: { builder: '@storybook/builder-vite' },
