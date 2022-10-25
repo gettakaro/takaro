@@ -1,12 +1,5 @@
-import {
-  FC,
-  useEffect,
-  Children,
-  isValidElement,
-  PropsWithChildren,
-  ReactNode,
-} from 'react';
-import Tooltip from 'rc-tooltip';
+import { FC, useEffect, Children, isValidElement } from 'react';
+import { Tooltip } from '../../../../components';
 import { useStepper } from '../context';
 import {
   Container,
@@ -16,9 +9,10 @@ import {
   Dot,
 } from './style';
 import { StepStates } from '../stepStates';
+
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
-const StepperSteps: FC<{ children: ReactNode }> = ({ children }) => {
+const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -55,12 +49,11 @@ const StepperSteps: FC<{ children: ReactNode }> = ({ children }) => {
 
 // Single <step/> subcomponent
 interface StepProps {
+  /// used as tooltip content
   name: string;
   id: string;
 }
-type StepFC = FC<PropsWithChildren<StepProps>>;
-
-const StepperStep: StepFC = ({ children }) => {
+const StepperStep: FC<StepProps> = ({ children }) => {
   return <>{children}</>;
 };
 
@@ -70,8 +63,8 @@ export interface SlimStepperProps {
 }
 
 // Main <Stepper/> component which contains subcomponents
-export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
-  Step: StepFC;
+export const SlimStepper: FC<SlimStepperProps> & {
+  Step: FC<StepProps>;
   Steps: any;
 } = ({ showTooltip = 'hover', canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
@@ -108,11 +101,7 @@ export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
             >
               {StepStates.CURRENT === getStepState(index, currentStep) &&
               showTooltip !== 'never' ? (
-                <Tooltip
-                  overlay={name}
-                  placement="bottom"
-                  {...(showTooltip === 'always' && { visible: true })}
-                >
+                <Tooltip placement="bottom" label={name}>
                   <Dot stepState={getStepState(index, currentStep)} />
                 </Tooltip>
               ) : (
