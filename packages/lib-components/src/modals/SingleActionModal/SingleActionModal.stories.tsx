@@ -1,18 +1,22 @@
 import { createRef } from 'react';
-import { Story, Meta } from '@storybook/react';
-import { SingleActionModal } from '../../modals';
+import { Meta, StoryFn } from '@storybook/react';
+import { SingleActionModal, SingleActionModalProps } from '.';
 import { useModal } from '../../hooks';
 import { useSnackbar } from 'notistack';
 
 export default {
   title: 'Modals/SingleAction',
-  component: undefined
-} as Meta;
+  component: undefined,
+  args: {
+    actionText: 'Go back to dashboard',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    title: 'Payment successful!',
+    type: 'info',
+  },
+} as Meta<SingleActionModalProps>;
 
-///////////////
-// SUCCESS
-///////////////
-export const Success: Story = () => {
+export const Example: StoryFn<SingleActionModalProps> = (args) => {
   const [ModalWrapper, open, close] = useModal();
   const ref = createRef<HTMLDivElement>();
   const { enqueueSnackbar } = useSnackbar();
@@ -21,43 +25,15 @@ export const Success: Story = () => {
     <div>
       <ModalWrapper>
         <SingleActionModal
+          {...args}
           action={() => {
             enqueueSnackbar('Accept button pressed.', { variant: 'success' });
           }}
-          actionText="Go back to dashboard"
           close={close}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
           ref={ref}
-          title="Payment successful!"
-          type="success"
         />
       </ModalWrapper>
       <button onClick={open}>Open Success Modal</button>
-    </div>
-  );
-};
-
-///////////////
-// ERROR
-///////////////
-export const Error: Story = () => {
-  const [ModalWrapper, open, close] = useModal();
-
-  return (
-    <div>
-      <ModalWrapper>
-        <SingleActionModal
-          action={() => {
-            /* dummy */
-          }}
-          actionText="Go back to dashboard"
-          close={close}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          title="Payment failed!"
-          type="error"
-        />
-      </ModalWrapper>
-      <button onClick={open}>Open Error Modal</button>
     </div>
   );
 };

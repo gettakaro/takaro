@@ -6,7 +6,6 @@ import { styled } from '../../../../styled';
 const Wrapper = styled.div`
   width: 300px;
   height: 100vh;
-  background-color: orange;
 `;
 
 export default {
@@ -17,12 +16,19 @@ export default {
 export const Default: StoryFn = () => {
   const files = {
     '/hooks/index.ts': { code: 'content here', active: true },
+    '/hooks/test.ts': { code: 'content here' },
+    '/hooks/inner/index.ts': { code: 'content here' },
+    '/hooks/inner/test.ts': { code: 'content here' },
     '/cron/index.ts': { code: 'content here' },
     '/command/index.ts': { code: 'content here' },
   };
 
   return (
-    <SandpackProvider files={files}>
+    <SandpackProvider
+      customSetup={{ entry: '/hooks/index.ts' }}
+      files={files}
+      prefix=""
+    >
       <Wrapper>
         <FileExplorer />
       </Wrapper>
