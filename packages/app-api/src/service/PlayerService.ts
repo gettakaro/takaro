@@ -2,8 +2,11 @@ import { TakaroService } from './Base';
 
 import { PlayerModel, PlayerRepo } from '../db/player';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { TakaroDTO } from '@takaro/http';
+import { ITakaroQuery } from '@takaro/db';
+import { PaginatedOutput } from '../db/base';
 
-export class PlayerOutputDTO {
+export class PlayerOutputDTO extends TakaroDTO<PlayerOutputDTO> {
   @IsUUID()
   id!: string;
 
@@ -21,7 +24,7 @@ export class PlayerOutputDTO {
   epicOnlineServicesId?: string;
 }
 
-export class PlayerCreateDTO {
+export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
   @IsString()
   name!: string;
 
@@ -36,14 +39,29 @@ export class PlayerCreateDTO {
   epicOnlineServicesId?: string;
 }
 
-export class UpdatePlayerDTO {
+export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   name!: string;
 }
 
-export class PlayerService extends TakaroService<PlayerModel> {
+export class PlayerService extends TakaroService<
+  PlayerModel,
+  PlayerOutputDTO,
+  PlayerCreateDTO,
+  PlayerUpdateDTO
+> {
   get repo() {
     return new PlayerRepo(this.domainId);
+  }
+
+  find(
+    filters: ITakaroQuery<PlayerOutputDTO>
+  ): Promise<PaginatedOutput<PlayerOutputDTO>> {
+    return this.repo.find(filters);
+  }
+
+  findOne(id: string): Promise<PlayerOutputDTO> {
+    return this.repo.findOne(id);
   }
 
   async create(item: PlayerCreateDTO) {
@@ -51,7 +69,7 @@ export class PlayerService extends TakaroService<PlayerModel> {
     return created;
   }
 
-  async update(id: string, item: UpdatePlayerDTO) {
+  async update(id: string, item: PlayerUpdateDTO) {
     const updated = await this.repo.update(id, item);
     return updated;
   }

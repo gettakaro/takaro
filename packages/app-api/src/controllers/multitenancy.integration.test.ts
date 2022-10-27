@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { CAPABILITIES } from '../db/role';
-import { DomainCreateOutputDTOAPI } from './DomainController';
+import { CAPABILITIES } from '../service/RoleService';
+import { DomainCreateOutputDTOAPI } from '@takaro/apiclient';
 
 const group = 'Multitenancy';
 

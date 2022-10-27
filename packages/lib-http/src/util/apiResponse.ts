@@ -21,6 +21,16 @@ export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
     parsed = data.toJSON();
   }
 
+  if (Array.isArray(data)) {
+    parsed = data.map((item) => {
+      if (isTakaroDTO(item)) {
+        return item.toJSON();
+      }
+
+      return item;
+    });
+  }
+
   return {
     meta: {
       serverTime: new Date().toISOString(),

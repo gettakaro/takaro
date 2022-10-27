@@ -1,8 +1,13 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
+import { Model } from 'objection';
 import { errors } from '@takaro/logger';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver';
 import { ITakaroRepo } from './base';
+import {
+  PlayerCreateDTO,
+  PlayerOutputDTO,
+  PlayerUpdateDTO,
+} from '../service/PlayerService';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 
@@ -40,17 +45,28 @@ export class PlayerModel extends TakaroModel {
   });
 }
 
-export class PlayerRepo extends ITakaroRepo<PlayerModel> {
+export class PlayerRepo extends ITakaroRepo<
+  PlayerModel,
+  PlayerOutputDTO,
+  PlayerCreateDTO,
+  PlayerUpdateDTO
+> {
   async getModel() {
     const knex = await this.getKnex();
     return PlayerModel.bindKnex(knex);
   }
-  async find(filters: ITakaroQuery<PlayerModel>) {
+  async find(filters: ITakaroQuery<PlayerOutputDTO>) {
     const model = await this.getModel();
-    return await new QueryBuilder<PlayerModel>(filters).build(model.query());
+    const result = await new QueryBuilder<PlayerModel, PlayerOutputDTO>(
+      filters
+    ).build(model.query());
+    return {
+      total: result.total,
+      results: result.results.map((item) => new PlayerOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<PlayerModel> {
+  async findOne(id: string): Promise<PlayerOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().findById(id);
 
@@ -58,13 +74,13 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel> {
       throw new errors.NotFoundError();
     }
 
-    return data;
+    return new PlayerOutputDTO(data);
   }
 
-  async create(item: PartialModelObject<PlayerModel>): Promise<PlayerModel> {
+  async create(item: PlayerCreateDTO): Promise<PlayerOutputDTO> {
     const model = await this.getModel();
-    const player = await model.query().insert(item).returning('*');
-    return player;
+    const player = await model.query().insert(item.toJSON()).returning('*');
+    return new PlayerOutputDTO(player);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -76,15 +92,16 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel> {
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: PartialModelObject<PlayerModel>
-  ): Promise<PlayerModel> {
+  async update(id: string, data: PlayerUpdateDTO): Promise<PlayerOutputDTO> {
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const res = await model
+      .query()
+      .updateAndFetchById(id, data.toJSON())
+      .returning('*');
+    return new PlayerOutputDTO(res);
   }
 
   async findGameAssociations(gameId: string) {

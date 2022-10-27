@@ -6,12 +6,14 @@ import {
 } from '@takaro/apiclient';
 import { GameEvents } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
+import { GameServerOutputDTO } from '@takaro/apiclient';
 
 const group = 'Event worker';
 const groupHooks = 'Event worker - Hook handling';
 
 interface ISetupHooks {
   hooks: HookOutputDTOAPI[];
+  gameserver: GameServerOutputDTO;
 }
 
 const tests = [
@@ -34,8 +36,18 @@ const tests = [
           moduleId: module.id,
         })
       ).data;
+
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
+
       return {
         hooks: [hook],
+        gameserver,
       };
     },
     test: async function () {
@@ -47,6 +59,7 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
+        gameServerId: this.setupData.gameserver.id,
         data: {
           msg: 'this is a test',
           timestamp: new Date(),
@@ -55,8 +68,6 @@ const tests = [
       });
 
       expect(addStub).to.have.been.calledOnce;
-
-      return addStub;
     },
   }),
   new IntegrationTest<ISetupHooks>({
@@ -85,9 +96,17 @@ const tests = [
           moduleId: module.id,
         })
       ).data;
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
 
       return {
         hooks: [hookOne, hookTwo],
+        gameserver,
       };
     },
     test: async function () {
@@ -99,6 +118,7 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
+        gameServerId: this.setupData.gameserver.id,
         data: {
           msg: 'this is a test',
           timestamp: new Date(),
@@ -107,8 +127,6 @@ const tests = [
       });
 
       expect(addStub).to.have.been.calledTwice;
-
-      return addStub;
     },
   }),
   new IntegrationTest<ISetupHooks>({
@@ -138,8 +156,17 @@ const tests = [
         })
       ).data;
 
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
+
       return {
         hooks: [hookOne, hookTwo],
+        gameserver,
       };
     },
     test: async function () {
@@ -152,6 +179,7 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
+        gameServerId: this.setupData.gameserver.id,
         data: {
           msg: 'this is a test',
           timestamp: new Date(),
@@ -166,8 +194,6 @@ const tests = [
       expect(calledItemId).to.be.eq(this.setupData.hooks[0].data.id);
       expect(calledData.domainId).to.be.eq(this.standardDomainId);
       expect(calledData.itemId).to.be.eq(this.setupData.hooks[0].data.id);
-
-      return addStub;
     },
   }),
 ];

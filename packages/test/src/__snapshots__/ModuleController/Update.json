@@ -6,6 +6,7 @@
     "data": {
       "name": "Updated module",
       "enabled": false,
+      "hooks": [],
       "updatedAt": "2022-09-24T17:31:05.781Z",
       "createdAt": "2022-09-24T17:31:05.752Z",
       "id": "ae888439-4e7e-41b2-882a-f1b55709d9ee",

@@ -23,9 +23,9 @@ import {
   Params,
   QueryParams,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
+import { CAPABILITIES } from '../service/RoleService';
 
 class GetSettingsOneInput extends TakaroDTO<GetSettingsOneInput> {
   @IsString()

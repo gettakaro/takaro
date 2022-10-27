@@ -13,7 +13,11 @@ import { HookService } from '../service/HookService';
 import { QueuesService } from '@takaro/queues';
 import { AuthService } from '../service/AuthService';
 import { FunctionService } from '../service/FunctionService';
-import { PlayerOutputDTO, PlayerService } from '../service/PlayerService';
+import {
+  PlayerCreateDTO,
+  PlayerOutputDTO,
+  PlayerService,
+} from '../service/PlayerService';
 
 const log = logger('worker:events');
 const queues = QueuesService.getInstance();
@@ -110,12 +114,14 @@ async function syncPlayerData(job: Job<IEventQueueData>) {
 
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
-        player = await playerService.create({
-          name: playerData.name,
-          epicOnlineServicesId: playerData.epicOnlineServicesId,
-          steamId: playerData.steamId,
-          xboxLiveId: playerData.xboxLiveId,
-        });
+        player = await playerService.create(
+          new PlayerCreateDTO({
+            name: playerData.name,
+            epicOnlineServicesId: playerData.epicOnlineServicesId,
+            steamId: playerData.steamId,
+            xboxLiveId: playerData.xboxLiveId,
+          })
+        );
       } else {
         player = existingPlayers.results[0];
       }

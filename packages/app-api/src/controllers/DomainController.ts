@@ -5,6 +5,7 @@ import {
   DomainCreateOutputDTO,
   DomainOutputDTO,
   DomainService,
+  DomainUpdateInputDTO,
 } from '../service/DomainService';
 import {
   createAdminAuthMiddleware,
@@ -25,7 +26,6 @@ import {
   UseBefore,
   Req,
 } from 'routing-controllers';
-import { DomainModel } from '../db/domain';
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
@@ -55,7 +55,7 @@ export class DomainSearchInputAllowedFilters {
   name!: string;
 }
 
-export class DomainSearchInputDTO extends ITakaroQuery<DomainModel> {
+export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
   filters!: DomainSearchInputAllowedFilters;
@@ -92,14 +92,14 @@ export class DomainController {
 
   @Post('/domain')
   @ResponseSchema(DomainCreateOutputDTOAPI)
-  async create(@Body() domain: DomainCreateInputDTO) {
+  async create(@Body() domain: Omit<DomainCreateInputDTO, 'id'>) {
     const service = new DomainService();
     return apiResponse(await service.initDomain(domain));
   }
 
   @Put('/domain/:id')
   @ResponseSchema(DomainOutputDTOAPI)
-  async update(@Param('id') id: string, @Body() domain: DomainCreateInputDTO) {
+  async update(@Param('id') id: string, @Body() domain: DomainUpdateInputDTO) {
     const service = new DomainService();
     return apiResponse(await service.update(id, domain));
   }
@@ -108,7 +108,7 @@ export class DomainController {
   @ResponseSchema(APIOutput)
   async remove(@Param('id') id: string) {
     const service = new DomainService();
-    await service.removeDomain(id);
+    await service.delete(id);
     return apiResponse();
   }
 }

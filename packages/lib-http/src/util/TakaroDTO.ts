@@ -10,7 +10,7 @@ import { Exclude } from 'class-transformer';
 export class TakaroDTO<T> {
   @Allow()
   @Exclude()
-  log = logger('TakaroDTO');
+  private log = logger('TakaroDTO');
 
   constructor(data: Partial<T> = {}) {
     Object.assign(this, data);

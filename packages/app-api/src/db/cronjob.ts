@@ -1,11 +1,16 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
+import { Model } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
 import {
   FUNCTIONS_ASSIGNMENT_TABLE_NAME,
   FUNCTION_TABLE_NAME,
 } from './function';
+import {
+  CronJobCreateDTO,
+  CronJobOutputDTO,
+  CronJobUpdateDTO,
+} from '../service/CronJobService';
 
 export const CRONJOB_TABLE_NAME = 'cronJobs';
 
@@ -34,7 +39,12 @@ export class CronJobModel extends TakaroModel {
   }
 }
 
-export class CronJobRepo extends ITakaroRepo<CronJobModel> {
+export class CronJobRepo extends ITakaroRepo<
+  CronJobModel,
+  CronJobOutputDTO,
+  CronJobCreateDTO,
+  CronJobUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -44,15 +54,20 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
     return CronJobModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<CronJobModel>) {
+  async find(filters: ITakaroQuery<CronJobOutputDTO>) {
     const model = await this.getModel();
-    return await new QueryBuilder<CronJobModel>({
+    const result = await new QueryBuilder<CronJobModel, CronJobOutputDTO>({
       ...filters,
       extend: ['functions'],
     }).build(model.query());
+
+    return {
+      total: result.total,
+      results: result.results.map((item) => new CronJobOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<CronJobModel> {
+  async findOne(id: string): Promise<CronJobOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().findById(id).withGraphJoined('functions');
 
@@ -60,16 +75,14 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    return new CronJobOutputDTO(data);
   }
 
-  async create(item: PartialModelObject<CronJobModel>): Promise<CronJobModel> {
+  async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
     const model = await this.getModel();
-    return model
-      .query()
-      .insert(item)
-      .returning('*')
-      .withGraphJoined('functions');
+    const res = await model.query().insert(item.toJSON()).returning('*');
+
+    return this.findOne(res.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -78,14 +91,13 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel> {
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: PartialModelObject<CronJobModel>
-  ): Promise<CronJobModel> {
+  async update(id: string, data: CronJobUpdateDTO): Promise<CronJobOutputDTO> {
     const model = await this.getModel();
-    return model
+    const item = await model
       .query()
-      .updateAndFetchById(id, data)
+      .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('functions');
+
+    return new CronJobOutputDTO(item);
   }
 }

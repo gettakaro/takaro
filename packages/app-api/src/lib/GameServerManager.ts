@@ -21,10 +21,10 @@ export class IGameServerInMemoryManager {
   >();
   private eventsQueue = QueuesService.getInstance().queues.events.queue;
 
-  async init(gameServers: (GameServerOutputDTO & { domainId: string })[]) {
+  async init(domainId: string, gameServers: GameServerOutputDTO[]) {
     this.log.info(`Initializing ${gameServers.length} game servers`);
     for (const gameServer of gameServers) {
-      await this.add(gameServer.domainId, gameServer);
+      await this.add(domainId, gameServer);
     }
   }
 

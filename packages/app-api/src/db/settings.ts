@@ -1,7 +1,6 @@
 import { TakaroModel } from '@takaro/db';
-import { Page } from 'objection';
 import { errors } from '@takaro/logger';
-import { ITakaroRepo } from './base';
+import { ITakaroRepo, PaginatedOutput } from './base';
 import {
   DEFAULT_SETTINGS,
   Settings,
@@ -24,7 +23,12 @@ export class GameServerSettingsModel extends SettingsModel {
   gameServerId!: string;
 }
 
-export class SettingsRepo extends ITakaroRepo<SettingsModel> {
+export class SettingsRepo extends ITakaroRepo<
+  SettingsModel,
+  Settings,
+  never,
+  never
+> {
   constructor(
     public readonly domainId: string,
     public readonly gameServerId?: string
@@ -42,12 +46,12 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
     return GameServerSettingsModel.bindKnex(knex);
   }
 
-  async find(): Promise<Page<SettingsModel>> {
+  async find(): Promise<PaginatedOutput<never>> {
     // Use the "getAll" method instead
     throw new errors.NotImplementedError();
   }
 
-  async findOne(): Promise<SettingsModel> {
+  async findOne(): Promise<never> {
     // Use the "get" method instead
     throw new errors.NotImplementedError();
   }
@@ -57,12 +61,12 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
     throw new errors.NotImplementedError();
   }
 
-  async update(): Promise<SettingsModel> {
+  async update(): Promise<never> {
     // Use the "set" method instead
     throw new errors.NotImplementedError();
   }
 
-  async create(): Promise<SettingsModel> {
+  async create(): Promise<Settings> {
     if (this.gameServerId) {
       const model = await this.getGameServerModel();
       const data = await model
@@ -72,17 +76,18 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
           ...DEFAULT_SETTINGS.toJSON(),
         })
         .returning('*');
-      return data;
+      return new Settings(data);
     }
 
     const model = await this.getModel();
-    return model
+    const res = await model
       .query()
       .insert({
         domainId: this.domainId,
         ...DEFAULT_SETTINGS.toJSON(),
       })
       .returning('*');
+    return new Settings(res);
   }
 
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {

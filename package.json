@@ -99,6 +99,7 @@
     "type-fest": "^2.18.0"
   },
   "overrides": {
-    "class-validator": "0.13.2"
+    "class-validator": "0.13.2",
+    "class-transformer": "0.3.1"
   }
 }
