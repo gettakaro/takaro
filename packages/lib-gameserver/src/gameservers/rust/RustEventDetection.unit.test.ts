@@ -11,15 +11,6 @@ const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   stacktrace: '',
 };
 
-/* const MOCK_RUST_PLAYER_DISCONNECTED: RustEvent = {
-  message:
-    'brunkel with steamid 76561198021481871 joined from ip 178.117.127.79:62166',
-  identifier: 0,
-  type: RustEventType.DEFAULT,
-  stacktrace: '',
-};
-*/
-
 const MOCK_PLAYER = new IGamePlayer({
   ip: '169.169.169.80',
   name: 'brunkel',
@@ -38,11 +29,8 @@ describe('rust event detection', () => {
 
   it('[PlayerConnected]: Can detect simple player connected', () => {
     new RustEmitter().parseMessage(MOCK_RUST_PLAYER_CONNECTED);
-    console.log('ok');
 
     expect(emitStub).to.have.been.calledOnce;
-
-    console.log(emitStub.getCalls()[0].args[0]);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(
       GameEvents.PLAYER_CONNECTED

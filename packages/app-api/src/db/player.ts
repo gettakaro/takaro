@@ -1,7 +1,7 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model, PartialModelObject } from 'objection';
 import { errors } from '@takaro/logger';
-import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver';
+import { GAMESERVER_TABLE_NAME } from './gameserver';
 import { ITakaroRepo } from './base';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
@@ -24,20 +24,24 @@ export class PlayerModel extends TakaroModel {
   xboxLiveId?: string;
   epicOnlineServicesId?: string;
 
-  static relationMappings = () => ({
-    gameServers: {
-      relation: Model.ManyToManyRelation,
-      modelClass: GameServerModel,
-      join: {
-        from: `${PLAYER_TABLE_NAME}.id`,
-        through: {
-          from: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
-          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
+  static get relationMappings() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const modelke = require('./gameserver.ts').GameServerModel;
+    return {
+      gameServers: {
+        relation: Model.ManyToManyRelation,
+        modelClass: modelke,
+        join: {
+          from: `${PLAYER_TABLE_NAME}.id`,
+          through: {
+            from: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+            to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
+          },
+          to: `${GAMESERVER_TABLE_NAME}.id`,
         },
-        to: `${GAMESERVER_TABLE_NAME}.id`,
       },
-    },
-  });
+    };
+  }
 }
 
 export class PlayerRepo extends ITakaroRepo<PlayerModel> {

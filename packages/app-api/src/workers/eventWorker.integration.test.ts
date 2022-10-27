@@ -4,14 +4,18 @@ import {
   HookOutputDTOAPI,
   HookCreateDTOEventTypeEnum,
 } from '@takaro/apiclient';
-import { GameEvents } from '@takaro/gameserver';
+import { GameEvents, IGamePlayer } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
+import { GameServerOutputDTO } from '@takaro/apiclient';
+import { v4 as uuid } from 'uuid';
+import { PlayerService } from '../service/PlayerService';
 
 const group = 'Event worker';
 const groupHooks = 'Event worker - Hook handling';
 
 interface ISetupHooks {
   hooks: HookOutputDTOAPI[];
+  gameserver: GameServerOutputDTO;
 }
 
 const tests = [
@@ -34,8 +38,18 @@ const tests = [
           moduleId: module.id,
         })
       ).data;
+
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
+
       return {
         hooks: [hook],
+        gameserver,
       };
     },
     test: async function () {
@@ -47,7 +61,8 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
-        data: {
+        gameServerId: this.setupData.gameserver.id,
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -55,8 +70,6 @@ const tests = [
       });
 
       expect(addStub).to.have.been.calledOnce;
-
-      return addStub;
     },
   }),
   new IntegrationTest<ISetupHooks>({
@@ -85,9 +98,17 @@ const tests = [
           moduleId: module.id,
         })
       ).data;
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
 
       return {
         hooks: [hookOne, hookTwo],
+        gameserver,
       };
     },
     test: async function () {
@@ -99,7 +120,8 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
-        data: {
+        gameServerId: this.setupData.gameserver.id,
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -107,8 +129,6 @@ const tests = [
       });
 
       expect(addStub).to.have.been.calledTwice;
-
-      return addStub;
     },
   }),
   new IntegrationTest<ISetupHooks>({
@@ -138,8 +158,17 @@ const tests = [
         })
       ).data;
 
+      const gameserver = (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'Test gameserver',
+          type: 'MOCK',
+          connectionInfo: '{}',
+        })
+      ).data.data;
+
       return {
         hooks: [hookOne, hookTwo],
+        gameserver,
       };
     },
     test: async function () {
@@ -152,7 +181,8 @@ const tests = [
       await handleHooks({
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
-        data: {
+        gameServerId: this.setupData.gameserver.id,
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -166,8 +196,44 @@ const tests = [
       expect(calledItemId).to.be.eq(this.setupData.hooks[0].data.id);
       expect(calledData.domainId).to.be.eq(this.standardDomainId);
       expect(calledData.itemId).to.be.eq(this.setupData.hooks[0].data.id);
+    },
+  }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Handles player joined event correctly',
+    setup: async function () {
+      return (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'my-server',
+          type: 'RUST',
+          connectionInfo: '{}',
+        })
+      ).data.data;
+    },
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
 
-      return addStub;
+      const MOCK_PLAYER = new IGamePlayer({
+        ip: '169.169.169.80',
+        name: 'brunkel',
+        gameId: uuid(),
+        steamId: '76561198021481871',
+        device: 'windows',
+      });
+
+      await playerService.sync(MOCK_PLAYER, this.setupData.id);
+
+      const players = await this.client.player.playerControllerSearch();
+
+      const player = players.data.data.find(
+        (player) => player.steamId === MOCK_PLAYER.steamId
+      );
+
+      expect(player).to.not.be.null;
+      expect(player?.steamId).to.eq(MOCK_PLAYER.steamId);
+
+      return players;
     },
   }),
 ];

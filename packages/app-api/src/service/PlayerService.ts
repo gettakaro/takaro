@@ -77,7 +77,11 @@ export class PlayerService extends TakaroService<PlayerModel> {
     const existingAssociations = await this.findAssociations(playerData.gameId);
     let player: PlayerOutputDTO;
 
+    console.log('existingAssociations: ', existingAssociations);
+
     if (!existingAssociations.length) {
+      console.log('searching players');
+
       const existingPlayers = await this.find({
         filters: {
           steamId: playerData.steamId,
@@ -86,7 +90,10 @@ export class PlayerService extends TakaroService<PlayerModel> {
         },
       });
 
+      console.log('existingPlayers: ', existingPlayers);
+
       if (!existingPlayers.results.length) {
+        console.log('creating player');
         // Main player profile does not exist yet!
         player = await this.create({
           name: playerData.name,
