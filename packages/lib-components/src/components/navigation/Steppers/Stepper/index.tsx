@@ -1,4 +1,12 @@
-import { FC, useEffect, Children, isValidElement, ReactElement } from 'react';
+import {
+  FC,
+  useEffect,
+  Children,
+  isValidElement,
+  ReactElement,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import { useStepper } from '../context';
 import {
   Container,
@@ -6,21 +14,28 @@ import {
   StepperHeader,
   StepperHeaderItem,
   StepCounter,
-  StepName
+  StepName,
 } from './style';
 import { AiOutlineCheck as CheckMark } from 'react-icons/ai';
 import { Spinner } from '../../..';
 import { StepStates } from '../stepStates';
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
-const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
+
+interface StepperStepsProps {
+  children: ReactNode[];
+}
+
+const StepperSteps: FC<StepperStepsProps> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
     const stepperSteps = Children.toArray(children)
       .filter(
         (step) =>
-          isValidElement(step) && typeof step.type !== 'string' && step.type.name === 'StepperStep'
+          isValidElement(step) &&
+          typeof step.type !== 'string' &&
+          step.type.name === 'StepperStep'
       )
       .map((step) => {
         if (isValidElement(step)) {
@@ -52,7 +67,9 @@ interface StepProps {
   id: string;
   icon?: ReactElement;
 }
-const StepperStep: FC<StepProps> = ({ children }) => {
+export type FCStep = FC<PropsWithChildren<StepProps>>;
+
+const StepperStep: FCStep = ({ children }) => {
   return <>{children}</>;
 };
 
@@ -62,11 +79,10 @@ export interface StepperProps {
 }
 
 // Main <Stepper/> component which contains subcomponents
-export const Stepper: FC<StepperProps> & { Step: FC<StepProps>; Steps: any } = ({
-  currentStepIsLoading = false,
-  canStepBack = true,
-  children
-}) => {
+export const Stepper: FC<PropsWithChildren<StepperProps>> & {
+  Step: FC<StepProps>;
+  Steps: any;
+} = ({ currentStepIsLoading = false, canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 
   function getStepState(index: number, currentStep: number) {
@@ -80,7 +96,10 @@ export const Stepper: FC<StepperProps> & { Step: FC<StepProps>; Steps: any } = (
   }
 
   function handleClick(index: number, currentStep: number) {
-    if (getStepState(index, currentStep) === StepStates.COMPLETE && canStepBack) {
+    if (
+      getStepState(index, currentStep) === StepStates.COMPLETE &&
+      canStepBack
+    ) {
       setCurrentStep(index);
     }
   }
@@ -90,7 +109,10 @@ export const Stepper: FC<StepperProps> & { Step: FC<StepProps>; Steps: any } = (
       <StepperHeader>
         {steps.length &&
           steps.map((step: StepProps, index: number) => (
-            <StepperHeaderItem key={step.id} stepState={getStepState(index, currentStep)}>
+            <StepperHeaderItem
+              key={step.id}
+              stepState={getStepState(index, currentStep)}
+            >
               <StepCounter
                 canStepBack={canStepBack}
                 onClick={() => handleClick(index, currentStep)}
