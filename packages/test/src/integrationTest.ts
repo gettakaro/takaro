@@ -4,12 +4,8 @@ import 'reflect-metadata';
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
-import {
-  AdminClient,
-  Client,
-  AxiosError,
-  AxiosResponse,
-} from '@takaro/apiclient';
+import axios from 'axios';
+import { AdminClient, Client, AxiosResponse } from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -105,7 +101,7 @@ export class IntegrationTest<SetupData> {
               this.standardDomainId
             );
           } catch (error) {
-            if (!(error instanceof AxiosError)) {
+            if (!axios.isAxiosError(error)) {
               throw error;
             }
             if (error.response?.status !== 404) {
@@ -121,7 +117,7 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (error instanceof AxiosError) {
+          if (axios.isAxiosError(error)) {
             response = error.response;
           } else {
             throw error;

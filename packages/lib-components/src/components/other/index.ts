@@ -9,3 +9,5 @@ export type { CompanyProps } from './Company';
 
 export { ActionMenu, Action } from './ActionMenu';
 export type { ActionMenuProps } from './ActionMenu';
+
+export { CollapseList } from './CollapseList';

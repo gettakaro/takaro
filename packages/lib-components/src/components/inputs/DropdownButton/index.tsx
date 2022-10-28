@@ -1,7 +1,7 @@
-import { ActionMenu } from 'components/other';
 import { FC, useState, useEffect, createRef, ReactElement } from 'react';
 import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';
+import { ActionMenu } from '../../../components';
 import { styled } from '../../../styled';
 import { useFloating } from '@floating-ui/react-dom';
 import { lighten } from 'polished';
@@ -21,7 +21,8 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   justify-content: center;
   cursor: pointer;
   width: 3.2rem;
-  border: .2rem solid ${({ theme, isVisible }) => isVisible ? theme.colors.primary : theme.colors.gray}};
+  border: .2rem solid ${({ theme, isVisible }) =>
+    isVisible ? theme.colors.primary : theme.colors.gray}};
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
 
@@ -38,20 +39,20 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
 `;
 
 const CurrentAction = styled.div`
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   font-weight: 500;
   cursor: pointer;
   min-width: 10rem;
   color: ${({ theme }) => theme.colors.text};
-  border-top: .2rem solid ${({ theme }) => theme.colors.gray};
-  border-left: .2rem solid ${({ theme }) => theme.colors.gray};
-  border-bottom: .2rem solid ${({ theme }) => theme.colors.gray};
-  border-top-left-radius: .5rem;
-  border-bottom-left-radius: .5rem;
+  border-top: 0.2rem solid ${({ theme }) => theme.colors.gray};
+  border-left: 0.2rem solid ${({ theme }) => theme.colors.gray};
+  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.gray};
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
   text-align: center;
   &:hover {
-    color:${({ theme }) => theme.colors.primary};
-    border-color:${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
     background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
   }
   &:active {
@@ -60,9 +61,9 @@ const CurrentAction = styled.div`
 `;
 
 const Container = styled.div`
-  display: flex; 
+  display: flex;
   align-items: center;
-  border-radius: .8rem;
+  border-radius: 0.8rem;
   width: max-content;
 
   &:hover ${DropdownActionContainer} {
@@ -72,7 +73,7 @@ const Container = styled.div`
 
 export interface DropdownButtonProps {
   children: ReactElement[];
-};
+}
 
 export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   const [visible, setVisible] = useState<boolean>(false);
@@ -91,18 +92,25 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   return (
     <Wrapper ref={parentRef}>
       <Container ref={reference}>
-        <CurrentAction onClick={() => children[selected].props.onClick}>{children[selected].props.text}</CurrentAction>
-        <DropdownActionContainer onClick={() => setVisible(!visible)} isVisible={visible}><Arrow size={17} /></DropdownActionContainer>
-        {visible && <ActionMenu
-          selectedState={[selected, setSelected]}
-          attributes={{ x, y, strategy }}
-          ref={floating}
+        <CurrentAction onClick={() => children[selected].props.onClick}>
+          {children[selected].props.text}
+        </CurrentAction>
+        <DropdownActionContainer
+          onClick={() => setVisible(!visible)}
+          isVisible={visible}
         >
-          {children}
-        </ActionMenu>
-        }
+          <Arrow size={17} />
+        </DropdownActionContainer>
+        {visible && (
+          <ActionMenu
+            selectedState={[selected, setSelected]}
+            attributes={{ x, y, strategy }}
+            ref={floating}
+          >
+            {children}
+          </ActionMenu>
+        )}
       </Container>
     </Wrapper>
   );
 };
-

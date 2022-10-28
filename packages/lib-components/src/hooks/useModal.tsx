@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, PropsWithChildren, ReactNode, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { styled } from '../styled';
 import { motion } from 'framer-motion';
@@ -37,7 +37,11 @@ export interface ModalProps {
   elementId: string;
 }
 
-const Modal: FC<ModalProps> = ({ children, isOpen = false, elementId }) => {
+const Modal: FC<PropsWithChildren<ModalProps>> = ({
+  children,
+  isOpen = false,
+  elementId,
+}) => {
   if (!isOpen) {
     return null;
   }
@@ -56,7 +60,13 @@ const Modal: FC<ModalProps> = ({ children, isOpen = false, elementId }) => {
   );
 };
 
-export const useModal = (): [({ children }: any) => JSX.Element, () => void, () => void] => {
+type Children = { children: ReactNode | ReactNode[] };
+
+export const useModal = (): [
+  ({ children }: Children) => JSX.Element,
+  () => void,
+  () => void
+] => {
   const [isOpen, setOpen] = useState(false);
 
   const open = useCallback(() => {
@@ -68,7 +78,7 @@ export const useModal = (): [({ children }: any) => JSX.Element, () => void, () 
   }, [setOpen]);
 
   const ModalWrapper = useCallback(
-    ({ children }) => (
+    ({ children }: Children) => (
       <Modal elementId="modal" isOpen={isOpen}>
         {children}
       </Modal>

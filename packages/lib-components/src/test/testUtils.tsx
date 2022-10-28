@@ -1,11 +1,11 @@
-import { FC, ReactElement } from 'react';
+import { FC, PropsWithChildren, ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { theme, GlobalStyle } from '@takaro/lib-components';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider } from '../helpers';
 import { MemoryRouter } from 'react-router-dom';
 
-const Providers: FC = ({ children }) => {
+const Providers: FC<PropsWithChildren<unknown>> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -18,8 +18,10 @@ const Providers: FC = ({ children }) => {
   );
 };
 
-const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
-  render(ui, { wrapper: Providers, ...options });
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) => render(ui, { wrapper: Providers, ...options });
 
 export * from '@testing-library/react';
 export { customRender as render };

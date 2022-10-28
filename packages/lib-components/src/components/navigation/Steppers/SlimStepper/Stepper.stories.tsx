@@ -2,8 +2,6 @@ import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
 import { useStepper } from '../context';
 import { Button, SlimStepper, SlimStepperProps } from '../../../../components';
-// IMPORTANT: this needs to be imported in the packages that use this component!
-import 'rc-tooltip/assets/bootstrap.css';
 
 export default {
   /** useStepper requires a context provider which is (currently) mounted on the root of the application.
@@ -19,7 +17,8 @@ const StepBody = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  p, button {
+  p,
+  button {
     margin-bottom: 1rem;
   }
 `;
