@@ -17,8 +17,11 @@ import {
   FunctionService,
 } from './FunctionService';
 import { Type } from 'class-transformer';
+import { TakaroDTO } from '@takaro/http';
+import { PaginatedOutput } from '../db/base';
+import { ITakaroQuery } from '@takaro/db';
 
-export class CronJobOutputDTO {
+export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
   @IsUUID()
   id!: string;
   @IsString()
@@ -31,11 +34,11 @@ export class CronJobOutputDTO {
   temporalValue!: string;
 
   @Type(() => FunctionOutputDTO)
-  @ValidateNested()
-  functions: FunctionOutputDTO[] = [];
+  @ValidateNested({ each: true })
+  functions: FunctionOutputDTO[];
 }
 
-export class CronJobCreateDTO {
+export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @IsString()
   @Length(3, 50)
   name!: string;
@@ -51,7 +54,7 @@ export class CronJobCreateDTO {
   moduleId!: string;
 }
 
-export class UpdateCronJobDTO {
+export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @Length(3, 50)
   @IsString()
   name!: string;
@@ -67,11 +70,26 @@ export class UpdateCronJobDTO {
   moduleId?: string;
 }
 
-export class CronJobService extends TakaroService<CronJobModel> {
+export class CronJobService extends TakaroService<
+  CronJobModel,
+  CronJobOutputDTO,
+  CronJobCreateDTO,
+  CronJobUpdateDTO
+> {
   queues = QueuesService.getInstance();
 
   get repo() {
     return new CronJobRepo(this.domainId);
+  }
+
+  find(
+    filters: ITakaroQuery<CronJobOutputDTO>
+  ): Promise<PaginatedOutput<CronJobOutputDTO>> {
+    return this.repo.find(filters);
+  }
+
+  findOne(id: string): Promise<CronJobOutputDTO> {
+    return this.repo.findOne(id);
   }
 
   async create(item: CronJobCreateDTO) {
@@ -79,7 +97,7 @@ export class CronJobService extends TakaroService<CronJobModel> {
     await this.addCronToQueue(created);
     return created;
   }
-  async update(id: string, item: UpdateCronJobDTO) {
+  async update(id: string, item: CronJobUpdateDTO) {
     await this.removeCronFromQueue(id);
     const updated = await this.repo.update(id, item);
     await this.addCronToQueue(updated);
@@ -109,14 +127,14 @@ export class CronJobService extends TakaroService<CronJobModel> {
     return cron;
   }
 
-  private getRepeatableOpts(item: CronJobModel) {
+  private getRepeatableOpts(item: CronJobOutputDTO) {
     return {
       pattern: item.temporalValue,
       jobId: item.id,
     };
   }
 
-  private async addCronToQueue(item: CronJobModel) {
+  private async addCronToQueue(item: CronJobOutputDTO) {
     const authService = new AuthService(this.domainId);
     const functionsService = new FunctionService(this.domainId);
 

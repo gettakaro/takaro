@@ -1,8 +1,13 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import { Model, PartialModelObject } from 'objection';
+import { Model } from 'objection';
 import { CRONJOB_TABLE_NAME } from './cronjob';
+import {
+  FunctionCreateDTO,
+  FunctionOutputDTO,
+  FunctionUpdateDTO,
+} from '../service/FunctionService';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 
@@ -44,7 +49,12 @@ export class FunctionModel extends TakaroModel {
   };
 }
 
-export class FunctionRepo extends ITakaroRepo<FunctionModel> {
+export class FunctionRepo extends ITakaroRepo<
+  FunctionModel,
+  FunctionOutputDTO,
+  FunctionCreateDTO,
+  FunctionUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -54,12 +64,18 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
     return FunctionModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<FunctionModel>) {
+  async find(filters: ITakaroQuery<FunctionOutputDTO>) {
     const model = await this.getModel();
-    return await new QueryBuilder<FunctionModel>(filters).build(model.query());
+    const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(
+      filters
+    ).build(model.query());
+    return {
+      total: result.total,
+      results: result.results.map((item) => new FunctionOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<FunctionModel> {
+  async findOne(id: string): Promise<FunctionOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().findById(id);
 
@@ -67,14 +83,13 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    return new FunctionOutputDTO(data);
   }
 
-  async create(
-    item: PartialModelObject<FunctionModel>
-  ): Promise<FunctionModel> {
+  async create(item: FunctionCreateDTO): Promise<FunctionOutputDTO> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    const data = await model.query().insert(item.toJSON()).returning('*');
+    return new FunctionOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -85,10 +100,14 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel> {
 
   async update(
     id: string,
-    data: PartialModelObject<FunctionModel>
-  ): Promise<FunctionModel> {
+    data: FunctionUpdateDTO
+  ): Promise<FunctionOutputDTO> {
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const result = await model
+      .query()
+      .updateAndFetchById(id, data.toJSON())
+      .returning('*');
+    return new FunctionOutputDTO(result);
   }
 
   async assign(

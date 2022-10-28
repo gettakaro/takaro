@@ -5,7 +5,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { APIOutput, apiResponse } from '@takaro/http';
+import { APIOutput, apiResponse, TakaroDTO } from '@takaro/http';
 import { errors } from '@takaro/logger';
 import {
   Settings,
@@ -23,18 +23,18 @@ import {
   Params,
   QueryParams,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
+import { CAPABILITIES } from '../service/RoleService';
 
-class GetSettingsOneInput {
+class GetSettingsOneInput extends TakaroDTO<GetSettingsOneInput> {
   @IsString()
   @IsOptional()
   @IsUUID()
   gameServerId?: string;
 }
 
-export class GetSettingsInput {
+export class GetSettingsInput extends TakaroDTO<GetSettingsInput> {
   @IsOptional()
   @Reflect.metadata('design:type', { name: 'string' })
   @IsEnum(SETTINGS_KEYS, {

@@ -5,7 +5,7 @@ import {
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerService,
-  UpdateGameServerDTO,
+  GameServerUpdateDTO,
 } from '../service/GameServerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -19,10 +19,10 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { CAPABILITIES } from '../service/RoleService';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -87,12 +87,7 @@ export class GameServerController {
     @Body() data: GameServerCreateDTO
   ) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(
-      await service.create({
-        ...data,
-        connectionInfo: JSON.parse(data.connectionInfo),
-      })
-    );
+    return apiResponse(await service.create(data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
@@ -101,15 +96,10 @@ export class GameServerController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateGameServerDTO
+    @Body() data: GameServerUpdateDTO
   ) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(
-      await service.update(params.id, {
-        ...data,
-        connectionInfo: JSON.parse(data.connectionInfo),
-      })
-    );
+    return apiResponse(await service.update(params.id, data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))

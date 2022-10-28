@@ -146,6 +146,24 @@ const tests = [
       return res;
     },
   }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Rejects numbers as input',
+    test: async function () {
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        // @ts-expect-error TS correctly throws an error, but we want to test runtime here
+        value: 123,
+      });
+      const res = await this.client.settings.settingsControllerGetOne(
+        'commandPrefix'
+      );
+
+      expect(res.data.data).to.be.eq('123');
+      return res;
+    },
+    expectedStatus: 400,
+  }),
 ];
 
 describe(group, function () {

@@ -17,10 +17,10 @@ import {
   Req,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
   @Type(() => PlayerOutputDTO)

@@ -13,7 +13,7 @@ import {
   HookCreateDTO,
   HookOutputDTO,
   HookService,
-  UpdateHookDTO,
+  HookUpdateDTO,
 } from '../service/HookService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -27,11 +27,11 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { ItemsThatCanBeAssignedAFunction } from '../db/function';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -122,7 +122,7 @@ export class HookController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateHookDTO
+    @Body() data: HookUpdateDTO
   ) {
     const service = new HookService(req.domainId);
     return apiResponse(await service.update(params.id, data));
@@ -154,13 +154,12 @@ export class HookController {
     @Params() data: AssignFunctionToHookDTO
   ) {
     const service = new HookService(req.domainId);
-    return apiResponse(
-      await service.assign({
-        type: ItemsThatCanBeAssignedAFunction.HOOK,
-        functionId: data.functionId,
-        itemId: data.id,
-      })
-    );
+    const res = await service.assign({
+      type: ItemsThatCanBeAssignedAFunction.HOOK,
+      functionId: data.functionId,
+      itemId: data.id,
+    });
+    return apiResponse(res);
   }
 
   @UseBefore(
