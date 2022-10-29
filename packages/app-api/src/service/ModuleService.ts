@@ -15,7 +15,7 @@ import { Type } from 'class-transformer';
 import { CronJobOutputDTO } from './CronJobService';
 import { JsonObject } from 'type-fest';
 import { HookOutputDTO } from './HookService';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 

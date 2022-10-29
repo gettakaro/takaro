@@ -1,6 +1,7 @@
-import { errors, logger } from '@takaro/util';
 import { validate } from 'class-validator';
 import { classToPlain } from 'class-transformer';
+import { logger } from '../logger';
+import * as errors from '../errors';
 
 /**
  * Generic Data Transfer Object, used widely in Takaro to pass data back and forth between components

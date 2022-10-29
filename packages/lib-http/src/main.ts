@@ -6,5 +6,3 @@ export {
   PaginationMiddleware,
 } from './middleware/paginationMiddleware';
 export { apiResponse, APIOutput } from './util/apiResponse';
-
-export { TakaroDTO, isTakaroDTO } from './util/TakaroDTO';

@@ -1,4 +1,4 @@
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { IsString } from 'class-validator';
 import { errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base';

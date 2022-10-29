@@ -5,8 +5,8 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { APIOutput, apiResponse, TakaroDTO } from '@takaro/http';
-import { errors } from '@takaro/util';
+import { APIOutput, apiResponse } from '@takaro/http';
+import { errors, TakaroDTO } from '@takaro/util';
 import {
   Settings,
   SettingsService,

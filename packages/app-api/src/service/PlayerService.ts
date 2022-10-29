@@ -3,7 +3,7 @@ import { TakaroService } from './Base';
 import { PlayerModel, PlayerRepo } from '../db/player';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { IGamePlayer } from '@takaro/gameserver';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 

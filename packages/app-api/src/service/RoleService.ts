@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import {
   Length,

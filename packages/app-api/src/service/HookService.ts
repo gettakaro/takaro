@@ -22,7 +22,7 @@ import {
 import { Type } from 'class-transformer';
 import { GameEvents } from '@takaro/gameserver';
 import safeRegex from 'safe-regex';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 

@@ -2,7 +2,7 @@ import { TakaroService } from './Base';
 
 import { IsString, IsUUID } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 
