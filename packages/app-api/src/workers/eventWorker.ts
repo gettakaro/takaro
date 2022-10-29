@@ -8,7 +8,7 @@ import {
   EventPlayerConnected,
   BaseEvent,
 } from '@takaro/gameserver';
-/* import { getSocketServer } from '../lib/socketServer'; */
+import { getSocketServer } from '../lib/socketServer';
 import { HookService } from '../service/HookService';
 import { QueuesService } from '@takaro/queues';
 import { AuthService } from '../service/AuthService';
@@ -30,7 +30,7 @@ function isConnectedEvent(a: BaseEvent): a is EventPlayerConnected {
 async function processJob(job: Job<IEventQueueData>) {
   log.info('Processing an event', job.data);
 
-  const { event, domainId } = job.data;
+  const { type, event, domainId } = job.data;
 
   if (isConnectedEvent(event)) {
     const playerService = new PlayerService(domainId);
@@ -41,8 +41,8 @@ async function processJob(job: Job<IEventQueueData>) {
 
   log.debug('should crash here');
 
-  /* const socketServer = getSocketServer();
-  socketServer.emit(domainId, 'gameEvent', [type, event]); */
+  const socketServer = getSocketServer();
+  socketServer.emit(domainId, 'gameEvent', [type, event]);
 }
 
 export async function handleHooks(eventData: IEventQueueData) {
