@@ -1,7 +1,6 @@
 import { IntegrationTest } from '@takaro/test';
 import {
   HookOutputDTOAPI,
-  FunctionOutputDTOAPI,
   HookCreateDTOEventTypeEnum,
 } from '@takaro/apiclient';
 
@@ -13,11 +12,6 @@ const mockHook = (moduleId: string) => ({
   eventType: HookCreateDTOEventTypeEnum.Log,
   moduleId,
 });
-
-interface ISetupHookAndFunction {
-  hook: HookOutputDTOAPI;
-  fn: FunctionOutputDTOAPI;
-}
 
 const tests = [
   new IntegrationTest<HookOutputDTOAPI>({
@@ -90,72 +84,6 @@ const tests = [
     test: async function () {
       return this.client.hook.hookControllerRemove(this.setupData.data.id);
     },
-  }),
-  new IntegrationTest<ISetupHookAndFunction>({
-    group,
-    snapshot: true,
-    name: 'Can assign a function to a hook',
-    setup: async function () {
-      const module = (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-        })
-      ).data.data;
-      const hook = (
-        await this.client.hook.hookControllerCreate(mockHook(module.id))
-      ).data;
-      const fn = (
-        await this.client.function.functionControllerCreate({
-          code: 'console.log("Hello world")',
-        })
-      ).data;
-      return {
-        hook,
-        fn,
-      };
-    },
-    test: async function () {
-      return this.client.hook.hookControllerAssignFunction(
-        this.setupData.hook.data.id,
-        this.setupData.fn.data.id
-      );
-    },
-    filteredFields: ['moduleId'],
-  }),
-  new IntegrationTest<ISetupHookAndFunction>({
-    group,
-    snapshot: true,
-    name: 'Can unassign a function from a hook',
-    setup: async function () {
-      const module = (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-        })
-      ).data.data;
-      const hook = (
-        await this.client.hook.hookControllerCreate(mockHook(module.id))
-      ).data;
-      const fn = (
-        await this.client.function.functionControllerCreate({
-          code: 'console.log("Hello world")',
-        })
-      ).data;
-      await this.client.hook.hookControllerAssignFunction(
-        hook.data.id,
-        fn.data.id
-      );
-      return {
-        hook,
-        fn,
-      };
-    },
-    test: async function () {
-      return this.client.hook.hookControllerUnassignFunction(
-        this.setupData.hook.data.id,
-        this.setupData.fn.data.id
-      );
-    },
-    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<void>({
     group,

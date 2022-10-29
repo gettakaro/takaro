@@ -30,7 +30,6 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
-import { ItemsThatCanBeAssignedAFunction } from '../db/function';
 import { CAPABILITIES } from '../service/RoleService';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
@@ -67,14 +66,6 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
   filters!: HookSearchInputAllowedFilters;
-}
-
-class AssignFunctionToHookDTO {
-  @IsUUID('4')
-  id!: string;
-
-  @IsUUID('4')
-  functionId!: string;
 }
 
 @OpenAPI({
@@ -135,50 +126,5 @@ export class HookController {
     const service = new HookService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
-  }
-
-  @UseBefore(
-    AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_FUNCTIONS,
-      CAPABILITIES.MANAGE_HOOKS,
-    ])
-  )
-  @ResponseSchema(HookOutputDTOAPI)
-  @OpenAPI({
-    description:
-      'Assign a function to a hook. This function will execute when the hook is triggered',
-  })
-  @Post('/hook/:id/function/:functionId')
-  async assignFunction(
-    @Req() req: AuthenticatedRequest,
-    @Params() data: AssignFunctionToHookDTO
-  ) {
-    const service = new HookService(req.domainId);
-    const res = await service.assign({
-      type: ItemsThatCanBeAssignedAFunction.HOOK,
-      functionId: data.functionId,
-      itemId: data.id,
-    });
-    return apiResponse(res);
-  }
-
-  @UseBefore(
-    AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_FUNCTIONS,
-      CAPABILITIES.MANAGE_HOOKS,
-    ])
-  )
-  @ResponseSchema(HookOutputDTOAPI)
-  @OpenAPI({
-    description:
-      'The function will not be executed when the hook is triggered anymore',
-  })
-  @Delete('/hook/:id/function/:functionId')
-  async unassignFunction(
-    @Req() req: AuthenticatedRequest,
-    @Params() data: AssignFunctionToHookDTO
-  ) {
-    const service = new HookService(req.domainId);
-    return apiResponse(await service.unAssign(data.id, data.functionId));
   }
 }
