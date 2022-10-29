@@ -39,8 +39,6 @@ async function processJob(job: Job<IEventQueueData>) {
 
   await handleHooks(job.data);
 
-  log.debug('should crash here');
-
   const socketServer = getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [type, event]);
 }
