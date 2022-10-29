@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import { logger, errors } from '@takaro/logger';
+import { logger, errors } from '@takaro/util';
 import { TakaroEmitter } from '../../interfaces/eventEmitter';
 import {
   EventPlayerConnected,

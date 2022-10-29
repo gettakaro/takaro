@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger, errors } from '@takaro/logger';
+import { logger, errors } from '@takaro/util';
 import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,

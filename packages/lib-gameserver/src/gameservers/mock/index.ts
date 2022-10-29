@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { IsNumber } from 'class-validator';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';

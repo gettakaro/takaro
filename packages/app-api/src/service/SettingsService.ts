@@ -1,6 +1,6 @@
 import { TakaroDTO } from '@takaro/http';
 import { IsString } from 'class-validator';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base';
 import { SettingsModel, SettingsRepo } from '../db/settings';
 import { TakaroService } from './Base';

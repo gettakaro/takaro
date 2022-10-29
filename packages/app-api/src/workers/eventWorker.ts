@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { config } from '../config';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {

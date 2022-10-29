@@ -1,4 +1,4 @@
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {

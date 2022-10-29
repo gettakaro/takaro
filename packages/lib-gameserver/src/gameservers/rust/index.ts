@@ -1,4 +1,4 @@
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';

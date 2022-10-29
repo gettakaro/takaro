@@ -1,5 +1,5 @@
 {
-  "name": "@takaro/logger",
+  "name": "@takaro/util",
   "version": "0.0.1",
   "description": "An opinionated logger",
   "main": "dist/main.js",

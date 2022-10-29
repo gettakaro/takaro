@@ -1,5 +1,5 @@
 import { IGameEventEmitter, GameEvents } from '@takaro/gameserver';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { QueuesService } from '@takaro/queues';
 import {
   GameServerOutputDTO,

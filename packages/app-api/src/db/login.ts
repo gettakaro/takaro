@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { TakaroDTO } from '@takaro/http';
 import { IsString } from 'class-validator';
 

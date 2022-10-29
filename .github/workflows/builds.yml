@@ -18,7 +18,7 @@ jobs:
             lib-db,
             lib-gameserver,
             lib-http,
-            lib-logger,
+            lib-util,
             lib-queues,
             test,
             web-docs,

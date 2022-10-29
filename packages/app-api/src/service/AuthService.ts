@@ -1,5 +1,5 @@
 import { DomainScoped } from '../lib/DomainScoped';
-import { errors, logger } from '@takaro/logger';
+import { errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';

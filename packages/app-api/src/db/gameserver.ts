@@ -6,7 +6,7 @@ import {
   decrypt,
 } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
 import {

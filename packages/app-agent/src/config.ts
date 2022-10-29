@@ -1,5 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 export enum EXECUTION_MODE {

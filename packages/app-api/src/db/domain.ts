@@ -7,7 +7,7 @@ import {
   migrateDomain,
 } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { LoginCreateDTO, LoginRepo } from './login';
 import {
   DomainOutputDTO,

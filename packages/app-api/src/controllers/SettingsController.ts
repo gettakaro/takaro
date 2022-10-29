@@ -6,7 +6,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { APIOutput, apiResponse, TakaroDTO } from '@takaro/http';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import {
   Settings,
   SettingsService,

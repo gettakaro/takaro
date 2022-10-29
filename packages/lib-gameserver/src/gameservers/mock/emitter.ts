@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:stream';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import {
   EventPlayerConnected,

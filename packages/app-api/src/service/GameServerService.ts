@@ -14,7 +14,7 @@ import {
   Length,
 } from 'class-validator';
 import { Mock, SevenDaysToDie, Rust } from '@takaro/gameserver';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { config } from '../config';
 import { SettingsService } from './SettingsService';

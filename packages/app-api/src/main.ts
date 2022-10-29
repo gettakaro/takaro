@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { migrateSystem } from '@takaro/db';
 import { DomainController } from './controllers/DomainController';
 import { Server as HttpServer } from 'http';

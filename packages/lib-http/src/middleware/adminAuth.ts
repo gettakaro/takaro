@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { logger, errors } from '@takaro/logger';
+import { logger, errors } from '@takaro/util';
 import basicAuth from 'basic-auth';
 
 const log = logger('middleware:authAdmin');

@@ -1,4 +1,4 @@
-import { errors, logger } from '@takaro/logger';
+import { errors, logger } from '@takaro/util';
 import { validate } from 'class-validator';
 import { classToPlain } from 'class-transformer';
 

@@ -7,7 +7,7 @@ import {
   QueueScheduler,
 } from 'bullmq';
 import { config } from './config';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 

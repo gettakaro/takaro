@@ -1,4 +1,4 @@
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService';
 import { randomBytes } from 'crypto';
 import {
