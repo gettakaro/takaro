@@ -1,11 +1,7 @@
 import { TakaroService } from './Base';
 
-import { IsEnum, IsString, IsUUID } from 'class-validator';
-import {
-  FunctionModel,
-  FunctionRepo,
-  ItemsThatCanBeAssignedAFunction,
-} from '../db/function';
+import { IsString, IsUUID } from 'class-validator';
+import { FunctionModel, FunctionRepo } from '../db/function';
 import { TakaroDTO } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
@@ -25,17 +21,6 @@ export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
   code!: string;
-}
-
-export class AssignFunctionDTO {
-  @IsEnum(ItemsThatCanBeAssignedAFunction)
-  type!: ItemsThatCanBeAssignedAFunction;
-
-  @IsUUID('4')
-  itemId!: string;
-
-  @IsUUID('4')
-  functionId!: string;
 }
 
 export class FunctionService extends TakaroService<
@@ -68,17 +53,5 @@ export class FunctionService extends TakaroService<
 
   delete(id: string): Promise<boolean> {
     return this.repo.delete(id);
-  }
-
-  async assign(data: AssignFunctionDTO) {
-    return this.repo.assign(data.type, data.itemId, data.functionId);
-  }
-
-  async unAssign(itemId: string, functionId: string) {
-    return this.repo.unAssign(itemId, functionId);
-  }
-
-  async getRelatedFunctions(itemId: string, onlyIds = true) {
-    return this.repo.getRelatedFunctions(itemId, onlyIds);
   }
 }
