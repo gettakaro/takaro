@@ -39,7 +39,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   useEffect(() => {
     handleAuth();
-  }, [handleAuth]);
+  }, []);
 
   function handleFrame() {
     switch (frame) {
