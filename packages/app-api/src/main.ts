@@ -66,9 +66,7 @@ async function main() {
   for (const domain of domains.results) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
-    await gameServerService.manager.init(
-      gameServers.results.map((g) => ({ ...g, domainId: domain.id }))
-    );
+    await gameServerService.manager.init(domain.id, gameServers.results);
   }
 
   await QueuesService.getInstance().registerWorker(new EventsWorker());

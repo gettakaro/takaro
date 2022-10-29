@@ -5,9 +5,10 @@ import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
-import { CAPABILITIES } from '../db/role';
 import { IsString } from 'class-validator';
 import ms from 'ms';
+import { TakaroDTO } from '@takaro/http';
+import { CAPABILITIES } from './RoleService';
 
 interface IJWTPayload {
   sub: string;
@@ -23,7 +24,7 @@ export interface AuthenticatedRequest extends Request {
   user: { id: string };
 }
 
-export class LoginOutputDTO {
+export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
   @IsString()
   token!: string;
 }
@@ -61,7 +62,7 @@ export class AuthService extends DomainScoped {
         maxAge: ms(config.get('auth.jwtExpiresIn')),
       });
 
-      return { token };
+      return new LoginOutputDTO({ token });
     } else {
       this.log.warn('Password does not match');
       throw new errors.UnauthorizedError();

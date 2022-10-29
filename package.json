@@ -101,6 +101,7 @@
   },
   "overrides": {
     "class-validator": "0.13.2",
+    "class-transformer": "0.3.1",
     "@docusaurus/core@2.1.0": {
       "react": "17.0.2",
       "react-dom": "17.0.2",
@@ -113,6 +114,5 @@
       "@types/react": "17.0.2",
       "@types/react-dom": "17.0.2"
     }
-
   }
 }

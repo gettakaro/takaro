@@ -5,7 +5,7 @@ import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobService,
-  UpdateCronJobDTO,
+  CronJobUpdateDTO,
 } from '../service/CronJobService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -19,11 +19,11 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { ItemsThatCanBeAssignedAFunction } from '../db/function';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
   @Type(() => CronJobOutputDTO)
@@ -113,7 +113,7 @@ export class CronJobController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateCronJobDTO
+    @Body() data: CronJobUpdateDTO
   ) {
     const service = new CronJobService(req.domainId);
     return apiResponse(await service.update(params.id, data));

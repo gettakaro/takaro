@@ -1,4 +1,7 @@
+import { TakaroDTO } from '@takaro/http';
 import { IsString } from 'class-validator';
+import { errors } from '@takaro/logger';
+import { PaginatedOutput } from '../db/base';
 import { SettingsModel, SettingsRepo } from '../db/settings';
 import { TakaroService } from './Base';
 
@@ -6,15 +9,25 @@ export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
   serverChatName = 'serverChatName',
 }
+export class Settings extends TakaroDTO<Settings> {
+  @IsString()
+  commandPrefix: string;
 
-export class Settings {
   @IsString()
-  commandPrefix = '/';
-  @IsString()
-  serverChatName = 'Takaro';
+  serverChatName: string;
 }
 
-export class SettingsService extends TakaroService<SettingsModel> {
+export const DEFAULT_SETTINGS: Settings = new Settings({
+  commandPrefix: '/',
+  serverChatName: 'Takaro',
+});
+
+export class SettingsService extends TakaroService<
+  SettingsModel,
+  Settings,
+  never,
+  never
+> {
   constructor(
     public readonly domainId: string,
     public readonly gameServerId?: string
@@ -26,7 +39,32 @@ export class SettingsService extends TakaroService<SettingsModel> {
     return new SettingsRepo(this.domainId, this.gameServerId);
   }
 
-  init() {
+  async find(): Promise<PaginatedOutput<never>> {
+    // Use the "getAll" method instead
+    throw new errors.NotImplementedError();
+  }
+
+  async findOne(): Promise<never> {
+    // Use the "get" method instead
+    throw new errors.NotImplementedError();
+  }
+
+  create(): Promise<never> {
+    // Use the "init" (created DB record) or "set" (changing a settings value) method instead
+    throw new errors.NotImplementedError();
+  }
+
+  async delete(): Promise<boolean> {
+    // This will cascade when a domain or gameserver is deleted
+    throw new errors.NotImplementedError();
+  }
+
+  async update(): Promise<never> {
+    // Use the "set" method instead
+    throw new errors.NotImplementedError();
+  }
+
+  init(): Promise<Settings> {
     return this.repo.create();
   }
 
@@ -56,6 +94,6 @@ export class SettingsService extends TakaroService<SettingsModel> {
 
   async getAll() {
     const all = await this.repo.getAll();
-    return all;
+    return new Settings(all);
   }
 }

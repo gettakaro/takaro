@@ -5,59 +5,80 @@ import {
   GameServerRepo,
   GAME_SERVER_TYPE,
 } from '../db/gameserver';
-import { IsEnum, IsJSON, IsString, IsUUID, Length } from 'class-validator';
+import {
+  IsEnum,
+  IsJSON,
+  IsObject,
+  IsString,
+  IsUUID,
+  Length,
+} from 'class-validator';
 import { Mock, SevenDaysToDie, Rust } from '@takaro/gameserver';
 import { errors } from '@takaro/logger';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
-import { PartialModelObject } from 'objection';
 import { config } from '../config';
 import { SettingsService } from './SettingsService';
+import { TakaroDTO } from '@takaro/http';
+import { ITakaroQuery } from '@takaro/db';
+import { PaginatedOutput } from '../db/base';
 
-export class GameServerOutputDTO {
+export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
   @IsUUID()
-  id!: string;
+  id: string;
   @IsString()
-  name!: string;
-  @IsJSON()
-  connectionInfo!: Record<string, unknown>;
+  name: string;
+  @IsObject()
+  connectionInfo: Record<string, unknown>;
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
-  type!: GAME_SERVER_TYPE;
+  type: GAME_SERVER_TYPE;
 }
 
-export class GameServerCreateDTO {
+export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
   @IsString()
   @Length(3, 50)
-  name!: string;
+  name: string;
   @IsJSON()
-  connectionInfo!: string;
+  connectionInfo: string;
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
-  type!: GAME_SERVER_TYPE;
+  type: GAME_SERVER_TYPE;
 }
 
-export class UpdateGameServerDTO {
+export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @Length(3, 50)
   @IsString()
-  name!: string;
-
+  name: string;
   @IsJSON()
-  connectionInfo!: string;
+  connectionInfo: string;
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
-  type!: GAME_SERVER_TYPE;
+  type: GAME_SERVER_TYPE;
 }
 
-export class GameServerService extends TakaroService<GameServerModel> {
+export class GameServerService extends TakaroService<
+  GameServerModel,
+  GameServerOutputDTO,
+  GameServerCreateDTO,
+  GameServerUpdateDTO
+> {
   private readonly gameServerManager = new IGameServerInMemoryManager();
 
   get repo() {
     return new GameServerRepo(this.domainId);
   }
 
-  async create(
-    item: PartialModelObject<GameServerModel>
-  ): Promise<GameServerModel> {
+  find(
+    filters: ITakaroQuery<GameServerOutputDTO>
+  ): Promise<PaginatedOutput<GameServerOutputDTO>> {
+    return this.repo.find(filters);
+  }
+
+  findOne(id: string): Promise<GameServerOutputDTO> {
+    return this.repo.findOne(id);
+  }
+
+  async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
     const createdServer = await this.repo.create(item);
 
     const settingsService = new SettingsService(
@@ -78,8 +99,8 @@ export class GameServerService extends TakaroService<GameServerModel> {
 
   async update(
     id: string,
-    item: PartialModelObject<GameServerModel>
-  ): Promise<GameServerModel | undefined> {
+    item: GameServerUpdateDTO
+  ): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
     await this.gameServerManager.remove(id);
     await this.gameServerManager.add(this.domainId, updatedServer);
