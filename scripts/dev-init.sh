@@ -15,12 +15,8 @@ if test -e ".env.example" && ! test -e ".env"; then
 	cp .env.example .env
 fi
 
-
-is_ci=${CI:-false}
-if test -e "node_modules" || [ ${is_ci} = false ] ; then
-  printHeader "Installing node dependencies"
-  npm ci
-fi
+printHeader "Installing node dependencies"
+npm ci
 
 printHeader "Initializing database"
 
