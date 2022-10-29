@@ -10,6 +10,7 @@ import {
 } from '../../main';
 import { IsString } from 'class-validator';
 import { JsonObject } from 'type-fest';
+import { RustConnectionInfo } from '.';
 
 export class RustConfig {
   @IsString()
@@ -49,17 +50,18 @@ export interface RustEvent {
 export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
+  private config: RustConnectionInfo;
 
-  async start(config: JsonObject): Promise<void> {
-    // temporary
-    config.hostname = '195.201.91.127';
-    config.port = '28016';
-    config.password = 'ikbeneenaap';
+  constructor(config: RustConnectionInfo) {
+    super();
+    this.config = config;
+  }
 
+  async start(): Promise<void> {
     this.logger.debug('Connecting to [RUST] game server...');
 
     this.ws = new WebSocket(
-      `ws://${config.hostname}:${config.port}/${config.password}`
+      `ws://${this.config.host}:${this.config.rconPort}/${this.config.rconPassword}`
     );
 
     this.logger.debug('Connected to [RUST] game server!!!');

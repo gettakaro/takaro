@@ -1,19 +1,17 @@
 import { logger } from '@takaro/logger';
-import { IsString, IsBoolean } from 'class-validator';
+import { IsString, IsNumber } from 'class-validator';
 import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
 
-export class SdtdConnectionInfo {
+export class RustConnectionInfo {
   @IsString()
   public readonly host!: string;
+  @IsNumber()
+  public readonly rconPort!: string;
   @IsString()
-  public readonly adminUser!: string;
-  @IsString()
-  public readonly adminToken!: string;
-  @IsBoolean()
-  public readonly useTls!: boolean;
+  public readonly rconPassword!: string;
 
   constructor(data: Record<string, unknown>) {
     Object.assign(this, data);
@@ -22,10 +20,10 @@ export class SdtdConnectionInfo {
 
 export class Rust implements IGameServer {
   private logger = logger('rust');
-  connectionInfo: SdtdConnectionInfo;
+  connectionInfo: RustConnectionInfo;
 
   constructor(config: Record<string, unknown>) {
-    this.connectionInfo = new SdtdConnectionInfo(config);
+    this.connectionInfo = new RustConnectionInfo(config);
   }
 
   async getPlayer(id: string): Promise<IGamePlayer | null> {
@@ -38,7 +36,7 @@ export class Rust implements IGameServer {
   }
 
   async getEventEmitter(): Promise<IGameEventEmitter> {
-    const emitter = new RustEmitter();
+    const emitter = new RustEmitter(this.connectionInfo);
     return emitter;
   }
 }
