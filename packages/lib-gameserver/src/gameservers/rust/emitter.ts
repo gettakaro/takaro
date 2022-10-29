@@ -54,17 +54,26 @@ export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
     // temporary
     config.hostname = '195.201.91.127';
     config.port = '28016';
-    config.password = 'docker';
+    config.password = 'ikbeneenaap';
+
+    this.logger.debug('Connecting to [RUST] game server...');
+
     this.ws = new WebSocket(
       `ws://${config.hostname}:${config.port}/${config.password}`
     );
+
+    this.logger.debug('Connected to [RUST] game server!!!');
 
     this.ws.on('message', (m: string) => {
       this.listener(m);
     });
 
     this.ws.on('open', () => {
-      this.logger.info('Connected to [RUST] gameserver.');
+      this.logger.info('Connected to [RUST] game server.');
+    });
+
+    this.ws.on('error', (e) => {
+      this.logger.error('Could not connect to [RUST] game server!', e);
     });
   }
 
@@ -73,13 +82,13 @@ export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
     this.logger.debug('Websocket connection has been closed');
     return;
   }
-  private transform(obj: any): RustEvent {
+  private transform(obj: Record<string, unknown>): RustEvent {
     // Currently this contains only lowercasing the keys.
     return {
-      message: obj.Message,
-      identifier: obj.Identifier,
-      type: obj.Type,
-      stacktrace: obj.Stacktrace,
+      message: obj.Message as string,
+      identifier: obj.Identifier as number,
+      type: obj.Type as RustEventType,
+      stacktrace: obj.Stacktrace as string,
     };
   }
 
