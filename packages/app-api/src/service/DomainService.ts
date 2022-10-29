@@ -17,6 +17,7 @@ import { SettingsService } from './SettingsService';
 import { TakaroDTO } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
+import { CronJobService } from './CronJobService';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -94,8 +95,15 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     const gameServerService = new GameServerService(id);
     const allGameServers = await gameServerService.find({});
     for (const gameServer of allGameServers.results) {
-      await gameServerService.manager.remove(gameServer.id);
+      await gameServerService.delete(gameServer.id);
     }
+
+    const cronJobService = new CronJobService(id);
+    const allCronJobs = await cronJobService.find({});
+    for (const cronJob of allCronJobs.results) {
+      await cronJobService.delete(cronJob.id);
+    }
+
     return this.repo.delete(id);
   }
 
