@@ -70,7 +70,7 @@ export class IGameServerInMemoryManager {
       this.log.debug('Received a logline event', logLine);
       await this.eventsQueue.add(GameEvents.LOG_LINE, {
         type: GameEvents.LOG_LINE,
-        data: logLine,
+        event: logLine,
         domainId,
         gameServerId,
       });
@@ -80,7 +80,7 @@ export class IGameServerInMemoryManager {
       this.log.debug('Received a player connected event', playerConnectedEvent);
       await this.eventsQueue.add(GameEvents.PLAYER_CONNECTED, {
         type: GameEvents.PLAYER_CONNECTED,
-        data: playerConnectedEvent,
+        event: playerConnectedEvent,
         domainId,
         gameServerId,
       });
@@ -95,7 +95,7 @@ export class IGameServerInMemoryManager {
         );
         await this.eventsQueue.add(GameEvents.PLAYER_DISCONNECTED, {
           type: GameEvents.PLAYER_DISCONNECTED,
-          data: playerDisconnectedEvent,
+          event: playerDisconnectedEvent,
           domainId,
           gameServerId,
         });

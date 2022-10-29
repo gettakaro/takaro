@@ -2,6 +2,7 @@ import { TakaroService } from './Base';
 
 import { PlayerModel, PlayerRepo } from '../db/player';
 import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IGamePlayer } from '@takaro/gameserver';
 import { TakaroDTO } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
@@ -88,5 +89,35 @@ export class PlayerService extends TakaroService<
     gameServerId: string
   ) {
     return this.repo.insertAssociation(gameId, playerId, gameServerId);
+  }
+
+  async sync(playerData: IGamePlayer, gameServerId: string) {
+    const existingAssociations = await this.findAssociations(playerData.gameId);
+    let player: PlayerOutputDTO;
+
+    if (!existingAssociations.length) {
+      const existingPlayers = await this.find({
+        filters: {
+          steamId: playerData.steamId,
+          epicOnlineServicesId: playerData.epicOnlineServicesId,
+          xboxLiveId: playerData.xboxLiveId,
+        },
+      });
+      if (!existingPlayers.results.length) {
+        // Main player profile does not exist yet!
+        player = await this.create(
+          new PlayerCreateDTO({
+            name: playerData.name,
+            steamId: playerData.steamId,
+            epicOnlineServicesId: playerData.epicOnlineServicesId,
+            xboxLiveId: playerData.xboxLiveId,
+          })
+        );
+      } else {
+        player = existingPlayers.results[0];
+      }
+
+      await this.insertAssociation(playerData.gameId, player.id, gameServerId);
+    }
   }
 }

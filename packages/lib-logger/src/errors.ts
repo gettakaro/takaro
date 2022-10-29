@@ -48,6 +48,19 @@ export class ValidationError extends TakaroError {
   }
 }
 
+export class GameServerError extends TakaroError {
+  constructor(message: string = 'Game server error') {
+    super(message);
+    this.http = 500;
+  }
+}
+export class WsTimeOutError extends TakaroError {
+  constructor(message: string = 'Websocket timeout Error') {
+    super(message);
+    this.http = 500;
+  }
+}
+
 export class BadRequestError extends TakaroError {
   constructor(message: string = 'Bad request') {
     super(message);

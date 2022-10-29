@@ -4,9 +4,11 @@ import {
   HookOutputDTOAPI,
   HookCreateDTOEventTypeEnum,
 } from '@takaro/apiclient';
-import { GameEvents } from '@takaro/gameserver';
+import { GameEvents, IGamePlayer } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { GameServerOutputDTO } from '@takaro/apiclient';
+import { v4 as uuid } from 'uuid';
+import { PlayerService } from '../service/PlayerService';
 
 const group = 'Event worker';
 const groupHooks = 'Event worker - Hook handling';
@@ -60,7 +62,7 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        data: {
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -119,7 +121,7 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        data: {
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -180,7 +182,7 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        data: {
+        event: {
           msg: 'this is a test',
           timestamp: new Date(),
           type: GameEvents.LOG_LINE,
@@ -194,6 +196,45 @@ const tests = [
       expect(calledItemId).to.be.eq(this.setupData.hooks[0].data.id);
       expect(calledData.domainId).to.be.eq(this.standardDomainId);
       expect(calledData.itemId).to.be.eq(this.setupData.hooks[0].data.id);
+    },
+  }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Handles player joined event correctly',
+    setup: async function () {
+      return (
+        await this.client.gameserver.gameServerControllerCreate({
+          name: 'my-server',
+          type: 'RUST',
+          connectionInfo:
+            '{"host": "169.169.169.80", "rconPort": "28016", "rconPassword": "123456"}',
+        })
+      ).data.data;
+    },
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
+
+      const MOCK_PLAYER = new IGamePlayer({
+        ip: '169.169.169.80',
+        name: 'brunkel',
+        gameId: uuid(),
+        steamId: '76561198021481871',
+        device: 'windows',
+      });
+
+      await playerService.sync(MOCK_PLAYER, this.setupData.id);
+
+      const players = await this.client.player.playerControllerSearch();
+
+      const player = players.data.data.find(
+        (player) => player.steamId === MOCK_PLAYER.steamId
+      );
+
+      expect(player).to.not.be.null;
+      expect(player?.steamId).to.eq(MOCK_PLAYER.steamId);
+
+      return players;
     },
   }),
 ];

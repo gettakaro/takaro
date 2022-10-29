@@ -66,7 +66,16 @@ async function main() {
   for (const domain of domains.results) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
-    await gameServerService.manager.init(domain.id, gameServers.results);
+
+    // GameService.find() does not decrypted the connectioninfo's
+    const gameServersDecrypted = await Promise.all(
+      gameServers.results.map(async (gameserver) => {
+        const gs = await gameServerService.findOne(gameserver.id);
+        return gs;
+      })
+    );
+
+    await gameServerService.manager.init(domain.id, gameServersDecrypted);
   }
 
   await QueuesService.getInstance().registerWorker(new EventsWorker());

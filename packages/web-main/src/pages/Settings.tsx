@@ -58,7 +58,7 @@ const SettingsPage: FC = () => {
       resolver: useValidationSchema(validationSchema),
     });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async () => {
     const formValues = getValues();
 
     await mapSettings(formValues, async (key, value) =>
@@ -72,7 +72,7 @@ const SettingsPage: FC = () => {
   const settingsComponents: ReactElement[] = [];
 
   if (data) {
-    mapSettings(data, async (key, value) =>
+    mapSettings(data, async (key) =>
       settingsComponents.push(
         <TextField
           control={control}

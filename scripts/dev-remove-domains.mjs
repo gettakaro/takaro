@@ -1,6 +1,6 @@
 #!/bin/node
 
-import { AdminClient } from '@takaro/apiclient';
+import { AdminClient, isAxiosError } from '@takaro/apiclient';
 import { config } from 'dotenv';
 
 config();
@@ -27,6 +27,10 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error(e);
+  if (isAxiosError(e)) {
+    console.error(JSON.stringify(e.response.data, null, 2));
+  } else {
+    console.error(e);
+  }
   process.exit(1);
 });

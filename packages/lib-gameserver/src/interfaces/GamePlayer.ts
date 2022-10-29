@@ -23,4 +23,20 @@ export class IGamePlayer {
   @IsString()
   @IsOptional()
   xboxLiveId?: string;
+
+  @IsString()
+  @IsOptional()
+  platformId?: string;
+
+  @IsString()
+  @IsOptional()
+  device?: string;
+
+  @IsString()
+  @IsOptional()
+  ip?: string;
+
+  constructor(data: Record<string, unknown>) {
+    Object.assign(this, data);
+  }
 }

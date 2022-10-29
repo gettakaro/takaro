@@ -8,10 +8,7 @@ import {
 import { Model } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import {
-  PlayerOnGameServerModel,
-  PLAYER_ON_GAMESERVER_TABLE_NAME,
-} from './player';
+import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
 import {
   GameServerOutputDTO,
   GameServerCreateDTO,
@@ -34,16 +31,22 @@ export class GameServerModel extends TakaroModel {
 
   type!: GAME_SERVER_TYPE;
 
-  static relationMappings = {
-    players: {
-      relation: Model.HasManyRelation,
-      modelClass: PlayerOnGameServerModel,
-      join: {
-        from: `${GAMESERVER_TABLE_NAME}.id`,
-        to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+  static get relationMappings() {
+    const PlayerOnGameServerModel =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('./player.ts').PlayerOnGameServerModel;
+
+    return {
+      players: {
+        relation: Model.HasManyRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${GAMESERVER_TABLE_NAME}.id`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+        },
       },
-    },
-  };
+    };
+  }
 }
 
 export class GameServerRepo extends ITakaroRepo<
