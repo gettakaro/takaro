@@ -1,9 +1,9 @@
-import {  FC, Fragment } from "react";
-import { Helmet } from "react-helmet";
-import { styled, Table, Loading, Button } from "@takaro/lib-components";
-import { useApiClient } from "hooks/useApiClient";
-import { useQuery } from "react-query";
-import { PlayerOutputArrayDTOAPI } from "@takaro/apiclient";
+import { FC, Fragment } from 'react';
+import { Helmet } from 'react-helmet';
+import { styled, Table, Loading } from '@takaro/lib-components';
+import { useApiClient } from 'hooks/useApiClient';
+import { useQuery } from 'react-query';
+import { PlayerOutputArrayDTOAPI } from '@takaro/apiclient';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -15,21 +15,29 @@ const TableContainer = styled.div`
 const Players: FC = () => {
   const client = useApiClient();
 
-  const { data, isLoading, refetch } = useQuery<PlayerOutputArrayDTOAPI>(
+  const { data, isLoading } = useQuery<PlayerOutputArrayDTOAPI>(
     'players',
-    async () => (await client.player.playerControllerSearch()).data,
+    async () => (await client.player.playerControllerSearch()).data
   );
 
   const columDefs = [
-    {field: 'updatedAt', headerName: 'Updated'},
-    {field: 'name', headerName: 'Name', filter: 'agTextColumnFilter'},
-    {field: 'steamId', headerName: 'Steam ID', filter: 'agTextColumnFilter'},
-    {field: 'epicOnlineServicesId', headerName: 'EOS ID', filter: 'agTextColumnFilter'},
-    {field: 'xboxLiveId', headerName: 'Xbox ID', filter: 'agTextColumnFilter'},
-  ]
+    { field: 'updatedAt', headerName: 'Updated' },
+    { field: 'name', headerName: 'Name', filter: 'agTextColumnFilter' },
+    { field: 'steamId', headerName: 'Steam ID', filter: 'agTextColumnFilter' },
+    {
+      field: 'epicOnlineServicesId',
+      headerName: 'EOS ID',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'xboxLiveId',
+      headerName: 'Xbox ID',
+      filter: 'agTextColumnFilter',
+    },
+  ];
 
   if (isLoading || data === undefined) {
-    return <Loading/>
+    return <Loading />;
   }
 
   return (
@@ -39,10 +47,15 @@ const Players: FC = () => {
       </Helmet>
 
       <TableContainer>
-        <Table columnDefs={columDefs} rowData={data.data} width={'100%'} height={'80vh'} />
+        <Table
+          columnDefs={columDefs}
+          rowData={data.data}
+          width={'100%'}
+          height={'80vh'}
+        />
       </TableContainer>
     </Fragment>
   );
-}
+};
 
 export default Players;
