@@ -12,7 +12,6 @@ import { getSocketServer } from '../lib/socketServer';
 import { HookService } from '../service/HookService';
 import { QueuesService } from '@takaro/queues';
 import { AuthService } from '../service/AuthService';
-import { FunctionService } from '../service/FunctionService';
 import {
   PlayerCreateDTO,
   PlayerOutputDTO,
@@ -55,17 +54,11 @@ export async function handleHooks(eventData: IEventQueueData) {
 
     await Promise.all(
       triggeredHooks.map(async (hook) => {
-        const functionsService = new FunctionService(eventData.domainId);
-        const relatedFunctions = await functionsService.getRelatedFunctions(
-          hook.id,
-          true
-        );
-
         return queues.queues.hooks.queue.add(hook.id, {
           itemId: hook.id,
           data: eventData.data,
           domainId: eventData.domainId,
-          functions: relatedFunctions as string[],
+          function: hook.function.code,
           token,
         });
       })

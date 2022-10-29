@@ -2,10 +2,7 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import {
-  FUNCTIONS_ASSIGNMENT_TABLE_NAME,
-  FUNCTION_TABLE_NAME,
-} from './function';
+import { FUNCTION_TABLE_NAME } from './function';
 import {
   CronJobCreateDTO,
   CronJobOutputDTO,
@@ -22,16 +19,12 @@ export class CronJobModel extends TakaroModel {
 
   static get relationMappings() {
     return {
-      functions: {
-        relation: Model.ManyToManyRelation,
+      function: {
+        relation: Model.HasOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
           from: `${CRONJOB_TABLE_NAME}.id`,
-          through: {
-            from: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.cronJob`,
-            to: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.function`,
-          },
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -58,7 +51,7 @@ export class CronJobRepo extends ITakaroRepo<
     const model = await this.getModel();
     const result = await new QueryBuilder<CronJobModel, CronJobOutputDTO>({
       ...filters,
-      extend: ['functions'],
+      extend: ['function'],
     }).build(model.query());
 
     return {
@@ -69,7 +62,7 @@ export class CronJobRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<CronJobOutputDTO> {
     const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('functions');
+    const data = await model.query().findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -81,6 +74,10 @@ export class CronJobRepo extends ITakaroRepo<
   async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
     const model = await this.getModel();
     const res = await model.query().insert(item.toJSON()).returning('*');
+
+    if (item.function) {
+      await this.assign(res.id, item.function);
+    }
 
     return this.findOne(res.id);
   }
@@ -96,8 +93,13 @@ export class CronJobRepo extends ITakaroRepo<
     const item = await model
       .query()
       .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('functions');
+      .withGraphFetched('function');
 
     return new CronJobOutputDTO(item);
+  }
+
+  async assign(id: string, functionId: string) {
+    const model = await this.getModel();
+    await model.relatedQuery('function').for(id).relate(functionId);
   }
 }

@@ -11,7 +11,9 @@
       "updatedAt": "2022-09-22T13:03:36.316Z",
       "id": "bcd3d3a2-b418-44a2-b2a8-f01024728384",
       "enabled": true,
-      "functions": []
+      "function": {
+        "code": ""
+      }
     }
   },
   "status": 200,

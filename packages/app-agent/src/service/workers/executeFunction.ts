@@ -2,10 +2,10 @@ import { config, EXECUTION_MODE } from '../../config';
 import { logger, errors } from '@takaro/logger';
 import { ContainerdService } from '../containerd';
 const log = logger('worker:function');
-import { FunctionOutputDTO, Client } from '@takaro/apiclient';
+import { Client } from '@takaro/apiclient';
 import { createContext, runInContext } from 'node:vm';
 
-export async function executeFunction(fn: FunctionOutputDTO, client: Client) {
+export async function executeFunction(fn: string, client: Client) {
   if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
     return executeLocal(fn, client);
   }
@@ -25,9 +25,9 @@ export async function executeFunction(fn: FunctionOutputDTO, client: Client) {
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, this is not production ready !!!!!!!!!!!!!!!!!
  *
  */
-async function executeLocal(fn: FunctionOutputDTO, client: Client) {
+async function executeLocal(fn: string, client: Client) {
   const ctx = createContext({ client });
-  const output = runInContext(fn.code, ctx);
+  const output = runInContext(fn, ctx);
   log.debug('Executed a local function', { output });
   return { ctx, output };
 }
