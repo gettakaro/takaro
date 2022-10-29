@@ -81,12 +81,11 @@ const AddGameServer: FC = () => {
     };
   };
 
-  const { control, handleSubmit, formState, reset, watch } =
-    useForm<IFormInputs>({
-      mode: 'onSubmit',
-      resolver: useValidationSchema(validationSchema),
-      defaultValues: defaultValues(),
-    });
+  const { control, handleSubmit, formState, watch } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
+    defaultValues: defaultValues(),
+  });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (inputs) => {
     setLoading(true);
@@ -158,14 +157,14 @@ const AddGameServer: FC = () => {
         key={'eventInterval'}
       />,
       <TextField
-      control={control}
-      label="Player pool size"
-      name="connectionInfo.playerPoolSize"
-      hint="How large is the pool of fake players"
-      placeholder="100"
-      error={formState.errors['connectionInfo.playerPoolSize']}
-      key={'playerPoolSize'}
-    />,
+        control={control}
+        label="Player pool size"
+        name="connectionInfo.playerPoolSize"
+        hint="How large is the pool of fake players"
+        placeholder="100"
+        error={formState.errors['connectionInfo.playerPoolSize']}
+        key={'playerPoolSize'}
+      />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
       <TextField

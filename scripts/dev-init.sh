@@ -16,7 +16,6 @@ if test -e ".env.example" && ! test -e ".env"; then
 fi
 
 printHeader "Installing node dependencies"
-
 npm ci
 
 printHeader "Initializing database"

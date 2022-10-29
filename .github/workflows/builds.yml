@@ -1,0 +1,36 @@
+name: Builds
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        pkg:
+          [
+            app-agent,
+            app-api,
+            lib-apiclient,
+            lib-components,
+            lib-config,
+            lib-db,
+            lib-gameserver,
+            lib-http,
+            lib-logger,
+            lib-queues,
+            test,
+            web-docs,
+            web-main,
+          ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: ./scripts/dev-init.sh
+      - run: npm -w packages/${{ matrix.pkg }} run build
