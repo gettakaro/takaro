@@ -5,7 +5,6 @@ import {
   isValidElement,
   ReactElement,
   PropsWithChildren,
-  ReactNode,
 } from 'react';
 import { useStepper } from '../context';
 import {
@@ -22,11 +21,7 @@ import { StepStates } from '../stepStates';
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
 
-interface StepperStepsProps {
-  children: ReactNode[];
-}
-
-const StepperSteps: FC<StepperStepsProps> = ({ children }) => {
+const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -81,7 +76,7 @@ export interface StepperProps {
 // Main <Stepper/> component which contains subcomponents
 export const Stepper: FC<PropsWithChildren<StepperProps>> & {
   Step: FC<StepProps>;
-  Steps: any;
+  Steps: FC<PropsWithChildren<void>>;
 } = ({ currentStepIsLoading = false, canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 
