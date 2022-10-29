@@ -207,7 +207,8 @@ const tests = [
         await this.client.gameserver.gameServerControllerCreate({
           name: 'my-server',
           type: 'RUST',
-          connectionInfo: '{}',
+          connectionInfo:
+            '{"host": "169.169.169.80", "rconPort": "28016", "rconPassword": "123456"}',
         })
       ).data.data;
     },
