@@ -32,13 +32,14 @@ export class GameServerModel extends TakaroModel {
   type!: GAME_SERVER_TYPE;
 
   static get relationMappings() {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const modelke = require('./player.ts').PlayerOnGameServerModel;
+    const PlayerOnGameServerModel =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('./player.ts').PlayerOnGameServerModel;
 
     return {
       players: {
         relation: Model.HasManyRelation,
-        modelClass: modelke,
+        modelClass: PlayerOnGameServerModel,
         join: {
           from: `${GAMESERVER_TABLE_NAME}.id`,
           to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,

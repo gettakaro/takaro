@@ -31,11 +31,12 @@ export class PlayerModel extends TakaroModel {
 
   static get relationMappings() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const modelke = require('./gameserver.ts').GameServerModel;
+    const GameServerModel = require('./gameserver.ts').GameServerModel;
+
     return {
       gameServers: {
         relation: Model.ManyToManyRelation,
-        modelClass: modelke,
+        modelClass: GameServerModel,
         join: {
           from: `${PLAYER_TABLE_NAME}.id`,
           through: {
