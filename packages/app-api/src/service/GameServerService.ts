@@ -56,13 +56,15 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   type: GAME_SERVER_TYPE;
 }
 
+const manager = new IGameServerInMemoryManager();
+
 export class GameServerService extends TakaroService<
   GameServerModel,
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO
 > {
-  private readonly gameServerManager = new IGameServerInMemoryManager();
+  private readonly gameServerManager = manager;
 
   get repo() {
     return new GameServerRepo(this.domainId);

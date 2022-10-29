@@ -8,45 +8,36 @@ import {
   FunctionOutputDTO,
   FunctionUpdateDTO,
 } from '../service/FunctionService';
+import { HOOKS_TABLE_NAME } from './hook';
 
 export const FUNCTION_TABLE_NAME = 'functions';
-
-export const FUNCTIONS_ASSIGNMENT_TABLE_NAME = 'functionAssignments';
-
-export enum ItemsThatCanBeAssignedAFunction {
-  CRONJOB = 'cronjob',
-  HOOK = 'hook',
-  COMMAND = 'command',
-}
-
-export class FunctionAssignmentModel extends TakaroModel {
-  static tableName = FUNCTIONS_ASSIGNMENT_TABLE_NAME;
-
-  function!: string;
-  cronJob!: string;
-  command!: string;
-  hook!: string;
-}
 
 export class FunctionModel extends TakaroModel {
   static tableName = FUNCTION_TABLE_NAME;
   code!: string;
 
-  static relationMappings = {
-    cronJob: {
-      relation: Model.ManyToManyRelation,
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      modelClass: require('./cronjob').CronJobModel,
-      join: {
-        from: `${FUNCTION_TABLE_NAME}.id`,
-        through: {
-          from: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.function`,
-          to: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.cronJob`,
+  static get relationMappings() {
+    return {
+      cronJob: {
+        relation: Model.HasOneRelation,
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        modelClass: require('./cronjob').CronJobModel,
+        join: {
+          from: `${FUNCTION_TABLE_NAME}.id`,
+          to: `${CRONJOB_TABLE_NAME}.id`,
         },
-        to: `${CRONJOB_TABLE_NAME}.id`,
       },
-    },
-  };
+      hook: {
+        relation: Model.HasOneRelation,
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        modelClass: require('./hook').HookModel,
+        join: {
+          from: `${FUNCTION_TABLE_NAME}.id`,
+          to: `${HOOKS_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
 }
 
 export class FunctionRepo extends ITakaroRepo<
@@ -108,71 +99,5 @@ export class FunctionRepo extends ITakaroRepo<
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
     return new FunctionOutputDTO(result);
-  }
-
-  async assign(
-    type: ItemsThatCanBeAssignedAFunction,
-    itemId: string,
-    functionId: string
-  ) {
-    const knex = await this.getKnex();
-    const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
-
-    switch (type) {
-      case ItemsThatCanBeAssignedAFunction.CRONJOB:
-        await functionAssignmentModel.query().insert({
-          cronJob: itemId,
-          function: functionId,
-        });
-        break;
-      case ItemsThatCanBeAssignedAFunction.HOOK:
-        await functionAssignmentModel.query().insert({
-          hook: itemId,
-          function: functionId,
-        });
-        break;
-      case ItemsThatCanBeAssignedAFunction.COMMAND:
-        await functionAssignmentModel.query().insert({
-          command: itemId,
-          function: functionId,
-        });
-        break;
-      default:
-        throw new errors.ValidationError(`Unknown type ${type}`);
-        break;
-    }
-  }
-
-  async unAssign(itemId: string, functionId: string) {
-    const knex = await this.getKnex();
-    const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
-
-    return functionAssignmentModel
-      .query()
-      .delete()
-      .where({ function: functionId })
-      .andWhere({ cronJob: itemId })
-      .orWhere({ command: itemId })
-      .orWhere({ hook: itemId });
-  }
-
-  async getRelatedFunctions(itemId: string, onlyIds = true) {
-    const knex = await this.getKnex();
-    const functionAssignmentModel = FunctionAssignmentModel.bindKnex(knex);
-    const functionModel = FunctionModel.bindKnex(knex);
-
-    const data = await functionAssignmentModel
-      .query()
-      .orWhere({ cronJob: itemId })
-      .orWhere({ command: itemId })
-      .orWhere({ hook: itemId });
-
-    const functionIds = data.map((item) => item.function);
-
-    if (onlyIds) {
-      return functionIds;
-    }
-
-    return functionModel.query().findByIds(functionIds);
   }
 }
