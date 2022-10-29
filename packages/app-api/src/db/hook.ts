@@ -2,10 +2,7 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/logger';
 import { ITakaroRepo } from './base';
-import {
-  FUNCTIONS_ASSIGNMENT_TABLE_NAME,
-  FUNCTION_TABLE_NAME,
-} from './function';
+import { FUNCTION_TABLE_NAME } from './function';
 import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,
@@ -24,16 +21,12 @@ export class HookModel extends TakaroModel {
 
   static get relationMappings() {
     return {
-      functions: {
-        relation: Model.ManyToManyRelation,
+      function: {
+        relation: Model.HasOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
           from: `${HOOKS_TABLE_NAME}.id`,
-          through: {
-            from: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.hook`,
-            to: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.function`,
-          },
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -60,7 +53,7 @@ export class HookRepo extends ITakaroRepo<
     const model = await this.getModel();
     const result = await new QueryBuilder<HookModel, HookOutputDTO>({
       ...filters,
-      extend: ['functions'],
+      extend: ['function'],
     }).build(model.query());
     return {
       total: result.total,
@@ -70,7 +63,7 @@ export class HookRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<HookOutputDTO> {
     const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('functions');
+    const data = await model.query().findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -82,6 +75,10 @@ export class HookRepo extends ITakaroRepo<
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().insert(item.toJSON());
+
+    if (item.function) {
+      await this.assign(data.id, item.function);
+    }
 
     return this.findOne(data.id);
   }
@@ -97,8 +94,13 @@ export class HookRepo extends ITakaroRepo<
     const item = await model
       .query()
       .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('functions');
+      .withGraphFetched('function');
 
     return new HookOutputDTO(item);
+  }
+
+  async assign(id: string, functionId: string) {
+    const model = await this.getModel();
+    await model.relatedQuery('function').for(id).relate(functionId);
   }
 }

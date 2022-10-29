@@ -11,7 +11,9 @@
       "enabled": true,
       "temporalValue": "0 * * * *",
       "moduleId": "882f051b-37f2-4f26-b260-7d22d75b9ad8",
-      "functions": []
+      "function": {
+        "code": ""
+      }
     }
   },
   "status": 200,

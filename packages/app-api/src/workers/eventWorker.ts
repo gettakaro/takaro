@@ -12,7 +12,6 @@ import {
 import { HookService } from '../service/HookService';
 import { QueuesService } from '@takaro/queues';
 import { AuthService } from '../service/AuthService';
-import { FunctionService } from '../service/FunctionService';
 import { PlayerService } from '../service/PlayerService';
 
 const log = logger('worker:events');
@@ -62,17 +61,11 @@ export async function handleHooks(eventData: IEventQueueData) {
 
     await Promise.all(
       triggeredHooks.map(async (hook) => {
-        const functionsService = new FunctionService(eventData.domainId);
-        const relatedFunctions = await functionsService.getRelatedFunctions(
-          hook.id,
-          true
-        );
-
         return queues.queues.hooks.queue.add(hook.id, {
           itemId: hook.id,
           data: eventData.event,
           domainId: eventData.domainId,
-          functions: relatedFunctions as string[],
+          function: hook.function.code,
           token,
         });
       })

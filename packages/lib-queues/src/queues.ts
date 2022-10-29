@@ -35,7 +35,7 @@ export abstract class TakaroWorker<T> extends Worker<T> {
   }
 }
 export interface IJobData {
-  functions: string[];
+  function: string;
   domainId: string;
   token: string;
   /**

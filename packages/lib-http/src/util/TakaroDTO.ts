@@ -1,17 +1,12 @@
 import { errors, logger } from '@takaro/logger';
-import { Allow, validate } from 'class-validator';
+import { validate } from 'class-validator';
 import { classToPlain } from 'class-transformer';
-import { Exclude } from 'class-transformer';
 
 /**
  * Generic Data Transfer Object, used widely in Takaro to pass data back and forth between components
  * Allows validation of properties when instantiated and JSON (de)serialization
  */
 export class TakaroDTO<T> {
-  @Allow()
-  @Exclude()
-  private log = logger('TakaroDTO');
-
   constructor(data: Partial<T> = {}) {
     Object.assign(this, data);
   }
@@ -25,7 +20,7 @@ export class TakaroDTO<T> {
 
     if (validationErrors.length) {
       const msg = `${validationErrors[0]}`;
-      this.log.warn(msg, validationErrors);
+      logger('TakaroDTO').warn(msg, validationErrors);
       throw new errors.ValidationError(msg, validationErrors);
     }
   }

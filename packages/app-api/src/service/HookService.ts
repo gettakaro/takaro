@@ -15,7 +15,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import {
-  AssignFunctionDTO,
+  FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
 } from './FunctionService';
@@ -46,8 +46,8 @@ export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
   regex: string;
 
   @Type(() => FunctionOutputDTO)
-  @ValidateNested({ each: true })
-  functions: FunctionOutputDTO[];
+  @ValidateNested()
+  function: FunctionOutputDTO;
 
   @IsEnum(GameEvents)
   eventType: GameEvents;
@@ -74,6 +74,10 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
 
   @IsEnum(GameEvents)
   eventType: GameEvents;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
@@ -119,7 +123,23 @@ export class HookService extends TakaroService<
   }
 
   async create(item: HookCreateDTO) {
-    const created = await this.repo.create(item);
+    const functionsService = new FunctionService(this.domainId);
+    let fnIdToAdd: string | null = null;
+
+    if (item.function) {
+      fnIdToAdd = item.function;
+    } else {
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: '',
+        })
+      );
+      fnIdToAdd = newFn.id;
+    }
+
+    const created = await this.repo.create(
+      new HookCreateDTO({ ...item, function: fnIdToAdd })
+    );
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -129,19 +149,5 @@ export class HookService extends TakaroService<
 
   async delete(id: string): Promise<boolean> {
     return this.repo.delete(id);
-  }
-
-  async assign(data: AssignFunctionDTO) {
-    const functionsService = new FunctionService(this.domainId);
-    await functionsService.assign(data);
-    const hook = await this.repo.findOne(data.itemId);
-    return hook;
-  }
-
-  async unAssign(itemId: string, functionId: string) {
-    const functionsService = new FunctionService(this.domainId);
-    await functionsService.unAssign(itemId, functionId);
-    const hook = await this.repo.findOne(itemId);
-    return hook;
   }
 }
