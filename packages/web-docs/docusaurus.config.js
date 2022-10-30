@@ -6,8 +6,6 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 async function createConfig() {
-  const mdxMermaid = await import('mdx-mermaid');
-
   return {
     title: 'Takaro',
     tagline: 'Multi-gameserver manager',
@@ -16,6 +14,10 @@ async function createConfig() {
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
+    markdown: {
+      mermaid: true,
+    },
+    themes: ['@docusaurus/theme-mermaid'],
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -36,7 +38,7 @@ async function createConfig() {
         /** @type {import('@docusaurus/preset-classic').Options} */
         ({
           docs: {
-            remarkPlugins: [mdxMermaid.default],
+            remarkPlugins: [],
             sidebarPath: require.resolve('./sidebars.js'),
             // Please change this to your repo.
             // Remove this to remove the "edit this page" links.
