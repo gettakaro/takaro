@@ -11,11 +11,11 @@ const mockSdtdConnectionInfo: SdtdConnectionInfo = {
 };
 
 describe('7d2d event detection', () => {
-  let emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emitGameEvent');
+  let emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
 
   beforeEach(() => {
     sandbox.restore();
-    emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emitGameEvent');
+    emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
   });
 
   it('[PlayerConnected]: Can detect simple player connected', () => {

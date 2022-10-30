@@ -1,16 +1,16 @@
 import WebSocket from 'ws';
 import { logger, errors } from '@takaro/util';
-import { TakaroEmitter } from '../../interfaces/eventEmitter';
 import {
+  EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-  IGameEventEmitter,
   IGamePlayer,
 } from '../../main';
 import { IsString } from 'class-validator';
 import { JsonObject } from 'type-fest';
 import { RustConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
 
 export class RustConfig {
   @IsString()
@@ -47,7 +47,7 @@ export interface RustEvent {
   stacktrace: string;
 }
 
-export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
+export class RustEmitter extends TakaroEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
   private config: RustConnectionInfo;
@@ -100,17 +100,20 @@ export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.message)) {
       this.logger.debug('regexje');
       const data = this.handlePlayerConnected(e.message);
-      this.emitGameEvent(GameEvents.PLAYER_CONNECTED, data);
+      this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.message)) {
       const data = this.handlePlayerDisconnected(e.message);
-      this.emitGameEvent(GameEvents.PLAYER_DISCONNECTED, data);
+      this.emit(GameEvents.PLAYER_DISCONNECTED, data);
     }
 
-    this.emit(GameEvents.LOG_LINE, {
-      timestamp: new Date(),
-      msg: e.message,
-    });
+    this.emit(
+      GameEvents.LOG_LINE,
+      new EventLogLine({
+        timestamp: new Date(),
+        msg: e.message,
+      })
+    );
   }
 
   private handlePlayerConnected(msg: string) {

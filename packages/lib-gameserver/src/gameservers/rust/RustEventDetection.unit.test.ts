@@ -19,16 +19,24 @@ const MOCK_PLAYER = new IGamePlayer({
   device: 'windows',
 });
 
+const MOCK_CONNECTION_INFO = {
+  host: 'localhost',
+  rconPassword: 'aaa',
+  rconPort: '28016',
+};
+
 describe('rust event detection', () => {
   let emitStub: SinonStub;
 
   beforeEach(() => {
     sandbox.restore();
-    emitStub = sandbox.stub(RustEmitter.prototype, 'emitGameEvent');
+    emitStub = sandbox.stub(RustEmitter.prototype, 'emit');
   });
 
   it('[PlayerConnected]: Can detect simple player connected', () => {
-    new RustEmitter().parseMessage(MOCK_RUST_PLAYER_CONNECTED);
+    new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
+      MOCK_RUST_PLAYER_CONNECTED
+    );
 
     expect(emitStub).to.have.been.calledOnce;
 
@@ -40,6 +48,8 @@ describe('rust event detection', () => {
   });
 
   it('[PlayerDisconnected]: Can detect simple player disconnected', () => {
-    new RustEmitter().parseMessage(MOCK_RUST_PLAYER_CONNECTED);
+    new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
+      MOCK_RUST_PLAYER_CONNECTED
+    );
   });
 });

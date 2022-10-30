@@ -2,16 +2,13 @@ import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
-  IGameEventEmitter,
-  TakaroEmitter,
-} from '../../interfaces/eventEmitter';
-import {
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
 } from '../../interfaces/events';
 import { SdtdConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -22,10 +19,7 @@ const EventRegexMap = {
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
 };
 
-export class SevenDaysToDieEmitter
-  extends TakaroEmitter
-  implements IGameEventEmitter
-{
+export class SevenDaysToDieEmitter extends TakaroEmitter {
   private SSERegex = /\d+-\d+-\d+T\d+:\d+:\d+ \d+\.\d+ INF (.+)/;
   private eventSource!: EventSource;
   private logger = logger('7D2D:SSE');
@@ -67,20 +61,16 @@ export class SevenDaysToDieEmitter
     }
 
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(logLine.msg)) {
-      const data = this.handlePlayerConnected(
-        logLine as unknown as I7DaysToDieEvent
-      );
-      this.emitGameEvent(GameEvents.PLAYER_CONNECTED, data);
+      const data = this.handlePlayerConnected(logLine);
+      await this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
 
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(logLine.msg)) {
-      const data = this.handlePlayerDisconnected(
-        logLine as unknown as I7DaysToDieEvent
-      );
-      this.emitGameEvent(GameEvents.PLAYER_DISCONNECTED, data);
+      const data = this.handlePlayerDisconnected(logLine);
+      await this.emit(GameEvents.PLAYER_DISCONNECTED, data);
     }
 
-    this.emitGameEvent(
+    await this.emit(
       GameEvents.LOG_LINE,
       new EventLogLine({
         timestamp: new Date(),
@@ -154,16 +144,12 @@ export class SevenDaysToDieEmitter
   }
 
   async listener(data: MessageEvent) {
-    try {
-      const parsed = JSON.parse(data.data);
-      const messageMatch = this.SSERegex.exec(parsed.msg);
-      if (messageMatch && messageMatch[1]) {
-        parsed.msg = messageMatch[1];
-      }
-
-      await this.parseMessage(parsed);
-    } catch (error) {
-      this.logger.error('Error handling message from game server', error);
+    const parsed = JSON.parse(data.data);
+    const messageMatch = this.SSERegex.exec(parsed.msg);
+    if (messageMatch && messageMatch[1]) {
+      parsed.msg = messageMatch[1];
     }
+
+    await this.parseMessage(parsed);
   }
 }

@@ -1,6 +1,5 @@
 import { logger } from '@takaro/util';
 import { IsString, IsBoolean } from 'class-validator';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { SevenDaysToDieEmitter } from './emitter';
@@ -36,7 +35,7 @@ export class SevenDaysToDie implements IGameServer {
     return [];
   }
 
-  async getEventEmitter(): Promise<IGameEventEmitter> {
+  getEventEmitter() {
     const emitter = new SevenDaysToDieEmitter(this.connectionInfo);
     return emitter;
   }

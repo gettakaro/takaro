@@ -1,6 +1,5 @@
 import { logger } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
@@ -35,7 +34,7 @@ export class Rust implements IGameServer {
     return [];
   }
 
-  async getEventEmitter(): Promise<IGameEventEmitter> {
+  getEventEmitter() {
     const emitter = new RustEmitter(this.connectionInfo);
     return emitter;
   }

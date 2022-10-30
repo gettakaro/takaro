@@ -1,7 +1,6 @@
 import faker from '@faker-js/faker';
 import { logger } from '@takaro/util';
 import { IsNumber } from 'class-validator';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
@@ -42,7 +41,7 @@ export class Mock implements IGameServer {
     return [];
   }
 
-  async getEventEmitter(): Promise<IGameEventEmitter> {
+  getEventEmitter() {
     const emitter = new MockEmitter(this.connectionInfo);
     return emitter;
   }

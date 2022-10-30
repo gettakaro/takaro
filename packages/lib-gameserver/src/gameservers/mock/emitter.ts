@@ -1,6 +1,4 @@
-import { EventEmitter } from 'node:stream';
 import { logger } from '@takaro/util';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import {
   EventPlayerConnected,
   EventLogLine,
@@ -9,8 +7,9 @@ import {
 } from '../../interfaces/events';
 import type { Faker } from '@faker-js/faker';
 import { MockConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
 
-export class MockEmitter extends EventEmitter implements IGameEventEmitter {
+export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');
   private interval: NodeJS.Timer | null = null;
 
@@ -34,10 +33,10 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     }
   }
 
-  private fireEvent(faker: Faker) {
+  private async fireEvent(faker: Faker) {
     const type = this.getRandomFromEnum();
     const data = this.getRandomEvent(faker, type);
-    this.emit(type, data);
+    await this.emit(type, data);
 
     this.logger.debug(`Emitted ${type}`, data);
   }
@@ -57,18 +56,19 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
   private getRandomEvent(faker: Faker, type: string) {
     let event;
 
-    if (type === GameEvents.PLAYER_CONNECTED) {
-      event = new EventPlayerConnected({ player: this.mockPlayer() });
-    }
+    switch (type) {
+      case GameEvents.PLAYER_CONNECTED:
+        event = new EventPlayerConnected({ player: this.mockPlayer() });
 
-    if (type === GameEvents.PLAYER_DISCONNECTED) {
-      event = new EventPlayerDisconnected({ player: this.mockPlayer() });
-    }
-
-    if (type === GameEvents.LOG_LINE) {
-      event = new EventLogLine({
-        msg: `This is a log line :) - ${faker.random.words()}`,
-      });
+        break;
+      case GameEvents.PLAYER_DISCONNECTED:
+        event = new EventPlayerDisconnected({ player: this.mockPlayer() });
+        break;
+      default:
+        event = new EventLogLine({
+          msg: `This is a log line :) - ${faker.random.words()}`,
+        });
+        break;
     }
 
     return event;
