@@ -115,9 +115,7 @@ export class GameServerRepo extends ITakaroRepo<
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
     const model = await this.getModel();
-    const encryptedConnectionInfo = await encrypt(
-      JSON.stringify(item.connectionInfo)
-    );
+    const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
       connectionInfo: encryptedConnectionInfo,
