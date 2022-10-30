@@ -1,8 +1,7 @@
 import { expect, sandbox } from '@takaro/test';
 import { SinonStub } from 'sinon';
-import { RustEmitter, RustEvent, RustEventType } from '.../emitter';
-import { GameEvents, IGamePlayer } from '../../../../main';
-import { RustConnectionInfo } from '..';
+import { RustEmitter, RustEvent, RustEventType } from '../emitter';
+import { GameEvents, IGamePlayer } from '../../../main';
 import { RustConnectionInfo } from '..';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
