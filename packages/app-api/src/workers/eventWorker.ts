@@ -30,11 +30,11 @@ function isConnectedEvent(a: BaseEvent): a is EventPlayerConnected {
 async function processJob(job: Job<IEventQueueData>) {
   log.info('Processing an event', job.data);
 
-  const { type, event, domainId } = job.data;
+  const { type, event, domainId, gameServerId } = job.data;
 
   if (isConnectedEvent(event)) {
     const playerService = new PlayerService(domainId);
-    await playerService.sync(event.player, domainId);
+    await playerService.sync(event.player, gameServerId);
   }
 
   await handleHooks(job.data);
