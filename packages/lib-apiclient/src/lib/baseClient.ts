@@ -56,19 +56,11 @@ export class BaseApiClient {
       axios.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${this.config.auth.token}`;
-    } else {
-      if (this.config.auth.adminSecret) {
-        axios.defaults.auth = {
-          username: 'admin',
-          password: this.config.auth.adminSecret,
-        };
-      } else {
-        if (!this.config.auth.username || !this.config.auth.password) {
-          this.log.warn(
-            'No authentication provided, any authenticated endpoint will fail!'
-          );
-        }
-      }
+    } else if (this.config.auth.adminSecret) {
+      axios.defaults.auth = {
+        username: 'admin',
+        password: this.config.auth.adminSecret,
+      };
     }
 
     return axios;
