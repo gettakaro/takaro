@@ -34,23 +34,17 @@ describe('rust event detection', () => {
     emitStub = sandbox.stub(RustEmitter.prototype, 'emit');
   });
 
-  it('[PlayerConnected]: Can detect simple player connected', () => {
-    new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
+  it('[PlayerConnected]: Can detect simple player connected', async () => {
+    await new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
       MOCK_RUST_PLAYER_CONNECTED
     );
 
-    expect(emitStub).to.have.been.calledOnce;
+    expect(emitStub).to.have.been.calledTwice;
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(
       GameEvents.PLAYER_CONNECTED
     );
 
     expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(MOCK_PLAYER);
-  });
-
-  it('[PlayerDisconnected]: Can detect simple player disconnected', () => {
-    new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
-      MOCK_RUST_PLAYER_CONNECTED
-    );
   });
 });
