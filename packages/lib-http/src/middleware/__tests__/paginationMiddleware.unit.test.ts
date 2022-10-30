@@ -1,6 +1,9 @@
 import { sandbox, expect } from '@takaro/test';
 import { NextFunction, Response } from 'express';
-import { PaginationMiddleware, PaginatedRequest } from './paginationMiddleware';
+import {
+  PaginationMiddleware,
+  PaginatedRequest,
+} from '../paginationMiddleware';
 import { errors } from '@takaro/logger';
 
 async function runPagination(page?: number, limit?: number) {

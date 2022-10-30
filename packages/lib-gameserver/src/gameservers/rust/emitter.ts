@@ -120,8 +120,6 @@ export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
         msg
       );
 
-    console.log(expSearch?.groups);
-
     if (
       expSearch &&
       expSearch.groups &&

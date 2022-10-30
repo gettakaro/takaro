@@ -1,6 +1,6 @@
 import { IntegrationTest } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
-import { CAPABILITIES } from '../service/RoleService';
+import { CAPABILITIES } from '../../service/RoleService';
 
 const group = 'RoleController';
 

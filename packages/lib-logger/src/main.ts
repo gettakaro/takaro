@@ -50,10 +50,17 @@ const simpleFormat = combine(
 
 const jsonFormat = combine(json());
 
+let level = config.get('logging.level');
+
+if (config.get('mode') === 'test' && process.env.LOGGING_LEVEL === undefined) {
+  level = 'none';
+}
+
 const transports = [
   new winston.transports.Console({
-    level: config.get('logging.level'),
+    level: level,
     format: config.get('logging.json') ? jsonFormat : simpleFormat,
+    silent: level === 'none',
   }),
 ];
 

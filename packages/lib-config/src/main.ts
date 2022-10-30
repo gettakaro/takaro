@@ -4,7 +4,7 @@ export interface IBaseConfig {
   app: {
     name: string;
   };
-  mode: 'development' | 'production';
+  mode: 'development' | 'production' | 'test';
 }
 
 export const baseConfigConvict: Schema<IBaseConfig> = {
@@ -18,7 +18,7 @@ export const baseConfigConvict: Schema<IBaseConfig> = {
   },
   mode: {
     doc: 'The application mode',
-    format: ['development', 'production'],
+    format: ['development', 'production', 'test'],
     default: 'production',
     env: 'NODE_ENV',
   },
