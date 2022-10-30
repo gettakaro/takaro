@@ -102,14 +102,11 @@ export function getErrorProxyHandler<T extends TakaroEmitter>(emitter: T) {
         try {
           // Check if callable function
           if (typeof target[prop] === 'function') {
-            //console.log('Function! Executing');
             return await target[prop](one, two);
             // Or if its a Promise, await it
           } else if (isPromise(target[prop])) {
-            //console.log('Promise! Awaiting');
             return await target[prop];
           } else {
-            //console.log('Returning');
             // Otherwise, return the value
             return target[prop];
           }
