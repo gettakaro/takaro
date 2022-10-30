@@ -1,11 +1,11 @@
 import faker from '@faker-js/faker';
-import { logger } from '@takaro/util';
+import { logger, TakaroDTO } from '@takaro/util';
 import { IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
 
-export class MockConnectionInfo {
+export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   @IsNumber()
   public readonly eventInterval = 10000;
   public readonly playerPoolSize = 100;
