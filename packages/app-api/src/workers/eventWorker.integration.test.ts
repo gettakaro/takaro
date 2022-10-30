@@ -4,7 +4,7 @@ import {
   HookOutputDTOAPI,
   HookCreateDTOEventTypeEnum,
 } from '@takaro/apiclient';
-import { GameEvents, IGamePlayer } from '@takaro/gameserver';
+import { GameEvents, IGamePlayer, EventLogLine } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
@@ -62,11 +62,11 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        event: {
+        event: new EventLogLine({
           msg: 'this is a test',
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
           type: GameEvents.LOG_LINE,
-        },
+        }),
       });
 
       expect(addStub).to.have.been.calledOnce;
@@ -121,11 +121,11 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        event: {
+        event: new EventLogLine({
           msg: 'this is a test',
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
           type: GameEvents.LOG_LINE,
-        },
+        }),
       });
 
       expect(addStub).to.have.been.calledTwice;
@@ -182,11 +182,11 @@ const tests = [
         type: GameEvents.LOG_LINE,
         domainId: this.standardDomainId,
         gameServerId: this.setupData.gameserver.id,
-        event: {
+        event: new EventLogLine({
           msg: 'this is a test',
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
           type: GameEvents.LOG_LINE,
-        },
+        }),
       });
 
       expect(addStub).to.have.been.calledOnce;
@@ -206,7 +206,7 @@ const tests = [
       return (
         await this.client.gameserver.gameServerControllerCreate({
           name: 'my-server',
-          type: 'RUST',
+          type: 'MOCK',
           connectionInfo:
             '{"host": "169.169.169.80", "rconPort": "28016", "rconPassword": "123456"}',
         })
