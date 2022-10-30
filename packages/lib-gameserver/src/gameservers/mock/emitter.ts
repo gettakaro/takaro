@@ -8,6 +8,7 @@ import {
 import type { Faker } from '@faker-js/faker';
 import { MockConnectionInfo } from '.';
 import { TakaroEmitter } from '../../TakaroEmitter';
+import { IGamePlayer } from '../../main';
 
 export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');
@@ -42,9 +43,12 @@ export class MockEmitter extends TakaroEmitter {
   }
 
   private mockPlayer() {
-    return this.config.mockPlayers[
-      Math.floor(Math.random() * this.config.mockPlayers.length)
-    ];
+    const randomEntry =
+      this.config.mockPlayers[
+        Math.floor(Math.random() * this.config.mockPlayers.length)
+      ];
+
+    return new IGamePlayer(randomEntry);
   }
 
   private getRandomFromEnum() {
@@ -55,14 +59,18 @@ export class MockEmitter extends TakaroEmitter {
 
   private getRandomEvent(faker: Faker, type: string) {
     let event;
+    const player = this.mockPlayer();
 
     switch (type) {
       case GameEvents.PLAYER_CONNECTED:
-        event = new EventPlayerConnected({ player: this.mockPlayer() });
+        event = new EventPlayerConnected({ player, msg: 'player-connected' });
 
         break;
       case GameEvents.PLAYER_DISCONNECTED:
-        event = new EventPlayerDisconnected({ player: this.mockPlayer() });
+        event = new EventPlayerDisconnected({
+          player,
+          msg: 'player-disconnected',
+        });
         break;
       default:
         event = new EventLogLine({

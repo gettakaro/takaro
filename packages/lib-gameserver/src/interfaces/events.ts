@@ -16,15 +16,14 @@ export type EventMapping = {
 };
 
 export class BaseEvent extends TakaroDTO<BaseEvent> {
-  [key: string]: unknown;
   @IsISO8601()
   timestamp: string;
 
   @IsEnum(GameEvents)
-  type!: string;
+  type: string;
 
   @IsString()
-  msg!: string;
+  msg: string;
 
   constructor(data: Record<string, unknown>) {
     super({ ...data, timestamp: new Date().toISOString() });
@@ -39,12 +38,12 @@ export class EventPlayerConnected extends BaseEvent {
   type = GameEvents.PLAYER_CONNECTED;
   @ValidateNested()
   @Type(() => IGamePlayer)
-  player!: IGamePlayer;
+  player: IGamePlayer;
 }
 
 export class EventPlayerDisconnected extends BaseEvent {
   type = GameEvents.PLAYER_DISCONNECTED;
   @ValidateNested()
   @Type(() => IGamePlayer)
-  player!: IGamePlayer;
+  player: IGamePlayer;
 }
