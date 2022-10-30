@@ -50,32 +50,34 @@ export interface RustEvent {
 export class RustEmitter extends TakaroEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
-  private config: RustConnectionInfo;
 
-  constructor(config: RustConnectionInfo) {
+  constructor(private config: RustConnectionInfo) {
     super();
-    this.config = config;
   }
 
   async start(): Promise<void> {
-    this.logger.debug('Connecting to [RUST] game server...');
+    return new Promise((resolve, reject) => {
+      this.logger.debug('Connecting to [RUST] game server...');
 
-    this.ws = new WebSocket(
-      `ws://${this.config.host}:${this.config.rconPort}/${this.config.rconPassword}`
-    );
+      this.ws = new WebSocket(
+        `ws://${this.config.host}:${this.config.rconPort}/${this.config.rconPassword}`
+      );
 
-    this.logger.debug('Connected to [RUST] game server!!!');
+      this.logger.debug('Connected to [RUST] game server!!!');
 
-    this.ws.on('message', (m: string) => {
-      this.listener(m);
-    });
+      this.ws.on('message', (m: string) => {
+        this.listener(m);
+      });
 
-    this.ws.on('open', () => {
-      this.logger.info('Connected to [RUST] game server.');
-    });
+      this.ws.on('open', () => {
+        this.logger.info('Connected to [RUST] game server.');
+        return resolve();
+      });
 
-    this.ws.on('error', (e) => {
-      this.logger.error('Could not connect to [RUST] game server!', e);
+      this.ws.on('error', (e) => {
+        this.logger.error('Could not connect to [RUST] game server!', e);
+        return reject();
+      });
     });
   }
 

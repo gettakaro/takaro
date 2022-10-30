@@ -1,10 +1,10 @@
-import { logger } from '@takaro/util';
+import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsBoolean } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { SevenDaysToDieEmitter } from './emitter';
 
-export class SdtdConnectionInfo {
+export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   @IsString()
   public readonly host!: string;
   @IsString()
@@ -13,10 +13,6 @@ export class SdtdConnectionInfo {
   public readonly adminToken!: string;
   @IsBoolean()
   public readonly useTls!: boolean;
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
 }
 export class SevenDaysToDie implements IGameServer {
   private logger = logger('7D2D');

@@ -1,20 +1,16 @@
-import { logger } from '@takaro/util';
+import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
 
-export class RustConnectionInfo {
+export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
   @IsString()
   public readonly host!: string;
   @IsNumber()
   public readonly rconPort!: string;
   @IsString()
   public readonly rconPassword!: string;
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
 }
 
 export class Rust implements IGameServer {

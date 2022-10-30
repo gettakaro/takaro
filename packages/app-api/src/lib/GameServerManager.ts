@@ -42,7 +42,11 @@ export class IGameServerInMemoryManager {
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
     this.attachListeners(domainId, gameServer.id, emitter);
-    await emitter.start();
+    try {
+      await emitter.start();
+    } catch (error) {
+      this.log.warn('Error while starting gameserver', { error });
+    }
 
     this.log.info(`Added game server ${gameServer.id}`);
   }
