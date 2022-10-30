@@ -12,17 +12,16 @@ export class MockConnectionInfo {
 
   public readonly mockPlayers: IGamePlayer[] = Array.from(
     Array(this.playerPoolSize).keys()
-  ).map((p) => ({
-    gameId: p.toString(),
-    name: faker.internet.userName(),
-    epicOnlineServicesId: faker.random.alphaNumeric(16),
-    steamId: faker.random.alphaNumeric(16),
-    xboxLiveId: faker.random.alphaNumeric(16),
-  }));
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
+  ).map(
+    (p) =>
+      new IGamePlayer({
+        gameId: p.toString(),
+        name: faker.internet.userName(),
+        epicOnlineServicesId: faker.random.alphaNumeric(16),
+        steamId: faker.random.alphaNumeric(16),
+        xboxLiveId: faker.random.alphaNumeric(16),
+      })
+  );
 }
 export class Mock implements IGameServer {
   private logger = logger('Mock');
