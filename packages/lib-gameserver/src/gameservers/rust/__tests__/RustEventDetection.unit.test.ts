@@ -1,7 +1,8 @@
 import { expect, sandbox } from '@takaro/test';
 import { SinonStub } from 'sinon';
-import { RustEmitter, RustEvent, RustEventType } from './emitter';
-import { GameEvents, IGamePlayer } from '../../main';
+import { RustEmitter, RustEvent, RustEventType } from '../emitter';
+import { GameEvents, IGamePlayer } from '../../../main';
+import { RustConnectionInfo } from '..';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   message:
@@ -19,6 +20,12 @@ const MOCK_PLAYER = new IGamePlayer({
   device: 'windows',
 });
 
+const MOCK_RUST_CONNECTION_INFO: RustConnectionInfo = {
+  host: '169.169.169.80',
+  rconPort: '28016',
+  rconPassword: 'verysecure',
+};
+
 describe('rust event detection', () => {
   let emitStub: SinonStub;
 
@@ -28,7 +35,9 @@ describe('rust event detection', () => {
   });
 
   it('[PlayerConnected]: Can detect simple player connected', () => {
-    new RustEmitter().parseMessage(MOCK_RUST_PLAYER_CONNECTED);
+    new RustEmitter(MOCK_RUST_CONNECTION_INFO).parseMessage(
+      MOCK_RUST_PLAYER_CONNECTED
+    );
 
     expect(emitStub).to.have.been.calledOnce;
 
@@ -40,6 +49,8 @@ describe('rust event detection', () => {
   });
 
   it('[PlayerDisconnected]: Can detect simple player disconnected', () => {
-    new RustEmitter().parseMessage(MOCK_RUST_PLAYER_CONNECTED);
+    new RustEmitter(MOCK_RUST_CONNECTION_INFO).parseMessage(
+      MOCK_RUST_PLAYER_CONNECTED
+    );
   });
 });
