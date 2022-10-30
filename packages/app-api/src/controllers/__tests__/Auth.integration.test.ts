@@ -1,6 +1,6 @@
 import { IntegrationTest, logInWithCapabilities } from '@takaro/test';
 import { RoleSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
-import { CAPABILITIES } from '../service/RoleService';
+import { CAPABILITIES } from '../../service/RoleService';
 
 const group = 'Auth';
 

@@ -1,7 +1,8 @@
 import { expect, sandbox } from '@takaro/test';
 import { SinonStub } from 'sinon';
-import { RustEmitter, RustEvent, RustEventType } from './emitter';
-import { GameEvents, IGamePlayer } from '../../main';
+import { RustEmitter, RustEvent, RustEventType } from '../emitter';
+import { GameEvents, IGamePlayer } from '../../../main';
+import { RustConnectionInfo } from '..';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   message:
@@ -19,11 +20,11 @@ const MOCK_PLAYER = new IGamePlayer({
   device: 'windows',
 });
 
-const MOCK_CONNECTION_INFO = {
+const MOCK_CONNECTION_INFO = new RustConnectionInfo({
   host: 'localhost',
   rconPassword: 'aaa',
   rconPort: '28016',
-};
+});
 
 describe('rust event detection', () => {
   let emitStub: SinonStub;

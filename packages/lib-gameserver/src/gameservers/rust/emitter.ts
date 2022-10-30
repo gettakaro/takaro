@@ -125,8 +125,6 @@ export class RustEmitter extends TakaroEmitter {
         msg
       );
 
-    console.log(expSearch?.groups);
-
     if (
       expSearch &&
       expSearch.groups &&

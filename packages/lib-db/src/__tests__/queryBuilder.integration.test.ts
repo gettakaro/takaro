@@ -1,10 +1,10 @@
 import {
   NOT_DOMAIN_SCOPED_getKnex,
   NOT_DOMAIN_SCOPED_disconnectKnex,
-} from './knex';
-import { QueryBuilder, SortDirection } from './queryBuilder';
+} from '../knex';
+import { QueryBuilder, SortDirection } from '../queryBuilder';
 import { expect } from '@takaro/test';
-import { TakaroModel } from './TakaroModel';
+import { TakaroModel } from '../TakaroModel';
 import { Model } from 'objection';
 
 const TEST_TABLE_USERS_NAME = 'test_users';

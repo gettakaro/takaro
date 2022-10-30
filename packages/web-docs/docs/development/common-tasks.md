@@ -4,12 +4,12 @@ sidebar_position: 6
 
 # Common tasks and snippets
 
-
 ## Running tests
 
 Running integration tests is easiest via the dev container.
 
-Run everything: 
+Run everything:
+
 ```
 docker-compose exec takaro npm -w packages/app-api run test:integration"
 ```
@@ -24,6 +24,14 @@ Or, if you want to zoom in to one test, you can use the full name of the test
 
 ```
 docker-compose exec takaro npm -w packages/app-api run test:integration -- -g "SettingsController - Can get all settings with a filter"
+```
+
+### Debugging tests
+
+If you whish to see logs when testing you can add the `LOGGING_LEVEL` env to your script
+
+```sh
+docker-compose exec -e LOGGING_LEVEL=debug takaro npm t
 ```
 
 ## Database migrations
@@ -51,5 +59,5 @@ docker-compose exec takaro node scripts/dev-remove-domains.mjs
 If your setup is well and truly messed up, you can use the `dev-reset-data.sh` script. This will take down the containers, remove the database data on filesystem level and then restart the containers.
 
 ```bash
-./scripts/dev-reset-data.sh 
+./scripts/dev-reset-data.sh
 ```

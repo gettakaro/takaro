@@ -1,6 +1,6 @@
 import { expect, sandbox } from '@takaro/test';
-import { GameEvents } from './interfaces/events';
-import { Mock } from './main';
+import { GameEvents } from '../interfaces/events';
+import { Mock } from '../main';
 
 describe('GameEventEmitter', () => {
   /**

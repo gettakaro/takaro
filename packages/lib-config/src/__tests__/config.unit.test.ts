@@ -1,6 +1,6 @@
 import { expect } from '@takaro/test';
 
-import { Config, IBaseConfig } from './main';
+import { Config, IBaseConfig } from '../main';
 
 interface ITestConfig extends IBaseConfig {
   test: string;

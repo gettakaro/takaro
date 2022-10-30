@@ -1,6 +1,6 @@
-import { compareHashed, decrypt, encrypt, hash } from './encryption';
+import { compareHashed, decrypt, encrypt, hash } from '../encryption';
 import { expect } from '@takaro/test';
-import { NOT_DOMAIN_SCOPED_getKnex } from './knex';
+import { NOT_DOMAIN_SCOPED_getKnex } from '../knex';
 
 describe('Database encryption', () => {
   before(async () => {

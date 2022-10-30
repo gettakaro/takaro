@@ -1,4 +1,4 @@
-import { handleHooks } from './eventWorker';
+import { handleHooks } from '../eventWorker';
 import { IntegrationTest, sandbox, expect } from '@takaro/test';
 import {
   HookOutputDTOAPI,
@@ -8,7 +8,7 @@ import { GameEvents, IGamePlayer, EventLogLine } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
-import { PlayerService } from '../service/PlayerService';
+import { PlayerService } from '../../service/PlayerService';
 
 const group = 'Event worker';
 const groupHooks = 'Event worker - Hook handling';

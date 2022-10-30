@@ -1,13 +1,22 @@
 import { Client } from '@takaro/apiclient';
 import ms from 'ms';
 import { integrationConfig } from './test/integrationConfig';
+import { logger } from '@takaro/util';
+
+const log = logger('tests');
 
 before(async () => {
+  if (process.env.LOGGING_LEVEL === 'none') {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    console.log = () => {};
+  }
+
   const client = new Client({
     url: integrationConfig.get('host'),
     auth: {},
   });
 
-  console.log('Waiting for app to be healthy');
+  log.info('Waiting for app to be healthy');
+
   await client.waitUntilHealthy(ms('10 minutes'));
 });
