@@ -10,7 +10,7 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { RoleOutputDTO } from './RoleService';
 import { Exclude, Type } from 'class-transformer';
 

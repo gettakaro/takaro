@@ -1,6 +1,7 @@
 export { IGameServer } from './interfaces/GameServer';
 export { IGamePlayer } from './interfaces/GamePlayer';
-export { IGameEventEmitter } from './interfaces/eventEmitter';
+
+export { TakaroEmitter } from './TakaroEmitter';
 
 export * from './interfaces/events';
 

@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import { FUNCTION_TABLE_NAME } from './function';
 import {

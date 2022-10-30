@@ -1,21 +1,16 @@
-import { logger } from '@takaro/logger';
+import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
 
-export class RustConnectionInfo {
+export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
   @IsString()
   public readonly host!: string;
   @IsNumber()
   public readonly rconPort!: string;
   @IsString()
   public readonly rconPassword!: string;
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
 }
 
 export class Rust implements IGameServer {
@@ -35,7 +30,7 @@ export class Rust implements IGameServer {
     return [];
   }
 
-  async getEventEmitter(): Promise<IGameEventEmitter> {
+  getEventEmitter() {
     const emitter = new RustEmitter(this.connectionInfo);
     return emitter;
   }

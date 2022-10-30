@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { config } from '../config';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
@@ -30,16 +30,14 @@ function isConnectedEvent(a: BaseEvent): a is EventPlayerConnected {
 async function processJob(job: Job<IEventQueueData>) {
   log.info('Processing an event', job.data);
 
-  const { type, event, domainId } = job.data;
+  const { type, event, domainId, gameServerId } = job.data;
 
   if (isConnectedEvent(event)) {
     const playerService = new PlayerService(domainId);
-    await playerService.sync(event.player, domainId);
+    await playerService.sync(event.player, gameServerId);
   }
 
   await handleHooks(job.data);
-
-  log.debug('should crash here');
 
   const socketServer = getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [type, event]);

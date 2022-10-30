@@ -1,7 +1,7 @@
+import { isTakaroDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { IsISO8601, ValidateNested } from 'class-validator';
 import { IsString } from 'class-validator';
-import { isTakaroDTO, TakaroDTO } from './TakaroDTO';
 
 interface IApiResponseOptions {
   error?: Error;

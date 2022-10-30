@@ -1,6 +1,4 @@
-import { EventEmitter } from 'node:stream';
-import { logger } from '@takaro/logger';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
+import { logger } from '@takaro/util';
 import {
   EventPlayerConnected,
   EventLogLine,
@@ -9,8 +7,10 @@ import {
 } from '../../interfaces/events';
 import type { Faker } from '@faker-js/faker';
 import { MockConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
+import { IGamePlayer } from '../../main';
 
-export class MockEmitter extends EventEmitter implements IGameEventEmitter {
+export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');
   private interval: NodeJS.Timer | null = null;
 
@@ -34,18 +34,21 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     }
   }
 
-  private fireEvent(faker: Faker) {
+  private async fireEvent(faker: Faker) {
     const type = this.getRandomFromEnum();
     const data = this.getRandomEvent(faker, type);
-    this.emit(type, data);
+    await this.emit(type, data);
 
     this.logger.debug(`Emitted ${type}`, data);
   }
 
   private mockPlayer() {
-    return this.config.mockPlayers[
-      Math.floor(Math.random() * this.config.mockPlayers.length)
-    ];
+    const randomEntry =
+      this.config.mockPlayers[
+        Math.floor(Math.random() * this.config.mockPlayers.length)
+      ];
+
+    return new IGamePlayer(randomEntry);
   }
 
   private getRandomFromEnum() {
@@ -56,19 +59,24 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
 
   private getRandomEvent(faker: Faker, type: string) {
     let event;
+    const player = this.mockPlayer();
 
-    if (type === GameEvents.PLAYER_CONNECTED) {
-      event = new EventPlayerConnected({ player: this.mockPlayer() });
-    }
+    switch (type) {
+      case GameEvents.PLAYER_CONNECTED:
+        event = new EventPlayerConnected({ player, msg: 'player-connected' });
 
-    if (type === GameEvents.PLAYER_DISCONNECTED) {
-      event = new EventPlayerDisconnected({ player: this.mockPlayer() });
-    }
-
-    if (type === GameEvents.LOG_LINE) {
-      event = new EventLogLine({
-        msg: `This is a log line :) - ${faker.random.words()}`,
-      });
+        break;
+      case GameEvents.PLAYER_DISCONNECTED:
+        event = new EventPlayerDisconnected({
+          player,
+          msg: 'player-disconnected',
+        });
+        break;
+      default:
+        event = new EventLogLine({
+          msg: `This is a log line :) - ${faker.random.words()}`,
+        });
+        break;
     }
 
     return event;

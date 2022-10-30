@@ -1,5 +1,5 @@
 import { config, EXECUTION_MODE } from '../../config';
-import { logger, errors } from '@takaro/logger';
+import { logger, errors } from '@takaro/util';
 import { ContainerdService } from '../containerd';
 const log = logger('worker:function');
 import { Client } from '@takaro/apiclient';

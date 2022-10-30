@@ -4,8 +4,8 @@ import {
   NOT_DOMAIN_SCOPED_ITakaroRepo,
   PaginatedOutput,
 } from '../db/base';
-import { logger } from '@takaro/logger';
-import { TakaroDTO } from '@takaro/http';
+import { logger } from '@takaro/util';
+import { TakaroDTO } from '@takaro/util';
 
 export abstract class NOT_DOMAIN_SCOPED_TakaroService<
   Model extends TakaroModel,

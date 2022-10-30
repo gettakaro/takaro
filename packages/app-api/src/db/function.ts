@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import { Model } from 'objection';
 import { CRONJOB_TABLE_NAME } from './cronjob';

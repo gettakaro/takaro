@@ -4,7 +4,7 @@ import {
   NOT_DOMAIN_SCOPED_getKnex,
   TakaroModel,
 } from '@takaro/db';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ModelClass } from 'objection';
 
 export interface PaginatedOutput<T> {

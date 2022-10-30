@@ -17,7 +17,7 @@ import {
   FunctionService,
 } from './FunctionService';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { PaginatedOutput } from '../db/base';
 import { ITakaroQuery } from '@takaro/db';
 

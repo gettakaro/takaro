@@ -1,7 +1,7 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
-import { errors } from '@takaro/logger';
-import { TakaroDTO } from '@takaro/http';
+import { errors } from '@takaro/util';
+import { TakaroDTO } from '@takaro/util';
 import { IsString } from 'class-validator';
 
 const LOGINS_TABLE_NAME = 'logins';

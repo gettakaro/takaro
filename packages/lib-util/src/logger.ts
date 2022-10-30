@@ -71,5 +71,3 @@ const mainLogger = winston.createLogger({
 export function logger(namespace: string, meta?: JsonObject): winston.Logger {
   return mainLogger.child({ namespace, meta });
 }
-
-export * as errors from './errors';

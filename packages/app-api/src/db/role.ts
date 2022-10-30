@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import _ from 'lodash';
 import { Model } from 'objection';
 import {

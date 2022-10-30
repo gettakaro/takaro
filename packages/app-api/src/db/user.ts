@@ -1,7 +1,7 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import {
   UserOutputDTO,

@@ -1,6 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
+import { TakaroDTO } from '@takaro/util';
 
-export class IGamePlayer {
+export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   /**
    * Unique identifier for this player, as used by the game
    */
@@ -35,8 +36,4 @@ export class IGamePlayer {
   @IsString()
   @IsOptional()
   ip?: string;
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
 }

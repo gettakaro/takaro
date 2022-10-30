@@ -6,7 +6,7 @@ import {
   decrypt,
 } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
 import {
@@ -115,9 +115,7 @@ export class GameServerRepo extends ITakaroRepo<
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
     const model = await this.getModel();
-    const encryptedConnectionInfo = await encrypt(
-      JSON.stringify(item.connectionInfo)
-    );
+    const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
       connectionInfo: encryptedConnectionInfo,

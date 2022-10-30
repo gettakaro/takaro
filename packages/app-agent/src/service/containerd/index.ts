@@ -1,4 +1,4 @@
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { spawn } from 'node:child_process';
 import { config } from '../../config';
 

@@ -1,4 +1,4 @@
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService';
 import { randomBytes } from 'crypto';
 import {
@@ -14,7 +14,7 @@ import humanId from 'human-id';
 import { Type } from 'class-transformer';
 import { GameServerService } from './GameServerService';
 import { SettingsService } from './SettingsService';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 import { CronJobService } from './CronJobService';

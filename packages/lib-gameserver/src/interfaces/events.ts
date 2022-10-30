@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { TakaroDTO } from '@takaro/util';
+import { IsEnum, IsISO8601, IsString, ValidateNested } from 'class-validator';
 import { IGamePlayer } from './GamePlayer';
 
 export enum GameEvents {
@@ -14,48 +15,35 @@ export type EventMapping = {
   [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
 };
 
-export class BaseEvent {
-  [key: string]: unknown;
-  timestamp: Date = new Date();
-  type!: string;
+export class BaseEvent extends TakaroDTO<BaseEvent> {
+  @IsISO8601()
+  timestamp: string;
+
+  @IsEnum(GameEvents)
+  type: string;
 
   @IsString()
-  msg!: string;
+  msg: string;
 
   constructor(data: Record<string, unknown>) {
-    const defaults = {
-      timestamp: new Date(),
-    };
-    Object.assign(this, { ...defaults, ...data });
+    super({ ...data, timestamp: new Date().toISOString() });
   }
 }
 
 export class EventLogLine extends BaseEvent {
   type = GameEvents.LOG_LINE;
-
-  constructor(data: Partial<EventLogLine>) {
-    super(data);
-  }
 }
 
 export class EventPlayerConnected extends BaseEvent {
   type = GameEvents.PLAYER_CONNECTED;
   @ValidateNested()
   @Type(() => IGamePlayer)
-  player!: IGamePlayer;
-
-  constructor(data: Partial<EventPlayerConnected>) {
-    super(data);
-  }
+  player: IGamePlayer;
 }
 
 export class EventPlayerDisconnected extends BaseEvent {
   type = GameEvents.PLAYER_DISCONNECTED;
   @ValidateNested()
   @Type(() => IGamePlayer)
-  player!: IGamePlayer;
-
-  constructor(data: Partial<EventPlayerDisconnected>) {
-    super(data);
-  }
+  player: IGamePlayer;
 }

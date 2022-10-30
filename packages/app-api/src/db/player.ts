@@ -1,6 +1,6 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { GAMESERVER_TABLE_NAME } from './gameserver';
 import { ITakaroRepo } from './base';
 import {

@@ -1,16 +1,16 @@
 import WebSocket from 'ws';
-import { logger, errors } from '@takaro/logger';
-import { TakaroEmitter } from '../../interfaces/eventEmitter';
+import { logger, errors } from '@takaro/util';
 import {
+  EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-  IGameEventEmitter,
   IGamePlayer,
 } from '../../main';
 import { IsString } from 'class-validator';
 import { JsonObject } from 'type-fest';
 import { RustConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
 
 export class RustConfig {
   @IsString()
@@ -47,35 +47,37 @@ export interface RustEvent {
   stacktrace: string;
 }
 
-export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
+export class RustEmitter extends TakaroEmitter {
   private ws: WebSocket | null = null;
   private logger = logger('rust:ws');
-  private config: RustConnectionInfo;
 
-  constructor(config: RustConnectionInfo) {
+  constructor(private config: RustConnectionInfo) {
     super();
-    this.config = config;
   }
 
   async start(): Promise<void> {
-    this.logger.debug('Connecting to [RUST] game server...');
+    return new Promise((resolve, reject) => {
+      this.logger.debug('Connecting to [RUST] game server...');
 
-    this.ws = new WebSocket(
-      `ws://${this.config.host}:${this.config.rconPort}/${this.config.rconPassword}`
-    );
+      this.ws = new WebSocket(
+        `ws://${this.config.host}:${this.config.rconPort}/${this.config.rconPassword}`
+      );
 
-    this.logger.debug('Connected to [RUST] game server!!!');
+      this.logger.debug('Connected to [RUST] game server!!!');
 
-    this.ws.on('message', (m: string) => {
-      this.listener(m);
-    });
+      this.ws.on('message', (m: string) => {
+        this.listener(m);
+      });
 
-    this.ws.on('open', () => {
-      this.logger.info('Connected to [RUST] game server.');
-    });
+      this.ws.on('open', () => {
+        this.logger.info('Connected to [RUST] game server.');
+        return resolve();
+      });
 
-    this.ws.on('error', (e) => {
-      this.logger.error('Could not connect to [RUST] game server!', e);
+      this.ws.on('error', (e) => {
+        this.logger.error('Could not connect to [RUST] game server!', e);
+        return reject();
+      });
     });
   }
 
@@ -100,17 +102,20 @@ export class RustEmitter extends TakaroEmitter implements IGameEventEmitter {
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.message)) {
       this.logger.debug('regexje');
       const data = this.handlePlayerConnected(e.message);
-      this.emitGameEvent(GameEvents.PLAYER_CONNECTED, data);
+      this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.message)) {
       const data = this.handlePlayerDisconnected(e.message);
-      this.emitGameEvent(GameEvents.PLAYER_DISCONNECTED, data);
+      this.emit(GameEvents.PLAYER_DISCONNECTED, data);
     }
 
-    this.emit(GameEvents.LOG_LINE, {
-      timestamp: new Date(),
-      msg: e.message,
-    });
+    this.emit(
+      GameEvents.LOG_LINE,
+      new EventLogLine({
+        timestamp: new Date(),
+        msg: e.message,
+      })
+    );
   }
 
   private handlePlayerConnected(msg: string) {

@@ -4,7 +4,7 @@ import {
   ExpressErrorMiddlewareInterface,
   HttpError,
 } from 'routing-controllers';
-import { logger, errors } from '@takaro/logger';
+import { logger, errors } from '@takaro/util';
 import { apiResponse } from '../main';
 import { ValidationError } from 'class-validator';
 

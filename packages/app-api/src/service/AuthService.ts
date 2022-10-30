@@ -1,5 +1,5 @@
 import { DomainScoped } from '../lib/DomainScoped';
-import { errors, logger } from '@takaro/logger';
+import { errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
@@ -7,7 +7,7 @@ import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
-import { TakaroDTO } from '@takaro/http';
+import { TakaroDTO } from '@takaro/util';
 import { CAPABILITIES } from './RoleService';
 
 interface IJWTPayload {
