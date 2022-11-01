@@ -91,7 +91,7 @@ async function createConfig() {
               items: [
                 {
                   label: 'Tutorial',
-                  to: '/docs/development/getting-started',
+                  to: '/development/getting-started',
                 },
               ],
             },
