@@ -28,7 +28,7 @@ docker-compose exec takaro npm -w packages/app-api run test:integration -- -g "S
 
 ### Debugging tests
 
-If you whish to see logs when testing you can add the `LOGGING_LEVEL` env to your script
+If you wish to see logs when testing you can add the `LOGGING_LEVEL` env to your script
 
 ```sh
 docker-compose exec -e LOGGING_LEVEL=debug takaro npm t
