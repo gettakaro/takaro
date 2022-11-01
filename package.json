@@ -15,8 +15,8 @@
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
     "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
-    "prettier": "npx --workspaces prettier --check 'src/**/*.{ts,md}'",
-    "prettier:fix": "npx --workspaces prettier --write 'src/**/*.{ts,md}'",
+    "prettier": "npx --workspaces prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
+    "prettier:fix": "npx --workspaces prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
