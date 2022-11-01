@@ -50,7 +50,7 @@ You do not need to manually run migrations to apply them, Takaro will do it auto
 
 ## Resetting data
 
-There's two ways to reset data, each applicable in different situations. If your environment is running correctly, you can quickly delete all domains (with related data) using the `dev-remove-domains.mjs` script. This script will talk to the Takaro API, thus if your application is not running this will fail. This script is significantly faster than the other option.
+There's two ways to reset database data, each applicable in different situations. If your environment is running correctly, you can quickly delete all domains (with related data) using the `dev-remove-domains.mjs` script. This script will talk to the Takaro API, thus if your application is not running this will fail. This script is significantly faster than the other option.
 
 ```bash
 docker-compose exec takaro node scripts/dev-remove-domains.mjs
@@ -60,4 +60,12 @@ If your setup is well and truly messed up, you can use the `dev-reset-data.sh` s
 
 ```bash
 ./scripts/dev-reset-data.sh
+```
+
+## "Starting from scratch"
+
+Cleaning out all artifacts from the repo and rebuilding everything. This will take a while, so go grab some ☕️.
+
+```bash
+npm run clean && ./scripts/dev-init.sh && docker-compose up -d --build
 ```
