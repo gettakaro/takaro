@@ -1,4 +1,5 @@
 import React from 'react';
+import { styled } from '../../../styled';
 import { Meta, StoryFn } from '@storybook/react';
 import { useRef, useState } from 'react';
 import { EditableFieldProps, EditableField } from '.';
@@ -8,23 +9,33 @@ export default {
   component: EditableField,
   args: {
     disabled: false,
-    editable: false,
+    isEditing: false,
     text: 'I am the text, double click me',
+    allowEmpty: false,
   },
 } as Meta<EditableFieldProps>;
+
+const Container = styled.div`
+  width: 50%;
+
+  input {
+    width: 100%;
+  }
+`;
 
 export const Default: StoryFn<EditableFieldProps> = (args) => {
   const [text, setText] = useState(args.text);
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div>
+    <Container>
       <EditableField
         text={text}
         childRef={inputRef}
-        editable={args.editable}
+        isEditing={args.isEditing}
         placeholder={args.placeholder}
         disabled={args.disabled}
+        allowEmpty={args.allowEmpty}
       >
         <input
           onChange={(e) => setText(e.target.value)}
@@ -32,6 +43,6 @@ export const Default: StoryFn<EditableFieldProps> = (args) => {
           value={text}
         />
       </EditableField>
-    </div>
+    </Container>
   );
 };
