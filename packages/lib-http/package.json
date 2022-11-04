@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@takaro/config": "0.0.1",
-    "@takaro/logger": "0.0.1",
+    "@takaro/util": "0.0.1",
     "body-parser": "^1.20.0",
     "class-validator-jsonschema": "^3.1.1",
     "cookie-parser": "^1.4.6",

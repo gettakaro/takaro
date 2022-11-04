@@ -12,13 +12,16 @@ import {
 } from 'class-validator';
 import { AuthService } from './AuthService';
 import {
-  AssignFunctionDTO,
+  FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
 } from './FunctionService';
 import { Type } from 'class-transformer';
+import { TakaroDTO } from '@takaro/util';
+import { PaginatedOutput } from '../db/base';
+import { ITakaroQuery } from '@takaro/db';
 
-export class CronJobOutputDTO {
+export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
   @IsUUID()
   id!: string;
   @IsString()
@@ -32,10 +35,10 @@ export class CronJobOutputDTO {
 
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
-  functions: FunctionOutputDTO[] = [];
+  function: FunctionOutputDTO;
 }
 
-export class CronJobCreateDTO {
+export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @IsString()
   @Length(3, 50)
   name!: string;
@@ -49,9 +52,13 @@ export class CronJobCreateDTO {
 
   @IsUUID()
   moduleId!: string;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
-export class UpdateCronJobDTO {
+export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @Length(3, 50)
   @IsString()
   name!: string;
@@ -67,19 +74,50 @@ export class UpdateCronJobDTO {
   moduleId?: string;
 }
 
-export class CronJobService extends TakaroService<CronJobModel> {
+export class CronJobService extends TakaroService<
+  CronJobModel,
+  CronJobOutputDTO,
+  CronJobCreateDTO,
+  CronJobUpdateDTO
+> {
   queues = QueuesService.getInstance();
 
   get repo() {
     return new CronJobRepo(this.domainId);
   }
 
+  find(
+    filters: ITakaroQuery<CronJobOutputDTO>
+  ): Promise<PaginatedOutput<CronJobOutputDTO>> {
+    return this.repo.find(filters);
+  }
+
+  findOne(id: string): Promise<CronJobOutputDTO> {
+    return this.repo.findOne(id);
+  }
+
   async create(item: CronJobCreateDTO) {
-    const created = await this.repo.create(item);
+    const functionsService = new FunctionService(this.domainId);
+    let fnIdToAdd: string | null = null;
+
+    if (item.function) {
+      fnIdToAdd = item.function;
+    } else {
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: '',
+        })
+      );
+      fnIdToAdd = newFn.id;
+    }
+
+    const created = await this.repo.create(
+      new CronJobCreateDTO({ ...item, function: fnIdToAdd })
+    );
     await this.addCronToQueue(created);
     return created;
   }
-  async update(id: string, item: UpdateCronJobDTO) {
+  async update(id: string, item: CronJobUpdateDTO) {
     await this.removeCronFromQueue(id);
     const updated = await this.repo.update(id, item);
     await this.addCronToQueue(updated);
@@ -91,44 +129,20 @@ export class CronJobService extends TakaroService<CronJobModel> {
     return this.repo.delete(id);
   }
 
-  async assign(data: AssignFunctionDTO) {
-    const functionsService = new FunctionService(this.domainId);
-    await functionsService.assign(data);
-    const cron = await this.repo.findOne(data.itemId);
-    await this.removeCronFromQueue(data.itemId);
-    await this.addCronToQueue(cron);
-    return cron;
-  }
-
-  async unAssign(itemId: string, functionId: string) {
-    const functionsService = new FunctionService(this.domainId);
-    await functionsService.unAssign(itemId, functionId);
-    const cron = await this.repo.findOne(itemId);
-    await this.removeCronFromQueue(itemId);
-    await this.addCronToQueue(cron);
-    return cron;
-  }
-
-  private getRepeatableOpts(item: CronJobModel) {
+  private getRepeatableOpts(item: CronJobOutputDTO) {
     return {
       pattern: item.temporalValue,
       jobId: item.id,
     };
   }
 
-  private async addCronToQueue(item: CronJobModel) {
+  private async addCronToQueue(item: CronJobOutputDTO) {
     const authService = new AuthService(this.domainId);
-    const functionsService = new FunctionService(this.domainId);
-
-    const relatedFunctions = await functionsService.getRelatedFunctions(
-      item.id,
-      true
-    );
 
     await this.queues.queues.cronjobs.queue.add(
       item.id,
       {
-        functions: relatedFunctions as string[],
+        function: item.function.code,
         domainId: this.domainId,
         token: await authService.getAgentToken(),
         itemId: item.id,

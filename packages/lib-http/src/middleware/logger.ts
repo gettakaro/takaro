@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
 
 const SUPPRESS_BODY_KEYWORDS = ['password', 'newPassword'];

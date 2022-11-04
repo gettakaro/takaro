@@ -7,7 +7,7 @@
       "createdAt": "2022-09-11T21:22:43.163Z",
       "updatedAt": "2022-09-11T21:22:43.164Z",
       "id": "slick-socks-jam",
-      "name": "standard-integration-test-domain"
+      "name": "integration-Get by ID"
     }
   },
   "status": 200,

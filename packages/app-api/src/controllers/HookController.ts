@@ -13,7 +13,7 @@ import {
   HookCreateDTO,
   HookOutputDTO,
   HookService,
-  UpdateHookDTO,
+  HookUpdateDTO,
 } from '../service/HookService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -27,11 +27,10 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
-import { ItemsThatCanBeAssignedAFunction } from '../db/function';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -67,14 +66,6 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
   filters!: HookSearchInputAllowedFilters;
-}
-
-class AssignFunctionToHookDTO {
-  @IsUUID('4')
-  id!: string;
-
-  @IsUUID('4')
-  functionId!: string;
 }
 
 @OpenAPI({
@@ -122,7 +113,7 @@ export class HookController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateHookDTO
+    @Body() data: HookUpdateDTO
   ) {
     const service = new HookService(req.domainId);
     return apiResponse(await service.update(params.id, data));
@@ -135,51 +126,5 @@ export class HookController {
     const service = new HookService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
-  }
-
-  @UseBefore(
-    AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_FUNCTIONS,
-      CAPABILITIES.MANAGE_HOOKS,
-    ])
-  )
-  @ResponseSchema(HookOutputDTOAPI)
-  @OpenAPI({
-    description:
-      'Assign a function to a hook. This function will execute when the hook is triggered',
-  })
-  @Post('/hook/:id/function/:functionId')
-  async assignFunction(
-    @Req() req: AuthenticatedRequest,
-    @Params() data: AssignFunctionToHookDTO
-  ) {
-    const service = new HookService(req.domainId);
-    return apiResponse(
-      await service.assign({
-        type: ItemsThatCanBeAssignedAFunction.HOOK,
-        functionId: data.functionId,
-        itemId: data.id,
-      })
-    );
-  }
-
-  @UseBefore(
-    AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_FUNCTIONS,
-      CAPABILITIES.MANAGE_HOOKS,
-    ])
-  )
-  @ResponseSchema(HookOutputDTOAPI)
-  @OpenAPI({
-    description:
-      'The function will not be executed when the hook is triggered anymore',
-  })
-  @Delete('/hook/:id/function/:functionId')
-  async unassignFunction(
-    @Req() req: AuthenticatedRequest,
-    @Params() data: AssignFunctionToHookDTO
-  ) {
-    const service = new HookService(req.domainId);
-    return apiResponse(await service.unAssign(data.id, data.functionId));
   }
 }

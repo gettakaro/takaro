@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as yup from 'yup';
-import { errors, logger } from '@takaro/logger';
+import { errors, logger } from '@takaro/util';
 import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
 
 const log = logger('http:pagination');

@@ -1,18 +1,10 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  Button,
-  TextField,
-  useValidationSchema,
-} from '@takaro/lib-components';
+import { Button, TextField, useValidationSchema } from '@takaro/lib-components';
 import * as yup from 'yup';
 import { AiFillSave } from 'react-icons/ai';
-import {
-  GameServerOutputDTOAPI,
-  Settings,
-  SettingsOutputObjectDTOAPI,
-} from '@takaro/apiclient';
+import { Settings, SettingsOutputObjectDTOAPI } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
@@ -41,13 +33,16 @@ const SettingsPage: FC = () => {
   const apiClient = useApiClient();
   const { serverId } = useParams();
 
-  const { data, isLoading } = useQuery<
-    SettingsOutputObjectDTOAPI['data']
-  >(`settings`, async function () {
-    const data = (await apiClient.settings.settingsControllerGet(undefined, serverId)).data.data;
-    await mapSettings(data, async (key, value) => setValue(key, value!!));
-    return data;
-  });
+  const { data, isLoading } = useQuery<SettingsOutputObjectDTOAPI['data']>(
+    `settings`,
+    async function () {
+      const data = (
+        await apiClient.settings.settingsControllerGet(undefined, serverId)
+      ).data.data;
+      await mapSettings(data, async (key, value) => setValue(key, value!!));
+      return data;
+    }
+  );
 
   const validationSchema = useMemo(() => {
     const schema = {};
@@ -63,7 +58,7 @@ const SettingsPage: FC = () => {
       resolver: useValidationSchema(validationSchema),
     });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async () => {
     const formValues = getValues();
 
     await mapSettings(formValues, async (key, value) =>
@@ -77,7 +72,7 @@ const SettingsPage: FC = () => {
   const settingsComponents: ReactElement[] = [];
 
   if (data) {
-    mapSettings(data, async (key, value) =>
+    mapSettings(data, async (key) =>
       settingsComponents.push(
         <TextField
           control={control}

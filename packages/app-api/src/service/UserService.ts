@@ -1,54 +1,87 @@
 import { TakaroService } from './Base';
-import { hash } from '@takaro/db';
+import { hash, ITakaroQuery } from '@takaro/db';
 
 import { UserModel, UserRepo } from '../db/user';
 import { DomainService } from './DomainService';
-import { IsEmail, IsString, IsUUID, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsUUID,
+  Length,
+  ValidateNested,
+} from 'class-validator';
+import { TakaroDTO } from '@takaro/util';
+import { RoleOutputDTO } from './RoleService';
+import { Exclude, Type } from 'class-transformer';
 
-export class UserOutputDTO {
+export class UserOutputDTO extends TakaroDTO<UserOutputDTO> {
   @IsUUID()
-  id!: string;
+  id: string;
   @IsString()
-  name!: string;
+  name: string;
   @IsString()
-  email!: string;
+  email: string;
+
+  @IsString()
+  @Exclude()
+  password: string;
 }
 
-export class UserCreateInputDTO {
+export class UserOutputWithRolesDTO extends UserOutputDTO {
+  @Type(() => RoleOutputDTO)
+  @ValidateNested()
+  roles: RoleOutputDTO[];
+}
+
+export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   @Length(3, 50)
-  name!: string;
+  name: string;
 
   @IsEmail()
-  email!: string;
+  email: string;
 
   // We're using Blowfish based hashing in the database, which has a max length of 72 characters
   @Length(8, 70)
-  password!: string;
+  password: string;
 }
 
-export class UserService extends TakaroService<UserModel> {
+export class UserUpdateDTO extends TakaroDTO<UserUpdateDTO> {
+  @Length(3, 50)
+  name: string;
+}
+
+export class UserService extends TakaroService<
+  UserModel,
+  UserOutputDTO,
+  UserCreateInputDTO,
+  UserUpdateDTO
+> {
   get repo() {
     return new UserRepo(this.domainId);
+  }
+
+  find(filters: ITakaroQuery<UserOutputDTO>) {
+    return this.repo.find(filters);
   }
 
   findOne(id: string) {
     return this.repo.findOne(id);
   }
 
-  async init(user: UserCreateInputDTO): Promise<UserModel> {
-    const passwordHash = await hash(user.password);
-
+  async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
+    user.password = await hash(user.password);
     const domainService = new DomainService();
-
-    const createdUser = await this.repo.create({
-      password: passwordHash,
-      name: user.name,
-      email: user.email,
-    });
-
+    const createdUser = await this.repo.create(user);
     await domainService.addLogin(createdUser, this.domainId);
-
     return createdUser;
+  }
+
+  async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
+    return this.repo.update(id, data);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    return this.repo.delete(id);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

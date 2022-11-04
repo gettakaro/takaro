@@ -5,7 +5,12 @@ import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
 import axios from 'axios';
-import { AdminClient, Client, AxiosResponse } from '@takaro/apiclient';
+import {
+  AdminClient,
+  Client,
+  AxiosResponse,
+  RoleCreateInputDTOCapabilitiesEnum,
+} from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -63,7 +68,7 @@ export class IntegrationTest<SetupData> {
 
   private async setupStandardEnvironment() {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
-      name: 'standard-integration-test-domain',
+      name: `integration-${this.test.name}`.slice(0, 49),
     });
     this.standardDomainId = createdDomain.data.data.domain.id;
 
@@ -141,7 +146,7 @@ export class IntegrationTest<SetupData> {
 
 export async function logInWithCapabilities(
   client: Client,
-  capabilities: string[]
+  capabilities: RoleCreateInputDTOCapabilitiesEnum[]
 ): Promise<Client> {
   const role = await client.role.roleControllerCreate({
     name: 'Test role',

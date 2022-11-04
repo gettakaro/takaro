@@ -1,29 +1,27 @@
 import faker from '@faker-js/faker';
-import { logger } from '@takaro/logger';
+import { logger, TakaroDTO } from '@takaro/util';
 import { IsNumber } from 'class-validator';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import { IGameServer } from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
 
-export class MockConnectionInfo {
+export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   @IsNumber()
   public readonly eventInterval = 10000;
   public readonly playerPoolSize = 100;
 
   public readonly mockPlayers: IGamePlayer[] = Array.from(
     Array(this.playerPoolSize).keys()
-  ).map((p) => ({
-    gameId: p.toString(),
-    name: faker.internet.userName(),
-    epicOnlineServicesId: faker.random.alphaNumeric(16),
-    steamId: faker.random.alphaNumeric(16),
-    xboxLiveId: faker.random.alphaNumeric(16),
-  }));
-
-  constructor(data: Record<string, unknown>) {
-    Object.assign(this, data);
-  }
+  ).map(
+    (p) =>
+      new IGamePlayer({
+        gameId: p.toString(),
+        name: faker.internet.userName(),
+        epicOnlineServicesId: faker.random.alphaNumeric(16),
+        steamId: faker.random.alphaNumeric(16),
+        xboxLiveId: faker.random.alphaNumeric(16),
+      })
+  );
 }
 export class Mock implements IGameServer {
   private logger = logger('Mock');
@@ -42,7 +40,7 @@ export class Mock implements IGameServer {
     return [];
   }
 
-  async getEventEmitter(): Promise<IGameEventEmitter> {
+  getEventEmitter() {
     const emitter = new MockEmitter(this.connectionInfo);
     return emitter;
   }

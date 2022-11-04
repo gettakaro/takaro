@@ -6,6 +6,7 @@ import {
   RoleService,
   RoleUpdateInputDTO,
   RoleOutputDTO,
+  CAPABILITIES,
 } from '../service/RoleService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -19,7 +20,6 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -89,7 +89,7 @@ export class RoleController {
   ) {
     const service = new RoleService(req.domainId);
     return apiResponse(
-      await service.createWithCapabilities(data.name, data.capabilities)
+      await service.createWithCapabilities(data, data.capabilities)
     );
   }
 
@@ -103,7 +103,7 @@ export class RoleController {
   ) {
     const service = new RoleService(req.domainId);
     await service.setCapabilities(params.id, data.capabilities);
-    return apiResponse(await service.update(params.id, { name: data.name }));
+    return apiResponse(await service.update(params.id, data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_ROLES]))

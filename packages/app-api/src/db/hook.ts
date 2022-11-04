@@ -1,12 +1,14 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
-import { errors } from '@takaro/logger';
+import { Model } from 'objection';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
-import {
-  FUNCTIONS_ASSIGNMENT_TABLE_NAME,
-  FUNCTION_TABLE_NAME,
-} from './function';
+import { FUNCTION_TABLE_NAME } from './function';
 import { GameEvents } from '@takaro/gameserver';
+import {
+  HookCreateDTO,
+  HookOutputDTO,
+  HookUpdateDTO,
+} from '../service/HookService';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -19,16 +21,12 @@ export class HookModel extends TakaroModel {
 
   static get relationMappings() {
     return {
-      functions: {
-        relation: Model.ManyToManyRelation,
+      function: {
+        relation: Model.HasOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
           from: `${HOOKS_TABLE_NAME}.id`,
-          through: {
-            from: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.hook`,
-            to: `${FUNCTIONS_ASSIGNMENT_TABLE_NAME}.function`,
-          },
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -36,7 +34,12 @@ export class HookModel extends TakaroModel {
   }
 }
 
-export class HookRepo extends ITakaroRepo<HookModel> {
+export class HookRepo extends ITakaroRepo<
+  HookModel,
+  HookOutputDTO,
+  HookCreateDTO,
+  HookUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -46,32 +49,38 @@ export class HookRepo extends ITakaroRepo<HookModel> {
     return HookModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<HookModel>) {
+  async find(filters: ITakaroQuery<HookOutputDTO>) {
     const model = await this.getModel();
-    return await new QueryBuilder<HookModel>({
+    const result = await new QueryBuilder<HookModel, HookOutputDTO>({
       ...filters,
-      extend: ['functions'],
+      extend: ['function'],
     }).build(model.query());
+    return {
+      total: result.total,
+      results: result.results.map((item) => new HookOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<HookModel> {
+  async findOne(id: string): Promise<HookOutputDTO> {
     const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('functions');
+    const data = await model.query().findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    return new HookOutputDTO(data);
   }
 
-  async create(item: PartialModelObject<HookModel>): Promise<HookModel> {
+  async create(item: HookCreateDTO): Promise<HookOutputDTO> {
     const model = await this.getModel();
-    return model
-      .query()
-      .insert(item)
-      .returning('*')
-      .withGraphJoined('functions');
+    const data = await model.query().insert(item.toJSON());
+
+    if (item.function) {
+      await this.assign(data.id, item.function);
+    }
+
+    return this.findOne(data.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -80,14 +89,18 @@ export class HookRepo extends ITakaroRepo<HookModel> {
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: PartialModelObject<HookModel>
-  ): Promise<HookModel> {
+  async update(id: string, data: HookUpdateDTO): Promise<HookOutputDTO> {
     const model = await this.getModel();
-    return model
+    const item = await model
       .query()
-      .updateAndFetchById(id, data)
-      .withGraphFetched('functions');
+      .updateAndFetchById(id, data.toJSON())
+      .withGraphFetched('function');
+
+    return new HookOutputDTO(item);
+  }
+
+  async assign(id: string, functionId: string) {
+    const model = await this.getModel();
+    await model.relatedQuery('function').for(id).relate(functionId);
   }
 }

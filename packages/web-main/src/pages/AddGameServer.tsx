@@ -81,12 +81,11 @@ const AddGameServer: FC = () => {
     };
   };
 
-  const { control, handleSubmit, formState, reset, watch } =
-    useForm<IFormInputs>({
-      mode: 'onSubmit',
-      resolver: useValidationSchema(validationSchema),
-      defaultValues: defaultValues(),
-    });
+  const { control, handleSubmit, formState, watch } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
+    defaultValues: defaultValues(),
+  });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (inputs) => {
     setLoading(true);
@@ -158,32 +157,40 @@ const AddGameServer: FC = () => {
         key={'eventInterval'}
       />,
       <TextField
-      control={control}
-      label="Player pool size"
-      name="connectionInfo.playerPoolSize"
-      hint="How large is the pool of fake players"
-      placeholder="100"
-      error={formState.errors['connectionInfo.playerPoolSize']}
-      key={'playerPoolSize'}
-    />,
+        control={control}
+        label="Player pool size"
+        name="connectionInfo.playerPoolSize"
+        hint="How large is the pool of fake players"
+        placeholder="100"
+        error={formState.errors['connectionInfo.playerPoolSize']}
+        key={'playerPoolSize'}
+      />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
       <TextField
         control={control}
-        label="IP (or FQDN), including port"
+        label="Server IP"
         name="connectionInfo.host"
         error={formState.errors['connectionInfo.host']}
-        placeholder="12.34.56.78:1234"
+        placeholder="12.34.56.78"
         key={'host'}
       />,
       <TextField
         control={control}
-        label="Password"
-        name="connectionInfo.password"
-        error={formState.errors['connectionInfo.password']}
+        label="RCON Port"
+        name="connectionInfo.rconPort"
+        error={formState.errors['connectionInfo.rconPort']}
+        placeholder=""
+        key={'rconPort'}
+      />,
+      <TextField
+        control={control}
+        label="RCON Password"
+        name="connectionInfo.rconPassword"
+        error={formState.errors['connectionInfo.rconPassword']}
         type="password"
         placeholder=""
-        key={'password'}
+        key={'rconPassword'}
       />,
       <>
         <p>use TLS?</p>

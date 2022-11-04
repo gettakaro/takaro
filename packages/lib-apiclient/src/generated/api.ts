@@ -92,44 +92,6 @@ export type AssignFunctionDTOTypeEnum =
 /**
  *
  * @export
- * @interface AssignFunctionToCronJobDTO
- */
-export interface AssignFunctionToCronJobDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionToCronJobDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionToCronJobDTO
-   */
-  functionId: string;
-}
-/**
- *
- * @export
- * @interface AssignFunctionToHookDTO
- */
-export interface AssignFunctionToHookDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionToHookDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionToHookDTO
-   */
-  functionId: string;
-}
-/**
- *
- * @export
  * @interface BaseEvent
  */
 export interface BaseEvent {
@@ -215,6 +177,12 @@ export interface CronJobCreateDTO {
    * @memberof CronJobCreateDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobCreateDTO
+   */
+  function?: string;
 }
 /**
  *
@@ -267,10 +235,10 @@ export interface CronJobOutputDTO {
   temporalValue: string;
   /**
    *
-   * @type {FunctionOutputDTO}
+   * @type {Array<FunctionOutputDTO>}
    * @memberof CronJobOutputDTO
    */
-  functions: FunctionOutputDTO;
+  functions: Array<FunctionOutputDTO>;
 }
 /**
  *
@@ -371,6 +339,37 @@ export type CronJobSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface CronJobUpdateDTO
+ */
+export interface CronJobUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobUpdateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CronJobUpdateDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobUpdateDTO
+   */
+  temporalValue: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobUpdateDTO
+   */
+  moduleId?: string;
+}
+/**
+ *
+ * @export
  * @interface DomainCreateInputDTO
  */
 export interface DomainCreateInputDTO {
@@ -380,6 +379,12 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  id: string;
 }
 /**
  *
@@ -553,6 +558,19 @@ export const DomainSearchInputDTOSortDirectionEnum = {
 export type DomainSearchInputDTOSortDirectionEnum =
   typeof DomainSearchInputDTOSortDirectionEnum[keyof typeof DomainSearchInputDTOSortDirectionEnum];
 
+/**
+ *
+ * @export
+ * @interface DomainUpdateInputDTO
+ */
+export interface DomainUpdateInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  name: string;
+}
 /**
  *
  * @export
@@ -742,6 +760,19 @@ export type FunctionSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface FunctionUpdateDTO
+ */
+export interface FunctionUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionUpdateDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
  * @interface GameServerCreateDTO
  */
 export interface GameServerCreateDTO {
@@ -813,10 +844,10 @@ export interface GameServerOutputDTO {
   name: string;
   /**
    *
-   * @type {string}
+   * @type {object}
    * @memberof GameServerOutputDTO
    */
-  connectionInfo: string;
+  connectionInfo: object;
   /**
    *
    * @type {string}
@@ -921,6 +952,41 @@ export type GameServerSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface GameServerUpdateDTO
+ */
+export interface GameServerUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerUpdateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerUpdateDTO
+   */
+  connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerUpdateDTO
+   */
+  type: GameServerUpdateDTOTypeEnum;
+}
+
+export const GameServerUpdateDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerUpdateDTOTypeEnum =
+  typeof GameServerUpdateDTOTypeEnum[keyof typeof GameServerUpdateDTOTypeEnum];
+
+/**
+ *
+ * @export
  * @interface GetSettingsInput
  */
 export interface GetSettingsInput {
@@ -1021,6 +1087,12 @@ export interface HookCreateDTO {
    * @memberof HookCreateDTO
    */
   eventType: HookCreateDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  function?: string;
 }
 
 export const HookCreateDTOEventTypeEnum = {
@@ -1083,11 +1155,27 @@ export interface HookOutputDTO {
   regex: string;
   /**
    *
-   * @type {FunctionOutputDTO}
+   * @type {Array<FunctionOutputDTO>}
    * @memberof HookOutputDTO
    */
-  functions: FunctionOutputDTO;
+  functions: Array<FunctionOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  eventType: HookOutputDTOEventTypeEnum;
 }
+
+export const HookOutputDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type HookOutputDTOEventTypeEnum =
+  typeof HookOutputDTOEventTypeEnum[keyof typeof HookOutputDTOEventTypeEnum];
+
 /**
  *
  * @export
@@ -1203,6 +1291,37 @@ export type HookSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface HookUpdateDTO
+ */
+export interface HookUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof HookUpdateDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
+  regex: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
+  moduleId?: string;
+}
+/**
+ *
+ * @export
  * @interface IGamePlayer
  */
 export interface IGamePlayer {
@@ -1292,6 +1411,31 @@ export type ITakaroQuerySortDirectionEnum =
 /**
  *
  * @export
+ * @interface LoginCreateDTO
+ */
+export interface LoginCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof LoginCreateDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginCreateDTO
+   */
+  domain: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginCreateDTO
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface LoginDTO
  */
 export interface LoginDTO {
@@ -1319,6 +1463,30 @@ export interface LoginOutputDTO {
    * @type {string}
    * @memberof LoginOutputDTO
    */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginOutputDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginOutputDTO
+   */
+  email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginOutputDTO
+   */
+  domain: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LoginOutputDTO
+   */
   token: string;
 }
 /**
@@ -1339,6 +1507,19 @@ export interface LoginOutputDTOAPI {
    * @memberof LoginOutputDTOAPI
    */
   metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface LoginUpdateDTO
+ */
+export interface LoginUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof LoginUpdateDTO
+   */
+  email: string;
 }
 /**
  *
@@ -1564,6 +1745,31 @@ export type ModuleSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface ModuleUpdateDTO
+ */
+export interface ModuleUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleUpdateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ModuleUpdateDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {object}
+   * @memberof ModuleUpdateDTO
+   */
+  config?: object;
+}
+/**
+ *
+ * @export
  * @interface ParamId
  */
 export interface ParamId {
@@ -1601,10 +1807,10 @@ export interface ParamIdAndRoleId {
 export interface ParamKey {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof ParamKey
    */
-  key: ParamKeyKeyEnum;
+  key: Array<ParamKeyKeyEnum>;
 }
 
 export const ParamKeyKeyEnum = {
@@ -1813,6 +2019,19 @@ export type PlayerSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface PlayerUpdateDTO
+ */
+export interface PlayerUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface RoleCreateInputDTO
  */
 export interface RoleCreateInputDTO {
@@ -1824,11 +2043,37 @@ export interface RoleCreateInputDTO {
   name: string;
   /**
    *
-   * @type {Array<any>}
+   * @type {Array<string>}
    * @memberof RoleCreateInputDTO
    */
-  capabilities: Array<any>;
+  capabilities: Array<RoleCreateInputDTOCapabilitiesEnum>;
 }
+
+export const RoleCreateInputDTOCapabilitiesEnum = {
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+} as const;
+
+export type RoleCreateInputDTOCapabilitiesEnum =
+  typeof RoleCreateInputDTOCapabilitiesEnum[keyof typeof RoleCreateInputDTOCapabilitiesEnum];
+
 /**
  *
  * @export
@@ -1971,11 +2216,37 @@ export interface RoleUpdateInputDTO {
   name: string;
   /**
    *
-   * @type {Array<any>}
+   * @type {Array<string>}
    * @memberof RoleUpdateInputDTO
    */
-  capabilities: Array<any>;
+  capabilities: Array<RoleUpdateInputDTOCapabilitiesEnum>;
 }
+
+export const RoleUpdateInputDTOCapabilitiesEnum = {
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+} as const;
+
+export type RoleUpdateInputDTOCapabilitiesEnum =
+  typeof RoleUpdateInputDTOCapabilitiesEnum[keyof typeof RoleUpdateInputDTOCapabilitiesEnum];
+
 /**
  *
  * @export
@@ -2099,167 +2370,6 @@ export interface SettingsSetDTO {
 /**
  *
  * @export
- * @interface UpdateCronJobDTO
- */
-export interface UpdateCronJobDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateCronJobDTO
-   */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof UpdateCronJobDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateCronJobDTO
-   */
-  temporalValue: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateCronJobDTO
-   */
-  moduleId?: string;
-}
-/**
- *
- * @export
- * @interface UpdateFunctionDTO
- */
-export interface UpdateFunctionDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateFunctionDTO
-   */
-  code: string;
-}
-/**
- *
- * @export
- * @interface UpdateGameServerDTO
- */
-export interface UpdateGameServerDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateGameServerDTO
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateGameServerDTO
-   */
-  connectionInfo: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateGameServerDTO
-   */
-  type: UpdateGameServerDTOTypeEnum;
-}
-
-export const UpdateGameServerDTOTypeEnum = {
-  Mock: 'MOCK',
-  Sevendaystodie: 'SEVENDAYSTODIE',
-  Rust: 'RUST',
-} as const;
-
-export type UpdateGameServerDTOTypeEnum =
-  typeof UpdateGameServerDTOTypeEnum[keyof typeof UpdateGameServerDTOTypeEnum];
-
-/**
- *
- * @export
- * @interface UpdateHookDTO
- */
-export interface UpdateHookDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateHookDTO
-   */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof UpdateHookDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateHookDTO
-   */
-  regex: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateHookDTO
-   */
-  moduleId?: string;
-}
-/**
- *
- * @export
- * @interface UpdateModuleDTO
- */
-export interface UpdateModuleDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateModuleDTO
-   */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof UpdateModuleDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof UpdateModuleDTO
-   */
-  config?: object;
-}
-/**
- *
- * @export
- * @interface UpdatePlayerDTO
- */
-export interface UpdatePlayerDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdatePlayerDTO
-   */
-  name: string;
-}
-/**
- *
- * @export
- * @interface UpdateUserDTO
- */
-export interface UpdateUserDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof UpdateUserDTO
-   */
-  name: string;
-}
-/**
- *
- * @export
  * @interface UserCreateInputDTO
  */
 export interface UserCreateInputDTO {
@@ -2348,6 +2458,37 @@ export interface UserOutputDTOAPI {
 /**
  *
  * @export
+ * @interface UserOutputWithRolesDTO
+ */
+export interface UserOutputWithRolesDTO {
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof UserOutputWithRolesDTO
+   */
+  roles: RoleOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface UserSearchInputAllowedFilters
  */
 export interface UserSearchInputAllowedFilters {
@@ -2411,6 +2552,20 @@ export type UserSearchInputDTOSortDirectionEnum =
   typeof UserSearchInputDTOSortDirectionEnum[keyof typeof UserSearchInputDTOSortDirectionEnum];
 
 /**
+ *
+ * @export
+ * @interface UserUpdateDTO
+ */
+export interface UserUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UserUpdateDTO
+   */
+  name: string;
+}
+
+/**
  * CronJobApi - axios parameter creator
  * @export
  */
@@ -2418,61 +2573,6 @@ export const CronJobApiAxiosParamCreator = function (
   configuration?: Configuration
 ) {
   return {
-    /**
-     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    cronJobControllerAssignFunction: async (
-      id: string,
-      functionId: string,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('cronJobControllerAssignFunction', 'id', id);
-      // verify required parameter 'functionId' is not null or undefined
-      assertParamExists(
-        'cronJobControllerAssignFunction',
-        'functionId',
-        functionId
-      );
-      const localVarPath = `/cronjob/{id}/function/{functionId}`
-        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
-        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
     /**
      *
      * @summary Create
@@ -2670,71 +2770,16 @@ export const CronJobApiAxiosParamCreator = function (
       };
     },
     /**
-     * The function will not be executed when the cronjob is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    cronJobControllerUnassignFunction: async (
-      id: string,
-      functionId: string,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('cronJobControllerUnassignFunction', 'id', id);
-      // verify required parameter 'functionId' is not null or undefined
-      assertParamExists(
-        'cronJobControllerUnassignFunction',
-        'functionId',
-        functionId
-      );
-      const localVarPath = `/cronjob/{id}/function/{functionId}`
-        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
-        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'DELETE',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     cronJobControllerUpdate: async (
       id: string,
-      updateCronJobDTO?: UpdateCronJobDTO,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -2771,7 +2816,7 @@ export const CronJobApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateCronJobDTO,
+        cronJobUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -2791,37 +2836,6 @@ export const CronJobApiAxiosParamCreator = function (
 export const CronJobApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration);
   return {
-    /**
-     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async cronJobControllerAssignFunction(
-      id: string,
-      functionId: string,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<CronJobOutputDTOAPI>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.cronJobControllerAssignFunction(
-          id,
-          functionId,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
     /**
      *
      * @summary Create
@@ -2926,47 +2940,16 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       );
     },
     /**
-     * The function will not be executed when the cronjob is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async cronJobControllerUnassignFunction(
-      id: string,
-      functionId: string,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<CronJobOutputDTOAPI>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.cronJobControllerUnassignFunction(
-          id,
-          functionId,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async cronJobControllerUpdate(
       id: string,
-      updateCronJobDTO?: UpdateCronJobDTO,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -2977,7 +2960,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.cronJobControllerUpdate(
           id,
-          updateCronJobDTO,
+          cronJobUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -3001,23 +2984,6 @@ export const CronJobApiFactory = function (
 ) {
   const localVarFp = CronJobApiFp(configuration);
   return {
-    /**
-     * Assign a function to a cronjob. This function will execute when the cronjob is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    cronJobControllerAssignFunction(
-      id: string,
-      functionId: string,
-      options?: any
-    ): AxiosPromise<CronJobOutputDTOAPI> {
-      return localVarFp
-        .cronJobControllerAssignFunction(id, functionId, options)
-        .then((request) => request(axios, basePath));
-    },
     /**
      *
      * @summary Create
@@ -3079,37 +3045,20 @@ export const CronJobApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * The function will not be executed when the cronjob is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    cronJobControllerUnassignFunction(
-      id: string,
-      functionId: string,
-      options?: any
-    ): AxiosPromise<CronJobOutputDTOAPI> {
-      return localVarFp
-        .cronJobControllerUnassignFunction(id, functionId, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     cronJobControllerUpdate(
       id: string,
-      updateCronJobDTO?: UpdateCronJobDTO,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
       options?: any
     ): AxiosPromise<CronJobOutputDTOAPI> {
       return localVarFp
-        .cronJobControllerUpdate(id, updateCronJobDTO, options)
+        .cronJobControllerUpdate(id, cronJobUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -3122,25 +3071,6 @@ export const CronJobApiFactory = function (
  * @extends {BaseAPI}
  */
 export class CronJobApi extends BaseAPI {
-  /**
-   * Assign a function to a cronjob. This function will execute when the cronjob is triggered
-   * @summary Assign function
-   * @param {string} id
-   * @param {string} functionId
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof CronJobApi
-   */
-  public cronJobControllerAssignFunction(
-    id: string,
-    functionId: string,
-    options?: AxiosRequestConfig
-  ) {
-    return CronJobApiFp(this.configuration)
-      .cronJobControllerAssignFunction(id, functionId, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    *
    * @summary Create
@@ -3204,40 +3134,21 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   * The function will not be executed when the cronjob is triggered anymore
-   * @summary Unassign function
-   * @param {string} id
-   * @param {string} functionId
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof CronJobApi
-   */
-  public cronJobControllerUnassignFunction(
-    id: string,
-    functionId: string,
-    options?: AxiosRequestConfig
-  ) {
-    return CronJobApiFp(this.configuration)
-      .cronJobControllerUnassignFunction(id, functionId, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateCronJobDTO} [updateCronJobDTO] UpdateCronJobDTO
+   * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof CronJobApi
    */
   public cronJobControllerUpdate(
     id: string,
-    updateCronJobDTO?: UpdateCronJobDTO,
+    cronJobUpdateDTO?: CronJobUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return CronJobApiFp(this.configuration)
-      .cronJobControllerUpdate(id, updateCronJobDTO, options)
+      .cronJobControllerUpdate(id, cronJobUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -3253,12 +3164,12 @@ export const DomainApiAxiosParamCreator = function (
     /**
      *
      * @summary Create
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {any} [body]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate: async (
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      body?: any,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       const localVarPath = `/domain`;
@@ -3292,7 +3203,7 @@ export const DomainApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        domainCreateInputDTO,
+        body,
         localVarRequestOptions,
         configuration
       );
@@ -3458,13 +3369,13 @@ export const DomainApiAxiosParamCreator = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {DomainUpdateInputDTO} [domainUpdateInputDTO] DomainUpdateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerUpdate: async (
       id: string,
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      domainUpdateInputDTO?: DomainUpdateInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -3503,7 +3414,7 @@ export const DomainApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        domainCreateInputDTO,
+        domainUpdateInputDTO,
         localVarRequestOptions,
         configuration
       );
@@ -3526,12 +3437,12 @@ export const DomainApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Create
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {any} [body]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async domainControllerCreate(
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      body?: any,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -3540,10 +3451,7 @@ export const DomainApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<DomainCreateOutputDTOAPI>
     > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.domainControllerCreate(
-          domainCreateInputDTO,
-          options
-        );
+        await localVarAxiosParamCreator.domainControllerCreate(body, options);
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -3630,13 +3538,13 @@ export const DomainApiFp = function (configuration?: Configuration) {
      *
      * @summary Update
      * @param {string} id
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {DomainUpdateInputDTO} [domainUpdateInputDTO] DomainUpdateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async domainControllerUpdate(
       id: string,
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      domainUpdateInputDTO?: DomainUpdateInputDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -3647,7 +3555,7 @@ export const DomainApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.domainControllerUpdate(
           id,
-          domainCreateInputDTO,
+          domainUpdateInputDTO,
           options
         );
       return createRequestFunction(
@@ -3674,16 +3582,16 @@ export const DomainApiFactory = function (
     /**
      *
      * @summary Create
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {any} [body]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate(
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      body?: any,
       options?: any
     ): AxiosPromise<DomainCreateOutputDTOAPI> {
       return localVarFp
-        .domainControllerCreate(domainCreateInputDTO, options)
+        .domainControllerCreate(body, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -3732,17 +3640,17 @@ export const DomainApiFactory = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+     * @param {DomainUpdateInputDTO} [domainUpdateInputDTO] DomainUpdateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerUpdate(
       id: string,
-      domainCreateInputDTO?: DomainCreateInputDTO,
+      domainUpdateInputDTO?: DomainUpdateInputDTO,
       options?: any
     ): AxiosPromise<DomainOutputDTOAPI> {
       return localVarFp
-        .domainControllerUpdate(id, domainCreateInputDTO, options)
+        .domainControllerUpdate(id, domainUpdateInputDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -3758,17 +3666,14 @@ export class DomainApi extends BaseAPI {
   /**
    *
    * @summary Create
-   * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+   * @param {any} [body]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DomainApi
    */
-  public domainControllerCreate(
-    domainCreateInputDTO?: DomainCreateInputDTO,
-    options?: AxiosRequestConfig
-  ) {
+  public domainControllerCreate(body?: any, options?: AxiosRequestConfig) {
     return DomainApiFp(this.configuration)
-      .domainControllerCreate(domainCreateInputDTO, options)
+      .domainControllerCreate(body, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -3821,18 +3726,18 @@ export class DomainApi extends BaseAPI {
    *
    * @summary Update
    * @param {string} id
-   * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
+   * @param {DomainUpdateInputDTO} [domainUpdateInputDTO] DomainUpdateInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DomainApi
    */
   public domainControllerUpdate(
     id: string,
-    domainCreateInputDTO?: DomainCreateInputDTO,
+    domainUpdateInputDTO?: DomainUpdateInputDTO,
     options?: AxiosRequestConfig
   ) {
     return DomainApiFp(this.configuration)
-      .domainControllerUpdate(id, domainCreateInputDTO, options)
+      .domainControllerUpdate(id, domainUpdateInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -4093,13 +3998,13 @@ export const FunctionApiAxiosParamCreator = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     functionControllerUpdate: async (
       id: string,
-      updateFunctionDTO?: UpdateFunctionDTO,
+      functionUpdateDTO?: FunctionUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -4136,7 +4041,7 @@ export const FunctionApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateFunctionDTO,
+        functionUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -4291,13 +4196,13 @@ export const FunctionApiFp = function (configuration?: Configuration) {
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async functionControllerUpdate(
       id: string,
-      updateFunctionDTO?: UpdateFunctionDTO,
+      functionUpdateDTO?: FunctionUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -4308,7 +4213,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.functionControllerUpdate(
           id,
-          updateFunctionDTO,
+          functionUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -4411,17 +4316,17 @@ export const FunctionApiFactory = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     functionControllerUpdate(
       id: string,
-      updateFunctionDTO?: UpdateFunctionDTO,
+      functionUpdateDTO?: FunctionUpdateDTO,
       options?: any
     ): AxiosPromise<FunctionOutputDTOAPI> {
       return localVarFp
-        .functionControllerUpdate(id, updateFunctionDTO, options)
+        .functionControllerUpdate(id, functionUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -4517,18 +4422,18 @@ export class FunctionApi extends BaseAPI {
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateFunctionDTO} [updateFunctionDTO] UpdateFunctionDTO
+   * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FunctionApi
    */
   public functionControllerUpdate(
     id: string,
-    updateFunctionDTO?: UpdateFunctionDTO,
+    functionUpdateDTO?: FunctionUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return FunctionApiFp(this.configuration)
-      .functionControllerUpdate(id, updateFunctionDTO, options)
+      .functionControllerUpdate(id, functionUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -4741,13 +4646,13 @@ export const GameServerApiAxiosParamCreator = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerUpdate: async (
       id: string,
-      updateGameServerDTO?: UpdateGameServerDTO,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -4784,7 +4689,7 @@ export const GameServerApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateGameServerDTO,
+        gameServerUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -4912,13 +4817,13 @@ export const GameServerApiFp = function (configuration?: Configuration) {
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async gameServerControllerUpdate(
       id: string,
-      updateGameServerDTO?: UpdateGameServerDTO,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -4929,7 +4834,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerUpdate(
           id,
-          updateGameServerDTO,
+          gameServerUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -5017,17 +4922,17 @@ export const GameServerApiFactory = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerUpdate(
       id: string,
-      updateGameServerDTO?: UpdateGameServerDTO,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
       options?: any
     ): AxiosPromise<GameServerOutputDTOAPI> {
       return localVarFp
-        .gameServerControllerUpdate(id, updateGameServerDTO, options)
+        .gameServerControllerUpdate(id, gameServerUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -5106,18 +5011,18 @@ export class GameServerApi extends BaseAPI {
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateGameServerDTO} [updateGameServerDTO] UpdateGameServerDTO
+   * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
   public gameServerControllerUpdate(
     id: string,
-    updateGameServerDTO?: UpdateGameServerDTO,
+    gameServerUpdateDTO?: GameServerUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return GameServerApiFp(this.configuration)
-      .gameServerControllerUpdate(id, updateGameServerDTO, options)
+      .gameServerControllerUpdate(id, gameServerUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -5130,61 +5035,6 @@ export const HookApiAxiosParamCreator = function (
   configuration?: Configuration
 ) {
   return {
-    /**
-     * Assign a function to a hook. This function will execute when the hook is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    hookControllerAssignFunction: async (
-      id: string,
-      functionId: string,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('hookControllerAssignFunction', 'id', id);
-      // verify required parameter 'functionId' is not null or undefined
-      assertParamExists(
-        'hookControllerAssignFunction',
-        'functionId',
-        functionId
-      );
-      const localVarPath = `/hook/{id}/function/{functionId}`
-        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
-        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'POST',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
     /**
      *
      * @summary Create
@@ -5382,71 +5232,16 @@ export const HookApiAxiosParamCreator = function (
       };
     },
     /**
-     * The function will not be executed when the hook is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    hookControllerUnassignFunction: async (
-      id: string,
-      functionId: string,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('hookControllerUnassignFunction', 'id', id);
-      // verify required parameter 'functionId' is not null or undefined
-      assertParamExists(
-        'hookControllerUnassignFunction',
-        'functionId',
-        functionId
-      );
-      const localVarPath = `/hook/{id}/function/{functionId}`
-        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
-        .replace(`{${'functionId'}}`, encodeURIComponent(String(functionId)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'DELETE',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     hookControllerUpdate: async (
       id: string,
-      updateHookDTO?: UpdateHookDTO,
+      hookUpdateDTO?: HookUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -5483,7 +5278,7 @@ export const HookApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateHookDTO,
+        hookUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -5503,37 +5298,6 @@ export const HookApiAxiosParamCreator = function (
 export const HookApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = HookApiAxiosParamCreator(configuration);
   return {
-    /**
-     * Assign a function to a hook. This function will execute when the hook is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async hookControllerAssignFunction(
-      id: string,
-      functionId: string,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<HookOutputDTOAPI>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.hookControllerAssignFunction(
-          id,
-          functionId,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
     /**
      *
      * @summary Create
@@ -5638,47 +5402,16 @@ export const HookApiFp = function (configuration?: Configuration) {
       );
     },
     /**
-     * The function will not be executed when the hook is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async hookControllerUnassignFunction(
-      id: string,
-      functionId: string,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<HookOutputDTOAPI>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.hookControllerUnassignFunction(
-          id,
-          functionId,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async hookControllerUpdate(
       id: string,
-      updateHookDTO?: UpdateHookDTO,
+      hookUpdateDTO?: HookUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -5689,7 +5422,7 @@ export const HookApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.hookControllerUpdate(
           id,
-          updateHookDTO,
+          hookUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -5713,23 +5446,6 @@ export const HookApiFactory = function (
 ) {
   const localVarFp = HookApiFp(configuration);
   return {
-    /**
-     * Assign a function to a hook. This function will execute when the hook is triggered
-     * @summary Assign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    hookControllerAssignFunction(
-      id: string,
-      functionId: string,
-      options?: any
-    ): AxiosPromise<HookOutputDTOAPI> {
-      return localVarFp
-        .hookControllerAssignFunction(id, functionId, options)
-        .then((request) => request(axios, basePath));
-    },
     /**
      *
      * @summary Create
@@ -5788,37 +5504,20 @@ export const HookApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * The function will not be executed when the hook is triggered anymore
-     * @summary Unassign function
-     * @param {string} id
-     * @param {string} functionId
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    hookControllerUnassignFunction(
-      id: string,
-      functionId: string,
-      options?: any
-    ): AxiosPromise<HookOutputDTOAPI> {
-      return localVarFp
-        .hookControllerUnassignFunction(id, functionId, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     hookControllerUpdate(
       id: string,
-      updateHookDTO?: UpdateHookDTO,
+      hookUpdateDTO?: HookUpdateDTO,
       options?: any
     ): AxiosPromise<HookOutputDTOAPI> {
       return localVarFp
-        .hookControllerUpdate(id, updateHookDTO, options)
+        .hookControllerUpdate(id, hookUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -5831,25 +5530,6 @@ export const HookApiFactory = function (
  * @extends {BaseAPI}
  */
 export class HookApi extends BaseAPI {
-  /**
-   * Assign a function to a hook. This function will execute when the hook is triggered
-   * @summary Assign function
-   * @param {string} id
-   * @param {string} functionId
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof HookApi
-   */
-  public hookControllerAssignFunction(
-    id: string,
-    functionId: string,
-    options?: AxiosRequestConfig
-  ) {
-    return HookApiFp(this.configuration)
-      .hookControllerAssignFunction(id, functionId, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    *
    * @summary Create
@@ -5913,40 +5593,21 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   * The function will not be executed when the hook is triggered anymore
-   * @summary Unassign function
-   * @param {string} id
-   * @param {string} functionId
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof HookApi
-   */
-  public hookControllerUnassignFunction(
-    id: string,
-    functionId: string,
-    options?: AxiosRequestConfig
-  ) {
-    return HookApiFp(this.configuration)
-      .hookControllerUnassignFunction(id, functionId, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateHookDTO} [updateHookDTO] UpdateHookDTO
+   * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof HookApi
    */
   public hookControllerUpdate(
     id: string,
-    updateHookDTO?: UpdateHookDTO,
+    hookUpdateDTO?: HookUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return HookApiFp(this.configuration)
-      .hookControllerUpdate(id, updateHookDTO, options)
+      .hookControllerUpdate(id, hookUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -6456,13 +6117,13 @@ export const ModuleApiAxiosParamCreator = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateModuleDTO} [updateModuleDTO] UpdateModuleDTO
+     * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     moduleControllerUpdate: async (
       id: string,
-      updateModuleDTO?: UpdateModuleDTO,
+      moduleUpdateDTO?: ModuleUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -6499,7 +6160,7 @@ export const ModuleApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateModuleDTO,
+        moduleUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -6626,13 +6287,13 @@ export const ModuleApiFp = function (configuration?: Configuration) {
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateModuleDTO} [updateModuleDTO] UpdateModuleDTO
+     * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async moduleControllerUpdate(
       id: string,
-      updateModuleDTO?: UpdateModuleDTO,
+      moduleUpdateDTO?: ModuleUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -6643,7 +6304,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.moduleControllerUpdate(
           id,
-          updateModuleDTO,
+          moduleUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -6728,17 +6389,17 @@ export const ModuleApiFactory = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateModuleDTO} [updateModuleDTO] UpdateModuleDTO
+     * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     moduleControllerUpdate(
       id: string,
-      updateModuleDTO?: UpdateModuleDTO,
+      moduleUpdateDTO?: ModuleUpdateDTO,
       options?: any
     ): AxiosPromise<ModuleOutputDTOAPI> {
       return localVarFp
-        .moduleControllerUpdate(id, updateModuleDTO, options)
+        .moduleControllerUpdate(id, moduleUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -6817,18 +6478,18 @@ export class ModuleApi extends BaseAPI {
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateModuleDTO} [updateModuleDTO] UpdateModuleDTO
+   * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ModuleApi
    */
   public moduleControllerUpdate(
     id: string,
-    updateModuleDTO?: UpdateModuleDTO,
+    moduleUpdateDTO?: ModuleUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return ModuleApiFp(this.configuration)
-      .moduleControllerUpdate(id, updateModuleDTO, options)
+      .moduleControllerUpdate(id, moduleUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -8523,13 +8184,13 @@ export const UserApiAxiosParamCreator = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateUserDTO} [updateUserDTO] UpdateUserDTO
+     * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     userControllerUpdate: async (
       id: string,
-      updateUserDTO?: UpdateUserDTO,
+      userUpdateDTO?: UserUpdateDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -8566,7 +8227,7 @@ export const UserApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        updateUserDTO,
+        userUpdateDTO,
         localVarRequestOptions,
         configuration
       );
@@ -8817,13 +8478,13 @@ export const UserApiFp = function (configuration?: Configuration) {
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateUserDTO} [updateUserDTO] UpdateUserDTO
+     * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async userControllerUpdate(
       id: string,
-      updateUserDTO?: UpdateUserDTO,
+      userUpdateDTO?: UserUpdateDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -8834,7 +8495,7 @@ export const UserApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.userControllerUpdate(
           id,
-          updateUserDTO,
+          userUpdateDTO,
           options
         );
       return createRequestFunction(
@@ -8990,17 +8651,17 @@ export const UserApiFactory = function (
      *
      * @summary Update
      * @param {string} id
-     * @param {UpdateUserDTO} [updateUserDTO] UpdateUserDTO
+     * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     userControllerUpdate(
       id: string,
-      updateUserDTO?: UpdateUserDTO,
+      userUpdateDTO?: UserUpdateDTO,
       options?: any
     ): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp
-        .userControllerUpdate(id, updateUserDTO, options)
+        .userControllerUpdate(id, userUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9160,18 +8821,18 @@ export class UserApi extends BaseAPI {
    *
    * @summary Update
    * @param {string} id
-   * @param {UpdateUserDTO} [updateUserDTO] UpdateUserDTO
+   * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UserApi
    */
   public userControllerUpdate(
     id: string,
-    updateUserDTO?: UpdateUserDTO,
+    userUpdateDTO?: UserUpdateDTO,
     options?: AxiosRequestConfig
   ) {
     return UserApiFp(this.configuration)
-      .userControllerUpdate(id, updateUserDTO, options)
+      .userControllerUpdate(id, userUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
