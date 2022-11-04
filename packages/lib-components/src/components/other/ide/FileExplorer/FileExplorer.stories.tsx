@@ -17,7 +17,9 @@ export const Default: StoryFn = () => {
   const files = {
     '/hooks/index.ts': { code: 'content here', active: true },
     '/hooks/test.ts': { code: 'content here' },
+    '/hooks/skrrrr.ts': { code: 'content here' },
     '/hooks/inner/index.ts': { code: 'content here' },
+    '/hooks/inner/index3.ts': { code: 'content here' },
     '/hooks/inner/test.ts': { code: 'content here' },
     '/cron/index.ts': { code: 'content here' },
     '/command/index.ts': { code: 'content here' },

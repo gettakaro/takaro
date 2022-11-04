@@ -47,3 +47,17 @@ export const fromPropsToModules = ({
 
   return { directories: Array.from(directories), modules };
 };
+
+// Currently it should be possible to rename files (this includes moving) in case they remain in the same top directory: hooks, cron and command.
+export function canRename(current_path: string, new_path: string) {
+  // if the toplevels are equal we can show it as a possible drop
+  const eq_top_lvl = new RegExp(
+    `${current_path.substring(1).split('/')[0]}\/*`
+  );
+  return eq_top_lvl.test(new_path);
+}
+
+// get filename from full path
+export function getFileName(path: string) {
+  return path.split('/').filter(Boolean).pop()!;
+}

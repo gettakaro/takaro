@@ -13,6 +13,8 @@ import { Tooltip } from '../../../../components';
 import { useModal, useOutsideAlerter, useTheme } from '../../../../hooks';
 import { ConfirmationModal } from '../../../../modals';
 import { useSandpack } from '@codesandbox/sandpack-react';
+import { useDrag } from 'react-dnd';
+import { ItemTypes } from './ItemTypes';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -63,6 +65,8 @@ export const File: FC<FileProps> = ({
   onClick,
   depth,
 }) => {
+  // TODO: create prop: IsDir() based on selectFile.
+
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
@@ -71,6 +75,12 @@ export const File: FC<FileProps> = ({
   useOutsideAlerter(ref, () => close());
 
   const fileName = path.split('/').filter(Boolean).pop()!;
+
+  const [, drag] = useDrag(() => ({
+    type: ItemTypes.FILE,
+    item: { path },
+  }));
+
   // const extension = fileName.split('.').pop();
 
   const onClickButton = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -82,12 +92,9 @@ export const File: FC<FileProps> = ({
 
   const handleDelete = () => {
     const filePaths = sandpack.visibleFiles;
-    console.log(path);
     const toDelete = filePaths.filter((filePath) =>
       filePath.startsWith(path.slice(0, -1))
     );
-    console.log(filePaths);
-    console.log(toDelete);
     for (const i of toDelete) {
       sandpack.deleteFile(i);
     }
@@ -108,13 +115,30 @@ export const File: FC<FileProps> = ({
   const handleOnNewFileClick = (e: MouseEvent<SVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`${path.slice(0, -1)}`);
     sandpack.updateFile(`${path.slice(0, -1)}newFileeeee.tsx`);
   };
 
   const handleOnNewDirClick = (e: MouseEvent<SVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
+    const dirName = 'new_dir_name';
+
+    // we need to open the folder
+    onClick?.(event as any); // TODO: fix this type
+
+    // add a . file
+    sandpack.addFile(
+      {
+        [`${path.slice(0, -1)}${dirName}/.`]: {
+          code: '',
+          hidden: true,
+          active: false,
+          readOnly: true,
+        },
+      },
+      ''
+    );
   };
 
   const getIcon = (): JSX.Element => {
@@ -131,7 +155,7 @@ export const File: FC<FileProps> = ({
     <Wrapper>
       <ConfirmationModal
         type="error"
-        title="Delete directory"
+        title={`Delete ${selectFile ? 'file' : 'directory'} `}
         close={close}
         description={`Are you sure you want to delete '${fileName}'? The ${
           selectFile ? 'file' : 'directory'
@@ -195,6 +219,8 @@ export const File: FC<FileProps> = ({
         title={fileName}
         onClick={onClickButton}
         type="button"
+        role="handle"
+        ref={drag}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
