@@ -1,8 +1,11 @@
 import { TakaroModel } from '@takaro/db';
-import { Page } from 'objection';
-import { errors } from '@takaro/logger';
-import { ITakaroRepo } from './base';
-import { Settings, SETTINGS_KEYS } from '../service/SettingsService';
+import { errors } from '@takaro/util';
+import { ITakaroRepo, PaginatedOutput } from './base';
+import {
+  DEFAULT_SETTINGS,
+  Settings,
+  SETTINGS_KEYS,
+} from '../service/SettingsService';
 
 export const SETTINGS_TABLE_NAME = 'settings';
 
@@ -20,7 +23,12 @@ export class GameServerSettingsModel extends SettingsModel {
   gameServerId!: string;
 }
 
-export class SettingsRepo extends ITakaroRepo<SettingsModel> {
+export class SettingsRepo extends ITakaroRepo<
+  SettingsModel,
+  Settings,
+  never,
+  never
+> {
   constructor(
     public readonly domainId: string,
     public readonly gameServerId?: string
@@ -38,12 +46,12 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
     return GameServerSettingsModel.bindKnex(knex);
   }
 
-  async find(): Promise<Page<SettingsModel>> {
+  async find(): Promise<PaginatedOutput<never>> {
     // Use the "getAll" method instead
     throw new errors.NotImplementedError();
   }
 
-  async findOne(): Promise<SettingsModel> {
+  async findOne(): Promise<never> {
     // Use the "get" method instead
     throw new errors.NotImplementedError();
   }
@@ -53,34 +61,33 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
     throw new errors.NotImplementedError();
   }
 
-  async update(): Promise<SettingsModel> {
+  async update(): Promise<never> {
     // Use the "set" method instead
     throw new errors.NotImplementedError();
   }
 
-  async create(): Promise<SettingsModel> {
-    const defaultSettings = new Settings();
-
+  async create(): Promise<Settings> {
     if (this.gameServerId) {
       const model = await this.getGameServerModel();
       const data = await model
         .query()
         .insert({
           gameServerId: this.gameServerId,
-          ...defaultSettings,
+          ...DEFAULT_SETTINGS.toJSON(),
         })
         .returning('*');
-      return data;
+      return new Settings(data);
     }
 
     const model = await this.getModel();
-    return model
+    const res = await model
       .query()
       .insert({
         domainId: this.domainId,
-        ...defaultSettings,
+        ...DEFAULT_SETTINGS.toJSON(),
       })
       .returning('*');
+    return new Settings(res);
   }
 
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
@@ -115,10 +122,10 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel> {
       throw new errors.NotFoundError();
     }
 
-    return {
+    return new Settings({
       commandPrefix: data[0].commandPrefix,
       serverChatName: data[0].serverChatName,
-    };
+    });
   }
 
   async set(key: SETTINGS_KEYS, value: string): Promise<void> {

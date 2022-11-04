@@ -7,7 +7,7 @@ import {
   QueueScheduler,
 } from 'bullmq';
 import { config } from './config';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
@@ -35,7 +35,7 @@ export abstract class TakaroWorker<T> extends Worker<T> {
   }
 }
 export interface IJobData {
-  functions: string[];
+  function: string;
   domainId: string;
   token: string;
   /**
@@ -53,7 +53,7 @@ export interface IEventQueueData {
   type: GameEvents;
   domainId: string;
   gameServerId: string;
-  data: EventMapping[GameEvents];
+  event: EventMapping[GameEvents];
 }
 
 export class QueuesService {

@@ -6,8 +6,6 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 async function createConfig() {
-  const mdxMermaid = await import('mdx-mermaid');
-
   return {
     title: 'Takaro',
     tagline: 'Multi-gameserver manager',
@@ -16,11 +14,15 @@ async function createConfig() {
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
+    markdown: {
+      mermaid: true,
+    },
+    themes: ['@docusaurus/theme-mermaid'],
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: 'facebook', // Usually your GitHub org/user name.
-    projectName: 'docusaurus', // Usually your repo name.
+    organizationName: 'niekcandaele', // Usually your GitHub org/user name.
+    projectName: 'takaro', // Usually your repo name.
 
     // Even if you don't use internalization, you can use this field to set useful
     // metadata like html lang. For example, if your site is Chinese, you may want
@@ -36,20 +38,15 @@ async function createConfig() {
         /** @type {import('@docusaurus/preset-classic').Options} */
         ({
           docs: {
-            remarkPlugins: [mdxMermaid.default],
+            routeBasePath: '/',
+            remarkPlugins: [],
             sidebarPath: require.resolve('./sidebars.js'),
             // Please change this to your repo.
             // Remove this to remove the "edit this page" links.
             editUrl:
               'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
           },
-          blog: {
-            showReadingTime: true,
-            // Please change this to your repo.
-            // Remove this to remove the "edit this page" links.
-            editUrl:
-              'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          },
+          blog: false,
           theme: {
             customCss: require.resolve('./src/css/custom.css'),
           },
@@ -69,13 +66,18 @@ async function createConfig() {
           items: [
             {
               type: 'doc',
-              docId: 'development/getting-started',
+              docId: 'application/modules',
               position: 'left',
               label: 'Docs',
             },
-            { to: '/blog', label: 'Blog', position: 'left' },
             {
-              href: 'https://github.com/facebook/docusaurus',
+              type: 'doc',
+              docId: 'development/getting-started',
+              position: 'left',
+              label: 'Development',
+            },
+            {
+              href: 'https://github.com/niekcandaele/takaro',
               label: 'GitHub',
               position: 'right',
             },
@@ -89,7 +91,7 @@ async function createConfig() {
               items: [
                 {
                   label: 'Tutorial',
-                  to: '/docs/development/getting-started',
+                  to: '/development/getting-started',
                 },
               ],
             },
@@ -97,16 +99,8 @@ async function createConfig() {
               title: 'Community',
               items: [
                 {
-                  label: 'Stack Overflow',
-                  href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-                },
-                {
                   label: 'Discord',
-                  href: 'https://discordapp.com/invite/docusaurus',
-                },
-                {
-                  label: 'Twitter',
-                  href: 'https://twitter.com/docusaurus',
+                  href: 'https://discord.catalysm.net',
                 },
               ],
             },
@@ -114,17 +108,13 @@ async function createConfig() {
               title: 'More',
               items: [
                 {
-                  label: 'Blog',
-                  to: '/blog',
-                },
-                {
                   label: 'GitHub',
                   href: 'https://github.com/niekcandaele/takaro',
                 },
               ],
             },
           ],
-          copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+          copyright: `Copyright © ${new Date().getFullYear()} Takaro.`,
         },
         prism: {
           theme: lightCodeTheme,

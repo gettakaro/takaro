@@ -1,5 +1,5 @@
-import { IGameEventEmitter, GameEvents } from '@takaro/gameserver';
-import { logger } from '@takaro/logger';
+import { TakaroEmitter, GameEvents } from '@takaro/gameserver';
+import { logger } from '@takaro/util';
 import { QueuesService } from '@takaro/queues';
 import {
   GameServerOutputDTO,
@@ -17,14 +17,14 @@ export class IGameServerInMemoryManager {
   private log = logger('GameServerManager');
   private emitterMap = new Map<
     string,
-    { domainId: string; emitter: IGameEventEmitter }
+    { domainId: string; emitter: TakaroEmitter }
   >();
   private eventsQueue = QueuesService.getInstance().queues.events.queue;
 
-  async init(gameServers: (GameServerOutputDTO & { domainId: string })[]) {
+  async init(domainId: string, gameServers: GameServerOutputDTO[]) {
     this.log.info(`Initializing ${gameServers.length} game servers`);
     for (const gameServer of gameServers) {
-      await this.add(gameServer.domainId, gameServer);
+      await this.add(domainId, gameServer);
     }
   }
 
@@ -38,11 +38,15 @@ export class IGameServerInMemoryManager {
 
   async add(domainId: string, gameServer: GameServerOutputDTO) {
     const game = GameServerService.getGame(gameServer.type);
-    const emitter = await new game(gameServer.connectionInfo).getEventEmitter();
+    const emitter = new game(gameServer.connectionInfo).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
-    await emitter.start(gameServer.connectionInfo);
     this.attachListeners(domainId, gameServer.id, emitter);
+    try {
+      await emitter.start();
+    } catch (error) {
+      this.log.warn('Error while starting gameserver', { error });
+    }
 
     this.log.info(`Added game server ${gameServer.id}`);
   }
@@ -64,13 +68,17 @@ export class IGameServerInMemoryManager {
   private attachListeners(
     domainId: string,
     gameServerId: string,
-    emitter: IGameEventEmitter
+    emitter: TakaroEmitter
   ) {
+    emitter.on('error', (error) => {
+      this.log.error('Error from game server', error);
+    });
+
     emitter.on(GameEvents.LOG_LINE, async (logLine) => {
       this.log.debug('Received a logline event', logLine);
       await this.eventsQueue.add(GameEvents.LOG_LINE, {
         type: GameEvents.LOG_LINE,
-        data: logLine,
+        event: logLine,
         domainId,
         gameServerId,
       });
@@ -80,7 +88,7 @@ export class IGameServerInMemoryManager {
       this.log.debug('Received a player connected event', playerConnectedEvent);
       await this.eventsQueue.add(GameEvents.PLAYER_CONNECTED, {
         type: GameEvents.PLAYER_CONNECTED,
-        data: playerConnectedEvent,
+        event: playerConnectedEvent,
         domainId,
         gameServerId,
       });
@@ -95,7 +103,7 @@ export class IGameServerInMemoryManager {
         );
         await this.eventsQueue.add(GameEvents.PLAYER_DISCONNECTED, {
           type: GameEvents.PLAYER_DISCONNECTED,
-          data: playerDisconnectedEvent,
+          event: playerDisconnectedEvent,
           domainId,
           gameServerId,
         });

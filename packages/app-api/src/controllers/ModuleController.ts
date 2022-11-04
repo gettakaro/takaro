@@ -11,7 +11,7 @@ import {
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleService,
-  UpdateModuleDTO,
+  ModuleUpdateDTO,
 } from '../service/ModuleService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -25,10 +25,10 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -110,7 +110,7 @@ export class ModuleController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateModuleDTO
+    @Body() data: ModuleUpdateDTO
   ) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.update(params.id, data));

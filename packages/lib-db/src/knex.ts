@@ -1,6 +1,6 @@
 import Knex, { Knex as IKnex } from 'knex';
 import { config } from './config';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 
 const log = logger('sql');
 

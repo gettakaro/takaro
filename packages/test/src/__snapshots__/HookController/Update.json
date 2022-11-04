@@ -12,7 +12,9 @@
       "id": "b7de409e-8711-4477-85a1-ccb0f355791d",
       "eventType": "log",
       "moduleId": "ee6b276f-f3a8-48f8-afa2-49d8d51a1c5a",
-      "functions": []
+      "function": {
+        "code": ""
+      }
     }
   },
   "status": 200,

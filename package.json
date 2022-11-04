@@ -7,7 +7,7 @@
     "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
     "shell": "docker-compose exec takaro bash",
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
-    "clean": "npx --workspaces rimraf dist && npx rimraf node_modules",
+    "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
     "test": "npm --workspaces run --if-present test",
     "test:unit": "COMMAND=\"--if-present test:unit\"  ./scripts/run-all-pkgs.sh",
     "test:integration": "npm --workspaces run --if-present test:integration",
@@ -15,8 +15,8 @@
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
     "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
     "lint:fix": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
-    "prettier": "npx --workspaces prettier --check 'src/**/*.{ts,md}'",
-    "prettier:fix": "npx --workspaces prettier --write 'src/**/*.{ts,md}'",
+    "prettier": "npx --workspaces prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
+    "prettier:fix": "npx --workspaces prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prepare": "[ -d '.husky' ] && husky install || true"
   },
   "engines": {
@@ -45,6 +45,7 @@
     "@types/sinon": "^10.0.6",
     "@types/sinon-chai": "^3.2.6",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "chai": "^4.3.4",
@@ -100,18 +101,30 @@
   },
   "overrides": {
     "class-validator": "0.13.2",
-    "@docusaurus/core@2.1.0": {
+    "class-transformer": "0.3.1",
+    "@docusaurus/core@2.2.0": {
       "react": "17.0.2",
       "react-dom": "17.0.2",
       "@types/react": "17.0.2",
       "@types/react-dom": "17.0.2"
     },
-    "@docusaurus/preset-classic": {
+    "@docusaurus/preset-classic@2.2.0": {
+      "react": "17.0.2",
+      "react-dom": "17.0.2",
+      "@types/react": "17.0.2",
+      "@types/react-dom": "17.0.2"
+    },
+    "@docusaurus/theme-mermaid@2.2.0": {
+      "react": "17.0.2",
+      "react-dom": "17.0.2",
+      "@types/react": "17.0.2",
+      "@types/react-dom": "17.0.2"
+    },
+    "@docusaurus/module-type-aliases@2.2.0": {
       "react": "17.0.2",
       "react-dom": "17.0.2",
       "@types/react": "17.0.2",
       "@types/react-dom": "17.0.2"
     }
-
   }
 }

@@ -1,6 +1,6 @@
 #!/bin/node
 
-import { AdminClient, AxiosError } from '@takaro/apiclient';
+import { AdminClient, isAxiosError } from '@takaro/apiclient';
 import { config } from 'dotenv';
 
 config();
@@ -27,7 +27,7 @@ async function main() {
 }
 
 main().catch((e) => {
-  if (e instanceof AxiosError) {
+  if (isAxiosError(e)) {
     console.error(JSON.stringify(e.response.data, null, 2));
   } else {
     console.error(e);

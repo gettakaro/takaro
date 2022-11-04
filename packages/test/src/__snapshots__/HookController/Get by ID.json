@@ -12,7 +12,9 @@
       "eventType": "log",
       "regex": "/this (is) a [regex]/g",
       "moduleId": "1a5d42fe-5d27-4ac6-bc82-2cc57197fee5",
-      "functions": []
+      "function": {
+        "code": ""
+      }
     }
   },
   "status": 200,

@@ -35,8 +35,6 @@ export class Meta {
       forbidNonWhitelisted: true,
     });
 
-    //console.log(JSON.stringify(schemas, null, 2))
-
     return routingControllersToSpec(
       storage,
       {},

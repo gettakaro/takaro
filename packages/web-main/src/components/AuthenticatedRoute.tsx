@@ -39,7 +39,8 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   useEffect(() => {
     handleAuth();
-  }, [handleAuth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleFrame() {
     switch (frame) {

@@ -1,7 +1,7 @@
 import { Config, IBaseConfig } from '@takaro/config';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 
 enum CLUSTER_MODE {
   SINGLE = 'single',

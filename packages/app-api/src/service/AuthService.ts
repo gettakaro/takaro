@@ -1,13 +1,14 @@
 import { DomainScoped } from '../lib/DomainScoped';
-import { errors, logger } from '@takaro/logger';
+import { errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
-import { CAPABILITIES } from '../db/role';
 import { IsString } from 'class-validator';
 import ms from 'ms';
+import { TakaroDTO } from '@takaro/util';
+import { CAPABILITIES } from './RoleService';
 
 interface IJWTPayload {
   sub: string;
@@ -23,7 +24,7 @@ export interface AuthenticatedRequest extends Request {
   user: { id: string };
 }
 
-export class LoginOutputDTO {
+export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
   @IsString()
   token!: string;
 }
@@ -61,7 +62,7 @@ export class AuthService extends DomainScoped {
         maxAge: ms(config.get('auth.jwtExpiresIn')),
       });
 
-      return { token };
+      return new LoginOutputDTO({ token });
     } else {
       this.log.warn('Password does not match');
       throw new errors.UnauthorizedError();
