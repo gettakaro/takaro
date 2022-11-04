@@ -54,7 +54,7 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   moduleId!: string;
 
   @IsOptional()
-  @IsString()
+  @IsUUID()
   function?: string;
 }
 
