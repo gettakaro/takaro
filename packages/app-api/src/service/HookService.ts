@@ -76,7 +76,7 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   eventType: GameEvents;
 
   @IsOptional()
-  @IsString()
+  @IsUUID()
   function?: string;
 }
 

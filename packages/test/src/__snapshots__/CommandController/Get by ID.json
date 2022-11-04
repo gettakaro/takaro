@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-04T20:20:54.079Z"
+    },
+    "data": {
+      "createdAt": "2022-11-04T20:20:54.056Z",
+      "updatedAt": "2022-11-04T20:20:54.056Z",
+      "id": "9003552c-0a11-4cee-84f1-5f53bcb949a7",
+      "name": "Test command",
+      "enabled": true,
+      "moduleId": "e69569d5-3bcb-4506-bae4-fd20de9c4c20",
+      "function": {
+        "createdAt": "2022-11-04T20:20:54.053Z",
+        "updatedAt": "2022-11-04T20:20:54.058Z",
+        "id": "9003552c-0a11-4cee-84f1-5f53bcb949a7",
+        "code": ""
+      }
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Get by ID",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

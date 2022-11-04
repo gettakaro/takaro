@@ -129,6 +129,8 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ManageCronjobs: 'MANAGE_CRONJOBS',
   ReadHooks: 'READ_HOOKS',
   ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
   ReadPlayers: 'READ_PLAYERS',
@@ -140,6 +142,202 @@ export const CapabilityOutputDTOCapabilityEnum = {
 export type CapabilityOutputDTOCapabilityEnum =
   typeof CapabilityOutputDTOCapabilityEnum[keyof typeof CapabilityOutputDTOCapabilityEnum];
 
+/**
+ *
+ * @export
+ * @interface CommandCreateDTO
+ */
+export interface CommandCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CommandCreateDTO
+   */
+  enabled?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandCreateDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandCreateDTO
+   */
+  function?: string;
+}
+/**
+ *
+ * @export
+ * @interface CommandOutputArrayDTOAPI
+ */
+export interface CommandOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<CommandOutputDTO>}
+   * @memberof CommandOutputArrayDTOAPI
+   */
+  data: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CommandOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CommandOutputDTO
+ */
+export interface CommandOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CommandOutputDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {FunctionOutputDTO}
+   * @memberof CommandOutputDTO
+   */
+  function: FunctionOutputDTO;
+}
+/**
+ *
+ * @export
+ * @interface CommandOutputDTOAPI
+ */
+export interface CommandOutputDTOAPI {
+  /**
+   *
+   * @type {CommandOutputDTO}
+   * @memberof CommandOutputDTOAPI
+   */
+  data: CommandOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CommandOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CommandSearchInputAllowedFilters
+ */
+export interface CommandSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputAllowedFilters
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputAllowedFilters
+   */
+  name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CommandSearchInputAllowedFilters
+   */
+  enabled?: boolean;
+}
+/**
+ *
+ * @export
+ * @interface CommandSearchInputDTO
+ */
+export interface CommandSearchInputDTO {
+  /**
+   *
+   * @type {CommandSearchInputAllowedFilters}
+   * @memberof CommandSearchInputDTO
+   */
+  filters?: CommandSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof CommandSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CommandSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputDTO
+   */
+  sortDirection?: CommandSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof CommandSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const CommandSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type CommandSearchInputDTOSortDirectionEnum =
+  typeof CommandSearchInputDTOSortDirectionEnum[keyof typeof CommandSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface CommandUpdateDTO
+ */
+export interface CommandUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CommandUpdateDTO
+   */
+  enabled?: boolean;
+}
 /**
  *
  * @export
@@ -2118,6 +2316,8 @@ export const RoleCreateInputDTOCapabilitiesEnum = {
   ManageCronjobs: 'MANAGE_CRONJOBS',
   ReadHooks: 'READ_HOOKS',
   ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
   ReadPlayers: 'READ_PLAYERS',
@@ -2291,6 +2491,8 @@ export const RoleUpdateInputDTOCapabilitiesEnum = {
   ManageCronjobs: 'MANAGE_CRONJOBS',
   ReadHooks: 'READ_HOOKS',
   ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
   ReadPlayers: 'READ_PLAYERS',
@@ -2668,6 +2870,594 @@ export interface UserUpdateDTO {
    * @memberof UserUpdateDTO
    */
   name: string;
+}
+
+/**
+ * CommandApi - axios parameter creator
+ * @export
+ */
+export const CommandApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreate: async (
+      commandCreateDTO?: CommandCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerGetOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerGetOne', 'id', id);
+      const localVarPath = `/command/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemove: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerRemove', 'id', id);
+      const localVarPath = `/command/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerSearch: async (
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdate: async (
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerUpdate', 'id', id);
+      const localVarPath = `/command/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandUpdateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * CommandApi - functional programming interface
+ * @export
+ */
+export const CommandApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = CommandApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerCreate(
+      commandCreateDTO?: CommandCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerCreate(
+          commandCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerRemove(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerSearch(
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerSearch(
+          commandSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerUpdate(
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerUpdate(
+          id,
+          commandUpdateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * CommandApi - factory interface
+ * @export
+ */
+export const CommandApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = CommandApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreate(
+      commandCreateDTO?: CommandCreateDTO,
+      options?: any
+    ): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp
+        .commandControllerCreate(commandCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerGetOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp
+        .commandControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .commandControllerRemove(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerSearch(
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options?: any
+    ): AxiosPromise<CommandOutputArrayDTOAPI> {
+      return localVarFp
+        .commandControllerSearch(commandSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdate(
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options?: any
+    ): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp
+        .commandControllerUpdate(id, commandUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * CommandApi - object-oriented interface
+ * @export
+ * @class CommandApi
+ * @extends {BaseAPI}
+ */
+export class CommandApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerCreate(
+    commandCreateDTO?: CommandCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerCreate(commandCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerRemove(id: string, options?: AxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerSearch(
+    commandSearchInputDTO?: CommandSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerSearch(commandSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerUpdate(
+    id: string,
+    commandUpdateDTO?: CommandUpdateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerUpdate(id, commandUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
 }
 
 /**
