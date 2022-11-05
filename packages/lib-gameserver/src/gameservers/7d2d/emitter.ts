@@ -9,6 +9,7 @@ import {
 } from '../../interfaces/events';
 import { SdtdConnectionInfo } from '.';
 import { TakaroEmitter } from '../../TakaroEmitter';
+import { IGamePlayer } from '../../main';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -73,7 +74,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     await this.emit(
       GameEvents.LOG_LINE,
       new EventLogLine({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         msg: logLine.msg,
       })
     );
@@ -104,13 +105,13 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (!gameId) throw new Error('Could not find gameId');
 
     return new EventPlayerConnected({
-      player: {
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
         xboxLiveId,
         epicOnlineServicesId,
-      },
+      }),
     });
   }
   private handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
@@ -134,12 +135,12 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (!gameId) throw new Error('Could not find gameId');
 
     return new EventPlayerDisconnected({
-      player: {
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
         xboxLiveId,
-      },
+      }),
     });
   }
 

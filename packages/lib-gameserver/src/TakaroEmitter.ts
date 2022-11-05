@@ -1,4 +1,5 @@
 import {
+  EventChatMessage,
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
@@ -21,6 +22,7 @@ export interface IEventMap {
   [GameEvents.PLAYER_DISCONNECTED]: (
     player: EventPlayerDisconnected
   ) => Promise<void>;
+  [GameEvents.CHAT_MESSAGE]: (chatMessage: EventChatMessage) => Promise<void>;
   error: (error: errors.TakaroError | Error) => Promise<void> | void;
 }
 
