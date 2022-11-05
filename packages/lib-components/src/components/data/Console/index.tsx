@@ -1,29 +1,37 @@
-import { FC, createRef, useEffect, useState, Ref, SetStateAction, Dispatch } from 'react';
+import {
+  FC,
+  createRef,
+  useEffect,
+  useState,
+  Ref,
+  SetStateAction,
+  Dispatch,
+} from 'react';
 import { AiOutlineArrowDown as ArrowDownIcon } from 'react-icons/ai';
 import SimpleBar from 'simplebar-react';
 import { Wrapper, StyledButton, Container } from './style';
 import { ConsoleLine } from './ConsoleLine';
 import { Message } from './ConsoleInterface';
-import { ConsoleInput, Suggestion } from './ConsoleInput';
+import { ConsoleInput } from './ConsoleInput';
 
 /* There are still a few unsolved problems
 1. When the rate of messages is very high, it sometimes does not allow you to scroll up.
 It has something to do with the useEffect which scrolls the last element into the view fires faster than the unsticking event.
 the [useEffect which scrolls the last elemnt into the view] should somehow be aware that a scroll up event is fired and it should wait for it to finish.
-
-2. The command suggestion window will reappear after the executeCommand, because the event clears the input field, but there is also a useEffect listening for the input
-to be empty, so it closes the command suggestion when the user deletes all his input.
 */
 
 export interface ConsoleProps {
   /// This should spit out messages of the format Message and add it using the setter.
   listener: (s: Dispatch<SetStateAction<Message[]>>) => void;
   onExecuteCommand: (command: string) => Promise<Message>;
-  initialMessages?: Message[],
-  commandList: Suggestion[];
+  initialMessages?: Message[];
 }
 
-export const Console: FC<ConsoleProps> = ({ listener, onExecuteCommand, commandList, initialMessages = [] }) => {
+export const Console: FC<ConsoleProps> = ({
+  listener,
+  onExecuteCommand,
+  initialMessages = [],
+}) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   // We want to reposition the scrollbar to the bottom when a new message arrives,
@@ -61,12 +69,18 @@ export const Console: FC<ConsoleProps> = ({ listener, onExecuteCommand, commandL
           window.requestAnimationFrame(updateScrollDir);
           // if user scrolls completely to the bottom, stick anyway
           console.log(scrollableNodeRef.current);
-          if (scrollableNodeRef.current.scrollHeight - scrollableNodeRef.current.scrollTop === scrollableNodeRef.current.clientHeight) setShouldStick(true);
+          if (
+            scrollableNodeRef.current.scrollHeight -
+              scrollableNodeRef.current.scrollTop ===
+            scrollableNodeRef.current.clientHeight
+          )
+            setShouldStick(true);
           ticking = true;
         }
       };
       scrollableNodeRef.current?.addEventListener('scroll', onScroll);
-      return () => scrollableNodeRef.current?.removeEventListener('scroll', onScroll);
+      return () =>
+        scrollableNodeRef.current?.removeEventListener('scroll', onScroll);
     }
   }, [scrollDir, messages]);
 
@@ -87,18 +101,27 @@ export const Console: FC<ConsoleProps> = ({ listener, onExecuteCommand, commandL
 
   return (
     <Wrapper>
-      {!shouldStick && <StyledButton icon={<ArrowDownIcon />} onClick={stickToBottom} size="tiny" text="Follow new lines" />}
+      {!shouldStick && (
+        <StyledButton
+          icon={<ArrowDownIcon />}
+          onClick={stickToBottom}
+          size="tiny"
+          text="Follow new lines"
+        />
+      )}
       <SimpleBar
         scrollableNodeProps={{ ref: scrollableNodeRef }}
         style={{
           minHeight: '80vh',
           width: '100%',
           maxHeight: '80vh',
-          overflowX: 'hidden'
+          overflowX: 'hidden',
         }}
       >
         <Container>
-          {messages.map((message, index) => (<ConsoleLine key={`console-line-${index}`} {...message} />))}
+          {messages.map((message, index) => (
+            <ConsoleLine key={`console-line-${index}`} {...message} />
+          ))}
           {/* bottom of the view*/}
           <div ref={bottomNodeRef} />
         </Container>
@@ -106,8 +129,7 @@ export const Console: FC<ConsoleProps> = ({ listener, onExecuteCommand, commandL
       <ConsoleInput
         setMessages={setMessages}
         onExecuteCommand={onExecuteCommand}
-        suggestions={commandList}
       />
-    </Wrapper >
+    </Wrapper>
   );
 };

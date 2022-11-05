@@ -58,7 +58,6 @@ export const IconContainer = styled.div<{ messageType: MessageType }>`
       if (messageType === 'debug') return theme.colors.error;
       if (messageType === 'command') return theme.colors.primary;
       return theme.colors[messageType];
-    }}
     }};
   }
 `;
