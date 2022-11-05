@@ -6,6 +6,7 @@ const group = 'CommandController';
 const mockCommand = (moduleId: string): CommandCreateDTO => ({
   name: 'Test command',
   enabled: true,
+  trigger: 'test',
   moduleId,
 });
 
