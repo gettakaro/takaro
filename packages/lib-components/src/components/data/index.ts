@@ -14,4 +14,4 @@ export { Table } from './Table';
 export type { TableProps } from './Table';
 
 export { Console } from './Console';
-export type { ConsoleProps } from './Console';
+export type { ConsoleProps, Message } from './Console';

@@ -17,6 +17,7 @@ import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
 import { Modules } from 'pages/Modules';
 import { Studio } from 'pages/studio';
+import GameServerDashboard from 'pages/GameserverDashboard';
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -67,6 +68,10 @@ export const Router: FC = () => (
               path={PATHS.gameServers.overview}
             />
             <Route element={<Modules />} path={PATHS.modules} />
+            <Route
+              element={<GameServerDashboard />}
+              path={PATHS.gameServers.dashboard}
+            />
             <Route
               element={<AddGameServer />}
               path={PATHS.gameServers.create}
