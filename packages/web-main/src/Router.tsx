@@ -6,10 +6,16 @@ import { AnimatePresence } from 'framer-motion';
 import Dashboard from 'pages/Dashboard';
 import { PATHS } from 'paths';
 import { AuthenticatedRoute } from 'components/AuthenticatedRoute';
-import { AiOutlineBook, AiOutlineMenu, AiOutlineWifi, AiOutlineShop } from 'react-icons/ai';
+import {
+  AiOutlineBook,
+  AiOutlineMenu,
+  AiOutlineWifi,
+  AiOutlineShop,
+} from 'react-icons/ai';
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
+import GameServerDashboard from 'pages/GameserverDashboard';
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -40,30 +46,47 @@ const error404Pages = [
     title: 'Blog',
     description: 'Read our latest news and articles',
     to: '',
-  }
+  },
 ];
 
 export const Router: FC = () => (
   <BrowserRouter>
     <AnimatePresence exitBeforeEnter>
       <Suspense fallback={<LoadingPage />}>
-
         <Routes>
-
-          <Route element={<AuthenticatedRoute frame="dashboard" />} path={PATHS.home}>
+          <Route
+            element={<AuthenticatedRoute frame="dashboard" />}
+            path={PATHS.home}
+          >
             <Route element={<Dashboard />} path={PATHS.home} />
             <Route element={<Settings />} path={PATHS.settings} />
             <Route element={<Settings />} path={PATHS.settingsGameserver} />
-            <Route element={<GameServers />} path={PATHS.gameServers.overview} />
-            <Route element={<AddGameServer />} path={PATHS.gameServers.create} />
-            <Route element={<AddGameServer />} path={PATHS.gameServers.update} />
+            <Route
+              element={<GameServers />}
+              path={PATHS.gameServers.overview}
+            />
+            <Route
+              element={<GameServerDashboard />}
+              path={PATHS.gameServers.dashboard}
+            />
+            <Route
+              element={<AddGameServer />}
+              path={PATHS.gameServers.create}
+            />
+            <Route
+              element={<AddGameServer />}
+              path={PATHS.gameServers.update}
+            />
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 
           <Route element={<LogIn />} path={PATHS.login} />
 
           {/* Page not found matches with everything => should stay at bottom */}
-          <Route element={<Error404 pages={error404Pages} homeRoute={PATHS.home} />} path="*" />
+          <Route
+            element={<Error404 pages={error404Pages} homeRoute={PATHS.home} />}
+            path="*"
+          />
         </Routes>
       </Suspense>
     </AnimatePresence>

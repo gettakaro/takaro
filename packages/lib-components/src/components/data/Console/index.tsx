@@ -27,6 +27,8 @@ export interface ConsoleProps {
   initialMessages?: Message[];
 }
 
+export type { Message } from './ConsoleInterface';
+
 export const Console: FC<ConsoleProps> = ({
   listener,
   onExecuteCommand,
