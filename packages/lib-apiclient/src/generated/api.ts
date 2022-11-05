@@ -84,6 +84,7 @@ export const BaseEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type BaseEventTypeEnum =
@@ -156,6 +157,18 @@ export interface CommandCreateDTO {
   name: string;
   /**
    *
+   * @type {string}
+   * @memberof CommandCreateDTO
+   */
+  trigger: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandCreateDTO
+   */
+  helpText?: string;
+  /**
+   *
    * @type {boolean}
    * @memberof CommandCreateDTO
    */
@@ -210,6 +223,18 @@ export interface CommandOutputDTO {
    * @memberof CommandOutputDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  trigger: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  helpText: string;
   /**
    *
    * @type {boolean}
@@ -331,6 +356,18 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandUpdateDTO
+   */
+  trigger?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandUpdateDTO
+   */
+  helpText?: string;
   /**
    *
    * @type {boolean}
@@ -778,6 +815,48 @@ export interface ErrorOutput {
 /**
  *
  * @export
+ * @interface EventChatMessage
+ */
+export interface EventChatMessage {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventChatMessage
+   */
+  player: IGamePlayer;
+  /**
+   *
+   * @type {BaseEventTimestamp}
+   * @memberof EventChatMessage
+   */
+  timestamp: BaseEventTimestamp;
+  /**
+   *
+   * @type {string}
+   * @memberof EventChatMessage
+   */
+  type: EventChatMessageTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof EventChatMessage
+   */
+  msg: string;
+}
+
+export const EventChatMessageTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+} as const;
+
+export type EventChatMessageTypeEnum =
+  typeof EventChatMessageTypeEnum[keyof typeof EventChatMessageTypeEnum];
+
+/**
+ *
+ * @export
  * @interface EventPlayerConnected
  */
 export interface EventPlayerConnected {
@@ -811,6 +890,7 @@ export const EventPlayerConnectedTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type EventPlayerConnectedTypeEnum =
@@ -852,6 +932,7 @@ export const EventPlayerDisconnectedTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type EventPlayerDisconnectedTypeEnum =
@@ -1334,6 +1415,7 @@ export const HookCreateDTOEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type HookCreateDTOEventTypeEnum =
@@ -1406,6 +1488,7 @@ export const HookOutputDTOEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type HookOutputDTOEventTypeEnum =
@@ -1466,6 +1549,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =

@@ -15,6 +15,8 @@ export class CommandModel extends TakaroModel {
   static tableName = COMMANDS_TABLE_NAME;
   name!: string;
   enabled!: boolean;
+  trigger: string;
+  helpText: string;
 
   static get relationMappings() {
     return {

@@ -27,9 +27,19 @@ export async function up(knex: Knex): Promise<void> {
       'MANAGE_COMMANDS',
     ])
   );
+
+  await knex.schema.alterTable('commands', (table) => {
+    table.text('trigger');
+    table.text('helpText').defaultTo('No help text available');
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.alterTable('commands', (table) => {
+    table.dropColumn('trigger');
+    table.dropColumn('helpText');
+  });
+
   await knex.raw(
     formatAlterTableEnumSql('capabilityOnRole', 'capability', [
       'ROOT',
