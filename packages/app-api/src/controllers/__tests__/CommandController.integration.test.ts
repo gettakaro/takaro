@@ -70,7 +70,7 @@ const tests = [
       return this.client.command.commandControllerUpdate(
         this.setupData.data.id,
         {
-          name: 'Updated hook',
+          name: 'Updated command',
         }
       );
     },

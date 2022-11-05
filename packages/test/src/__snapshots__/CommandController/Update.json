@@ -4,7 +4,9 @@
       "serverTime": "2022-11-04T20:20:54.857Z"
     },
     "data": {
-      "name": "Updated hook",
+      "helpText": "No help text available",
+      "name": "Updated command",
+      "trigger": "test",
       "updatedAt": "2022-11-04T20:20:54.853Z",
       "createdAt": "2022-11-04T20:20:54.832Z",
       "id": "7f7ffd6d-7c83-4807-a727-705f3c5e267c",
