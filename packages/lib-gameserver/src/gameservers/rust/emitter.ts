@@ -112,7 +112,7 @@ export class RustEmitter extends TakaroEmitter {
     this.emit(
       GameEvents.LOG_LINE,
       new EventLogLine({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         msg: e.message,
       })
     );

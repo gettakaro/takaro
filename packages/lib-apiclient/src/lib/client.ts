@@ -8,6 +8,7 @@ import {
   HookApi,
   PlayerApi,
   SettingsApi,
+  CommandApi,
 } from '../generated';
 import { BaseApiClient, IApiClientConfig } from './baseClient';
 
@@ -109,6 +110,16 @@ export class Client extends BaseApiClient {
 
   get hook() {
     return new HookApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get command() {
+    return new CommandApi(
       {
         isJsonMime: this.isJsonMime,
       },

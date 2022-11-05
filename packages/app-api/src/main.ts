@@ -20,6 +20,7 @@ import { getSocketServer } from './lib/socketServer';
 import { HookController } from './controllers/HookController';
 import { PlayerController } from './controllers/PlayerController';
 import { SettingsController } from './controllers/SettingsController';
+import { CommandController } from './controllers/CommandController';
 
 export const server = new HTTP(
   {
@@ -34,6 +35,7 @@ export const server = new HTTP(
       HookController,
       PlayerController,
       SettingsController,
+      CommandController,
     ],
   },
   {

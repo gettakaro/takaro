@@ -7,12 +7,14 @@ import {
   EventMapping,
   EventPlayerConnected,
   BaseEvent,
+  EventChatMessage,
 } from '@takaro/gameserver';
 import { getSocketServer } from '../lib/socketServer';
 import { HookService } from '../service/HookService';
 import { QueuesService } from '@takaro/queues';
 import { AuthService } from '../service/AuthService';
 import { PlayerService } from '../service/PlayerService';
+import { CommandService } from '../service/CommandService';
 
 const log = logger('worker:events');
 const queues = QueuesService.getInstance();
@@ -23,8 +25,12 @@ export class EventsWorker extends TakaroWorker<IEventQueueData> {
   }
 }
 
-function isConnectedEvent(a: BaseEvent): a is EventPlayerConnected {
+function isConnectedEvent(a: BaseEvent<unknown>): a is EventPlayerConnected {
   return a.type === GameEvents.PLAYER_CONNECTED;
+}
+
+function isChatMessageEvent(a: BaseEvent<unknown>): a is EventChatMessage {
+  return a.type === GameEvents.CHAT_MESSAGE;
 }
 
 async function processJob(job: Job<IEventQueueData>) {
@@ -35,6 +41,11 @@ async function processJob(job: Job<IEventQueueData>) {
   if (isConnectedEvent(event)) {
     const playerService = new PlayerService(domainId);
     await playerService.sync(event.player, gameServerId);
+  }
+
+  if (isChatMessageEvent(event)) {
+    const commandService = new CommandService(domainId);
+    await commandService.handleChatMessage(event, gameServerId);
   }
 
   await handleHooks(job.data);
