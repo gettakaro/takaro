@@ -6,8 +6,17 @@ import {
   AiFillInfoCircle as InfoIcon,
   AiFillMacCommand as CommandIcon,
 } from 'react-icons/ai';
-import { MdKeyboardArrowRight as ArrowRightIcon } from 'react-icons/md';
-import { Wrapper, Container, Body, Header, IconContainer, TimestampContainer, TextContainer, CollapsedContainer, StyledExpandIcon } from './style';
+import {
+  Wrapper,
+  Container,
+  Body,
+  Header,
+  IconContainer,
+  TimestampContainer,
+  TextContainer,
+  CollapsedContainer,
+  StyledExpandIcon,
+} from './style';
 import { Message, MessageType } from '../ConsoleInterface';
 
 const COLLAPSED_LENGTH = 125;
@@ -25,18 +34,16 @@ export const ConsoleLine: FC<Message> = (message) => {
   const [isCollapsed, setCollapsed] = useState<boolean>(canCollapse);
 
   function defineCollapsableMessageLayout(): ReactElement {
-    let header = null;
-    let body = null;
+    let header = '';
+    let body = '';
 
     if (type === 'command') {
       header = 'command here';
       body = data;
-    }
-    else if (trace) {
+    } else if (trace) {
       header = data;
       body = trace;
-    }
-    else {
+    } else {
       header = data.split('\n')[0];
       body = data.split('\n').slice(1).join('\n');
     }
@@ -47,7 +54,9 @@ export const ConsoleLine: FC<Message> = (message) => {
           <p>{header}</p>
           {body && <StyledExpandIcon size={15} />}
         </Header>
-        <Body isCollapsed={isCollapsed} type={type}>{body}</Body>
+        <Body isCollapsed={isCollapsed} type={type}>
+          {body}
+        </Body>
       </CollapsedContainer>
     );
   }
@@ -78,14 +87,15 @@ export const ConsoleLine: FC<Message> = (message) => {
 
   return (
     <Wrapper canCollapse={canCollapse} messageType={type}>
-      <Container isCollapsed={isCollapsed} onClick={onClick} >
+      <Container isCollapsed={isCollapsed} onClick={onClick}>
         <IconContainer messageType={type}>{setIcon(type)}</IconContainer>
         <TimestampContainer>[{timestamp}]</TimestampContainer>
-        {
-          canCollapse ? defineCollapsableMessageLayout() : <TextContainer>{data}</TextContainer>
-        }
+        {canCollapse ? (
+          defineCollapsableMessageLayout()
+        ) : (
+          <TextContainer>{data}</TextContainer>
+        )}
       </Container>
     </Wrapper>
   );
 };
-
