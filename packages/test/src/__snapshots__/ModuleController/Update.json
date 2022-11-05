@@ -1,14 +1,15 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-22T13:11:05.516Z"
+      "serverTime": "2022-09-24T17:31:05.788Z"
     },
     "data": {
       "name": "Updated module",
       "enabled": false,
-      "updatedAt": "2022-09-22T13:11:05.508Z",
-      "createdAt": "2022-09-22T13:11:05.482Z",
-      "id": "855a3fb8-a4b1-4136-814f-097f0d17608f",
+      "hooks": [],
+      "updatedAt": "2022-09-24T17:31:05.781Z",
+      "createdAt": "2022-09-24T17:31:05.752Z",
+      "id": "ae888439-4e7e-41b2-882a-f1b55709d9ee",
       "config": {},
       "cronJobs": []
     }
@@ -16,6 +17,7 @@
   "status": 200,
   "test": {
     "group": "ModuleController",
+    "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
     "filteredFields": [],

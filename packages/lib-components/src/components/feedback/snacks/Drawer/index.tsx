@@ -1,5 +1,5 @@
 import { CustomContentProps, useSnackbar } from 'notistack';
-import { useState, forwardRef, ReactNode } from 'react';
+import { useState, forwardRef, ReactElement } from 'react';
 import { styled } from '../../../../styled';
 import { AiOutlineClose as CloseIcon, AiOutlineDown as ArrowDownIcon } from 'react-icons/ai';
 
@@ -26,13 +26,11 @@ const Container = styled.div<{ expanded: boolean }>`
       `;
     }
   }}
-
   h5 {
     color: white;
     font-size: 1.5rem;
     font-weight: 700;
   }
-
   svg {
     fill: white;
     stroke: white;
@@ -51,8 +49,8 @@ const Content = styled.div<{ expanded: boolean }>`
   border-radius: 10px;
 `;
 
-interface DrawerSnackProps extends CustomContentProps {
-  children: ReactNode | ReactNode[];
+export interface DrawerSnackProps extends CustomContentProps {
+  children: ReactElement | ReactElement[]
 }
 
 export const DrawerSnack = forwardRef<HTMLDivElement, DrawerSnackProps>(

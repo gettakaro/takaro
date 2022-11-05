@@ -7,14 +7,9 @@ import {
   QueueScheduler,
 } from 'bullmq';
 import { config } from './config';
-import { logger } from '@takaro/logger';
-import {
-  GameEvents,
-  EventLogLine,
-  EventPlayerConnected,
-  EventPlayerDisconnected,
-} from '@takaro/gameserver';
+import { logger } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions';
+import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 const log = logger('queue');
 
@@ -40,7 +35,7 @@ export abstract class TakaroWorker<T> extends Worker<T> {
   }
 }
 export interface IJobData {
-  functions: string[];
+  function: string;
   domainId: string;
   token: string;
   /**
@@ -51,13 +46,14 @@ export interface IJobData {
    * Additional data that can be passed to the job
    * Typically, this depends on what triggered the job
    */
-  data: Record<string, unknown>;
+  data?: EventMapping[GameEvents];
 }
 
 export interface IEventQueueData {
   type: GameEvents;
   domainId: string;
-  data: EventLogLine | EventPlayerConnected | EventPlayerDisconnected;
+  gameServerId: string;
+  event: EventMapping[GameEvents];
 }
 
 export class QueuesService {
@@ -70,7 +66,8 @@ export class QueuesService {
     return QueuesService.instance;
   }
 
-  private workers: TakaroWorker<IJobData>[] = [];
+  private workers: (TakaroWorker<IJobData> | TakaroWorker<IEventQueueData>)[] =
+    [];
 
   private queuesMap = {
     commands: {
@@ -119,7 +116,9 @@ export class QueuesService {
     return this.queuesMap;
   }
 
-  async registerWorker(worker: TakaroWorker<any>) {
+  async registerWorker(
+    worker: TakaroWorker<IJobData> | TakaroWorker<IEventQueueData>
+  ) {
     this.workers.push(worker);
     log.info(`Registered worker ${worker.name}`);
   }

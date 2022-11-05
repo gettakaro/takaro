@@ -1,15 +1,18 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Divider, DividerProps } from '.';
 
 export default {
   title: 'Layout/Divider',
-  component: Divider
-} as Meta;
+  component: Divider,
+  args: {
+    label: { text: 'label', labelPosition: 'center' }
+  }
+} as Meta<DividerProps>;
 
-export const Default: Story<DividerProps> = () => (
+export const Default: StoryFn<DividerProps> = (args) => (
   <div>
     <div>this is the content above</div>
-    <Divider label={{ text: 'label', labelPosition: 'center' }} />
+    <Divider {...args} />
     <div> this is the content after</div>
   </div>
 );

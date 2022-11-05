@@ -18,11 +18,5 @@ async function processCronJob(job: Job<IJobData>) {
     url: config.get('takaro.url'),
   });
 
-  const functionsToExecuteRes =
-    await client.function.functionControllerGetRelated(job.data.itemId);
-  const functionsToExecute = functionsToExecuteRes.data.data;
-
-  for (const fn of functionsToExecute) {
-    await executeFunction(fn, client);
-  }
+  await executeFunction(job.data.function, client);
 }

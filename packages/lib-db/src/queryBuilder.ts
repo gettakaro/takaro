@@ -1,4 +1,9 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  QueryBuilder as ObjectionQueryBuilder,
+  Model as ObjectionModel,
+  Page,
+} from 'objection';
 
 export class ITakaroQuery<T> {
   @IsOptional()
@@ -16,12 +21,16 @@ export class ITakaroQuery<T> {
 
   @IsOptional()
   @IsString()
-  sortBy?: keyof T;
+  sortBy?: Extract<keyof T, string>;
 
   @IsOptional()
   @IsString()
   @IsEnum(['asc', 'desc'])
   sortDirection?: SortDirection;
+
+  @IsOptional()
+  @IsString({ each: true })
+  extend?: string[];
 }
 
 export enum SortDirection {
@@ -29,45 +38,64 @@ export enum SortDirection {
   desc = 'desc',
 }
 
-export class QueryBuilder<T> {
-  private filterTable: string | null = null;
+export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
+  constructor(
+    private readonly query: ITakaroQuery<OutputDTO> = new ITakaroQuery()
+  ) {}
 
-  constructor(private readonly query: ITakaroQuery<T> = {}) {}
+  build(
+    query: ObjectionQueryBuilder<Model, Model[]>
+  ): ObjectionQueryBuilder<Model, Page<Model>> {
+    const tableName = query.modelClass().tableName;
 
-  build(filterTable?: string) {
-    if (filterTable) this.filterTable = filterTable;
-    return {
-      where: this.filters(),
-      orderBy: this.sorting(),
-    };
+    const filters = this.filters(tableName);
+    const pagination = this.pagination();
+    const sorting = this.sorting();
+
+    const qry = query
+      .where(filters)
+      .page(pagination.page, pagination.limit)
+      .orderBy(sorting.sortBy, sorting.sortDirection);
+
+    for (const extend of this.query.extend ?? []) {
+      qry.withGraphJoined(extend);
+    }
+
+    return qry;
   }
 
-  private filters() {
-    const filters: Record<string, any> = {};
+  private filters(tableName: string) {
+    const filters: Record<string, unknown> = {};
 
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
-        filters[this.applyFilterTable(filter)] = searchVal;
+        if (searchVal) {
+          filters[`${tableName}.${filter}`] = searchVal;
+        }
       }
     }
 
     return filters;
   }
 
-  private applyFilterTable(key: string) {
-    if (!this.filterTable) return key;
-    return `${this.filterTable}.${key}`;
-  }
-
-  private sorting() {
+  private sorting(): { sortBy: string; sortDirection: SortDirection } {
     if (!this.query.sortBy) {
       return {
-        id: this.query.sortDirection ?? SortDirection.asc,
+        sortBy: 'id',
+        sortDirection: SortDirection.asc,
       };
     }
     return {
-      [this.query.sortBy]: this.query.sortDirection,
+      sortBy: this.query.sortBy,
+      sortDirection: this.query.sortDirection ?? SortDirection.asc,
+    };
+  }
+
+  private pagination() {
+    return {
+      page: this.query.page ?? 0,
+      limit: this.query.limit ?? 10,
     };
   }
 }

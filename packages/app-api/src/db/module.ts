@@ -1,9 +1,15 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
-import { errors } from '@takaro/logger';
+import { Model } from 'objection';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
 import { JsonObject } from 'type-fest';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob';
+import { HookModel, HOOKS_TABLE_NAME } from './hook';
+import {
+  ModuleCreateDTO,
+  ModuleOutputDTO,
+  ModuleUpdateDTO,
+} from '../service/ModuleService';
 
 export const MODULE_TABLE_NAME = 'modules';
 
@@ -23,11 +29,24 @@ export class ModuleModel extends TakaroModel {
           to: `${CRONJOB_TABLE_NAME}.moduleId`,
         },
       },
+      hooks: {
+        relation: Model.HasManyRelation,
+        modelClass: HookModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: `${HOOKS_TABLE_NAME}.moduleId`,
+        },
+      },
     };
   }
 }
 
-export class ModuleRepo extends ITakaroRepo<ModuleModel> {
+export class ModuleRepo extends ITakaroRepo<
+  ModuleModel,
+  ModuleOutputDTO,
+  ModuleCreateDTO,
+  ModuleUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -37,30 +56,44 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel> {
     return ModuleModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<ModuleModel>): Promise<ModuleModel[]> {
-    const params = new QueryBuilder(filters).build(MODULE_TABLE_NAME);
+  async find(filters: ITakaroQuery<ModuleOutputDTO>) {
     const model = await this.getModel();
-    return await model.query().where(params.where).withGraphJoined('cronJobs');
+    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>({
+      ...filters,
+      extend: ['cronJobs', 'hooks'],
+    }).build(model.query());
+
+    return {
+      total: result.total,
+      results: result.results.map((item) => new ModuleOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<ModuleModel> {
+  async findOne(id: string): Promise<ModuleOutputDTO> {
     const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('cronJobs');
+    const data = await model
+      .query()
+      .findById(id)
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    return new ModuleOutputDTO(data);
   }
 
-  async create(item: PartialModelObject<ModuleModel>): Promise<ModuleModel> {
+  async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
     const model = await this.getModel();
-    return model
+    const data = await model
       .query()
-      .insert(item)
+      .insert(item.toJSON())
       .returning('*')
-      .withGraphJoined('cronJobs');
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks');
+
+    return new ModuleOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -69,14 +102,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel> {
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: PartialModelObject<ModuleModel>
-  ): Promise<ModuleModel> {
+  async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const model = await this.getModel();
-    return model
+    const item = await model
       .query()
-      .updateAndFetchById(id, data)
+      .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('cronJobs');
+
+    return new ModuleOutputDTO(item);
   }
 }

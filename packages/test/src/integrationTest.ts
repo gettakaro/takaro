@@ -1,11 +1,36 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+import 'reflect-metadata';
+
 import { ITestWithSnapshot, matchSnapshot } from './snapshots';
 import { integrationConfig } from './main';
 import { expect } from './test/expect';
-import { logger } from '@takaro/logger';
-import { AdminClient, Client, AxiosError } from '@takaro/apiclient';
+import axios from 'axios';
+import {
+  AdminClient,
+  Client,
+  AxiosResponse,
+  RoleCreateInputDTOCapabilitiesEnum,
+} from '@takaro/apiclient';
+
+export class IIntegrationTest<SetupData> {
+  snapshot!: boolean;
+  group!: string;
+  name!: string;
+  standardEnvironment?: boolean = true;
+  setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
+  teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
+  test!: (this: IntegrationTest<SetupData>) => Promise<AxiosResponse | void>;
+  expectedStatus?: number = 200;
+  filteredFields?: string[];
+}
 
 export class IntegrationTest<SetupData> {
-  protected log = logger('IntegrationTest');
+  protected log = {
+    info: () => {},
+    error: () => {},
+    warn: () => {},
+    debug: () => {},
+  };
 
   public readonly adminClient: AdminClient;
   public readonly client: Client;
@@ -17,9 +42,13 @@ export class IntegrationTest<SetupData> {
     password: '',
   };
 
-  constructor(public test: ITestWithSnapshot<SetupData>) {
-    this.test.expectedStatus = this.test.expectedStatus ?? 200;
-    this.test.filteredFields = this.test.filteredFields ?? [];
+  constructor(
+    public test: IIntegrationTest<SetupData> | ITestWithSnapshot<SetupData>
+  ) {
+    if (test.snapshot) {
+      this.test.expectedStatus = this.test.expectedStatus ?? 200;
+      this.test.filteredFields = this.test.filteredFields ?? [];
+    }
     this.test.standardEnvironment = this.test.standardEnvironment ?? true;
 
     this.adminClient = new AdminClient({
@@ -39,7 +68,7 @@ export class IntegrationTest<SetupData> {
 
   private async setupStandardEnvironment() {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
-      name: 'standard-integration-test-domain',
+      name: `integration-${this.test.name}`.slice(0, 49),
     });
     this.standardDomainId = createdDomain.data.data.domain.id;
 
@@ -77,7 +106,7 @@ export class IntegrationTest<SetupData> {
               this.standardDomainId
             );
           } catch (error) {
-            if (!(error instanceof AxiosError)) {
+            if (!axios.isAxiosError(error)) {
               throw error;
             }
             if (error.response?.status !== 404) {
@@ -93,19 +122,23 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (error instanceof AxiosError) {
+          if (axios.isAxiosError(error)) {
             response = error.response;
           } else {
             throw error;
           }
         }
 
-        if (!response) {
-          throw new Error('No response returned from test');
+        if (this.test.snapshot) {
+          if (!response) {
+            throw new Error('No response returned from test');
+          }
+          await matchSnapshot(
+            this.test as ITestWithSnapshot<unknown>,
+            response
+          );
+          expect(response.status).to.equal(this.test.expectedStatus);
         }
-
-        await matchSnapshot(this.test, response);
-        expect(response.status).to.equal(this.test.expectedStatus);
       });
     });
   }
@@ -113,7 +146,7 @@ export class IntegrationTest<SetupData> {
 
 export async function logInWithCapabilities(
   client: Client,
-  capabilities: string[]
+  capabilities: RoleCreateInputDTOCapabilitiesEnum[]
 ): Promise<Client> {
   const role = await client.role.roleControllerCreate({
     name: 'Test role',

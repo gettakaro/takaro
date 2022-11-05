@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
-import { logger } from '@takaro/logger';
+import { logger } from '@takaro/util';
 import { migrateSystem } from '@takaro/db';
 import { DomainController } from './controllers/DomainController';
+import { Server as HttpServer } from 'http';
 import { config } from './config';
 import { UserController } from './controllers/UserController';
 import { RoleController } from './controllers/Rolecontroller';
@@ -15,6 +16,11 @@ import { CronJobController } from './controllers/CronJobController';
 import { ModuleController } from './controllers/ModuleController';
 import { EventsWorker } from './workers/eventWorker';
 import { QueuesService } from '@takaro/queues';
+import { getSocketServer } from './lib/socketServer';
+import { HookController } from './controllers/HookController';
+import { PlayerController } from './controllers/PlayerController';
+import { SettingsController } from './controllers/SettingsController';
+import { CommandController } from './controllers/CommandController';
 
 export const server = new HTTP(
   {
@@ -26,6 +32,10 @@ export const server = new HTTP(
       FunctionController,
       CronJobController,
       ModuleController,
+      HookController,
+      PlayerController,
+      SettingsController,
+      CommandController,
     ],
   },
   {
@@ -45,6 +55,7 @@ async function main() {
   await migrateSystem();
   log.info('🦾 Database up to date');
 
+  getSocketServer(server.server as HttpServer);
   await server.start();
 
   log.info('🚀 Server started');
@@ -54,12 +65,19 @@ async function main() {
   const domainService = new DomainService();
   const domains = await domainService.find({});
 
-  for (const domain of domains) {
+  for (const domain of domains.results) {
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
-    await gameServerService.manager.init(
-      gameServers.map((g) => ({ ...g, domainId: domain.id }))
+
+    // GameService.find() does not decrypted the connectioninfo's
+    const gameServersDecrypted = await Promise.all(
+      gameServers.results.map(async (gameserver) => {
+        const gs = await gameServerService.findOne(gameserver.id);
+        return gs;
+      })
     );
+
+    await gameServerService.manager.init(domain.id, gameServersDecrypted);
   }
 
   await QueuesService.getInstance().registerWorker(new EventsWorker());

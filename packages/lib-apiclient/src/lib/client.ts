@@ -5,6 +5,10 @@ import {
   RoleApi,
   UserApi,
   ModuleApi,
+  HookApi,
+  PlayerApi,
+  SettingsApi,
+  CommandApi,
 } from '../generated';
 import { BaseApiClient, IApiClientConfig } from './baseClient';
 
@@ -96,6 +100,46 @@ export class Client extends BaseApiClient {
 
   get module() {
     return new ModuleApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get hook() {
+    return new HookApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get command() {
+    return new CommandApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get player() {
+    return new PlayerApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get settings() {
+    return new SettingsApi(
       {
         isJsonMime: this.isJsonMime,
       },

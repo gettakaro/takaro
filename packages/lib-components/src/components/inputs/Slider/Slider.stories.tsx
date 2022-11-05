@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { SliderComponent, SliderProps } from '.';
 import { useForm } from 'react-hook-form';
@@ -16,31 +16,31 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Inputs/Slider/Default',
+  title: 'Inputs/Slider',
   component: SliderComponent,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+} as Meta<SliderProps>;
 
-const Template: Story<SliderProps> = (args) => {
+const Template: StoryFn<SliderProps> = (args) => {
   const { control } = useForm();
-
   return <SliderComponent {...args} control={control} />;
 };
 
 // Default Checkbox
 export const Default = Template.bind({});
 Default.args = {
-  name: 'slider01',
+  name: 'default-slider',
   min: 0,
   max: 100,
   step: 1,
   onChange: (val: number) => {
-    /* console.log(val) */
+    console.log(val);
   }
 };
 
 export const Steps = Template.bind({});
 Steps.args = {
+  name: 'slider-with-steps',
   min: 0,
   max: 100,
   step: 10
@@ -48,13 +48,9 @@ Steps.args = {
 
 export const StepsWithDots = Template.bind({});
 StepsWithDots.args = {
+  name: 'slider-with-dots',
   min: 0,
   max: 100,
   step: 10,
   showDots: true
 };
-
-// Checked by default
-// Loading Checkbox (maybe the existing value has to be fetched);
-// Read Only Checkbox
-//export const ShowingDots = Template.bind({});

@@ -1,5 +1,7 @@
 import { Config, IBaseConfig } from '@takaro/config';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
+import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
+import { errors } from '@takaro/util';
 
 enum CLUSTER_MODE {
   SINGLE = 'single',
@@ -13,7 +15,6 @@ interface IHttpConfig extends IBaseConfig {
   };
   auth: {
     adminSecret: string;
-    saltRounds: number;
     jwtSecret: string;
     jwtExpiresIn: string;
     cookieName: string;
@@ -27,16 +28,21 @@ const configSchema = {
       doc: 'The port to bind.',
       // This value can be ANYTHING because it is user provided
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      format: (value: any) => {
+      format: (value: unknown) => {
         if (process.env.NODE_ENV === 'test') {
           // This allows us to pass 'undefined' as the port
           // Which lets the tests run without needed to open an actual port
           return value;
         }
-        value = parseInt(value, 10);
 
-        if (value < 0 || value > 65535) {
-          throw new Error('ports must be within range 0 - 65535');
+        if (typeof value !== 'string' && typeof value !== 'number') {
+          throw new errors.ConfigError('Value must be a string or number');
+        }
+
+        const parsed = parseInt(value.toString(), 10);
+
+        if (parsed < 0 || parsed > 65535) {
+          throw new errors.ConfigError('ports must be within range 0 - 65535');
         }
       },
       default: 3000,
@@ -55,12 +61,6 @@ const configSchema = {
       format: String,
       default: null,
       env: 'ADMIN_SECRET',
-    },
-    saltRounds: {
-      doc: 'The number of rounds to use when salting passwords',
-      format: Number,
-      default: 10,
-      env: 'SALT_ROUNDS',
     },
     jwtSecret: {
       doc: 'The secret used to sign JWTs',
@@ -89,7 +89,8 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHttpConfig & IQueuesConfig>([
+export const config = new Config<IHttpConfig & IQueuesConfig & IDbConfig>([
   configSchema,
   queuesConfigSchema,
+  dbConfigSchema,
 ]);

@@ -1,11 +1,10 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { DashboardFrame } from '../frames/dashboardFrame';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
-import { Loading,styled } from '@takaro/lib-components';
+import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-
 
 const Container = styled.div`
   width: 100vw;
@@ -26,26 +25,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
   const [loading, isLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    handleAuth();
-  }, []);
-
-  function handleFrame() {
-    switch (frame) {
-      case 'dashboard':
-        return (
-          <DashboardFrame>
-            <Outlet />
-          </DashboardFrame>
-        );
-      case 'none':
-        return <Outlet />;
-      default:
-        return <Outlet />;
-    }
-  }
-
-  async function handleAuth() {
+  const handleAuth = useCallback(async () => {
     try {
       const user = await getSession();
       setIsAuth(true);
@@ -54,6 +34,22 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
       navigate(PATHS.login);
     } finally {
       isLoading(false);
+    }
+  }, [getSession, navigate, setUserData]);
+
+  useEffect(() => {
+    handleAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleFrame() {
+    switch (frame) {
+      case 'dashboard':
+        return <DashboardFrame />;
+      case 'none':
+        return <Outlet />;
+      default:
+        return <Outlet />;
     }
   }
 

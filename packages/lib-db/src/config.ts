@@ -1,6 +1,6 @@
 import { Config, IBaseConfig, baseConfigConvict } from '@takaro/config';
 
-interface IDbConfig extends IBaseConfig {
+export interface IDbConfig extends IBaseConfig {
   postgres: {
     host: string;
     port: number;
@@ -10,11 +10,10 @@ interface IDbConfig extends IBaseConfig {
   };
   systemSchema: string;
   baseDomainSchema: string;
-  systemMigrationsPath: string;
-  domainScopedMigrationsPath: string;
+  encryptionKey: string;
 }
 
-const configSchema = {
+export const configSchema = {
   postgres: {
     host: {
       doc: 'The Postgres host to connect to',
@@ -58,6 +57,12 @@ const configSchema = {
     format: String,
     default: 'domain_',
     env: 'POSTGRES_BASE_DOMAIN_SCHEMA',
+  },
+  encryptionKey: {
+    doc: 'Encryption key used for encrypting sensitive data',
+    format: String,
+    default: null,
+    env: 'POSTGRES_ENCRYPTION_KEY',
   },
 };
 

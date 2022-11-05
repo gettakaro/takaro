@@ -1,12 +1,21 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
-import { errors } from '@takaro/logger';
+import {
+  TakaroModel,
+  ITakaroQuery,
+  QueryBuilder,
+  encrypt,
+  decrypt,
+} from '@takaro/db';
+import { Model } from 'objection';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
-import { PlayerModel, PLAYER_TABLE_NAME } from './player';
-import { JsonObject } from 'type-fest';
+import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
+import {
+  GameServerOutputDTO,
+  GameServerCreateDTO,
+  GameServerUpdateDTO,
+} from '../service/GameServerService';
 
-const TABLE_NAME = 'gameservers';
-export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
+export const GAMESERVER_TABLE_NAME = 'gameservers';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
@@ -14,40 +23,38 @@ export enum GAME_SERVER_TYPE {
   'RUST' = 'RUST',
 }
 
-export class PlayerOnGameServerModel extends TakaroModel {
-  static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
-
-  gameServerId!: string;
-  playerId!: string;
-
-  gameId!: string;
-}
-
 export class GameServerModel extends TakaroModel {
-  static tableName = TABLE_NAME;
+  static tableName = GAMESERVER_TABLE_NAME;
   name!: string;
 
-  connectionInfo!: JsonObject;
+  connectionInfo!: Record<string, unknown>;
 
   type!: GAME_SERVER_TYPE;
 
-  static relationMappings = {
-    players: {
-      relation: Model.ManyToManyRelation,
-      modelClass: PlayerModel,
-      join: {
-        from: `${TABLE_NAME}.id`,
-        through: {
-          from: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
-          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
+  static get relationMappings() {
+    const PlayerOnGameServerModel =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('./player.ts').PlayerOnGameServerModel;
+
+    return {
+      players: {
+        relation: Model.HasManyRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${GAMESERVER_TABLE_NAME}.id`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
         },
-        to: `${PLAYER_TABLE_NAME}.id`,
       },
-    },
-  };
+    };
+  }
 }
 
-export class GameServerRepo extends ITakaroRepo<GameServerModel> {
+export class GameServerRepo extends ITakaroRepo<
+  GameServerModel,
+  GameServerOutputDTO,
+  GameServerCreateDTO,
+  GameServerUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -57,15 +64,18 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
     return GameServerModel.bindKnex(knex);
   }
 
-  async find(
-    filters: ITakaroQuery<GameServerModel>
-  ): Promise<GameServerModel[]> {
-    const params = new QueryBuilder(filters).build(TABLE_NAME);
+  async find(filters: ITakaroQuery<GameServerOutputDTO>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(
+      filters
+    ).build(model.query());
+    return {
+      total: result.total,
+      results: result.results.map((item) => new GameServerOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<GameServerModel> {
+  async findOne(id: string): Promise<GameServerOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().findById(id);
 
@@ -73,14 +83,25 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return data;
+    const connectionInfo = JSON.parse(
+      await decrypt(data.connectionInfo as unknown as string)
+    );
+
+    return new GameServerOutputDTO({ ...data, connectionInfo });
   }
 
-  async create(
-    item: PartialModelObject<GameServerModel>
-  ): Promise<GameServerModel> {
+  async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    const encryptedConnectionInfo = await encrypt(item.connectionInfo);
+    const data = {
+      ...item.toJSON(),
+      connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
+    } as unknown as Partial<GameServerModel>;
+    const res = await model.query().insert(data).returning('*');
+    return new GameServerOutputDTO({
+      ...res,
+      connectionInfo: JSON.parse(item.connectionInfo),
+    });
   }
 
   async delete(id: string): Promise<boolean> {
@@ -91,9 +112,18 @@ export class GameServerRepo extends ITakaroRepo<GameServerModel> {
 
   async update(
     id: string,
-    data: PartialModelObject<GameServerModel>
-  ): Promise<GameServerModel> {
+    item: GameServerUpdateDTO
+  ): Promise<GameServerOutputDTO> {
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const encryptedConnectionInfo = await encrypt(item.connectionInfo);
+    const data = {
+      ...item.toJSON(),
+      connectionInfo: encryptedConnectionInfo,
+    } as unknown as Partial<GameServerModel>;
+    const res = await model.query().updateAndFetchById(id, data).returning('*');
+    return new GameServerOutputDTO({
+      ...res,
+      connectionInfo: JSON.parse(item.connectionInfo),
+    });
   }
 }

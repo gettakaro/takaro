@@ -1,11 +1,11 @@
 import { IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse } from '@takaro/http';
+import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
-  UpdateFunctionDTO,
+  FunctionUpdateDTO,
 } from '../service/FunctionService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -19,10 +19,10 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { CAPABILITIES } from '../service/RoleService';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -59,11 +59,18 @@ export class FunctionController {
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @Post('/function/search')
   async search(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: AuthenticatedRequest & PaginatedRequest,
     @Body() query: FunctionSearchInputDTO
   ) {
     const service = new FunctionService(req.domainId);
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
@@ -72,21 +79,6 @@ export class FunctionController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.findOne(params.id));
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
-  @ResponseSchema(FunctionOutputArrayDTOAPI)
-  @OpenAPI({
-    description:
-      'Get functions that will be executed when an item (cronjob, command or hook) is executed',
-  })
-  @Get('/function/related/:id')
-  async getRelated(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId
-  ) {
-    const service = new FunctionService(req.domainId);
-    return apiResponse(await service.getRelatedFunctions(params.id, false));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
@@ -106,7 +98,7 @@ export class FunctionController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateFunctionDTO
+    @Body() data: FunctionUpdateDTO
   ) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.update(params.id, data));

@@ -1,15 +1,25 @@
 version: '3.1'
+
 services:
+  homer:
+    image: b4bz/homer
+    container_name: homer
+    volumes:
+      - ./containers/homer/assets:/www/assets
+    ports:
+      - 13337:8080
+    environment:
+      - INIT_ASSETS=0
   postgresql:
     image: postgres:14
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
-      - ./_data/db:/var/lib/postgresql      
+      - ./_data/db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}        
+      POSTGRES_DB: ${POSTGRES_DB}
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -17,53 +27,57 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-       - pgadmin:/var/lib/pgadmin
+      - pgadmin:/var/lib/pgadmin
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - ${PGADMIN_PORT:-5050}:80
     logging:
       driver: none
 
   redis:
     image: redis
     ports:
-      - 6379:6379    
+      - 6379:6379
   takaro:
     build:
       context: .
       dockerfile: containers/dev.Dockerfile
-#      args:
-#       NODE_ENV: development
-#    command: "npm run start:dev"
+    #      args:
+    #       NODE_ENV: development
+    #    command: "npm run start:dev"
     volumes:
-      - ./packages:/app/packages  
+      - ./packages:/app/packages
+      - ./reports:/app/reports
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
-      REDIS_HOST: "redis"
-      ADMIN_SECRET: "${ADMIN_SECRET}"
-      JWT_SECRET: "${JWT_SECRET}"
-      FUNCTIONS_EXECUTION_MODE: "local"
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
+      REDIS_HOST: redis
+      ADMIN_SECRET: ${ADMIN_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      FUNCTIONS_EXECUTION_MODE: local
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}  
-      POSTGRES_HOST: "postgresql"   
-      TAKARO_HOST: "http://localhost:3000"  
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: postgresql
+      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
+      TAKARO_HOST: ${TAKARO_HOST}:http://localhost:13000
 
-      REACT_APP_API: "http://localhost:13000" 
+      REACT_APP_API: http://localhost:13000
 
-      CORS_ALLOWED_ORIGINS: "http://localhost:13000,http://localhost:13001"
+      CORS_ALLOWED_ORIGINS: http://localhost:13000,http://localhost:13001,http://localhost:13004,https://admin.socket.io
 
     ports:
-    # api
+      # api
       - 13000:3000
       - 12001:12001
-    # web-main
+      # web-main
       - 13001:13001
-    # lib-components storybook
+      # lib-components storybook
       - 13002:13002
-    # agent  
+      # agent
       - 13004:3001
-      - 12002:12001
+      - 12002:12002
+      # Docs
+      - 13005:13005
 volumes:
-    pgadmin:      
+  pgadmin:

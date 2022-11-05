@@ -1,5 +1,5 @@
 // TODO: save images locally so when there is no network they are still loaded.
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Avatar, AvatarProps } from '.';
 import { getInitials } from '../../../helpers';
@@ -13,18 +13,17 @@ const Wrapper = styled.div`
   border-radius: 1rem;
 `;
 
+const placeholder01 = 'images/placeholder-01.jpeg';
+
 export default {
   title: 'Data/Avatar',
   component: Avatar,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+} as Meta<AvatarProps>;
 
-const Template: Story<AvatarProps> = (args) => <Avatar {...args} />;
-const placeholder01 = 'images/placeholder-01.jpeg';
-export const Basic = Template.bind({});
-Basic.args = { alt: 'Harry Potter', size: 'medium', src: placeholder01 };
+export const Default: StoryFn<AvatarProps> = (args) => <Avatar alt="Harry Potter" {...args} src={placeholder01} />;
 
-export const Sizes = () => (
+export const Sizes: StoryFn = () => (
   <>
     <Avatar alt="Harry Potter" size="tiny" src={placeholder01} />
     <Avatar alt="Harry Potter" size="small" src={placeholder01} />
@@ -34,22 +33,21 @@ export const Sizes = () => (
   </>
 );
 
-export const Initials = () => (
-  /* I added a double last name to show that it takes up to 2 letters from their lastname */
+export const Initials: StoryFn = () => (
   <>
     <Avatar alt="Harry Potter" size="tiny">
       {getInitials('Harry Potter')}
     </Avatar>
-    <Avatar alt="Albus Severus Potter" size="small">
+    <Avatar alt="Harry Potter" size="small">
       {getInitials('Albus Severus Potter')}
     </Avatar>
-    <Avatar alt="James Sirius Potter" size="medium">
+    <Avatar alt="Harry Potter Vanmiet" size="medium">
       {getInitials('James Sirius Potter ')}
     </Avatar>
-    <Avatar alt="Lily Luna Potter" size="large">
+    <Avatar alt="Harry Potter" size="large">
       {getInitials('Lily Luna Potter')}
     </Avatar>
-    <Avatar alt="Lily Luna Potter" size="huge">
+    <Avatar alt="Harry Potter" size="huge">
       {getInitials('Lily Luna Potter')}
     </Avatar>
   </>

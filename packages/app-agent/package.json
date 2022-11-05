@@ -6,11 +6,13 @@
   "types": "main.ts",
   "scripts": {
     "start": "node dist/main.js",
-    "start:dev": "nodemon  --config ../../nodemon.json",
+    "start:dev": "npx concurrently --kill-others-on-fail --names \"api,tests-compiler\" \"npm run start:dev:app\" \"npm run start:dev:test-compiler\"",
+    "start:dev:app": "nodemon --exec 'node --inspect=0.0.0.0:12002 -r ts-node/register src/main.ts'  --config ../../nodemon.json",
+    "start:dev:test-compiler": "tsc --preserveWatchOutput --watch",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts",
+    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],

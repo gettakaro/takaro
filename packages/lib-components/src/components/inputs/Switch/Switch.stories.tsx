@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Switch, SwitchProps } from '.';
 import { useForm } from 'react-hook-form';
@@ -24,7 +24,7 @@ export default {
   decorators: [(story) => <Wrapper>{story()}</Wrapper>]
 } as Meta;
 
-const Template: Story<SwitchProps> = (args) => {
+const Template: StoryFn<SwitchProps> = (args) => {
   const { control } = useForm();
   return (
     <div>

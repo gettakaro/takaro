@@ -6,11 +6,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse } from '@takaro/http';
+import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   UserCreateInputDTO,
   UserOutputDTO,
   UserService,
+  UserUpdateDTO,
 } from '../service/UserService';
 import {
   AuthenticatedRequest,
@@ -29,17 +30,12 @@ import {
   Params,
   Res,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { DomainService } from '../service/DomainService';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { Response } from 'express';
-
-export class UpdateUserDTO {
-  @Length(3, 50)
-  name!: string;
-}
+import { CAPABILITIES } from '../service/RoleService';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -122,11 +118,18 @@ export class UserController {
   @ResponseSchema(UserOutputArrayDTOAPI)
   @Post('/user/search')
   async search(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: AuthenticatedRequest & PaginatedRequest,
     @Body() query: UserSearchInputDTO
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
@@ -145,7 +148,7 @@ export class UserController {
     @Body() data: UserCreateInputDTO
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.init(data));
+    return apiResponse(await service.create(data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
@@ -154,7 +157,7 @@ export class UserController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateUserDTO
+    @Body() data: UserUpdateDTO
   ) {
     const service = new UserService(req.domainId);
     return apiResponse(await service.update(params.id, data));

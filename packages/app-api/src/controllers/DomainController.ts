@@ -5,11 +5,13 @@ import {
   DomainCreateOutputDTO,
   DomainOutputDTO,
   DomainService,
+  DomainUpdateInputDTO,
 } from '../service/DomainService';
 import {
   createAdminAuthMiddleware,
   apiResponse,
   APIOutput,
+  PaginatedRequest,
 } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
 
@@ -22,8 +24,8 @@ import {
   Delete,
   JsonController,
   UseBefore,
+  Req,
 } from 'routing-controllers';
-import { DomainModel } from '../db/domain';
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
@@ -53,7 +55,7 @@ export class DomainSearchInputAllowedFilters {
   name!: string;
 }
 
-export class DomainSearchInputDTO extends ITakaroQuery<DomainModel> {
+export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
   filters!: DomainSearchInputAllowedFilters;
@@ -67,9 +69,19 @@ export class DomainSearchInputDTO extends ITakaroQuery<DomainModel> {
 export class DomainController {
   @Post('/domain/search')
   @ResponseSchema(DomainOutputArrayDTOAPI)
-  async search(@Body() query: DomainSearchInputDTO) {
+  async search(
+    @Req() req: PaginatedRequest,
+    @Body() query: DomainSearchInputDTO
+  ) {
     const service = new DomainService();
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
   @Get('/domain/:id')
   @ResponseSchema(DomainOutputDTOAPI)
@@ -80,14 +92,14 @@ export class DomainController {
 
   @Post('/domain')
   @ResponseSchema(DomainCreateOutputDTOAPI)
-  async create(@Body() domain: DomainCreateInputDTO) {
+  async create(@Body() domain: Omit<DomainCreateInputDTO, 'id'>) {
     const service = new DomainService();
     return apiResponse(await service.initDomain(domain));
   }
 
   @Put('/domain/:id')
   @ResponseSchema(DomainOutputDTOAPI)
-  async update(@Param('id') id: string, @Body() domain: DomainCreateInputDTO) {
+  async update(@Param('id') id: string, @Body() domain: DomainUpdateInputDTO) {
     const service = new DomainService();
     return apiResponse(await service.update(id, domain));
   }
@@ -96,7 +108,7 @@ export class DomainController {
   @ResponseSchema(APIOutput)
   async remove(@Param('id') id: string) {
     const service = new DomainService();
-    await service.removeDomain(id);
+    await service.delete(id);
     return apiResponse();
   }
 }

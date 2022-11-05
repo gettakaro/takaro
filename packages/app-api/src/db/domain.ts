@@ -7,9 +7,13 @@ import {
   migrateDomain,
 } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
-import { errors } from '@takaro/logger';
-import { PartialModelObject } from 'objection';
-import { LoginRepo } from './login';
+import { errors } from '@takaro/util';
+import { LoginCreateDTO, LoginRepo } from './login';
+import {
+  DomainOutputDTO,
+  DomainCreateInputDTO,
+  DomainUpdateInputDTO,
+} from '../service/DomainService';
 
 const TABLE_NAME = 'domains';
 const LOGINS_TABLE_NAME = 'logins';
@@ -26,18 +30,28 @@ export class DomainModel extends TakaroModel {
   name!: string;
 }
 
-export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
+export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
+  DomainModel,
+  DomainOutputDTO,
+  DomainCreateInputDTO,
+  DomainUpdateInputDTO
+> {
   async getModel() {
     const knex = await this.getKnex();
     return DomainModel.bindKnex(knex);
   }
-  async find(filters: ITakaroQuery<DomainModel>): Promise<DomainModel[]> {
-    const params = new QueryBuilder(filters).build();
+  async find(filters: ITakaroQuery<DomainOutputDTO>) {
     const model = await this.getModel();
-    return await model.query().where(params.where);
+    const result = await new QueryBuilder<DomainModel, DomainOutputDTO>(
+      filters
+    ).build(model.query());
+    return {
+      total: result.total,
+      results: result.results.map((item) => new DomainOutputDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<DomainModel> {
+  async findOne(id: string): Promise<DomainOutputDTO> {
     const model = await this.getModel();
     const data = await model.query().findById(id);
 
@@ -45,15 +59,15 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
       throw new errors.NotFoundError();
     }
 
-    return data;
+    return new DomainOutputDTO(data);
   }
 
-  async create(item: PartialModelObject<DomainModel>): Promise<DomainModel> {
+  async create(item: DomainCreateInputDTO): Promise<DomainOutputDTO> {
     const model = await this.getModel();
-    const domain = await model.query().insert(item).returning('*');
+    const domain = await model.query().insert(item.toJSON()).returning('*');
 
     await migrateDomain(domain.id);
-    return domain;
+    return new DomainOutputDTO(domain);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -71,31 +85,37 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<DomainModel> {
 
   async update(
     id: string,
-    data: PartialModelObject<DomainModel>
-  ): Promise<DomainModel> {
+    data: DomainUpdateInputDTO
+  ): Promise<DomainOutputDTO> {
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const res = await model
+      .query()
+      .updateAndFetchById(id, data.toJSON())
+      .returning('*');
+    return new DomainOutputDTO(res);
   }
 
   async addLogin(userId: string, email: string, domainId: string) {
     const loginRepo = new LoginRepo();
-    await loginRepo.create({
-      userId,
-      email,
-      domain: domainId,
-    });
+    await loginRepo.create(
+      new LoginCreateDTO({
+        userId,
+        email,
+        domain: domainId,
+      })
+    );
   }
 
   async resolveDomain(email: string): Promise<string | null> {
     const loginRepo = new LoginRepo();
     const login = await loginRepo.find({ filters: { email } });
-    if (!login.length) {
+    if (!login.results.length) {
       return null;
     }
 
-    return login[0].domain;
+    return login.results[0].domain;
   }
 }

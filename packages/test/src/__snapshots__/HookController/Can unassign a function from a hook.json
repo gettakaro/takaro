@@ -1,0 +1,28 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-09-24T11:54:43.638Z"
+    },
+    "data": {
+      "createdAt": "2022-09-24T11:54:43.600Z",
+      "updatedAt": "2022-09-24T11:54:43.609Z",
+      "id": "1a6b2457-973f-4b79-b962-5300c6714205",
+      "name": "Test hook",
+      "enabled": true,
+      "eventType": "log",
+      "regex": "/this (is) a [regex]/g",
+      "moduleId": "82643d24-d26e-4197-b9be-f0ccdd6e9248",
+      "functions": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "name": "Can unassign a function from a hook",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

@@ -9,7 +9,7 @@ const skeletonLoading = keyframes`
 
 export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   *::selection {
-    background-color: #3ccd6a;
+    background-color: ${({ theme }) => theme.colors.primary};
     color: white;
   }
   :root {
@@ -23,7 +23,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     margin: 0;
     padding: 0;
     scroll-behavior: smooth;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -42,7 +42,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   *, a, p, div, li, h1, h2, h3, h4, h5, h6, header, footer {
     font-weight: 400; /* Default size */
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     margin: 0;
@@ -203,16 +204,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   /* notistack snackbar styling */
   ${SnackBarStyles}
-
-  .rc-tooltip-inner {
-    color: white;
-    span {
-      color: white;
-    }
-  }
-  .tippy-arrow {
-    color: ${({ theme }): string => theme.colors.secondary};
-  }
 
   /* rc-slider */
   .rc-slider-tooltip-inner {

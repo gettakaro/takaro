@@ -9,8 +9,10 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts",
-    "test:watch": "npm run test -- --watch"
+    "test:integration": "ts-mocha -p ./tsconfig.json src/**/*.integration.test.ts --exit",
+    "test:watch": "npm run test -- --watch",
+    "migrate:create:system": "touch ./src/migrations/system/$(date -u +\"%Y%m%d%H%M%S\").ts",
+    "migrate:create:domain": "touch ./src/migrations/domainScoped/$(date -u +\"%Y%m%d%H%M%S\").ts"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,30 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-10-24T21:42:26.135Z",
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "createdAt": "2022-10-24T21:42:26.104Z",
+        "updatedAt": "2022-10-24T21:42:26.106Z",
+        "id": "d6325093-cc2a-4687-868c-46f321846de5",
+        "name": "brunkel",
+        "steamId": "76561198021481871",
+        "xboxLiveId": null,
+        "epicOnlineServicesId": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "Event worker",
+    "snapshot": true,
+    "name": "Player joined a gameserver",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

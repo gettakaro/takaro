@@ -12,6 +12,12 @@ export const useApiClient = () => {
   cachedClient = new Client({
     url: process.env.REACT_APP_API,
     auth: {},
+    log: {
+      debug: () => {},
+      info: () => {},
+      warn: console.warn,
+      error: console.error,
+    },
   });
 
   return cachedClient;

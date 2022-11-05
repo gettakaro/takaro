@@ -1,18 +1,33 @@
-import { FC, useEffect, Children, isValidElement } from 'react';
-import Tooltip from 'rc-tooltip';
+import {
+  FC,
+  useEffect,
+  Children,
+  isValidElement,
+  PropsWithChildren,
+} from 'react';
+import { Tooltip } from '../../../../components';
 import { useStepper } from '../context';
-import { Container, StepperBody, StepperHeader, StepperHeaderItem, Dot } from './style';
+import {
+  Container,
+  StepperBody,
+  StepperHeader,
+  StepperHeaderItem,
+  Dot,
+} from './style';
 import { StepStates } from '../stepStates';
+
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
-const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
+const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
     const stepperSteps = Children.toArray(children)
       .filter(
         (step) =>
-          isValidElement(step) && typeof step.type !== 'string' && step.type.name === 'StepperStep'
+          isValidElement(step) &&
+          typeof step.type !== 'string' &&
+          step.type.name === 'StepperStep'
       )
       .map((step) => {
         if (isValidElement(step)) {
@@ -40,22 +55,23 @@ const StepperSteps: FC<{ children: FC<StepProps>[] }> = ({ children }) => {
 
 // Single <step/> subcomponent
 interface StepProps {
+  /// used as tooltip content
   name: string;
   id: string;
 }
-const StepperStep: FC<StepProps> = ({ children }) => {
+const StepperStep: FC<PropsWithChildren<StepProps>> = ({ children }) => {
   return <>{children}</>;
 };
 
-interface StepperProps {
+export interface SlimStepperProps {
   canStepBack?: boolean; // disable step back via step header
   showTooltip?: 'never' | 'always' | 'hover';
 }
 
 // Main <Stepper/> component which contains subcomponents
-export const SlimStepper: FC<StepperProps> & {
+export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
   Step: FC<StepProps>;
-  Steps: any;
+  Steps: FC<PropsWithChildren<void>>;
 } = ({ showTooltip = 'hover', canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 
@@ -70,7 +86,10 @@ export const SlimStepper: FC<StepperProps> & {
   }
 
   function handleClick(index: number, currentStep: number) {
-    if (getStepState(index, currentStep) === StepStates.COMPLETE && canStepBack) {
+    if (
+      getStepState(index, currentStep) === StepStates.COMPLETE &&
+      canStepBack
+    ) {
       setCurrentStep(index);
     }
   }
@@ -88,11 +107,7 @@ export const SlimStepper: FC<StepperProps> & {
             >
               {StepStates.CURRENT === getStepState(index, currentStep) &&
               showTooltip !== 'never' ? (
-                <Tooltip
-                  overlay={name}
-                  placement="bottom"
-                  {...(showTooltip === 'always' && { visible: true })}
-                >
+                <Tooltip placement="bottom" label={name}>
                   <Dot stepState={getStepState(index, currentStep)} />
                 </Tooltip>
               ) : (

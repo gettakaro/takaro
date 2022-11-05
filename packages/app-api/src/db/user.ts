@@ -1,8 +1,14 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model, PartialModelObject } from 'objection';
+import { Model } from 'objection';
 import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role';
-import { errors } from '@takaro/logger';
+import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
+import {
+  UserOutputDTO,
+  UserCreateInputDTO,
+  UserUpdateDTO,
+  UserOutputWithRolesDTO,
+} from '../service/UserService';
 
 const TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
@@ -34,7 +40,12 @@ export interface IUserFindOneOutput extends UserModel {
   roles: Array<RoleModel & { capabilities: CapabilityModel[] }>;
 }
 
-export class UserRepo extends ITakaroRepo<UserModel> {
+export class UserRepo extends ITakaroRepo<
+  UserModel,
+  UserOutputDTO,
+  UserCreateInputDTO,
+  UserUpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -44,16 +55,20 @@ export class UserRepo extends ITakaroRepo<UserModel> {
     return UserModel.bindKnex(knex);
   }
 
-  async find(filters: ITakaroQuery<UserModel>): Promise<UserModel[]> {
-    const params = new QueryBuilder(filters).build(TABLE_NAME);
+  async find(filters: ITakaroQuery<UserOutputDTO>) {
     const model = await this.getModel();
-    return await model
-      .query()
-      .where(params.where)
-      .withGraphJoined('roles.capabilities');
+    const result = await new QueryBuilder<UserModel, UserOutputDTO>({
+      ...filters,
+      extend: ['roles.capabilities'],
+    }).build(model.query());
+
+    return {
+      total: result.total,
+      results: result.results.map((item) => new UserOutputWithRolesDTO(item)),
+    };
   }
 
-  async findOne(id: string): Promise<IUserFindOneOutput> {
+  async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const model = await this.getModel();
     const data = await model
       .query()
@@ -64,12 +79,13 @@ export class UserRepo extends ITakaroRepo<UserModel> {
       throw new errors.NotFoundError(`User with id ${id} not found`);
     }
 
-    return data as IUserFindOneOutput;
+    return new UserOutputWithRolesDTO(data);
   }
 
-  async create(item: PartialModelObject<UserModel>): Promise<UserModel> {
+  async create(data: UserCreateInputDTO): Promise<UserOutputDTO> {
     const model = await this.getModel();
-    return model.query().insert(item).returning('*');
+    const item = await model.query().insert(data.toJSON()).returning('*');
+    return new UserOutputDTO(item);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -78,12 +94,13 @@ export class UserRepo extends ITakaroRepo<UserModel> {
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: PartialModelObject<UserModel>
-  ): Promise<UserModel> {
+  async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
     const model = await this.getModel();
-    return model.query().updateAndFetchById(id, data).returning('*');
+    const item = await model
+      .query()
+      .updateAndFetchById(id, data.toJSON())
+      .returning('*');
+    return new UserOutputDTO(item);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

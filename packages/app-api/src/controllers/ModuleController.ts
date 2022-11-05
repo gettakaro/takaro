@@ -1,11 +1,17 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse } from '@takaro/http';
+import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleService,
-  UpdateModuleDTO,
+  ModuleUpdateDTO,
 } from '../service/ModuleService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -19,10 +25,10 @@ import {
   Put,
   Params,
 } from 'routing-controllers';
-import { CAPABILITIES } from '../db/role';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
+import { CAPABILITIES } from '../service/RoleService';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -46,8 +52,8 @@ class ModuleSearchInputAllowedFilters {
   name!: string;
 
   @IsOptional()
-  @IsString()
-  enabled!: string;
+  @IsBoolean()
+  enabled!: boolean;
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
@@ -65,11 +71,18 @@ export class ModuleController {
   @ResponseSchema(ModuleOutputArrayDTOAPI)
   @Post('/module/search')
   async search(
-    @Req() req: AuthenticatedRequest,
+    @Req() req: AuthenticatedRequest & PaginatedRequest,
     @Body() query: ModuleSearchInputDTO
   ) {
     const service = new ModuleService(req.domainId);
-    return apiResponse(await service.find(query));
+    const result = await service.find({
+      ...query,
+      page: req.page,
+      limit: req.limit,
+    });
+    return apiResponse(result.results, {
+      meta: { page: req.page, limit: req.limit, total: result.total },
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_MODULES]))
@@ -97,7 +110,7 @@ export class ModuleController {
   async update(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: UpdateModuleDTO
+    @Body() data: ModuleUpdateDTO
   ) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.update(params.id, data));

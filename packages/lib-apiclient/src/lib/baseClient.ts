@@ -16,10 +16,10 @@ export interface IApiClientConfig {
 }
 
 interface Logger {
-  info: (msg: string, meta?: any) => void;
-  warn: (msg: string, meta?: any) => void;
-  error: (msg: string, meta?: any) => void;
-  debug: (msg: string, meta?: any) => void;
+  info: (msg: string, meta?: unknown) => void;
+  warn: (msg: string, meta?: unknown) => void;
+  error: (msg: string, meta?: unknown) => void;
+  debug: (msg: string, meta?: unknown) => void;
 }
 
 export class BaseApiClient {
@@ -56,19 +56,11 @@ export class BaseApiClient {
       axios.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${this.config.auth.token}`;
-    } else {
-      if (this.config.auth.adminSecret) {
-        axios.defaults.auth = {
-          username: 'admin',
-          password: this.config.auth.adminSecret,
-        };
-      } else {
-        if (!this.config.auth.username || !this.config.auth.password) {
-          this.log.warn(
-            'No authentication provided, any authenticated endpoint will fail!'
-          );
-        }
-      }
+    } else if (this.config.auth.adminSecret) {
+      axios.defaults.auth = {
+        username: 'admin',
+        password: this.config.auth.adminSecret,
+      };
     }
 
     return axios;

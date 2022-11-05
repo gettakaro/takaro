@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { darken } from 'polished';
 import { motion } from 'framer-motion';
 
-
 import { Link } from 'react-router-dom';
 import {
   AiOutlineAppstore as Dashboard,
@@ -15,7 +14,6 @@ import {
   AiOutlineIdcard as Players,
 } from 'react-icons/ai';
 import { Company, styled } from '@takaro/lib-components';
-import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
 
 const Nav = styled.nav`
@@ -110,14 +108,14 @@ export const Navbar: FC = () => {
           <Dashboard size={24} />
           <p>Dashboard</p>
         </NavLink>
-        <NavLink to={PATHS.servers}>
+        <NavLink to={PATHS.gameServers.overview}>
           <GameServers size={24} />
           <p>Servers</p>
         </NavLink>
         <NavLink to={PATHS.players}>
           <Players size={24} />
           <p>Players</p>
-        </NavLink>        
+        </NavLink>
         <NavLink to={PATHS.users}>
           <Users size={24} />
           <p>Users</p>
@@ -125,12 +123,16 @@ export const Navbar: FC = () => {
         <NavLink to={PATHS.modules}>
           <Modules size={24} />
           <p>Modules</p>
-        </NavLink>        
+        </NavLink>
         <NavLink to={PATHS.settings}>
           <Settings size={24} />
           <p>Settings</p>
         </NavLink>
-        <a href="https://docs.csmm.app" rel="noopener noreferrer" target="_blank">
+        <a
+          href="https://docs.takaro.io"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <Book size={24} />
           <p>Documentation</p>
         </a>

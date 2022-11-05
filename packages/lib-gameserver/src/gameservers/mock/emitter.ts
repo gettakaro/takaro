@@ -1,40 +1,30 @@
-import { EventEmitter } from 'node:stream';
-import { logger } from '@takaro/logger';
-import { IGameEventEmitter } from '../../interfaces/eventEmitter';
+import { logger } from '@takaro/util';
 import {
   EventPlayerConnected,
   EventLogLine,
   EventPlayerDisconnected,
   GameEvents,
 } from '../../interfaces/events';
-import { JsonObject } from 'type-fest';
-import { Faker } from '@faker-js/faker';
+import type { Faker } from '@faker-js/faker';
+import { MockConnectionInfo } from '.';
+import { TakaroEmitter } from '../../TakaroEmitter';
+import { IGamePlayer } from '../../main';
 
-const allEvents = Object.keys(GameEvents);
-
-class IMockConfig {
-  allowedEvents = allEvents;
-  interval = 60000;
-
-  constructor(config?: Partial<IMockConfig>) {
-    if (!config) return;
-    Object.assign(this, config);
-  }
-}
-
-export class MockEmitter extends EventEmitter implements IGameEventEmitter {
+export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');
   private interval: NodeJS.Timer | null = null;
 
-  async start(config: JsonObject): Promise<void> {
-    const { faker } = await import('@faker-js/faker');
+  constructor(private config: MockConnectionInfo) {
+    super();
+  }
 
-    const mockConfig = new IMockConfig(config);
+  async start(): Promise<void> {
+    const { faker } = await import('@faker-js/faker');
 
     setTimeout(() => this.fireEvent(faker), 1000);
     this.interval = setInterval(
       () => this.fireEvent(faker),
-      mockConfig.interval
+      this.config.eventInterval
     );
   }
 
@@ -44,18 +34,21 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
     }
   }
 
-  private fireEvent(faker: Faker) {
+  private async fireEvent(faker: Faker) {
     const type = this.getRandomFromEnum();
     const data = this.getRandomEvent(faker, type);
-    this.emit(type, data);
+    await this.emit(type, data);
+
     this.logger.debug(`Emitted ${type}`, data);
   }
 
-  private mockPlayer(faker: Faker) {
-    return {
-      name: faker.internet.userName(),
-      platformId: faker.random.words(),
-    };
+  private mockPlayer() {
+    const randomEntry =
+      this.config.mockPlayers[
+        Math.floor(Math.random() * this.config.mockPlayers.length)
+      ];
+
+    return new IGamePlayer(randomEntry);
   }
 
   private getRandomFromEnum() {
@@ -66,20 +59,24 @@ export class MockEmitter extends EventEmitter implements IGameEventEmitter {
 
   private getRandomEvent(faker: Faker, type: string) {
     let event;
+    const player = this.mockPlayer();
 
-    if (type === GameEvents.PLAYER_CONNECTED) {
-      event = new EventPlayerConnected();
-      event.player = this.mockPlayer(faker);
-    }
+    switch (type) {
+      case GameEvents.PLAYER_CONNECTED:
+        event = new EventPlayerConnected({ player, msg: 'player-connected' });
 
-    if (type === GameEvents.PLAYER_DISCONNECTED) {
-      event = new EventPlayerDisconnected();
-      event.player = this.mockPlayer(faker);
-    }
-
-    if (type === GameEvents.LOG_LINE) {
-      event = new EventLogLine();
-      event.msg = `This is a log line :) - ${faker.random.words()}`;
+        break;
+      case GameEvents.PLAYER_DISCONNECTED:
+        event = new EventPlayerDisconnected({
+          player,
+          msg: 'player-disconnected',
+        });
+        break;
+      default:
+        event = new EventLogLine({
+          msg: `This is a log line :) - ${faker.random.words()}`,
+        });
+        break;
     }
 
     return event;

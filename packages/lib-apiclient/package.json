@@ -9,7 +9,7 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts",
+    "test:integration": "ts-mocha -p ./tsconfig.json --timeout 60000 --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
     "test:watch": "npm run test -- --watch",
     "generate": "npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/"
   },

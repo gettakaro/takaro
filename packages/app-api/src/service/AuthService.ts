@@ -1,13 +1,14 @@
 import { DomainScoped } from '../lib/DomainScoped';
-import { errors, logger } from '@takaro/logger';
-import { compare } from 'bcrypt';
+import { errors, logger } from '@takaro/util';
+import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService';
 import * as jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { NextFunction, Request, Response } from 'express';
-import { CAPABILITIES } from '../db/role';
 import { IsString } from 'class-validator';
 import ms from 'ms';
+import { TakaroDTO } from '@takaro/util';
+import { CAPABILITIES } from './RoleService';
 
 interface IJWTPayload {
   sub: string;
@@ -23,7 +24,7 @@ export interface AuthenticatedRequest extends Request {
   user: { id: string };
 }
 
-export class LoginOutputDTO {
+export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
   @IsString()
   token!: string;
 }
@@ -39,26 +40,29 @@ export class AuthService extends DomainScoped {
     const service = new UserService(this.domainId);
     const users = await service.find({ filters: { email } });
 
-    if (!users.length) {
+    if (!users.results.length) {
       this.log.warn('User not found');
       throw new errors.UnauthorizedError();
     }
 
-    if (users.length > 1) {
+    if (users.results.length > 1) {
       this.log.error('Too many users found!');
       throw new errors.UnauthorizedError();
     }
 
-    const passwordMatches = await compare(password, users[0].password);
+    const passwordMatches = await compareHashed(
+      password,
+      users.results[0].password
+    );
 
     if (passwordMatches) {
-      const token = await this.signJwt({ user: { id: users[0].id } });
+      const token = await this.signJwt({ user: { id: users.results[0].id } });
       res.cookie(config.get('auth.cookieName'), token, {
         httpOnly: true,
         maxAge: ms(config.get('auth.jwtExpiresIn')),
       });
 
-      return { token };
+      return new LoginOutputDTO({ token });
     } else {
       this.log.warn('Password does not match');
       throw new errors.UnauthorizedError();
@@ -82,12 +86,12 @@ export class AuthService extends DomainScoped {
       filters: { name: 'root' },
     });
 
-    if (!rootUser.length) {
+    if (!rootUser.results.length) {
       this.log.error('No root user found');
       throw new errors.InternalServerError();
     }
 
-    return await this.signJwt({ user: { id: rootUser[0].id } });
+    return await this.signJwt({ user: { id: rootUser.results[0].id } });
   }
 
   async signJwt(payload: IJWTSignOptions): Promise<string> {

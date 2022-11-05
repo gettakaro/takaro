@@ -1,6 +1,9 @@
 {
   "body": {
     "meta": {
+      "limit": 100,
+      "page": 0,
+      "total": 1,
       "serverTime": "2022-09-22T13:03:37.510Z"
     },
     "data": [
@@ -12,7 +15,9 @@
         "enabled": true,
         "temporalValue": "0 * * * *",
         "moduleId": "441fde07-5f0c-41af-996d-47e5f5f1b97b",
-        "functions": []
+        "function": {
+          "code": ""
+        }
       }
     ]
   },

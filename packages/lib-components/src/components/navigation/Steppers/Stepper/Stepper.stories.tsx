@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
 import { useStepper } from '../context';
 import { Button, Stepper } from '../../../../components';
@@ -26,7 +26,7 @@ const StepBody = styled.div`
   }
 `;
 
-export const Numbers: Story = () => {
+export const Numbers: StoryFn = () => {
   const { incrementCurrentStep, decrementCurrentStep } = useStepper();
 
   return (
@@ -56,7 +56,7 @@ export const Numbers: Story = () => {
   );
 };
 
-export const Icons: Story = () => {
+export const Icons: StoryFn = () => {
   const { incrementCurrentStep, decrementCurrentStep } = useStepper();
 
   return (

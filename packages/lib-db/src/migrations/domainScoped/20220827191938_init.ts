@@ -32,8 +32,12 @@ export async function up(knex: Knex): Promise<void> {
         'MANAGE_FUNCTIONS',
         'READ_CRONJOBS',
         'MANAGE_CRONJOBS',
+        'READ_HOOKS',
+        'MANAGE_HOOKS',
         'READ_MODULES',
         'MANAGE_MODULES',
+        'READ_PLAYERS',
+        'MANAGE_PLAYERS',
       ])
       .notNullable();
 
@@ -61,17 +65,21 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.enu('type', ['MOCK', 'SEVENDAYSTODIE', 'RUST']).notNullable();
-    table.json('connectionInfo').notNullable();
+    table.binary('connectionInfo').notNullable();
   });
 
   await knex.schema.createTable('players', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').notNullable();
+    table.string('steamId');
+    table.string('xboxLiveId');
+    table.string('epicOnlineServicesId');
   });
 
   await knex.schema.createTable('playerOnGameServer', (table) => {
     table.timestamps(true, true, true);
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table
       .uuid('playerId')
       .references('players.id')
@@ -120,7 +128,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name').unique();
     table.boolean('enabled').notNullable().defaultTo(true);
-    table.string('trigger').notNullable();
+    table
+      .enu('eventType', ['log', 'player-connected', 'player-disconnected'])
+      .notNullable();
+    table.string('regex').notNullable();
     table
       .uuid('moduleId')
       .references('modules.id')
@@ -161,5 +172,16 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTable('functionAssignments');
+  await knex.schema.dropTable('commands');
+  await knex.schema.dropTable('hooks');
+  await knex.schema.dropTable('cronJobs');
+  await knex.schema.dropTable('modules');
+  await knex.schema.dropTable('functions');
+  await knex.schema.dropTable('playerOnGameServer');
+  await knex.schema.dropTable('players');
+  await knex.schema.dropTable('gameservers');
+  await knex.schema.dropTable('roleOnUser');
+  await knex.schema.dropTable('roles');
   await knex.schema.dropTable('users');
 }

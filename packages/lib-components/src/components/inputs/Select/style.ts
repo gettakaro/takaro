@@ -75,7 +75,7 @@ export const ArrowContainer = styled.div`
 `;
 
 export const DropDownContainer = styled.div`
-  width: 350px;
+  min-width: 150px;
   white-space: nowrap;
   border: 1px solid ${({ theme }): string => theme.colors.gray};
   border-radius: 0.5rem;

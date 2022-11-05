@@ -1,23 +1,23 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-22T13:11:05.125Z"
+      "serverTime": "2022-09-24T17:31:05.355Z"
     },
     "data": {
       "name": "Test module",
-      "createdAt": "2022-09-22T13:11:05.114Z",
-      "updatedAt": "2022-09-22T13:11:05.124Z",
-      "id": "7f839c79-aa6f-42c3-9321-a712d40f69b9",
+      "createdAt": "2022-09-24T17:31:05.324Z",
+      "updatedAt": "2022-09-24T17:31:05.351Z",
+      "id": "ab85972a-1aef-473d-ad92-7515acac70a4",
       "enabled": true,
       "config": {},
-      "cronJobs": [
-        {}
-      ]
+      "cronJobs": [],
+      "hooks": []
     }
   },
   "status": 200,
   "test": {
     "group": "ModuleController",
+    "snapshot": true,
     "name": "Create",
     "expectedStatus": 200,
     "filteredFields": [],

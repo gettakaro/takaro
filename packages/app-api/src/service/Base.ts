@@ -1,36 +1,50 @@
 import { ITakaroQuery, TakaroModel } from '@takaro/db';
-import { ITakaroRepo, NOT_DOMAIN_SCOPED_ITakaroRepo } from '../db/base';
-import { logger } from '@takaro/logger';
-import { PartialModelObject } from 'objection';
+import {
+  ITakaroRepo,
+  NOT_DOMAIN_SCOPED_ITakaroRepo,
+  PaginatedOutput,
+} from '../db/base';
+import { logger } from '@takaro/util';
+import { TakaroDTO } from '@takaro/util';
 
-export abstract class NOT_DOMAIN_SCOPED_TakaroService<T extends TakaroModel> {
+export abstract class NOT_DOMAIN_SCOPED_TakaroService<
+  Model extends TakaroModel,
+  OutputDTO extends TakaroDTO<OutputDTO>,
+  CreateInputDTO extends TakaroDTO<CreateInputDTO>,
+  UpdateDTO extends TakaroDTO<UpdateDTO>
+> {
   log = logger(this.constructor.name);
 
-  abstract get repo(): NOT_DOMAIN_SCOPED_ITakaroRepo<T>;
+  abstract get repo(): NOT_DOMAIN_SCOPED_ITakaroRepo<
+    Model,
+    OutputDTO,
+    CreateInputDTO,
+    UpdateDTO
+  >;
 
-  find(filters: ITakaroQuery<T>): Promise<T[]> {
-    return this.repo.find(filters);
-  }
-  findOne(id: string | number): Promise<T | undefined> {
-    return this.repo.findOne(id);
-  }
-  create(item: PartialModelObject<T>): Promise<T> {
-    return this.repo.create(item);
-  }
-  update(id: string, item: PartialModelObject<T>): Promise<T | undefined> {
-    return this.repo.update(id, item);
-  }
-  delete(id: string): Promise<boolean> {
-    return this.repo.delete(id);
-  }
+  abstract find(
+    filters: ITakaroQuery<OutputDTO>
+  ): Promise<PaginatedOutput<OutputDTO>>;
+  abstract findOne(id: string | number): Promise<OutputDTO | undefined>;
+  abstract create(item: CreateInputDTO): Promise<OutputDTO>;
+  abstract update(id: string, item: UpdateDTO): Promise<OutputDTO | undefined>;
+  abstract delete(id: string): Promise<boolean>;
 }
 
 export abstract class TakaroService<
-  T extends TakaroModel
-> extends NOT_DOMAIN_SCOPED_TakaroService<T> {
+  Model extends TakaroModel,
+  OutputDTO extends TakaroDTO<OutputDTO>,
+  CreateInputDTO extends TakaroDTO<CreateInputDTO>,
+  UpdateDTO extends TakaroDTO<UpdateDTO>
+> extends NOT_DOMAIN_SCOPED_TakaroService<
+  Model,
+  OutputDTO,
+  CreateInputDTO,
+  UpdateDTO
+> {
   constructor(public readonly domainId: string) {
     super();
   }
 
-  abstract get repo(): ITakaroRepo<T>;
+  abstract get repo(): ITakaroRepo<Model, OutputDTO, CreateInputDTO, UpdateDTO>;
 }

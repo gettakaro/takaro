@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Button, ButtonProps } from '.';
 import { AiFillCloud as Icon } from 'react-icons/ai';
@@ -21,19 +21,21 @@ const Wrapper = styled.div`
 export default {
   title: 'Inputs/Button',
   component: Button,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
-} as Meta;
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  args: {
+    size: 'medium',
+    text: 'basic button',
+    variant: 'default',
+    type: 'button',
+    disabled: false,
+    isLoading: false,
+    color: 'primary',
+    isWhite: false,
+    onClick: undefined
+  }
+} as Meta<ButtonProps>;
 
-const Template: Story<ButtonProps> = (args) => <Button {...args} />;
-
-// Default Button
-export const Default = Template.bind({});
-Default.args = {
-  text: 'Basic Button',
-  size: 'medium',
-  type: 'button',
-  variant: 'default'
-};
+export const Default: StoryFn<ButtonProps> = (args) => <Button {...args} />;
 
 export const Examples = () => (
   <div>
@@ -100,115 +102,3 @@ export const Examples = () => (
   </div>
 );
 
-/* ===================================
-    DIFFERENT SIZED DEFAULT BUTTONS
-  ====================================
-*/
-export const Sizes = () => (
-  <div>
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      size="tiny"
-      text="Tiny Button"
-    />
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      size="small"
-      text="Small Button"
-    />
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Medium Button"
-    />
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      size="large"
-      text="Large Button"
-    />
-    <Button
-      onClick={() => {
-        /* */
-      }}
-      size="huge"
-      text="Huge Button"
-    />
-  </div>
-);
-
-export const Colors = () => (
-  <div>
-    <Button
-      color="primary"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Primary Button"
-    />
-    <Button
-      color="secondary"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Secondary Button"
-    />
-    <Button
-      color="tertiary"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Tertiary Button"
-    />
-    <Button
-      color="quaternary"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Quaternary Button"
-    />
-    <Button
-      color="info"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Info Button"
-    />
-    <Button
-      color="success"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Success Button"
-    />
-    <Button
-      color="warning"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Warning Button"
-    />
-    <Button
-      color="error"
-      onClick={() => {
-        /* */
-      }}
-      size="medium"
-      text="Error Button"
-    />
-  </div>
-);
