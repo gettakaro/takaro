@@ -7,7 +7,9 @@
       "createdAt": "2022-11-04T20:20:54.460Z",
       "updatedAt": "2022-11-04T20:20:54.461Z",
       "id": "afe9af9c-1f9e-4d56-9146-a94e6c0e19e5",
+      "helpText": "No help text available",
       "name": "Test command",
+      "trigger": "test",
       "enabled": true,
       "moduleId": "d17860fe-cca6-4121-97a8-61cd8e8b7c6a",
       "function": {
