@@ -4,7 +4,7 @@ export const PATHS = {
   settings: '/settings',
   settingsGameserver: '/settings/:serverId',
   gameServers: {
-    dashboard: '/gameservers/:serverId',
+    dashboard: '/servers/:serverId',
     overview: '/servers',
     create: '/servers/create',
     update: '/servers/update/:serverId',
