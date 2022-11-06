@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import { Button } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 
@@ -12,6 +11,20 @@ const Dashboard: FC = () => {
   const sendPing = () => {
     socket.emit('ping');
   };
+
+  useEffect(() => {
+    socket.on('pong', () => {
+      setLastPong(new Date().toISOString());
+    });
+
+    socket.on('gameEvent', (type, data) => {
+      setLastEvent(`${type} - ${JSON.stringify(data)}`);
+    });
+
+    return () => {
+      socket.off('pong');
+    };
+  });
 
   return (
     <div>
