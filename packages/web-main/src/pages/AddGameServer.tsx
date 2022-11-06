@@ -94,7 +94,7 @@ const AddGameServer: FC = () => {
       resolver: useValidationSchema(validationSchema),
     });
 
-  const { data, isLoading, refetch } = useQuery<
+  const { isLoading, refetch } = useQuery<
     GameServerOutputDTOAPI['data'] | null
   >(`gameserver/${serverId}`, async () => {
     if (!serverId) return null;
