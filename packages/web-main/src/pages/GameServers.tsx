@@ -17,6 +17,11 @@ const TableContainer = styled.div`
   margin-top: 2rem;
 `;
 
+const TableLink = styled(NavLink)<{ type: 'normal' | 'danger' }>`
+  color: ${({ theme, type }) =>
+    type === 'normal' ? theme.colors.primary : theme.colors.error};
+`;
+
 const GameServers: FC = () => {
   const client = useApiClient();
   const navigate = useNavigate();
@@ -33,15 +38,44 @@ const GameServers: FC = () => {
       headerName: 'Name',
       cellRenderer: (row) => {
         return (
-          <NavLink
+          <TableLink
+            type="normal"
             to={PATHS.gameServers.dashboard.replace(':serverId', row.data.id)}
           >
             {row.value}
-          </NavLink>
+          </TableLink>
         );
       },
     },
     { field: 'type', headerName: 'Type' },
+    {
+      field: 'id',
+      headerName: '',
+      cellRenderer: (row) => {
+        return (
+          <TableLink
+            type="normal"
+            to={PATHS.gameServers.update.replace(':serverId', row.value)}
+          >
+            Edit
+          </TableLink>
+        );
+      },
+    },
+    {
+      field: 'id',
+      headerName: '',
+      cellRenderer: (row) => {
+        return (
+          <TableLink
+            type="normal"
+            to={PATHS.settingsGameserver.replace(':serverId', row.value)}
+          >
+            Settings
+          </TableLink>
+        );
+      },
+    },
     {
       field: 'id',
       headerName: '',
@@ -55,34 +89,6 @@ const GameServers: FC = () => {
                 variant: 'success',
               });
             }}
-          />
-        );
-      },
-    },
-    {
-      field: 'id',
-      headerName: '',
-      cellRenderer: (row) => {
-        return (
-          <Button
-            onClick={() =>
-              navigate(PATHS.gameServers.update.replace(':serverId', row.value))
-            }
-            text="Edit"
-          />
-        );
-      },
-    },
-    {
-      field: 'id',
-      headerName: '',
-      cellRenderer: (row) => {
-        return (
-          <Button
-            onClick={() =>
-              navigate(PATHS.settingsGameserver.replace(':serverId', row.value))
-            }
-            text="Settings"
           />
         );
       },
