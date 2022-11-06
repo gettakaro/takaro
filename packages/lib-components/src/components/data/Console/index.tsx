@@ -21,8 +21,11 @@ the [useEffect which scrolls the last elemnt into the view] should somehow be aw
 */
 
 export interface ConsoleProps {
-  /// This should spit out messages of the format Message and add it using the setter.
-  listener: (s: Dispatch<SetStateAction<Message[]>>) => void;
+  // This should spit out messages of the format Message and add it using the setter.
+  listenerFactory: (s: Dispatch<SetStateAction<Message[]>>) => {
+    on: () => void;
+    off: () => void;
+  };
   onExecuteCommand: (command: string) => Promise<Message>;
   initialMessages?: Message[];
 }
@@ -30,7 +33,7 @@ export interface ConsoleProps {
 export type { Message } from './ConsoleInterface';
 
 export const Console: FC<ConsoleProps> = ({
-  listener,
+  listenerFactory,
   onExecuteCommand,
   initialMessages = [],
 }) => {
@@ -70,7 +73,6 @@ export const Console: FC<ConsoleProps> = ({
         if (!ticking && scrollableNodeRef.current) {
           window.requestAnimationFrame(updateScrollDir);
           // if user scrolls completely to the bottom, stick anyway
-          console.log(scrollableNodeRef.current);
           if (
             scrollableNodeRef.current.scrollHeight -
               scrollableNodeRef.current.scrollTop ===
@@ -87,7 +89,12 @@ export const Console: FC<ConsoleProps> = ({
   }, [scrollDir, messages]);
 
   useEffect(() => {
-    listener(setMessages);
+    const { on, off } = listenerFactory(setMessages);
+    on();
+
+    return () => {
+      off();
+    };
   }, []);
 
   useEffect(() => {
