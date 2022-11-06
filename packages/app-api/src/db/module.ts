@@ -10,6 +10,7 @@ import {
   ModuleOutputDTO,
   ModuleUpdateDTO,
 } from '../service/ModuleService';
+import { CommandModel, COMMANDS_TABLE_NAME } from './command';
 
 export const MODULE_TABLE_NAME = 'modules';
 
@@ -37,6 +38,14 @@ export class ModuleModel extends TakaroModel {
           to: `${HOOKS_TABLE_NAME}.moduleId`,
         },
       },
+      commands: {
+        relation: Model.HasManyRelation,
+        modelClass: CommandModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: `${COMMANDS_TABLE_NAME}.moduleId`,
+        },
+      },
     };
   }
 }
@@ -60,7 +69,7 @@ export class ModuleRepo extends ITakaroRepo<
     const model = await this.getModel();
     const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>({
       ...filters,
-      extend: ['cronJobs', 'hooks'],
+      extend: ['cronJobs', 'hooks', 'commands'],
     }).build(model.query());
 
     return {
@@ -74,8 +83,9 @@ export class ModuleRepo extends ITakaroRepo<
     const data = await model
       .query()
       .findById(id)
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks');
+      .withGraphJoined('cronJobs.function')
+      .withGraphJoined('hooks.function')
+      .withGraphJoined('commands.function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -86,14 +96,9 @@ export class ModuleRepo extends ITakaroRepo<
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
     const model = await this.getModel();
-    const data = await model
-      .query()
-      .insert(item.toJSON())
-      .returning('*')
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks');
+    const data = await model.query().insert(item.toJSON());
 
-    return new ModuleOutputDTO(data);
+    return this.findOne(data.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -107,7 +112,9 @@ export class ModuleRepo extends ITakaroRepo<
     const item = await model
       .query()
       .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('cronJobs');
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks')
+      .withGraphJoined('commands');
 
     return new ModuleOutputDTO(item);
   }
