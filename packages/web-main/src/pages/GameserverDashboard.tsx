@@ -1,4 +1,4 @@
-import { styled, Console, Message } from '@takaro/lib-components';
+import { Console, Loading, Message } from '@takaro/lib-components';
 import { Dispatch, FC, Fragment, SetStateAction } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
@@ -12,7 +12,7 @@ const GameServerDashboard: FC = () => {
   const apiClient = useApiClient();
   const { socket } = useSocket();
 
-  const { data, isLoading, refetch } = useQuery<GameServerOutputDTO>(
+  const { data, isLoading } = useQuery<GameServerOutputDTO>(
     `gameserver/${serverId}`,
     async () => {
       if (!serverId) throw new Error('No server id provided');
@@ -43,12 +43,14 @@ const GameServerDashboard: FC = () => {
     };
   }
 
+  if (isLoading) return <Loading />;
+
   return (
     <Fragment>
       <Helmet>
         <title>Gameserver dashboard</title>
       </Helmet>
-      <h1>Dashboard</h1>
+      <h1>Dashboard - {data?.name}</h1>
 
       <Console
         listenerFactory={handleMessageFactory}
