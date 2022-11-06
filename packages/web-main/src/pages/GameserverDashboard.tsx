@@ -21,9 +21,8 @@ const GameServerDashboard: FC = () => {
     }
   );
 
-  function listener(setter: Dispatch<SetStateAction<Message[]>>) {
-    console.log('RUNNING LISTENER');
-    socket.on('gameEvent', (type, data) => {
+  function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
+    const handler = (type, data) => {
       setter((prev: Message[]) => [
         ...prev,
         {
@@ -32,7 +31,16 @@ const GameServerDashboard: FC = () => {
           data: data.msg,
         },
       ]);
-    });
+    };
+
+    return {
+      on: () => {
+        socket.on('gameEvent', handler);
+      },
+      off: () => {
+        socket.off('gameEvent', handler);
+      },
+    };
   }
 
   return (
@@ -43,7 +51,7 @@ const GameServerDashboard: FC = () => {
       <h1>Dashboard</h1>
 
       <Console
-        listener={listener}
+        listenerFactory={handleMessageFactory}
         onExecuteCommand={async () => {
           return {
             type: 'command',

@@ -17,8 +17,8 @@ const MessageTypeMap: MessageType[] = [
 ];
 
 export const Console: Story = () => {
-  function listener(setter: Dispatch<SetStateAction<Message[]>>) {
-    const generateMessagesInterval = setInterval(() => {
+  function listenerFactory(setter: Dispatch<SetStateAction<Message[]>>) {
+    const interval = setInterval(() => {
       const r = Math.floor(Math.random() * 5);
       const newMessage: Message = {
         data: `this is a ${MessageTypeMap[r]} logline`,
@@ -27,12 +27,19 @@ export const Console: Story = () => {
       };
 
       setter((prev: Message[]) => [...prev, newMessage]);
-      return () => clearInterval(generateMessagesInterval);
     }, 1000);
+
+    return {
+      on: () => {
+        /* Nothing to do here */
+      },
+      off: () => clearInterval(interval),
+    };
   }
+
   return (
     <ConsoleComponent
-      listener={listener}
+      listenerFactory={listenerFactory}
       onExecuteCommand={async () => {
         return {
           type: 'command',
