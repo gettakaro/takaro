@@ -48,6 +48,9 @@ const Row = styled.div`
 const SubContainer = styled.div`
   width: 50%;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const AddGameServer: FC = () => {
@@ -225,41 +228,43 @@ const AddGameServer: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Container>
           <SubContainer>
-            <TextField
-              control={control}
-              error={formState.errors.name}
-              label="Server name"
-              loading={loading}
-              name="name"
-              placeholder="My cool server"
-              required
-            />
-            <Select
-              control={control}
-              icon={<AiFillControl />}
-              error={formState.errors.type}
-              label=""
-              readOnly={!!serverId}
-              name="type"
-              options={[
-                { label: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
-                {
-                  label: '7 Days to die',
-                  value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-                },
-                {
-                  label: 'Mock (testing purposes)',
-                  value: GameServerCreateDTOTypeEnum.Mock,
-                },
-              ]}
-              placeholder="Select your game"
-            />
-
+            <div>
+              <TextField
+                control={control}
+                error={formState.errors.name}
+                label="Server name"
+                loading={loading}
+                name="name"
+                placeholder="My cool server"
+                required
+              />
+              <Select
+                control={control}
+                icon={<AiFillControl />}
+                error={formState.errors.type}
+                label=""
+                readOnly={!!serverId}
+                name="type"
+                options={[
+                  { label: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
+                  {
+                    label: '7 Days to die',
+                    value: GameServerCreateDTOTypeEnum.Sevendaystodie,
+                  },
+                  {
+                    label: 'Mock (testing purposes)',
+                    value: GameServerCreateDTOTypeEnum.Mock,
+                  },
+                ]}
+                placeholder="Select your game"
+              />
+            </div>
             <ErrorMessage message={error} />
+
             <Row>
               <Button
                 icon={<AiFillQuestionCircle />}
-                isLoading={loading}
+                isLoading={checkReachability.isLoading}
                 onClick={() => {
                   checkReachability.mutate({
                     connectionInfo: JSON.stringify(watch('connectionInfo')),
@@ -270,7 +275,7 @@ const AddGameServer: FC = () => {
                 type="button"
                 variant="default"
               />
-              {isConnectable ? (
+              {isConnectable && (
                 <Button
                   icon={<AiFillPlusCircle />}
                   isLoading={loading}
@@ -279,9 +284,10 @@ const AddGameServer: FC = () => {
                   }}
                   text="Save"
                   type="submit"
+                  color="success"
                   variant="default"
                 />
-              ) : null}
+              )}
             </Row>
           </SubContainer>
 
