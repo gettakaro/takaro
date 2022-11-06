@@ -46,7 +46,7 @@ export const Container = styled.div<{ isCollapsed: boolean }>`
   max-width: 100%;
   vertical-align: top;
   display: grid;
-  grid-template-columns: 4rem 18rem auto;
+  grid-template-columns: 4rem 20rem auto;
   text-align: left;
   margin: 0;
 `;
