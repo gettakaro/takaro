@@ -1,5 +1,5 @@
-export { IGameServer } from './interfaces/GameServer';
-export { IGamePlayer } from './interfaces/GamePlayer';
+export * from './interfaces/GameServer';
+export * from './interfaces/GamePlayer';
 
 export { TakaroEmitter } from './TakaroEmitter';
 

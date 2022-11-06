@@ -109,6 +109,27 @@ export class GameServerService extends TakaroService<
     return updatedServer;
   }
 
+  async testReachability(
+    id?: string,
+    connectionInfo?: Record<string, unknown>,
+    type?: GAME_SERVER_TYPE
+  ) {
+    if (id) {
+      const gameserver = await this.repo.findOne(id);
+      const game = GameServerService.getGame(gameserver.type);
+      const instance = new game(gameserver.connectionInfo);
+
+      return instance.testReachability();
+    } else if (connectionInfo && type) {
+      const game = GameServerService.getGame(type);
+      const instance = new game(connectionInfo);
+
+      return instance.testReachability();
+    } else {
+      throw new errors.BadRequestError('Missing required parameters');
+    }
+  }
+
   static getGame(type: GAME_SERVER_TYPE) {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:

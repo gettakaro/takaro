@@ -1,7 +1,10 @@
 import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsBoolean } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { IGameServer } from '../../interfaces/GameServer';
+import {
+  IGameServer,
+  TestReachabilityOutput,
+} from '../../interfaces/GameServer';
 import { SevenDaysToDieEmitter } from './emitter';
 
 export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
@@ -34,5 +37,11 @@ export class SevenDaysToDie implements IGameServer {
   getEventEmitter() {
     const emitter = new SevenDaysToDieEmitter(this.connectionInfo);
     return emitter;
+  }
+
+  async testReachability(): Promise<TestReachabilityOutput> {
+    return new TestReachabilityOutput({
+      connectable: true,
+    });
   }
 }
