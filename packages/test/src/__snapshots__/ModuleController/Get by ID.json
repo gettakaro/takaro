@@ -11,7 +11,8 @@
       "enabled": true,
       "config": {},
       "cronJobs": [],
-      "hooks": []
+      "hooks": [],
+      "commands": []
     }
   },
   "status": 200,
