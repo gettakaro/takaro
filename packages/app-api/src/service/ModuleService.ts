@@ -18,6 +18,7 @@ import { HookOutputDTO } from './HookService';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
+import { CommandOutputDTO } from './CommandService';
 
 export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   @IsUUID()
@@ -32,12 +33,16 @@ export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   config!: JsonObject;
 
   @Type(() => CronJobOutputDTO)
-  @ValidateNested()
-  cronJobs: CronJobOutputDTO[] = [];
+  @ValidateNested({ each: true })
+  cronJobs: CronJobOutputDTO[];
 
   @Type(() => HookOutputDTO)
-  @ValidateNested()
-  hooks: HookOutputDTO[] = [];
+  @ValidateNested({ each: true })
+  hooks: HookOutputDTO[];
+
+  @Type(() => CommandOutputDTO)
+  @ValidateNested({ each: true })
+  commands: CommandOutputDTO[];
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
