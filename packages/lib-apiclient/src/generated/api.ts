@@ -1268,6 +1268,54 @@ export type GameServerSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface GameServerTestReachabilityDTOAPI
+ */
+export interface GameServerTestReachabilityDTOAPI {
+  /**
+   *
+   * @type {TestReachabilityOutput}
+   * @memberof GameServerTestReachabilityDTOAPI
+   */
+  data: TestReachabilityOutput;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GameServerTestReachabilityDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface GameServerTestReachabilityInputDTO
+ */
+export interface GameServerTestReachabilityInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerTestReachabilityInputDTO
+   */
+  connectionInfo: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerTestReachabilityInputDTO
+   */
+  type: GameServerTestReachabilityInputDTOTypeEnum;
+}
+
+export const GameServerTestReachabilityInputDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerTestReachabilityInputDTOTypeEnum =
+  typeof GameServerTestReachabilityInputDTOTypeEnum[keyof typeof GameServerTestReachabilityInputDTOTypeEnum];
+
+/**
+ *
+ * @export
  * @interface GameServerUpdateDTO
  */
 export interface GameServerUpdateDTO {
@@ -1972,16 +2020,22 @@ export interface ModuleOutputDTO {
   config: object;
   /**
    *
-   * @type {CronJobOutputDTO}
+   * @type {Array<CronJobOutputDTO>}
    * @memberof ModuleOutputDTO
    */
-  cronJobs: CronJobOutputDTO;
+  cronJobs: Array<CronJobOutputDTO>;
   /**
    *
-   * @type {HookOutputDTO}
+   * @type {Array<HookOutputDTO>}
    * @memberof ModuleOutputDTO
    */
-  hooks: HookOutputDTO;
+  hooks: Array<HookOutputDTO>;
+  /**
+   *
+   * @type {Array<CommandOutputDTO>}
+   * @memberof ModuleOutputDTO
+   */
+  commands: Array<CommandOutputDTO>;
 }
 /**
  *
@@ -2757,6 +2811,25 @@ export interface SettingsSetDTO {
    * @memberof SettingsSetDTO
    */
   value: string;
+}
+/**
+ *
+ * @export
+ * @interface TestReachabilityOutput
+ */
+export interface TestReachabilityOutput {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TestReachabilityOutput
+   */
+  connectable: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof TestReachabilityOutput
+   */
+  reason?: string;
 }
 /**
  *
@@ -5515,6 +5588,104 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachability: async (
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/reachability`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerTestReachabilityInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachabilityForId: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerTestReachabilityForId', 'id', id);
+      const localVarPath = `/gameserver/{id}/reachability`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -5686,6 +5857,62 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTestReachability(
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerTestReachabilityDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerTestReachability(
+          gameServerTestReachabilityInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTestReachabilityForId(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerTestReachabilityDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerTestReachabilityForId(
+          id,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -5791,6 +6018,39 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachability(
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options?: any
+    ): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+      return localVarFp
+        .gameServerControllerTestReachability(
+          gameServerTestReachabilityInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachabilityForId(
+      id: string,
+      options?: any
+    ): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+      return localVarFp
+        .gameServerControllerTestReachabilityForId(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -5875,6 +6135,43 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerSearch(gameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Test reachability
+   * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerTestReachability(
+    gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerTestReachability(
+        gameServerTestReachabilityInputDTO,
+        options
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Test reachability for id
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerTestReachabilityForId(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerTestReachabilityForId(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
