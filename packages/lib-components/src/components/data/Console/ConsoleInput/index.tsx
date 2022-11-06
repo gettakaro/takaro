@@ -38,9 +38,6 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
   }
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // TODO: Send command ?
-    // executeCommand();
-
     setInput(e.target.value);
   };
 
