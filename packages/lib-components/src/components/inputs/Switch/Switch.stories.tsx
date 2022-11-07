@@ -25,9 +25,14 @@ export default {
   title: 'Inputs/Switch',
   component: Switch,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
-} as Meta;
+  args: {
+    label: 'I am a label',
+    loading: false,
+    name: 'switch01',
+  },
+} as Meta<SwitchProps>;
 
-const Template: StoryFn<SwitchProps> = (args) => {
+export const Default: StoryFn<SwitchProps> = (args) => {
   const { control } = useForm();
   return (
     <div>
@@ -35,16 +40,6 @@ const Template: StoryFn<SwitchProps> = (args) => {
     </div>
   );
 };
-
-// Default Button
-export const Default = Template.bind({});
-Default.args = { name: 'switch01' };
-// Checked by default
-export const DefaultChecked = Template.bind({});
-DefaultChecked.args = { name: 'switch02', defaultValue: true };
-// Loading Switch
-export const Loading = Template.bind({});
-Loading.args = { name: 'switch03' };
 
 export const Form = () => {
   const [value, setValue] = useState<boolean>();

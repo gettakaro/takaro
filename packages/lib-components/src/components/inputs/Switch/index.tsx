@@ -1,7 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
+import { Skeleton } from '../../../components';
 import { Container, Dot, Line, Label, ContentContainer } from './style';
 import { useController, Control } from 'react-hook-form';
+
 export interface SwitchProps {
   /* Unique name, required to toggle the switch */
   name: string;
@@ -40,7 +42,12 @@ export const Switch: FC<SwitchProps> = ({
   }, [isChecked]);
 
   if (loading) {
-    <div className="placeholder" />;
+    return (
+      <Container>
+        {label && <div>{label}</div>}
+        <Skeleton variant="text" width="30px" height="15px" />
+      </Container>
+    );
   }
 
   return (
@@ -57,10 +64,10 @@ export const Switch: FC<SwitchProps> = ({
       ></input>
       {label && <Label htmlFor={name}>{label}</Label>}
       <ContentContainer onClick={handleClick}>
-        <Line disabled={readOnly} isChecked={isChecked}>
+        <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}
-            disabled={readOnly}
+            readOnly={readOnly}
             isChecked={isChecked}
             layout
             transition={getTransition()}
