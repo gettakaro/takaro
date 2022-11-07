@@ -11,15 +11,20 @@ import {
   Loading,
 } from '@takaro/lib-components';
 import * as yup from 'yup';
-import { AiFillPlusCircle, AiFillControl } from 'react-icons/ai';
+import {
+  AiFillPlusCircle,
+  AiFillControl,
+  AiFillQuestionCircle,
+} from 'react-icons/ai';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTOAPI,
+  GameServerTestReachabilityInputDTO,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
 interface IFormInputs {
@@ -35,25 +40,26 @@ const Container = styled.div`
   border-radius: 1.5rem;
 `;
 
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const SubContainer = styled.div`
   width: 50%;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const AddGameServer: FC = () => {
   const [loading, setLoading] = useState(false);
+  const [isConnectable, setIsConnectable] = useState(false);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const apiClient = useApiClient();
   const { serverId } = useParams();
-
-  const { data, isLoading, refetch } = useQuery<
-    GameServerOutputDTOAPI['data'] | null
-  >(`gameserver/${serverId}`, async () => {
-    if (!serverId) return null;
-    return (await apiClient.gameserver.gameServerControllerGetOne(serverId))
-      .data.data;
-  });
 
   const validationSchema = useMemo(
     () =>
@@ -70,21 +76,35 @@ const AddGameServer: FC = () => {
     []
   );
 
-  const defaultValues = () => {
-    if (!serverId) return undefined;
-    if (!data) return undefined;
+  const checkReachability = useMutation({
+    mutationFn: async (info: GameServerTestReachabilityInputDTO) => {
+      const res =
+        await apiClient.gameserver.gameServerControllerTestReachability(info);
 
-    return {
-      connectionInfo: data.connectionInfo as unknown as Record<string, never>,
-      name: data.name,
-      type: data.type,
-    };
-  };
+      setIsConnectable(res.data.data.connectable);
+      setError(res.data.data.reason);
 
-  const { control, handleSubmit, formState, watch } = useForm<IFormInputs>({
-    mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
-    defaultValues: defaultValues(),
+      return res;
+    },
+  });
+
+  const { control, handleSubmit, formState, watch, setValue } =
+    useForm<IFormInputs>({
+      mode: 'onSubmit',
+      resolver: useValidationSchema(validationSchema),
+    });
+
+  const { isLoading, refetch } = useQuery<
+    GameServerOutputDTOAPI['data'] | null
+  >(`gameserver/${serverId}`, async () => {
+    if (!serverId) return null;
+    const resp = (
+      await apiClient.gameserver.gameServerControllerGetOne(serverId)
+    ).data.data;
+    setValue('name', resp.name);
+    setValue('type', resp.type);
+    setValue('connectionInfo', resp.connectionInfo as Record<string, unknown>);
+    return resp;
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (inputs) => {
@@ -208,48 +228,67 @@ const AddGameServer: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Container>
           <SubContainer>
-            <TextField
-              control={control}
-              error={formState.errors.name}
-              label="Server name"
-              loading={loading}
-              name="name"
-              placeholder="My cool server"
-              required
-            />
-            <Select
-              control={control}
-              icon={<AiFillControl />}
-              error={formState.errors.type}
-              label=""
-              readOnly={!!serverId}
-              name="type"
-              options={[
-                { label: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
-                {
-                  label: '7 Days to die',
-                  value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-                },
-                {
-                  label: 'Mock (testing purposes)',
-                  value: GameServerCreateDTOTypeEnum.Mock,
-                },
-              ]}
-              placeholder="Select your game"
-            />
-
+            <div>
+              <TextField
+                control={control}
+                error={formState.errors.name}
+                label="Server name"
+                loading={loading}
+                name="name"
+                placeholder="My cool server"
+                required
+              />
+              <Select
+                control={control}
+                icon={<AiFillControl />}
+                error={formState.errors.type}
+                label=""
+                readOnly={!!serverId}
+                name="type"
+                options={[
+                  { label: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
+                  {
+                    label: '7 Days to die',
+                    value: GameServerCreateDTOTypeEnum.Sevendaystodie,
+                  },
+                  {
+                    label: 'Mock (testing purposes)',
+                    value: GameServerCreateDTOTypeEnum.Mock,
+                  },
+                ]}
+                placeholder="Select your game"
+              />
+            </div>
             <ErrorMessage message={error} />
 
-            <Button
-              icon={<AiFillPlusCircle />}
-              isLoading={loading}
-              onClick={() => {
-                /* dummy */
-              }}
-              text="Save"
-              type="submit"
-              variant="default"
-            />
+            <Row>
+              <Button
+                icon={<AiFillQuestionCircle />}
+                isLoading={checkReachability.isLoading}
+                onClick={() => {
+                  checkReachability.mutate({
+                    connectionInfo: JSON.stringify(watch('connectionInfo')),
+                    type: watch('type'),
+                  });
+                }}
+                text="Test connection"
+                type="button"
+                variant="default"
+              />
+              {isConnectable && (
+                <Button
+                  icon={<AiFillPlusCircle />}
+                  isLoading={loading}
+                  onClick={() => {
+                    /* dummy */
+                  }}
+                  text="Save"
+                  type="submit"
+                  color="success"
+                  variant="default"
+                />
+              )}
+            </Row>
           </SubContainer>
 
           <SubContainer>

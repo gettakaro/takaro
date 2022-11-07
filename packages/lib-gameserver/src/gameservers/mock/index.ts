@@ -2,7 +2,10 @@ import faker from '@faker-js/faker';
 import { logger, TakaroDTO } from '@takaro/util';
 import { IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { IGameServer } from '../../interfaces/GameServer';
+import {
+  IGameServer,
+  TestReachabilityOutput,
+} from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
 
 export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
@@ -43,5 +46,21 @@ export class Mock implements IGameServer {
   getEventEmitter() {
     const emitter = new MockEmitter(this.connectionInfo);
     return emitter;
+  }
+
+  async testReachability(): Promise<TestReachabilityOutput> {
+    const fiftyFiftyChance = Math.random() >= 0.5;
+
+    if (fiftyFiftyChance) {
+      return new TestReachabilityOutput({
+        connectable: true,
+      });
+    } else {
+      return new TestReachabilityOutput({
+        connectable: false,
+        reason:
+          'Mock server has a 50% chance of being unreachable. Try again please :)',
+      });
+    }
   }
 }

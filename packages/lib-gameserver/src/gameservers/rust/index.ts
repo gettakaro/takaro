@@ -1,7 +1,10 @@
 import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
-import { IGameServer } from '../../interfaces/GameServer';
+import {
+  IGameServer,
+  TestReachabilityOutput,
+} from '../../interfaces/GameServer';
 import { RustEmitter } from './emitter';
 
 export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
@@ -33,5 +36,11 @@ export class Rust implements IGameServer {
   getEventEmitter() {
     const emitter = new RustEmitter(this.connectionInfo);
     return emitter;
+  }
+
+  async testReachability(): Promise<TestReachabilityOutput> {
+    return new TestReachabilityOutput({
+      connectable: true,
+    });
   }
 }

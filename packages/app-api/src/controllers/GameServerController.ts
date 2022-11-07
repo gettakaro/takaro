@@ -1,5 +1,13 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsJSON,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
+import { TakaroDTO } from '@takaro/util';
+import { TestReachabilityOutput } from '@takaro/gameserver';
 import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -23,6 +31,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { CAPABILITIES } from '../service/RoleService';
+import { GAME_SERVER_TYPE } from '../db/gameserver';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -36,6 +45,12 @@ class GameServerOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   data!: GameServerOutputDTO[];
 }
 
+class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutput> {
+  @Type(() => TestReachabilityOutput)
+  @ValidateNested()
+  data!: TestReachabilityOutput;
+}
+
 class GameServerSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
@@ -46,6 +61,14 @@ class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedFilters)
   filters!: GameServerSearchInputAllowedFilters;
+}
+
+class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {
+  @IsJSON()
+  connectionInfo: string;
+  @IsString()
+  @IsEnum(GAME_SERVER_TYPE)
+  type: GAME_SERVER_TYPE;
 }
 
 @OpenAPI({
@@ -109,5 +132,33 @@ export class GameServerController {
     const service = new GameServerService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(GameServerTestReachabilityDTOAPI)
+  @Get('/gameserver/:id/reachability')
+  async testReachabilityForId(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.testReachability(params.id);
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(GameServerTestReachabilityDTOAPI)
+  @Post('/gameserver/reachability')
+  async testReachability(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: GameServerTestReachabilityInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.testReachability(
+      undefined,
+      JSON.parse(data.connectionInfo),
+      data.type
+    );
+    return apiResponse(res);
   }
 }
