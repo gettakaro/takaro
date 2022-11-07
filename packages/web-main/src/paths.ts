@@ -10,6 +10,9 @@ export const PATHS = {
   },
   players: '/players',
   modules: '/modules',
+  studio: {
+    module: '/studio/:moduleId',
+  },
   users: '/users',
   profile: '/profile',
 };

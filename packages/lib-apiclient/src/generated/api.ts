@@ -57,44 +57,21 @@ export interface APIOutput {
 /**
  *
  * @export
- * @interface AssignFunctionDTO
- */
-export interface AssignFunctionDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionDTO
-   */
-  type: AssignFunctionDTOTypeEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionDTO
-   */
-  itemId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof AssignFunctionDTO
-   */
-  functionId: string;
-}
-
-export const AssignFunctionDTOTypeEnum = {
-  Cronjob: 'cronjob',
-  Hook: 'hook',
-  Command: 'command',
-} as const;
-
-export type AssignFunctionDTOTypeEnum =
-  typeof AssignFunctionDTOTypeEnum[keyof typeof AssignFunctionDTOTypeEnum];
-
-/**
- *
- * @export
  * @interface BaseEvent
  */
 export interface BaseEvent {
+  /**
+   *
+   * @type {BaseEventTimestamp}
+   * @memberof BaseEvent
+   */
+  timestamp: BaseEventTimestamp;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseEvent
+   */
+  type: BaseEventTypeEnum;
   /**
    *
    * @type {string}
@@ -102,6 +79,22 @@ export interface BaseEvent {
    */
   msg: string;
 }
+
+export const BaseEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type BaseEventTypeEnum =
+  typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
+
+/**
+ * @type BaseEventTimestamp
+ * @export
+ */
+export type BaseEventTimestamp = string;
+
 /**
  *
  * @export
@@ -235,10 +228,10 @@ export interface CronJobOutputDTO {
   temporalValue: string;
   /**
    *
-   * @type {Array<FunctionOutputDTO>}
+   * @type {FunctionOutputDTO}
    * @memberof CronJobOutputDTO
    */
-  functions: Array<FunctionOutputDTO>;
+  function: FunctionOutputDTO;
 }
 /**
  *
@@ -598,11 +591,33 @@ export interface EventPlayerConnected {
   player: IGamePlayer;
   /**
    *
+   * @type {BaseEventTimestamp}
+   * @memberof EventPlayerConnected
+   */
+  timestamp: BaseEventTimestamp;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerConnected
+   */
+  type: EventPlayerConnectedTypeEnum;
+  /**
+   *
    * @type {string}
    * @memberof EventPlayerConnected
    */
   msg: string;
 }
+
+export const EventPlayerConnectedTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type EventPlayerConnectedTypeEnum =
+  typeof EventPlayerConnectedTypeEnum[keyof typeof EventPlayerConnectedTypeEnum];
+
 /**
  *
  * @export
@@ -617,11 +632,33 @@ export interface EventPlayerDisconnected {
   player: IGamePlayer;
   /**
    *
+   * @type {BaseEventTimestamp}
+   * @memberof EventPlayerDisconnected
+   */
+  timestamp: BaseEventTimestamp;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerDisconnected
+   */
+  type: EventPlayerDisconnectedTypeEnum;
+  /**
+   *
    * @type {string}
    * @memberof EventPlayerDisconnected
    */
   msg: string;
 }
+
+export const EventPlayerDisconnectedTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+} as const;
+
+export type EventPlayerDisconnectedTypeEnum =
+  typeof EventPlayerDisconnectedTypeEnum[keyof typeof EventPlayerDisconnectedTypeEnum];
+
 /**
  *
  * @export
@@ -1155,10 +1192,10 @@ export interface HookOutputDTO {
   regex: string;
   /**
    *
-   * @type {Array<FunctionOutputDTO>}
+   * @type {FunctionOutputDTO}
    * @memberof HookOutputDTO
    */
-  functions: Array<FunctionOutputDTO>;
+  function: FunctionOutputDTO;
   /**
    *
    * @type {string}
@@ -1355,6 +1392,24 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  platformId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  device?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IGamePlayer
+   */
+  ip?: string;
 }
 /**
  *
@@ -1635,16 +1690,16 @@ export interface ModuleOutputDTO {
   config: object;
   /**
    *
-   * @type {CronJobOutputDTO}
+   * @type {Array<CronJobOutputDTO>}
    * @memberof ModuleOutputDTO
    */
-  cronJobs: CronJobOutputDTO;
+  cronJobs: Array<CronJobOutputDTO>;
   /**
    *
-   * @type {HookOutputDTO}
+   * @type {Array<HookOutputDTO>}
    * @memberof ModuleOutputDTO
    */
-  hooks: HookOutputDTO;
+  hooks: Array<HookOutputDTO>;
 }
 /**
  *
@@ -2247,6 +2302,56 @@ export const RoleUpdateInputDTOCapabilitiesEnum = {
 export type RoleUpdateInputDTOCapabilitiesEnum =
   typeof RoleUpdateInputDTOCapabilitiesEnum[keyof typeof RoleUpdateInputDTOCapabilitiesEnum];
 
+/**
+ *
+ * @export
+ * @interface RustConfig
+ */
+export interface RustConfig {
+  /**
+   *
+   * @type {string}
+   * @memberof RustConfig
+   */
+  hostname: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RustConfig
+   */
+  port: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RustConfig
+   */
+  password: string;
+}
+/**
+ *
+ * @export
+ * @interface RustConnectionInfo
+ */
+export interface RustConnectionInfo {
+  /**
+   *
+   * @type {string}
+   * @memberof RustConnectionInfo
+   */
+  host: string;
+  /**
+   *
+   * @type {number}
+   * @memberof RustConnectionInfo
+   */
+  rconPort: number;
+  /**
+   *
+   * @type {string}
+   * @memberof RustConnectionInfo
+   */
+  rconPassword: string;
+}
 /**
  *
  * @export
@@ -3849,54 +3954,6 @@ export const FunctionApiAxiosParamCreator = function (
       };
     },
     /**
-     * Get functions that will be executed when an item (cronjob, command or hook) is executed
-     * @summary Get related
-     * @param {string} id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    functionControllerGetRelated: async (
-      id: string,
-      options: AxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('functionControllerGetRelated', 'id', id);
-      const localVarPath = `/function/related/{id}`.replace(
-        `{${'id'}}`,
-        encodeURIComponent(String(id))
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Remove
      * @param {string} id
@@ -4115,34 +4172,6 @@ export const FunctionApiFp = function (configuration?: Configuration) {
       );
     },
     /**
-     * Get functions that will be executed when an item (cronjob, command or hook) is executed
-     * @summary Get related
-     * @param {string} id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async functionControllerGetRelated(
-      id: string,
-      options?: AxiosRequestConfig
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<FunctionOutputArrayDTOAPI>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.functionControllerGetRelated(
-          id,
-          options
-        );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
-    /**
      *
      * @summary Remove
      * @param {string} id
@@ -4268,21 +4297,6 @@ export const FunctionApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Get functions that will be executed when an item (cronjob, command or hook) is executed
-     * @summary Get related
-     * @param {string} id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    functionControllerGetRelated(
-      id: string,
-      options?: any
-    ): AxiosPromise<FunctionOutputArrayDTOAPI> {
-      return localVarFp
-        .functionControllerGetRelated(id, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Remove
      * @param {string} id
@@ -4367,23 +4381,6 @@ export class FunctionApi extends BaseAPI {
   public functionControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return FunctionApiFp(this.configuration)
       .functionControllerGetOne(id, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Get functions that will be executed when an item (cronjob, command or hook) is executed
-   * @summary Get related
-   * @param {string} id
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof FunctionApi
-   */
-  public functionControllerGetRelated(
-    id: string,
-    options?: AxiosRequestConfig
-  ) {
-    return FunctionApiFp(this.configuration)
-      .functionControllerGetRelated(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

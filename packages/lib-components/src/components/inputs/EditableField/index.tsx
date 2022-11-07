@@ -14,6 +14,7 @@ export interface EditableFieldProps {
   text?: string;
   isEditing?: boolean;
   placeholder?: string;
+  onEdited?: () => unknown;
   disabled?: boolean;
   allowEmpty: boolean;
   childRef: MutableRefObject<HTMLInputElement | null>;
@@ -38,6 +39,7 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
   isEditing = false,
   disabled = false,
   allowEmpty,
+  onEdited,
   children,
   childRef,
 }) => {
@@ -52,8 +54,20 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
   }, [editing, childRef]);
 
   useEffect(() => {
-    setEditing(editing);
+    console.log('on edited', onEdited);
+    console.log('editing', editing);
+    console.log('childref', childRef);
+    console.log('childref', childRef.current);
+    if (onEdited && editing == false) {
+      onEdited();
+    }
   }, [editing]);
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditing(true);
+    }
+  }, [isEditing]);
 
   // handle focus change
   const handleKeyDown = ({ key }: KeyboardEvent) => {

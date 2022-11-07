@@ -74,8 +74,8 @@ export class ModuleRepo extends ITakaroRepo<
     const data = await model
       .query()
       .findById(id)
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks');
+      .withGraphJoined('cronJobs.function')
+      .withGraphJoined('hooks.function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);

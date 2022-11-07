@@ -32,12 +32,12 @@ export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   config!: JsonObject;
 
   @Type(() => CronJobOutputDTO)
-  @ValidateNested()
-  cronJobs: CronJobOutputDTO[] = [];
+  @ValidateNested({ each: true })
+  cronJobs: CronJobOutputDTO[];
 
   @Type(() => HookOutputDTO)
-  @ValidateNested()
-  hooks: HookOutputDTO[] = [];
+  @ValidateNested({ each: true })
+  hooks: HookOutputDTO[];
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {

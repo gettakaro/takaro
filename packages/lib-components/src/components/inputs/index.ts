@@ -32,3 +32,6 @@ export type { CodeFieldProps } from './CodeField';
 
 export { RadioGroup } from './RadioGroup';
 export type { RadioGroupProps } from './RadioGroup';
+
+export { EditableField } from './EditableField';
+export type { EditableFieldProps } from './EditableField';
