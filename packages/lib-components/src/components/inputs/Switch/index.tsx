@@ -1,54 +1,72 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
-import { Container, Dot, Line, Label } from './style';
+import { Container, Dot, Line, Label, ContentContainer } from './style';
 import { useController, Control } from 'react-hook-form';
 export interface SwitchProps {
   /* Unique name, required to toggle the switch */
   name: string;
   control: Control<any>;
+  loading?: boolean;
   defaultValue?: boolean;
-  disabled?: boolean;
+  readOnly?: boolean;
+  label?: string;
   onChange?: (isChecked: boolean) => void;
 }
 
 export const Switch: FC<SwitchProps> = ({
   name,
   control,
+  loading = false,
+  label,
+  readOnly = false,
   defaultValue = false,
-  disabled = false,
-  onChange
+  onChange,
 }) => {
-  const [isChecked, setChecked] = useState(defaultValue);
-  const { field: sw } = useController({ name, control });
+  const [isChecked, setChecked] = useState<boolean>(defaultValue);
+  const { field: sw } = useController({
+    name,
+    control,
+    defaultValue: defaultValue,
+  });
 
-  function onCheck(): void {
-    setChecked(!isChecked);
+  function handleClick(): void {
+    if (readOnly) return;
+    setChecked((prev) => !prev);
     if (typeof onChange === 'function') onChange(sw.value);
+  }
+
+  useEffect(() => {
+    sw.onChange(isChecked);
+  }, [isChecked]);
+
+  if (loading) {
+    <div className="placeholder" />;
   }
 
   return (
     <Container>
       {/* this is the input component itself, but cannot be styled properly. */}
       <input
-        disabled={disabled}
+        {...sw}
         id={name}
         name={name}
-        onChange={onCheck}
-        ref={sw.ref}
+        readOnly={readOnly}
+        checked={isChecked}
         style={{ display: 'none' }}
         type="checkbox"
       ></input>
-      <Label htmlFor={name}>
-        <Line disabled={disabled} isChecked={isChecked}>
+      {label && <Label htmlFor={name}>{label}</Label>}
+      <ContentContainer onClick={handleClick}>
+        <Line disabled={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}
-            disabled={disabled}
+            disabled={readOnly}
             isChecked={isChecked}
             layout
             transition={getTransition()}
           />
         </Line>
-      </Label>
+      </ContentContainer>
     </Container>
   );
 };

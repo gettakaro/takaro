@@ -4,25 +4,34 @@ import { motion } from 'framer-motion';
 
 export const Container = styled.div`
   position: relative;
-  width: 30px;
   display: inline-block;
   vertical-align: middle;
   text-align: left;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
 `;
 
 export const Label = styled.label`
   display: block;
   overflow: hidden;
   cursor: pointer;
+  margin: 0 0 1rem 0;
+`;
+
+export const ContentContainer = styled.div`
+  position: relative;
+  width: 3rem;
+  display: block;
+  cursor: pointer;
   border: 0 solid #cccccc;
-  border-radius: 20px;
   margin: 0;
 `;
 
 export const Line = styled.span<{ isChecked: boolean; disabled: boolean }>`
   display: block;
   width: 100%;
-  height: 9px;
+  border-radius: 2rem;
+  height: 0.9rem;
   transition: background 0.2s ease-in-out;
   background: ${({ theme, disabled, isChecked }): string => {
     let color = isChecked
@@ -40,8 +49,8 @@ export const Dot = styled(motion.span)<{
   disabled: boolean;
 }>`
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 1.8rem;
+  height: 1.8rem;
   border: 1px solid
     ${({ theme, isChecked }) =>
       isChecked ? theme.colors.primary : theme.colors.gray};

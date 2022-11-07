@@ -1,27 +1,30 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Switch, SwitchProps } from '.';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useState } from 'react';
+import { Button } from '../..';
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto;
-  grid-gap: 0.5rem 2rem;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
   border-radius: 1rem;
-  text-align: center;
 
   & > div {
     margin: 0 auto;
-    padding: 2px 10px;
+    padding: 0.2rem 1rem;
+  }
+
+  form {
+    width: 100%;
   }
 `;
 
 export default {
   title: 'Inputs/Switch',
   component: Switch,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
 } as Meta;
 
 const Template: StoryFn<SwitchProps> = (args) => {
@@ -43,32 +46,32 @@ DefaultChecked.args = { name: 'switch02', defaultValue: true };
 export const Loading = Template.bind({});
 Loading.args = { name: 'switch03' };
 
-/* TODO: bigger example
-export const Examples = () => {
+export const Form = () => {
+  const [value, setValue] = useState<boolean>();
+
+  const { control, handleSubmit } = useForm<FormFields>();
 
   type FormFields = {
-    isMale: string;
-  }
+    hasCar: boolean;
+  };
 
-  const onSubmit: SubmitHandler<FormFields> = ({ isMale }) => {
-    // Do something with form data
+  const onSubmit: SubmitHandler<FormFields> = ({ hasCar }) => {
+    setValue(hasCar);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h3>Default</h3>
-      <h3>Disabled</h3>
-      <h3>Checked by default </h3>
-      <div>
-        <Switch name="switch01" />
-      </div>
-      <div>
-        <Switch disabled name="switch02" />
-      </div>
-      <div>
-        <Switch defaultChecked name="switch03" />
-      </div>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Switch name="hasCar" label="Do you have a car?" control={control} />
+        <Button
+          type="submit"
+          text="submit"
+          onClick={() => {
+            /**/
+          }}
+        />
+      </form>
+      submitted value: {value ? 'true' : 'false'}
+    </>
   );
 };
-*/
