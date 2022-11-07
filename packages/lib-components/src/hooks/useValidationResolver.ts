@@ -3,7 +3,7 @@ import * as yup from 'yup';
 
 export const useValidationSchema = (validationSchema: yup.AnyObjectSchema) =>
   useCallback(
-    async (data) => {
+    async (data: any) => {
       try {
         const values = await validationSchema.validate(data, {
           abortEarly: false,

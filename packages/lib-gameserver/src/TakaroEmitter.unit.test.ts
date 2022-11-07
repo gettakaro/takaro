@@ -100,6 +100,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
+        // @ts-expect-error - testing validation
         unknownProperty: 'this should trip validation',
       })
     );

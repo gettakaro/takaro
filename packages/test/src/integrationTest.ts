@@ -12,6 +12,9 @@ import {
   RoleCreateInputDTOCapabilitiesEnum,
 } from '@takaro/apiclient';
 
+/**
+ * blabla doesthisshowupanywhere
+ */
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;

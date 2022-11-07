@@ -4,6 +4,7 @@ import {
 } from '../knex';
 import { QueryBuilder, SortDirection } from '../queryBuilder';
 import { expect } from '@takaro/test';
+import { TakaroDTO } from '@takaro/util';
 import { TakaroModel } from '../TakaroModel';
 import { Model } from 'objection';
 
@@ -43,6 +44,10 @@ class TestUserModel extends TakaroModel {
   };
 }
 
+class TestUserDTO extends TakaroDTO<TestUserDTO> {
+  name: string;
+}
+
 describe('QueryBuilder', () => {
   beforeEach(async () => {
     const knex = await NOT_DOMAIN_SCOPED_getKnex();
@@ -75,7 +80,7 @@ describe('QueryBuilder', () => {
     await TestUserModel.query().insert({ name: 'test2' });
     await TestUserModel.query().insert({ name: 'test3' });
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserDTO>({
       filters: { name: 'test2' },
     }).build(TestUserModel.query());
 
@@ -91,7 +96,7 @@ describe('QueryBuilder', () => {
       await TestUserModel.query().insert({ name: `test${number}` });
     }
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserDTO>({
       page: 2,
       limit: 10,
       sortBy: 'name',
@@ -108,7 +113,7 @@ describe('QueryBuilder', () => {
     await TestUserModel.query().insert({ name: 'test2' });
     await TestUserModel.query().insert({ name: 'test3' });
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserDTO>({
       sortBy: 'name',
       sortDirection: SortDirection.desc,
     }).build(TestUserModel.query());
@@ -122,7 +127,8 @@ describe('QueryBuilder', () => {
     await TestPostModel.query().insert({ title: 'test1', userId: user.id });
 
     const res = await new QueryBuilder<
-      TestPostModel & { author?: TestUserModel }
+      TestPostModel & { author?: TestUserModel },
+      TestUserDTO
     >({ extend: ['author'] }).build(TestPostModel.query());
 
     expect(res.results).to.have.lengthOf(1);

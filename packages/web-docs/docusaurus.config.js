@@ -32,6 +32,24 @@ async function createConfig() {
       locales: ['en'],
     },
 
+    plugins: [
+      [
+        'docusaurus-plugin-typedoc',
+
+        // Plugin / TypeDoc options
+        {
+          entryPoints: ['../..'],
+          entryPointStrategy: 'packages',
+          sidebar: {
+            categoryLabel: 'Packages API',
+            fullNames: true,
+          },
+          tsconfig: '../lib-config/tsconfig.json',
+          out: 'development/packages',
+        },
+      ],
+    ],
+
     presets: [
       [
         'classic',

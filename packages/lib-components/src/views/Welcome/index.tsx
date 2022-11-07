@@ -115,7 +115,7 @@ export const Welcome: FC = () => {
           <ContentWrapper>
             <ContentContainer>
               <Tile game="7 days to die"></Tile>
-              <Tile game="rust">Rust</Tile>
+              <Tile game="rust"></Tile>
             </ContentContainer>
           </ContentWrapper>
         </Grid>
