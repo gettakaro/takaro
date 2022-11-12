@@ -1,4 +1,7 @@
 /* eslint-disable quotes */
+/**
+ * Helper function to alter an enum value (eg add a new entry)
+ */
 export function formatAlterTableEnumSql(
   tableName: string,
   columnName: string,
