@@ -4,8 +4,8 @@ export type { ButtonProps } from './Button';
 export { Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
 
-export { Select } from './Select';
-export type { SelectProps } from './Select';
+export { Select, OptionGroup, Option } from './Select';
+export type { SelectProps, OptionProps, OptionGroupProps } from './Select';
 
 export { ToggleButtonGroup, ToggleButton } from './Toggle';
 export type { ToggleButtonGroupProps, ToggleButtonProps } from './Toggle';
