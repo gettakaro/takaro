@@ -45,7 +45,7 @@ export const GetStarted: FC<GetStartedProps> = ({
   title = 'Ready to dive in? ',
   title2 = 'Start using CSMM today.',
   description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
-  to
+  to,
 }) => {
   const navigate = useNavigate();
 
@@ -55,7 +55,12 @@ export const GetStarted: FC<GetStartedProps> = ({
         <h2>{title}</h2>
         <h2>{title2}</h2>
         <p>{description}</p>
-        <Button isWhite onClick={() => navigate(to)} size="huge" text="Get Started" />
+        <Button
+          onClick={() => navigate(to)}
+          size="huge"
+          text="Get Started"
+          variant="white"
+        />
       </Inner>
     </Container>
   );
