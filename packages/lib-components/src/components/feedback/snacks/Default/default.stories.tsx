@@ -1,8 +1,9 @@
-import { Meta, Story, StoryFn } from '@storybook/react';
+import * as React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { useSnackbar } from 'notistack';
 import { styled } from '../../../../styled';
-import { Button } from '../../..';
-import { FaChartArea as CustomIcon } from 'react-icons/fa';
+import { Button } from '../../../../components';
+import { DefaultSnackProps } from '.';
 
 const Wrapper = styled.div`
   display: flex;
@@ -15,80 +16,39 @@ export default {
   parameters: {
     docs: {
       inlineStories: false,
-    }
-  }
-} as Meta;
+    },
+  },
+  args: {
+    type: 'info',
+    title: 'Update available',
+    message: 'A new software version is available for download.',
+  },
+} as Meta<DefaultSnackProps>;
 
-export const Snacks: StoryFn = () => {
+export const Snacks: StoryFn<DefaultSnackProps> = (args) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const handleOnClick = () => {
+    enqueueSnackbar(args.message!, {
+      title: args.title,
+      type: args.type,
+      key: 'software-update',
+      button1: <Button text="Update" />,
+      button2: (
+        <Button
+          onClick={() => {
+            closeSnackbar('software-update');
+          }}
+          text="Not now"
+          variant="outline"
+        />
+      ),
+    });
+  };
 
   return (
     <Wrapper>
-      <button
-        onClick={() => {
-          enqueueSnackbar('A new software version is available for download.', {
-            key: 'software-update',
-            variant: 'default',
-            title: 'Update available',
-            button1: (
-              <Button
-                onClick={() => {
-                  /* dummy*/
-                }}
-                text="Update"
-              />
-            ),
-            button2: (
-              <Button
-                onClick={() => {
-                  closeSnackbar('software-update');
-                }}
-                text="Not now"
-                variant="outline"
-              />
-            )
-          });
-        }}
-      >
-        Info
-      </button>
-      <button
-        onClick={() => {
-          enqueueSnackbar('file was uploaded successfully', {
-            variant: 'default',
-            title: ' Upload successful',
-            button1: (
-              <Button
-                color="success"
-                onClick={() => {
-                  /* dummy*/
-                }}
-                text="Show report"
-                variant="outline"
-              />
-            )
-          });
-        }}
-      >
-        Success
-      </button>
-      <button
-        onClick={() => {
-          enqueueSnackbar('Warning message', { type: 'warning' });
-        }}
-      >
-        Warning
-      </button>
-      <button
-        onClick={() => {
-          enqueueSnackbar<'default'>('Error message with custom icon', {
-            type: 'error',
-            icon: <CustomIcon />
-          });
-        }}
-      >
-        Error
-      </button>
+      <Button onClick={handleOnClick} text="show snack" />
     </Wrapper>
   );
 };
