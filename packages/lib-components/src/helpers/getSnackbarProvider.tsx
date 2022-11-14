@@ -8,8 +8,8 @@ import {
   CookieConsentSnack,
 } from '../components/feedback/snacks';
 
-import { ButtonProps } from 'components';
-import { AlertVariants } from 'styled';
+import { ButtonProps } from '../components';
+import { AlertVariants } from '../styled';
 
 const snackbarOptions: Partial<SnackbarProviderProps> = {
   anchorOrigin: {
@@ -37,7 +37,7 @@ declare module 'notistack' {
   interface VariantOverrides {
     /* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
     default: {
-      title: string;
+      title?: string;
       button1?: ReactElement<ButtonProps>;
       button2?: ReactElement<ButtonProps>;
       type?: AlertVariants;
