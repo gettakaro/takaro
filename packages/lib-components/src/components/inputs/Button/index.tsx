@@ -1,20 +1,24 @@
-import { FC, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
+import {
+  cloneElement,
+  FC,
+  MouseEvent as ReactMouseEvent,
+  ReactElement,
+} from 'react';
 import { Spinner } from '../..';
-import { Container } from './style';
-import { Color, Size, Variant, AlertVariants } from '../../../styled/types';
+import { ButtonColor, Default, Outline, Clear, White } from './style';
+import { Size, Variant } from '../../../styled/types';
 
 export interface ButtonProps {
   disabled?: boolean;
-  onClick: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
+  onClick?: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
   isLoading?: boolean;
-  icon?: ReactNode;
+  icon?: ReactElement;
   className?: string;
   size?: Size;
   type?: 'submit' | 'reset' | 'button';
-  variant?: Variant;
-  color?: Color | AlertVariants | 'background';
+  variant?: Variant | 'white';
+  color?: ButtonColor;
   text: string;
-  isWhite?: boolean;
 
   /// When nesting forms a button can be linked to only fire the form with the given name.
   form?: string;
@@ -30,38 +34,60 @@ export const Button: FC<ButtonProps> = ({
   text,
   color = 'primary',
   disabled = false,
-  isWhite = false,
   variant = 'default',
-  onClick = null
+  onClick = () => {},
 }) => {
-  function content(): JSX.Element {
-    return (
-      <>
-        {isLoading ? (
-          <Spinner color={variant === 'outline' ? color : 'white'} size="small" />
-        ) : (
-          icon
-        )}
-        <span>{text}</span>
-      </>
-    );
+  function getIcon(): JSX.Element {
+    if (isLoading)
+      return (
+        <Spinner color={variant === 'default' ? 'white' : color} size="small" />
+      );
+
+    if (icon) return cloneElement(icon, { size: 20 });
+
+    return <></>;
   }
 
-  return (
-    <Container
-      className={className}
-      color={color}
-      disabled={disabled}
-      form={form}
-      icon={!!icon}
-      isLoading={isLoading}
-      onClick={disabled || isLoading || !onClick ? undefined : onClick}
-      outline={variant === 'outline'}
-      size={size}
-      type={type}
-      white={isWhite}
-    >
-      {content()}
-    </Container>
-  );
+  function getVariant(): JSX.Element {
+    const props = {
+      className: className,
+      color: color,
+      disabled: disabled,
+      form: form,
+      icon: !!icon,
+      isLoading: isLoading,
+      onClick: !disabled || !isLoading ? onClick : undefined,
+      size: size,
+      [type]: type,
+    };
+
+    switch (variant) {
+      case 'default':
+        return (
+          <Default {...props}>
+            {getIcon()} <span>{text}</span>
+          </Default>
+        );
+      case 'outline':
+        return (
+          <Outline {...props}>
+            {getIcon()} <span>{text}</span>{' '}
+          </Outline>
+        );
+      case 'clear':
+        return (
+          <Clear {...props}>
+            {getIcon()} <span>{text}</span>
+          </Clear>
+        );
+      case 'white':
+        return (
+          <White {...props}>
+            {getIcon()} <span>{text}</span>
+          </White>
+        );
+    }
+  }
+
+  return getVariant();
 };

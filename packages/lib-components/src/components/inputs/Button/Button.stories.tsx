@@ -4,8 +4,9 @@ import { Button, ButtonProps } from '.';
 import { AiFillCloud as Icon } from 'react-icons/ai';
 
 const Wrapper = styled.div`
+  width: 100%;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: repeat(4, auto);
   grid-gap: 2rem;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
@@ -30,21 +31,20 @@ export default {
     disabled: false,
     isLoading: false,
     color: 'primary',
-    isWhite: false,
-    onClick: undefined
-  }
+    onClick: undefined,
+  },
 } as Meta<ButtonProps>;
 
 export const Default: StoryFn<ButtonProps> = (args) => <Button {...args} />;
 
 export const Examples = () => (
-  <div>
+  <>
+    {/* Default */}
     <Button
-      isWhite
       onClick={() => {
         /* */
       }}
-      text="White Button"
+      text="Default Button"
     />
     <Button
       icon={<Icon size={20} />}
@@ -67,6 +67,7 @@ export const Examples = () => (
       }}
       text="Loading Button"
     />
+
     {/* Outline */}
     <Button
       onClick={() => {
@@ -99,6 +100,71 @@ export const Examples = () => (
       text="Loading Button"
       variant="outline"
     />
-  </div>
-);
 
+    {/* Clear */}
+    <Button
+      onClick={() => {
+        /* */
+      }}
+      text="Clear Button"
+      variant="clear"
+    />
+    <Button
+      icon={<Icon size={20} />}
+      onClick={() => {
+        /* */
+      }}
+      text="Icon Button"
+      variant="clear"
+    />
+    <Button
+      disabled
+      onClick={() => {
+        /* */
+      }}
+      text="Disabled Button"
+      variant="clear"
+    />
+    <Button
+      isLoading
+      onClick={() => {
+        /* */
+      }}
+      text="Loading Button"
+      variant="clear"
+    />
+
+    {/* white */}
+    <Button
+      onClick={() => {
+        /* */
+      }}
+      text="White Button"
+      variant="white"
+    />
+    <Button
+      icon={<Icon size={20} />}
+      onClick={() => {
+        /* */
+      }}
+      text="Icon Button"
+      variant="white"
+    />
+    <Button
+      disabled
+      onClick={() => {
+        /* */
+      }}
+      text="Disabled Button"
+      variant="white"
+    />
+    <Button
+      isLoading
+      onClick={() => {
+        /* */
+      }}
+      text="Loading Button"
+      variant="white"
+    />
+  </>
+);
