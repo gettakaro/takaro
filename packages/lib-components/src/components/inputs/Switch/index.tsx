@@ -8,8 +8,9 @@ export interface SwitchProps {
   name: string;
   control: Control<any>;
   loading?: boolean;
+  readOnly?: boolean;
   defaultValue?: boolean;
-  disabled?: boolean;
+  label?: string;
 }
 
 export const Switch: FC<SwitchProps> = ({
@@ -19,7 +20,6 @@ export const Switch: FC<SwitchProps> = ({
   label,
   readOnly = false,
   defaultValue = false,
-  disabled = false,
 }) => {
   const [isChecked, setChecked] = useState(defaultValue);
   const { field } = useController({ name, control });
@@ -32,10 +32,20 @@ export const Switch: FC<SwitchProps> = ({
     field.onChange(isChecked);
   }, [isChecked]);
 
+  if (loading) {
+    return (
+      <Container>
+        {label && <div>{label}</div>}
+        <Skeleton variant="text" width="30px" height="15px" />
+      </Container>
+    );
+  }
+
   return (
-    <Container onClick={handleOnClick}>
-      <Label htmlFor={name}>
-        <Line disabled={disabled} isChecked={isChecked}>
+    <Container>
+      {label && <Label htmlFor={name}>{label}</Label>}
+      <ContentContainer onClick={handleOnClick}>
+        <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}
             readOnly={readOnly}
