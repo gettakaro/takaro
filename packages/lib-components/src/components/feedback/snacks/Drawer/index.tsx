@@ -1,7 +1,10 @@
 import { CustomContentProps, useSnackbar } from 'notistack';
-import { useState, forwardRef, ReactElement } from 'react';
+import { useState, forwardRef, PropsWithChildren } from 'react';
 import { styled } from '../../../../styled';
-import { AiOutlineClose as CloseIcon, AiOutlineDown as ArrowDownIcon } from 'react-icons/ai';
+import {
+  AiOutlineClose as CloseIcon,
+  AiOutlineDown as ArrowDownIcon,
+} from 'react-icons/ai';
 
 const Wrapper = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.default};
@@ -49,30 +52,27 @@ const Content = styled.div<{ expanded: boolean }>`
   border-radius: 10px;
 `;
 
-export interface DrawerSnackProps extends CustomContentProps {
-  children: ReactElement | ReactElement[]
-}
+export const DrawerSnack = forwardRef<
+  HTMLDivElement,
+  PropsWithChildren<CustomContentProps>
+>(({ id, message, children }, ref) => {
+  const { closeSnackbar } = useSnackbar();
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-export const DrawerSnack = forwardRef<HTMLDivElement, DrawerSnackProps>(
-  ({ id, message, children }, ref) => {
-    const { closeSnackbar } = useSnackbar();
-    const [expanded, setExpanded] = useState<boolean>(false);
+  const handleClose = () => {
+    closeSnackbar(id);
+  };
 
-    const handleClose = () => {
-      closeSnackbar(id);
-    };
-
-    return (
-      <Wrapper ref={ref}>
-        <Container expanded={expanded}>
-          <h5>{message}</h5>
-          <div>
-            <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
-            <CloseIcon onClick={handleClose} size={20} />
-          </div>
-        </Container>
-        <Content expanded={expanded}>{children}</Content>
-      </Wrapper>
-    );
-  }
-);
+  return (
+    <Wrapper ref={ref}>
+      <Container expanded={expanded}>
+        <h5>{message}</h5>
+        <div>
+          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
+          <CloseIcon onClick={handleClose} size={20} />
+        </div>
+      </Container>
+      <Content expanded={expanded}>{children}</Content>
+    </Wrapper>
+  );
+});

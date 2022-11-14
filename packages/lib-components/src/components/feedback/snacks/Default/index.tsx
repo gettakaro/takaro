@@ -1,4 +1,4 @@
-import { forwardRef, FC, ReactElement, cloneElement } from 'react';
+import { forwardRef, FC, ReactElement, cloneElement, useCallback } from 'react';
 import { CustomContentProps, useSnackbar } from 'notistack';
 import {
   AiOutlineClose as CloseIcon,
@@ -18,13 +18,15 @@ import {
 } from './style';
 import { useTheme } from '../../../../hooks';
 import { ButtonProps } from '../../../inputs';
+import { AlertVariants } from 'styled';
 
+/* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
 export interface DefaultSnackProps extends CustomContentProps {
   title: string;
   button1?: FC<ButtonProps>;
   button2?: FC<ButtonProps>;
-  type?: 'info' | 'warning' | 'error' | 'success';
-  icon: ReactElement;
+  type?: AlertVariants;
+  icon?: ReactElement;
 }
 
 export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
@@ -45,6 +47,10 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
       }
     };
 
+    const handleDismiss = useCallback(() => {
+      closeSnackbar(id);
+    }, [id, closeSnackbar]);
+
     return (
       <Wrapper ref={ref}>
         <ContentContainer>
@@ -64,7 +70,7 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
             </ButtonContainer>
           </TextContainer>
         </ContentContainer>
-        <CloseContainer onClick={() => closeSnackbar(id)}>
+        <CloseContainer onClick={handleDismiss}>
           <CloseIcon size={20} />
         </CloseContainer>
       </Wrapper>
