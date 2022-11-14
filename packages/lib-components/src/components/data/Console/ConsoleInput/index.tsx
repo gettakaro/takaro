@@ -31,7 +31,8 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
         setMessages((prev: Message[]) => [...prev, message]);
       } catch {
         enqueueSnackbar('Something went wrong while executing your command.', {
-          variant: 'error',
+          variant: 'default',
+          type: 'error',
         });
       }
     }
