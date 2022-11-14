@@ -1,21 +1,32 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { Select as SelectComponent, SelectProps } from '.';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { AiOutlineWallet as Wallet } from 'react-icons/ai';
+import { Button } from '../../../components';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { styled } from '../../../styled';
+import { Select, SelectProps, Option, OptionGroup } from './index';
+import { films } from './data';
 
 export default {
   title: 'Inputs/Select',
-  component: SelectComponent,
 } as Meta<SelectProps>;
 
-export const Select: StoryFn<SelectProps> = () => {
-  type FormFields = { carBrand: string };
+const OptionIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #1d1e20;
+  color: transparent;
+`;
+
+export const Default: StoryFn<SelectProps> = () => {
+  type FormFields = { film: string };
   const [result, setResult] = useState<string>('none');
   const { control, handleSubmit } = useForm<FormFields>();
 
-  const submit: SubmitHandler<FormFields> = ({ carBrand }) => {
-    setResult(carBrand);
+  const submit: SubmitHandler<FormFields> = ({ film }) => {
+    console.log(film);
+    setResult(film);
   };
 
   return (
@@ -23,19 +34,35 @@ export const Select: StoryFn<SelectProps> = () => {
       <form onSubmit={handleSubmit(submit)}>
         <Select
           control={control}
-          icon={<Wallet />}
-          label=""
-          name="carBrand"
-          options={[
-            { label: 'Part Time', value: 'partTime' },
-            { label: 'Full Time', value: 'fullTime' },
-            { label: 'Casual', value: 'casual' }
-          ]}
-          placeholder="Select your car brand"
+          name="film"
+          render={(selectedIndex) => (
+            <div>
+              {films[selectedIndex] ? (
+                <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
+              ) : null}
+              {films[selectedIndex]?.name ?? 'Select...'}{' '}
+            </div>
+          )}
+        >
+          <OptionGroup label="films">
+            {films.map(({ name }) => (
+              <Option key={name} value={name}>
+                <div>
+                  <span>{name}</span>
+                </div>
+              </Option>
+            ))}
+          </OptionGroup>
+        </Select>
+        <Button
+          type="submit"
+          onClick={() => {
+            /* placeholder */
+          }}
+          text="Submit"
         />
-        <button type="submit">submit form</button>
       </form>
-      <p>result: {result}</p>
+      <span>result: {result}</span>
     </>
   );
 };

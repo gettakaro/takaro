@@ -1,10 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
-import { Container, Dot, Line, Label } from './style';
+import { Skeleton } from '../../../components';
+import { Container, Dot, Line, Label, ContentContainer } from './style';
 import { useController, Control } from 'react-hook-form';
+
 export interface SwitchProps {
   name: string;
   control: Control<any>;
+  loading?: boolean;
   defaultValue?: boolean;
   disabled?: boolean;
 }
@@ -12,6 +15,9 @@ export interface SwitchProps {
 export const Switch: FC<SwitchProps> = ({
   name,
   control,
+  loading = false,
+  label,
+  readOnly = false,
   defaultValue = false,
   disabled = false,
 }) => {
@@ -32,13 +38,13 @@ export const Switch: FC<SwitchProps> = ({
         <Line disabled={disabled} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}
-            disabled={disabled}
+            readOnly={readOnly}
             isChecked={isChecked}
             layout
             transition={getTransition()}
           />
         </Line>
-      </Label>
+      </ContentContainer>
     </Container>
   );
 };
