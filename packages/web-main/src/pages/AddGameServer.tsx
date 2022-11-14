@@ -13,11 +13,7 @@ import {
   Loading,
 } from '@takaro/lib-components';
 import * as yup from 'yup';
-import {
-  AiFillPlusCircle,
-  AiFillControl,
-  AiFillQuestionCircle,
-} from 'react-icons/ai';
+import { AiFillPlusCircle, AiFillQuestionCircle } from 'react-icons/ai';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTOAPI,
