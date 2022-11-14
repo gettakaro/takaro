@@ -22,11 +22,10 @@ export default {
     defaultValue: false,
     readOnly: false,
     label: 'this is the label',
-  }
+  },
 } as Meta<CheckboxProps>;
 
 export const Default: StoryFn<CheckboxProps> = (args) => {
   const { control } = useForm();
   return <Checkbox {...args} control={control} />;
 };
-

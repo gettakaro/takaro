@@ -16,15 +16,15 @@ const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
     ${({ size }) => {
       switch (size) {
         case 'tiny':
-          return 'height: 3px;';
+          return 'height: .3rem;';
         case 'small':
-          return 'height: 4px;';
+          return 'height: .4rem;';
         case 'medium':
-          return 'height: 5px;';
+          return 'height: .5rem;';
         case 'large':
-          return 'height: 6px;';
+          return 'height: .6rem;';
         case 'huge':
-          return 'height: 9px;';
+          return 'height: .9rem;';
       }
     }}
   }
@@ -45,38 +45,38 @@ const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
       background-color: ${({ theme }) => theme.colors.white};
     }
 
-    ${({ size, theme }) => {
+    ${({ size }) => {
       switch (size) {
         case 'tiny':
           return `
-            width: 12px;
-            height : 12px;
-            margin-top: -4px;
+            width: 1.2rem;
+            height : 1.2rem;
+            margin-top: -0.4rem;
           `;
         case 'small':
           return `
-            width: 14px;
-            height : 14px;
-            margin-top: -5px;
+            width: 1.4rem;
+            height : 1.4rem;
+            margin-top: -0.5rem;
           `;
         case 'medium':
           return `
-            width: 20px;
-            height: 20px;
-            margin-top: -8px;
+            width: 2rem;
+            height: 2rem;
+            margin-top: -.8rem;
           `;
         case 'large':
           return `
-            width: 28px;
-            height: 28px;
-            margin-top: -12px;
+            width: 2.8rem;
+            height: 2.8rem;
+            margin-top: -1.2rem;
           `;
         case 'huge':
           return `
-            width: 28px;
-            height: 28px;
-            margin-left: 1px;
-            margin-top: -10px;
+            width: 2.8rem;
+            height: 2.8rem;
+            margin-left: .1rem;
+            margin-top: -1rem;
           `;
       }
     }}
@@ -91,33 +91,33 @@ const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
       switch (size) {
         case 'tiny':
           return `
-            width: 6px;
-            height : 6px;
-            top: -1px;
+            width: 0.6rem;
+            height : 0.6rem;
+            top: -0.1rem;
           `;
         case 'small':
           return `
-            width: 8px;
-            height : 8px;
-            top: -2px;
+            width: 0.8rem;
+            height : 0.8rem;
+            top: -.2rem;
           `;
         case 'medium':
           return `
-            width: 11px;
-            height: 11px;
-            top: -3px;
+            width: 1.1rem;
+            height: 1.1rem;
+            top: -0.3rem;
           `;
         case 'large':
           return `
-            width: 15px;
-            height: 15px;
-            top: -4px;
+            width: 1.5rem;
+            height: 1.5rem;
+            top: -0.4rem;
           `;
         case 'huge':
           return `
-            width: 18px;
-            height: 18px;
-            top: -5px;
+            width: 1.8rem;
+            height: 1.8rem;
+            top: -0.5rem;
           `;
       }
     }}
@@ -148,7 +148,6 @@ export interface SliderProps {
   marks?: Mark[];
   step?: number;
   showDots: boolean;
-  onChange?: (val: number) => void;
   size?: Size;
 }
 
@@ -164,17 +163,13 @@ export const SliderComponent: FC<SliderProps> = ({
   showDots,
   defaultValue = max / 2,
   readOnly = false,
-  onChange,
   size = 'medium',
-  label, // todo: implement label
-  marks = []
+  // label, // todo: implement label
+  marks = [],
 }) => {
   const { field: slider } = useController({ name, control, defaultValue });
 
   const handleChange = (value: number) => {
-    if (typeof onChange === 'function') {
-      onChange(value);
-    }
     slider.onChange(value);
   };
 

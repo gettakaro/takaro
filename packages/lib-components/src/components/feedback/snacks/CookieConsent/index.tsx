@@ -6,10 +6,10 @@ import {
   CookieTypeContainer,
   NecessaryCookieContainer,
   Wrapper,
-  ActionContainer
+  ActionContainer,
 } from './style';
 import { Button, Switch } from '../../..';
-import { Control, SubmitHandler, useForm } from 'react-hook-form';
+import { Control, SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useValidationSchema } from '../../../../hooks';
 import { AiOutlineDown as Arrow } from 'react-icons/ai';
 import { FaCookieBite as CookieBite } from 'react-icons/fa';
@@ -20,7 +20,10 @@ type FormInputs = {
   analytical: boolean;
 };
 
-export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>(({ id }, ref) => {
+export const CookieConsentSnack = forwardRef<
+  HTMLDivElement,
+  CustomContentProps
+>(({ id }, ref) => {
   const { closeSnackbar } = useSnackbar();
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
@@ -28,12 +31,12 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
     () =>
       yup.object({
         functional: yup.boolean().required(),
-        analytical: yup.boolean().required()
+        analytical: yup.boolean().required(),
       }),
     []
   );
 
-  const onSubmit: SubmitHandler<FormInputs> = async ({ analytical, functional }) => {
+  const onSubmit: SubmitHandler<FormInputs> = async () => {
     // TODO: send data to backend
     //const response = await fetch('', { method: 'POST', body: JSON.stringify({ analytical, functional }) });
     closeSnackbar(id);
@@ -41,8 +44,11 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
 
   const { control, handleSubmit } = useForm<FormInputs>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema)
+    resolver: useValidationSchema(validationSchema),
   });
+
+  const functionalValue = useWatch({ control, name: 'functional' });
+  const analyticalValue = useWatch({ control, name: 'analytical' });
 
   return (
     <Wrapper ref={ref}>
@@ -50,8 +56,8 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
         Cookies <CookieBite size={24} />
       </h2>
       <p>
-        I know, I know, its annoying. But we need to get through this! We only use cookies to
-        guarantee you the best experience on our website.
+        I know, I know, its annoying. But we need to get through this! We only
+        use cookies to guarantee you the best experience on our website.
       </p>
 
       <ActionContainer
@@ -71,12 +77,14 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
           <CookieType
             control={control}
             description="We will remember the basics such as language."
-            type="functional"
+            cookieType="functional"
+            value={functionalValue}
           />
           <CookieType
             control={control}
             description="We will know where we should improve your experience."
-            type="analytical"
+            cookieType="analytical"
+            value={analyticalValue}
           />
         </form>
       </Container>
@@ -114,27 +122,25 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
 });
 
 interface CookieTypeProps {
-  type: string;
+  cookieType: string;
   description: string;
   control: Control<FormInputs>;
+  value: boolean;
 }
 
-const CookieType: FC<CookieTypeProps> = ({ type, description, control }) => {
-  const defaultActive = true;
-  const [active, setActive] = useState<boolean>(defaultActive);
-
+const CookieType: FC<CookieTypeProps> = ({
+  cookieType,
+  description,
+  control,
+  value,
+}) => {
   return (
-    <CookieTypeContainer active={active}>
+    <CookieTypeContainer active={value}>
       <div>
-        <h4>{type} cookies</h4>
+        <h4>{cookieType} cookies</h4>
         <p>{description}</p>
       </div>
-      <Switch
-        control={control as Control<any, any>}
-        defaultValue={defaultActive}
-        name={type}
-        onChange={(isChecked) => setActive(isChecked)}
-      />
+      <Switch control={control} name={cookieType} />
     </CookieTypeContainer>
   );
 };
