@@ -86,7 +86,7 @@ const GameServers: FC = () => {
               await client.gameserver.gameServerControllerRemove(row.value);
               refetch();
               enqueueSnackbar('The server was deleted', {
-                variant: 'success',
+                type: 'success',
               });
             }}
           />
