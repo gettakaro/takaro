@@ -1,63 +1,26 @@
 import { styled } from '../../../styled';
-import { Color, AlertVariants, Size } from '../../../styled/types';
+import { Color, Size, AlertVariants } from '../../../styled/types';
 
-export const Container = styled.button<{
+export type ButtonColor = Color | AlertVariants | 'background';
+
+export const Default = styled.button<{
   size: Size;
-  white: boolean;
+  color: ButtonColor;
   icon: boolean;
   isLoading: boolean;
-  color: Color | AlertVariants | 'background';
-  outline: boolean;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
   border-radius: 0.5rem;
-
-  background: ${({ theme, outline, white, color }): string => {
-    if (outline) return 'transparent;';
-    else if (white) return 'white;';
-    else return `${theme.colors[color]};`;
-  }};
   background-size: 200% auto;
-  border: 2px solid
-    ${({ theme, outline, white, color }) => {
-      if (white) return 'white;';
-      else if (outline) return `${theme.colors[color]};`;
-      else return 'none;';
-    }};
-  cursor: pointer;
-  line-height: 19px;
+  cursor: ${({ isLoading }) => (isLoading ? 'default' : 'pointer')};
+  line-height: 1.9rem;
   letter-spacing: 0;
-  box-shadow: ${({ white, theme }): string =>
-    white ? 'none' : theme.shadows.default};
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  span {
-    margin-left: ${({ icon, isLoading }): string =>
-      icon || isLoading ? '10px' : '0px'};
-    color: ${({ color, theme, outline, white }) =>
-      outline
-        ? white
-          ? 'white'
-          : theme.colors[color]
-        : white
-        ? 'black'
-        : 'white'};
-    font-size: 1.25rem;
-    font-weight: 600;
-    &:hover {
-      color: ${({ color, outline, theme, white }): string =>
-        white
-          ? outline
-            ? 'white'
-            : theme.colors[color]
-          : outline
-          ? theme.colors[color]
-          : 'white'};
-    }
-  }
+  box-shadow: ${({ theme }) => theme.shadows.default};
+  background: ${({ theme, color }) => theme.colors[color]};
 
   &:focus {
     outline: 0;
@@ -65,65 +28,177 @@ export const Container = styled.button<{
   &:hover {
     background-position: right center;
   }
+
+  span {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    margin-left: ${({ icon, isLoading }): string =>
+      icon || isLoading ? '10px' : '0px'};
+  }
+
   &:disabled {
     cursor: default;
-    background: ${({ theme, outline }) =>
-      outline ? 'transparent' : theme.colors.gray};
-    border-color: ${({ theme, outline }) =>
-      outline ? theme.colors.gray : 'transparent'};
-    color: ${({ theme, outline }) => (outline ? theme.colors.gray : 'white')};
-
-    span {
-      color: ${({ theme, outline }) => (outline ? theme.colors.gray : 'white')};
-    }
-    &:hover {
-      span {
-        color: ${({ theme, outline }): string =>
-          outline ? theme.colors.gray : 'white'};
-      }
-    }
+    background: ${({ theme }) => theme.colors.gray};
+    border-color: white;
   }
 
   svg {
     display: ${({ icon, isLoading }): string =>
       icon || isLoading ? 'block' : 'none'};
     cursor: pointer;
-    fill: ${({ color, theme, outline, white }): string =>
-      outline ? theme.colors[color] : white ? theme.colors[color] : 'white'};
-    stroke: ${({ color, theme, outline, white }): string =>
-      outline
-        ? white
-          ? 'white'
-          : theme.colors[color]
-        : white
-        ? theme.colors[color]
-        : 'white'};
+    fill: white;
+    stroke: white;
   }
 
   ${({ size }) => {
     switch (size) {
       case 'tiny':
         return `
-          padding: 4px 8px;
+          padding: 0.4rem 0.8rem;
         `;
       case 'small':
         return `
-          padding: 6px 15px;
+          padding: .6rem 1.5rem;
         `;
       case 'medium':
         return `
-          padding: 11px 18px;
+          padding: 1.1rem 1.8rem;
         `;
       case 'large':
         return `
-          padding: 14px 22px;
+          padding: 1.4rem 2.2rem;
         `;
       case 'huge':
         return `
           span {
             font-size: 105%;
           }
-          padding: 16px 24px;
+          padding: 1.6rem 2.4rem;
+        `;
+    }
+  }}
+`;
+
+export const Outline = styled(Default)<{ color: ButtonColor }>`
+  background: transparent;
+  border: 0.2rem solid ${({ theme, color }): string => theme.colors[color]};
+  span {
+    color: ${({ theme, color }): string => theme.colors[color]};
+  }
+  &:disabled {
+    background: none;
+    border-color: ${({ theme }): string => theme.colors.gray};
+    span {
+      color: ${({ theme }): string => theme.colors.gray};
+    }
+    svg {
+      fill: ${({ theme }): string => theme.colors.gray};
+      stroke: ${({ theme }): string => theme.colors.gray};
+    }
+  }
+
+  svg {
+    fill: ${({ theme, color }): string => theme.colors[color]};
+    stroke: ${({ theme, color }): string => theme.colors[color]};
+  }
+
+  ${({ size }) => {
+    switch (size) {
+      case 'tiny':
+        return `
+          padding: 0.2rem 0.6rem;
+        `;
+      case 'small':
+        return `
+          padding: .4rem 1.3rem;
+        `;
+      case 'medium':
+        return `
+          padding: 0.9rem 1.6rem;
+        `;
+      case 'large':
+        return `
+          padding: 1.2rem 2rem;
+        `;
+      case 'huge':
+        return `
+          span {
+            font-size: 105%;
+          }
+          padding: 1.4rem 2.2rem;
+        `;
+    }
+  }}
+`;
+
+export const Clear = styled(Outline)`
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  span {
+    color: ${({ theme, color }): string => theme.colors[color]};
+  }
+
+  ${({ size }) => {
+    switch (size) {
+      case 'tiny':
+        return `
+          padding: 0.4rem 0.8rem;
+        `;
+      case 'small':
+        return `
+          padding: .6rem 1.5rem;
+        `;
+      case 'medium':
+        return `
+          padding: 1.1rem 1.8rem;
+        `;
+      case 'large':
+        return `
+          padding: 1.4rem 2.2rem;
+        `;
+      case 'huge':
+        return `
+          span {
+            font-size: 105%;
+          }
+          padding: 1.6rem 2.4rem;
+        `;
+    }
+  }}
+`;
+
+export const White = styled(Clear)`
+  background: ${({ theme }): string => theme.colors.white};
+  &:disabled {
+    background-color: white;
+  }
+
+  ${({ size }) => {
+    switch (size) {
+      case 'tiny':
+        return `
+          padding: 0.4rem 0.8rem;
+        `;
+      case 'small':
+        return `
+          padding: .6rem 1.5rem;
+        `;
+      case 'medium':
+        return `
+          padding: 1.1rem 1.8rem;
+        `;
+      case 'large':
+        return `
+          padding: 1.4rem 2.2rem;
+        `;
+      case 'huge':
+        return `
+          span {
+            font-size: 105%;
+          }
+          padding: 1.6rem 2.4rem;
         `;
     }
   }}
