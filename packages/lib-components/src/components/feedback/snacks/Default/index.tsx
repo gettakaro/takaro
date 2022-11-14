@@ -17,12 +17,12 @@ import {
   ButtonContainer,
 } from './style';
 import { useTheme } from '../../../../hooks';
-import { ButtonProps } from '../../../inputs';
-import { AlertVariants } from 'styled';
+import { ButtonProps } from '../../../../components';
+import { AlertVariants } from '../../../../styled';
 
 /* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
 export interface DefaultSnackProps extends CustomContentProps {
-  title: string;
+  title?: string;
   button1?: FC<ButtonProps>;
   button2?: FC<ButtonProps>;
   type?: AlertVariants;
