@@ -5,14 +5,12 @@ import { Container, Dot, Line, Label, ContentContainer } from './style';
 import { useController, Control } from 'react-hook-form';
 
 export interface SwitchProps {
-  /* Unique name, required to toggle the switch */
   name: string;
   control: Control<any>;
   loading?: boolean;
-  defaultValue?: boolean;
   readOnly?: boolean;
+  defaultValue?: boolean;
   label?: string;
-  onChange?: (isChecked: boolean) => void;
 }
 
 export const Switch: FC<SwitchProps> = ({
@@ -22,23 +20,16 @@ export const Switch: FC<SwitchProps> = ({
   label,
   readOnly = false,
   defaultValue = false,
-  onChange,
 }) => {
-  const [isChecked, setChecked] = useState<boolean>(defaultValue);
-  const { field: sw } = useController({
-    name,
-    control,
-    defaultValue: defaultValue,
-  });
+  const [isChecked, setChecked] = useState(defaultValue);
+  const { field } = useController({ name, control });
 
-  function handleClick(): void {
-    if (readOnly) return;
-    setChecked((prev) => !prev);
-    if (typeof onChange === 'function') onChange(sw.value);
+  function handleOnClick(): void {
+    setChecked(!isChecked);
   }
 
   useEffect(() => {
-    sw.onChange(isChecked);
+    field.onChange(isChecked);
   }, [isChecked]);
 
   if (loading) {
@@ -52,18 +43,8 @@ export const Switch: FC<SwitchProps> = ({
 
   return (
     <Container>
-      {/* this is the input component itself, but cannot be styled properly. */}
-      <input
-        {...sw}
-        id={name}
-        name={name}
-        readOnly={readOnly}
-        checked={isChecked}
-        style={{ display: 'none' }}
-        type="checkbox"
-      ></input>
       {label && <Label htmlFor={name}>{label}</Label>}
-      <ContentContainer onClick={handleClick}>
+      <ContentContainer onClick={handleOnClick}>
         <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}

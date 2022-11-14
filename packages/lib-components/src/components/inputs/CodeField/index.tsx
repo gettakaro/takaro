@@ -1,5 +1,18 @@
-import React, { KeyboardEvent, FC, useRef, useEffect, ChangeEvent } from 'react';
-import { Container, InputContainer, Input, LoadingField, ErrorContainer, Error } from './style';
+import React, {
+  KeyboardEvent,
+  FC,
+  useRef,
+  useEffect,
+  ChangeEvent,
+} from 'react';
+import {
+  Container,
+  InputContainer,
+  Input,
+  LoadingField,
+  ErrorContainer,
+  Error,
+} from './style';
 import { Control, useController, FieldError } from 'react-hook-form';
 
 export interface CodeFieldProps {
@@ -21,9 +34,11 @@ export const CodeField: FC<CodeFieldProps> = ({
   form,
   autoSubmit,
   allowedCharacters = /[0-9]/,
-  control
+  control,
 }) => {
-  const { field: { ...inputProps } } = useController({ name, control });
+  const {
+    field: { ...inputProps },
+  } = useController({ name, control });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
@@ -46,7 +61,7 @@ export const CodeField: FC<CodeFieldProps> = ({
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {
-      target: { value, nextElementSibling }
+      target: { value, nextElementSibling },
     } = e;
 
     if (value.match(allowedCharacters)) {
@@ -97,7 +112,10 @@ export const CodeField: FC<CodeFieldProps> = ({
       <Container>
         <InputContainer fields={fields}>
           {Array.from(Array(fields).keys()).map((_, idx) => (
-            <LoadingField key={`loading-field-array-${idx}`} className="placeholder" />
+            <LoadingField
+              key={`loading-field-array-${idx}`}
+              className="placeholder"
+            />
           ))}
         </InputContainer>
       </Container>

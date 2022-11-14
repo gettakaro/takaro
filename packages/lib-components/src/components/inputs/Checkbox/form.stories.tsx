@@ -11,7 +11,7 @@ const ResultContainer = styled.div`
 
 export default {
   title: 'Inputs/Checkbox/Form',
-  component: Checkbox
+  component: Checkbox,
 } as Meta<CheckboxProps>;
 
 export const OnChange: StoryFn<CheckboxProps> = () => {
@@ -23,7 +23,12 @@ export const OnChange: StoryFn<CheckboxProps> = () => {
 
   return (
     <>
-      <Checkbox control={control} label="Do you have a car?" labelPosition="left" name="hasCar" />
+      <Checkbox
+        control={control}
+        label="Do you have a car?"
+        labelPosition="left"
+        name="hasCar"
+      />
       <ResultContainer>Result: {result ? 'true' : 'false'}</ResultContainer>
     </>
   );
@@ -44,7 +49,12 @@ export const OnSubmit: StoryFn<CheckboxProps> = () => {
   return (
     <>
       <form onSubmit={handleSubmit(submit)}>
-        <Checkbox control={control} label="Do you have a car?" labelPosition="left" name="hasCar" />
+        <Checkbox
+          control={control}
+          label="Do you have a car?"
+          labelPosition="left"
+          name="hasCar"
+        />
         <Button
           onClick={() => {
             /* placeholder */

@@ -1,25 +1,24 @@
 import { getTransition } from '../../../../helpers';
-import { FC, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { Control, useController } from 'react-hook-form';
-import { Container, RadioContainer, Inner, Label, Input } from './style';
+import { Container, RadioContainer, Inner, Label } from './style';
 
 export interface RadioProps {
   name: string;
   control: Control<any>;
   loading?: boolean;
   selected: boolean;
-  setSelected: any;
+  setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
   readOnly: boolean;
   label?: string;
   value: string;
   labelPosition: 'left' | 'right';
-  onChange?: (value: unknown) => void;
 }
 
 const variants = {
   selected: { scale: 1 },
-  deselected: { scale: 0 }
+  deselected: { scale: 0 },
 };
 
 export const Radio: FC<RadioProps> = ({
@@ -31,35 +30,24 @@ export const Radio: FC<RadioProps> = ({
   selected,
   setSelected,
   label = '',
-  defaultSelected = false,
   labelPosition,
-  onChange = undefined
 }) => {
   const onSelect = () => {
     if (readOnly) return;
-
     setSelected(value);
   };
 
   useEffect(() => {
     if (selected && !readOnly) {
-      inputProps.onChange(value);
+      field.onChange(value);
     }
   }, [selected]);
 
-  const {
-    field: { ref, ...inputProps }
-  } = useController({
+  const { field } = useController({
     name,
     control,
-    defaultValue: selected ? value : undefined
+    defaultValue: selected ?? value,
   });
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(value);
-    }
-  }, [selected]);
 
   /* todo: handle loading state */
   if (loading) {
@@ -87,20 +75,15 @@ export const Radio: FC<RadioProps> = ({
         />
       </RadioContainer>
       {labelPosition === 'right' && (
-        <Label htmlFor={name} isLeft={false} onClick={onSelect} readOnly={readOnly}>
+        <Label
+          htmlFor={name}
+          isLeft={false}
+          onClick={onSelect}
+          readOnly={readOnly}
+        >
           {label}
         </Label>
       )}
-      {/* Ignore, this is is just for the react-hook-form to handle forms */}
-      <Input
-        {...inputProps}
-        checked={selected}
-        id={name}
-        name={name}
-        ref={ref}
-        type="radio"
-        value={value}
-      />
     </Container>
   );
 };
