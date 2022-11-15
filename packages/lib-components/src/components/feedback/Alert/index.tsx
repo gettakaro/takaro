@@ -7,7 +7,7 @@ import {
   AiFillInfoCircle as Info,
 } from 'react-icons/ai';
 import { AnimatePresence } from 'framer-motion';
-import { Elevation } from 'styled';
+import { Elevation } from '../../../styled/';
 
 export type AlertVariants = 'success' | 'error' | 'warning' | 'info';
 

@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { Container, Item } from './style';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
-import { Elevation } from 'styled';
+import { Elevation } from '../../../styled/';
 
 export interface ActionMenuProps {
   attributes: {
