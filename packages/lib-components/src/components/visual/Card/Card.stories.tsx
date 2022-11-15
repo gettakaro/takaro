@@ -78,17 +78,17 @@ export const Example = () => (
           </p>
           <ButtonContainer>
             <Button
-              isWhite
               onClick={() => {
                 /* */
               }}
               text="Drink Fat Milk"
+              variant="white"
             />
             <Button
-              isWhite
               onClick={() => {
                 /* */
               }}
+              color="white"
               text="Drink Low Fat Milk"
               variant="outline"
             />

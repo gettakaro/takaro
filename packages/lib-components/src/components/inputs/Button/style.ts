@@ -1,7 +1,7 @@
 import { styled } from '../../../styled';
 import { Color, Size, AlertVariants } from '../../../styled/types';
 
-export type ButtonColor = Color | AlertVariants | 'background';
+export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
 export const Default = styled.button<{
   size: Size;
@@ -31,7 +31,8 @@ export const Default = styled.button<{
   span {
     font-size: 1.25rem;
     font-weight: 600;
-    color: white;
+    color: ${({ theme, color }) =>
+      color === 'white' ? theme.colors.primary : 'white'};
     margin-left: ${({ icon, isLoading }): string =>
       icon || isLoading ? '10px' : '0px'};
   }
