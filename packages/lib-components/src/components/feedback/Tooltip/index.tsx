@@ -1,5 +1,5 @@
 import { FC, cloneElement, useState, useMemo } from 'react';
-import { styled } from '../../../styled';
+import { Elevation, styled } from '../../../styled';
 import {
   Placement,
   offset,
@@ -22,11 +22,13 @@ export interface TooltipProps {
   label: string;
   placement?: Placement;
   children: JSX.Element;
+  elevation?: Elevation;
 }
 
-const Container = styled(motion.div)`
+const Container = styled(motion.div)<{ elevation: Elevation }>`
   background: #222;
   color: white;
+  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
   border-radius: 0.6rem;
   padding: 0.4rem 0.6rem;
@@ -39,6 +41,7 @@ export const Tooltip: FC<TooltipProps> = ({
   children,
   label,
   placement = 'top',
+  elevation = 1,
 }) => {
   const { delay, setCurrentId } = useDelayGroupContext();
   const [open, setOpen] = useState(false);
@@ -77,6 +80,7 @@ export const Tooltip: FC<TooltipProps> = ({
       <AnimatePresence>
         {open && (
           <Container
+            elevation={elevation}
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}

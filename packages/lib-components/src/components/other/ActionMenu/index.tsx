@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { Container, Item } from './style';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
+import { Elevation } from 'styled';
 
 export interface ActionMenuProps {
   attributes: {
@@ -18,14 +19,16 @@ export interface ActionMenuProps {
   };
   selectedState: [number, Dispatch<SetStateAction<number>>];
   children: ReactElement | ReactElement[];
+  elevation?: Elevation;
 }
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
-  ({ attributes, children, selectedState }, ref) => {
+  ({ attributes, children, selectedState, elevation = 4 }, ref) => {
     const [selected, setSelected] = selectedState;
 
     return (
       <Container
+        elevation={elevation}
         style={{
           position: attributes.strategy,
           top: attributes.y ? attributes.y + 5 : 0,

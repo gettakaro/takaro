@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
   padding: 1.5rem;
   max-width: 450px;
   border-radius: 1rem;
-  box-shadow: ${({ theme }) => theme.shadows.default};
+  box-shadow: ${({ theme }) => theme.elevation[4]};
 
   & > p {
     margin-top: 1rem;
