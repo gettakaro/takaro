@@ -1,26 +1,11 @@
 import { FC } from 'react';
-import { Size, styled } from '../../../styled';
+import { styled } from '../../../styled';
 
-const Container = styled.div<{ spacing: Size }>`
+const Container = styled.div`
   position: relative;
   display: flex;
   align-items: center;
   width: 70%;
-
-  ${({ spacing }) => {
-    switch (spacing) {
-      case 'tiny':
-        return 'margin: .25rem auto .25rem auto';
-      case 'small':
-        return 'margin: .5rem auto .5rem auto';
-      case 'medium':
-        return 'margin: 1rem auto 1rem auto';
-      case 'large':
-        return 'margin: 2.225rem auto 2.225rem auto';
-      case 'huge':
-        return 'margin: 6rem auto 6rem auto';
-    }
-  }}
 `;
 const Label = styled.label<{ position: 'left' | 'center' | 'right' }>`
   position: absolute;
@@ -32,7 +17,7 @@ const Label = styled.label<{ position: 'left' | 'center' | 'right' }>`
     color: gray;
     background-color: white;
     font-size: 1.325rem;
-    padding: 0 0.5rem;
+    padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   }
 
   ${({ position }) => {
@@ -66,12 +51,12 @@ type LabelProps = {
 
 export interface DividerProps {
   label?: LabelProps;
-  spacing?: Size;
+  /* TODO: reimplement sizing (this might go automatically with different density options. */
 }
 
-export const Divider: FC<DividerProps> = ({ label, spacing = 'medium' }) => {
+export const Divider: FC<DividerProps> = ({ label }) => {
   return (
-    <Container spacing={spacing}>
+    <Container>
       <Line />
       {label && (
         <Label position={label.labelPosition}>

@@ -4,22 +4,22 @@ import { Elevation, Size, styled } from '../../../styled';
 const Container = styled.div<{ size: Size; elevation: Elevation }>`
   background-color: white;
   border-radius: 0.6rem;
-  margin: 1rem 0;
+  margin: ${({ theme }) => `${theme.spacing[1]} 0`};
   box-shadow: ${({ theme, elevation }): string => theme.elevation[elevation]};
   color: ${({ theme }) => theme.colors.text};
 
-  ${({ size }) => {
+  ${({ theme, size }) => {
     switch (size) {
       case 'tiny':
-        return 'padding: 0.225rem';
+        return `padding: ${theme.spacing['0_25']}`;
       case 'small':
-        return 'padding: 0.5rem';
+        return `padding: ${theme.spacing['0_5']}`;
       case 'medium':
-        return '1.5rem';
+        return `padding: ${theme.spacing['1_5']}`;
       case 'large':
-        return '2.5rem';
+        return `padding: ${theme.spacing['2_5']}`;
       case 'huge':
-        return '4rem';
+        return `padding: ${theme.spacing[5]}`;
     }
   }};
 

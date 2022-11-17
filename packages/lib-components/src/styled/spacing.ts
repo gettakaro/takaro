@@ -17,7 +17,7 @@ export type Spacing =
   | '9'
   | '10';
 
-export const Spacing: Record<Spacing, string> = {
+export const spacing: Record<Spacing, string> = {
   '0': '0rem',
   '0_1': '0.1rem',
   '0_25': '0.2rem',

@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useState } from 'react';
 import { styled } from '../../../styled';
 import { IoMdArrowDropright as ArrowRightIcon } from 'react-icons/io';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTheme } from '../../../hooks';
 
 // this needs a waaaay better name
 export const CollapseList: FC<PropsWithChildren> & {
@@ -20,8 +21,8 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.background};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  border-bottom: 0.1rem solid ${({ theme }) => theme.colors.background};
   svg {
     transform: ${({ isCollapsed }) =>
       isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)'};
@@ -38,6 +39,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
   children,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
+  const theme = useTheme();
 
   return (
     <div>
@@ -58,7 +60,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
             initial="collapsed"
             animate="open"
             exit="collapsed"
-            style={{ padding: '1rem', overflowX: 'hidden' }}
+            style={{ padding: theme.spacing[1], overflowX: 'hidden' }}
           >
             <motion.div
               variants={{
@@ -66,7 +68,10 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
                 collapsed: { y: -6 },
               }}
               transition={{ duration: 0.125 }}
-              style={{ transformOrigin: 'top center', padding: '1rem 0' }}
+              style={{
+                transformOrigin: 'top center',
+                padding: `${theme.spacing[1]} 0`,
+              }}
             >
               {children}
             </motion.div>

@@ -2,7 +2,7 @@ import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
 export const Container = styled.div`
-  margin: 1rem 0;
+  margin: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[0]}`};
   display: flex;
   align-items: center;
 `;
@@ -52,7 +52,8 @@ export const Inner = styled(motion.div)<{
 `;
 
 export const Label = styled.label<{ isLeft: boolean; readOnly: boolean }>`
-  margin: ${({ isLeft }) => (isLeft ? '0 1rem 0 0' : '0 0 0 1rem')};
+  margin: ${({ isLeft, theme }) =>
+    isLeft ? `0 ${theme.spacing[1]} 0 0` : `0 0 0 ${theme.spacing[1]}`};
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
 `;
 

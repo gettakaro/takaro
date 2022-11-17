@@ -6,12 +6,14 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 2.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 `;
 
 export const Label = styled.label<{ position: 'left' | 'right' }>`
-  margin: ${({ position }) =>
-    position === 'left' ? '0 2.5rem 0 0' : '0 0 0 2.5rem'};
+  margin: ${({ theme, position }) =>
+    position === 'left'
+      ? `0 ${theme.spacing['2_5']} 0 0`
+      : `0 0 0 ${theme.spacing['2_5']}`};
   cursor: pointer;
   font-size: 1.5rem;
   user-select: none;
@@ -24,11 +26,11 @@ export const Input = styled.input`
 
 export const BackgroundContainer = styled(motion.div)`
   position: absolute;
-  width: 23px;
-  height: 23px;
+  width: 2.3rem;
+  height: 2.3rem;
   background-color: ${({ theme }) => theme.colors.primary};
   z-index: 0;
-  border-radius: 6px;
+  border-radius: 0.6rem;
 `;
 
 export const CheckboxContainer = styled.div<{
@@ -37,11 +39,11 @@ export const CheckboxContainer = styled.div<{
 }>`
   display: flex;
   position: relative;
-  width: 23px;
-  height: 23px;
+  width: 2.3rem;
+  height: 2.3rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid
+  border: 0.1rem solid
     ${({ theme, readOnly, isChecked }): string =>
       readOnly
         ? theme.colors.lightGray
@@ -55,9 +57,9 @@ export const CheckboxContainer = styled.div<{
   overflow: visible;
   &.placeholder {
     border: none; /* Otherwise the border does not have the animation */
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
+    border-radius: 0.4rem;
+    width: 2.4rem;
+    height: 2.4rem;
     cursor: default;
   }
 `;
