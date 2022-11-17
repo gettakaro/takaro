@@ -1,4 +1,4 @@
-import { styled } from '../../../styled';
+import { Elevation, styled } from '../../../styled';
 import { AlertVariants } from '.';
 import { motion } from 'framer-motion';
 import { lighten, darken } from 'polished';
@@ -6,10 +6,12 @@ import { lighten, darken } from 'polished';
 export const Container = styled(motion.div)<{
   variant: AlertVariants;
   hasTitle: boolean;
+  elevation: Elevation;
 }>`
   width: 100%;
   padding: 1rem 1.2rem;
   border-radius: 1rem;
+  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   margin: 1.5rem auto 1.5rem auto;
   h2 {
     font-size: 1.825rem;

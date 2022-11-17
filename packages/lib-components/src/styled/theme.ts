@@ -1,4 +1,5 @@
 import baseStyled, { ThemedStyledInterface } from 'styled-components';
+import { elevation } from './elevation';
 
 export const theme = {
   colors: {
@@ -19,10 +20,7 @@ export const theme = {
     warning: '#f57c00',
     error: '#FF4252',
   },
-  shadows: {
-    default: 'rgb(0 0 0 / 5%) 0px 15px 30px 0px',
-  },
-
+  elevation,
   spacing: {
     small: '1rem',
     medium: '1.5rem',

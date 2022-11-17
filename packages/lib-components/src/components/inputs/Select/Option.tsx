@@ -19,7 +19,6 @@ const OptionContainer = styled.div<{ isSelected: boolean }>`
   &:focus {
     background-color: ${({ theme }) => theme.colors.primary};
     color: rgba(255, 255, 255, 0.9);
-    box-shadow: ${({ theme }) => theme.shadows.default};
     position: relative;
     z-index: 1;
   }
