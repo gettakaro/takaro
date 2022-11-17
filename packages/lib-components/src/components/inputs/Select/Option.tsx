@@ -4,10 +4,10 @@ import { SelectContext } from './context';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
 
 const OptionContainer = styled.div<{ isSelected: boolean }>`
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`}
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
-  border-radius: .4rem;
+  border-radius: 0.4rem;
   text-align: left;
   display: flex;
   align-items: center;

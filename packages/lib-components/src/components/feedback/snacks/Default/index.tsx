@@ -60,18 +60,27 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
               : getIcon()}
           </IconContainer>
           <TextContainer>
-            {title ? <h3>{title}</h3> : <h5>{message}</h5>}
-            {title && <h5>{message}</h5>}
-            <ButtonContainer>
+            {title ? (
               <>
-                {button1 && button1}
-                {button2 && button2}
+                <h3>{title}</h3>
+                <h5>{message}</h5>
               </>
-            </ButtonContainer>
+            ) : (
+              <h5>{message}</h5>
+            )}
+
+            {button1 && (
+              <ButtonContainer>
+                <>
+                  {button1}
+                  {button2 && button2}
+                </>
+              </ButtonContainer>
+            )}
           </TextContainer>
         </ContentContainer>
         <CloseContainer onClick={handleDismiss}>
-          <CloseIcon size={20} />
+          <CloseIcon size={18} />
         </CloseContainer>
       </Wrapper>
     );

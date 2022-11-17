@@ -12,8 +12,8 @@ export const Container = styled.div`
 export const Label = styled.label<{ position: 'left' | 'right' }>`
   margin: ${({ theme, position }) =>
     position === 'left'
-      ? `0 ${theme.spacing['2_5']} 0 0`
-      : `0 0 0 ${theme.spacing['2_5']}`};
+      ? `0 ${theme.spacing['1_5']} 0 0`
+      : `0 0 0 ${theme.spacing['1_5']}`};
   cursor: pointer;
   font-size: 1.5rem;
   user-select: none;

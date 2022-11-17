@@ -16,7 +16,7 @@ export const Label = styled.label`
   overflow: hidden;
   cursor: pointer;
   margin: ${({ theme }) =>
-    `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]}`};
+    `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[1]} ${theme.spacing[0]}`};
 `;
 
 export const ContentContainer = styled.div`

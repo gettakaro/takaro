@@ -35,12 +35,12 @@ export const Checkbox: FC<CheckboxProps> = ({
   name,
   loading = false,
 }) => {
-  const [isChecked, setChecked] = useState<boolean>(defaultValue);
   const { field: checkbox } = useController({
     name,
     control,
     defaultValue: defaultValue,
   });
+  const [isChecked, setChecked] = useState<boolean>(defaultValue);
 
   function onCheck(): void {
     if (readOnly) {

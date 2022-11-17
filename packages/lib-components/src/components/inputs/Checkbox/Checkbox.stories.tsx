@@ -22,6 +22,7 @@ export default {
     defaultValue: false,
     readOnly: false,
     label: 'this is the label',
+    labelPosition: 'left',
   },
 } as Meta<CheckboxProps>;
 

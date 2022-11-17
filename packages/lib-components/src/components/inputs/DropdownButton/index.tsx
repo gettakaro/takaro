@@ -81,6 +81,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   const { x, y, reference, floating, strategy } = useFloating();
 
   const parentRef = createRef<HTMLDivElement>();
+
   useOutsideAlerter(parentRef, () => {
     setVisible(false);
   });
@@ -89,10 +90,15 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
     setVisible(false);
   }, [selected]);
 
+  const handleSelectedActionClicked = () => {
+    setVisible(false);
+    children[selected].props.onClick();
+  };
+
   return (
     <Wrapper ref={parentRef}>
       <Container ref={reference}>
-        <CurrentAction onClick={() => children[selected].props.onClick}>
+        <CurrentAction onClick={handleSelectedActionClicked}>
           {children[selected].props.text}
         </CurrentAction>
         <DropdownActionContainer

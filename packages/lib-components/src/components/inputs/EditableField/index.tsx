@@ -22,7 +22,6 @@ export interface EditableFieldProps {
 const Container = styled.div`
   input {
     border: 1px solid ${({ theme }) => theme.colors.gray};
-    padding: ${({ theme }) => theme.spacing['0_5']};
   }
 `;
 
