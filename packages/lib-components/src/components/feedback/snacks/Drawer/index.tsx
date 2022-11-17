@@ -7,7 +7,7 @@ import {
 } from 'react-icons/ai';
 
 const Wrapper = styled.div`
-  box-shadow: ${({ theme }) => theme.shadows.default};
+  box-shadow: ${({ theme }) => theme.elevation[4]};
   border-radius: 10px;
   width: 300px;
 `;

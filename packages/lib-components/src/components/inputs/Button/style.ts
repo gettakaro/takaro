@@ -19,7 +19,6 @@ export const Default = styled.button<{
   line-height: 1.9rem;
   letter-spacing: 0;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: ${({ theme }) => theme.shadows.default};
   background: ${({ theme, color }) => theme.colors[color]};
 
   &:focus {

@@ -20,7 +20,7 @@ export const SnackBarStyles = css<{ theme: ThemeType }>`
 
   div.SnackbarContent-root {
     border: 1px solid ${({ theme }) => theme.colors.background};
-    box-shadow: ${({ theme }): string => theme.shadows.default}!important;
+    box-shadow: ${({ theme }): string => theme.elevation[4]}!important;
   }
 
   /* info */
@@ -37,6 +37,7 @@ export const SnackBarStyles = css<{ theme: ThemeType }>`
   }
   /* error */
   div.SnackbarItem-variantError {
-    background-color: ${({ theme }): string => theme.colors.background}!important;
+    background-color: ${({ theme }): string =>
+      theme.colors.background}!important;
   }
 `;

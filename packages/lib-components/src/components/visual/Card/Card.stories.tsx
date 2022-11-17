@@ -18,6 +18,7 @@ export default {
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
   args: {
     size: 'medium',
+    loading: false,
   },
 } as Meta<CardProps>;
 
@@ -66,7 +67,7 @@ const ImageContainer = styled.div`
 
 export const Example = () => (
   <Container>
-    <Card gradient size="large">
+    <Card elevation={3} size="large">
       <FlexContainer>
         <div>
           <h2>Drink milk, it is good for you!</h2>
