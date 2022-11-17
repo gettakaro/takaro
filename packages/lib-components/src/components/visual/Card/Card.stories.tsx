@@ -18,10 +18,13 @@ export default {
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
   args: {
     size: 'medium',
-  }
+    loading: false,
+  },
 } as Meta<CardProps>;
 
-export const Default: StoryFn<CardProps> = (args) => <Card {...args}>example card</Card>;
+export const Default: StoryFn<CardProps> = (args) => (
+  <Card {...args}>example card</Card>
+);
 
 const Container = styled.div`
   border-radius: 1rem;
@@ -64,27 +67,28 @@ const ImageContainer = styled.div`
 
 export const Example = () => (
   <Container>
-    <Card gradient size="large">
+    <Card elevation={3} size="large">
       <FlexContainer>
         <div>
           <h2>Drink milk, it is good for you!</h2>
           <p>
-            Reduced Fat and Low Fat Milk (also know as 2% or 1% milk) have the same amount of
-            calcium, protein, vitamins and minerals as whole milk, just less fat and fewer calories.
+            Reduced Fat and Low Fat Milk (also know as 2% or 1% milk) have the
+            same amount of calcium, protein, vitamins and minerals as whole
+            milk, just less fat and fewer calories.
           </p>
           <ButtonContainer>
             <Button
-              isWhite
               onClick={() => {
                 /* */
               }}
               text="Drink Fat Milk"
+              variant="white"
             />
             <Button
-              isWhite
               onClick={() => {
                 /* */
               }}
+              color="white"
               text="Drink Low Fat Milk"
               variant="outline"
             />

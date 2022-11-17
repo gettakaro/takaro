@@ -5,3 +5,5 @@ export { GlobalStyle } from './GlobalStyle';
 export * from './types';
 export { device } from './device';
 export * from './animations';
+
+export type { Elevation } from './elevation';

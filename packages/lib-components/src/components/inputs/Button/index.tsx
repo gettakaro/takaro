@@ -17,7 +17,7 @@ export interface ButtonProps {
   size?: Size;
   type?: 'submit' | 'reset' | 'button';
   variant?: Variant | 'white';
-  color?: ButtonColor;
+  color?: ButtonColor | 'white';
   text: string;
 
   /// When nesting forms a button can be linked to only fire the form with the given name.

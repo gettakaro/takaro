@@ -61,7 +61,6 @@ export const Dot = styled(motion.span)<{
     }
     return color;
   }};
-  box-shadow: ${({ theme }) => theme.shadows.default};
   position: absolute;
   margin-top: -0.45rem;
   top: 0;

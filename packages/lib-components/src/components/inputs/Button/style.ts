@@ -1,7 +1,7 @@
 import { styled } from '../../../styled';
 import { Color, Size, AlertVariants } from '../../../styled/types';
 
-export type ButtonColor = Color | AlertVariants | 'background';
+export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
 export const Default = styled.button<{
   size: Size;
@@ -19,7 +19,6 @@ export const Default = styled.button<{
   line-height: 1.9rem;
   letter-spacing: 0;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: ${({ theme }) => theme.shadows.default};
   background: ${({ theme, color }) => theme.colors[color]};
 
   &:focus {
@@ -32,7 +31,8 @@ export const Default = styled.button<{
   span {
     font-size: 1.25rem;
     font-weight: 600;
-    color: white;
+    color: ${({ theme, color }) =>
+      color === 'white' ? theme.colors.primary : 'white'};
     margin-left: ${({ icon, isLoading }): string =>
       icon || isLoading ? '10px' : '0px'};
   }
