@@ -13,7 +13,7 @@ const Container = styled.div`
   border-radius: 10px;
   width: 300px;
   background-color: white;
-  box-shadow: ${({ theme }): string => theme.shadows.default};
+  box-shadow: ${({ theme }): string => theme.elevation[4]};
   p {
     font-size: 1.325rem;
   }
@@ -32,43 +32,53 @@ const CloseIconContainer = styled.div`
   }
 `;
 
-export const NetworkDetectorOfflineSnack = forwardRef<HTMLDivElement, CustomContentProps>(
-  ({ id, message }, ref) => {
-    const { closeSnackbar } = useSnackbar();
+export const NetworkDetectorOfflineSnack = forwardRef<
+  HTMLDivElement,
+  CustomContentProps
+>(({ id, message }, ref) => {
+  const { closeSnackbar } = useSnackbar();
 
-    const handleClose = () => {
-      closeSnackbar(id);
-    };
+  const handleClose = () => {
+    closeSnackbar(id);
+  };
 
-    return (
-      <Container ref={ref}>
-        <WifiOffIcon size={18} style={{ stroke: 'black' }} />
-        <p>{message}</p>
-        <CloseIconContainer>
-          <CloseIcon onClick={handleClose} size={18} style={{ cursor: 'pointer' }} />
-        </CloseIconContainer>
-      </Container>
-    );
-  }
-);
+  return (
+    <Container ref={ref}>
+      <WifiOffIcon size={18} style={{ stroke: 'black' }} />
+      <p>{message}</p>
+      <CloseIconContainer>
+        <CloseIcon
+          onClick={handleClose}
+          size={18}
+          style={{ cursor: 'pointer' }}
+        />
+      </CloseIconContainer>
+    </Container>
+  );
+});
 
-export const NetworkDetectorOnlineSnack = forwardRef<HTMLDivElement, CustomContentProps>(
-  ({ id, message }, ref) => {
-    const theme = useTheme();
-    const { closeSnackbar } = useSnackbar();
+export const NetworkDetectorOnlineSnack = forwardRef<
+  HTMLDivElement,
+  CustomContentProps
+>(({ id, message }, ref) => {
+  const theme = useTheme();
+  const { closeSnackbar } = useSnackbar();
 
-    const handleClose = () => {
-      closeSnackbar(id);
-    };
+  const handleClose = () => {
+    closeSnackbar(id);
+  };
 
-    return (
-      <Container ref={ref}>
-        <WifiIcon size={20} style={{ stroke: theme.colors.success }} />
-        <p>{message}</p>
-        <CloseIconContainer>
-          <CloseIcon onClick={handleClose} size={18} style={{ cursor: 'pointer' }} />
-        </CloseIconContainer>
-      </Container>
-    );
-  }
-);
+  return (
+    <Container ref={ref}>
+      <WifiIcon size={20} style={{ stroke: theme.colors.success }} />
+      <p>{message}</p>
+      <CloseIconContainer>
+        <CloseIcon
+          onClick={handleClose}
+          size={18}
+          style={{ cursor: 'pointer' }}
+        />
+      </CloseIconContainer>
+    </Container>
+  );
+});

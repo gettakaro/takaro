@@ -12,7 +12,7 @@ export const SelectContainer = styled.div`
   border: 0.2rem solid ${({ theme }) => theme.colors.primary};
   border-radius: 0.5rem;
   background-color: ${({ theme }) => theme.colors.white};
-  box-shadow: ${({ theme }) => theme.shadows.default};
+  box-shadow: ${({ theme }) => theme.elevation[4]};
   user-select: none;
 `;
 
@@ -30,7 +30,6 @@ export const SelectButton = styled.div<{ isOpen: boolean }>`
     ${({ theme, isOpen }) =>
       isOpen ? theme.colors.primary : theme.colors.background};
   border-radius: 0.5rem;
-  box-shadow: ${({ theme }) => theme.shadows.default};
   margin-bottom: 2.5rem;
 
   & > div {

@@ -14,8 +14,7 @@ import { AlertVariants } from '../../styled';
 export interface ConfirmationModalProps {
   title: string;
   description?: string;
-  // TODO: type to a function with unknown params and unknown return type
-  action: any;
+  action: () => unknown;
   actionText: string;
   icon?: React.ReactNode;
   close: () => void;

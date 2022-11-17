@@ -22,9 +22,8 @@ export const Container = styled(motion.div)`
   min-height: 200px;
   max-height: 750px;
   background-color: white;
-  padding: 2.4rem 2.4rem 1.5rem 2.4rem;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 3px 1px -2px, rgba(0, 0, 0, 0.14) 0 2px 2px 0,
-    rgba(0, 0, 0, 0.12) 0 1px 5px 0;
+  padding: 25px 25px 15px 25px;
+  box-shadow: ${({ theme }) => theme.elevation[3]}
   border-radius: 10px;
   p {
     text-align: left;

@@ -1,10 +1,10 @@
-import { styled } from '../../../styled';
+import { Elevation, styled } from '../../../styled';
 
-export const Container = styled.ul`
+export const Container = styled.ul<{ elevation: Elevation }>`
   display: flex;
   flex-direction: column;
   width: fit-content;
-  box-shadow: ${({ theme }) => theme.shadows.default};
+  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   border-radius: 0.5rem;
   border: 2px solid ${({ theme }) => theme.colors.background};
   background-color: ${({ theme }) => theme.colors.white};
