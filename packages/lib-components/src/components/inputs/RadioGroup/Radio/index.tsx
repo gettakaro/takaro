@@ -53,7 +53,11 @@ export const Radio: FC<RadioProps> = ({
   if (loading) {
     return (
       <Container>
-        <RadioContainer className="placeholder" readOnly={true} />
+        <RadioContainer
+          isSelected={selected}
+          className="placeholder"
+          readOnly={true}
+        />
       </Container>
     );
   }
@@ -65,7 +69,11 @@ export const Radio: FC<RadioProps> = ({
           {label}
         </Label>
       )}
-      <RadioContainer onClick={onSelect} readOnly={readOnly}>
+      <RadioContainer
+        isSelected={selected}
+        onClick={onSelect}
+        readOnly={readOnly}
+      >
         <Inner
           animate={selected ? 'selected' : 'deselected'}
           isSelected={selected}

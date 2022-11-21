@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { styled } from '../../../styled';
 
 const Container = styled.div`
-  margin: 1rem 0;
+  margin: ${({ theme }) => `${theme.spacing['0_75']} 0`};
   text-align: center;
   p {
     color: ${({ theme }) => theme.colors.error};

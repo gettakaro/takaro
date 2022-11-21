@@ -3,14 +3,14 @@ import { lighten } from 'polished';
 
 export const Wrapper = styled.div`
   border: 0.2rem solid ${({ theme }) => theme.colors.primary};
-  padding: 1.5rem;
+  padding: ${({ theme }) => theme.spacing['1_5']};
   max-width: 450px;
   border-radius: 1rem;
   box-shadow: ${({ theme }) => theme.elevation[4]};
 
   & > p {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: ${({ theme }) => theme.spacing[1]};
+    margin-bottom: ${({ theme }) => theme.spacing[1]};
     font-size: 110%;
   }
 
@@ -45,10 +45,10 @@ export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: ${({ theme }) => theme.spacing[2]};
 
   button:last-child {
-    margin-left: 1rem;
+    margin-left: ${({ theme }) => theme.spacing[1]};
   }
 `;
 
@@ -56,11 +56,11 @@ export const ActionContainer = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
   font-weight: 600;
 
   svg {
-    margin-left: 0.5rem;
+    margin-left: ${({ theme }) => theme.spacing['0_5']};
     ${({ active }): string => (active ? 'transform: rotate(180deg)' : '')};
     transition: transform 0.2s ease-in-out;
   }
@@ -68,8 +68,9 @@ export const ActionContainer = styled.div<{ active: boolean }>`
 
 export const CookieTypeContainer = styled.div<{ active: boolean }>`
   border: 0.1rem solid ${({ theme }) => theme.colors.primary};
-  margin: 1rem 0;
-  padding: 1rem 2rem 1rem 1rem;
+  margin: ${({ theme }) => `${theme.spacing[1]} 0`};
+  padding: ${({ theme }) =>
+    `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing[1]}`};
   border-radius: 1rem;
   display: flex;
   flex-direction: row;
@@ -82,7 +83,7 @@ export const CookieTypeContainer = styled.div<{ active: boolean }>`
   }
 
   div:first-child {
-    margin-right: 1rem;
+    margin-left: ${({ theme }) => theme.spacing[1]};
   }
 `;
 export const NecessaryCookieContainer = styled.div`
@@ -90,8 +91,8 @@ export const NecessaryCookieContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 1rem;
-  padding: 1.5rem 2rem;
-  margin-bottom: 1rem;
+  padding: ${({ theme }) => `${theme.spacing['1_5']} ${theme.spacing[2]}`};
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
   background-color: ${({ theme }) => lighten(0, theme.colors.primary)};
 
   p {

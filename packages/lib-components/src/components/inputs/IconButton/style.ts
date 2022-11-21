@@ -19,27 +19,27 @@ export const Default = styled.button<{ size: Size; color: Color }>`
 
   }};
 
-  ${({ size }) => {
+  ${({ size, theme }) => {
     switch (size) {
       case 'tiny':
         return `
-          padding: 2px;
+          padding: ${theme.spacing['0_25']} 
         `;
       case 'small':
         return `
-          padding: 4px;
+          padding: ${theme.spacing['0_5']}
         `;
       case 'medium':
         return `
-          padding: 8px;
+          padding: ${theme.spacing['0_75']}
         `;
       case 'large':
         return `
-          padding: 16px;
+          padding: ${theme.spacing['1_5']}
         `;
       case 'huge':
         return `
-          padding: 30px;
+          padding: ${theme.spacing[4]}
         `;
     }
   }};

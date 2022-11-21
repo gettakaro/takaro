@@ -80,7 +80,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   input {
     margin: 0;
     outline: 0;
-    padding: 10px 15px;
+    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 2px;
     border-radius: 5px;
     border-color: transparent;
@@ -109,8 +109,9 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   button {
     display: block;
     font-weight: 700;
-    padding: 7px 25px;
-    border-radius: 8px;
+    padding: ${({ theme }) =>
+      `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
+    border-radius: .8rem;
     border: none;
   }
 
@@ -146,7 +147,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     color: white;
     font-size: 1.5rem;
     th {
-      padding: 1rem 2rem;
+      padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
       font-weight: 600;
       background-color: white;
       border-bottom: 3px solid ${({ theme }) => theme.colors.background};
@@ -173,7 +174,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
     td {
       background-color: ${({ theme }) => theme.colors.white};
-      padding: 2.5rem 0;
+      padding: ${({ theme }) => `${theme.spacing['2_5']} ${theme.spacing[0]}`};
       border-bottom: 3px solid ${({ theme }) => theme.colors.background};
     }
   }

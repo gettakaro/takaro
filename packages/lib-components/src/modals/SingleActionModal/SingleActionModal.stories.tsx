@@ -3,6 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import { SingleActionModal, SingleActionModalProps } from '.';
 import { useModal } from '../../hooks';
 import { useSnackbar } from 'notistack';
+import { Button } from '../../components';
 
 export default {
   title: 'Modals/SingleAction',
@@ -27,13 +28,13 @@ export const Example: StoryFn<SingleActionModalProps> = (args) => {
         <SingleActionModal
           {...args}
           action={() => {
-            enqueueSnackbar('Accept button pressed.', { variant: 'success' });
+            enqueueSnackbar('Accept button pressed.', { type: 'success' });
           }}
           close={close}
           ref={ref}
         />
       </ModalWrapper>
-      <button onClick={open}>Open Success Modal</button>
+      <Button onClick={open} text="Open Success Modal" />
     </div>
   );
 };

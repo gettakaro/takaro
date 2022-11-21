@@ -25,7 +25,7 @@ export const List = styled.ul<{ color: string }>`
   }}
   border-radius: 2rem;
   color: ${({ theme }): string => theme.colors.text};
-  margin-bottom: 50px;
+  margin-bottom: ${({ theme }) => theme.spacing[7]};
 `;
 
 export const TabContentContainer = styled(motion.div)`
@@ -36,7 +36,7 @@ export const TabContentContainer = styled(motion.div)`
 export const Item = styled.li<{ selected: boolean; white: boolean }>`
   cursor: pointer;
   text-align: center;
-  padding: 1.5rem;
+  padding: ${({ theme }) => theme.spacing['1_5']};
   font-weight: 800;
   border-radius: 1.225rem;
   transition: all 0.2s ease-in-out;
