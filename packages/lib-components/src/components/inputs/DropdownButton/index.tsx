@@ -17,7 +17,7 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   font-weight: 500;
   display: flex;
   align-items: center;
-  padding: .5rem 0;
+  padding: ${({ theme }) => `${theme.spacing['0_5']} 0`};
   justify-content: center;
   cursor: pointer;
   width: 3.2rem;
@@ -39,7 +39,7 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
 `;
 
 const CurrentAction = styled.div`
-  padding: 0.5rem 1rem;
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
   font-weight: 500;
   cursor: pointer;
   min-width: 10rem;
@@ -81,6 +81,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   const { x, y, reference, floating, strategy } = useFloating();
 
   const parentRef = createRef<HTMLDivElement>();
+
   useOutsideAlerter(parentRef, () => {
     setVisible(false);
   });
@@ -89,10 +90,15 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
     setVisible(false);
   }, [selected]);
 
+  const handleSelectedActionClicked = () => {
+    setVisible(false);
+    children[selected].props.onClick();
+  };
+
   return (
     <Wrapper ref={parentRef}>
       <Container ref={reference}>
-        <CurrentAction onClick={() => children[selected].props.onClick}>
+        <CurrentAction onClick={handleSelectedActionClicked}>
           {children[selected].props.text}
         </CurrentAction>
         <DropdownActionContainer

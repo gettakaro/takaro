@@ -21,6 +21,6 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-  padding-top: 4.5rem;
+  padding-top: ${({ theme }) => theme.spacing[5]};
   z-index: 1;
 `;

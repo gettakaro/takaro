@@ -7,15 +7,16 @@ export const Container = styled.div`
   display: inline-block;
   vertical-align: middle;
   text-align: left;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: ${({ theme }) => theme.spacing['0_5']};
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const Label = styled.label`
   display: block;
   overflow: hidden;
   cursor: pointer;
-  margin: 0 0 1rem 0;
+  margin: ${({ theme }) =>
+    `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[1]} ${theme.spacing[0]}`};
 `;
 
 export const ContentContainer = styled.div`
@@ -24,7 +25,7 @@ export const ContentContainer = styled.div`
   display: block;
   cursor: pointer;
   border: 0 solid #cccccc;
-  margin: 0;
+  margin: ${({ theme }) => theme.spacing[0]};
 `;
 
 export const Line = styled.span<{ isChecked: boolean; readOnly: boolean }>`
@@ -62,7 +63,7 @@ export const Dot = styled(motion.span)<{
     return color;
   }};
   position: absolute;
-  margin-top: -0.45rem;
+  margin-top: -${({ theme }) => theme.spacing['0_5']};
   top: 0;
   bottom: 0;
   border-radius: 50%;

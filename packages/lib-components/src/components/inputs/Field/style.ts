@@ -2,13 +2,13 @@ import { styled } from '../../../styled';
 
 export const Container = styled.div`
   width: 100%;
-  margin-bottom: 2.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
   position: relative;
 `;
 
 export const LabelContainer = styled.div`
   width: 100%;
-  margin-bottom: 0.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const Label = styled.label<{ showError: boolean }>`
@@ -42,8 +42,8 @@ export const InputContainer = styled.div`
     position: absolute;
     top: 0;
     bottom: 0;
-    margin: auto 0;
-    left: 20px;
+    margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
+    left: ${({ theme }) => theme.spacing[2]};
   }
   &:focus {
     .icon path {
@@ -57,8 +57,8 @@ export const InputContainer = styled.div`
     position: absolute;
     top: 0;
     bottom: 0;
-    margin: auto 0;
-    right: 20px;
+    margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
+    right: ${({ theme }) => theme.spacing[2]};
     cursor: pointer;
     fill: ${({ theme }) => theme.colors.gray};
   }
@@ -69,7 +69,7 @@ export const PrefixContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
+  padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
 `;
@@ -79,7 +79,7 @@ export const SuffixContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
+  padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
 `;
@@ -91,10 +91,8 @@ export const Input = styled.input<{
   hasSuffix: boolean;
 }>`
   width: 100%;
-  padding-left: ${
-    ({ hasIcon }): string =>
-      hasIcon ? '60px' : '15px' /* 15 is the standard */
-  };
+  padding-left: ${({ hasIcon, theme }): string =>
+    hasIcon ? theme.spacing[7] : theme.spacing['1_5']};
   background-color: transparent;
   font-size: 1.5rem;
   border: 2px solid
@@ -129,10 +127,10 @@ export const Input = styled.input<{
 
 export const ErrorContainer = styled.div<{ showError: boolean }>`
   position: absolute;
-  min-height: 4rem;
+  min-height: ${({ theme }) => theme.spacing[5]};
   display: flex;
   align-items: center;
-  bottom: -4.5rem;
+  bottom: ${({ theme }) => -theme.spacing[6]};
   height: auto;
   width: ${({ showError }): string => (showError ? '100%' : '0')};
   background-color: ${({ theme }): string => theme.colors.error};
@@ -149,8 +147,9 @@ export const Error = styled.span`
   align-items: center;
   min-width: 100%;
   width: 100%;
-  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
-  height: 4rem;
+  padding: ${({ theme }) =>
+    `${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
+  height: ${({ theme }) => theme.spacing[5]};
   color: white;
   font-weight: 500;
   white-space: nowrap;

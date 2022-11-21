@@ -17,6 +17,7 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { AnimatePresence, motion } from 'framer-motion';
 import { mergeRefs } from 'react-merge-refs';
+import { useTheme } from '../../../hooks';
 
 export interface TooltipProps {
   label: string;
@@ -31,7 +32,7 @@ const Container = styled(motion.div)<{ elevation: Elevation }>`
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
   border-radius: 0.6rem;
-  padding: 0.4rem 0.6rem;
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['0_75']}`};
   font-size: 1.4rem;
   width: max-content;
   z-index: 100;
@@ -45,6 +46,7 @@ export const Tooltip: FC<TooltipProps> = ({
 }) => {
   const { delay, setCurrentId } = useDelayGroupContext();
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
 
   const { x, y, reference, floating, strategy, context } = useFloating({
     placement,
@@ -56,7 +58,11 @@ export const Tooltip: FC<TooltipProps> = ({
         setCurrentId(label);
       }
     },
-    middleware: [offset(5), flip(), shift({ padding: 8 })],
+    middleware: [
+      offset(5),
+      flip(),
+      shift({ padding: Number(theme.spacing[10].replace('rem', '')) }),
+    ],
     whileElementsMounted: autoUpdate,
   });
 
