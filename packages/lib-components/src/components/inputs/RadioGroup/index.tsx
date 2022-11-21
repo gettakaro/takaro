@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import { Control } from 'react-hook-form';
+import { FormProps } from '../FormProps';
 import { Radio } from './Radio';
 import { FieldSet } from './style';
 
@@ -9,12 +10,11 @@ interface Option {
   value: string;
 }
 
-export interface RadioGroupProps {
+export interface RadioGroupProps extends FormProps {
   label: string;
-  loading?: boolean;
   options: Option[];
   defaultValue?: string;
-  control: Control<Record<string, unknown>>
+  control: Control<Record<string, unknown>>;
   readOnly?: boolean;
   name: string;
 }
@@ -24,11 +24,17 @@ export const RadioGroup: FC<RadioGroupProps> = ({
   control,
   options,
   defaultValue,
-  loading = false,
+  loading,
   name,
-  readOnly = false
+  error,
+  size,
+  required,
+  disabled,
+  readOnly = false,
 }) => {
-  const [selected, setSelected] = useState<string>(defaultValue ? defaultValue : options[0].value);
+  const [selected, setSelected] = useState<string>(
+    defaultValue ? defaultValue : options[0].value
+  );
 
   return (
     <FieldSet>
@@ -46,6 +52,10 @@ export const RadioGroup: FC<RadioGroupProps> = ({
               selected={selected === value}
               setSelected={setSelected}
               value={value}
+              error={error}
+              size={size}
+              required={required}
+              disabled={disabled}
             />
           );
         })}

@@ -6,29 +6,6 @@ export const Container = styled.div`
   position: relative;
 `;
 
-export const LabelContainer = styled.div`
-  width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-`;
-
-export const Label = styled.label<{ showError: boolean }>`
-  color: ${({ theme, showError }): string =>
-    showError ? theme.colors.error : theme.colors.text};
-  width: 100%;
-  user-select: none;
-  font-size: 1.4rem;
-  font-weight: 500;
-  text-transform: capitalize;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  span {
-    font-size: 1rem;
-    color: ${({ theme, showError }): string =>
-      showError ? theme.colors.error : theme.colors.text};
-  }
-`;
 export const InputContainer = styled.div`
   width: 100%;
   position: relative;
@@ -38,6 +15,7 @@ export const InputContainer = styled.div`
   &.placeholder {
     height: 44px;
   }
+
   .icon {
     position: absolute;
     top: 0;
@@ -45,6 +23,7 @@ export const InputContainer = styled.div`
     margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
     left: ${({ theme }) => theme.spacing[2]};
   }
+
   &:focus {
     .icon path {
       transition: fill 0.2s ease-in-out;

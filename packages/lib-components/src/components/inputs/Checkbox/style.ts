@@ -9,16 +9,6 @@ export const Container = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 `;
 
-export const Label = styled.label<{ position: 'left' | 'right' }>`
-  margin: ${({ theme, position }) =>
-    position === 'left'
-      ? `0 ${theme.spacing['1_5']} 0 0`
-      : `0 0 0 ${theme.spacing['1_5']}`};
-  cursor: pointer;
-  font-size: 1.5rem;
-  user-select: none;
-`;
-
 export const Input = styled.input`
   position: absolute;
   visibility: hidden;
@@ -51,7 +41,7 @@ export const CheckboxContainer = styled.div<{
         ? theme.colors.primary
         : theme.colors.gray};
   border-radius: 6px;
-  transition: box-shadow 0.125s linear, border-color 0.15s linear;
+  transition: box-shadow 100ms linear, border-color 100ms linear;
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
   z-index: 1;
   overflow: visible;

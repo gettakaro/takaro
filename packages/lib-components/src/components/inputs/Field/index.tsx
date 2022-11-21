@@ -1,18 +1,12 @@
 import { ReactElement } from 'react';
-import { FieldError, Control } from 'react-hook-form';
+import { FormProps } from '../FormProps';
 
-export interface FieldProps {
+export interface FieldProps extends FormProps {
   name: string;
   icon?: ReactElement;
   readOnly?: boolean;
-  label: string;
   placeholder: string;
   prefix?: string;
   suffix?: string;
-  error?: FieldError;
-  loading?: boolean;
-  control: Control<any, object>;
-  hint?: string;
-  required?: boolean;
   type?: 'text' | 'password';
 }

@@ -1,16 +1,14 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
-import { Skeleton } from '../../../components';
-import { Container, Dot, Line, Label, ContentContainer } from './style';
-import { useController, Control } from 'react-hook-form';
+import { Skeleton, Label } from '../../../components';
+import { Container, Dot, Line, ContentContainer } from './style';
+import { useController } from 'react-hook-form';
+import { FormProps } from '../FormProps';
 
-export interface SwitchProps {
+export interface SwitchProps extends FormProps {
   name: string;
-  control: Control<any>;
-  loading?: boolean;
   readOnly?: boolean;
   defaultValue?: boolean;
-  label?: string;
 }
 
 export const Switch: FC<SwitchProps> = ({
@@ -20,6 +18,9 @@ export const Switch: FC<SwitchProps> = ({
   label,
   readOnly = false,
   defaultValue = false,
+  error,
+  size,
+  required,
 }) => {
   const [isChecked, setChecked] = useState(defaultValue);
   const { field } = useController({ name, control });
@@ -43,7 +44,17 @@ export const Switch: FC<SwitchProps> = ({
 
   return (
     <Container>
-      {label && <Label htmlFor={name}>{label}</Label>}
+      {label && (
+        <Label
+          htmlFor={name}
+          text={label}
+          position="top"
+          error={!!error}
+          size={size}
+          required={required}
+          onClick={handleOnClick}
+        />
+      )}
       <ContentContainer onClick={handleOnClick}>
         <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot

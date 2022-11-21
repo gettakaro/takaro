@@ -11,14 +11,6 @@ export const Container = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-export const Label = styled.label`
-  display: block;
-  overflow: hidden;
-  cursor: pointer;
-  margin: ${({ theme }) =>
-    `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[1]} ${theme.spacing[0]}`};
-`;
-
 export const ContentContainer = styled.div`
   position: relative;
   width: 3rem;
