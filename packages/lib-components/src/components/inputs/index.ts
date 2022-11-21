@@ -32,3 +32,6 @@ export type { CodeFieldProps } from './CodeField';
 
 export { RadioGroup } from './RadioGroup';
 export type { RadioGroupProps } from './RadioGroup';
+
+export { Label } from './Label';
+export type { LabelProps } from './Label';

@@ -57,12 +57,6 @@ export const Inner = styled(motion.div)<{
   transition: 0.2s opacity ease-in-out cubic-bezier(0.215, 0.61, 0.355, 1);
 `;
 
-export const Label = styled.label<{ isLeft: boolean; readOnly: boolean }>`
-  margin: ${({ isLeft, theme }) =>
-    isLeft ? `0 ${theme.spacing[1]} 0 0` : `0 0 0 ${theme.spacing[1]}`};
-  cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
-`;
-
 export const Input = styled.input`
   position: absolute;
   visibility: hidden;
