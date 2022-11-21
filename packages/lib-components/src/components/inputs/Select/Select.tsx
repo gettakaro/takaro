@@ -96,6 +96,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
+      /* TODO: is this rem, px? something else? */
       offset(5),
       flip({ padding: 8 }),
       size({

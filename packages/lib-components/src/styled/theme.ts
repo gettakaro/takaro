@@ -1,5 +1,6 @@
 import baseStyled, { ThemedStyledInterface } from 'styled-components';
 import { elevation } from './elevation';
+import { spacing } from './spacing';
 
 export const theme = {
   colors: {
@@ -21,11 +22,7 @@ export const theme = {
     error: '#FF4252',
   },
   elevation,
-  spacing: {
-    small: '1rem',
-    medium: '1.5rem',
-    large: '2rem',
-  },
+  spacing,
   fontSize: {
     tiny: '1rem',
     small: '1.3rem',

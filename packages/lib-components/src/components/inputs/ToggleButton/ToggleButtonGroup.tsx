@@ -1,55 +1,67 @@
-import { cloneElement, FC, MouseEvent, Children, ReactNode, useState, isValidElement, FunctionComponentElement, ReactElement, useEffect, SetStateAction } from 'react';
-import { AnimateSharedLayout } from 'framer-motion';
+import {
+  cloneElement,
+  FC,
+  Children,
+  ReactNode,
+  useState,
+  isValidElement,
+  FunctionComponentElement,
+  ReactElement,
+  useEffect,
+} from 'react';
 import { styled } from '../../../styled';
 import { ToggleButtonProps } from './ToggleButton';
 
 type orientation = 'horizontal' | 'vertical';
 
-const Container = styled.div<{ orientation: orientation, fullWidth: boolean }>`
-  display: flex; 
-  flex-direction: ${({ orientation }) => orientation === 'horizontal' ? 'row' : 'column'};
+const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
+  display: flex;
+  flex-direction: ${({ orientation }) =>
+    orientation === 'horizontal' ? 'row' : 'column'};
   align-items: center;
-  width: ${({ fullWidth }) => fullWidth ? '100%' : 'max-content'};
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
 
   button {
-    flex-basis: ${({ fullWidth }) => fullWidth ? '100%' : ''};
+    flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
     border: 2px solid ${({ theme }): string => theme.colors.gray};
-    border-bottom: ${({ orientation, theme }) => orientation === 'horizontal' ? `2px solid ${theme.colors.gray}` : 'none'};
-    border-right: ${({ orientation, theme }) => orientation === 'vertical' ? `2px solid ${theme.colors.gray}` : 'none'};
+    border-bottom: ${({ orientation, theme }) =>
+      orientation === 'horizontal' ? `2px solid ${theme.colors.gray}` : 'none'};
+    border-right: ${({ orientation, theme }) =>
+      orientation === 'vertical' ? `2px solid ${theme.colors.gray}` : 'none'};
 
-  &:first-child {
+    &:first-child {
       ${({ orientation }) => {
-    if (orientation == 'horizontal') {
-      return `
+        if (orientation == 'horizontal') {
+          return `
             border-top-left-radius: 5px;
             border-bottom-left-radius: 5px;
           `;
-    } else {
-      return `
+        } else {
+          return `
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
           `;
+        }
+      }}
     }
-  }}
-  }
 
-  &:last-child {
-    ${({ orientation, theme }) => {
-    if (orientation == 'horizontal') {
-      return `
+    &:last-child {
+      ${({ orientation, theme }) => {
+        if (orientation == 'horizontal') {
+          return `
             border-top-right-radius: 5px;
             border-bottom-right-radius: 5px;
             border-right: 2px solid ${theme.colors.gray};
           `;
-    } else {
-      return `
+        } else {
+          return `
             border-bottom-right-radius: 5px;
             border-bottom-left-radius: 5px;
             border-bottom: 2px solid ${theme.colors.gray};
       `;
+        }
+      }}
     }
-  }}
-  }
   }
 `;
 
@@ -64,22 +76,30 @@ export interface ToggleButtonGroupProps {
   fullWidth?: boolean;
 }
 
-export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({ children, defaultValue, exclusive, onChange, orientation = 'horizontal', fullWidth = false }) => {
-
+export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
+  children,
+  defaultValue,
+  exclusive,
+  onChange,
+  orientation = 'horizontal',
+  fullWidth = false,
+}) => {
   /* TODO: set correct type
-  * if true: string
-  * if false: Map<string, boolean>
-  */
-  const [selected, setSelected] = useState<any>(exclusive ? defaultValue || '' : handleDefaultValueNonExclusive());
+   * if true: string
+   * if false: Map<string, boolean>
+   */
+  const [selected, setSelected] = useState<any>(
+    exclusive ? defaultValue || '' : handleDefaultValueNonExclusive()
+  );
 
   function handleDefaultValueNonExclusive() {
     const m = new Map();
     selected as Map<string, boolean>;
 
-    Children.forEach(children, child => {
+    Children.forEach(children, (child) => {
       if (isValidElement(child)) {
         m.set(child.props.value, false);
-      };
+      }
     });
     return m;
   }
@@ -91,7 +111,6 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({ children, defaul
         return setSelected('');
       }
       return setSelected(value);
-
     } else {
       // handle case that each button has a seperate state
       setSelected(new Map(selected.set(value, !selected.get(value))));
@@ -106,20 +125,21 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({ children, defaul
 
   return (
     <Container orientation={orientation} fullWidth={fullWidth}>
-      {Children.map(children, child => {
+      {Children.map(children, (child) => {
         if (isValidElement(child)) {
-          return cloneElement(child as ReactElement<ToggleButtonProps | Record<string, unknown>>,
+          return cloneElement(
+            child as ReactElement<ToggleButtonProps | Record<string, unknown>>,
             {
-              selected: exclusive ? selected == child.props.value : selected.get(child.props.value),
+              selected: exclusive
+                ? selected == child.props.value
+                : selected.get(child.props.value),
               parentClickEvent: clickEvent,
               orientation: orientation,
             }
           );
         }
         return child;
-      }
-      )}
+      })}
     </Container>
   );
 };
-

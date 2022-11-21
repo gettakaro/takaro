@@ -10,7 +10,7 @@ export const StepperHeader = styled.div`
   margin-top: auto;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
   position: relative;
@@ -62,7 +62,7 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
 `;
 
 export const StepperBody = styled.div`
-  padding: 50px 16px;
+  padding: ${({ theme }) => `${theme.spacing[7]} ${theme.spacing['1_5']}`};
 `;
 
 export const StepCounter = styled.div<{
@@ -88,7 +88,7 @@ export const StepCounter = styled.div<{
       ? theme.colors.primary
       : theme.colors.white};
   transition: all 0.2s ease-in-out;
-  margin-bottom: 1rem;
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
   color: ${({ theme, stepState }) =>
     stepState !== StepStates.OTHER ? theme.colors.white : theme.colors.text};
   font-size: 1.5rem;

@@ -11,10 +11,14 @@ import { Radio } from './Radio';
 export default {
   title: 'Inputs/RadioGroup/Default',
   component: RadioGroup,
-  subcomponents: { Radio }
+  subcomponents: { Radio },
+  args: {
+    readOnly: false,
+    loading: false,
+  },
 } as Meta<RadioGroupProps>;
 
-export const OnChange: StoryFn<RadioGroupProps> = () => {
+export const OnChange: StoryFn<RadioGroupProps> = (args) => {
   type FormFields = {
     gender: string;
   };
@@ -24,14 +28,14 @@ export const OnChange: StoryFn<RadioGroupProps> = () => {
   const validationSchema = useMemo(
     () =>
       yup.object({
-        gender: yup.string().required('Pick a gender')
+        gender: yup.string().required('Pick a gender'),
       }),
     []
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
     mode: 'onChange',
-    resolver: useValidationSchema(validationSchema)
+    resolver: useValidationSchema(validationSchema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async ({ gender }) => {
@@ -43,11 +47,13 @@ export const OnChange: StoryFn<RadioGroupProps> = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <RadioGroup
           control={control}
+          loading={args.loading}
+          readOnly={args.readOnly}
           label="Enter your gender"
           name="gender"
           options={[
             { label: 'male', labelPosition: 'right', value: 'm' },
-            { label: 'female', labelPosition: 'right', value: 'f' }
+            { label: 'female', labelPosition: 'right', value: 'f' },
           ]}
         />
         <Button

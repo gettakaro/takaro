@@ -3,10 +3,11 @@ import { Story, Meta } from '@storybook/react';
 import { SingleActionModal } from '../../modals';
 import { useModal } from '../../hooks';
 import { useSnackbar } from 'notistack';
+import { Button } from '../../components';
 
 export default {
   title: 'Modals/SingleAction',
-  component: undefined
+  component: undefined,
 } as Meta;
 
 ///////////////
@@ -22,7 +23,7 @@ export const Success: Story = () => {
       <ModalWrapper>
         <SingleActionModal
           action={() => {
-            enqueueSnackbar('Accept button pressed.', { variant: 'success' });
+            enqueueSnackbar('Accept button pressed.', { type: 'success' });
           }}
           actionText="Go back to dashboard"
           close={close}
@@ -32,7 +33,7 @@ export const Success: Story = () => {
           type="success"
         />
       </ModalWrapper>
-      <button onClick={open}>Open Success Modal</button>
+      <Button onClick={open} text="Open Success Modal" />
     </div>
   );
 };
@@ -47,9 +48,6 @@ export const Error: Story = () => {
     <div>
       <ModalWrapper>
         <SingleActionModal
-          action={() => {
-            /* dummy */
-          }}
           actionText="Go back to dashboard"
           close={close}
           description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
@@ -57,7 +55,8 @@ export const Error: Story = () => {
           type="error"
         />
       </ModalWrapper>
-      <button onClick={open}>Open Error Modal</button>
+
+      <Button onClick={open} text="Open Error Modal" />
     </div>
   );
 };

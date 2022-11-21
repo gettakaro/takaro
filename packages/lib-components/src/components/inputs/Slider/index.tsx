@@ -45,38 +45,38 @@ const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
       background-color: ${({ theme }) => theme.colors.white};
     }
 
-    ${({ size }) => {
+    ${({ size, theme }) => {
       switch (size) {
         case 'tiny':
           return `
             width: 1.2rem;
             height : 1.2rem;
-            margin-top: -0.4rem;
+            margin-top: -${theme.spacing['0_5']};
           `;
         case 'small':
           return `
             width: 1.4rem;
             height : 1.4rem;
-            margin-top: -0.5rem;
+            margin-top: -${theme.spacing['0_5']};
           `;
         case 'medium':
           return `
             width: 2rem;
             height: 2rem;
-            margin-top: -.8rem;
+            margin-top: -${theme.spacing['0_75']};
           `;
         case 'large':
           return `
             width: 2.8rem;
             height: 2.8rem;
-            margin-top: -1.2rem;
+            margin-top: -${theme.spacing[1]};
           `;
         case 'huge':
           return `
             width: 2.8rem;
             height: 2.8rem;
-            margin-left: .1rem;
-            margin-top: -1rem;
+            margin-left: -${theme.spacing['0_1']};
+            margin-top: -${theme.spacing[1]};
           `;
       }
     }}

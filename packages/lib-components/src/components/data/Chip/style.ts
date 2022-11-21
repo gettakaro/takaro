@@ -11,12 +11,12 @@ export const Container = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 12px;
+  padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing[1]}`};
   border-radius: 1.5rem;
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
 
   svg {
-    margin-left: 0.5rem;
+    margin-left: ${({ theme }) => theme.spacing['0_5']};
     cursor: pointer;
     ${({ theme, color, outline }) => {
       if (!outline) {
@@ -36,7 +36,8 @@ export const Container = styled.div<{
   span {
     display: block;
     white-space: nowrap;
-    margin-left: ${({ hasAvatar }) => (hasAvatar ? '5px' : 0)};
+    margin-left: ${({ hasAvatar, theme }) =>
+      hasAvatar ? theme.spacing['0_5'] : 0};
     font-weight: 600;
     font-size: 1.225rem;
 
@@ -57,10 +58,10 @@ export const Container = styled.div<{
 `;
 
 export const Dot = styled.div<{ color: ChipColor; outline: boolean }>`
-  width: 6px;
-  height: 6px;
+  width: 0.6rem;
+  height: 0.6rem;
   border-radius: 50%;
-  margin-right: 8px;
+  margin-right: ${({ theme }) => theme.spacing['0_75']};
   background-color: ${({ outline, theme, color }) =>
     outline ? theme.colors[color] : 'white'};
 `;
