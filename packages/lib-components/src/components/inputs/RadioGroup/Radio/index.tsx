@@ -1,17 +1,16 @@
 import { getTransition } from '../../../../helpers';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { Control, useController } from 'react-hook-form';
-import { Container, RadioContainer, Inner, Label } from './style';
+import { useController } from 'react-hook-form';
+import { Container, RadioContainer, Inner } from './style';
+import { Label } from '../../../../components';
+import { FormProps } from '../../FormProps';
 
-export interface RadioProps {
+export interface RadioProps extends FormProps {
   name: string;
-  control: Control<any>;
-  loading?: boolean;
   selected: boolean;
   setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
   readOnly: boolean;
-  label?: string;
   value: string;
   labelPosition: 'left' | 'right';
 }
@@ -26,13 +25,16 @@ export const Radio: FC<RadioProps> = ({
   control,
   loading = false,
   readOnly,
+  size,
   value,
+  error,
   selected,
   setSelected,
   label = '',
   labelPosition,
+  required,
 }) => {
-  const onSelect = () => {
+  const handleOnClick = () => {
     if (readOnly) return;
     setSelected(value);
   };
@@ -65,13 +67,19 @@ export const Radio: FC<RadioProps> = ({
   return (
     <Container>
       {labelPosition === 'left' && (
-        <Label htmlFor={name} isLeft onClick={onSelect} readOnly={readOnly}>
-          {label}
-        </Label>
+        <Label
+          htmlFor={name}
+          text={label}
+          required={required}
+          position={labelPosition}
+          size={size}
+          error={!!error}
+          onClick={handleOnClick}
+        />
       )}
       <RadioContainer
         isSelected={selected}
-        onClick={onSelect}
+        onClick={handleOnClick}
         readOnly={readOnly}
       >
         <Inner
@@ -85,12 +93,13 @@ export const Radio: FC<RadioProps> = ({
       {labelPosition === 'right' && (
         <Label
           htmlFor={name}
-          isLeft={false}
-          onClick={onSelect}
-          readOnly={readOnly}
-        >
-          {label}
-        </Label>
+          position={labelPosition}
+          required={required}
+          error={!!error}
+          text={label}
+          size={size}
+          onClick={handleOnClick}
+        />
       )}
     </Container>
   );

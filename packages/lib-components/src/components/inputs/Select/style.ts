@@ -76,27 +76,3 @@ export const Error = styled.span`
   font-weight: 500;
   white-space: nowrap;
 `;
-
-export const LabelContainer = styled.div`
-  width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-`;
-
-export const Label = styled.label<{ showError: boolean }>`
-  color: ${({ theme, showError }): string =>
-    showError ? theme.colors.error : theme.colors.text};
-  width: 100%;
-  user-select: none;
-  font-size: 1.4rem;
-  font-weight: 500;
-  text-transform: capitalize;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  span {
-    font-size: 1rem;
-    color: ${({ theme, showError }): string =>
-      showError ? theme.colors.error : theme.colors.text};
-  }
-`;

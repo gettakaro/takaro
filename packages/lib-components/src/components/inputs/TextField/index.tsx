@@ -1,20 +1,19 @@
 import { FC, cloneElement, useState } from 'react';
 import {
   Container,
-  LabelContainer,
-  Label,
   InputContainer,
   Input,
   ErrorContainer,
   Error,
   PrefixContainer,
-  SuffixContainer
+  SuffixContainer,
 } from '../Field/style';
+import { Label } from '../Label';
 import { FieldProps } from '../..';
 import { useController } from 'react-hook-form';
 import {
   AiOutlineEye as ShowPasswordIcon,
-  AiOutlineEyeInvisible as HidePasswordIcon
+  AiOutlineEyeInvisible as HidePasswordIcon,
 } from 'react-icons/ai';
 
 export const TextField: FC<FieldProps> = ({
@@ -30,29 +29,38 @@ export const TextField: FC<FieldProps> = ({
   hint,
   required,
   type = 'text',
-  loading = false
+  loading = false,
+  size,
+  disabled,
 }) => {
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
-    field: { ref, ...inputProps }
+    field: { ref, ...inputProps },
   } = useController({ name, control });
 
-  if (!hint && required) {
-    hint = 'Required';
-  } else if (hint && required) {
-    hint += '*';
-  }
+  const handleOnBlur = () => {
+    inputProps.onBlur();
+    setShowError(false);
+  };
+
+  const handleOnFocus = () => {
+    setShowError(true);
+  };
 
   if (loading) {
     return (
       <Container>
-        <LabelContainer>
-          <Label htmlFor={name} showError={error ? true : false}>
-            {label}
-          </Label>
-        </LabelContainer>
+        <Label
+          required={required}
+          htmlFor={name}
+          error={!!error}
+          size={size}
+          disabled={disabled}
+          text={label}
+          position="top"
+        />
         <InputContainer className="placeholder" />
       </Container>
     );
@@ -60,12 +68,16 @@ export const TextField: FC<FieldProps> = ({
 
   return (
     <Container>
-      <LabelContainer>
-        <Label htmlFor={name} showError={error ? true : false}>
-          {label}
-          <span>{hint}</span>
-        </Label>
-      </LabelContainer>
+      <Label
+        required={required}
+        hint={hint}
+        htmlFor={name}
+        error={error ? true : false}
+        size={size}
+        text={label}
+        disabled={disabled}
+        position="top"
+      />
       <InputContainer>
         {prefix && <PrefixContainer>{prefix}</PrefixContainer>}
         {icon && cloneElement(icon, { size: 22, className: 'icon' })}
@@ -73,24 +85,21 @@ export const TextField: FC<FieldProps> = ({
           {...inputProps}
           autoCapitalize="off"
           autoComplete={type === 'password' ? 'new-password' : 'off'}
-          hasError={error ? true : false}
-          hasIcon={icon ? true : false}
-          hasPrefix={prefix ? true : false}
-          hasSuffix={suffix ? true : false}
+          hasError={!!error}
+          hasIcon={!!icon}
+          hasPrefix={!!prefix}
+          hasSuffix={!!suffix}
           id={name}
           name={name}
-          onBlur={(): void => {
-            inputProps.onBlur();
-            setShowError(false);
-          }}
-          onFocus={(): void => {
-            setShowError(true);
-          }}
+          onBlur={handleOnBlur}
+          onFocus={handleOnFocus}
           placeholder={placeholder}
           readOnly={readOnly}
           ref={ref}
           role="presentation"
-          type={type === 'text' ? 'search' : showPassword ? 'search' : 'password'}
+          type={
+            type === 'text' ? 'search' : showPassword ? 'search' : 'password'
+          }
         />
         {type === 'password' ? (
           showPassword ? (

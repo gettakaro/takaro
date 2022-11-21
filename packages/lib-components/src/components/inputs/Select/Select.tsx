@@ -13,13 +13,12 @@ import { SelectContext } from './context';
 import {
   GroupLabel,
   SelectButton,
-  Label,
-  LabelContainer,
   SelectContainer,
   ArrowIcon,
   ErrorContainer,
   Error,
 } from './style';
+import { Label } from '../../../components';
 
 import {
   useFloating,
@@ -37,28 +36,26 @@ import {
   FloatingOverlay,
 } from '@floating-ui/react-dom-interactions';
 
-import { Control, FieldError, useController } from 'react-hook-form';
+import { useController } from 'react-hook-form';
+import { FormProps } from '../FormProps';
 
-export interface SelectProps {
+export interface SelectProps extends FormProps {
   render: (selectedIndex: number) => React.ReactNode;
   defaultValue?: string;
-  control: Control<any, object>;
-  error?: FieldError;
   name: string;
-  label?: string;
   hint?: string;
-  required?: boolean;
 }
 
 // TODO: implement required (but this should only be done after the label reimplementation.
-
 export const Select: FC<PropsWithChildren<SelectProps>> = ({
   children,
   defaultValue,
   control,
+  loading,
   name,
   error,
   label,
+  required,
   render,
 }) => {
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -187,9 +184,12 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
       }}
     >
       {label && (
-        <LabelContainer>
-          <Label showError={showError}>{label}</Label>
-        </LabelContainer>
+        <Label
+          loading={loading}
+          error={!!error}
+          text={label}
+          required={required}
+        />
       )}
       <SelectButton
         {...getReferenceProps({
