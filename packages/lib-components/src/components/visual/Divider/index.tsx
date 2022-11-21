@@ -1,13 +1,31 @@
 import { FC } from 'react';
-import { styled } from '../../../styled';
+import { Size, styled } from '../../../styled';
 
-const Container = styled.div`
+const Container = styled.div<{ size: Size }>`
   position: relative;
   display: flex;
   align-items: center;
   width: 70%;
+
+  ${({ size, theme }) => {
+    switch (size) {
+      case 'tiny':
+        return `margin: ${theme.spacing['0_25']} auto ${theme.spacing['0_25']} auto`;
+      case 'small':
+        return `margin: ${theme.spacing['0_5']} auto ${theme.spacing['0_5']} auto`;
+      case 'medium':
+        return `margin: ${theme.spacing['0_75']} auto ${theme.spacing['0_75']} auto`;
+      case 'large':
+        return `margin: ${theme.spacing['2_5']} auto ${theme.spacing['2_5']} auto`;
+      case 'huge':
+        return `margin: ${theme.spacing[8]} auto ${theme.spacing[8]} auto`;
+    }
+  }}
 `;
-const Label = styled.label<{ position: 'left' | 'center' | 'right' }>`
+
+const Label = styled.label<{
+  position: 'left' | 'center' | 'right';
+}>`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -51,12 +69,13 @@ type LabelProps = {
 
 export interface DividerProps {
   label?: LabelProps;
+  size?: Size;
   /* TODO: reimplement sizing (this might go automatically with different density options. */
 }
 
-export const Divider: FC<DividerProps> = ({ label }) => {
+export const Divider: FC<DividerProps> = ({ label, size = 'medium' }) => {
   return (
-    <Container>
+    <Container size={size}>
       <Line />
       {label && (
         <Label position={label.labelPosition}>
