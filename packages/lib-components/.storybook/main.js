@@ -1,5 +1,3 @@
-//const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-
 module.exports = {
   framework: {
     name: '@storybook/react-vite',
@@ -7,7 +5,6 @@ module.exports = {
   },
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
-    '@storybook/addon-storysource',
     '@storybook/addon-essentials',
     '@storybook/addon-links',
     '@storybook/addon-a11y',
@@ -18,9 +15,10 @@ module.exports = {
   },
   staticDirs: ['../public'],
   core: { builder: '@storybook/builder-vite' },
-  logLevel: 'debug',
+};
 
-  /*
+/*
+  const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
   webpackFinal: async (config) => {
     config.resolve.plugins = [
       ...(config.resolve.plugins || []),
@@ -42,4 +40,3 @@ module.exports = {
     };
   }
   */
-};
