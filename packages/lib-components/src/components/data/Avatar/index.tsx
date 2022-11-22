@@ -20,34 +20,34 @@ const Container = styled.div<{ src?: string; size: Size; isCircle: boolean }>`
 
   ${({ size }) => {
     switch (size) {
-      case 'tiny':
+      case 'xs':
         return `
           width: 1.825rem;
           height: 1.825rem;
-          font-size: 1rem;
+          font-size: 0.9rem;
         `;
-      case 'small':
+      case 'sm':
         return `
           width: 3.125rem;
           height: 3.125rem;
-          font-size: 1.325rem;
+          font-size: 1.12rem;
         `;
-      case 'medium':
+      case 'md':
         return `
           width: 6rem;
           height: 6rem;
           font-size: 2rem;
         `;
-      case 'large':
+      case 'lg':
         return `
-          width: 14rem;
-          height: 14rem;
+          width: 12rem;
+          height: 12rem;
           font-size: 2.8rem;
         `;
-      case 'huge':
+      case 'xl':
         return `
-          width: 20rem;
-          height: 20rem;
+          width: 18rem;
+          height: 18rem;
           font-size: 3rem;
         `;
     }

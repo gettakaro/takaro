@@ -19,35 +19,40 @@ export default {
   title: 'Data/Avatar',
   component: Avatar,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  args: {
+    size: 'md',
+  },
 } as Meta<AvatarProps>;
 
-export const Default: StoryFn<AvatarProps> = (args) => <Avatar alt="Harry Potter" {...args} src={placeholder01} />;
+export const Default: StoryFn<AvatarProps> = (args) => (
+  <Avatar alt="Harry Potter" {...args} src={placeholder01} />
+);
 
 export const Sizes: StoryFn = () => (
   <>
-    <Avatar alt="Harry Potter" size="tiny" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="small" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="medium" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="large" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="huge" src={placeholder01} />
+    <Avatar alt="Harry Potter" size="xs" src={placeholder01} />
+    <Avatar alt="Harry Potter" size="sm" src={placeholder01} />
+    <Avatar alt="Harry Potter" size="md" src={placeholder01} />
+    <Avatar alt="Harry Potter" size="lg" src={placeholder01} />
+    <Avatar alt="Harry Potter" size="xl" src={placeholder01} />
   </>
 );
 
 export const Initials: StoryFn = () => (
   <>
-    <Avatar alt="Harry Potter" size="tiny">
+    <Avatar alt="Harry Potter" size="xs">
       {getInitials('Harry Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="small">
+    <Avatar alt="Harry Potter" size="sm">
       {getInitials('Albus Severus Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter Vanmiet" size="medium">
+    <Avatar alt="Harry Potter Vanmiet" size="md">
       {getInitials('James Sirius Potter ')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="large">
+    <Avatar alt="Harry Potter" size="lg">
       {getInitials('Lily Luna Potter')}
     </Avatar>
-    <Avatar alt="Harry Potter" size="huge">
+    <Avatar alt="Harry Potter" size="xl">
       {getInitials('Lily Luna Potter')}
     </Avatar>
   </>

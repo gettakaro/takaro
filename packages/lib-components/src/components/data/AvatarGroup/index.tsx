@@ -6,18 +6,18 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
   div {
-    :first-child {
-      margin-left: 0;
-    }
     border: 2px solid ${({ theme }) => theme.colors.background};
-    margin-left: -10px;
+    /* mind the negative sign here */
+    margin-left: -${({ theme }) => theme.spacing['4']};
+    :first-child {
+      margin-left: ${({ theme }) => theme.spacing[0]};
+    }
   }
 `;
 
 export interface AvatarGroupProps {
-  /* Max amount of avatars that should be shown */
+  /// Max amount of avatars that should be shown
   max?: number;
   children: ReactNode[];
 }

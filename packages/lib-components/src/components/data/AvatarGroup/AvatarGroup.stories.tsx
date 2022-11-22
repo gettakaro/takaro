@@ -22,17 +22,16 @@ export default {
   subcomponents: { Avatar },
   args: {
     max: 3,
-  }
+  },
 } as Meta<AvatarGroupProps>;
 
 export const Default: StoryFn<AvatarGroupProps> = (args) => (
   <AvatarGroup {...args}>
-    <Avatar alt="Harry Potter" size="medium" src={placeholder01} />
-    <Avatar alt="Ron Weasley" size="medium" src={placeholder02} />
-    <Avatar alt="Hermione Granger" size="medium" src={placeholder03} />
-    { /* TODO: add different images for this user */}
-    <Avatar alt="Tom Riddle" size="medium" src={placeholder03} />
-    <Avatar alt="Tom Riddle" size="medium" src={placeholder03} />
+    <Avatar alt="Harry Potter" size="md" src={placeholder01} />
+    <Avatar alt="Ron Weasley" size="md" src={placeholder02} />
+    <Avatar alt="Hermione Granger" size="md" src={placeholder03} />
+    {/* TODO: add different images for this user */}
+    <Avatar alt="Tom Riddle" size="md" src={placeholder03} />
+    <Avatar alt="Tom Riddle" size="md" src={placeholder03} />
   </AvatarGroup>
 );
-
