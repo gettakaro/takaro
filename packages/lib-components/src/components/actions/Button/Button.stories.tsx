@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Inputs/Button',
+  title: 'Actions/Button',
   component: Button,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {

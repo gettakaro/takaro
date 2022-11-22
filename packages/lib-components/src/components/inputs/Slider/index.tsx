@@ -1,50 +1,60 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { useController } from 'react-hook-form';
 import { handle } from './handle';
 import { Skeleton, Label } from '../../../components';
 import { Color } from '../../../styled';
 import { StyledSlider, Container } from './style';
-import { FormProps } from '../FormProps';
+import {
+  InputProps,
+  defaultInputProps,
+  defaultInputPropsFactory,
+} from '../InputProps';
 
 interface Mark {
   value: number;
   label: string;
 }
 
-export interface SliderProps extends FormProps {
-  name: string;
+export interface SliderProps extends InputProps {
   min: number;
   max: number;
   color?: Color;
-  defaultValue?: number;
-  readOnly?: boolean;
   showTooltip?: boolean;
   marks?: Mark[];
   step?: number;
   showDots: boolean;
 }
 
-export const SliderComponent: FC<SliderProps> = ({
-  name,
-  color = 'primary',
-  control,
-  loading, // todo: implement a loading state
-  step = 1,
-  min,
-  max,
-  showTooltip = true, // todo fix show Tooltip
-  showDots,
-  defaultValue = max / 2,
-  readOnly = false,
-  size = 'medium',
-  // label, // todo: implement label
-  marks = [],
-  label,
-  error,
-  required,
-  hint,
-}) => {
-  const { field: slider } = useController({ name, control, defaultValue });
+const defaultsApplier =
+  defaultInputPropsFactory<PropsWithChildren<SliderProps>>(defaultInputProps);
+
+export const SliderComponent: FC<SliderProps> = (props) => {
+  const {
+    name,
+    color = 'primary',
+    size,
+    control,
+    min,
+    max,
+    step = 1,
+    value = max / 2,
+    required,
+    marks = [],
+    error,
+    disabled,
+    loading,
+    label,
+    hint,
+    readOnly,
+    showTooltip = true,
+    showDots,
+  } = defaultsApplier(props);
+
+  const { field: slider } = useController({
+    name,
+    control,
+    defaultValue: value,
+  });
 
   const handleOnChange = (value: number) => {
     slider.onChange(value);
@@ -62,19 +72,22 @@ export const SliderComponent: FC<SliderProps> = ({
 
   return (
     <Container>
-      <Label
-        position="top"
-        size={size}
-        text={label}
-        required={required}
-        error={!!error}
-        htmlFor={name}
-        hint={hint}
-      />
+      {label && (
+        <Label
+          position="top"
+          size={size}
+          text={label}
+          required={required}
+          error={!!error}
+          htmlFor={name}
+          hint={hint}
+          disabled={disabled}
+        />
+      )}
       <StyledSlider
         activeDotStyle={{ scale: 1.1 }}
         color={color}
-        defaultValue={defaultValue}
+        defaultValue={value as number}
         disabled={readOnly}
         dots={showDots}
         handle={handle}

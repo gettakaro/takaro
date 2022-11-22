@@ -1,4 +1,4 @@
-import { FC, cloneElement, useState } from 'react';
+import { FC, cloneElement, useState, ReactElement } from 'react';
 import {
   Container,
   InputContainer,
@@ -7,7 +7,7 @@ import {
   Error,
   PrefixContainer,
   SuffixContainer,
-} from '../Field/style';
+} from './style';
 import { Label } from '../Label';
 import { FieldProps } from '../..';
 import { useController } from 'react-hook-form';
@@ -15,30 +15,48 @@ import {
   AiOutlineEye as ShowPasswordIcon,
   AiOutlineEyeInvisible as HidePasswordIcon,
 } from 'react-icons/ai';
+import {
+  InputProps,
+  defaultInputProps,
+  defaultInputPropsFactory,
+} from '../InputProps';
 
-export const TextField: FC<FieldProps> = ({
-  control,
-  label,
-  placeholder,
-  name,
-  prefix,
-  suffix,
-  error,
-  icon,
-  readOnly,
-  hint,
-  required,
-  type = 'text',
-  loading = false,
-  size,
-  disabled,
-}) => {
+export interface FieldProps extends InputProps {
+  icon?: ReactElement;
+  readOnly?: boolean;
+  placeholder: string;
+  prefix?: string;
+  suffix?: string;
+  type?: 'text' | 'password';
+}
+
+const defaultsApplier = defaultInputPropsFactory<FieldProps>(defaultInputProps);
+
+export const TextField: FC<FieldProps> = (props) => {
+  const {
+    control,
+    loading,
+    value,
+    label,
+    hint,
+    error,
+    disabled,
+    required,
+    name,
+    size,
+    readOnly,
+    placeholder,
+    icon,
+    type = 'text',
+    prefix,
+    suffix,
+  } = defaultsApplier(props);
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     field: { ref, ...inputProps },
-  } = useController({ name, control });
+  } = useController({ name, control, defaultValue: value });
 
   const handleOnBlur = () => {
     inputProps.onBlur();
@@ -52,15 +70,17 @@ export const TextField: FC<FieldProps> = ({
   if (loading) {
     return (
       <Container>
-        <Label
-          required={required}
-          htmlFor={name}
-          error={!!error}
-          size={size}
-          disabled={disabled}
-          text={label}
-          position="top"
-        />
+        {label && (
+          <Label
+            required={required}
+            htmlFor={name}
+            error={!!error}
+            size={size}
+            disabled={disabled}
+            text={label}
+            position="top"
+          />
+        )}
         <InputContainer className="placeholder" />
       </Container>
     );
@@ -68,16 +88,18 @@ export const TextField: FC<FieldProps> = ({
 
   return (
     <Container>
-      <Label
-        required={required}
-        hint={hint}
-        htmlFor={name}
-        error={error ? true : false}
-        size={size}
-        text={label}
-        disabled={disabled}
-        position="top"
-      />
+      {label && (
+        <Label
+          required={required}
+          hint={hint}
+          htmlFor={name}
+          error={error ? true : false}
+          size={size}
+          text={label}
+          disabled={disabled}
+          position="top"
+        />
+      )}
       <InputContainer>
         {prefix && <PrefixContainer>{prefix}</PrefixContainer>}
         {icon && cloneElement(icon, { size: 22, className: 'icon' })}
@@ -97,12 +119,10 @@ export const TextField: FC<FieldProps> = ({
           readOnly={readOnly}
           ref={ref}
           role="presentation"
-          type={
-            type === 'text' ? 'search' : showPassword ? 'search' : 'password'
-          }
+          type={type === 'text' || showPassword ? 'search' : 'password'}
         />
-        {type === 'password' ? (
-          showPassword ? (
+        {type === 'password' &&
+          (showPassword ? (
             <HidePasswordIcon
               className="password-icon"
               onClick={() => {
@@ -118,8 +138,7 @@ export const TextField: FC<FieldProps> = ({
               }}
               size="24"
             />
-          )
-        ) : null}
+          ))}
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
       {error && (

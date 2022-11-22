@@ -15,7 +15,7 @@ export interface LabelProps {
   size: Size;
 
   /// if `true`, the component is disabled
-  disabled?: boolean;
+  disabled: boolean;
 
   /// Visible text
   text: string;
@@ -41,6 +41,7 @@ export const Label: FC<LabelProps> = ({
   size,
   text,
   hint,
+  disabled,
   position,
   onClick = () => {},
 }) => {
@@ -49,8 +50,19 @@ export const Label: FC<LabelProps> = ({
   } else if (hint && required) {
     hint += '*';
   }
+
+  const handleOnClick = () => {
+    onClick();
+  };
+
   return (
-    <Container onClick={onClick} error={error} size={size} position={position}>
+    <Container
+      onClick={handleOnClick}
+      error={error}
+      size={size}
+      position={position}
+      disabled={disabled}
+    >
       {text}
       <span>{hint}</span>
     </Container>

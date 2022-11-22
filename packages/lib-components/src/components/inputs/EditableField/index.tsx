@@ -8,38 +8,39 @@ import {
   useState,
 } from 'react';
 
-import { styled } from '../../../styled';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../InputProps';
 
-export interface EditableFieldProps {
+import { Container, ErrorMessage } from './style';
+
+export interface EditableFieldProps extends InputProps {
   text?: string;
   isEditing?: boolean;
   placeholder?: string;
-  disabled?: boolean;
-  allowEmpty: boolean;
   childRef: MutableRefObject<HTMLInputElement | null>;
 }
 
-const Container = styled.div`
-  input {
-    border: 1px solid ${({ theme }) => theme.colors.gray};
-  }
-`;
+const defaultsApplier =
+  defaultInputPropsFactory<PropsWithChildren<EditableFieldProps>>(
+    defaultInputProps
+  );
 
-const ErrorMessage = styled.span`
-  display: block;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.error};
-`;
+export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = (
+  props
+) => {
+  const {
+    isEditing = false,
+    disabled,
+    childRef,
+    required,
+    children,
+    text,
+    placeholder,
+  } = defaultsApplier(props);
 
-export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
-  text,
-  placeholder,
-  isEditing = false,
-  disabled = false,
-  allowEmpty,
-  children,
-  childRef,
-}) => {
   const [editing, setEditing] = useState(isEditing);
   const [error, setError] = useState<string>('');
 
@@ -58,7 +59,7 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
   const handleKeyDown = ({ key }: KeyboardEvent) => {
     const keys = ['Escape', 'Tab', 'Enter'];
 
-    if (!allowEmpty && childRef.current?.value == '') {
+    if (required && childRef.current?.value == '') {
       setError('Field cannot be empty!');
       return;
     }
@@ -70,7 +71,7 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
   };
 
   const handleOnBlur = () => {
-    if (!allowEmpty && childRef.current?.value == '') {
+    if (required && childRef.current?.value == '') {
       setError('field cannot be empty!');
       return;
     }
