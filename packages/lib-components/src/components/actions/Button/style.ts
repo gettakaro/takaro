@@ -1,5 +1,4 @@
-import { styled } from '../../../styled';
-import { Color, Size, AlertVariants } from '../../../styled/types';
+import { styled, Color, Size, AlertVariants } from '../../../styled';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
