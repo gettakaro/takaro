@@ -15,7 +15,7 @@ const WrapperDecorator = styled.div`
 `;
 
 export default {
-  title: 'Inputs/ToggleButton',
+  title: 'Actions/ToggleButton',
   component: ToggleButtonGroup,
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
   subcomponents: { ToggleButton },

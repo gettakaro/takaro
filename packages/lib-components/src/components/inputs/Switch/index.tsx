@@ -3,27 +3,31 @@ import { getTransition } from '../../../helpers';
 import { Skeleton, Label } from '../../../components';
 import { Container, Dot, Line, ContentContainer } from './style';
 import { useController } from 'react-hook-form';
-import { FormProps } from '../FormProps';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../InputProps';
 
-export interface SwitchProps extends FormProps {
-  name: string;
-  readOnly?: boolean;
-  defaultValue?: boolean;
-}
+const defaultsApplier = defaultInputPropsFactory<InputProps>(defaultInputProps);
 
-export const Switch: FC<SwitchProps> = ({
-  name,
-  control,
-  loading = false,
-  label,
-  readOnly = false,
-  defaultValue = false,
-  error,
-  size,
-  required,
-}) => {
-  const [isChecked, setChecked] = useState(defaultValue);
-  const { field } = useController({ name, control });
+export const Switch: FC<InputProps> = (props) => {
+  const {
+    readOnly,
+    size,
+    name,
+    required,
+    disabled,
+    error,
+    hint,
+    label,
+    loading,
+    control,
+    value = false,
+  } = defaultsApplier(props);
+
+  const { field } = useController({ name, control, defaultValue: value });
+  const [isChecked, setChecked] = useState(field.value);
 
   function handleOnClick(): void {
     setChecked(!isChecked);
@@ -53,6 +57,8 @@ export const Switch: FC<SwitchProps> = ({
           size={size}
           required={required}
           onClick={handleOnClick}
+          hint={hint}
+          disabled={disabled}
         />
       )}
       <ContentContainer onClick={handleOnClick}>

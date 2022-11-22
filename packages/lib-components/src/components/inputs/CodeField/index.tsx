@@ -13,29 +13,34 @@ import {
   ErrorContainer,
   Error,
 } from './style';
-import { Control, useController, FieldError } from 'react-hook-form';
+import { useController } from 'react-hook-form';
+import {
+  InputProps,
+  defaultInputProps,
+  defaultInputPropsFactory,
+} from '../InputProps';
 
-export interface CodeFieldProps {
+export interface CodeFieldProps extends InputProps {
   name: string;
   fields: number;
-  loading?: boolean;
   allowedCharacters?: RegExp;
-  error?: FieldError;
-  form?: string;
-  autoSubmit?: any;
-  control: Control<any>;
+  autoSubmit: () => unknown;
 }
 
-export const CodeField: FC<CodeFieldProps> = ({
-  name,
-  fields,
-  loading = false,
-  error,
-  form,
-  autoSubmit,
-  allowedCharacters = /[0-9]/,
-  control,
-}) => {
+const defaultsApplier =
+  defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
+
+export const CodeField: FC<CodeFieldProps> = (props) => {
+  const {
+    error,
+    loading,
+    control,
+    name,
+    fields,
+    autoSubmit,
+    allowedCharacters = /[0-9]/,
+  } = defaultsApplier(props);
+
   const {
     field: { ...inputProps },
   } = useController({ name, control });
@@ -129,7 +134,6 @@ export const CodeField: FC<CodeFieldProps> = ({
           <Input
             autoCapitalize="off"
             autoComplete="off"
-            form={form}
             hasError={error ? true : false}
             id={`${name}-${i}`}
             maxLength={1}
