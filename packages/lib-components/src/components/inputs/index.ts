@@ -10,8 +10,6 @@ export type { SwitchProps } from './Switch';
 export { TextField } from './TextField';
 export type { FieldProps } from './Field';
 
-export { SearchField } from './SearchField';
-
 export { SliderComponent as Slider } from './Slider';
 export type { SliderProps } from './Slider';
 
