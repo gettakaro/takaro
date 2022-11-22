@@ -1,8 +1,6 @@
 export { Alert } from './Alert';
 export type { AlertProps } from './Alert';
 
-export { Feed } from './Feed';
-
 export { Skeleton } from './Skeleton';
 export type { SkeletonProps } from './Skeleton';
 
