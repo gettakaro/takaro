@@ -182,7 +182,7 @@ const LogIn: FC = () => {
             size="huge"
           />
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ErrorMessage message={error} />
+            {error && <ErrorMessage message={error} />}
             <TextField
               control={control}
               error={formState.errors.email}
