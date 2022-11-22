@@ -11,8 +11,8 @@ const Container = styled(motion.div)<{ elevation: Elevation }>`
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-  overflow: hidden;
   will-change: height;
+  overflow: hidden;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
 
   div {
@@ -63,9 +63,9 @@ export const NotificationBanner: FC<NotificationBannerProps> = ({
       {visible && (
         <Container
           elevation={elevation}
-          animate={{ height: 'auto' }}
+          initial={{ y: -40 }}
+          animate={{ y: 0 }}
           exit={{ opacity: '0' }}
-          initial={{ height: 0 }}
         >
           <div>
             <h3>{title}</h3>
