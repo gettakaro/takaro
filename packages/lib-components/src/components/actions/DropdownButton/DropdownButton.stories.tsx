@@ -13,7 +13,7 @@ const WrapperDecorator = styled.div`
 `;
 
 export default {
-  title: 'Inputs/DropdownButton',
+  title: 'Actions/DropdownButton',
   component: DropdownButton,
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
 } as Meta;

@@ -11,16 +11,16 @@ import { Label } from '../../../components';
 import { AiOutlineCheck as Icon } from 'react-icons/ai';
 import { useController } from 'react-hook-form';
 import { getTransition } from '../../../helpers';
-import { Size } from 'styled';
-import { FormProps } from '../FormProps';
 
-export interface CheckboxProps extends FormProps {
+import {
+  InputProps,
+  defaultInputPropsFactory,
+  defaultInputProps,
+} from '../InputProps';
+
+export interface CheckboxProps extends InputProps {
   name: string;
-  defaultValue?: boolean;
-  readOnly?: boolean;
   labelPosition?: 'left' | 'right';
-  size: Size;
-  required: boolean;
 }
 
 const variants = {
@@ -28,23 +28,29 @@ const variants = {
   unchecked: { scale: 0, opacity: 0 },
 };
 
-export const Checkbox: FC<CheckboxProps> = ({
-  control,
-  defaultValue = false,
-  readOnly = false,
-  label,
-  labelPosition = 'right',
-  name,
-  loading = false,
-  size = 'medium',
-  required,
-}) => {
+const defaultsApplier =
+  defaultInputPropsFactory<CheckboxProps>(defaultInputProps);
+
+export const Checkbox: FC<CheckboxProps> = (props) => {
+  const {
+    name,
+    size,
+    label,
+    control,
+    loading,
+    required,
+    readOnly,
+    disabled,
+    value,
+    labelPosition,
+  } = defaultsApplier(props);
+
   const { field: checkbox } = useController({
     name,
     control,
-    defaultValue: defaultValue,
+    defaultValue: value,
   });
-  const [isChecked, setChecked] = useState<boolean>(defaultValue);
+  const [isChecked, setChecked] = useState<boolean>(checkbox.value);
 
   function handleOnClick(): void {
     if (readOnly) {
@@ -67,6 +73,7 @@ export const Checkbox: FC<CheckboxProps> = ({
             position={labelPosition}
             size={size}
             text={label}
+            disabled={disabled}
             required={required}
           />
         )}
@@ -80,6 +87,7 @@ export const Checkbox: FC<CheckboxProps> = ({
           <Label
             error={false}
             position={labelPosition}
+            disabled={disabled}
             text={label}
             size={size}
             required={required}
@@ -98,6 +106,7 @@ export const Checkbox: FC<CheckboxProps> = ({
           position={labelPosition}
           size={size}
           text={label}
+          disabled={disabled}
           required={required}
           onClick={handleOnClick}
         />
@@ -122,6 +131,7 @@ export const Checkbox: FC<CheckboxProps> = ({
           error={false}
           position={labelPosition}
           text={label}
+          disabled={disabled}
           required={required}
           size={size}
         />

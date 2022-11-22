@@ -3,14 +3,17 @@ import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { Container, RadioContainer, Inner } from './style';
 import { Label } from '../../../../components';
-import { FormProps } from '../../FormProps';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../../InputProps';
 
-export interface RadioProps extends FormProps {
+export interface RadioProps extends InputProps {
   name: string;
   selected: boolean;
   setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
-  readOnly: boolean;
   value: string;
   labelPosition: 'left' | 'right';
 }
@@ -20,20 +23,25 @@ const variants = {
   deselected: { scale: 0 },
 };
 
-export const Radio: FC<RadioProps> = ({
-  name,
-  control,
-  loading = false,
-  readOnly,
-  size,
-  value,
-  error,
-  selected,
-  setSelected,
-  label = '',
-  labelPosition,
-  required,
-}) => {
+const defaultsApplier = defaultInputPropsFactory<RadioProps>(defaultInputProps);
+
+export const Radio: FC<RadioProps> = (props) => {
+  const {
+    readOnly,
+    control,
+    loading,
+    name,
+    size,
+    required,
+    error,
+    value,
+    selected,
+    setSelected,
+    labelPosition = 'left',
+    label,
+    disabled,
+  } = defaultsApplier(props);
+
   const handleOnClick = () => {
     if (readOnly) return;
     setSelected(value);
@@ -66,7 +74,7 @@ export const Radio: FC<RadioProps> = ({
 
   return (
     <Container>
-      {labelPosition === 'left' && (
+      {label && labelPosition === 'left' && (
         <Label
           htmlFor={name}
           text={label}
@@ -75,6 +83,7 @@ export const Radio: FC<RadioProps> = ({
           size={size}
           error={!!error}
           onClick={handleOnClick}
+          disabled={disabled}
         />
       )}
       <RadioContainer
@@ -90,7 +99,7 @@ export const Radio: FC<RadioProps> = ({
           variants={variants}
         />
       </RadioContainer>
-      {labelPosition === 'right' && (
+      {label && labelPosition === 'right' && (
         <Label
           htmlFor={name}
           position={labelPosition}
@@ -98,6 +107,7 @@ export const Radio: FC<RadioProps> = ({
           error={!!error}
           text={label}
           size={size}
+          disabled={disabled}
           onClick={handleOnClick}
         />
       )}

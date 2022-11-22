@@ -32,32 +32,39 @@ import {
   useDismiss,
   FloatingFocusManager,
   autoUpdate,
-  size,
   FloatingOverlay,
+  size,
 } from '@floating-ui/react-dom-interactions';
 
 import { useController } from 'react-hook-form';
-import { FormProps } from '../FormProps';
+import {
+  InputProps,
+  defaultInputPropsFactory,
+  defaultInputProps,
+} from '../InputProps';
 
-export interface SelectProps extends FormProps {
+export interface SelectProps extends InputProps {
   render: (selectedIndex: number) => React.ReactNode;
-  defaultValue?: string;
-  name: string;
-  hint?: string;
 }
 
+const defaultsApplier =
+  defaultInputPropsFactory<PropsWithChildren<SelectProps>>(defaultInputProps);
+
 // TODO: implement required (but this should only be done after the label reimplementation.
-export const Select: FC<PropsWithChildren<SelectProps>> = ({
-  children,
-  defaultValue,
-  control,
-  loading,
-  name,
-  error,
-  label,
-  required,
-  render,
-}) => {
+export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
+  const {
+    required,
+    name,
+    size: componentSize,
+    label,
+    render,
+    error,
+    children,
+    control,
+    value,
+    disabled,
+  } = defaultsApplier(props);
+
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
     'Select...',
@@ -72,14 +79,14 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
   const { field } = useController({
     name,
     control,
-    defaultValue: Math.max(0, listContentRef.current.indexOf(defaultValue)),
+    defaultValue: Math.max(0, listContentRef.current.indexOf(value)),
   });
 
   const [open, setOpen] = useState(false);
   const [showError] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, listContentRef.current.indexOf(defaultValue))
+    Math.max(0, listContentRef.current.indexOf(value))
   );
 
   const [pointer, setPointer] = useState(false);
@@ -185,10 +192,12 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
     >
       {label && (
         <Label
-          loading={loading}
           error={!!error}
           text={label}
           required={required}
+          position="top"
+          size={componentSize}
+          disabled={disabled}
         />
       )}
       <SelectButton

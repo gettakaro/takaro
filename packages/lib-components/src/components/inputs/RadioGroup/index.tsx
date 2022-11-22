@@ -1,6 +1,9 @@
 import { FC, useState } from 'react';
-import { Control } from 'react-hook-form';
-import { FormProps } from '../FormProps';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../InputProps';
 import { Radio } from './Radio';
 import { FieldSet } from './style';
 
@@ -10,30 +13,33 @@ interface Option {
   value: string;
 }
 
-export interface RadioGroupProps extends FormProps {
-  label: string;
+export interface RadioGroupProps extends InputProps {
   options: Option[];
-  defaultValue?: string;
-  control: Control<Record<string, unknown>>;
-  readOnly?: boolean;
-  name: string;
 }
 
-export const RadioGroup: FC<RadioGroupProps> = ({
-  label,
-  control,
-  options,
-  defaultValue,
-  loading,
-  name,
-  error,
-  size,
-  required,
-  disabled,
-  readOnly = false,
-}) => {
+const defaultsApplier =
+  defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
+
+export const RadioGroup: FC<RadioGroupProps> = (props) => {
+  const {
+    loading,
+    control,
+    readOnly,
+    value,
+    name,
+    size,
+    label,
+    error,
+    options,
+    required,
+    disabled,
+  } = defaultsApplier(props);
+
   const [selected, setSelected] = useState<string>(
-    defaultValue ? defaultValue : options[0].value
+    // check if value exists in options
+    options.some((option) => option.value === value)
+      ? (value as string)
+      : options[0].value
   );
 
   return (

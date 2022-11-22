@@ -5,9 +5,18 @@ export const Container = styled.label<{
   error: boolean;
   size: Size;
   position: LabelPosition;
+  disabled: string;
 }>`
-  color: ${({ theme, error }): string =>
-    error ? theme.colors.error : theme.colors.text};
+  color: ${({ theme, error, disabled }): string => {
+    if (disabled) {
+      return theme.colors.gray;
+    }
+    if (error) {
+      return theme.colors.error;
+    }
+    return theme.colors.text;
+  }};
+
   width: 100%;
   user-select: none;
   font-size: 1.4rem;
