@@ -274,7 +274,7 @@ const AddGameServer: FC = () => {
                 </OptionGroup>
               </Select>
             </div>
-            <ErrorMessage message={error} />
+            {error && <ErrorMessage message={error} />}
 
             <Row>
               <Button
