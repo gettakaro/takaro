@@ -3,13 +3,12 @@ import {
   Container,
   InputContainer,
   Input,
-  ErrorContainer,
-  Error,
   PrefixContainer,
   SuffixContainer,
 } from './style';
+
+import { ErrorMessage } from '../ErrorMessage';
 import { Label } from '../Label';
-import { FieldProps } from '../..';
 import { useController } from 'react-hook-form';
 import {
   AiOutlineEye as ShowPasswordIcon,
@@ -21,7 +20,7 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 
-export interface FieldProps extends InputProps {
+export interface TextFieldProps extends InputProps {
   icon?: ReactElement;
   readOnly?: boolean;
   placeholder: string;
@@ -30,9 +29,10 @@ export interface FieldProps extends InputProps {
   type?: 'text' | 'password';
 }
 
-const defaultsApplier = defaultInputPropsFactory<FieldProps>(defaultInputProps);
+const defaultsApplier =
+  defaultInputPropsFactory<TextFieldProps>(defaultInputProps);
 
-export const TextField: FC<FieldProps> = (props) => {
+export const TextField: FC<TextFieldProps> = (props) => {
   const {
     control,
     loading,
@@ -51,15 +51,16 @@ export const TextField: FC<FieldProps> = (props) => {
     prefix,
     suffix,
   } = defaultsApplier(props);
+
+  console.log(required);
+
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    field: { ref, ...inputProps },
-  } = useController({ name, control, defaultValue: value });
+  const { field } = useController({ name, control, defaultValue: value });
 
   const handleOnBlur = () => {
-    inputProps.onBlur();
+    field.onBlur();
     setShowError(false);
   };
 
@@ -93,7 +94,7 @@ export const TextField: FC<FieldProps> = (props) => {
           required={required}
           hint={hint}
           htmlFor={name}
-          error={error ? true : false}
+          error={!!error}
           size={size}
           text={label}
           disabled={disabled}
@@ -104,7 +105,7 @@ export const TextField: FC<FieldProps> = (props) => {
         {prefix && <PrefixContainer>{prefix}</PrefixContainer>}
         {icon && cloneElement(icon, { size: 22, className: 'icon' })}
         <Input
-          {...inputProps}
+          {...field}
           autoCapitalize="off"
           autoComplete={type === 'password' ? 'new-password' : 'off'}
           hasError={!!error}
@@ -117,7 +118,6 @@ export const TextField: FC<FieldProps> = (props) => {
           onFocus={handleOnFocus}
           placeholder={placeholder}
           readOnly={readOnly}
-          ref={ref}
           role="presentation"
           type={type === 'text' || showPassword ? 'search' : 'password'}
         />
@@ -141,11 +141,7 @@ export const TextField: FC<FieldProps> = (props) => {
           ))}
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
-      {error && (
-        <ErrorContainer showError={showError}>
-          <Error>{error.message}</Error>
-        </ErrorContainer>
-      )}
+      {error && showError && <ErrorMessage message={error.message!} />}
     </Container>
   );
 };

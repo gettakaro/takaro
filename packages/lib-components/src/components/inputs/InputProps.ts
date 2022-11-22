@@ -7,15 +7,12 @@ interface DefaultInputProps {
   readOnly?: boolean;
   disabled?: boolean;
   size?: Size;
-
-  /// default value
 }
 
 export interface InputProps extends DefaultInputProps {
   control: Control<FieldValues> | Control<any>;
   name: string;
-
-  /// These can just have undefined as default value
+  /// These can just have undefined as default value.
   label?: string;
   error?: FieldError;
   hint?: string;
@@ -38,5 +35,6 @@ export const defaultInputProps: Required<DefaultInputProps> = {
 export function defaultInputPropsFactory<T extends InputProps>(
   defaultValues: Required<DefaultInputProps>
 ) {
-  return (values: T) => Object.assign({}, values, defaultValues);
+  return (values: T) =>
+    Object.assign({} as Required<DefaultInputProps> & T, defaultValues, values);
 }

@@ -33,6 +33,10 @@ Default.args = {
   min: 0,
   max: 100,
   step: 1,
+  showDots: false,
+  loading: false,
+  label: 'slider label',
+  color: 'primary',
 };
 
 export const Steps = Template.bind({});
@@ -41,6 +45,9 @@ Steps.args = {
   min: 0,
   max: 100,
   step: 10,
+  showDots: false,
+  loading: false,
+  color: 'primary',
 };
 
 export const StepsWithDots = Template.bind({});
@@ -50,4 +57,6 @@ StepsWithDots.args = {
   max: 100,
   step: 10,
   showDots: true,
+  loading: false,
+  color: 'primary',
 };

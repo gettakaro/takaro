@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { styled } from '../../../styled';
 import { Meta, StoryFn } from '@storybook/react';
-import { useRef, useState } from 'react';
 import { EditableFieldProps, EditableField } from '.';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { useValidationSchema } from '../../../hooks';
 
 export default {
   title: 'Inputs/EditableField',
@@ -10,8 +12,9 @@ export default {
   args: {
     disabled: false,
     isEditing: false,
-    text: 'I am the text, double click me',
-    allowEmpty: false,
+    value: 'I am the text, double click me',
+    required: true,
+    label: 'label',
   },
 } as Meta<EditableFieldProps>;
 
@@ -24,25 +27,37 @@ const Container = styled.div`
 `;
 
 export const Default: StoryFn<EditableFieldProps> = (args) => {
-  const [text, setText] = useState(args.text);
-  const inputRef = useRef<HTMLInputElement>(null);
+  type FormFields = {
+    editableField: string;
+  };
+
+  const validationSchema = useMemo(
+    () =>
+      yup.object<Record<keyof FormFields, yup.AnySchema>>({
+        editableField: yup
+          .string()
+          .min(12)
+          .required('This is a required field'),
+      }),
+    []
+  );
+
+  const { control } = useForm<FormFields>({
+    resolver: useValidationSchema(validationSchema),
+    mode: 'all',
+  });
 
   return (
     <Container>
       <EditableField
-        text={text}
-        childRef={inputRef}
+        name="editableField"
         isEditing={args.isEditing}
-        placeholder={args.placeholder}
         disabled={args.disabled}
-        allowEmpty={args.allowEmpty}
-      >
-        <input
-          onChange={(e) => setText(e.target.value)}
-          ref={inputRef}
-          value={text}
-        />
-      </EditableField>
+        required={args.required}
+        control={control}
+        value={args.value}
+        label={args.label}
+      />
     </Container>
   );
 };

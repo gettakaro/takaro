@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { TextField, FieldProps } from '../../inputs';
+import { TextField, TextFieldProps } from '.';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button } from '../../../';
+import * as yup from 'yup';
+import { useValidationSchema } from '../../../hooks';
 
 const Wrapper = styled.div`
   display: flex;
@@ -26,16 +28,30 @@ export default {
     prefix: 'https://',
     suffix: '.io',
   },
-} as Meta<FieldProps>;
+} as Meta<TextFieldProps>;
 
-export const Default: StoryFn<FieldProps> = (args) => {
+export const Default: StoryFn<TextFieldProps> = (args) => {
   type FormFields = { name: string };
   const [result, setResult] = useState<string>('none');
 
-  const { control, handleSubmit } = useForm<FormFields>({
+  const validationSchema = useMemo(
+    () =>
+      yup.object<Record<keyof FormFields, yup.AnySchema>>({
+        name: yup.string().min(6).required('Name is a required field.'),
+      }),
+    []
+  );
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormFields>({
     defaultValues: {
       name: '',
     },
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = ({ name }) => {
@@ -48,38 +64,42 @@ export const Default: StoryFn<FieldProps> = (args) => {
         <TextField
           control={control}
           label={args.label}
-          name="name"
+          name="textfield"
           placeholder={args.placeholder}
           required={args.required}
           hint={args.hint}
+          error={errors.name}
         />
         <TextField
           control={control}
           label={args.label}
-          name="name"
+          name="textfield"
           placeholder={args.placeholder}
           prefix={args.prefix}
           required={args.required}
           hint={args.hint}
+          error={errors.name}
         />
         <TextField
           control={control}
           label={args.label}
-          name="name"
+          name="textfield"
           placeholder={args.placeholder}
           suffix={args.suffix}
           required={args.required}
           hint={args.hint}
+          error={errors.name}
         />
         <TextField
           control={control}
           label={args.label}
-          name="name"
+          name="textfield"
           placeholder={args.placeholder}
           prefix={args.prefix}
           suffix={args.suffix}
           required={args.required}
           hint={args.hint}
+          error={errors.name}
         />
         <Button type="submit" text="Submit form" size="large" />
       </form>

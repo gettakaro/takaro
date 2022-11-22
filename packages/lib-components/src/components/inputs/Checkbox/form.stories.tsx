@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Button } from '../..';
 import { Checkbox, CheckboxProps } from '.';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import * as yup from 'yup';
+import { useValidationSchema } from '../../../hooks';
 
 const ResultContainer = styled.div`
   margin-top: 3rem;
@@ -38,12 +40,28 @@ export const OnSubmit: StoryFn<CheckboxProps> = () => {
   const [result, setResult] = useState<boolean>(false);
 
   type FormFields = {
-    hasCar: boolean;
+    termsAndConditions: boolean;
   };
-  const { control, handleSubmit } = useForm<FormFields>();
 
-  const submit: SubmitHandler<FormFields> = ({ hasCar }) => {
-    setResult(hasCar);
+  const validationSchema = useMemo(
+    () =>
+      yup.object<Record<keyof FormFields, yup.AnySchema>>({
+        termsAndConditions: yup.bool().oneOf([true], 'Field must be checked'),
+      }),
+    []
+  );
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
+  });
+
+  const submit: SubmitHandler<FormFields> = ({ termsAndConditions }) => {
+    setResult(termsAndConditions);
   };
 
   return (
@@ -51,9 +69,10 @@ export const OnSubmit: StoryFn<CheckboxProps> = () => {
       <form onSubmit={handleSubmit(submit)}>
         <Checkbox
           control={control}
-          label="Do you have a car?"
+          label="Do you accept the terms and conditions?"
           labelPosition="left"
-          name="hasCar"
+          name="termsAndConditions"
+          error={errors.termsAndConditions}
         />
         <Button
           onClick={() => {

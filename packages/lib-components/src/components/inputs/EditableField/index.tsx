@@ -2,54 +2,57 @@ import {
   FC,
   KeyboardEvent,
   MouseEvent,
-  MutableRefObject,
-  PropsWithChildren,
   useEffect,
+  useRef,
   useState,
 } from 'react';
+import { useController } from 'react-hook-form';
+import { ErrorMessage } from '../ErrorMessage';
 
 import {
   defaultInputProps,
   defaultInputPropsFactory,
   InputProps,
 } from '../InputProps';
+import { Label } from '../Label';
 
-import { Container, ErrorMessage } from './style';
+import { Container } from './style';
 
 export interface EditableFieldProps extends InputProps {
-  text?: string;
   isEditing?: boolean;
-  placeholder?: string;
-  childRef: MutableRefObject<HTMLInputElement | null>;
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<PropsWithChildren<EditableFieldProps>>(
-    defaultInputProps
-  );
+const defaultsApplier = defaultInputPropsFactory<EditableFieldProps>({
+  ...defaultInputProps,
+  required: true,
+});
 
-export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = (
-  props
-) => {
+export const EditableField: FC<EditableFieldProps> = (props) => {
   const {
     isEditing = false,
     disabled,
-    childRef,
     required,
-    children,
-    text,
-    placeholder,
+    value,
+    label,
+    size,
+    hint,
+    error,
+    name,
+    control,
+    loading,
   } = defaultsApplier(props);
 
   const [editing, setEditing] = useState(isEditing);
-  const [error, setError] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { field } = useController({ name, control, defaultValue: value });
 
   useEffect(() => {
-    if (childRef && childRef.current && editing === true) {
-      childRef.current.focus();
-      childRef.current.select();
+    if (inputRef && inputRef.current && editing === true) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
-  }, [editing, childRef]);
+  }, [editing, inputRef]);
 
   useEffect(() => {
     setEditing(editing);
@@ -59,20 +62,17 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = (
   const handleKeyDown = ({ key }: KeyboardEvent) => {
     const keys = ['Escape', 'Tab', 'Enter'];
 
-    if (required && childRef.current?.value == '') {
-      setError('Field cannot be empty!');
+    if (required && inputRef.current?.value == '') {
       return;
     }
 
-    if (keys.indexOf(key) > -1 && childRef.current && !disabled) {
-      setError('');
+    if (keys.indexOf(key) > -1 && inputRef.current && !disabled) {
       setEditing(false);
     }
   };
 
   const handleOnBlur = () => {
-    if (required && childRef.current?.value == '') {
-      setError('field cannot be empty!');
+    if (required && inputRef.current?.value == '') {
       return;
     }
     setEditing(false);
@@ -85,18 +85,34 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = (
     }
   };
 
+  if (loading) {
+    return <div>loading</div>;
+  }
+
   return (
     <Container>
+      {label && editing && (
+        <Label
+          error={!!error}
+          size={size}
+          text={label}
+          disabled={disabled}
+          position="top"
+          required={required}
+          hint={hint}
+        />
+      )}
+
       {editing ? (
         <div onBlur={handleOnBlur} onKeyDown={(e) => handleKeyDown(e)}>
-          {children}
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <input {...field} ref={inputRef} />
         </div>
       ) : (
         <div onClick={handleOnClick}>
-          <span>{text || placeholder}</span>
+          <span>{field.value || (value as string)}</span>
         </div>
       )}
+      {error && <ErrorMessage message={error.message!} />}
     </Container>
   );
 };

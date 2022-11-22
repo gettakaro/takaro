@@ -103,33 +103,3 @@ export const Input = styled.input<{
     color: ${({ theme }): string => theme.colors.primary};
   }
 `;
-
-export const ErrorContainer = styled.div<{ showError: boolean }>`
-  position: absolute;
-  min-height: ${({ theme }) => theme.spacing[5]};
-  display: flex;
-  align-items: center;
-  bottom: ${({ theme }) => -theme.spacing[6]};
-  height: auto;
-  width: ${({ showError }): string => (showError ? '100%' : '0')};
-  background-color: ${({ theme }): string => theme.colors.error};
-  transition: width 0.2s ease-in-out, transform 0.3s ease-in-out;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  transform: ${({ showError }): string =>
-    `translate(${showError ? '0' : '.5rem'})`};
-  z-index: 5;
-`;
-
-export const Error = styled.span`
-  display: flex;
-  align-items: center;
-  min-width: 100%;
-  width: 100%;
-  padding: ${({ theme }) =>
-    `${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
-  height: ${({ theme }) => theme.spacing[5]};
-  color: white;
-  font-weight: 500;
-  white-space: nowrap;
-`;
