@@ -11,7 +11,6 @@ export const Container = styled.div`
 
 export const Description = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing[4]};
-  user-select: none;
   color: ${({ theme }) => theme.colors.secondary};
   font-weight: 500;
   font-size: 1.25rem;
@@ -28,7 +27,6 @@ export const ActionContainer = styled.div<{ type: AlertVariants }>`
 
 export const Cancel = styled.div`
   cursor: pointer;
-  user-select: none;
   margin-right: ${({ theme }) => theme.spacing['1_5']};
   font-size: 1.325rem;
   color: ${({ theme }) => theme.colors.gray};
@@ -39,7 +37,6 @@ export const Header = styled.div<{ type: AlertVariants }>`
   align-items: center;
   justify-content: space-between;
   padding-bottom: ${({ theme }) => theme.spacing[3]};
-  user-select: none;
   svg {
     fill: ${({ theme, type }) =>
       type === 'info' ? theme.colors.primary : theme.colors.error};

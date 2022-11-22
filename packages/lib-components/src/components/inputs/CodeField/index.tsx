@@ -4,15 +4,9 @@ import React, {
   useRef,
   useEffect,
   ChangeEvent,
+  useState,
 } from 'react';
-import {
-  Container,
-  InputContainer,
-  Input,
-  LoadingField,
-  ErrorContainer,
-  Error,
-} from './style';
+import { Container, InputContainer, Input, LoadingField } from './style';
 import { useController } from 'react-hook-form';
 import {
   InputProps,
@@ -20,12 +14,13 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 import { Label } from '../Label';
+import { ErrorMessage } from '../ErrorMessage';
 
 export interface CodeFieldProps extends InputProps {
   name: string;
   fields: number;
   allowedCharacters?: RegExp;
-  autoSubmit: () => unknown;
+  autoSubmit?: () => unknown;
 }
 
 const defaultsApplier =
@@ -48,13 +43,14 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     value,
   } = defaultsApplier(props);
 
+  const [showError, setShowError] = useState<boolean>(false);
+
   const {
     field: { ...inputProps },
   } = useController({ name, control, defaultValue: value });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
-    console.log(fieldRefs.current);
     if (fieldRefs.current.length) {
       fieldRefs.current[0].focus();
     }
@@ -65,13 +61,13 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     inputProps.onChange(res);
 
     if (res.length === fields) {
-      if (autoSubmit) {
-        autoSubmit();
-      }
+      if (autoSubmit) autoSubmit();
     }
   };
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
     const {
       target: { value, nextElementSibling },
     } = e;
@@ -87,11 +83,15 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
   };
 
   const handleOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
+    setShowError(true);
     e.target.select();
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
+
     if (e.key === 'Backspace') {
       if (target.value === '' && target.previousElementSibling !== null) {
         if (target.previousElementSibling !== null) {
@@ -103,6 +103,11 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
       }
       sendResult();
     }
+  };
+
+  const handleOnBlur = () => {
+    if (disabled) return;
+    setShowError(false);
   };
 
   const handleOnPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
@@ -153,12 +158,15 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
           <Input
             autoCapitalize="off"
             autoComplete="off"
-            hasError={error ? true : false}
+            hasError={!!error}
+            isDisabled={disabled}
+            disabled={disabled}
             id={`${name}-${i}`}
             maxLength={1}
             name={`${name}-${i}`}
             onChange={handleOnChange}
             onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
             onKeyDown={handleKeyDown}
             onPaste={handleOnPaste}
             ref={(el) => {
@@ -169,12 +177,8 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             type="text"
           />
         ))}
+        {error && showError && <ErrorMessage message={error.message!} />}
       </InputContainer>
-      {error && (
-        <ErrorContainer>
-          <Error>{error.message}</Error>
-        </ErrorContainer>
-      )}
     </Container>
   );
 };
