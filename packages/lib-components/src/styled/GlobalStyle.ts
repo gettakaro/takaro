@@ -47,7 +47,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     margin: 0;
-    user-select: none;
     padding: 0;
     box-sizing: border-box;
     color: ${({ theme }) => theme.colors.text};
@@ -206,13 +205,4 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   /* notistack snackbar styling */
   ${SnackBarStyles}
 
-  /* rc-slider */
-  .rc-slider-tooltip-inner {
-    background-color: ${({ theme }) => theme.colors.primary}!important;
-    font-weight: 600;
-  }
-
-  .rc-slider-tooltip-arrow {
-    border-top-color: ${({ theme }) => theme.colors.primary}!important;
-  }
-`;
+  `;

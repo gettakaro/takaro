@@ -24,8 +24,8 @@ export interface CheckboxProps extends InputProps {
 }
 
 const variants = {
-  checked: { scale: 1 },
   unchecked: { scale: 0, opacity: 0 },
+  checked: { scale: 1 },
 };
 
 const defaultsApplier =
@@ -56,7 +56,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
   const [isChecked, setChecked] = useState<boolean>(checkbox.value);
 
   function handleOnClick(): void {
-    if (readOnly) {
+    if (readOnly || disabled) {
       return;
     }
     setChecked(!isChecked);
@@ -87,6 +87,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
           isChecked={isChecked}
           readOnly={readOnly}
           error={!!error}
+          disabled={disabled}
         />
         {/* CASE: show label after <CheckBox /> */}
         {labelPosition === 'right' && label && (
@@ -124,6 +125,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
         onClick={handleOnClick}
         readOnly={readOnly}
         error={!!error}
+        disabled={disabled}
       >
         <BackgroundContainer
           animate={isChecked ? 'checked' : 'unchecked'}
