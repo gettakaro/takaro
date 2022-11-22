@@ -40,6 +40,7 @@ export const Radio: FC<RadioProps> = (props) => {
     labelPosition = 'left',
     label,
     disabled,
+    hint,
   } = defaultsApplier(props);
 
   const handleOnClick = () => {
@@ -84,6 +85,7 @@ export const Radio: FC<RadioProps> = (props) => {
           error={!!error}
           onClick={handleOnClick}
           disabled={disabled}
+          hint={hint}
         />
       )}
       <RadioContainer
@@ -109,6 +111,7 @@ export const Radio: FC<RadioProps> = (props) => {
           size={size}
           disabled={disabled}
           onClick={handleOnClick}
+          hint={hint}
         />
       )}
     </Container>

@@ -1,13 +1,18 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { styled } from '../../../styled';
 import { Select, SelectProps, Option, OptionGroup } from './index';
 import { films } from './data';
+import { useValidationSchema } from '../../../hooks';
+import * as yup from 'yup';
 
 export default {
   title: 'Inputs/Select',
+  args: {
+    label: 'Film',
+  },
 } as Meta<SelectProps>;
 
 const OptionIcon = styled.img`
@@ -19,13 +24,28 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const Default: StoryFn<SelectProps> = () => {
+export const Default: StoryFn<SelectProps> = (args) => {
   type FormFields = { film: string };
   const [result, setResult] = useState<string>('none');
-  const { control, handleSubmit } = useForm<FormFields>();
+
+  const validationSchema = useMemo(
+    () =>
+      yup.object<Record<keyof FormFields, yup.AnySchema>>({
+        film: yup
+          .string()
+          .oneOf(
+            films.map((film) => film.name, 'Selecting an option is required.')
+          )
+          .required('The field is required.'),
+      }),
+    []
+  );
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    resolver: useValidationSchema(validationSchema),
+  });
 
   const submit: SubmitHandler<FormFields> = ({ film }) => {
-    console.log(film);
     setResult(film);
   };
 
@@ -35,12 +55,13 @@ export const Default: StoryFn<SelectProps> = () => {
         <Select
           control={control}
           name="film"
+          label={args.label}
           render={(selectedIndex) => (
             <div>
-              {films[selectedIndex] ? (
+              {films[selectedIndex] && (
                 <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
-              ) : null}
-              {films[selectedIndex]?.name ?? 'Select...'}{' '}
+              )}
+              {films[selectedIndex]?.name ?? 'Select...'}
             </div>
           )}
         >
@@ -54,13 +75,7 @@ export const Default: StoryFn<SelectProps> = () => {
             ))}
           </OptionGroup>
         </Select>
-        <Button
-          type="submit"
-          onClick={() => {
-            /* placeholder */
-          }}
-          text="Submit"
-        />
+        <Button type="submit" text="Submit" />
       </form>
       <span>result: {result}</span>
     </>

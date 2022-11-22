@@ -13,9 +13,6 @@ export { NetworkDetector } from './NetworkDetector';
 export { NotificationBanner } from './NotificationBanner';
 export type { NotificationBannerProps } from './NotificationBanner';
 
-export { ErrorMessage } from './ErrorMessage';
-export type { ErrorMessageProps } from './ErrorMessage';
-
 export { Error } from './Error';
 export type { ErrorProps } from './Error';
 

@@ -31,7 +31,7 @@ export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
   .rc-slider-handle {
     border: none;
     position: relative;
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme, color }) => theme.colors[color]};
     &::after {
       content: '';
       position: absolute;
@@ -81,6 +81,16 @@ export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
     }}
   }
   }
+
+  .rc-slider-tooltip-inner {
+    background-color: ${({ theme, color }) => theme.colors[color]}!important;
+    font-weight: 600;
+  }
+
+  .rc-slider-tooltip-arrow {
+    border-top-color: ${({ theme, color }) => theme.colors[color]}!important;
+  }
+
 
   .rc-slider-dot {
     background-color: ${({ theme }): string => theme.colors.gray};

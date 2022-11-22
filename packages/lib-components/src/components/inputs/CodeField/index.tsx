@@ -19,6 +19,7 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
+import { Label } from '../Label';
 
 export interface CodeFieldProps extends InputProps {
   name: string;
@@ -39,11 +40,17 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     fields,
     autoSubmit,
     allowedCharacters = /[0-9]/,
+    hint,
+    size,
+    disabled,
+    required,
+    label,
+    value,
   } = defaultsApplier(props);
 
   const {
     field: { ...inputProps },
-  } = useController({ name, control });
+  } = useController({ name, control, defaultValue: value });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
@@ -129,6 +136,18 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   return (
     <Container>
+      {label && (
+        <Label
+          required={required}
+          disabled={disabled}
+          size={size}
+          hint={hint}
+          text={label}
+          position="top"
+          error={!!error}
+          htmlFor={`${name}-0`}
+        />
+      )}
       <InputContainer fields={fields}>
         {Array.from(Array(fields).keys()).map((_, i) => (
           <Input
