@@ -17,7 +17,6 @@ export const SelectContainer = styled.div`
   border-radius: 0.5rem;
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: ${({ theme }) => theme.elevation[4]};
-  user-select: none;
 `;
 
 export const SelectButton = styled.div<{ isOpen: boolean }>`

@@ -27,6 +27,7 @@ export const CheckboxContainer = styled.div<{
   isChecked?: boolean;
   readOnly: boolean;
   error: boolean;
+  disabled: boolean;
 }>`
   display: flex;
   position: relative;
@@ -35,9 +36,9 @@ export const CheckboxContainer = styled.div<{
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
-    ${({ theme, readOnly, isChecked, error }): string => {
-      if (readOnly) {
-        return theme.colors.lightGray;
+    ${({ theme, isChecked, error, disabled }): string => {
+      if (disabled) {
+        return theme.colors.gray;
       }
       if (isChecked) {
         return theme.colors.primary;
@@ -50,7 +51,8 @@ export const CheckboxContainer = styled.div<{
 
   border-radius: 6px;
   transition: box-shadow 100ms linear, border-color 100ms linear;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  cursor: ${({ readOnly, disabled }) =>
+    readOnly || disabled ? 'not-allowed' : 'pointer'};
   z-index: 1;
   overflow: visible;
   &.placeholder {

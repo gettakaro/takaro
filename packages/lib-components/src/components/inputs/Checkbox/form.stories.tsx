@@ -14,9 +14,19 @@ const ResultContainer = styled.div`
 export default {
   title: 'Inputs/Checkbox/Form',
   component: Checkbox,
+  args: {
+    disabled: false,
+    hint: '',
+    label: 'Do you have a car?',
+    loading: false,
+    labelPosition: 'left',
+    readOnly: false,
+    required: false,
+    size: 'medium',
+  },
 } as Meta<CheckboxProps>;
 
-export const OnChange: StoryFn<CheckboxProps> = () => {
+export const OnChange: StoryFn<CheckboxProps> = (args) => {
   type FormFields = {
     hasCar: boolean;
   };
@@ -27,16 +37,21 @@ export const OnChange: StoryFn<CheckboxProps> = () => {
     <>
       <Checkbox
         control={control}
-        label="Do you have a car?"
-        labelPosition="left"
+        label={args.label}
+        labelPosition={args.labelPosition}
         name="hasCar"
+        disabled={args.disabled}
+        required={args.required}
+        readOnly={args.readOnly}
+        size={args.size}
+        loading={args.loading}
       />
       <ResultContainer>Result: {result ? 'true' : 'false'}</ResultContainer>
     </>
   );
 };
 
-export const OnSubmit: StoryFn<CheckboxProps> = () => {
+export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
   const [result, setResult] = useState<boolean>(false);
 
   type FormFields = {
@@ -72,15 +87,14 @@ export const OnSubmit: StoryFn<CheckboxProps> = () => {
           label="Do you accept the terms and conditions?"
           labelPosition="left"
           name="termsAndConditions"
+          readOnly={args.readOnly}
+          loading={args.loading}
+          size={args.size}
+          disabled={args.disabled}
+          required={args.required}
           error={errors.termsAndConditions}
         />
-        <Button
-          onClick={() => {
-            /* placeholder */
-          }}
-          text="Submit Form"
-          type="submit"
-        />
+        <Button text="Submit Form" type="submit" />
       </form>
       <ResultContainer>Result: {result ? 'true' : 'false'}</ResultContainer>
     </>

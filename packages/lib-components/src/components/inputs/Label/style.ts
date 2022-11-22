@@ -5,7 +5,7 @@ export const Container = styled.label<{
   error: boolean;
   size: Size;
   position: LabelPosition;
-  disabled: string;
+  disabled: boolean;
 }>`
   color: ${({ theme, error, disabled }): string => {
     if (disabled) {
@@ -18,7 +18,6 @@ export const Container = styled.label<{
   }};
 
   width: 100%;
-  user-select: none;
   font-size: 1.4rem;
   font-weight: 500;
   text-transform: capitalize;
@@ -28,9 +27,15 @@ export const Container = styled.label<{
 
   span {
     font-size: 1rem;
-    color: ${({ theme, error }): string =>
-      error ? theme.colors.error : theme.colors.text};
-  }
+    color: ${({ theme, error, disabled }): string => {
+      if (disabled) {
+        return theme.colors.gray;
+      }
+      if (error) {
+        return theme.colors.error;
+      }
+      return theme.colors.text;
+    }};
 
   margin: ${({ theme, position }) => {
     switch (position) {

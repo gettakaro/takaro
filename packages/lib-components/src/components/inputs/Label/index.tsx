@@ -43,6 +43,7 @@ export const Label: FC<LabelProps> = ({
   hint,
   disabled,
   position,
+  htmlFor,
   onClick = () => {},
 }) => {
   if (!hint && required) {
@@ -62,6 +63,7 @@ export const Label: FC<LabelProps> = ({
       size={size}
       position={position}
       disabled={disabled}
+      htmlFor={htmlFor}
     >
       {text}
       <span>{hint}</span>
