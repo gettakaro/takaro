@@ -21,3 +21,6 @@ export type { ProgressBarProps } from './ProgressBar';
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
+
+export { ErrorMessage } from './ErrorMessage/';
+export type { ErrorMessageProps } from './ErrorMessage/';
