@@ -10,6 +10,7 @@ const Container = styled.div`
     border: 2px solid ${({ theme }) => theme.colors.background};
     /* mind the negative sign here */
     margin-left: -${({ theme }) => theme.spacing['4']};
+
     :first-child {
       margin-left: ${({ theme }) => theme.spacing[0]};
     }

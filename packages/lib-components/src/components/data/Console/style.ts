@@ -1,5 +1,5 @@
 import { styled } from '../../../styled';
-import { Button } from '../../inputs/Button';
+import { Button } from '../../actions';
 
 export const Wrapper = styled.div`
   height: auto;
@@ -21,6 +21,6 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-  padding-top: 4.5rem;
+  padding-top: ${({ theme }) => theme.spacing[5]};
   z-index: 1;
 `;

@@ -12,7 +12,7 @@ const Container = styled.div`
     font-weight: 500;
   }
   p {
-    margin-bottom: 1.5rem;
+    margin-bottom: ${({ theme }) => theme.spacing['1_5']};
     font-size: 2rem;
   }
 `;
@@ -24,7 +24,10 @@ export interface ErrorProps {
   showIcon?: boolean;
 }
 
-export const Error: FC<ErrorProps> = ({ message = 'Something went wrong.', showIcon = true }) => {
+export const Error: FC<ErrorProps> = ({
+  message = 'Something went wrong.',
+  showIcon = true,
+}) => {
   return (
     <Container>
       {showIcon && <GhostIcon size={80} />}

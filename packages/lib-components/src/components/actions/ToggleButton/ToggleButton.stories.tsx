@@ -1,7 +1,12 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { ToggleButtonGroup, ToggleButton, ToggleButtonGroupProps } from '.';
-import { MdOutlineFormatAlignLeft, MdOutlineFormatAlignRight, MdOutlineFormatAlignJustify, MdOutlineFormatAlignCenter } from 'react-icons/md';
+import {
+  MdOutlineFormatAlignLeft,
+  MdOutlineFormatAlignRight,
+  MdOutlineFormatAlignJustify,
+  MdOutlineFormatAlignCenter,
+} from 'react-icons/md';
 
 const WrapperDecorator = styled.div`
   padding: 5rem;
@@ -10,10 +15,10 @@ const WrapperDecorator = styled.div`
 `;
 
 export default {
-  title: 'Inputs/ToggleButton',
+  title: 'Actions/ToggleButton',
   component: ToggleButtonGroup,
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
-  subcomponents: { ToggleButton }
+  subcomponents: { ToggleButton },
 } as Meta<ToggleButtonGroupProps>;
 
 export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
@@ -22,14 +27,19 @@ export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
   };
 
   return (
-    <ToggleButtonGroup
-      onChange={handleOnChange}
-      exclusive
-    >
-      <ToggleButton value="left"><MdOutlineFormatAlignLeft size={20} /></ToggleButton>
-      <ToggleButton value="center"><MdOutlineFormatAlignCenter size={20} /></ToggleButton>
-      <ToggleButton value="right"><MdOutlineFormatAlignRight size={20} /></ToggleButton>
-      <ToggleButton disabled value="justify"><MdOutlineFormatAlignJustify size={20} /></ToggleButton>
+    <ToggleButtonGroup onChange={handleOnChange} exclusive>
+      <ToggleButton value="left">
+        <MdOutlineFormatAlignLeft size={20} />
+      </ToggleButton>
+      <ToggleButton value="center">
+        <MdOutlineFormatAlignCenter size={20} />
+      </ToggleButton>
+      <ToggleButton value="right">
+        <MdOutlineFormatAlignRight size={20} />
+      </ToggleButton>
+      <ToggleButton disabled value="justify">
+        <MdOutlineFormatAlignJustify size={20} />
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 };
@@ -45,10 +55,18 @@ export const Vertical: StoryFn<ToggleButtonGroupProps> = () => {
       orientation="vertical"
       exclusive
     >
-      <ToggleButton value="left"><MdOutlineFormatAlignLeft size={20} /></ToggleButton>
-      <ToggleButton value="center"><MdOutlineFormatAlignCenter size={20} /></ToggleButton>
-      <ToggleButton value="right"><MdOutlineFormatAlignRight size={20} /></ToggleButton>
-      <ToggleButton value="justify"><MdOutlineFormatAlignJustify size={20} /></ToggleButton>
+      <ToggleButton value="left">
+        <MdOutlineFormatAlignLeft size={20} />
+      </ToggleButton>
+      <ToggleButton value="center">
+        <MdOutlineFormatAlignCenter size={20} />
+      </ToggleButton>
+      <ToggleButton value="right">
+        <MdOutlineFormatAlignRight size={20} />
+      </ToggleButton>
+      <ToggleButton value="justify">
+        <MdOutlineFormatAlignJustify size={20} />
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 };
@@ -65,10 +83,18 @@ export const FullWidth: StoryFn<ToggleButtonGroupProps> = () => {
       fullWidth
       exclusive
     >
-      <ToggleButton value="left"><MdOutlineFormatAlignLeft size={20} /></ToggleButton>
-      <ToggleButton value="center"><MdOutlineFormatAlignCenter size={20} /></ToggleButton>
-      <ToggleButton value="right"><MdOutlineFormatAlignRight size={20} /></ToggleButton>
-      <ToggleButton value="justify"><MdOutlineFormatAlignJustify size={20} /></ToggleButton>
+      <ToggleButton value="left">
+        <MdOutlineFormatAlignLeft size={20} />
+      </ToggleButton>
+      <ToggleButton value="center">
+        <MdOutlineFormatAlignCenter size={20} />
+      </ToggleButton>
+      <ToggleButton value="right">
+        <MdOutlineFormatAlignRight size={20} />
+      </ToggleButton>
+      <ToggleButton value="justify">
+        <MdOutlineFormatAlignJustify size={20} />
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 };
@@ -93,7 +119,7 @@ export const Text: StoryFn<ToggleButtonGroupProps> = () => {
 };
 
 export const NonExclusive: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (result: Map<string, boolean>) => {
+  const handleOnChange = (result: string | Map<string, boolean>) => {
     console.log('handleOnChange fired', result);
   };
 
@@ -103,10 +129,18 @@ export const NonExclusive: StoryFn<ToggleButtonGroupProps> = () => {
       orientation="horizontal"
       exclusive={false}
     >
-      <ToggleButton value="left"><MdOutlineFormatAlignLeft size={20} /></ToggleButton>
-      <ToggleButton value="center"><MdOutlineFormatAlignCenter size={20} /></ToggleButton>
-      <ToggleButton value="right"><MdOutlineFormatAlignRight size={20} /></ToggleButton>
-      <ToggleButton value="justify"><MdOutlineFormatAlignJustify size={20} /></ToggleButton>
+      <ToggleButton value="left">
+        <MdOutlineFormatAlignLeft size={20} />
+      </ToggleButton>
+      <ToggleButton value="center">
+        <MdOutlineFormatAlignCenter size={20} />
+      </ToggleButton>
+      <ToggleButton value="right">
+        <MdOutlineFormatAlignRight size={20} />
+      </ToggleButton>
+      <ToggleButton value="justify">
+        <MdOutlineFormatAlignJustify size={20} />
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 };

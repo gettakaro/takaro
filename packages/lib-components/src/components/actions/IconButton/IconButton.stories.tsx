@@ -13,15 +13,17 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Inputs/IconButton',
+  title: 'Actions/IconButton',
   component: IconButton,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
     onClick: undefined,
     size: 'medium',
     color: 'primary',
-    icon: <Icon />
-  }
+    icon: <Icon />,
+  },
 } as Meta<IconButtonProps>;
 
-export const Default: StoryFn<IconButtonProps> = (args) => <IconButton {...args} />;
+export const Default: StoryFn<IconButtonProps> = (args) => (
+  <IconButton {...args} />
+);

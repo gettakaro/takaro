@@ -54,5 +54,6 @@ export const Svg = styled.svg<{
     }
   }};
   fill: ${({ theme, color }): string => theme.colors[color]};
-  margin-right: ${({ textVisible }) => (textVisible ? '1.5rem' : '0')};
+  margin-right: ${({ theme, textVisible }) =>
+    textVisible ? theme.spacing['1_5'] : theme.spacing[0]};
 `;

@@ -1,5 +1,4 @@
-import { styled } from '../../../styled';
-import { Color, Size, AlertVariants } from '../../../styled/types';
+import { styled, Color, Size, AlertVariants } from '../../../styled';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
@@ -51,30 +50,30 @@ export const Default = styled.button<{
     stroke: white;
   }
 
-  ${({ size }) => {
+  ${({ size, theme }) => {
     switch (size) {
       case 'tiny':
         return `
-          padding: 0.4rem 0.8rem;
+          padding: ${theme.spacing['0_25']} ${theme.spacing['0_75']};
         `;
       case 'small':
         return `
-          padding: .6rem 1.5rem;
+          padding: ${theme.spacing['0_5']} ${theme.spacing['1']}
         `;
       case 'medium':
         return `
-          padding: 1.1rem 1.8rem;
+          padding: ${theme.spacing['0_75']} ${theme.spacing['1_5']}
         `;
       case 'large':
         return `
-          padding: 1.4rem 2.2rem;
+          padding: ${theme.spacing['1']} ${theme.spacing['2']}
         `;
       case 'huge':
         return `
           span {
             font-size: 105%;
           }
-          padding: 1.6rem 2.4rem;
+          padding: ${theme.spacing[1]} ${theme.spacing[2]}
         `;
     }
   }}
@@ -102,34 +101,6 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
     fill: ${({ theme, color }): string => theme.colors[color]};
     stroke: ${({ theme, color }): string => theme.colors[color]};
   }
-
-  ${({ size }) => {
-    switch (size) {
-      case 'tiny':
-        return `
-          padding: 0.2rem 0.6rem;
-        `;
-      case 'small':
-        return `
-          padding: .4rem 1.3rem;
-        `;
-      case 'medium':
-        return `
-          padding: 0.9rem 1.6rem;
-        `;
-      case 'large':
-        return `
-          padding: 1.2rem 2rem;
-        `;
-      case 'huge':
-        return `
-          span {
-            font-size: 105%;
-          }
-          padding: 1.4rem 2.2rem;
-        `;
-    }
-  }}
 `;
 
 export const Clear = styled(Outline)`
@@ -139,34 +110,6 @@ export const Clear = styled(Outline)`
   span {
     color: ${({ theme, color }): string => theme.colors[color]};
   }
-
-  ${({ size }) => {
-    switch (size) {
-      case 'tiny':
-        return `
-          padding: 0.4rem 0.8rem;
-        `;
-      case 'small':
-        return `
-          padding: .6rem 1.5rem;
-        `;
-      case 'medium':
-        return `
-          padding: 1.1rem 1.8rem;
-        `;
-      case 'large':
-        return `
-          padding: 1.4rem 2.2rem;
-        `;
-      case 'huge':
-        return `
-          span {
-            font-size: 105%;
-          }
-          padding: 1.6rem 2.4rem;
-        `;
-    }
-  }}
 `;
 
 export const White = styled(Clear)`
@@ -174,32 +117,4 @@ export const White = styled(Clear)`
   &:disabled {
     background-color: white;
   }
-
-  ${({ size }) => {
-    switch (size) {
-      case 'tiny':
-        return `
-          padding: 0.4rem 0.8rem;
-        `;
-      case 'small':
-        return `
-          padding: .6rem 1.5rem;
-        `;
-      case 'medium':
-        return `
-          padding: 1.1rem 1.8rem;
-        `;
-      case 'large':
-        return `
-          padding: 1.4rem 2.2rem;
-        `;
-      case 'huge':
-        return `
-          span {
-            font-size: 105%;
-          }
-          padding: 1.6rem 2.4rem;
-        `;
-    }
-  }}
 `;

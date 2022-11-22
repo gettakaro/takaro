@@ -1,17 +1,19 @@
 import { getTransition } from '../../../../helpers';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { Control, useController } from 'react-hook-form';
-import { Container, RadioContainer, Inner, Label } from './style';
+import { useController } from 'react-hook-form';
+import { Container, RadioContainer, Inner } from './style';
+import { Label } from '../../../../components';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../../InputProps';
 
-export interface RadioProps {
+export interface RadioProps extends InputProps {
   name: string;
-  control: Control<any>;
-  loading?: boolean;
   selected: boolean;
   setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
-  readOnly: boolean;
-  label?: string;
   value: string;
   labelPosition: 'left' | 'right';
 }
@@ -21,18 +23,27 @@ const variants = {
   deselected: { scale: 0 },
 };
 
-export const Radio: FC<RadioProps> = ({
-  name,
-  control,
-  loading = false,
-  readOnly,
-  value,
-  selected,
-  setSelected,
-  label = '',
-  labelPosition,
-}) => {
-  const onSelect = () => {
+const defaultsApplier = defaultInputPropsFactory<RadioProps>(defaultInputProps);
+
+export const Radio: FC<RadioProps> = (props) => {
+  const {
+    readOnly,
+    control,
+    loading,
+    name,
+    size,
+    required,
+    error,
+    value,
+    selected,
+    setSelected,
+    labelPosition = 'left',
+    label,
+    disabled,
+    hint,
+  } = defaultsApplier(props);
+
+  const handleOnClick = () => {
     if (readOnly) return;
     setSelected(value);
   };
@@ -53,19 +64,35 @@ export const Radio: FC<RadioProps> = ({
   if (loading) {
     return (
       <Container>
-        <RadioContainer className="placeholder" readOnly={true} />
+        <RadioContainer
+          isSelected={selected}
+          className="placeholder"
+          readOnly={true}
+        />
       </Container>
     );
   }
 
   return (
     <Container>
-      {labelPosition === 'left' && (
-        <Label htmlFor={name} isLeft onClick={onSelect} readOnly={readOnly}>
-          {label}
-        </Label>
+      {label && labelPosition === 'left' && (
+        <Label
+          htmlFor={name}
+          text={label}
+          required={required}
+          position={labelPosition}
+          size={size}
+          error={!!error}
+          onClick={handleOnClick}
+          disabled={disabled}
+          hint={hint}
+        />
       )}
-      <RadioContainer onClick={onSelect} readOnly={readOnly}>
+      <RadioContainer
+        isSelected={selected}
+        onClick={handleOnClick}
+        readOnly={readOnly}
+      >
         <Inner
           animate={selected ? 'selected' : 'deselected'}
           isSelected={selected}
@@ -74,15 +101,18 @@ export const Radio: FC<RadioProps> = ({
           variants={variants}
         />
       </RadioContainer>
-      {labelPosition === 'right' && (
+      {label && labelPosition === 'right' && (
         <Label
           htmlFor={name}
-          isLeft={false}
-          onClick={onSelect}
-          readOnly={readOnly}
-        >
-          {label}
-        </Label>
+          position={labelPosition}
+          required={required}
+          error={!!error}
+          text={label}
+          size={size}
+          disabled={disabled}
+          onClick={handleOnClick}
+          hint={hint}
+        />
       )}
     </Container>
   );

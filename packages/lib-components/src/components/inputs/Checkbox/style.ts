@@ -6,15 +6,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 2.5rem;
-`;
-
-export const Label = styled.label<{ position: 'left' | 'right' }>`
-  margin: ${({ position }) =>
-    position === 'left' ? '0 2.5rem 0 0' : '0 0 0 2.5rem'};
-  cursor: pointer;
-  font-size: 1.5rem;
-  user-select: none;
+  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 `;
 
 export const Input = styled.input`
@@ -24,40 +16,50 @@ export const Input = styled.input`
 
 export const BackgroundContainer = styled(motion.div)`
   position: absolute;
-  width: 23px;
-  height: 23px;
+  width: 2.3rem;
+  height: 2.3rem;
   background-color: ${({ theme }) => theme.colors.primary};
   z-index: 0;
-  border-radius: 6px;
+  border-radius: 0.6rem;
 `;
 
 export const CheckboxContainer = styled.div<{
   isChecked?: boolean;
   readOnly: boolean;
+  error: boolean;
+  disabled: boolean;
 }>`
   display: flex;
   position: relative;
-  width: 23px;
-  height: 23px;
+  width: 2.3rem;
+  height: 2.3rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid
-    ${({ theme, readOnly, isChecked }): string =>
-      readOnly
-        ? theme.colors.lightGray
-        : isChecked
-        ? theme.colors.primary
-        : theme.colors.gray};
+  border: 0.1rem solid
+    ${({ theme, isChecked, error, disabled }): string => {
+      if (disabled) {
+        return theme.colors.gray;
+      }
+      if (isChecked) {
+        return theme.colors.primary;
+      }
+      if (error) {
+        return theme.colors.error;
+      }
+      return theme.colors.gray;
+    }};
+
   border-radius: 6px;
-  transition: box-shadow 0.125s linear, border-color 0.15s linear;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  transition: box-shadow 100ms linear, border-color 100ms linear;
+  cursor: ${({ readOnly, disabled }) =>
+    readOnly || disabled ? 'not-allowed' : 'pointer'};
   z-index: 1;
   overflow: visible;
   &.placeholder {
     border: none; /* Otherwise the border does not have the animation */
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
+    border-radius: 0.4rem;
+    width: 2.4rem;
+    height: 2.4rem;
     cursor: default;
   }
 `;

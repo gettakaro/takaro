@@ -4,9 +4,9 @@ import {
   MouseEvent as ReactMouseEvent,
   ReactElement,
 } from 'react';
-import { Spinner } from '../..';
+import { Spinner } from '../../../components';
 import { ButtonColor, Default, Outline, Clear, White } from './style';
-import { Size, Variant } from '../../../styled/types';
+import { Size, Variant } from '../../../styled';
 
 export interface ButtonProps {
   disabled?: boolean;
