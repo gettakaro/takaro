@@ -5,10 +5,8 @@ export { Select, OptionGroup, Option } from './Select';
 export type { SelectProps, OptionProps, OptionGroupProps } from './Select';
 
 export { Switch } from './Switch';
-export type { SwitchProps } from './Switch';
 
 export { TextField } from './TextField';
-export type { FieldProps } from './Field';
 
 export { SliderComponent as Slider } from './Slider';
 export type { SliderProps } from './Slider';

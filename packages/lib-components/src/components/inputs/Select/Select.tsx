@@ -15,8 +15,7 @@ import {
   SelectButton,
   SelectContainer,
   ArrowIcon,
-  ErrorContainer,
-  Error,
+  Container,
 } from './style';
 import { Label } from '../../../components';
 
@@ -42,6 +41,7 @@ import {
   defaultInputPropsFactory,
   defaultInputProps,
 } from '../InputProps';
+import { ErrorMessage } from '../ErrorMessage';
 
 export interface SelectProps extends InputProps {
   render: (selectedIndex: number) => React.ReactNode;
@@ -58,11 +58,13 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     size: componentSize,
     label,
     render,
-    error,
     children,
     control,
     value,
     disabled,
+    hint,
+    error,
+    loading,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -83,7 +85,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
   });
 
   const [open, setOpen] = useState(false);
-  const [showError] = useState<boolean>(false);
+  const [showError] = useState<boolean>(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
     Math.max(0, listContentRef.current.indexOf(value))
@@ -177,6 +179,10 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     ) ?? []),
   ];
 
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
   return (
     <SelectContext.Provider
       value={{
@@ -190,58 +196,61 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
         dataRef: context.dataRef,
       }}
     >
-      {label && (
-        <Label
-          error={!!error}
-          text={label}
-          required={required}
-          position="top"
-          size={componentSize}
-          disabled={disabled}
-        />
-      )}
-      <SelectButton
-        {...getReferenceProps({
-          ref: reference,
-        })}
-        isOpen={open}
-      >
-        {render(selectedIndex - 1)}
-        <ArrowIcon size={18} isOpen={open} />
-      </SelectButton>
-      {error && (
-        <ErrorContainer showError={!open && showError}>
-          <Error>{error.message}</Error>
-        </ErrorContainer>
-      )}
-      {open && (
-        <FloatingOverlay lockScroll>
-          <FloatingFocusManager context={context} initialFocus={selectedIndex}>
-            <SelectContainer
-              {...getFloatingProps({
-                ref: floating,
-                style: {
-                  position: strategy,
-                  top: y ?? 0,
-                  left: x ?? 0,
-                  overflow: 'auto',
-                },
-                onPointerMove() {
-                  setPointer(true);
-                },
-                onKeyDown(event) {
-                  setPointer(false);
-                  if (event.key === 'Tab') {
-                    setOpen(false);
-                  }
-                },
-              })}
+      <Container>
+        {label && (
+          <Label
+            error={!!error}
+            text={label}
+            required={required}
+            position="top"
+            size={componentSize}
+            disabled={disabled}
+            hint={hint}
+            onClick={() => setOpen(!open)}
+          />
+        )}
+        <SelectButton
+          {...getReferenceProps({
+            ref: reference,
+          })}
+          isOpen={open}
+        >
+          {render(selectedIndex - 1)}
+          <ArrowIcon size={18} isOpen={open} />
+        </SelectButton>
+        {error && showError && <ErrorMessage message={error.message!} />}
+        {open && (
+          <FloatingOverlay lockScroll>
+            <FloatingFocusManager
+              context={context}
+              initialFocus={selectedIndex}
             >
-              {options}
-            </SelectContainer>
-          </FloatingFocusManager>
-        </FloatingOverlay>
-      )}
+              <SelectContainer
+                {...getFloatingProps({
+                  ref: floating,
+                  style: {
+                    position: strategy,
+                    top: y ?? 0,
+                    left: x ?? 0,
+                    overflow: 'auto',
+                  },
+                  onPointerMove() {
+                    setPointer(true);
+                  },
+                  onKeyDown(event) {
+                    setPointer(false);
+                    if (event.key === 'Tab') {
+                      setOpen(false);
+                    }
+                  },
+                })}
+              >
+                {options}
+              </SelectContainer>
+            </FloatingFocusManager>
+          </FloatingOverlay>
+        )}
+      </Container>
     </SelectContext.Provider>
   );
 };

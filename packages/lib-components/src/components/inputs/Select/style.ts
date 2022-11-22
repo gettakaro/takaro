@@ -1,7 +1,11 @@
 import { styled } from '../../../styled';
 import { AiOutlineDown } from 'react-icons/ai';
 
-// this wraps all the options
+// This wraps everything
+export const Container = styled.div`
+  display: relative;
+`;
+
 export const SelectContainer = styled.div`
   margin: ${({ theme }) => theme.spacing[0]};
   box-sizing: border-box;
@@ -54,25 +58,4 @@ export const GroupLabel = styled.li`
 export const ArrowIcon = styled(AiOutlineDown)<{ isOpen: boolean }>`
   fill: ${({ theme, isOpen }) =>
     isOpen ? theme.colors.primary : theme.colors.background};
-`;
-
-export const ErrorContainer = styled.div<{ showError: boolean }>`
-  width: ${({ showError }): string => (showError ? '100%' : '0')};
-  background-color: ${({ theme }): string => theme.colors.error};
-  transition: width 0.2s ease-in-out, transform 0.3s ease-in-out;
-  overflow: hidden;
-  border-radius: 0.5rem;
-`;
-
-export const Error = styled.span`
-  display: flex;
-  align-items: center;
-  min-width: 100%;
-  width: 100%;
-  padding: ${({ theme }) =>
-    `${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
-  height: 4rem;
-  color: white;
-  font-weight: 500;
-  white-space: nowrap;
 `;

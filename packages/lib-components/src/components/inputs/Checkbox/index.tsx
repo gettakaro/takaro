@@ -17,9 +17,9 @@ import {
   defaultInputPropsFactory,
   defaultInputProps,
 } from '../InputProps';
+import { ErrorMessage } from '../ErrorMessage';
 
 export interface CheckboxProps extends InputProps {
-  name: string;
   labelPosition?: 'left' | 'right';
 }
 
@@ -43,6 +43,8 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
     disabled,
     value,
     labelPosition,
+    hint,
+    error,
   } = defaultsApplier(props);
 
   const { field: checkbox } = useController({
@@ -50,6 +52,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
     control,
     defaultValue: value,
   });
+
   const [isChecked, setChecked] = useState<boolean>(checkbox.value);
 
   function handleOnClick(): void {
@@ -69,28 +72,33 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
         {/* CASE: Show label before <CheckBox /> */}
         {labelPosition === 'left' && label && (
           <Label
-            error={false}
+            error={!!error}
             position={labelPosition}
             size={size}
             text={label}
             disabled={disabled}
             required={required}
+            hint={hint}
+            onClick={handleOnClick}
           />
         )}
         <CheckboxContainer
           className="placeholder"
           isChecked={isChecked}
           readOnly={readOnly}
+          error={!!error}
         />
         {/* CASE: show label after <CheckBox /> */}
         {labelPosition === 'right' && label && (
           <Label
-            error={false}
+            error={!!error}
             position={labelPosition}
-            disabled={disabled}
-            text={label}
             size={size}
+            text={label}
+            disabled={disabled}
             required={required}
+            hint={hint}
+            onClick={handleOnClick}
           />
         )}
       </Container>
@@ -102,7 +110,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
       {/* CASE: Show label before <CheckBox /> */}
       {labelPosition === 'left' && label && (
         <Label
-          error={false}
+          error={!!error}
           position={labelPosition}
           size={size}
           text={label}
@@ -115,6 +123,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
         isChecked={isChecked}
         onClick={handleOnClick}
         readOnly={readOnly}
+        error={!!error}
       >
         <BackgroundContainer
           animate={isChecked ? 'checked' : 'unchecked'}
@@ -128,7 +137,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
       {/* CASE: show label after <CheckBox /> */}
       {labelPosition === 'right' && label && (
         <Label
-          error={false}
+          error={!!error}
           position={labelPosition}
           text={label}
           disabled={disabled}
@@ -136,6 +145,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
           size={size}
         />
       )}
+      {error && <ErrorMessage message={error.message!} />}
     </Container>
   );
 };
