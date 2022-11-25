@@ -1,11 +1,14 @@
 import { CustomContentProps, useSnackbar } from 'notistack';
-import { useState, forwardRef, ReactElement } from 'react';
+import { useState, forwardRef, PropsWithChildren } from 'react';
 import { styled } from '../../../../styled';
-import { AiOutlineClose as CloseIcon, AiOutlineDown as ArrowDownIcon } from 'react-icons/ai';
+import {
+  AiOutlineClose as CloseIcon,
+  AiOutlineDown as ArrowDownIcon,
+} from 'react-icons/ai';
 
 const Wrapper = styled.div`
-  box-shadow: ${({ theme }) => theme.shadows.default};
-  border-radius: 10px;
+  box-shadow: ${({ theme }) => theme.elevation[4]};
+  border-radius: 1rem;
   width: 300px;
 `;
 
@@ -15,8 +18,8 @@ const Container = styled.div<{ expanded: boolean }>`
   justify-content: space-between;
   min-height: 0;
   background-color: ${({ theme }) => theme.colors.primary};
-  padding: 1.2rem;
-  border-radius: 10px;
+  padding: ${({ theme }) => theme.spacing[1]};
+  border-radius: 1rem;
 
   ${({ expanded }) => {
     if (expanded) {
@@ -35,44 +38,42 @@ const Container = styled.div<{ expanded: boolean }>`
     fill: white;
     stroke: white;
     cursor: pointer;
-    margin: 0 4px;
+    padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   }
 `;
 
 const Content = styled.div<{ expanded: boolean }>`
   background-color: white;
   height: ${({ expanded }): string => (expanded ? 'auto' : '0')};
-  padding: ${({ expanded }): string => (expanded ? '1.2rem' : '0')};
+  padding: ${({ expanded, theme }): string =>
+    expanded ? theme.spacing[1] : theme.spacing[0]};
   will-change: height;
   transition: height 0.2s ease-in-out;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 1rem;
 `;
 
-export interface DrawerSnackProps extends CustomContentProps {
-  children: ReactElement | ReactElement[]
-}
+export const DrawerSnack = forwardRef<
+  HTMLDivElement,
+  PropsWithChildren<CustomContentProps>
+>(({ id, message, children }, ref) => {
+  const { closeSnackbar } = useSnackbar();
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-export const DrawerSnack = forwardRef<HTMLDivElement, DrawerSnackProps>(
-  ({ id, message, children }, ref) => {
-    const { closeSnackbar } = useSnackbar();
-    const [expanded, setExpanded] = useState<boolean>(false);
+  const handleClose = () => {
+    closeSnackbar(id);
+  };
 
-    const handleClose = () => {
-      closeSnackbar(id);
-    };
-
-    return (
-      <Wrapper ref={ref}>
-        <Container expanded={expanded}>
-          <h5>{message}</h5>
-          <div>
-            <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
-            <CloseIcon onClick={handleClose} size={20} />
-          </div>
-        </Container>
-        <Content expanded={expanded}>{children}</Content>
-      </Wrapper>
-    );
-  }
-);
+  return (
+    <Wrapper ref={ref}>
+      <Container expanded={expanded}>
+        <h5>{message}</h5>
+        <div>
+          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
+          <CloseIcon onClick={handleClose} size={20} />
+        </div>
+      </Container>
+      <Content expanded={expanded}>{children}</Content>
+    </Wrapper>
+  );
+});

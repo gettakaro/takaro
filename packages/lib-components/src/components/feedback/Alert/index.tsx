@@ -4,9 +4,10 @@ import {
   AiFillCheckCircle as Success,
   AiFillCloseCircle as Error,
   AiOutlineWarning as Warning,
-  AiFillInfoCircle as Info
+  AiFillInfoCircle as Info,
 } from 'react-icons/ai';
 import { AnimatePresence } from 'framer-motion';
+import { Elevation } from '../../../styled/';
 
 export type AlertVariants = 'success' | 'error' | 'warning' | 'info';
 
@@ -19,11 +20,19 @@ export interface AlertProps {
   variant: AlertVariants;
   title: string;
   text: string | string[];
+  elevation?: Elevation;
   dismiss?: boolean;
   action?: Action;
 }
 
-export const Alert: FC<AlertProps> = ({ variant, title, text, dismiss = false, action }) => {
+export const Alert: FC<AlertProps> = ({
+  variant,
+  title,
+  text,
+  dismiss = false,
+  elevation = 4,
+  action,
+}) => {
   const [visible, setVisible] = useState(true);
 
   function getIcon() {
@@ -47,6 +56,7 @@ export const Alert: FC<AlertProps> = ({ variant, title, text, dismiss = false, a
           hasTitle={title ? true : false}
           initial={{ opacity: 0 }}
           variant={variant}
+          elevation={elevation}
         >
           <Grid>
             <IconContainer variant={variant}>{getIcon()}</IconContainer>
@@ -68,9 +78,16 @@ export const Alert: FC<AlertProps> = ({ variant, title, text, dismiss = false, a
               </ul>
             )}
             <div />
-            <ButtonContainer show={dismiss || action ? true : false} variant={variant}>
-              {action && <button onClick={() => action.execute()}>{action.text}</button>}
-              {dismiss && <button onClick={() => setVisible(false)}>Dismiss</button>}
+            <ButtonContainer
+              show={dismiss || action ? true : false}
+              variant={variant}
+            >
+              {action && (
+                <button onClick={() => action.execute()}>{action.text}</button>
+              )}
+              {dismiss && (
+                <button onClick={() => setVisible(false)}>Dismiss</button>
+              )}
             </ButtonContainer>
           </Grid>
         </Container>

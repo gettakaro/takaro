@@ -18,7 +18,7 @@ const Wrapper = styled.div`
 export default {
   title: 'Inputs/Slider',
   component: SliderComponent,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
 } as Meta<SliderProps>;
 
 const Template: StoryFn<SliderProps> = (args) => {
@@ -33,9 +33,10 @@ Default.args = {
   min: 0,
   max: 100,
   step: 1,
-  onChange: (val: number) => {
-    console.log(val);
-  }
+  showDots: false,
+  loading: false,
+  label: 'slider label',
+  color: 'primary',
 };
 
 export const Steps = Template.bind({});
@@ -43,7 +44,10 @@ Steps.args = {
   name: 'slider-with-steps',
   min: 0,
   max: 100,
-  step: 10
+  step: 10,
+  showDots: false,
+  loading: false,
+  color: 'primary',
 };
 
 export const StepsWithDots = Template.bind({});
@@ -52,5 +56,7 @@ StepsWithDots.args = {
   min: 0,
   max: 100,
   step: 10,
-  showDots: true
+  showDots: true,
+  loading: false,
+  color: 'primary',
 };

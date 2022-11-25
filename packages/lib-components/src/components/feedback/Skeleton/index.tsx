@@ -22,7 +22,7 @@ const StyledDiv = styled.div<{
 }>`
   width: ${({ s_width }) => s_width};
   height: ${({ s_height }) => s_height};
-  margin: 10px 0;
+  margin: ${({ theme }) => theme.spacing[1]};
   overflow: hidden;
   position: relative;
 
@@ -46,7 +46,7 @@ const StyledDiv = styled.div<{
     animation: ${skeletonLoading} 2.5s infinite ease-in-out;
   }
 
-  border-radius: ${({ variant, s_width, s_height }) => {
+  border-radius: ${({ variant }) => {
     switch (variant) {
       case 'rectangular':
         return '1rem';
@@ -58,6 +58,10 @@ const StyledDiv = styled.div<{
   }};
 `;
 
-export const Skeleton: FC<SkeletonProps> = ({ width = '210px', height = '20px', variant }) => {
+export const Skeleton: FC<SkeletonProps> = ({
+  width = '210px',
+  height = '20px',
+  variant,
+}) => {
   return <StyledDiv s_height={height} s_width={width} variant={variant} />;
 };

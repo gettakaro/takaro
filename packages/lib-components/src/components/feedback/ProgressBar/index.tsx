@@ -43,13 +43,13 @@ const Container = styled.div`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: 1rem;
+  padding: ${({ theme }) => theme.spacing[1]};
 `;
 const Progress = styled.div<{ color: Color; progress: number }>`
   width: calc(100% - 50px);
   position: relative;
-  background-color: ${({ color, theme }) => theme.colors.background};
-  height: 1rem;
+  background-color: ${({ theme }) => theme.colors.background};
+  height: ${({ theme }) => theme.spacing[1]};
   border-radius: 1rem;
   overflow: hidden;
 
@@ -60,7 +60,7 @@ const Progress = styled.div<{ color: Color; progress: number }>`
     top: 50%;
     transform: translateY(-50%);
     left: 0;
-    height: 1rem;
+    height: ${({ theme }) => theme.spacing[1]};
     max-width: 100%;
     transition: 0.2s width ease-out;
     background-color: ${({ theme, color }) => darken(0.2, theme.colors[color])};
@@ -75,7 +75,7 @@ const Progress = styled.div<{ color: Color; progress: number }>`
 `;
 
 const Label = styled.div`
-  margin-left: 1rem;
+  margin-left: ${({ theme }) => theme.spacing[1]};
 `;
 
 export interface ProgressBarProps {
@@ -89,7 +89,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({
   mode,
   value = 0,
   color = 'primary',
-  showValue = false
+  showValue = false,
 }) => {
   if (mode === 'determinate') {
     return (

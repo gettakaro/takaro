@@ -1,56 +1,53 @@
 import { FC, PropsWithChildren } from 'react';
-import { styled } from '../../../styled';
+import { Elevation, Size, styled } from '../../../styled';
 
-const Template = styled.div<{ gradient: boolean }>`
-  background: ${({ theme, gradient }) =>
-    gradient ? theme.colors.primary : 'white'};
+const Container = styled.div<{ size: Size; elevation: Elevation }>`
+  background-color: white;
   border-radius: 0.6rem;
-  margin: 1rem;
-  box-shadow: ${({ theme }) => theme.shadows.default};
-  color: ${({ theme, gradient }) => (gradient ? 'white' : theme.colors.text)};
+  margin: ${({ theme }) => `${theme.spacing[1]} 0`};
+  box-shadow: ${({ theme, elevation }): string => theme.elevation[elevation]};
+  color: ${({ theme }) => theme.colors.text};
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  div {
-    color: ${({ theme, gradient }) =>
-      gradient ? 'white' : theme.colors.text}!important;
+  ${({ theme, size }) => {
+    switch (size) {
+      case 'tiny':
+        return `padding: ${theme.spacing['0_25']}`;
+      case 'small':
+        return `padding: ${theme.spacing['0_5']}`;
+      case 'medium':
+        return `padding: ${theme.spacing['1_5']}`;
+      case 'large':
+        return `padding: ${theme.spacing['2_5']}`;
+      case 'huge':
+        return `padding: ${theme.spacing[5]}`;
+    }
+  }};
+
+  &.placeholder {
+    width: 100%;
+    height: 500px; /* TODO: this should be based on the **density** and **size** */
   }
 `;
 
-const Small = styled(Template)`
-  padding: 0.5rem;
-`;
-const Medium = styled(Template)`
-  padding: 1.5rem;
-`;
-const Large = styled(Template)`
-  padding: 2.5rem;
-`;
-
 export interface CardProps {
-  gradient?: boolean;
-  size?: 'small' | 'medium' | 'large';
-  // TODO: add skeleton loading
-  // loading?: boolean;
+  size?: Size;
+  loading?: boolean;
+  elevation: Elevation;
 }
 
 // TODO: implement skeleton loading
 export const Card: FC<PropsWithChildren<CardProps>> = ({
   children,
-  gradient = false,
   size = 'medium',
+  loading = false,
+  elevation,
 }) => {
-  switch (size) {
-    case 'small':
-      return <Small gradient={gradient}>{children}</Small>;
-    case 'medium':
-      return <Medium gradient={gradient}>{children}</Medium>;
-    case 'large':
-      return <Large gradient={gradient}>{children}</Large>;
-  }
+  if (loading)
+    return <Container elevation={0} size="large" className="placeholder" />;
+
+  return (
+    <Container elevation={elevation} size={size}>
+      {children}
+    </Container>
+  );
 };

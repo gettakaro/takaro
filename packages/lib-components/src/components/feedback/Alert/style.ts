@@ -1,4 +1,4 @@
-import { styled } from '../../../styled';
+import { Elevation, styled } from '../../../styled';
 import { AlertVariants } from '.';
 import { motion } from 'framer-motion';
 import { lighten, darken } from 'polished';
@@ -6,11 +6,13 @@ import { lighten, darken } from 'polished';
 export const Container = styled(motion.div)<{
   variant: AlertVariants;
   hasTitle: boolean;
+  elevation: Elevation;
 }>`
   width: 100%;
-  padding: 1rem 1.2rem;
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   border-radius: 1rem;
-  margin: 1.5rem auto 1.5rem auto;
+  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
+  margin: ${({ theme }) => `${theme.spacing['1_5']} auto`};
   h2 {
     font-size: 1.825rem;
     display: flex;
@@ -19,18 +21,19 @@ export const Container = styled(motion.div)<{
     justify-content: flex-start;
   }
   p {
-    margin-top: ${({ hasTitle }) => (hasTitle ? '1.5rem' : '0')};
+    margin-top: ${({ theme, hasTitle }) =>
+      hasTitle ? theme.spacing['1_5'] : theme.spacing[0]};
   }
   p,
   li {
     font-size: 1.325rem;
   }
   ul {
-    margin-left: 15px;
+    margin-left: ${({ theme }) => theme.spacing['1_5']};
     li {
       list-style-type: disc;
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin-top: ${({ theme }) => theme.spacing['0_5']};
+      margin-bottom: ${({ theme }) => theme.spacing['0_5']};
     }
   }
   /* set background color equal to provided type */
@@ -52,7 +55,7 @@ export const Container = styled(motion.div)<{
 
 export const Grid = styled.div`
   display: grid;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: ${({ theme }) => theme.spacing[5]} 1fr;
   align-items: center;
 `;
 
@@ -60,7 +63,7 @@ export const IconContainer = styled.div<{ variant: AlertVariants }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1.4rem;
+  margin-right: ${({ theme }) => theme.spacing['1_5']};
   svg {
     fill: ${({ variant, theme }): string => theme.colors[variant]};
   }
@@ -72,9 +75,10 @@ export const ButtonContainer = styled.div<{
 }>`
   display: ${({ show }): string => (show ? 'flex' : 'none')};
   button {
-    margin-top: 2rem;
-    margin-right: 2rem;
-    padding: 0.8rem 0.5rem 0.8rem 0.5rem;
+    margin-top: ${({ theme }) => theme.spacing[2]};
+    margin-right: ${({ theme }) => theme.spacing[2]};
+    padding: ${({ theme }) =>
+      `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
     border-radius: 0.5rem;
     background-color: ${({ theme, variant }): string =>
       lighten('0.2', theme.colors[variant])};

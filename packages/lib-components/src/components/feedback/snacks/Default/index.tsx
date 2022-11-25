@@ -1,4 +1,4 @@
-import { forwardRef, FC, ReactElement, cloneElement } from 'react';
+import { forwardRef, FC, ReactElement, cloneElement, useCallback } from 'react';
 import { CustomContentProps, useSnackbar } from 'notistack';
 import {
   AiOutlineClose as CloseIcon,
@@ -17,14 +17,16 @@ import {
   ButtonContainer,
 } from './style';
 import { useTheme } from '../../../../hooks';
-import { ButtonProps } from '../../../inputs';
+import { ButtonProps } from '../../../../components';
+import { AlertVariants } from '../../../../styled';
 
+/* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
 export interface DefaultSnackProps extends CustomContentProps {
-  title: string;
+  title?: string;
   button1?: FC<ButtonProps>;
   button2?: FC<ButtonProps>;
-  type?: 'info' | 'warning' | 'error' | 'success';
-  icon: ReactElement;
+  type?: AlertVariants;
+  icon?: ReactElement;
 }
 
 export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
@@ -45,6 +47,10 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
       }
     };
 
+    const handleDismiss = useCallback(() => {
+      closeSnackbar(id);
+    }, [id, closeSnackbar]);
+
     return (
       <Wrapper ref={ref}>
         <ContentContainer>
@@ -54,18 +60,27 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
               : getIcon()}
           </IconContainer>
           <TextContainer>
-            {title ? <h3>{title}</h3> : <h5>{message}</h5>}
-            {title && <h5>{message}</h5>}
-            <ButtonContainer>
+            {title ? (
               <>
-                {button1 && button1}
-                {button2 && button2}
+                <h3>{title}</h3>
+                <h5>{message}</h5>
               </>
-            </ButtonContainer>
+            ) : (
+              <h5>{message}</h5>
+            )}
+
+            {button1 && (
+              <ButtonContainer>
+                <>
+                  {button1}
+                  {button2 && button2}
+                </>
+              </ButtonContainer>
+            )}
           </TextContainer>
         </ContentContainer>
-        <CloseContainer onClick={() => closeSnackbar(id)}>
-          <CloseIcon size={20} />
+        <CloseContainer onClick={handleDismiss}>
+          <CloseIcon size={18} />
         </CloseContainer>
       </Wrapper>
     );

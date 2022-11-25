@@ -22,13 +22,13 @@ export const Container = styled(motion.div)`
   min-height: 200px;
   max-height: 750px;
   background-color: white;
-  padding: 25px 25px 15px 25px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 3px 1px -2px, rgba(0, 0, 0, 0.14) 0 2px 2px 0,
-    rgba(0, 0, 0, 0.12) 0 1px 5px 0;
-  border-radius: 10px;
+  padding: ${({ theme }) =>
+    `${theme.spacing['2_5']} ${theme.spacing['2_5']} ${theme.spacing['1']} ${theme.spacing['2_5']}`};
+  box-shadow: ${({ theme }) => theme.elevation[3]}
+  border-radius: 1rem;
   p {
     text-align: left;
-    margin-top: 15px;
+    margin-top: ${({ theme }) => theme.spacing['1']} ;
   }
 `;
 

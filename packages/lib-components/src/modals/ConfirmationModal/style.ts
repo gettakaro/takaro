@@ -6,12 +6,11 @@ export const Container = styled.div`
   align-items: space-between;
   justify-content: center;
   width: 500px;
-  padding: 10px;
+  padding: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const Description = styled.p`
-  margin-bottom: 35px;
-  user-select: none;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
   color: ${({ theme }) => theme.colors.secondary};
   font-weight: 500;
   font-size: 1.25rem;
@@ -28,8 +27,7 @@ export const ActionContainer = styled.div<{ type: AlertVariants }>`
 
 export const Cancel = styled.div`
   cursor: pointer;
-  user-select: none;
-  margin-right: 15px;
+  margin-right: ${({ theme }) => theme.spacing['1_5']};
   font-size: 1.325rem;
   color: ${({ theme }) => theme.colors.gray};
 `;
@@ -38,8 +36,7 @@ export const Header = styled.div<{ type: AlertVariants }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 30px;
-  user-select: none;
+  padding-bottom: ${({ theme }) => theme.spacing[3]};
   svg {
     fill: ${({ theme, type }) =>
       type === 'info' ? theme.colors.primary : theme.colors.error};
@@ -53,8 +50,8 @@ export const Header = styled.div<{ type: AlertVariants }>`
     color: ${({ theme, type }): string => theme.colors[type]};
     font-weight: 700;
     .icon {
-      margin-top: -3px;
-      margin-right: 25px;
+      margin-top: -${({ theme }) => theme.spacing['0_25']};
+      margin-right: ${({ theme }) => theme.spacing['2_5']};
       svg {
         fill: ${({ theme, type }): string => theme.colors[type]};
       }
@@ -64,6 +61,8 @@ export const Header = styled.div<{ type: AlertVariants }>`
         width: 175%;
         height: 175%;
         border-radius: 50%;
+
+        margin: ${({ theme }) => `${theme.spacing[0]} auto`};
         margin: 0 auto;
         top: 0;
         left: 0;

@@ -17,7 +17,7 @@ export const Container = styled.div`
     font-weight: 500;
     font-family: 'inconsolata';
     border-radius: 0;
-    padding-right: 5rem;
+    padding-right: ${({ theme }) => theme.spacing[6]};
     ::placeholder {
       color: white;
     }
@@ -29,7 +29,7 @@ export const Container = styled.div`
     font-family: 'inconsolata';
     color: black;
     font-weight: 500;
-    margin-left: 10px;
+    margin-left: ${({ theme }) => theme.spacing[1]};
   }
 `;
 

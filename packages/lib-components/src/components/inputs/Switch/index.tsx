@@ -1,44 +1,40 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
-import { Skeleton } from '../../../components';
-import { Container, Dot, Line, Label, ContentContainer } from './style';
-import { useController, Control } from 'react-hook-form';
+import { Skeleton, Label } from '../../../components';
+import { Container, Dot, Line, ContentContainer } from './style';
+import { useController } from 'react-hook-form';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../InputProps';
 
-export interface SwitchProps {
-  /* Unique name, required to toggle the switch */
-  name: string;
-  control: Control<any>;
-  loading?: boolean;
-  defaultValue?: boolean;
-  readOnly?: boolean;
-  label?: string;
-  onChange?: (isChecked: boolean) => void;
-}
+const defaultsApplier = defaultInputPropsFactory<InputProps>(defaultInputProps);
 
-export const Switch: FC<SwitchProps> = ({
-  name,
-  control,
-  loading = false,
-  label,
-  readOnly = false,
-  defaultValue = false,
-  onChange,
-}) => {
-  const [isChecked, setChecked] = useState<boolean>(defaultValue);
-  const { field: sw } = useController({
+export const Switch: FC<InputProps> = (props) => {
+  const {
+    readOnly,
+    size,
     name,
+    required,
+    disabled,
+    error,
+    hint,
+    label,
+    loading,
     control,
-    defaultValue: defaultValue,
-  });
+    value = false,
+  } = defaultsApplier(props);
 
-  function handleClick(): void {
-    if (readOnly) return;
-    setChecked((prev) => !prev);
-    if (typeof onChange === 'function') onChange(sw.value);
+  const { field } = useController({ name, control, defaultValue: value });
+  const [isChecked, setChecked] = useState(field.value);
+
+  function handleOnClick(): void {
+    setChecked(!isChecked);
   }
 
   useEffect(() => {
-    sw.onChange(isChecked);
+    field.onChange(isChecked);
   }, [isChecked]);
 
   if (loading) {
@@ -52,18 +48,20 @@ export const Switch: FC<SwitchProps> = ({
 
   return (
     <Container>
-      {/* this is the input component itself, but cannot be styled properly. */}
-      <input
-        {...sw}
-        id={name}
-        name={name}
-        readOnly={readOnly}
-        checked={isChecked}
-        style={{ display: 'none' }}
-        type="checkbox"
-      ></input>
-      {label && <Label htmlFor={name}>{label}</Label>}
-      <ContentContainer onClick={handleClick}>
+      {label && (
+        <Label
+          htmlFor={name}
+          text={label}
+          position="top"
+          error={!!error}
+          size={size}
+          required={required}
+          onClick={handleOnClick}
+          hint={hint}
+          disabled={disabled}
+        />
+      )}
+      <ContentContainer onClick={handleOnClick}>
         <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}

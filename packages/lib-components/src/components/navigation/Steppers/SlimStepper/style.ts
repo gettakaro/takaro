@@ -5,18 +5,16 @@ import { lighten } from 'polished';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: 1rem;
+  padding-top: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const StepperHeader = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  background-color: pink;
   width: 35vw;
   height: 0.7rem;
   border-radius: 1rem;
-  margin: auto auto;
+  margin: auto;
 `;
 export const StepperHeaderItem = styled.div<{
   stepState: StepStates;
@@ -86,5 +84,5 @@ export const Dot = styled.div<{ stepState: StepStates }>`
 `;
 
 export const StepperBody = styled.div`
-  padding: 7rem 1.6rem;
+  padding: ${({ theme }) => `${theme.spacing[9]} ${theme.spacing['1_5']}`};
 `;

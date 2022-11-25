@@ -4,8 +4,9 @@ import { lighten } from 'polished';
 export const Wrapper = styled.div`
   position: relative;
   background-color: white;
-  padding: 2.5rem 4.5rem 1.5rem 1.5rem;
-  box-shadow: rgba(3, 27, 78, 0.15) 0 6px 20px -5px;
+  padding: ${({ theme }) =>
+    `${theme.spacing['2_5']} ${theme.spacing[6]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
+  box-shadow: ${({ theme }) => theme.elevation[4]};
   border-radius: 0.8rem;
 `;
 
@@ -17,13 +18,13 @@ export const ContentContainer = styled.div`
 
 export const TextContainer = styled.div`
   display: flex;
-  padding-top: 0.5rem;
   flex-direction: column;
+  justify-content: center;
   width: 250px;
   h3 {
     font-weight: 700;
     font-size: 1.725rem;
-    margin-bottom: 1rem;
+    margin-bottom: ${({ theme }) => theme.spacing[1]};
   }
   h5 {
     font-size: 1.325rem;
@@ -36,11 +37,11 @@ export const IconContainer = styled.div<{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  padding: ${({ theme }) => theme.spacing['0_5']};
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  margin-right: 1rem;
+  margin-right: ${({ theme }) => theme.spacing[1]};
   background-color: ${({ variant, theme }): string =>
     lighten(0.3, theme.colors[variant])};
 `;
@@ -54,14 +55,14 @@ export const ButtonContainer = styled.div`
   button {
     width: 100%;
     &:first-child {
-      margin-right: 0.5rem;
+      margin-right: ${({ theme }) => theme.spacing['0_5']};
     }
   }
 `;
 
 export const CloseContainer = styled.div`
   position: absolute;
-  top: 3rem;
+  top: ${({ theme }) => theme.spacing['3']};
   cursor: pointer;
-  right: 1.5rem;
+  right: ${({ theme }) => theme.spacing['2']};
 `;

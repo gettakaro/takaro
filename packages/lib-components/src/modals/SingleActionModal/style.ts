@@ -4,14 +4,14 @@ import { AlertVariants } from '../../styled/types';
 export const Container = styled.div`
   min-width: 300px;
   button {
-    margin-top: 1rem;
+    margin-top: ${({ theme }) => theme.spacing[1]};
     width: 100%;
   }
   h2 {
     font-size: 2rem;
     color: ${({ theme }): string => theme.colors.secondary};
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: ${({ theme }) => theme.spacing[1]};
   }
   p {
     text-align: center !important;
@@ -22,7 +22,7 @@ export const Container = styled.div`
 
 export const DescriptionContainer = styled.div`
   width: 50%;
-  margin: 0 auto;
+  margin: ${({ theme }) => `${theme.spacing[0]} auto `};
 `;
 
 export const IconContainer = styled.div<{ type: AlertVariants }>`
@@ -30,10 +30,12 @@ export const IconContainer = styled.div<{ type: AlertVariants }>`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme, type }): string => theme.colors[type]};
-  padding: 8px;
+  padding: ${({ theme }) => theme.spacing['0_75']};
   border-radius: 50%;
   width: fit-content;
-  margin: 0 auto 2rem auto;
+
+  margin-top: ${({ theme }) =>
+    `${theme.spacing[0]} auto ${theme.spacing[2]} auto`};
 
   svg {
     fill: white;

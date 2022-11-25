@@ -3,6 +3,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   Select,
+  OptionGroup,
+  Option,
   TextField,
   useValidationSchema,
   styled,
@@ -11,11 +13,7 @@ import {
   Loading,
 } from '@takaro/lib-components';
 import * as yup from 'yup';
-import {
-  AiFillPlusCircle,
-  AiFillControl,
-  AiFillQuestionCircle,
-} from 'react-icons/ai';
+import { AiFillPlusCircle, AiFillQuestionCircle } from 'react-icons/ai';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTOAPI,
@@ -107,22 +105,26 @@ const AddGameServer: FC = () => {
     return resp;
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async (inputs) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({
+    name,
+    type,
+    connectionInfo,
+  }) => {
     setLoading(true);
     setError(undefined);
 
     try {
       if (!serverId) {
         await apiClient.gameserver.gameServerControllerCreate({
-          connectionInfo: JSON.stringify(inputs.connectionInfo),
-          name: inputs.name,
-          type: inputs.type,
+          connectionInfo: JSON.stringify(connectionInfo),
+          name,
+          type,
         });
       } else {
         await apiClient.gameserver.gameServerControllerUpdate(serverId, {
-          connectionInfo: JSON.stringify(inputs.connectionInfo),
-          name: inputs.name,
-          type: inputs.type,
+          connectionInfo: JSON.stringify(connectionInfo),
+          name,
+          type,
         });
         refetch();
       }
@@ -223,6 +225,18 @@ const AddGameServer: FC = () => {
     return <Loading />;
   }
 
+  const gameTypeOptions = [
+    { name: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
+    {
+      name: '7 Days to die',
+      value: GameServerCreateDTOTypeEnum.Sevendaystodie,
+    },
+    {
+      name: 'Mock (testing purposes)',
+      value: GameServerCreateDTOTypeEnum.Mock,
+    },
+  ];
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -240,26 +254,27 @@ const AddGameServer: FC = () => {
               />
               <Select
                 control={control}
-                icon={<AiFillControl />}
                 error={formState.errors.type}
-                label=""
-                readOnly={!!serverId}
                 name="type"
-                options={[
-                  { label: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
-                  {
-                    label: '7 Days to die',
-                    value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-                  },
-                  {
-                    label: 'Mock (testing purposes)',
-                    value: GameServerCreateDTOTypeEnum.Mock,
-                  },
-                ]}
-                placeholder="Select your game"
-              />
+                label="Game server"
+                render={(selectedIndex) => (
+                  <div>
+                    {gameTypeOptions[selectedIndex]?.name ?? 'Select...'}
+                  </div>
+                )}
+              >
+                <OptionGroup label="Games">
+                  {gameTypeOptions.map(({ name, value }) => (
+                    <Option key={name} value={value}>
+                      <div>
+                        <span>{name}</span>
+                      </div>
+                    </Option>
+                  ))}
+                </OptionGroup>
+              </Select>
             </div>
-            <ErrorMessage message={error} />
+            {error && <ErrorMessage message={error} />}
 
             <Row>
               <Button

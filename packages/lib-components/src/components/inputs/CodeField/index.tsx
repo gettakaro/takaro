@@ -1,33 +1,56 @@
-import React, { KeyboardEvent, FC, useRef, useEffect, ChangeEvent } from 'react';
-import { Container, InputContainer, Input, LoadingField, ErrorContainer, Error } from './style';
-import { Control, useController, FieldError } from 'react-hook-form';
+import React, {
+  KeyboardEvent,
+  FC,
+  useRef,
+  useEffect,
+  ChangeEvent,
+  useState,
+} from 'react';
+import { Container, InputContainer, Input, LoadingField } from './style';
+import { useController } from 'react-hook-form';
+import {
+  InputProps,
+  defaultInputProps,
+  defaultInputPropsFactory,
+} from '../InputProps';
+import { Label } from '../Label';
+import { ErrorMessage } from '../ErrorMessage';
 
-export interface CodeFieldProps {
+export interface CodeFieldProps extends InputProps {
   name: string;
   fields: number;
-  loading?: boolean;
   allowedCharacters?: RegExp;
-  error?: FieldError;
-  form?: string;
-  autoSubmit?: any;
-  control: Control<any>;
+  autoSubmit?: () => unknown;
 }
 
-export const CodeField: FC<CodeFieldProps> = ({
-  name,
-  fields,
-  loading = false,
-  error,
-  form,
-  autoSubmit,
-  allowedCharacters = /[0-9]/,
-  control
-}) => {
-  const { field: { ...inputProps } } = useController({ name, control });
+const defaultsApplier =
+  defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
+
+export const CodeField: FC<CodeFieldProps> = (props) => {
+  const {
+    error,
+    loading,
+    control,
+    name,
+    fields,
+    autoSubmit,
+    allowedCharacters = /[0-9]/,
+    hint,
+    size,
+    disabled,
+    required,
+    label,
+    value,
+  } = defaultsApplier(props);
+
+  const [showError, setShowError] = useState<boolean>(false);
+
+  const {
+    field: { ...inputProps },
+  } = useController({ name, control, defaultValue: value });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
-    console.log(fieldRefs.current);
     if (fieldRefs.current.length) {
       fieldRefs.current[0].focus();
     }
@@ -38,15 +61,15 @@ export const CodeField: FC<CodeFieldProps> = ({
     inputProps.onChange(res);
 
     if (res.length === fields) {
-      if (autoSubmit) {
-        autoSubmit();
-      }
+      if (autoSubmit) autoSubmit();
     }
   };
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
     const {
-      target: { value, nextElementSibling }
+      target: { value, nextElementSibling },
     } = e;
 
     if (value.match(allowedCharacters)) {
@@ -60,11 +83,15 @@ export const CodeField: FC<CodeFieldProps> = ({
   };
 
   const handleOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
+    setShowError(true);
     e.target.select();
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
+
     if (e.key === 'Backspace') {
       if (target.value === '' && target.previousElementSibling !== null) {
         if (target.previousElementSibling !== null) {
@@ -76,6 +103,11 @@ export const CodeField: FC<CodeFieldProps> = ({
       }
       sendResult();
     }
+  };
+
+  const handleOnBlur = () => {
+    if (disabled) return;
+    setShowError(false);
   };
 
   const handleOnPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
@@ -97,7 +129,10 @@ export const CodeField: FC<CodeFieldProps> = ({
       <Container>
         <InputContainer fields={fields}>
           {Array.from(Array(fields).keys()).map((_, idx) => (
-            <LoadingField key={`loading-field-array-${idx}`} className="placeholder" />
+            <LoadingField
+              key={`loading-field-array-${idx}`}
+              className="placeholder"
+            />
           ))}
         </InputContainer>
       </Container>
@@ -106,18 +141,32 @@ export const CodeField: FC<CodeFieldProps> = ({
 
   return (
     <Container>
+      {label && (
+        <Label
+          required={required}
+          disabled={disabled}
+          size={size}
+          hint={hint}
+          text={label}
+          position="top"
+          error={!!error}
+          htmlFor={`${name}-0`}
+        />
+      )}
       <InputContainer fields={fields}>
         {Array.from(Array(fields).keys()).map((_, i) => (
           <Input
             autoCapitalize="off"
             autoComplete="off"
-            form={form}
-            hasError={error ? true : false}
+            hasError={!!error}
+            isDisabled={disabled}
+            disabled={disabled}
             id={`${name}-${i}`}
             maxLength={1}
             name={`${name}-${i}`}
             onChange={handleOnChange}
             onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
             onKeyDown={handleKeyDown}
             onPaste={handleOnPaste}
             ref={(el) => {
@@ -128,12 +177,8 @@ export const CodeField: FC<CodeFieldProps> = ({
             type="text"
           />
         ))}
+        {error && showError && <ErrorMessage message={error.message!} />}
       </InputContainer>
-      {error && (
-        <ErrorContainer>
-          <Error>{error.message}</Error>
-        </ErrorContainer>
-      )}
     </Container>
   );
 };

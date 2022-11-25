@@ -1,83 +1,98 @@
 import { getTransition } from '../../../../helpers';
-import { FC, useEffect } from 'react';
-import { Control, useController } from 'react-hook-form';
-import { Container, RadioContainer, Inner, Label, Input } from './style';
+import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { useController } from 'react-hook-form';
+import { Container, RadioContainer, Inner } from './style';
+import { Label } from '../../../../components';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../../InputProps';
 
-export interface RadioProps {
+export interface RadioProps extends InputProps {
   name: string;
-  control: Control<any>;
-  loading?: boolean;
   selected: boolean;
-  setSelected: any;
+  setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
-  readOnly: boolean;
-  label?: string;
   value: string;
   labelPosition: 'left' | 'right';
-  onChange?: (value: unknown) => void;
 }
 
 const variants = {
   selected: { scale: 1 },
-  deselected: { scale: 0 }
+  deselected: { scale: 0 },
 };
 
-export const Radio: FC<RadioProps> = ({
-  name,
-  control,
-  loading = false,
-  readOnly,
-  value,
-  selected,
-  setSelected,
-  label = '',
-  defaultSelected = false,
-  labelPosition,
-  onChange = undefined
-}) => {
-  const onSelect = () => {
-    if (readOnly) return;
+const defaultsApplier = defaultInputPropsFactory<RadioProps>(defaultInputProps);
 
+export const Radio: FC<RadioProps> = (props) => {
+  const {
+    readOnly,
+    control,
+    loading,
+    name,
+    size,
+    required,
+    error,
+    value,
+    selected,
+    setSelected,
+    labelPosition = 'left',
+    label,
+    disabled,
+    hint,
+  } = defaultsApplier(props);
+
+  const handleOnClick = () => {
+    if (readOnly) return;
     setSelected(value);
   };
 
   useEffect(() => {
     if (selected && !readOnly) {
-      inputProps.onChange(value);
+      field.onChange(value);
     }
   }, [selected]);
 
-  const {
-    field: { ref, ...inputProps }
-  } = useController({
+  const { field } = useController({
     name,
     control,
-    defaultValue: selected ? value : undefined
+    defaultValue: selected ?? value,
   });
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(value);
-    }
-  }, [selected]);
 
   /* todo: handle loading state */
   if (loading) {
     return (
       <Container>
-        <RadioContainer className="placeholder" readOnly={true} />
+        <RadioContainer
+          isSelected={selected}
+          className="placeholder"
+          readOnly={true}
+        />
       </Container>
     );
   }
 
   return (
     <Container>
-      {labelPosition === 'left' && (
-        <Label htmlFor={name} isLeft onClick={onSelect} readOnly={readOnly}>
-          {label}
-        </Label>
+      {label && labelPosition === 'left' && (
+        <Label
+          htmlFor={name}
+          text={label}
+          required={required}
+          position={labelPosition}
+          size={size}
+          error={!!error}
+          onClick={handleOnClick}
+          disabled={disabled}
+          hint={hint}
+        />
       )}
-      <RadioContainer onClick={onSelect} readOnly={readOnly}>
+      <RadioContainer
+        isSelected={selected}
+        onClick={handleOnClick}
+        readOnly={readOnly}
+      >
         <Inner
           animate={selected ? 'selected' : 'deselected'}
           isSelected={selected}
@@ -86,21 +101,19 @@ export const Radio: FC<RadioProps> = ({
           variants={variants}
         />
       </RadioContainer>
-      {labelPosition === 'right' && (
-        <Label htmlFor={name} isLeft={false} onClick={onSelect} readOnly={readOnly}>
-          {label}
-        </Label>
+      {label && labelPosition === 'right' && (
+        <Label
+          htmlFor={name}
+          position={labelPosition}
+          required={required}
+          error={!!error}
+          text={label}
+          size={size}
+          disabled={disabled}
+          onClick={handleOnClick}
+          hint={hint}
+        />
       )}
-      {/* Ignore, this is is just for the react-hook-form to handle forms */}
-      <Input
-        {...inputProps}
-        checked={selected}
-        id={name}
-        name={name}
-        ref={ref}
-        type="radio"
-        value={value}
-      />
     </Container>
   );
 };

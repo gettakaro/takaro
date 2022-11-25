@@ -1,20 +1,19 @@
-// TODO: <NotificationBanner/>
-
 import { FC, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { styled } from '../../../styled';
+import { Elevation, styled } from '../../../styled';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const Container = styled(motion.div)`
+const Container = styled(motion.div)<{ elevation: Elevation }>`
   position: sticky;
   background-color: ${({ theme }): string => theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  overflow: hidden;
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
   will-change: height;
+  overflow: hidden;
+  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
 
   div {
     display: flex;
@@ -42,22 +41,32 @@ const Container = styled(motion.div)`
 export interface NotificationBannerProps {
   title: string;
   description: string;
+  elevation?: Elevation;
 }
 
 /* What is <NotificationBanner?
   ------------------------------
   It is a sticky component that shows above the headerbar to show a notification and
   can be hidden by clicking the X in the upper right corner.
-  IMPORTANT: the component requires a separate div mounted outside of root callednotification-banner. 
+  IMPORTANT: the component requires a separate div mounted outside of root called with id notification-banner. 
 */
 
-export const NotificationBanner: FC<NotificationBannerProps> = ({ title, description }) => {
+export const NotificationBanner: FC<NotificationBannerProps> = ({
+  title,
+  description,
+  elevation = 4,
+}) => {
   const [visible, setVisible] = useState<boolean>(true);
 
   return createPortal(
     <AnimatePresence>
       {visible && (
-        <Container animate={{ height: 'auto' }} exit={{ opacity: '0' }} initial={{ height: 0 }}>
+        <Container
+          elevation={elevation}
+          initial={{ y: -40 }}
+          animate={{ y: 0 }}
+          exit={{ opacity: '0' }}
+        >
           <div>
             <h3>{title}</h3>
             <p>{description}</p>

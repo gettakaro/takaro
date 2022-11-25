@@ -1,128 +1,60 @@
 import { styled } from '../../../styled';
+import { AiOutlineDown } from 'react-icons/ai';
 
+// This wraps everything
 export const Container = styled.div`
-  width: fit-content;
-  min-width: 100px;
-  margin-bottom: 1rem;
-  select {
-    display: none;
-  }
-  label {
-    margin-bottom: 0.5rem;
-    margin-right: 1rem;
-    cursor: pointer;
-  }
+  display: relative;
 `;
 
-export const IconContainer = styled.div`
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const SelectedContainer = styled.div<{
-  hasError: boolean;
-  hasIcon: boolean;
-}>`
-  position: relative;
-  display: inline-block;
-  padding: 0.75rem 3.5rem 0.75rem
-    ${({ hasIcon }): string => (hasIcon ? '3.5rem' : '1.225rem')};
-  border: 2px solid
-    ${({ theme, hasError }): string =>
-      hasError ? theme.colors.error : theme.colors.gray};
-  border-radius: 0.2rem;
-  background-color: white;
-  color: white;
-  font-size: 1.3rem;
-  text-align: center;
-  font-weight: 600;
-  cursor: pointer;
-
-  p {
-    color: black;
-  }
-
-  &:focus,
-  &:hover {
-    border-color: ${({ theme, hasError }): string =>
-      hasError ? theme.colors.error : theme.colors.primary};
-
-    svg {
-      fill: ${({ theme }) => theme.colors.primary};
-    }
-  }
-  &::placeholder {
-    text-transform: capitalize;
-    font-weight: 600;
-    color: white;
-  }
-
-  &.read-only {
-    opacity: 0.5;
-  }
-`;
-
-export const ArrowContainer = styled.div`
-  position: absolute;
-  right: 0.7rem;
-  top: 55%;
-  transform: translateY(-50%);
-`;
-
-export const DropDownContainer = styled.div`
-  min-width: 150px;
-  white-space: nowrap;
-  border: 1px solid ${({ theme }): string => theme.colors.gray};
+export const SelectContainer = styled.div`
+  margin: ${({ theme }) => theme.spacing[0]};
+  box-sizing: border-box;
+  list-style-type: none;
+  overflow-y: auto;
+  padding: ${({ theme }) => theme.spacing['0_75']};
+  outline: 0;
+  border: 0.2rem solid ${({ theme }) => theme.colors.primary};
   border-radius: 0.5rem;
+  background-color: ${({ theme }) => theme.colors.white};
+  box-shadow: ${({ theme }) => theme.elevation[4]};
 `;
 
-export const OptionsContainer = styled.div`
+export const SelectButton = styled.div<{ isOpen: boolean }>`
   display: flex;
-  flex-direction: column;
-`;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  font-size: inherit;
+  font-family: inherit;
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
+  outline: 0;
+  min-height: 4.3rem;
+  border: 2px solid
+    ${({ theme, isOpen }) =>
+      isOpen ? theme.colors.primary : theme.colors.background};
+  border-radius: 0.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 
-export const Option = styled.div<{ selected: boolean }>`
-  position: relative;
-  display: block;
-  white-space: nowrap;
-  padding: 1.225rem 4.5rem 1.225rem 1.2rem;
-  cursor: pointer;
-  background-color: white;
-  color: black;
-
-  &:first-child {
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing[1]};
+    font-weight: 600;
   }
 
-  &:last-child {
-    border-bottom-right-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
-  }
-
-  &:hover {
-    span {
-      color: white;
-    }
-    background-color: ${({ theme }): string => theme.colors.primary};
-    svg {
-      fill: white;
-    }
+  span {
+    display: flex;
   }
 `;
 
-export const CheckMarkContainer = styled.div`
-  position: absolute;
-  right: 1.5rem;
-  top: 52%;
-  transform: translateY(-50%);
+export const GroupLabel = styled.li`
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[0]}`};
+  opacity: 0.5;
+  padding: ${({ theme }) => `${theme.spacing[0]} ${theme.spacing['1_5']}`};
+`;
 
-  svg {
-    fill: ${({ theme }): string => theme.colors.primary};
-  }
+export const ArrowIcon = styled(AiOutlineDown)<{ isOpen: boolean }>`
+  fill: ${({ theme, isOpen }) =>
+    isOpen ? theme.colors.primary : theme.colors.background};
 `;
