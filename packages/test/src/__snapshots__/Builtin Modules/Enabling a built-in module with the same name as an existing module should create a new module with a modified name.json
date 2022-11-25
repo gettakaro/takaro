@@ -1,0 +1,48 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-14T18:38:15.999Z"
+    },
+    "data": {
+      "createdAt": "2022-11-14T18:38:15.970Z",
+      "updatedAt": "2022-11-14T18:38:15.971Z",
+      "id": "786d0bb8-da27-4c34-874e-f86364e58bbc",
+      "name": "ping (builtin)",
+      "enabled": true,
+      "config": {},
+      "builtinModuleId": "ping",
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [
+        {
+          "createdAt": "2022-11-14T18:38:15.978Z",
+          "updatedAt": "2022-11-14T18:38:15.979Z",
+          "id": "4ab90ec1-dcf8-4588-ab80-4da6c8fe2148",
+          "name": "ping",
+          "enabled": true,
+          "moduleId": "786d0bb8-da27-4c34-874e-f86364e58bbc",
+          "function": {
+            "createdAt": "2022-11-14T18:38:15.976Z",
+            "updatedAt": "2022-11-14T18:38:15.983Z",
+            "id": "4ab90ec1-dcf8-4588-ab80-4da6c8fe2148",
+            "code": "console.log(\"pong\");"
+          },
+          "trigger": null,
+          "helpText": "No help text available"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Builtin Modules",
+    "snapshot": true,
+    "filteredFields": [
+      "moduleId",
+      "functionId"
+    ],
+    "name": "Enabling a built-in module with the same name as an existing module should create a new module with a modified name",
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

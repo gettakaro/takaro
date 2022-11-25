@@ -1,0 +1,50 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-14T18:59:48.054Z"
+    },
+    "data": {
+      "name": "ping",
+      "createdAt": "2022-11-14T18:59:47.957Z",
+      "updatedAt": "2022-11-14T18:59:48.032Z",
+      "id": "5f2b3ded-4381-443e-b6ab-8bb2a199e917",
+      "enabled": true,
+      "config": {
+        "foo": "baz"
+      },
+      "builtinModuleId": "ping",
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [
+        {
+          "name": "ping",
+          "moduleId": "5f2b3ded-4381-443e-b6ab-8bb2a199e917",
+          "createdAt": "2022-11-14T18:59:48.011Z",
+          "updatedAt": "2022-11-14T18:59:48.012Z",
+          "id": "119bb5e9-7507-42a5-829f-5fc41cf34a01",
+          "enabled": true,
+          "function": {
+            "code": "console.log(\"pong\");",
+            "createdAt": "2022-11-14T18:59:48.008Z",
+            "updatedAt": "2022-11-14T18:59:48.014Z",
+            "id": "119bb5e9-7507-42a5-829f-5fc41cf34a01"
+          },
+          "trigger": null,
+          "helpText": "No help text available"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Builtin Modules",
+    "snapshot": true,
+    "filteredFields": [
+      "moduleId",
+      "functionId"
+    ],
+    "name": "Allows updating the config of an already enabled module",
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

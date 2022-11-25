@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-25T13:38:36.550Z",
+      "error": {
+        "code": "BadRequestError",
+        "details": {}
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Builtin Modules",
+    "snapshot": true,
+    "filteredFields": [
+      "moduleId"
+    ],
+    "name": "Does not allow updating code of a builtin module",
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}

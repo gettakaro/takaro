@@ -54,6 +54,10 @@ class HookSearchInputAllowedFilters {
   name!: string;
 
   @IsOptional()
+  @IsString()
+  functionId!: string;
+
+  @IsOptional()
   @IsBoolean()
   enabled!: boolean;
 

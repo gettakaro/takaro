@@ -133,11 +133,14 @@ export class IntegrationTest<SetupData> {
           if (!response) {
             throw new Error('No response returned from test');
           }
+          expect(response.status).to.equal(
+            this.test.expectedStatus,
+            JSON.stringify(response.data)
+          );
           await matchSnapshot(
             this.test as ITestWithSnapshot<unknown>,
             response
           );
-          expect(response.status).to.equal(this.test.expectedStatus);
         }
       });
     });

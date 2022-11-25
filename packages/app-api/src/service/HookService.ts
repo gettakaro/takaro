@@ -45,12 +45,18 @@ export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
   @IsString()
   regex: string;
 
+  @IsString()
+  functionId: string;
+
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
 
   @IsEnum(GameEvents)
   eventType: GameEvents;
+
+  @IsString()
+  moduleId: string;
 }
 
 export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {

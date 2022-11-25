@@ -1,0 +1,48 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-14T18:48:16.916Z"
+    },
+    "data": {
+      "name": "ping",
+      "createdAt": "2022-11-14T18:48:16.873Z",
+      "updatedAt": "2022-11-14T18:48:16.874Z",
+      "id": "25b9ffb9-52de-4d9b-a951-b2db4b653d33",
+      "enabled": true,
+      "config": {},
+      "builtinModuleId": "ping",
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [
+        {
+          "name": "ping",
+          "moduleId": "25b9ffb9-52de-4d9b-a951-b2db4b653d33",
+          "createdAt": "2022-11-14T18:48:16.893Z",
+          "updatedAt": "2022-11-14T18:48:16.894Z",
+          "id": "9f2288d9-e2c2-4cb3-84da-79b87ecd2cf3",
+          "enabled": true,
+          "function": {
+            "code": "console.log(\"pong\");",
+            "createdAt": "2022-11-14T18:48:16.888Z",
+            "updatedAt": "2022-11-14T18:48:16.897Z",
+            "id": "9f2288d9-e2c2-4cb3-84da-79b87ecd2cf3"
+          },
+          "trigger": null,
+          "helpText": "No help text available"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Builtin Modules",
+    "snapshot": true,
+    "filteredFields": [
+      "moduleId",
+      "functionId"
+    ],
+    "name": "Enable a built-in module",
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

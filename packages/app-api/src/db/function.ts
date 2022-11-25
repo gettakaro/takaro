@@ -9,6 +9,7 @@ import {
   FunctionUpdateDTO,
 } from '../service/FunctionService';
 import { HOOKS_TABLE_NAME } from './hook';
+import { COMMANDS_TABLE_NAME } from './command';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 
@@ -24,7 +25,7 @@ export class FunctionModel extends TakaroModel {
         modelClass: require('./cronjob').CronJobModel,
         join: {
           from: `${FUNCTION_TABLE_NAME}.id`,
-          to: `${CRONJOB_TABLE_NAME}.id`,
+          to: `${CRONJOB_TABLE_NAME}.function`,
         },
       },
       hook: {
@@ -33,7 +34,16 @@ export class FunctionModel extends TakaroModel {
         modelClass: require('./hook').HookModel,
         join: {
           from: `${FUNCTION_TABLE_NAME}.id`,
-          to: `${HOOKS_TABLE_NAME}.id`,
+          to: `${HOOKS_TABLE_NAME}.function`,
+        },
+      },
+      command: {
+        relation: Model.HasOneRelation,
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        modelClass: require('./command').CommandModel,
+        join: {
+          from: `${FUNCTION_TABLE_NAME}.id`,
+          to: `${COMMANDS_TABLE_NAME}.function`,
         },
       },
     };

@@ -11,6 +11,7 @@ import {
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleService,
+  ModuleSetBuiltinDTO,
   ModuleUpdateDTO,
 } from '../service/ModuleService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
@@ -27,8 +28,8 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
 import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -60,6 +61,11 @@ class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters>
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
   filters!: ModuleSearchInputAllowedFilters;
+}
+
+class ParamName {
+  @IsString()
+  name!: string;
 }
 
 @OpenAPI({
@@ -123,5 +129,36 @@ export class ModuleController {
     const service = new ModuleService(req.domainId);
     const deletedRecord = await service.delete(params.id);
     return apiResponse(deletedRecord);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_MODULES]))
+  @ResponseSchema(ModuleOutputArrayDTOAPI)
+  @Get('/modules/builtins')
+  async getBuiltins(@Req() req: AuthenticatedRequest) {
+    const service = new ModuleService(req.domainId);
+    return apiResponse(await service.getBuiltins());
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_MODULES]))
+  @ResponseSchema(ModuleOutputDTOAPI)
+  @Get('/modules/builtins/:name')
+  async getBuiltin(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamName
+  ) {
+    const service = new ModuleService(req.domainId);
+    return apiResponse(await service.findOne(params.name));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_MODULES]))
+  @ResponseSchema(ModuleOutputDTOAPI)
+  @Post('/modules/builtins/:name')
+  async setBuiltin(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamName,
+    @Body() data: ModuleSetBuiltinDTO
+  ) {
+    const service = new ModuleService(req.domainId);
+    return apiResponse(await service.setBuiltin(params.name, data));
   }
 }

@@ -29,7 +29,7 @@ export async function up(knex: Knex): Promise<void> {
   );
 
   await knex.schema.alterTable('commands', (table) => {
-    table.text('trigger');
+    table.text('trigger').notNullable();
     table.text('helpText').defaultTo('No help text available');
   });
 }

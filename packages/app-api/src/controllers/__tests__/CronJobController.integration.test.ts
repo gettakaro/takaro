@@ -31,7 +31,7 @@ const tests = [
         this.setupData.data.id
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<void>({
     snapshot: true,
@@ -47,7 +47,7 @@ const tests = [
         mockCronjob(module.id)
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
@@ -75,7 +75,7 @@ const tests = [
         }
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
@@ -121,7 +121,7 @@ const tests = [
         filters: { name: mockCronjob(module.id).name },
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
 ];
 

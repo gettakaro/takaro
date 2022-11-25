@@ -33,9 +33,15 @@ export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
   @IsString()
   temporalValue!: string;
 
+  @IsString()
+  functionId: string;
+
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsString()
+  moduleId: string;
 }
 
 export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {

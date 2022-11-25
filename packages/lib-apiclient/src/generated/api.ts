@@ -243,10 +243,22 @@ export interface CommandOutputDTO {
   enabled: boolean;
   /**
    *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  functionId: string;
+  /**
+   *
    * @type {FunctionOutputDTO}
    * @memberof CommandOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  moduleId: string;
 }
 /**
  *
@@ -463,10 +475,22 @@ export interface CronJobOutputDTO {
   temporalValue: string;
   /**
    *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  functionId: string;
+  /**
+   *
    * @type {FunctionOutputDTO}
    * @memberof CronJobOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  moduleId: string;
 }
 /**
  *
@@ -1520,6 +1544,12 @@ export interface HookOutputDTO {
   regex: string;
   /**
    *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  functionId: string;
+  /**
+   *
    * @type {FunctionOutputDTO}
    * @memberof HookOutputDTO
    */
@@ -1530,6 +1560,12 @@ export interface HookOutputDTO {
    * @memberof HookOutputDTO
    */
   eventType: HookOutputDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  moduleId: string;
 }
 
 export const HookOutputDTOEventTypeEnum = {
@@ -1579,6 +1615,12 @@ export interface HookSearchInputAllowedFilters {
    * @memberof HookSearchInputAllowedFilters
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
+  functionId?: string;
   /**
    *
    * @type {boolean}
@@ -1968,6 +2010,12 @@ export interface ModuleCreateDTO {
    * @memberof ModuleCreateDTO
    */
   config?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateDTO
+   */
+  builtinModuleId?: string;
 }
 /**
  *
@@ -2036,6 +2084,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   commands: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  builtinModuleId: string;
 }
 /**
  *
@@ -2136,6 +2190,25 @@ export type ModuleSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface ModuleSetBuiltinDTO
+ */
+export interface ModuleSetBuiltinDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof ModuleSetBuiltinDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {object}
+   * @memberof ModuleSetBuiltinDTO
+   */
+  config?: object;
+}
+/**
+ *
+ * @export
  * @interface ModuleUpdateDTO
  */
 export interface ModuleUpdateDTO {
@@ -2212,6 +2285,19 @@ export const ParamKeyKeyEnum = {
 export type ParamKeyKeyEnum =
   typeof ParamKeyKeyEnum[keyof typeof ParamKeyKeyEnum];
 
+/**
+ *
+ * @export
+ * @interface ParamName
+ */
+export interface ParamName {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamName
+   */
+  name: string;
+}
 /**
  *
  * @export
@@ -7137,6 +7223,95 @@ export const ModuleApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get builtin
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerGetBuiltin: async (
+      name: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('moduleControllerGetBuiltin', 'name', name);
+      const localVarPath = `/modules/builtins/{name}`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get builtins
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerGetBuiltins: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/modules/builtins`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7283,6 +7458,63 @@ export const ModuleApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Set builtin
+     * @param {string} name
+     * @param {ModuleSetBuiltinDTO} [moduleSetBuiltinDTO] ModuleSetBuiltinDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerSetBuiltin: async (
+      name: string,
+      moduleSetBuiltinDTO?: ModuleSetBuiltinDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('moduleControllerSetBuiltin', 'name', name);
+      const localVarPath = `/modules/builtins/{name}`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        moduleSetBuiltinDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -7378,6 +7610,57 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get builtin
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerGetBuiltin(
+      name: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.moduleControllerGetBuiltin(
+          name,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get builtins
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerGetBuiltins(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.moduleControllerGetBuiltins(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7453,6 +7736,37 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Set builtin
+     * @param {string} name
+     * @param {ModuleSetBuiltinDTO} [moduleSetBuiltinDTO] ModuleSetBuiltinDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerSetBuiltin(
+      name: string,
+      moduleSetBuiltinDTO?: ModuleSetBuiltinDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.moduleControllerSetBuiltin(
+          name,
+          moduleSetBuiltinDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -7513,6 +7827,34 @@ export const ModuleApiFactory = function (
     },
     /**
      *
+     * @summary Get builtin
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerGetBuiltin(
+      name: string,
+      options?: any
+    ): AxiosPromise<ModuleOutputDTOAPI> {
+      return localVarFp
+        .moduleControllerGetBuiltin(name, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get builtins
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerGetBuiltins(
+      options?: any
+    ): AxiosPromise<ModuleOutputArrayDTOAPI> {
+      return localVarFp
+        .moduleControllerGetBuiltins(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7551,6 +7893,23 @@ export const ModuleApiFactory = function (
     ): AxiosPromise<ModuleOutputArrayDTOAPI> {
       return localVarFp
         .moduleControllerSearch(moduleSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Set builtin
+     * @param {string} name
+     * @param {ModuleSetBuiltinDTO} [moduleSetBuiltinDTO] ModuleSetBuiltinDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerSetBuiltin(
+      name: string,
+      moduleSetBuiltinDTO?: ModuleSetBuiltinDTO,
+      options?: any
+    ): AxiosPromise<ModuleOutputDTOAPI> {
+      return localVarFp
+        .moduleControllerSetBuiltin(name, moduleSetBuiltinDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7599,6 +7958,36 @@ export class ModuleApi extends BaseAPI {
 
   /**
    *
+   * @summary Get builtin
+   * @param {string} name
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerGetBuiltin(
+    name: string,
+    options?: AxiosRequestConfig
+  ) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerGetBuiltin(name, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get builtins
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerGetBuiltins(options?: AxiosRequestConfig) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerGetBuiltins(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -7639,6 +8028,25 @@ export class ModuleApi extends BaseAPI {
   ) {
     return ModuleApiFp(this.configuration)
       .moduleControllerSearch(moduleSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Set builtin
+   * @param {string} name
+   * @param {ModuleSetBuiltinDTO} [moduleSetBuiltinDTO] ModuleSetBuiltinDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerSetBuiltin(
+    name: string,
+    moduleSetBuiltinDTO?: ModuleSetBuiltinDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerSetBuiltin(name, moduleSetBuiltinDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

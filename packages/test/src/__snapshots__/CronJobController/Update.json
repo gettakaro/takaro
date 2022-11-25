@@ -21,7 +21,8 @@
     "group": "CronJobController",
     "name": "Update",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

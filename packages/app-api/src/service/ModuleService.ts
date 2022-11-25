@@ -12,13 +12,26 @@ import {
 } from 'class-validator';
 
 import { Type } from 'class-transformer';
-import { CronJobOutputDTO } from './CronJobService';
-import { JsonObject } from 'type-fest';
-import { HookOutputDTO } from './HookService';
-import { TakaroDTO } from '@takaro/util';
+import {
+  CronJobCreateDTO,
+  CronJobOutputDTO,
+  CronJobService,
+} from './CronJobService';
+import { HookCreateDTO, HookOutputDTO, HookService } from './HookService';
+import { errors, TakaroDTO } from '@takaro/util';
+import getModules from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
-import { CommandOutputDTO } from './CommandService';
+import {
+  CommandCreateDTO,
+  CommandOutputDTO,
+  CommandService,
+} from './CommandService';
+import {
+  FunctionCreateDTO,
+  FunctionOutputDTO,
+  FunctionService,
+} from './FunctionService';
 
 export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   @IsUUID()
@@ -30,7 +43,7 @@ export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   enabled!: boolean;
 
   @IsObject()
-  config!: JsonObject;
+  config!: Record<string, string>;
 
   @Type(() => CronJobOutputDTO)
   @ValidateNested({ each: true })
@@ -43,6 +56,9 @@ export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested({ each: true })
   commands: CommandOutputDTO[];
+
+  @IsString()
+  builtinModuleId: string | null;
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
@@ -56,7 +72,11 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  config!: JsonObject;
+  config!: Record<string, string>;
+
+  @IsOptional()
+  @IsString()
+  builtinModuleId: string | null;
 }
 
 export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
@@ -69,7 +89,16 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
 
   @IsOptional()
   @IsObject()
-  config!: JsonObject;
+  config!: Record<string, string>;
+}
+
+export class ModuleSetBuiltinDTO extends TakaroDTO<ModuleSetBuiltinDTO> {
+  @IsBoolean()
+  enabled!: boolean;
+
+  @IsOptional()
+  @IsObject()
+  config!: Record<string, string>;
 }
 
 export class ModuleService extends TakaroService<
@@ -89,6 +118,37 @@ export class ModuleService extends TakaroService<
   }
 
   async findOne(id: string): Promise<ModuleOutputDTO | undefined> {
+    const modules = await getModules();
+    const builtinModule = modules.get(id);
+    if (builtinModule) {
+      return new ModuleOutputDTO({
+        name: builtinModule.name,
+        commands: builtinModule.commands.map(
+          (c) =>
+            new CommandOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        cronJobs: builtinModule.cronJobs.map(
+          (c) =>
+            new CronJobOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        hooks: builtinModule.hooks.map(
+          (c) =>
+            new HookOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        enabled: true,
+        config: {},
+      });
+    }
+
     return this.repo.findOne(id);
   }
 
@@ -103,5 +163,141 @@ export class ModuleService extends TakaroService<
 
   async delete(id: string): Promise<boolean> {
     return this.repo.delete(id);
+  }
+
+  async getBuiltins(): Promise<ModuleOutputDTO[]> {
+    const modules = await getModules();
+    return Array.from(modules.values()).map((mod) => {
+      return new ModuleOutputDTO({
+        name: mod.name,
+        commands: mod.commands.map(
+          (c) =>
+            new CommandOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        cronJobs: mod.cronJobs.map(
+          (c) =>
+            new CronJobOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        hooks: mod.hooks.map(
+          (c) =>
+            new HookOutputDTO({
+              ...c,
+              function: new FunctionOutputDTO({ code: c.function }),
+            })
+        ),
+        enabled: true,
+        config: {},
+      });
+    });
+  }
+
+  async setBuiltin(id: string, item: ModuleSetBuiltinDTO) {
+    const modules = await getModules();
+    const builtinModule = modules.get(id);
+    if (!builtinModule) {
+      throw new errors.NotFoundError('This builtin module does not exist');
+    }
+
+    // See if this built-in module was already enabled
+    const existingBuiltIn = await this.repo.find({
+      filters: { builtinModuleId: id },
+    });
+
+    if (existingBuiltIn.results.length > 0) {
+      // It already exists, update it
+      const existing = existingBuiltIn.results[0];
+      await this.repo.update(
+        existing.id,
+        new ModuleUpdateDTO({
+          config: item.config,
+          enabled: item.enabled,
+        })
+      );
+      return this.findOne(existing.id);
+    }
+
+    let created: ModuleOutputDTO | null = null;
+
+    try {
+      created = await this.repo.create(
+        new ModuleCreateDTO({
+          name: builtinModule.name,
+          enabled: item.enabled,
+          config: item.config,
+          builtinModuleId: id,
+        })
+      );
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+
+      if (!error.message.includes('UniqueViolationError')) {
+        created = await this.repo.create(
+          new ModuleCreateDTO({
+            name: `${builtinModule.name} (builtin)`,
+            enabled: item.enabled,
+            config: item.config,
+            builtinModuleId: id,
+          })
+        );
+      }
+    }
+
+    const commandService = new CommandService(this.domainId);
+    const functionService = new FunctionService(this.domainId);
+    const hookService = new HookService(this.domainId);
+    const cronJobService = new CronJobService(this.domainId);
+
+    // Create all the commands,hooks, cronjobs associated with the builtin module
+    await Promise.all([
+      ...builtinModule.commands.map(async (c) => {
+        const fn = await functionService.create(
+          new FunctionCreateDTO({ code: c.function })
+        );
+        return commandService.create(
+          new CommandCreateDTO({
+            ...c,
+            trigger: c.name,
+            function: fn.id,
+            moduleId: created?.id,
+          })
+        );
+      }),
+      ...builtinModule.hooks.map(async (c) => {
+        const fn = await functionService.create(
+          new FunctionCreateDTO({ code: c.function })
+        );
+
+        return hookService.create(
+          new HookCreateDTO({
+            ...c,
+            function: fn.id,
+            moduleId: created?.id,
+          })
+        );
+      }),
+      ...builtinModule.cronJobs.map(async (c) => {
+        const fn = await functionService.create(
+          new FunctionCreateDTO({ code: c.function })
+        );
+
+        return cronJobService.create(
+          new CronJobCreateDTO({
+            ...c,
+            function: fn.id,
+            moduleId: created?.id,
+          })
+        );
+      }),
+    ]);
+
+    if (created) return this.findOne(created?.id);
   }
 }

@@ -2,7 +2,6 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base';
-import { JsonObject } from 'type-fest';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob';
 import { HookModel, HOOKS_TABLE_NAME } from './hook';
 import {
@@ -18,7 +17,9 @@ export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
   enabled!: boolean;
-  config!: JsonObject;
+  config!: Record<string, string>;
+
+  builtinModuleId: string | null;
 
   static get relationMappings() {
     return {

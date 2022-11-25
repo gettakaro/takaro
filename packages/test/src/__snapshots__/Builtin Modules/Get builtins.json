@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-11-10T20:01:51.758Z"
+    },
+    "data": [
+      {
+        "name": "ping",
+        "commands": [
+          {
+            "function": {
+              "code": "console.log(\"pong\");"
+            },
+            "name": "ping"
+          }
+        ],
+        "cronJobs": [],
+        "hooks": [],
+        "enabled": true,
+        "config": {}
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "Builtin Modules",
+    "snapshot": true,
+    "name": "Get builtins",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

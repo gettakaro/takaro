@@ -38,9 +38,15 @@ export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
   @IsBoolean()
   enabled: boolean;
 
+  @IsString()
+  functionId: string;
+
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsString()
+  moduleId: string;
 }
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {

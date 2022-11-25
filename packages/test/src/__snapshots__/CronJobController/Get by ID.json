@@ -21,7 +21,8 @@
     "group": "CronJobController",
     "name": "Get by ID",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

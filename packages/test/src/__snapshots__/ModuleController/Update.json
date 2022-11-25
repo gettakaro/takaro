@@ -5,6 +5,7 @@
     },
     "data": {
       "name": "Updated module",
+      "builtinModuleId": null,
       "enabled": false,
       "updatedAt": "2022-09-24T17:31:05.781Z",
       "createdAt": "2022-09-24T17:31:05.752Z",
