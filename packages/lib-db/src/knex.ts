@@ -31,11 +31,11 @@ export async function getKnex(): Promise<IKnex> {
   return final;
 }
 
-export async function disconnectKnex(domainId: string): Promise<void> {
+export async function disconnectKnex(): Promise<void> {
   if (!cachedKnex) return;
   await cachedKnex.destroy();
   cachedKnex = null;
-  log.info(`Disconnected knex for domain ${domainId}`);
+  log.info('Disconnected knex');
 }
 
 function addLoggingMiddle(knex: IKnex) {

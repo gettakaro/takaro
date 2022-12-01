@@ -1,7 +1,4 @@
-import {
-  NOT_DOMAIN_SCOPED_getKnex,
-  NOT_DOMAIN_SCOPED_disconnectKnex,
-} from '../knex';
+import { disconnectKnex, getKnex } from '../knex';
 import { QueryBuilder, SortDirection } from '../queryBuilder';
 import { expect } from '@takaro/test';
 import { TakaroModel } from '../TakaroModel';
@@ -45,7 +42,7 @@ class TestUserModel extends TakaroModel {
 
 describe('QueryBuilder', () => {
   beforeEach(async () => {
-    const knex = await NOT_DOMAIN_SCOPED_getKnex();
+    const knex = await getKnex();
     await knex.schema.dropTableIfExists(TEST_TABLE_USERS_NAME);
     await knex.schema.dropTableIfExists(TEST_TABLE_POSTS_NAME);
     await knex.schema.createTable(TEST_TABLE_USERS_NAME, (table) => {
@@ -65,9 +62,9 @@ describe('QueryBuilder', () => {
   });
 
   afterEach(async () => {
-    const knex = await NOT_DOMAIN_SCOPED_getKnex();
+    const knex = await getKnex();
     await knex.schema.dropTableIfExists(TEST_TABLE_USERS_NAME);
-    await NOT_DOMAIN_SCOPED_disconnectKnex();
+    await disconnectKnex();
   });
 
   it('Can create basic filters', async () => {
@@ -75,7 +72,7 @@ describe('QueryBuilder', () => {
     await TestUserModel.query().insert({ name: 'test2' });
     await TestUserModel.query().insert({ name: 'test3' });
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
       filters: { name: 'test2' },
     }).build(TestUserModel.query());
 
@@ -91,7 +88,7 @@ describe('QueryBuilder', () => {
       await TestUserModel.query().insert({ name: `test${number}` });
     }
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
       page: 2,
       limit: 10,
       sortBy: 'name',
@@ -108,7 +105,7 @@ describe('QueryBuilder', () => {
     await TestUserModel.query().insert({ name: 'test2' });
     await TestUserModel.query().insert({ name: 'test3' });
 
-    const res = await new QueryBuilder<TestUserModel>({
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
       sortBy: 'name',
       sortDirection: SortDirection.desc,
     }).build(TestUserModel.query());
@@ -122,6 +119,7 @@ describe('QueryBuilder', () => {
     await TestPostModel.query().insert({ title: 'test1', userId: user.id });
 
     const res = await new QueryBuilder<
+      TestPostModel & { author?: TestUserModel },
       TestPostModel & { author?: TestUserModel }
     >({ extend: ['author'] }).build(TestPostModel.query());
 
