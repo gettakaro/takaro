@@ -58,13 +58,17 @@ export class PlayerRepo extends ITakaroRepo<
 > {
   async getModel() {
     const knex = await this.getKnex();
-    return PlayerModel.bindKnex(knex);
+    const model = PlayerModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
   async find(filters: ITakaroQuery<PlayerOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<PlayerModel, PlayerOutputDTO>(
       filters
-    ).build(model.query());
+    ).build(query);
     return {
       total: result.total,
       results: result.results.map((item) => new PlayerOutputDTO(item)),
@@ -72,8 +76,8 @@ export class PlayerRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<PlayerOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id);
+    const { query } = await this.getModel();
+    const data = await query.findById(id);
 
     if (!data) {
       throw new errors.NotFoundError();
@@ -83,8 +87,13 @@ export class PlayerRepo extends ITakaroRepo<
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputDTO> {
-    const model = await this.getModel();
-    const player = await model.query().insert(item.toJSON()).returning('*');
+    const { query } = await this.getModel();
+    const player = await query
+      .insert({
+        ...item.toJSON(),
+        domain: this.domainId,
+      })
+      .returning('*');
     return new PlayerOutputDTO(player);
   }
 
@@ -92,8 +101,8 @@ export class PlayerRepo extends ITakaroRepo<
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
@@ -101,9 +110,8 @@ export class PlayerRepo extends ITakaroRepo<
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
-    const model = await this.getModel();
-    const res = await model
-      .query()
+    const { query } = await this.getModel();
+    const res = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
     return new PlayerOutputDTO(res);
@@ -112,7 +120,10 @@ export class PlayerRepo extends ITakaroRepo<
   async findGameAssociations(gameId: string) {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
-    const foundProfiles = await model.query().where({ gameId });
+    const foundProfiles = await model
+      .query()
+      .modify('domainScoped', this.domainId)
+      .where({ gameId });
     return foundProfiles;
   }
 
@@ -127,6 +138,7 @@ export class PlayerRepo extends ITakaroRepo<
       gameId,
       playerId,
       gameServerId,
+      domain: this.domainId,
     });
     return foundProfiles;
   }

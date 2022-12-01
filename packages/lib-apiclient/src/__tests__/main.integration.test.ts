@@ -27,7 +27,7 @@ describe('API client', () => {
       const domain = await adminClient.domain.domainControllerCreate({
         name: TEST_DOMAIN_NAME,
       });
-      expect(domain.data.data.domain.name).to.equal(TEST_DOMAIN_NAME);
+      expect(domain.data.data.createdDomain.name).to.equal(TEST_DOMAIN_NAME);
 
       const domainsRes = await adminClient.domain.domainControllerSearch({
         filters: { name: TEST_DOMAIN_NAME },
@@ -37,7 +37,7 @@ describe('API client', () => {
       expect(domainsRes.data.data[0].name).to.equal(TEST_DOMAIN_NAME);
 
       await adminClient.domain.domainControllerRemove(
-        domain.data.data.domain.id
+        domain.data.data.createdDomain.id
       );
     });
   });
@@ -54,7 +54,7 @@ describe('API client', () => {
     afterEach(async () => {
       if (domain) {
         await adminClient.domain.domainControllerRemove(
-          domain.data.data.domain.id
+          domain.data.data.createdDomain.id
         );
       }
     });

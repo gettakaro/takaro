@@ -61,14 +61,18 @@ export class GameServerRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return GameServerModel.bindKnex(knex);
+    const model = GameServerModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<GameServerOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(
       filters
-    ).build(model.query());
+    ).build(query);
     return {
       total: result.total,
       results: result.results.map((item) => new GameServerOutputDTO(item)),
@@ -76,8 +80,8 @@ export class GameServerRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id);
+    const { query } = await this.getModel();
+    const data = await query.findById(id);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -91,13 +95,14 @@ export class GameServerRepo extends ITakaroRepo<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
+      domain: this.domainId,
       connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
     } as unknown as Partial<GameServerModel>;
-    const res = await model.query().insert(data).returning('*');
+    const res = await query.insert(data).returning('*');
     return new GameServerOutputDTO({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
@@ -105,8 +110,8 @@ export class GameServerRepo extends ITakaroRepo<
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
@@ -114,13 +119,13 @@ export class GameServerRepo extends ITakaroRepo<
     id: string,
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
       connectionInfo: encryptedConnectionInfo,
     } as unknown as Partial<GameServerModel>;
-    const res = await model.query().updateAndFetchById(id, data).returning('*');
+    const res = await query.updateAndFetchById(id, data).returning('*');
     return new GameServerOutputDTO({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),

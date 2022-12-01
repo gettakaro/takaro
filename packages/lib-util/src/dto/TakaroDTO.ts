@@ -1,5 +1,5 @@
 import { validate } from 'class-validator';
-import { classToPlain } from 'class-transformer';
+import { classToPlain, Exclude } from 'class-transformer';
 import { logger } from '../logger';
 import * as errors from '../errors';
 
@@ -11,6 +11,9 @@ export class TakaroDTO<T> {
   constructor(data: Partial<T> = {}) {
     Object.assign(this, data);
   }
+
+  @Exclude()
+  domain: string;
 
   async validate() {
     const validationErrors = await validate(this, {

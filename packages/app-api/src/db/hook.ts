@@ -46,15 +46,19 @@ export class HookRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return HookModel.bindKnex(knex);
+    const model = HookModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<HookOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<HookModel, HookOutputDTO>({
       ...filters,
       extend: ['function'],
-    }).build(model.query());
+    }).build(query);
     return {
       total: result.total,
       results: result.results.map((item) => new HookOutputDTO(item)),
@@ -62,8 +66,8 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('function');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -73,8 +77,11 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().insert(item.toJSON());
+    const { query } = await this.getModel();
+    const data = await query.insert({
+      ...item.toJSON(),
+      domain: this.domainId,
+    });
 
     if (item.function) {
       await this.assign(data.id, item.function);
@@ -84,15 +91,14 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: HookUpdateDTO): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
@@ -100,7 +106,7 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async assign(id: string, functionId: string) {
-    const model = await this.getModel();
+    const { model } = await this.getModel();
     await model.relatedQuery('function').for(id).relate(functionId);
   }
 }

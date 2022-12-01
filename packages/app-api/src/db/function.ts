@@ -52,14 +52,18 @@ export class FunctionRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return FunctionModel.bindKnex(knex);
+    const model = FunctionModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<FunctionOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(
       filters
-    ).build(model.query());
+    ).build(query);
     return {
       total: result.total,
       results: result.results.map((item) => new FunctionOutputDTO(item)),
@@ -67,8 +71,8 @@ export class FunctionRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<FunctionOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id);
+    const { query } = await this.getModel();
+    const data = await query.findById(id);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -78,14 +82,19 @@ export class FunctionRepo extends ITakaroRepo<
   }
 
   async create(item: FunctionCreateDTO): Promise<FunctionOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().insert(item.toJSON()).returning('*');
+    const { query } = await this.getModel();
+    const data = await query
+      .insert({
+        ...item.toJSON(),
+        domain: this.domainId,
+      })
+      .returning('*');
     return new FunctionOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
@@ -93,9 +102,8 @@ export class FunctionRepo extends ITakaroRepo<
     id: string,
     data: FunctionUpdateDTO
   ): Promise<FunctionOutputDTO> {
-    const model = await this.getModel();
-    const result = await model
-      .query()
+    const { query } = await this.getModel();
+    const result = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
     return new FunctionOutputDTO(result);
