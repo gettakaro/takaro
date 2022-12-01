@@ -43,7 +43,7 @@ export class DomainOutputDTO extends TakaroDTO<DomainOutputDTO> {
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
   @Type(() => DomainOutputDTO)
   @ValidateNested()
-  domain: DomainOutputDTO;
+  createdDomain: DomainOutputDTO;
 
   @Type(() => UserOutputDTO)
   @ValidateNested()
@@ -141,11 +141,12 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await userService.assignRole(rootUser.id, rootRole.id);
 
-    return new DomainCreateOutputDTO({ domain, rootUser, rootRole, password });
-  }
-
-  async addLogin(user: UserOutputDTO, domainId: string) {
-    await this.repo.addLogin(user.id, user.email, domainId);
+    return new DomainCreateOutputDTO({
+      createdDomain: domain,
+      rootUser,
+      rootRole,
+      password,
+    });
   }
 
   async resolveDomain(email: string): Promise<string> {

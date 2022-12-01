@@ -52,15 +52,19 @@ export class UserRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return UserModel.bindKnex(knex);
+    const model = UserModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<UserOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
       extend: ['roles.capabilities'],
-    }).build(model.query());
+    }).build(query);
 
     return {
       total: result.total,
@@ -69,11 +73,8 @@ export class UserRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
-    const model = await this.getModel();
-    const data = await model
-      .query()
-      .findById(id)
-      .withGraphJoined('roles.capabilities');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('roles.capabilities');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);
@@ -83,37 +84,57 @@ export class UserRepo extends ITakaroRepo<
   }
 
   async create(data: UserCreateInputDTO): Promise<UserOutputDTO> {
-    const model = await this.getModel();
-    const item = await model.query().insert(data.toJSON()).returning('*');
+    const { query } = await this.getModel();
+    const item = await query
+      .insert({
+        ...data.toJSON(),
+        domain: this.domainId,
+      })
+      .returning('*');
     return new UserOutputDTO(item);
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
     return new UserOutputDTO(item);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {
-    const model = await this.getModel();
+    const { model } = await this.getModel();
     await model.relatedQuery('roles').for(userId).relate(roleId);
   }
 
   async removeRole(userId: string, roleId: string): Promise<void> {
-    const model = await this.getModel();
+    const { model } = await this.getModel();
     await model
       .relatedQuery('roles')
       .for(userId)
       .unrelate()
       .where('roleId', roleId);
+  }
+
+  async NOT_DOMAIN_SCOPED_resolveDomainByEmail(email: string): Promise<string> {
+    const { model } = await this.getModel();
+
+    const data = await model
+      .query()
+      .select('domain')
+      .where('email', email)
+      .first();
+
+    if (!data) {
+      throw new errors.NotFoundError(`User with email ${email} not found`);
+    }
+
+    return data.domain;
   }
 }

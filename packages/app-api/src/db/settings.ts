@@ -12,8 +12,6 @@ export const SETTINGS_TABLE_NAME = 'settings';
 export class SettingsModel extends TakaroModel {
   static tableName = SETTINGS_TABLE_NAME;
 
-  domainId!: string;
-
   commandPrefix!: string;
   serverChatName!: string;
 }
@@ -38,12 +36,20 @@ export class SettingsRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return SettingsModel.bindKnex(knex);
+    const model = SettingsModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async getGameServerModel() {
     const knex = await this.getKnex();
-    return GameServerSettingsModel.bindKnex(knex);
+    const model = GameServerSettingsModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(): Promise<PaginatedOutput<never>> {
@@ -68,22 +74,21 @@ export class SettingsRepo extends ITakaroRepo<
 
   async create(): Promise<Settings> {
     if (this.gameServerId) {
-      const model = await this.getGameServerModel();
-      const data = await model
-        .query()
+      const { query } = await this.getGameServerModel();
+      const data = await query
         .insert({
           gameServerId: this.gameServerId,
+          domain: this.domainId,
           ...DEFAULT_SETTINGS.toJSON(),
         })
         .returning('*');
       return new Settings(data);
     }
 
-    const model = await this.getModel();
-    const res = await model
-      .query()
+    const { query } = await this.getModel();
+    const res = await query
       .insert({
-        domainId: this.domainId,
+        domain: this.domainId,
         ...DEFAULT_SETTINGS.toJSON(),
       })
       .returning('*');
@@ -94,11 +99,11 @@ export class SettingsRepo extends ITakaroRepo<
     let data: SettingsModel[] | GameServerSettingsModel[];
 
     if (this.gameServerId) {
-      const model = await this.getGameServerModel();
-      data = await model.query().where({ gameServerId: this.gameServerId });
+      const { query } = await this.getGameServerModel();
+      data = await query.where({ gameServerId: this.gameServerId });
     } else {
-      const model = await this.getModel();
-      data = await model.query().where({ domainId: this.domainId });
+      const { query } = await this.getModel();
+      data = await query.where({ domain: this.domainId });
     }
 
     if (!data.length) {
@@ -112,11 +117,11 @@ export class SettingsRepo extends ITakaroRepo<
     let data: SettingsModel[] | GameServerSettingsModel[];
 
     if (this.gameServerId) {
-      const model = await this.getGameServerModel();
-      data = await model.query().where({ gameServerId: this.gameServerId });
+      const { query } = await this.getGameServerModel();
+      data = await query.where({ gameServerId: this.gameServerId });
     } else {
-      const model = await this.getModel();
-      data = await model.query().where({ domainId: this.domainId });
+      const { query } = await this.getModel();
+      data = await query.where({ domain: this.domainId });
     }
     if (!data.length) {
       throw new errors.NotFoundError();
@@ -130,18 +135,14 @@ export class SettingsRepo extends ITakaroRepo<
 
   async set(key: SETTINGS_KEYS, value: string): Promise<void> {
     if (this.gameServerId) {
-      const model = await this.getGameServerModel();
-      await model
-        .query()
+      const { query } = await this.getGameServerModel();
+      await query
         .where({ gameServerId: this.gameServerId })
         .update({ [key]: value });
       return;
     }
 
-    const model = await this.getModel();
-    await model
-      .query()
-      .update({ [key]: value })
-      .where({ domainId: this.domainId });
+    const { query } = await this.getModel();
+    await query.update({ [key]: value }).where({ domain: this.domainId });
   }
 }

@@ -1,11 +1,6 @@
-import {
-  getKnex,
-  ITakaroQuery,
-  NOT_DOMAIN_SCOPED_getKnex,
-  TakaroModel,
-} from '@takaro/db';
+import { getKnex, ITakaroQuery, TakaroModel } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { ModelClass } from 'objection';
+import { ModelClass, QueryBuilder } from 'objection';
 
 export interface PaginatedOutput<T> {
   total: number;
@@ -18,13 +13,16 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
   UpdateDTO extends TakaroDTO<UpdateDTO>
 > {
   async getKnex() {
-    return NOT_DOMAIN_SCOPED_getKnex();
+    return getKnex();
   }
 
   /**
    * We have to bind a knex instance to the model class in this function
    */
-  abstract getModel(): Promise<ModelClass<Model>>;
+  abstract getModel(): Promise<{
+    model: ModelClass<Model>;
+    query: QueryBuilder<Model>;
+  }>;
 
   abstract find(
     filters: ITakaroQuery<OutputDTO>
@@ -51,6 +49,6 @@ export abstract class ITakaroRepo<
   }
 
   async getKnex() {
-    return getKnex(this.domainId);
+    return getKnex();
   }
 }

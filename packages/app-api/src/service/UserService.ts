@@ -2,7 +2,6 @@ import { TakaroService } from './Base';
 import { hash, ITakaroQuery } from '@takaro/db';
 
 import { UserModel, UserRepo } from '../db/user';
-import { DomainService } from './DomainService';
 import {
   IsEmail,
   IsString,
@@ -70,9 +69,7 @@ export class UserService extends TakaroService<
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
     user.password = await hash(user.password);
-    const domainService = new DomainService();
     const createdUser = await this.repo.create(user);
-    await domainService.addLogin(createdUser, this.domainId);
     return createdUser;
   }
 

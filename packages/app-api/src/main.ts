@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
-import { migrateSystem } from '@takaro/db';
+import { migrate } from '@takaro/db';
 import { DomainController } from './controllers/DomainController';
 import { Server as HttpServer } from 'http';
 import { config } from './config';
@@ -52,7 +52,7 @@ async function main() {
   log.info('✅ Config validated');
 
   log.info('📖 Ensuring database is up to date');
-  await migrateSystem();
+  await migrate();
   log.info('🦾 Database up to date');
 
   getSocketServer(server.server as HttpServer);
