@@ -49,7 +49,7 @@ async function main() {
   });
 
   console.log('---------------------------------');
-  console.log(`Created a domain with id ${domainRes.data.data.domain.id}`);
+  console.log(`Created a domain with id ${domainRes.data.data.createdDomain.id}`);
   console.log(
     `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.rootUser.password}`
   );

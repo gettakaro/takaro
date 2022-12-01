@@ -71,7 +71,7 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
-export class CapabilityOutputDTO {
+export class CapabilityOutputDTO extends TakaroDTO<CapabilityOutputDTO> {
   @IsUUID()
   id: string;
 

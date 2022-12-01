@@ -5,9 +5,13 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('settings', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table.string('domainId').unique();
     table.string('commandPrefix');
     table.string('serverChatName');
+    table
+      .string('domain')
+      .references('domains.id')
+      .onDelete('CASCADE')
+      .notNullable();
   });
 
   await knex.schema.createTable('gameServerSettings', (table) => {
@@ -19,6 +23,11 @@ export async function up(knex: Knex): Promise<void> {
       .onDelete('CASCADE')
       .notNullable()
       .unique();
+    table
+      .string('domain')
+      .references('domains.id')
+      .onDelete('CASCADE')
+      .notNullable();
   });
 
   await knex.raw(

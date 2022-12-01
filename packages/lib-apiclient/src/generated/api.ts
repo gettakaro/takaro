@@ -625,7 +625,7 @@ export interface DomainCreateOutputDTO {
    * @type {DomainOutputDTO}
    * @memberof DomainCreateOutputDTO
    */
-  domain: DomainOutputDTO;
+  createdDomain: DomainOutputDTO;
   /**
    *
    * @type {UserOutputDTO}
@@ -1796,31 +1796,6 @@ export type ITakaroQuerySortDirectionEnum =
 /**
  *
  * @export
- * @interface LoginCreateDTO
- */
-export interface LoginCreateDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  userId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  domain: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  email: string;
-}
-/**
- *
- * @export
  * @interface LoginDTO
  */
 export interface LoginDTO {
@@ -1848,30 +1823,6 @@ export interface LoginOutputDTO {
    * @type {string}
    * @memberof LoginOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  userId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  email: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  domain: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
   token: string;
 }
 /**
@@ -1892,19 +1843,6 @@ export interface LoginOutputDTOAPI {
    * @memberof LoginOutputDTOAPI
    */
   metadata: MetadataOutput;
-}
-/**
- *
- * @export
- * @interface LoginUpdateDTO
- */
-export interface LoginUpdateDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof LoginUpdateDTO
-   */
-  email: string;
 }
 /**
  *

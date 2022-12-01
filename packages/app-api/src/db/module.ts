@@ -62,15 +62,19 @@ export class ModuleRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return ModuleModel.bindKnex(knex);
+    const model = ModuleModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<ModuleOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>({
       ...filters,
       extend: ['cronJobs', 'hooks', 'commands'],
-    }).build(model.query());
+    }).build(query);
 
     return {
       total: result.total,
@@ -79,9 +83,8 @@ export class ModuleRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<ModuleOutputDTO> {
-    const model = await this.getModel();
-    const data = await model
-      .query()
+    const { query } = await this.getModel();
+    const data = await query
       .findById(id)
       .withGraphJoined('cronJobs.function')
       .withGraphJoined('hooks.function')
@@ -95,22 +98,24 @@ export class ModuleRepo extends ITakaroRepo<
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().insert(item.toJSON());
+    const { query } = await this.getModel();
+    const data = await query.insert({
+      ...item.toJSON(),
+      domain: this.domainId,
+    });
 
     return this.findOne(data.id);
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .withGraphJoined('cronJobs')
       .withGraphJoined('hooks')
