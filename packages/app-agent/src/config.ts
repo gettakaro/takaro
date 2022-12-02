@@ -29,6 +29,13 @@ interface IAgentConfig extends IBaseConfig {
     executablePath: string;
     namespace: string;
   };
+  firecracker: {
+    binary: string;
+    kernelImage: string;
+    rootfs: string;
+    socket: string;
+    agentSocket: string;
+  };
 }
 
 const configSchema = {
@@ -123,6 +130,38 @@ const configSchema = {
       format: String,
       default: 'http://localhost:3000',
       env: 'TAKARO_HOST',
+    },
+  },
+  firecracker: {
+    binary: {
+      doc: 'Path to Firecracker binary',
+      format: String,
+      default: '/usr/bin/firecracker',
+      env: 'FIRECRACKER_BINARY',
+    },
+    kernelImage: {
+      doc: 'Path to the kernel image used by the Firecracker vm',
+      format: String,
+      default: '',
+      env: 'FIRECRACKER_KERNEL_IMAGE',
+    },
+    rootfs: {
+      doc: 'Path to the rootfs used by the Firecracker vm',
+      format: String,
+      default: '',
+      env: 'FIRECRACKER_ROOTFS',
+    },
+    socket: {
+      doc: 'socket (fd) to communicate with firecracker vm',
+      format: String,
+      default: '/tmp/firecracker.socket',
+      env: 'FIRECRACKER_SOCKET',
+    },
+    agentSocket: {
+      doc: 'vsocket (fd) to communicate with agent inside firecracker vm',
+      format: String,
+      default: '/tmp/agent.socket',
+      env: 'FIRECRACKER_AGENT_SOCKET',
     },
   },
 };
