@@ -1,11 +1,14 @@
-import os from 'os';
 import child_process, { ChildProcess } from 'child_process';
 import fs, { WriteStream } from 'fs';
+import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 
 interface FcOptions {
-  binPath: string;
-  socketPath: string;
+  binary: string;
+  kernelImage: string;
+  rootfs: string;
+  fcSocket: string;
+  agentSocket: string;
 }
 
 interface InfoReponse {
@@ -18,24 +21,42 @@ interface InfoReponse {
 export default class Firecracker {
   child: ChildProcess | undefined;
   options: FcOptions;
+  logger;
 
   private readonly httpSock: Got;
 
   constructor(options: FcOptions) {
+    this.logger = logger('firecracker');
     this.options = options;
     this.httpSock = got.extend({
       enableUnixSockets: true,
-      prefixUrl: `unix:${options.socketPath}:`,
+      prefixUrl: `unix:${options.fcSocket}:`,
     });
 
     this.spawn();
     this.setupListeners();
+
+    // make sure to clean up on exit
+    process.on('SIGINT', () => {
+      this.kill();
+    });
   }
 
   spawn(): ChildProcess {
+    this.logger.debug('spawning child process');
+
     this.child = child_process.spawn(
-      this.options.binPath,
-      ['--api-sock', this.options.socketPath],
+      this.options.binary,
+      [
+        '--api-sock',
+        this.options.fcSocket,
+        '--log-path',
+        'logs.fifo',
+        '--level',
+        'Debug',
+        '--show-level',
+        '--show-log-origin',
+      ],
       { detached: true }
     );
 
@@ -45,17 +66,17 @@ export default class Firecracker {
   setupListeners(): void {
     if (this.child !== undefined) {
       this.child.on('exit', () => {
-        fs.unlink(this.options.socketPath, () => {});
+        fs.unlink(this.options.fcSocket, () => {});
         this.child = undefined;
       });
 
       this.child.on('close', () => {
-        fs.unlink(this.options.socketPath, () => {});
+        fs.unlink(this.options.fcSocket, () => {});
         this.child = undefined;
       });
 
       this.child.on('error', () => {
-        fs.unlink(this.options.socketPath, () => {});
+        fs.unlink(this.options.fcSocket, () => {});
       });
     }
   }
@@ -64,8 +85,12 @@ export default class Firecracker {
     const isKilled = this.child?.kill() ?? false;
 
     if (isKilled) {
-      fs.unlink(this.options.socketPath, () => {});
+      this.logger.debug('cleaning up sockets');
+
       this.child = undefined;
+
+      fs.unlink(this.options.fcSocket, () => {});
+      fs.unlink(this.options.agentSocket, () => {});
     }
 
     return isKilled;
@@ -76,31 +101,52 @@ export default class Firecracker {
   }
 
   async createVM() {
-    await this.httpSock.put('boot-source', {
-      json: {
-        kernel_image_path: os.tmpdir() + '/hello-vmlinux.bin',
-        boot_args: 'console=ttyS0 reboot=k panic=1 pci=off',
-      },
-    });
+    try {
+      this.logger.debug('adding boot source');
 
-    await this.httpSock
-      .put('drives/rootfs', {
+      await this.httpSock.put('boot-source', {
+        json: {
+          kernel_image_path: this.options.kernelImage,
+          boot_args: 'console=ttyS0 reboot=k panic=1 pci=off',
+        },
+      });
+
+      this.logger.debug('adding rootfs');
+
+      await this.httpSock.put('drives/rootfs', {
         json: {
           drive_id: 'rootfs',
-          path_on_host: os.tmpdir() + '/hello-rootfs.ext4',
+          path_on_host: this.options.rootfs,
           is_root_device: true,
           is_read_only: false,
         },
-      })
-      .json();
+      });
 
-    return await this.httpSock
-      .put('actions', {
+      this.logger.debug('setting up vsock');
+
+      await this.httpSock.put('vsock', {
         json: {
-          action_type: 'InstanceStart',
+          guest_cid: 3,
+          uds_path: this.options.agentSocket,
         },
-      })
-      .json();
+      });
+
+      this.logger.debug('setting up logger');
+
+      const responseData = await this.httpSock
+        .put('actions', {
+          json: {
+            action_type: 'InstanceStart',
+          },
+        })
+        .json();
+
+      this.logger.info('started vm instance', responseData);
+
+      return responseData;
+    } catch (err) {
+      this.logger.error('creating vm instance', err);
+    }
   }
 
   async downloadImage(url: string, destination: string): Promise<void> {

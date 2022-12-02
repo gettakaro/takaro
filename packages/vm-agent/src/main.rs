@@ -1,9 +1,9 @@
-use micro_http::{HttpServer, ServerError, ServerRequest};
+use micro_http::{
+    Body, HttpServer, Response, ServerError, ServerRequest, ServerResponse, StatusCode,
+};
 use serde::Deserialize;
 
-use std::fs::File;
-use std::io::prelude::*;
-use std::process::Command;
+use std::{fs, process::Command};
 
 #[derive(Deserialize)]
 struct FunctionRequest {
@@ -11,27 +11,47 @@ struct FunctionRequest {
     code: String,
 }
 
-fn handle_request(request: ServerRequest) {
-    let function: Option<FunctionRequest> = match request.request.body {
-        Some(body) => serde_json::from_slice(body.raw()).unwrap(),
-        _ => None,
-    };
+fn handle_request(request: ServerRequest) -> ServerResponse {
+    println!("handling request");
 
-    if let Some(function) = function {
-        let mut file = File::create("function.js").unwrap();
-        file.write_all(function.code.as_bytes());
+    request.process(|request| {
+        let function: Option<FunctionRequest> = match &request.body {
+            Some(body) => serde_json::from_slice(body.raw()).unwrap(),
+            _ => None,
+        };
 
-        let output = Command::new("/usr/bin/node")
-            .arg("./function.js")
-            .output()
-            .unwrap();
+        let output = if let Some(function) = function {
+            fs::write("/tmp/function.js", function.code).expect("Unable to write file");
 
-        dbg!(output);
-    }
+            Some(
+                Command::new("/usr/bin/node")
+                    .arg("/tmp/function.js")
+                    .output()
+                    .unwrap(),
+            )
+        } else {
+            None
+        };
+
+        dbg!(&output);
+
+        println!("responding..");
+
+        let mut response = Response::new(request.http_version(), StatusCode::OK);
+
+        if let Some(output) = output {
+            let body = Body {
+                body: output.stdout,
+            };
+            response.set_body(body);
+        }
+
+        response
+    })
 }
 
 fn run_server() -> Result<(), ServerError> {
-    let path_to_socket = "/tmp/agent.socket";
+    let path_to_socket = "/tmp/agent.sock_52";
     std::fs::remove_file(path_to_socket).unwrap_or_default();
 
     // Start the server.
@@ -44,7 +64,9 @@ fn run_server() -> Result<(), ServerError> {
     // Server loop processing requests.
     loop {
         for request in server.requests()? {
-            handle_request(request);
+            let response = handle_request(request);
+
+            server.respond(response)?;
         }
     }
 

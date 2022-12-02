@@ -6,8 +6,8 @@ describe('Firecracker', () => {
 
   before(() => {
     firecracker = new Firecracker({
-      binPath: '/home/branco/.local/bin/firecracker',
-      socketPath: '/tmp/firecracker.socket',
+      binary: '/home/branco/.local/bin/firecracker',
+      fcSocketPath: '/tmp/firecracker.socket',
     });
   });
 
