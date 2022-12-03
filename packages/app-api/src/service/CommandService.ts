@@ -63,7 +63,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
   moduleId: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
   function?: string;
 }
 
@@ -111,7 +111,12 @@ export class CommandService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
         new FunctionCreateDTO({

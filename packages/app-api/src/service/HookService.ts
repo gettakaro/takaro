@@ -76,7 +76,7 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   eventType: GameEvents;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
   function?: string;
 }
 
@@ -127,7 +127,12 @@ export class HookService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
         new FunctionCreateDTO({

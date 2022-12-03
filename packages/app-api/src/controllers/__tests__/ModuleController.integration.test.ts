@@ -43,7 +43,6 @@ const tests = [
     test: async function () {
       return this.client.module.moduleControllerUpdate(this.setupData.id, {
         name: 'Updated module',
-        enabled: false,
       });
     },
   }),

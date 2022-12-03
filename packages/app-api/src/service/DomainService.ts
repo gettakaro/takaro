@@ -18,6 +18,7 @@ import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 import { CronJobService } from './CronJobService';
+import { ModuleService } from './ModuleService';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -122,6 +123,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
     const settingsService = new SettingsService(domain.id);
+    const moduleService = new ModuleService(domain.id);
 
     await settingsService.init();
 
@@ -140,6 +142,8 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     );
 
     await userService.assignRole(rootUser.id, rootRole.id);
+
+    await moduleService.seedBuiltinModules();
 
     return new DomainCreateOutputDTO({
       createdDomain: domain,

@@ -21,6 +21,7 @@ import { HookController } from './controllers/HookController';
 import { PlayerController } from './controllers/PlayerController';
 import { SettingsController } from './controllers/SettingsController';
 import { CommandController } from './controllers/CommandController';
+import { ModuleService } from './service/ModuleService';
 
 export const server = new HTTP(
   {
@@ -51,8 +52,9 @@ async function main() {
   config.validate();
   log.info('✅ Config validated');
 
-  log.info('📖 Ensuring database is up to date');
+  log.info('📖 Running database migrations');
   await migrate();
+
   log.info('🦾 Database up to date');
 
   getSocketServer(server.server as HttpServer);
@@ -60,16 +62,19 @@ async function main() {
 
   log.info('🚀 Server started');
 
-  log.info('🔌 Starting all game servers');
-
   const domainService = new DomainService();
   const domains = await domainService.find({});
 
   for (const domain of domains.results) {
+    log.info('🌱 Seeding database with builtin modules');
+    const moduleService = new ModuleService(domain.id);
+    await moduleService.seedBuiltinModules();
+
+    log.info('🔌 Starting all game servers');
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
 
-    // GameService.find() does not decrypted the connectioninfo's
+    // GameService.find() does not decrypt the connectioninfo
     const gameServersDecrypted = await Promise.all(
       gameServers.results.map(async (gameserver) => {
         const gs = await gameServerService.findOne(gameserver.id);

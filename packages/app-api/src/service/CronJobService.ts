@@ -54,7 +54,7 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   moduleId!: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
   function?: string;
 }
 
@@ -101,7 +101,12 @@ export class CronJobService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
