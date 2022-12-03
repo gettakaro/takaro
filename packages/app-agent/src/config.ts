@@ -142,13 +142,13 @@ const configSchema = {
     kernelImage: {
       doc: 'Path to the kernel image used by the Firecracker vm',
       format: String,
-      default: '',
+      default: '/tmp/rootfs.bin',
       env: 'FIRECRACKER_KERNEL_IMAGE',
     },
     rootfs: {
       doc: 'Path to the rootfs used by the Firecracker vm',
       format: String,
-      default: '',
+      default: '/tmp/vmlinux.bin',
       env: 'FIRECRACKER_ROOTFS',
     },
     socket: {
