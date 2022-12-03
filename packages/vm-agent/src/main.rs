@@ -2,6 +2,8 @@ use micro_http::{
     Body, HttpServer, Response, ServerError, ServerRequest, ServerResponse, StatusCode,
 };
 use serde::Deserialize;
+use std::os::fd::{AsRawFd, RawFd};
+use vsock::{VsockAddr, VsockListener};
 
 use std::{fs, process::Command};
 
@@ -20,55 +22,63 @@ fn handle_request(request: ServerRequest) -> ServerResponse {
             _ => None,
         };
 
-        let output = if let Some(function) = function {
-            fs::write("/tmp/function.js", function.code).expect("Unable to write file");
+        // let output = if let Some(function) = function {
+        //     fs::write("/tmp/function.js", function.code).expect("Unable to write file");
+        //
+        //     Some(
+        //         Command::new("/usr/bin/node")
+        //             .arg("/tmp/function.js")
+        //             .output()
+        //             .unwrap(),
+        //     )
+        // } else {
+        //     None
+        // };
 
-            Some(
-                Command::new("/usr/bin/node")
-                    .arg("/tmp/function.js")
-                    .output()
-                    .unwrap(),
-            )
-        } else {
-            None
-        };
-
-        dbg!(&output);
+        // dbg!(&output);
 
         println!("responding..");
 
         let mut response = Response::new(request.http_version(), StatusCode::OK);
 
-        if let Some(output) = output {
-            let body = Body {
-                body: output.stdout,
-            };
-            response.set_body(body);
-        }
+        // if let Some(output) = output {
+        //     let body = Body {
+        //         body: output.stdout,
+        //     };
+        //     response.set_body(body);
+        // }
 
         response
     })
 }
 
 fn run_server() -> Result<(), ServerError> {
-    let path_to_socket = "/tmp/agent.sock_52";
-    std::fs::remove_file(path_to_socket).unwrap_or_default();
+    unsafe {
+        let addr = VsockAddr::new(2, 55);
 
-    // Start the server.
-    let mut server = HttpServer::new(path_to_socket)?;
-    server.start_server()?;
+        println!("vscock address created");
 
-    // Connect a client to the server so it doesn't block in our example.
-    let _socket = std::os::unix::net::UnixStream::connect(path_to_socket).unwrap();
+        let raw_fd = VsockListener::bind(&addr)
+            .expect("bind and listen failed")
+            .as_raw_fd();
 
-    // Server loop processing requests.
-    loop {
-        for request in server.requests()? {
-            let response = handle_request(request);
+        println!("vsock listener bound");
 
-            server.respond(response)?;
+        // Start the server.
+        let mut server = HttpServer::new_from_fd(raw_fd)?;
+        server.start_server()?;
+
+        println!("server started");
+
+        // Server loop processing requests.
+        loop {
+            for request in server.requests()? {
+                let response = handle_request(request);
+
+                server.respond(response)?;
+            }
         }
-    }
+    };
 
     Ok(())
 }

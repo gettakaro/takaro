@@ -1,68 +1,74 @@
 Running Firecracker v1.1.2
-2022-11-26T22:07:35.377775209 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/boot-source" with body "{\"kernel_image_path\":\"/home/branco/dev/firecracker/hello-vmlinux.bin\",\"boot_args\":\"console=ttyS0 reboot=k panic=1 pci=off\"}".
-2022-11-26T22:07:35.377986484 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
-2022-11-26T22:07:35.378023279 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 257 us.
-2022-11-26T22:07:35.389042555 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/drives/rootfs" with body "{\"drive_id\":\"rootfs\",\"path_on_host\":\"/home/branco/dev/firecracker/rootfs.ext4\",\"is_root_device\":true,\"is_read_only\":false}".
-2022-11-26T22:07:35.389333433 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
-2022-11-26T22:07:35.389348291 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 315 us.
-2022-11-26T22:07:35.392870247 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/vsock" with body "{\"guest_cid\":3,\"uds_path\":\"/tmp/agent.sock\"}".
-2022-11-26T22:07:35.393293594 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
-2022-11-26T22:07:35.393368135 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 505 us.
-2022-11-26T22:07:35.396800911 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/actions" with body "{\"action_type\":\"InstanceStart\"}".
-2022-11-26T22:07:35.451441514 [anonymous-instance:main:INFO:src/vmm/src/device_manager/mmio.rs:418] Artificially kick devices.
-2022-11-26T22:07:35.451842703 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
-2022-11-26T22:07:35.451870717 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 55075 us.
-2022-11-26T22:07:35.718179715 [anonymous-instance:main:DEBUG:src/devices/src/virtio/block/event_handler.rs:35] block: activate event
-2022-11-26T22:07:35.721389478 [anonymous-instance:fc_vcpu 0:WARN:src/devices/src/legacy/i8042.rs:126] Failed to trigger i8042 kbd interrupt (disabled by guest OS)
-2022-11-26T22:07:35.730937401 [anonymous-instance:fc_vcpu 0:WARN:src/devices/src/legacy/i8042.rs:126] Failed to trigger i8042 kbd interrupt (disabled by guest OS)
-2022-11-26T22:07:35.998213311 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:139] vsock: activate event
-2022-11-26T22:07:35.998275230 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:40] vsock: RX queue event
-2022-11-26T22:07:35.998286440 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:86] vsock: event queue event
-2022-11-26T22:07:43.629635372 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:43.629688396 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:43.629701809 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
-2022-11-26T22:07:43.629730678 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:45.849128577 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:45.849170011 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:45.849181195 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
-2022-11-26T22:07:45.849205919 [anonymous-instance:main:INFO:src/devices/src/virtio/vsock/unix/muxer.rs:412] vsock: error adding local-init connection: UnixRead(Os { code: 11, kind: WouldBlock, message: "Resource temporarily unavailable" })
-2022-11-26T22:07:45.849217618 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:47.342700097 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:47.342738276 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:47.342747682 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
-2022-11-26T22:07:47.342765528 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:50.430150754 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:50.430193047 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:50.430204107 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
-2022-11-26T22:07:50.430235646 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:50.430246176 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:133] vsock: process_rx()
-2022-11-26T22:07:50.430258497 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:179] vsock muxer: RX pkt: VsockPacketHeader { src_cid: 2, dst_cid: 3, src_port: 1073741824, dst_port: 52, len: 0, type_: 1, op: 1, flags: 0, buf_alloc: 65536, fwd_cnt: 0 }
-2022-11-26T22:07:50.430271525 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
-2022-11-26T22:07:50.430428589 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:60] vsock: TX queue event
-2022-11-26T22:07:50.430441289 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:50.430449880 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:201] vsock: muxer.send[rxq.len=0]: VsockPacketHeader { src_cid: 3, dst_cid: 2, src_port: 52, dst_port: 1073741824, len: 0, type_: 1, op: 3, flags: 0, buf_alloc: 0, fwd_cnt: 0 }
-2022-11-26T22:07:50.430473626 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
-2022-11-26T22:07:51.880813850 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:51.880859599 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:51.880873818 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
-2022-11-26T22:07:51.880903181 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:07:56.909118420 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:07:56.909159504 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:07:56.909171887 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
-2022-11-26T22:07:56.909207575 [anonymous-instance:main:INFO:src/devices/src/virtio/vsock/unix/muxer.rs:412] vsock: error adding local-init connection: InvalidPortRequest
-2022-11-26T22:07:56.909219412 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:23:58.128979069 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:23:58.129034509 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:23:58.129047368 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
-2022-11-26T22:23:58.129073964 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:24:02.546942568 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
-2022-11-26T22:24:02.546984943 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
-2022-11-26T22:24:02.546998452 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
-2022-11-26T22:24:02.547034119 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:24:02.547046677 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:133] vsock: process_rx()
-2022-11-26T22:24:02.547061154 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:179] vsock muxer: RX pkt: VsockPacketHeader { src_cid: 2, dst_cid: 3, src_port: 1073741825, dst_port: 52, len: 0, type_: 1, op: 1, flags: 0, buf_alloc: 65536, fwd_cnt: 0 }
-2022-11-26T22:24:02.547077343 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
-2022-11-26T22:24:02.547254557 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:60] vsock: TX queue event
-2022-11-26T22:24:02.547274878 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
-2022-11-26T22:24:02.547285710 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:201] vsock: muxer.send[rxq.len=0]: VsockPacketHeader { src_cid: 3, dst_cid: 2, src_port: 52, dst_port: 1073741825, len: 0, type_: 1, op: 3, flags: 0, buf_alloc: 0, fwd_cnt: 0 }
-2022-11-26T22:24:02.547314628 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:46:07.719755573 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/boot-source" with body "{\"kernel_image_path\":\"/home/branco/dev/takaro/firecracker/vmlinux.bin\",\"boot_args\":\"console=ttyS0 reboot=k panic=1 pci=off\"}".
+2022-12-03T18:46:07.719870929 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
+2022-12-03T18:46:07.719884863 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 136 us.
+2022-12-03T18:46:07.727326816 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/drives/rootfs" with body "{\"drive_id\":\"rootfs\",\"path_on_host\":\"/home/branco/dev/takaro/firecracker/rootfs.ext4\",\"is_root_device\":true,\"is_read_only\":false}".
+2022-12-03T18:46:07.727413893 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
+2022-12-03T18:46:07.727435471 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 114 us.
+2022-12-03T18:46:07.729359990 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/vsock" with body "{\"guest_cid\":3,\"uds_path\":\"/tmp/takaro/agent.socket\"}".
+2022-12-03T18:46:07.729464685 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
+2022-12-03T18:46:07.729476912 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 120 us.
+2022-12-03T18:46:07.731164204 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:218] The API server received a Put request on "/actions" with body "{\"action_type\":\"InstanceStart\"}".
+2022-12-03T18:46:07.782951794 [anonymous-instance:main:INFO:src/vmm/src/device_manager/mmio.rs:418] Artificially kick devices.
+2022-12-03T18:46:07.783120027 [anonymous-instance:fc_api:INFO:src/api_server/src/parsed_request.rs:165] The request was executed successfully. Status code: 204 No Content.
+2022-12-03T18:46:07.783150967 [anonymous-instance:fc_api:DEBUG:src/api_server/src/lib.rs:229] Total previous API call duration: 51989 us.
+2022-12-03T18:46:07.950961090 [anonymous-instance:main:DEBUG:src/devices/src/virtio/block/event_handler.rs:35] block: activate event
+2022-12-03T18:46:07.953276851 [anonymous-instance:fc_vcpu 0:WARN:src/devices/src/legacy/i8042.rs:126] Failed to trigger i8042 kbd interrupt (disabled by guest OS)
+2022-12-03T18:46:07.961235683 [anonymous-instance:fc_vcpu 0:WARN:src/devices/src/legacy/i8042.rs:126] Failed to trigger i8042 kbd interrupt (disabled by guest OS)
+2022-12-03T18:46:08.223210061 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:139] vsock: activate event
+2022-12-03T18:46:08.223272167 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:40] vsock: RX queue event
+2022-12-03T18:46:08.223284741 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:86] vsock: event queue event
+2022-12-03T18:47:14.807034346 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:47:14.807079632 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:47:14.807092870 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
+2022-12-03T18:47:14.807125025 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:47:20.647641794 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:47:20.647696941 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:47:20.647720130 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
+2022-12-03T18:47:20.647753340 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:47:20.647761417 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:133] vsock: process_rx()
+2022-12-03T18:47:20.647771005 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:179] vsock muxer: RX pkt: VsockPacketHeader { src_cid: 2, dst_cid: 3, src_port: 1073741824, dst_port: 55, len: 0, type_: 1, op: 1, flags: 0, buf_alloc: 65536, fwd_cnt: 0 }
+2022-12-03T18:47:20.647780017 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:47:20.647978947 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:60] vsock: TX queue event
+2022-12-03T18:47:20.648005028 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:47:20.648021815 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:201] vsock: muxer.send[rxq.len=0]: VsockPacketHeader { src_cid: 3, dst_cid: 2, src_port: 55, dst_port: 1073741824, len: 0, type_: 1, op: 3, flags: 0, buf_alloc: 0, fwd_cnt: 0 }
+2022-12-03T18:47:20.648042933 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:51:52.156827311 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:51:52.156882995 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:51:52.156901948 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
+2022-12-03T18:51:52.156926289 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:51:56.417163519 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:51:56.417238478 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:51:56.417255608 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
+2022-12-03T18:51:56.417280940 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:51:56.417288791 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:133] vsock: process_rx()
+2022-12-03T18:51:56.417297729 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:179] vsock muxer: RX pkt: VsockPacketHeader { src_cid: 2, dst_cid: 3, src_port: 1073741825, dst_port: 55, len: 0, type_: 1, op: 1, flags: 0, buf_alloc: 65536, fwd_cnt: 0 }
+2022-12-03T18:51:56.417307378 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:51:56.417479843 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:60] vsock: TX queue event
+2022-12-03T18:51:56.417500112 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:51:56.417508486 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:201] vsock: muxer.send[rxq.len=0]: VsockPacketHeader { src_cid: 3, dst_cid: 2, src_port: 55, dst_port: 1073741825, len: 0, type_: 1, op: 3, flags: 0, buf_alloc: 0, fwd_cnt: 0 }
+2022-12-03T18:51:56.417538188 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:52:41.695260842 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:52:41.695311255 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:52:41.695320441 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
+2022-12-03T18:52:41.695342950 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:52:44.530005088 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:52:44.530055448 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:52:44.530066093 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN
+2022-12-03T18:52:44.530092972 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:52:44.530106902 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:133] vsock: process_rx()
+2022-12-03T18:52:44.530125189 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:179] vsock muxer: RX pkt: VsockPacketHeader { src_cid: 2, dst_cid: 3, src_port: 1073741826, dst_port: 55, len: 0, type_: 1, op: 1, flags: 0, buf_alloc: 65536, fwd_cnt: 0 }
+2022-12-03T18:52:44.530147092 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:52:44.530294538 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:60] vsock: TX queue event
+2022-12-03T18:52:44.530309285 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:52:44.530318622 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:201] vsock: muxer.send[rxq.len=0]: VsockPacketHeader { src_cid: 3, dst_cid: 2, src_port: 55, dst_port: 1073741826, len: 0, type_: 1, op: 3, flags: 0, buf_alloc: 0, fwd_cnt: 0 }
+2022-12-03T18:52:44.530347120 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:123] vsock: raising IRQ
+2022-12-03T18:52:51.323127848 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:52:51.323179606 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:52:51.323192698 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=12, evset=IN
+2022-12-03T18:52:51.323228111 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()
+2022-12-03T18:52:53.373851034 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/event_handler.rs:102] vsock: backend event
+2022-12-03T18:52:53.373913107 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:283] vsock: muxer received kick
+2022-12-03T18:52:53.373934336 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/unix/muxer.rs:341] vsock: muxer processing event: fd=24, evset=IN | HANG_UP
+2022-12-03T18:52:53.373966591 [anonymous-instance:main:INFO:src/devices/src/virtio/vsock/unix/muxer.rs:412] vsock: error adding local-init connection: UnixRead(Custom { kind: UnexpectedEof, error: "failed to fill whole buffer" })
+2022-12-03T18:52:53.373987433 [anonymous-instance:main:DEBUG:src/devices/src/virtio/vsock/device.rs:185] vsock::process_tx()

@@ -12,10 +12,11 @@ ln -s agetty /etc/init.d/agetty.ttyS0
 echo ttyS0 >/etc/securetty
 rc-update add agetty.ttyS0 default
 
-# Make sure special file systems are mounted on boot:
-rc-update add devfs boot
-rc-update add procfs boot
-rc-update add sysfs boot
+# Change root password
+echo "root:root" | chpasswd
+
+# Setup dns
+echo "nameserver 1.1.1.1" >>/etc/resolv.conf
 
 # Start our agent service on boot
 rc-update add agent boot

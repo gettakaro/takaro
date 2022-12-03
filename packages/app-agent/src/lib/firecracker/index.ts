@@ -1,4 +1,5 @@
 import child_process, { ChildProcess } from 'child_process';
+import process from 'process';
 import fs, { WriteStream } from 'fs';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
@@ -33,8 +34,8 @@ export default class Firecracker {
       prefixUrl: `unix:${options.fcSocket}:`,
     });
 
-    this.spawn();
-    this.setupListeners();
+    // this.spawn();
+    // this.setupListeners();
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
@@ -42,7 +43,7 @@ export default class Firecracker {
     });
   }
 
-  spawn(): ChildProcess {
+  spawn(): ChildProcess | null {
     this.logger.debug('spawning child process');
 
     this.child = child_process.spawn(
@@ -65,6 +66,9 @@ export default class Firecracker {
 
   setupListeners(): void {
     if (this.child !== undefined) {
+      this.child.on('spawn', () => {
+        this.logger.debug('firecracker is running');
+      });
       this.child.on('exit', () => {
         fs.unlink(this.options.fcSocket, () => {});
         this.child = undefined;

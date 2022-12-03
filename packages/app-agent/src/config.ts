@@ -148,7 +148,7 @@ const configSchema = {
     rootfs: {
       doc: 'Path to the rootfs used by the Firecracker vm',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/rootfs.ex4',
+      default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
       env: 'FIRECRACKER_ROOTFS',
     },
     socket: {

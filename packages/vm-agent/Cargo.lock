@@ -42,6 +42,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "micro_http"
+version = "0.1.0"
+source = "git+https://github.com/firecracker-microvm/micro-http#4b18a043e997da5b5f679e3defc279fec908753e"
+dependencies = [
+ "libc",
+ "vmm-sys-util",
+]
+
+[[package]]
 name = "nix"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -130,9 +139,20 @@ name = "vm-agent"
 version = "0.1.0"
 dependencies = [
  "libc",
+ "micro_http",
  "serde",
  "serde_json",
  "vsock",
+]
+
+[[package]]
+name = "vmm-sys-util"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc06a16ee8ebf0d9269aed304030b0d20a866b8b3dd3d4ce532596ac567a0d24"
+dependencies = [
+ "bitflags",
+ "libc",
 ]
 
 [[package]]

@@ -3,7 +3,7 @@
 name=$RC_SVCNAME
 description="Takaro agent"
 supervisor="supervise-daemon"
-command="/bin/agent"
+command="/usr/local/bin/agent"
 pidfile="/run/agent.pid"
 
 depend() {
