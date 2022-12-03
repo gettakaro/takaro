@@ -40,3 +40,6 @@ reports/
 tsconfig.*.tsbuildinfo
 
 _data/
+
+# Firecracker
+firecracker/
