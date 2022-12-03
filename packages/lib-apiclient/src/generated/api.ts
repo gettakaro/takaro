@@ -1896,16 +1896,10 @@ export interface ModuleCreateDTO {
   name: string;
   /**
    *
-   * @type {boolean}
+   * @type {string}
    * @memberof ModuleCreateDTO
    */
-  enabled?: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleCreateDTO
-   */
-  config?: object;
+  builtin?: string;
 }
 /**
  *
@@ -1946,16 +1940,10 @@ export interface ModuleOutputDTO {
   name: string;
   /**
    *
-   * @type {boolean}
+   * @type {string}
    * @memberof ModuleOutputDTO
    */
-  enabled: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleOutputDTO
-   */
-  config: object;
+  builtin?: string;
   /**
    *
    * @type {Array<CronJobOutputDTO>}
@@ -2012,12 +2000,6 @@ export interface ModuleSearchInputAllowedFilters {
    * @memberof ModuleSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ModuleSearchInputAllowedFilters
-   */
-  enabled?: boolean;
 }
 /**
  *
@@ -2083,18 +2065,6 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ModuleUpdateDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleUpdateDTO
-   */
-  config?: object;
 }
 /**
  *
