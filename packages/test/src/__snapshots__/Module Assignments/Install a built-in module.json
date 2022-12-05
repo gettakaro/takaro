@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-12-05T19:23:19.885Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "Module Assignments",
+    "snapshot": true,
+    "name": "Install a built-in module",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
