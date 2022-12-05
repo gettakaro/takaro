@@ -14,8 +14,14 @@ import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobService,
+  CronJobUpdateDTO,
 } from './CronJobService';
-import { HookCreateDTO, HookOutputDTO, HookService } from './HookService';
+import {
+  HookCreateDTO,
+  HookOutputDTO,
+  HookService,
+  HookUpdateDTO,
+} from './HookService';
 import { TakaroDTO } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
@@ -24,6 +30,7 @@ import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandService,
+  CommandUpdateDTO,
 } from './CommandService';
 import { BuiltinModule } from '@takaro/modules';
 
@@ -113,21 +120,31 @@ export class ModuleService extends TakaroService<
       filters: { builtin: builtin.name },
     });
 
-    if (existing.results.length > 0) {
-      return;
-    }
+    let mod = existing.results[0];
 
-    const module = await this.create(
-      new ModuleCreateDTO({
-        name: builtin.name,
-        domain: this.domainId,
-        builtin: builtin.name,
-      })
-    );
+    if (existing.results.length !== 1) {
+      mod = await this.create(
+        new ModuleCreateDTO({
+          name: builtin.name,
+          domain: this.domainId,
+          builtin: builtin.name,
+        })
+      );
+    }
 
     const commands = Promise.all(
       builtin.commands.map(async (c) => {
-        const data = new CommandCreateDTO({ ...c, moduleId: module.id });
+        const existing = await commandService.find({
+          filters: { name: c.name, moduleId: mod.id },
+        });
+
+        if (existing.results.length === 1) {
+          const data = new CommandUpdateDTO(c);
+          await data.validate();
+          return commandService.update(existing.results[0].id, data);
+        }
+
+        const data = new CommandCreateDTO({ ...c, moduleId: mod.id });
         await data.validate();
         return commandService.create(data);
       })
@@ -135,14 +152,34 @@ export class ModuleService extends TakaroService<
 
     const hooks = Promise.all(
       builtin.hooks.map(async (h) => {
-        const data = new HookCreateDTO({ ...h, moduleId: module.id });
+        const existing = await hookService.find({
+          filters: { name: h.name, moduleId: mod.id },
+        });
+
+        if (existing.results.length === 1) {
+          const data = new HookUpdateDTO(h);
+          await data.validate();
+          return hookService.update(existing.results[0].id, data);
+        }
+
+        const data = new HookCreateDTO({ ...h, moduleId: mod.id });
         await data.validate();
         return hookService.create(data);
       })
     );
     const cronjobs = Promise.all(
       builtin.cronJobs.map(async (c) => {
-        const data = new CronJobCreateDTO({ ...c, moduleId: module.id });
+        const existing = await cronjobService.find({
+          filters: { name: c.name, moduleId: mod.id },
+        });
+
+        if (existing.results.length === 1) {
+          const data = new CronJobUpdateDTO(c);
+          await data.validate();
+          return cronjobService.update(existing.results[0].id, data);
+        }
+
+        const data = new CronJobCreateDTO({ ...c, moduleId: mod.id });
         await data.validate();
         return cronjobService.create(data);
       })

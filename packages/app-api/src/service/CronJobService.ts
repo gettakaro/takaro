@@ -15,9 +15,10 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
+  FunctionUpdateDTO,
 } from './FunctionService';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base';
 import { ITakaroQuery } from '@takaro/db';
 
@@ -36,6 +37,9 @@ export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
@@ -72,6 +76,10 @@ export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @IsUUID()
   @IsOptional()
   moduleId?: string;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
 export class CronJobService extends TakaroService<
@@ -123,6 +131,27 @@ export class CronJobService extends TakaroService<
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Cronjob not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        new FunctionUpdateDTO({
+          code: item.function,
+        })
+      );
+    }
+
     await this.removeCronFromQueue(id);
     const updated = await this.repo.update(id, item);
     await this.addCronToQueue(updated);

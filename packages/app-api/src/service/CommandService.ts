@@ -13,11 +13,12 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
+  FunctionUpdateDTO,
 } from './FunctionService';
 import { EventChatMessage } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService';
@@ -41,6 +42,9 @@ export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
@@ -84,6 +88,10 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsBoolean()
   @IsOptional()
   enabled?: boolean;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
 export class CommandService extends TakaroService<
@@ -133,6 +141,27 @@ export class CommandService extends TakaroService<
   }
 
   async update(id: string, item: CommandUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Command not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        new FunctionUpdateDTO({
+          code: item.function,
+        })
+      );
+    }
+
     const updated = await this.repo.update(id, item);
     return updated;
   }

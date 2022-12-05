@@ -18,11 +18,12 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
+  FunctionUpdateDTO,
 } from './FunctionService';
 import { Type } from 'class-transformer';
 import { GameEvents } from '@takaro/gameserver';
 import safeRegex from 'safe-regex';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 
@@ -51,6 +52,9 @@ export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
 
   @IsEnum(GameEvents)
   eventType: GameEvents;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
@@ -98,6 +102,10 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsUUID()
   @IsOptional()
   moduleId?: string;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
 export class HookService extends TakaroService<
@@ -148,6 +156,27 @@ export class HookService extends TakaroService<
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Hook not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        new FunctionUpdateDTO({
+          code: item.function,
+        })
+      );
+    }
+
     const updated = await this.repo.update(id, item);
     return updated;
   }
