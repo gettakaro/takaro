@@ -247,6 +247,12 @@ export interface CommandOutputDTO {
    * @memberof CommandOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  moduleId: string;
 }
 /**
  *
@@ -374,6 +380,12 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   enabled?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandUpdateDTO
+   */
+  function?: string;
 }
 /**
  *
@@ -467,6 +479,12 @@ export interface CronJobOutputDTO {
    * @memberof CronJobOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  moduleId: string;
 }
 /**
  *
@@ -594,6 +612,12 @@ export interface CronJobUpdateDTO {
    * @memberof CronJobUpdateDTO
    */
   moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobUpdateDTO
+   */
+  function?: string;
 }
 /**
  *
@@ -1530,6 +1554,12 @@ export interface HookOutputDTO {
    * @memberof HookOutputDTO
    */
   eventType: HookOutputDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  moduleId: string;
 }
 
 export const HookOutputDTOEventTypeEnum = {
@@ -1685,6 +1715,12 @@ export interface HookUpdateDTO {
    * @memberof HookUpdateDTO
    */
   moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
+  function?: string;
 }
 /**
  *
@@ -1904,6 +1940,63 @@ export interface ModuleCreateDTO {
 /**
  *
  * @export
+ * @interface ModuleInstallDTO
+ */
+export interface ModuleInstallDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallDTO
+   */
+  config: string;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallationOutputDTO
+ */
+export interface ModuleInstallationOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  config: string;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallationOutputDTOAPI
+ */
+export interface ModuleInstallationOutputDTOAPI {
+  /**
+   *
+   * @type {ModuleInstallDTO}
+   * @memberof ModuleInstallationOutputDTOAPI
+   */
+  data: ModuleInstallDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleInstallationOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface ModuleOutputArrayDTOAPI
  */
 export interface ModuleOutputArrayDTOAPI {
@@ -2078,6 +2171,25 @@ export interface ParamId {
    * @memberof ParamId
    */
   id: string;
+}
+/**
+ *
+ * @export
+ * @interface ParamIdAndModuleId
+ */
+export interface ParamIdAndModuleId {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndModuleId
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndModuleId
+   */
+  moduleId: string;
 }
 /**
  *
@@ -5350,6 +5462,61 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get module installation
+     * @param {string} id
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation: async (
+      id: string,
+      moduleId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetModuleInstallation', 'id', id);
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGetModuleInstallation',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{id}/module/{moduleId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5390,6 +5557,77 @@ export const GameServerApiAxiosParamCreator = function (
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule: async (
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerInstallModule',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerInstallModule',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/modules/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        moduleInstallDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -5594,6 +5832,68 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule: async (
+      gameserverId: string,
+      moduleId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUninstallModule',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUninstallModule',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/modules/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -5690,6 +5990,37 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get module installation
+     * @param {string} id
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetModuleInstallation(
+      id: string,
+      moduleId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleInstallationOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetModuleInstallation(
+          id,
+          moduleId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5706,6 +6037,40 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerInstallModule(
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleInstallationOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerInstallModule(
+          gameserverId,
+          moduleId,
+          moduleInstallDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -5821,6 +6186,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUninstallModule(
+      gameserverId: string,
+      moduleId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerUninstallModule(
+          gameserverId,
+          moduleId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -5881,6 +6274,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Get module installation
+     * @param {string} id
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation(
+      id: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetModuleInstallation(id, moduleId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5892,6 +6302,30 @@ export const GameServerApiFactory = function (
     ): AxiosPromise<GameServerOutputDTOAPI> {
       return localVarFp
         .gameServerControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule(
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerInstallModule(
+          gameserverId,
+          moduleId,
+          moduleInstallDTO,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5959,6 +6393,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule(
+      gameserverId: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerUninstallModule(gameserverId, moduleId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -6003,6 +6454,25 @@ export class GameServerApi extends BaseAPI {
 
   /**
    *
+   * @summary Get module installation
+   * @param {string} id
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetModuleInstallation(
+    id: string,
+    moduleId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetModuleInstallation(id, moduleId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -6012,6 +6482,32 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Install module
+   * @param {string} gameserverId
+   * @param {string} moduleId
+   * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerInstallModule(
+    gameserverId: string,
+    moduleId: string,
+    moduleInstallDTO?: ModuleInstallDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerInstallModule(
+        gameserverId,
+        moduleId,
+        moduleInstallDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6080,6 +6576,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerTestReachabilityForId(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Uninstall module
+   * @param {string} gameserverId
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUninstallModule(
+    gameserverId: string,
+    moduleId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUninstallModule(gameserverId, moduleId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

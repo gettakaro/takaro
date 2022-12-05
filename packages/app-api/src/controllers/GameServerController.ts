@@ -3,6 +3,7 @@ import {
   IsJSON,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
@@ -14,6 +15,8 @@ import {
   GameServerOutputDTO,
   GameServerService,
   GameServerUpdateDTO,
+  ModuleInstallationOutputDTO,
+  ModuleInstallDTO,
 } from '../service/GameServerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -69,6 +72,20 @@ class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachab
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+}
+
+class ParamIdAndModuleId {
+  @IsUUID('4')
+  gameserverId!: string;
+
+  @IsUUID('4')
+  moduleId!: string;
+}
+
+class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
+  @Type(() => ModuleInstallDTO)
+  @ValidateNested()
+  data!: ModuleInstallationOutputDTO;
 }
 
 @OpenAPI({
@@ -160,5 +177,45 @@ export class GameServerController {
       data.type
     );
     return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @Get('/gameserver/:gameserverId/module/:moduleId')
+  async getModuleInstallation(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.getModuleInstallation(
+      params.gameserverId,
+      params.moduleId
+    );
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @Post('/gameserver/:gameserverId/modules/:moduleId')
+  async installModule(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId,
+    @Body() data: ModuleInstallDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    await service.installModule(params.gameserverId, params.moduleId, data);
+    return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Delete('/gameserver/:gameserverId/modules/:moduleId')
+  async uninstallModule(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId
+  ) {
+    const service = new GameServerService(req.domainId);
+    await service.uninstallModule(params.gameserverId, params.moduleId);
+    return apiResponse();
   }
 }
