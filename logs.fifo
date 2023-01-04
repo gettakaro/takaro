@@ -1,0 +1,2 @@
+Running Firecracker v1.1.2
+2022-12-04T13:40:30.099408911 [anonymous-instance:fc_api:ERROR:src/api_server/src/lib.rs:174] Error creating the HTTP server: IO error: Address in use (os error 98)
