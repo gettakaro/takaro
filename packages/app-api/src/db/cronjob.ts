@@ -17,14 +17,16 @@ export class CronJobModel extends TakaroModel {
   enabled!: boolean;
   temporalValue!: string;
 
+  functionId: string;
+
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
+        relation: Model.BelongsToOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
-          from: `${CRONJOB_TABLE_NAME}.id`,
+          from: `${CRONJOB_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -107,7 +109,7 @@ export class CronJobRepo extends ITakaroRepo<
   }
 
   async assign(id: string, functionId: string) {
-    const { model } = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
   }
 }

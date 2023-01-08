@@ -12,7 +12,7 @@
       "id": "f7ff06bc-3f63-428d-a3d1-38943483dc98",
       "moduleId": "ec28a3a2-9d13-477e-8108-fbc13f1a517e",
       "function": {
-        "code": ""
+        "code": "console.log(\"test\")"
       }
     }
   },
@@ -21,7 +21,8 @@
     "group": "CronJobController",
     "name": "Update",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

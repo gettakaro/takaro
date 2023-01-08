@@ -16,7 +16,7 @@
         "temporalValue": "0 * * * *",
         "moduleId": "441fde07-5f0c-41af-996d-47e5f5f1b97b",
         "function": {
-          "code": ""
+          "code": "console.log(\"test\")"
         }
       }
     ]
@@ -26,7 +26,8 @@
     "group": "CronJobController",
     "name": "Search",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

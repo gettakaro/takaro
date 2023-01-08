@@ -30,7 +30,7 @@ const tests = [
     test: async function () {
       return this.client.hook.hookControllerGetOne(this.setupData.data.id);
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -44,7 +44,7 @@ const tests = [
       ).data.data;
       return this.client.hook.hookControllerCreate(mockHook(module.id));
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,
@@ -66,7 +66,7 @@ const tests = [
         regex: '/new [regex]/g',
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,

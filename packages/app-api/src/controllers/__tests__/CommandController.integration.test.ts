@@ -32,7 +32,7 @@ const tests = [
         this.setupData.data.id
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -48,7 +48,7 @@ const tests = [
         mockCommand(module.id)
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CommandOutputDTOAPI>({
     group,
@@ -74,7 +74,7 @@ const tests = [
         }
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CommandOutputDTOAPI>({
     group,

@@ -68,7 +68,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
 
   @IsOptional()
   @IsString()
-  function?: string;
+  function: string;
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
@@ -182,16 +182,17 @@ export class CommandService extends TakaroService<
 
     const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
 
-    const triggeredCommands = await this.find({
-      filters: { trigger: commandName },
-    });
+    const triggeredCommands = await this.repo.getTriggeredCommands(
+      commandName,
+      gameServerId
+    );
 
-    if (triggeredCommands.results.length) {
+    if (triggeredCommands.length) {
       const authService = new AuthService(this.domainId);
       const token = await authService.getAgentToken();
       const queues = QueuesService.getInstance();
 
-      const promises = triggeredCommands.results.map(async (command) => {
+      const promises = triggeredCommands.map(async (command) => {
         return queues.queues.commands.queue.add(command.id, {
           domainId: this.domainId,
           function: command.function.code,
