@@ -18,14 +18,16 @@ export class CommandModel extends TakaroModel {
   trigger: string;
   helpText: string;
 
+  functionId: string;
+
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
+        relation: Model.BelongsToOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
-          from: `${COMMANDS_TABLE_NAME}.id`,
+          from: `${COMMANDS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -105,7 +107,37 @@ export class CommandRepo extends ITakaroRepo<
   }
 
   async assign(id: string, functionId: string) {
-    const { model } = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
+  }
+
+  async getTriggeredCommands(input: string, gameServerId: string) {
+    const { query } = await this.getModel();
+
+    const commandIds = (
+      await query
+        .select('commands.id as commandId')
+        .innerJoin('functions', 'commands.functionId', 'functions.id')
+        .innerJoin('modules', 'commands.moduleId', 'modules.id')
+        .innerJoin(
+          'moduleAssignments',
+          'moduleAssignments.moduleId',
+          'modules.id'
+        )
+        .innerJoin(
+          'gameservers',
+          'moduleAssignments.gameserverId',
+          'gameservers.id'
+        )
+        .where({
+          trigger: input,
+          'commands.enabled': true,
+          'gameservers.id': gameServerId,
+        })
+    )
+      // @ts-expect-error TODO: Fix this
+      .map((x) => x.commandId);
+
+    return Promise.all(commandIds.map((commandId) => this.findOne(commandId)));
   }
 }

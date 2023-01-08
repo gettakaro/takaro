@@ -2,15 +2,15 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.alterTable('hooks', (table) => {
-    table.uuid('function').references('functions.id').onDelete('CASCADE');
+    table.uuid('functionId').references('functions.id').onDelete('CASCADE');
   });
 
   await knex.schema.alterTable('commands', (table) => {
-    table.uuid('function').references('functions.id').onDelete('CASCADE');
+    table.uuid('functionId').references('functions.id').onDelete('CASCADE');
   });
 
   await knex.schema.alterTable('cronJobs', (table) => {
-    table.uuid('function').references('functions.id').onDelete('CASCADE');
+    table.uuid('functionId').references('functions.id').onDelete('CASCADE');
   });
 
   await knex.schema.dropTable('functionAssignments');
@@ -21,7 +21,7 @@ export async function down(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table
-      .uuid('function')
+      .uuid('functionId')
       .references('functions.id')
       .onDelete('CASCADE')
       .notNullable()
@@ -37,14 +37,14 @@ export async function down(knex: Knex): Promise<void> {
   });
 
   await knex.schema.alterTable('cronJobs', (table) => {
-    table.dropColumn('function');
+    table.dropColumn('functionId');
   });
 
   await knex.schema.alterTable('commands', (table) => {
-    table.dropColumn('function');
+    table.dropColumn('functionId');
   });
 
   await knex.schema.alterTable('hooks', (table) => {
-    table.dropColumn('function');
+    table.dropColumn('functionId');
   });
 }

@@ -22,7 +22,8 @@
     "group": "HookController",
     "name": "Create",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

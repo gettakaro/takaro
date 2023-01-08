@@ -9,9 +9,7 @@
   "test": {
     "group": "CronJobController",
     "name": "Delete",
-    "filteredFields": [
-      "moduleId"
-    ],
+    "filteredFields": [],
     "expectedStatus": 200,
     "standardEnvironment": true
   }

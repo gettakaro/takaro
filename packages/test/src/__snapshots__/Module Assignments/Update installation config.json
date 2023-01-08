@@ -7,7 +7,6 @@
       "createdAt": "2022-12-05T19:49:14.084Z",
       "updatedAt": "2022-12-05T19:49:14.085Z",
       "id": "2eca6a06-5e28-4f84-be6d-966227a655cf",
-      "enabled": true,
       "config": {
         "foo": "bar"
       },

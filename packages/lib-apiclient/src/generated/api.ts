@@ -5463,26 +5463,33 @@ export const GameServerApiAxiosParamCreator = function (
     /**
      *
      * @summary Get module installation
-     * @param {string} id
+     * @param {string} gameserverId
      * @param {string} moduleId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerGetModuleInstallation: async (
-      id: string,
+      gameserverId: string,
       moduleId: string,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('gameServerControllerGetModuleInstallation', 'id', id);
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGetModuleInstallation',
+        'gameserverId',
+        gameserverId
+      );
       // verify required parameter 'moduleId' is not null or undefined
       assertParamExists(
         'gameServerControllerGetModuleInstallation',
         'moduleId',
         moduleId
       );
-      const localVarPath = `/gameserver/{id}/module/{moduleId}`
-        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+      const localVarPath = `/gameserver/{gameserverId}/module/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
         .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5991,13 +5998,13 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get module installation
-     * @param {string} id
+     * @param {string} gameserverId
      * @param {string} moduleId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async gameServerControllerGetModuleInstallation(
-      id: string,
+      gameserverId: string,
       moduleId: string,
       options?: AxiosRequestConfig
     ): Promise<
@@ -6008,7 +6015,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerGetModuleInstallation(
-          id,
+          gameserverId,
           moduleId,
           options
         );
@@ -6275,18 +6282,22 @@ export const GameServerApiFactory = function (
     /**
      *
      * @summary Get module installation
-     * @param {string} id
+     * @param {string} gameserverId
      * @param {string} moduleId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerGetModuleInstallation(
-      id: string,
+      gameserverId: string,
       moduleId: string,
       options?: any
     ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
       return localVarFp
-        .gameServerControllerGetModuleInstallation(id, moduleId, options)
+        .gameServerControllerGetModuleInstallation(
+          gameserverId,
+          moduleId,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -6455,19 +6466,23 @@ export class GameServerApi extends BaseAPI {
   /**
    *
    * @summary Get module installation
-   * @param {string} id
+   * @param {string} gameserverId
    * @param {string} moduleId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
   public gameServerControllerGetModuleInstallation(
-    id: string,
+    gameserverId: string,
     moduleId: string,
     options?: AxiosRequestConfig
   ) {
     return GameServerApiFp(this.configuration)
-      .gameServerControllerGetModuleInstallation(id, moduleId, options)
+      .gameServerControllerGetModuleInstallation(
+        gameserverId,
+        moduleId,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

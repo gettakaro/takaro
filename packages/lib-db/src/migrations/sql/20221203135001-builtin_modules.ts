@@ -4,7 +4,6 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('moduleAssignments', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table.boolean('enabled').notNullable().defaultTo(true);
     table.json('config').defaultTo('{}');
     table.uuid('moduleId').references('modules.id').onDelete('CASCADE');
     table
