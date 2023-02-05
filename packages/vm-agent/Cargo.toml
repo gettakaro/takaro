@@ -6,12 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.137"
 serde = { version = "1.0.147", features = ["derive"] }
 serde_json = "1.0.88"
 vsock = "0.3.0"
 micro_http = { git = "https://github.com/firecracker-microvm/micro-http" }
+vmm-sys-util = "0.11.0"
 nix = "0.26.1"
+libc = "0.2.139"
+byteorder = "1.4.3"
 
 # Optimizing for binary size, more info at https://github.com/johnthagen/min-sized-rust
 

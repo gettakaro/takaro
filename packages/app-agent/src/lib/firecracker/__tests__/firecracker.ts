@@ -13,6 +13,6 @@ const firecracker = new Firecracker({
 });
 
 firecracker
-  .createVM()
+  .startVM()
   .then(() => {})
   .catch((err) => console.log(err));
