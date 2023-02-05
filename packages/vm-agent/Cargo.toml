@@ -14,6 +14,7 @@ vmm-sys-util = "0.11.0"
 nix = "0.26.1"
 libc = "0.2.139"
 byteorder = "1.4.3"
+bincode = "1.3.3"
 
 # Optimizing for binary size, more info at https://github.com/johnthagen/min-sized-rust
 

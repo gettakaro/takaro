@@ -1,16 +1,11 @@
-use std::{
-    io::{Read, Write},
-    net::Shutdown,
-    os::fd::AsRawFd,
-    process::{Command, Stdio},
-    thread,
-};
+use std::{net::Shutdown, os::fd::AsRawFd, process::Command};
 
-use byteorder::{ByteOrder, NetworkEndian};
+use vm_agent::common::{Header, Payload};
 use vsock::{VsockAddr, VsockListener};
 
 type Result<T> = std::result::Result<T, ServerError>;
 
+#[derive(Debug)]
 enum ServerError {
     ConnectionError,
     IOError(std::io::Error),
@@ -20,14 +15,7 @@ struct Server {
     vsock: VsockListener,
 }
 
-const HEADER_SIZE_BYTES: u64 = std::mem::size_of::<u64>() as u64;
-
-// By default, the VSOCK exporter should talk "out" to the host where the
-// forwarder is running.
-const DEFAULT_CID: u32 = libc::VMADDR_CID_HOST;
-
-// The VSOCK port the forwarders listens on by default
-const DEFAULT_PORT: u32 = 10240;
+const HEADER_SIZE_BYTES: u64 = std::mem::size_of::<Header>() as u64;
 
 impl Server {
     pub fn new(host: u32, port: u32) -> Result<Self> {
@@ -42,22 +30,38 @@ impl Server {
     pub fn handle_requests(self) -> Result<()> {
         for stream in self.vsock.incoming() {
             match stream {
-                Ok(mut stream) => {
+                Ok(stream) => {
                     println!(
                         "New connection: {}",
                         stream.peer_addr().expect("unable to get peer address")
                     );
-                    thread::spawn(move || {
-                        let mut header_buf = [0u8; HEADER_SIZE_BYTES as usize];
-                        stream.read_exact(&mut header_buf);
 
-                        let length = NetworkEndian::read_u64(&mut header_buf);
+                    let fd = stream.as_raw_fd();
+                    let mut header_buf = [0 as u8; HEADER_SIZE_BYTES as usize].to_vec();
 
-                        let mut payload_buf = vec![];
-                        payload_buf.resize(length as usize, 0);
+                    vm_agent::recv_loop(fd, &mut header_buf, 9).expect("could not read header");
 
-                        stream.read_exact(&mut header_buf);
-                    });
+                    let header: Header =
+                        bincode::deserialize(&header_buf).expect("could not deserialize header");
+
+                    println!("{:?}", header);
+
+                    let mut payload_buf: Vec<u8> = vec![];
+                    payload_buf.resize(header.payload_length as usize, 0);
+
+                    vm_agent::recv_loop(fd, &mut payload_buf, header.payload_length)
+                        .expect("could not read payload");
+
+                    let payload: Payload =
+                        bincode::deserialize(&payload_buf).expect("could not deserialize payload");
+
+                    println!("payload: {:?}", payload);
+
+                    let output = execute_code(payload.code);
+
+                    println!("output: {}", output);
+
+                    stream.shutdown(Shutdown::Both).expect("shutdown failed");
                 }
                 Err(e) => {
                     println!("Error: {}", e);
@@ -69,56 +73,23 @@ impl Server {
 }
 
 fn execute_code(code: String) -> String {
-    println!("{}", code.as_bytes().len());
-
     let output = Command::new("node")
         .arg("-e")
         .arg(code.trim_end())
         .output()
         .unwrap();
 
-    let out = String::from_utf8(output.stdout).unwrap();
-
-    out
+    String::from_utf8(output.stdout).unwrap()
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     println!("I'm the server");
 
-    const BUF_MAX_LEN: usize = 8192;
+    let server = Server::new(libc::VMADDR_CID_LOCAL, 8000).unwrap();
 
-    let listen_port = 8000;
-    let listener =
-        VsockListener::bind(&VsockAddr::new(1, listen_port)).expect("bind and listen failed");
+    server.handle_requests().unwrap();
 
-    for stream in listener.incoming() {
-        match stream {
-            Ok(mut stream) => {
-                println!(
-                    "New connection: {}",
-                    stream.peer_addr().expect("unable to get peer address")
-                );
-                let fd = stream.as_raw_fd();
-
-                let len: u64 = vm_agent::recv_u64(fd).unwrap();
-                let mut buf: Vec<u8> = vec![];
-                buf.resize(len.try_into().unwrap(), 0);
-
-                vm_agent::recv_loop(fd, &mut buf, len).unwrap();
-
-                let received = String::from_utf8(buf.to_vec()).unwrap();
-
-                println!("received: {}", received);
-
-                println!("output: {}", execute_code(received));
-
-                stream.shutdown(Shutdown::Both).expect("shutdown failed");
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-            }
-        }
-    }
+    Ok(())
 }
 
 #[cfg(test)]
