@@ -21,6 +21,7 @@ import { SettingsService } from './SettingsService';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
+import { ModuleService } from './ModuleService';
 
 export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
   @IsUUID()
@@ -160,6 +161,16 @@ export class GameServerService extends TakaroService<
 
   async uninstallModule(gameserverId: string, moduleId: string) {
     return this.repo.uninstallModule(gameserverId, moduleId);
+  }
+
+  async getInstalledModules(gameserverId: string) {
+    const installations = await this.repo.getInstalledModules(gameserverId);
+    const moduleService = new ModuleService(this.domainId);
+    return await Promise.all(
+      installations.map((i) => {
+        return moduleService.findOne(i.moduleId);
+      })
+    );
   }
 
   static getGame(type: GAME_SERVER_TYPE) {
