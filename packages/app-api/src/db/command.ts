@@ -114,7 +114,7 @@ export class CommandRepo extends ITakaroRepo<
   async getTriggeredCommands(input: string, gameServerId: string) {
     const { query } = await this.getModel();
 
-    const commandIds = (
+    const commandIds: string[] = (
       await query
         .select('commands.id as commandId')
         .innerJoin('functions', 'commands.functionId', 'functions.id')
@@ -130,12 +130,13 @@ export class CommandRepo extends ITakaroRepo<
           'gameservers.id'
         )
         .where({
-          trigger: input,
+          'commands.trigger': input,
           'commands.enabled': true,
           'gameservers.id': gameServerId,
         })
     )
-      // @ts-expect-error TODO: Fix this
+      // @ts-expect-error Knex is confused because we start from the 'normal' query object
+      // but we create a query that does NOT produce a CommandModel
       .map((x) => x.commandId);
 
     return Promise.all(commandIds.map((commandId) => this.findOne(commandId)));

@@ -1,5 +1,6 @@
 import { TakaroService } from './Base';
 import { QueuesService } from '@takaro/queues';
+import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook';
 import {
@@ -21,11 +22,11 @@ import {
   FunctionUpdateDTO,
 } from './FunctionService';
 import { Type } from 'class-transformer';
-import { GameEvents } from '@takaro/gameserver';
 import safeRegex from 'safe-regex';
 import { TakaroDTO, errors } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
+import { AuthService } from './AuthService';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -183,5 +184,34 @@ export class HookService extends TakaroService<
 
   async delete(id: string): Promise<boolean> {
     return this.repo.delete(id);
+  }
+
+  async handleEvent(eventData: EventMapping[GameEvents], gameServerId: string) {
+    this.log.debug('Handling hooks', { eventData });
+
+    const triggeredHooks = await this.repo.getTriggeredHooks(
+      eventData.type,
+      eventData.msg,
+      gameServerId
+    );
+
+    this.log.debug(`Found ${triggeredHooks.length} hooks that match the event`);
+
+    if (triggeredHooks.length) {
+      const authService = new AuthService(this.domainId);
+      const token = await authService.getAgentToken();
+
+      await Promise.all(
+        triggeredHooks.map(async (hook) => {
+          return this.queues.queues.hooks.queue.add(hook.id, {
+            itemId: hook.id,
+            data: eventData,
+            domainId: this.domainId,
+            function: hook.function.code,
+            token,
+          });
+        })
+      );
+    }
   }
 }

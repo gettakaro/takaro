@@ -4,20 +4,16 @@ import { config } from '../config';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
   GameEvents,
-  EventMapping,
   EventPlayerConnected,
   BaseEvent,
   EventChatMessage,
 } from '@takaro/gameserver';
 import { getSocketServer } from '../lib/socketServer';
 import { HookService } from '../service/HookService';
-import { QueuesService } from '@takaro/queues';
-import { AuthService } from '../service/AuthService';
 import { PlayerService } from '../service/PlayerService';
 import { CommandService } from '../service/CommandService';
 
 const log = logger('worker:events');
-const queues = QueuesService.getInstance();
 
 export class EventsWorker extends TakaroWorker<IEventQueueData> {
   constructor() {
@@ -48,52 +44,9 @@ async function processJob(job: Job<IEventQueueData>) {
     await commandService.handleChatMessage(event, gameServerId);
   }
 
-  await handleHooks(job.data);
+  const hooksService = new HookService(domainId);
+  await hooksService.handleEvent(event, gameServerId);
 
   const socketServer = getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [type, event]);
-}
-
-export async function handleHooks(eventData: IEventQueueData) {
-  log.debug('Handling hooks');
-
-  const triggeredHooks = await getTriggeredHooks(
-    eventData.domainId,
-    eventData.event
-  );
-
-  log.debug(`Found ${triggeredHooks.length} hooks that match the event`);
-
-  if (triggeredHooks.length) {
-    const authService = new AuthService(eventData.domainId);
-    const token = await authService.getAgentToken();
-
-    await Promise.all(
-      triggeredHooks.map(async (hook) => {
-        return queues.queues.hooks.queue.add(hook.id, {
-          itemId: hook.id,
-          data: eventData.event,
-          domainId: eventData.domainId,
-          function: hook.function.code,
-          token,
-        });
-      })
-    );
-  }
-}
-
-async function getTriggeredHooks(
-  domainId: string,
-  data: EventMapping[GameEvents]
-) {
-  const hookService = new HookService(domainId);
-  const hooksThatMatchType = await hookService.find({
-    filters: { eventType: data.type },
-  });
-
-  return hooksThatMatchType.results.filter((hook) => {
-    const hookRegex = new RegExp(hook.regex);
-    const hookRegexMatches = hookRegex.exec(data.msg);
-    return hookRegexMatches;
-  });
 }
