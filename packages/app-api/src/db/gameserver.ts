@@ -182,6 +182,14 @@ export class GameServerRepo extends ITakaroRepo<
     return new ModuleInstallationOutputDTO(res[0]);
   }
 
+  async getInstalledModules(gameserverId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query
+      .modify('domainScoped', this.domainId)
+      .where({ gameserverId });
+    return res.map((item) => new ModuleInstallationOutputDTO(item));
+  }
+
   async installModule(
     gameserverId: string,
     moduleId: string,
