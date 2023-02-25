@@ -35,6 +35,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { CAPABILITIES } from '../service/RoleService';
 import { GAME_SERVER_TYPE } from '../db/gameserver';
+import { ModuleOutputArrayDTOAPI } from './ModuleController';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -191,6 +192,18 @@ export class GameServerController {
       params.gameserverId,
       params.moduleId
     );
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(ModuleOutputArrayDTOAPI)
+  @Get('/gameserver/:id/modules')
+  async getInstalledModules(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.getInstalledModules(params.id);
     return apiResponse(res);
   }
 

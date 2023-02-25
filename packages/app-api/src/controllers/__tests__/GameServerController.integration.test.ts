@@ -77,6 +77,36 @@ const tests = [
       );
     },
   }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Get list of installed modules',
+    setup: async function () {
+      return (
+        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
+      ).data.data;
+    },
+    test: async function () {
+      const modules = (await this.client.module.moduleControllerSearch()).data
+        .data;
+
+      const pingModule = modules.find((m) => m.name === 'ping');
+      if (!pingModule) {
+        throw new Error('Ping module not found');
+      }
+
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.id,
+        pingModule.id,
+        { config: '{}' }
+      );
+
+      return this.client.gameserver.gameServerControllerGetInstalledModules(
+        this.setupData.id
+      );
+    },
+    filteredFields: ['functionId', 'moduleId'],
+  }),
 ];
 
 describe(group, function () {
