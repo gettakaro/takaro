@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# THIS SCRIPT SHOULD BE RUN INSIDE THE PROVIDED ALPINE CONTAINER
+
 set -e
 
 # Add required packages

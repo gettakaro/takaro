@@ -31,7 +31,6 @@ interface IAgentConfig extends IBaseConfig {
   };
   firecracker: {
     binary: string;
-    kernelImage: string;
     rootfs: string;
     socket: string;
     agentSocket: string;
