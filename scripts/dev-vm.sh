@@ -13,8 +13,7 @@ function build_agent() {
 }
 build_agent
 
-# Create rootfs
-source .env
+FIRECRACKER_ROOTFS=./packages/app-agent/src/lib/firecracker/rootfs.ext4
 
 # create an empty rootfs
 dd if=/dev/zero of="$FIRECRACKER_ROOTFS" bs=1M count=150
