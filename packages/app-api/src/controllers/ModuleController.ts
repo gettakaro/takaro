@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
@@ -50,10 +44,6 @@ class ModuleSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
-
-  @IsOptional()
-  @IsBoolean()
-  enabled!: boolean;
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {

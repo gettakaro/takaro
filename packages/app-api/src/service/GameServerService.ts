@@ -56,6 +56,22 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   type: GAME_SERVER_TYPE;
 }
 
+export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
+  @IsJSON()
+  config: string;
+}
+
+export class ModuleInstallationOutputDTO extends TakaroDTO<ModuleInstallationOutputDTO> {
+  @IsUUID()
+  gameserverId: string;
+
+  @IsUUID()
+  moduleId: string;
+
+  @IsJSON()
+  config: string;
+}
+
 const manager = new IGameServerInMemoryManager();
 
 export class GameServerService extends TakaroService<
@@ -128,6 +144,22 @@ export class GameServerService extends TakaroService<
     } else {
       throw new errors.BadRequestError('Missing required parameters');
     }
+  }
+
+  async getModuleInstallation(gameserverId: string, moduleId: string) {
+    return this.repo.getModuleInstallation(gameserverId, moduleId);
+  }
+
+  async installModule(
+    gameserverId: string,
+    moduleId: string,
+    installDto: ModuleInstallDTO
+  ) {
+    return this.repo.installModule(gameserverId, moduleId, installDto);
+  }
+
+  async uninstallModule(gameserverId: string, moduleId: string) {
+    return this.repo.uninstallModule(gameserverId, moduleId);
   }
 
   static getGame(type: GAME_SERVER_TYPE) {

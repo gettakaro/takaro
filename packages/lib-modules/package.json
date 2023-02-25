@@ -1,7 +1,7 @@
 {
-  "name": "@takaro/db",
+  "name": "@takaro/modules",
   "version": "0.0.1",
-  "description": "An opinionated data layer",
+  "description": "Built-in modules for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
@@ -9,21 +9,16 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json src/**/*.integration.test.ts --exit",
-    "test:watch": "npm run test -- --watch",
-    "migrate:create": "touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\").ts"
+    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
+    "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convict": "^6.2.3",
-    "knex": "^2.2.0",
-    "objection": "^3.0.1",
-    "pg": "^8.8.0"
+    "@takaro/gameserver": "^0.0.1"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
-    "@types/convict": "^6.1.1"
+    "@takaro/test": "0.0.1"
   }
 }

@@ -19,6 +19,7 @@ export class ModuleModel extends TakaroModel {
   name!: string;
   enabled!: boolean;
   config!: JsonObject;
+  builtin: string;
 
   static get relationMappings() {
     return {

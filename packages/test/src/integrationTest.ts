@@ -122,7 +122,7 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (axios.isAxiosError(error)) {
+          if (axios.isAxiosError(error) && this.test.snapshot) {
             response = error.response;
           } else {
             throw error;

@@ -19,14 +19,16 @@ export class HookModel extends TakaroModel {
   regex!: string;
   eventType!: GameEvents;
 
+  functionId: string;
+
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
+        relation: Model.BelongsToOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
-          from: `${HOOKS_TABLE_NAME}.id`,
+          from: `${HOOKS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -106,7 +108,49 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async assign(id: string, functionId: string) {
-    const { model } = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
+  }
+
+  async getTriggeredHooks(
+    eventType: GameEvents,
+    msg: string,
+    gameServerId: string
+  ): Promise<HookOutputDTO[]> {
+    const { query } = await this.getModel();
+
+    const hookIds: string[] = (
+      await query
+        .select('hooks.id as hookId')
+        .innerJoin('functions', 'hooks.functionId', 'functions.id')
+        .innerJoin('modules', 'hooks.moduleId', 'modules.id')
+        .innerJoin(
+          'moduleAssignments',
+          'moduleAssignments.moduleId',
+          'modules.id'
+        )
+        .innerJoin(
+          'gameservers',
+          'moduleAssignments.gameserverId',
+          'gameservers.id'
+        )
+        .where({
+          'hooks.eventType': eventType,
+          'hooks.enabled': true,
+          'gameservers.id': gameServerId,
+        })
+    )
+      // @ts-expect-error Knex is confused because we start from the 'normal' query object
+      // but we create a query that does NOT produce a Model
+      .map((x) => x.hookId);
+
+    const hooksMatchingEvent = await Promise.all(
+      hookIds.map((id) => this.findOne(id))
+    );
+
+    return hooksMatchingEvent.filter((hook) => {
+      const regex = new RegExp(hook.regex);
+      return regex.test(msg);
+    });
   }
 }

@@ -13,9 +13,13 @@ import {
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO,
+  ModuleInstallDTO,
+  ModuleInstallationOutputDTO,
 } from '../service/GameServerService';
+import { MODULE_TABLE_NAME } from './module';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
+const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
@@ -49,6 +53,35 @@ export class GameServerModel extends TakaroModel {
   }
 }
 
+class ModuleAssignmentModel extends TakaroModel {
+  static tableName = MODULE_ASSIGNMENTS_TABLE_NAME;
+  gameserverId: string;
+  moduleId: string;
+  config: string;
+
+  static get relationMappings() {
+    return {
+      module: {
+        relation: Model.BelongsToOneRelation,
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        modelClass: require('./module').ModuleModel,
+        join: {
+          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.moduleId`,
+          to: `${MODULE_TABLE_NAME}.id`,
+        },
+      },
+      gameserver: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: GameServerModel,
+        join: {
+          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.gameserverId`,
+          to: `${GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
+}
+
 export class GameServerRepo extends ITakaroRepo<
   GameServerModel,
   GameServerOutputDTO,
@@ -62,6 +95,15 @@ export class GameServerRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = GameServerModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
+  async getAssignmentsModel() {
+    const knex = await this.getKnex();
+    const model = ModuleAssignmentModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
@@ -130,5 +172,44 @@ export class GameServerRepo extends ITakaroRepo<
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
+  }
+
+  async getModuleInstallation(gameserverId: string, moduleId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query
+      .modify('domainScoped', this.domainId)
+      .where({ gameserverId, moduleId });
+    return new ModuleInstallationOutputDTO(res[0]);
+  }
+
+  async installModule(
+    gameserverId: string,
+    moduleId: string,
+    installDto: ModuleInstallDTO
+  ) {
+    const { query, model } = await this.getAssignmentsModel();
+    const data: Partial<ModuleAssignmentModel> = {
+      gameserverId,
+      moduleId,
+      config: installDto.config,
+      domain: this.domainId,
+    };
+
+    const existing = await query.where({ gameserverId, moduleId });
+
+    if (existing.length > 0) {
+      await query.updateAndFetchById(existing[0].id, data);
+    } else {
+      await model.query().insert(data);
+    }
+
+    const res = await query.findOne({ gameserverId, moduleId });
+    return new ModuleInstallationOutputDTO(res);
+  }
+
+  async uninstallModule(gameserverId: string, moduleId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query.delete().where({ gameserverId, moduleId });
+    return !!res;
   }
 }

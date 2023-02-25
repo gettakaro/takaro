@@ -1,4 +1,4 @@
-import { IntegrationTest } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import {
   HookOutputDTOAPI,
   HookCreateDTOEventTypeEnum,
@@ -30,7 +30,7 @@ const tests = [
     test: async function () {
       return this.client.hook.hookControllerGetOne(this.setupData.data.id);
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -44,7 +44,7 @@ const tests = [
       ).data.data;
       return this.client.hook.hookControllerCreate(mockHook(module.id));
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,
@@ -66,7 +66,7 @@ const tests = [
         regex: '/new [regex]/g',
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<HookOutputDTOAPI>({
     group,
@@ -101,6 +101,38 @@ const tests = [
       });
     },
     expectedStatus: 400,
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<{ id: string }>({
+    group,
+    snapshot: true,
+    name: 'Does not allow creating 2 hooks with the same name inside the same module',
+    setup: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
+      await this.client.hook.hookControllerCreate(mockHook(module.id));
+
+      return module;
+    },
+    test: async function () {
+      // Creating a hook with a new name should be fine
+      const hook = (
+        await this.client.hook.hookControllerCreate({
+          ...mockHook(this.setupData.id),
+          name: 'New name',
+        })
+      ).data.data;
+
+      expect(hook.name).to.be.eq('New name');
+
+      // But using the same name again should fail
+      return this.client.hook.hookControllerCreate(mockHook(this.setupData.id));
+    },
+    expectedStatus: 409,
     filteredFields: ['moduleId'],
   }),
 ];
