@@ -54,10 +54,17 @@ const GameServerDashboard: FC = () => {
 
       <Console
         listenerFactory={handleMessageFactory}
-        onExecuteCommand={async () => {
+        onExecuteCommand={async (command: string) => {
+          if (!serverId) throw new Error('No server id provided');
+          const result =
+            await apiClient.gameserver.gameServerControllerExecuteCommand(
+              serverId,
+              { command }
+            );
+
           return {
             type: 'command',
-            data: 'response here',
+            data: result.data.data.rawResult,
             timestamp: new Date().toISOString(),
           };
         }}

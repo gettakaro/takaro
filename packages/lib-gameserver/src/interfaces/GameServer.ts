@@ -3,6 +3,15 @@ import { IGamePlayer } from './GamePlayer';
 import { TakaroDTO } from '@takaro/util';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
+export class CommandOutput extends TakaroDTO<CommandOutput> {
+  @IsString()
+  rawResult: string;
+  @IsBoolean()
+  success: boolean;
+  @IsOptional()
+  @IsString()
+  errorMessage?: string;
+}
 export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
   @IsBoolean()
   connectable: boolean;
@@ -18,6 +27,8 @@ export interface IGameServer {
   getPlayer(id: string): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getEventEmitter(): TakaroEmitter;
+
+  executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
 
   /**
    * Try and connect to the gameserver

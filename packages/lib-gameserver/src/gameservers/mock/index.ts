@@ -3,6 +3,7 @@ import { logger, TakaroDTO } from '@takaro/util';
 import { IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import {
+  CommandOutput,
   IGameServer,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer';
@@ -62,5 +63,12 @@ export class Mock implements IGameServer {
           'Mock server has a 50% chance of being unreachable. Try again please :)',
       });
     }
+  }
+
+  async executeConsoleCommand(rawCommand: string) {
+    return new CommandOutput({
+      rawResult: `Command "${rawCommand}" executed successfully`,
+      success: true,
+    });
   }
 }

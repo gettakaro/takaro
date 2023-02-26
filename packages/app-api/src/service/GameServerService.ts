@@ -192,4 +192,12 @@ export class GameServerService extends TakaroService<
   get manager() {
     return this.gameServerManager;
   }
+
+  async executeCommand(id: string, rawCommand: string) {
+    const gameserver = await this.repo.findOne(id);
+    const game = GameServerService.getGame(gameserver.type);
+    const instance = new game(gameserver.connectionInfo);
+
+    return instance.executeConsoleCommand(rawCommand);
+  }
 }

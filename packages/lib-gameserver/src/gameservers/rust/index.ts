@@ -1,7 +1,8 @@
-import { logger, TakaroDTO } from '@takaro/util';
+import { logger, TakaroDTO, errors } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import {
+  CommandOutput,
   IGameServer,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer';
@@ -41,6 +42,14 @@ export class Rust implements IGameServer {
   async testReachability(): Promise<TestReachabilityOutput> {
     return new TestReachabilityOutput({
       connectable: true,
+    });
+  }
+
+  async executeConsoleCommand(rawCommand: string) {
+    throw new errors.NotImplementedError();
+    return new CommandOutput({
+      rawResult: `Command "${rawCommand}" executed successfully`,
+      success: true,
     });
   }
 }
