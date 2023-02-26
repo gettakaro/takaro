@@ -22,7 +22,8 @@ const GameServerDashboard: FC = () => {
   );
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
-    const handler = (type, data) => {
+    const handler = (gameserverId, type, data) => {
+      if (gameserverId !== serverId) return;
       setter((prev: Message[]) => [
         ...prev,
         {
