@@ -2,7 +2,7 @@
 # NOTE: this script should run from the repo root.
 
 FIRECRACKER_ROOTFS=./packages/app-agent/src/lib/firecracker/rootfs.ext4
-VM_AGENT_BINARY=./packages/vm-agent/target/release/vm-agent
+VM_AGENT_BINARY=./packages/vm-agent/target/x86_64-unknown-linux-musl/debug/vm-agent
 VM_AGENT_SERVICE=./packages/vm-agent/agent-service
 
 cargo build --manifest-path=./packages/vm-agent/Cargo.toml
