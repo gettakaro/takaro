@@ -2,6 +2,7 @@ import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
+  EventChatMessage,
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
@@ -18,6 +19,8 @@ interface I7DaysToDieEvent extends JsonObject {
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]: /(Player connected,)/,
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
+  [GameEvents.CHAT_MESSAGE]:
+    /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
 };
 
 export class SevenDaysToDieEmitter extends TakaroEmitter {
@@ -69,6 +72,13 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(logLine.msg)) {
       const data = this.handlePlayerDisconnected(logLine);
       await this.emit(GameEvents.PLAYER_DISCONNECTED, data);
+    }
+
+    if (EventRegexMap[GameEvents.CHAT_MESSAGE].test(logLine.msg)) {
+      const data = this.handleChatMessage(logLine);
+      if (data) {
+        await this.emit(GameEvents.CHAT_MESSAGE, data);
+      }
     }
 
     await this.emit(
@@ -141,6 +151,40 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         steamId,
         xboxLiveId,
       }),
+    });
+  }
+
+  private handleChatMessage(logLine: I7DaysToDieEvent) {
+    const match = EventRegexMap[GameEvents.CHAT_MESSAGE].exec(logLine.msg);
+    if (!match) throw new Error('Could not parse chat message');
+
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse chat message');
+
+    const { platformId, entityId, name, message } = groups;
+
+    const xboxLiveId = platformId.startsWith('XBL_')
+      ? platformId.replace('XBL_', '')
+      : undefined;
+    const steamId = platformId.startsWith('Steam_')
+      ? platformId.replace('Steam_', '')
+      : undefined;
+
+    if (
+      (platformId === '-non-player-' && name !== 'Server') ||
+      entityId === '-1'
+    ) {
+      return;
+    }
+
+    return new EventChatMessage({
+      player: new IGamePlayer({
+        name,
+        steamId,
+        xboxLiveId,
+        gameId: entityId,
+      }),
+      msg: message.trim(),
     });
   }
 

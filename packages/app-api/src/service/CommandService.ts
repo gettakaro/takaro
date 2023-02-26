@@ -198,6 +198,7 @@ export class CommandService extends TakaroService<
           function: command.function.code,
           itemId: command.id,
           data: chatMessage,
+          gameServerId,
           token,
         });
       });

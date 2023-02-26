@@ -208,6 +208,7 @@ export class HookService extends TakaroService<
             data: eventData,
             domainId: this.domainId,
             function: hook.function.code,
+            gameServerId,
             token,
           });
         })

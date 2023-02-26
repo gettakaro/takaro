@@ -6,7 +6,7 @@ export class Ping extends BuiltinModule {
 
     this.commands = [
       {
-        function: 'console.log("pong");',
+        function: '',
         name: 'ping',
         trigger: 'ping',
         helpText:

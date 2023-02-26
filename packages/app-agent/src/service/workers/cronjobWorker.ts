@@ -18,5 +18,9 @@ async function processCronJob(job: Job<IJobData>) {
     url: config.get('takaro.url'),
   });
 
-  await executeFunction(job.data.function, client);
+  await executeFunction(job.data.function, {
+    client,
+    event: job.data.data,
+    gameServerId: job.data.gameServerId,
+  });
 }
