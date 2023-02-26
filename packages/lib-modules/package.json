@@ -16,7 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/gameserver": "^0.0.1"
+    "@takaro/gameserver": "^0.0.1",
+    "@takaro/apiclient": "^0.0.1"
   },
   "devDependencies": {
     "@takaro/test": "0.0.1"
