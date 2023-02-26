@@ -180,6 +180,7 @@ export class CronJobService extends TakaroService<
         domainId: this.domainId,
         token: await authService.getAgentToken(),
         itemId: item.id,
+        gameServerId: 'any',
       },
       {
         repeat: this.getRepeatableOpts(item),

@@ -141,7 +141,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('functions', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table.string('code').notNullable();
+    table.text('code').notNullable();
     table
       .string('domain')
       .references('domains.id')

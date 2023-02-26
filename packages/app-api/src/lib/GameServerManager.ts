@@ -109,5 +109,15 @@ export class IGameServerInMemoryManager {
         });
       }
     );
+
+    emitter.on(GameEvents.CHAT_MESSAGE, async (chatMessage) => {
+      this.log.debug('Received a chatMessage event', chatMessage);
+      await this.eventsQueue.add(GameEvents.CHAT_MESSAGE, {
+        type: GameEvents.CHAT_MESSAGE,
+        event: chatMessage,
+        domainId,
+        gameServerId,
+      });
+    });
   }
 }
