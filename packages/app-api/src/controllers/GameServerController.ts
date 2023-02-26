@@ -4,11 +4,12 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { TestReachabilityOutput } from '@takaro/gameserver';
+import { TestReachabilityOutput, CommandOutput } from '@takaro/gameserver';
 import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -89,6 +90,17 @@ class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
   data!: ModuleInstallationOutputDTO;
 }
 
+class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
+  @Type(() => CommandOutput)
+  @ValidateNested()
+  data!: CommandOutput;
+}
+
+class CommandExecuteInputDTO extends TakaroDTO<CommandExecuteInputDTO> {
+  @IsString()
+  @MinLength(1)
+  command!: string;
+}
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -230,5 +242,18 @@ export class GameServerController {
     const service = new GameServerService(req.domainId);
     await service.uninstallModule(params.gameserverId, params.moduleId);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(CommandExecuteDTOAPI)
+  @Post('/gameserver/:id/command')
+  async executeCommand(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: CommandExecuteInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.executeCommand(params.id, data.command);
+    return apiResponse(result);
   }
 }

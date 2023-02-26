@@ -3,6 +3,7 @@ import axios from 'axios';
 import { IsString, IsBoolean } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer';
 import {
+  CommandOutput,
   IGameServer,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer';
@@ -76,6 +77,15 @@ export class SevenDaysToDie implements IGameServer {
 
     return new TestReachabilityOutput({
       connectable: true,
+    });
+  }
+
+  async executeConsoleCommand(rawCommand: string) {
+    const result = await this.apiClient.executeConsoleCommand(rawCommand);
+
+    return new CommandOutput({
+      rawResult: result.data.result,
+      success: true,
     });
   }
 }
