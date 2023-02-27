@@ -31,6 +31,7 @@ interface IAgentConfig extends IBaseConfig {
   };
   firecracker: {
     binary: string;
+    kernelImage: string;
     rootfs: string;
     socket: string;
     agentSocket: string;
@@ -147,7 +148,8 @@ const configSchema = {
     rootfs: {
       doc: 'Path to the rootfs used by the Firecracker vm',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
+      default:
+        '/home/branco/dev/takaro/packages/app-agent/src/lib/firecracker/rootfs.ext4',
       env: 'FIRECRACKER_ROOTFS',
     },
     socket: {
