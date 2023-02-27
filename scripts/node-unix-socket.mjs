@@ -1,13 +1,39 @@
 import net from 'node:net';
+import http from 'node:http';
+import fetch from 'node-fetch';
 
-const client = net.createConnection({ path: '/tmp/takaro/firecracker.socket' });
-client.on('connect', () => {
-  client.write('CONNECT 8000\n');
+const customAgent = new http.Agent({});
 
-  //
-  client.write('GET / HTTP/1.1\r\n');
-});
+customAgent.createConnection = (options, callback) => {
+  getSocket().then((socket) => {
+    callback(null, socket);
+  })
+    .catch((err) => {
+      callback(err);
+    });
+};
 
-client.on('data', (data) => {
-  console.log('DATA: ', data.toString());
-});
+fetch('http://localhost/foobar', { agent: customAgent })
+  .then((res) => res.text())
+  .then((data) => console.log(data));
+
+
+function getSocket() {
+  return new Promise((resolve, reject) => {
+    const socket = net.createConnection({ path: '/tmp/takaro/firecracker.socket' });
+    socket.on('connect', () => {
+      socket.write('CONNECT 8000\n');
+      resolve(socket);
+    });
+
+    socket.on('data', (data) => {
+      console.log('DATA: ', data.toString());
+    });
+
+    socket.on('error', (err) => {
+      console.log('ERROR: ', err);
+      reject(err);
+    });
+  });
+
+}
