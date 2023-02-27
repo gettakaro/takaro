@@ -5,9 +5,10 @@ import fetch from 'node-fetch';
 const customAgent = new http.Agent({});
 
 customAgent.createConnection = (options, callback) => {
-  getSocket().then((socket) => {
-    callback(null, socket);
-  })
+  getSocket()
+    .then((socket) => {
+      callback(null, socket);
+    })
     .catch((err) => {
       callback(err);
     });
@@ -17,10 +18,9 @@ fetch('http://localhost/foobar', { agent: customAgent })
   .then((res) => res.text())
   .then((data) => console.log(data));
 
-
 function getSocket() {
   return new Promise((resolve, reject) => {
-    const socket = net.createConnection({ path: '/tmp/takaro/firecracker.socket' });
+    const socket = net.createConnection({ path: '/tmp/takaro/agent.socket' });
     socket.on('connect', () => {
       socket.write('CONNECT 8000\n');
       resolve(socket);
@@ -35,5 +35,4 @@ function getSocket() {
       reject(err);
     });
   });
-
 }
