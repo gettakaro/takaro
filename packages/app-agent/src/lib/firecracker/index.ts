@@ -137,13 +137,13 @@ export default class Firecracker {
 
       this.logger.debug('setting up network');
 
-      await this.httpSock.put('network-interfaces/enp0s25', {
-        json: {
-          iface_id: 'enp0s25',
-          guest_mac: 'AA:FC:00:00:00:01',
-          host_dev_name: 'tap0',
-        },
-      });
+      // await this.httpSock.put('network-interfaces/enp0s25', {
+      //   json: {
+      //     iface_id: 'enp0s25',
+      //     guest_mac: 'AA:FC:00:00:00:01',
+      //     host_dev_name: 'tap0',
+      //   },
+      // });
     } catch (err) {
       this.logger.error('setting up vm failed', err);
     }
