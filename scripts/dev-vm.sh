@@ -5,7 +5,7 @@ FIRECRACKER_ROOTFS=./packages/app-agent/src/lib/firecracker/rootfs.ext4
 VM_AGENT_BINARY=./packages/vm-agent/target/x86_64-unknown-linux-musl/debug/vm-agent
 VM_AGENT_SERVICE=./packages/vm-agent/agent-service
 
-cargo build --manifest-path=./packages/vm-agent/Cargo.toml
+cargo build --manifest-path=./packages/vm-agent/Cargo.toml --bin vm-agent
 
 # create an empty rootfs
 dd if=/dev/zero of="$FIRECRACKER_ROOTFS" bs=1M count=150
@@ -28,4 +28,4 @@ rm /tmp/takaro/*.socket
 echo "Starting firecracker..."
 
 # # Start firecracker
-firecracker --api-sock /tmp/takaro/firecracker.socket
+firecracker --api-sock /tmp/takaro/firecracker.socket --log-path logs.fifo --level debug --show-level --show-log-origin
