@@ -1,56 +1,30 @@
-use std::io::Read;
-use std::io::Write;
-use std::net::Shutdown;
-use std::thread;
-use vsock::{VsockAddr, VsockListener};
+use std::{collections::HashMap, sync::Arc};
+use tokio::sync::Mutex;
+use tokio_vsock::VsockListener;
 
-const BLOCK_SIZE: usize = 16384;
+const HOST: u32 = libc::VMADDR_CID_ANY;
+const PORT: u32 = 8000;
 
-fn main() {
-    let listen_port = 8000;
-    let host = libc::VMADDR_CID_ANY;
+#[derive(Debug)]
+enum InitError {}
 
-    println!("kaka op {} en pipi in {}", host, listen_port);
+#[tokio::main]
+async fn main() -> Result<(), InitError> {
+    // env vars
+    let envs = HashMap::new();
 
-    let listener =
-        VsockListener::bind(&VsockAddr::new(host, listen_port)).expect("bind and listen failed");
+    // TODO: add error in case vsock device is not present
+    let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
 
-    println!("Server listening for connections on port {}", listen_port);
-    for stream in listener.incoming() {
-        match stream {
-            Ok(mut stream) => {
-                println!(
-                    "New connection: {}",
-                    stream.peer_addr().expect("unable to get peer address")
-                );
-                thread::spawn(move || {
-                    let mut buf = vec![];
-                    buf.resize(BLOCK_SIZE, 0);
-                    loop {
-                        let read_bytes = match stream.read(&mut buf) {
-                            Ok(0) => break,
-                            Ok(read_bytes) => read_bytes,
-                            Err(e) => panic!("read failed {}", e),
-                        };
+    println!("listining on {}:{}", HOST, PORT);
 
-                        let mut total_written = 0;
-                        while total_written < read_bytes {
-                            let written_bytes = match stream.write(&buf[total_written..read_bytes])
-                            {
-                                Ok(0) => break,
-                                Ok(written_bytes) => written_bytes,
-                                Err(e) => panic!("write failed {}", e),
-                            };
-                            total_written += written_bytes;
-                        }
-                    }
+    let waitpid_mutex = Arc::new(Mutex::new(()));
 
-                    stream.shutdown(Shutdown::Both).expect("shutdown failed");
-                });
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-            }
-        }
-    }
+    let (api_server, tx, mut rx_sig) = vm_agent::api::server(envs, waitpid_mutex.clone(), listener);
+
+    tokio::spawn(api_server);
+
+    loop {}
+
+    Ok(())
 }

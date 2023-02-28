@@ -14,7 +14,7 @@ customAgent.createConnection = (options, callback) => {
     });
 };
 
-fetch('http://localhost/foobar', { agent: customAgent })
+fetch('http://localhost/hello', { agent: customAgent })
   .then((res) => res.text())
   .then((data) => console.log(data));
 
@@ -23,11 +23,11 @@ function getSocket() {
     const socket = net.createConnection({ path: '/tmp/takaro/agent.socket' });
     socket.on('connect', () => {
       socket.write('CONNECT 8000\n');
-      resolve(socket);
     });
 
     socket.on('data', (data) => {
       console.log('DATA: ', data.toString());
+      resolve(socket);
     });
 
     socket.on('error', (err) => {

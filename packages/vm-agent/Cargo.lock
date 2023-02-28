@@ -1029,6 +1029,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
+ "vsock",
 ]
 
 [[package]]

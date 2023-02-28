@@ -1,19 +1,23 @@
-use std::sync::Arc;
-use std::task::{ready, Context, Poll};
-use std::{collections::HashMap, pin::Pin};
-
-use axum::{
-    routing::{get, post},
-    Router,
+use std::{
+    pin::Pin,
+    task::{ready, Context, Poll},
 };
-use futures::Future;
+
+use axum::{response::IntoResponse, routing::post, Router};
 use hyper::server::accept::Accept;
-use nix::sys::signal::Signal;
-use tokio::sync::mpsc;
-use tokio::sync::{oneshot, Mutex};
 use tokio_vsock::{VsockListener, VsockStream};
 use tower::BoxError;
 use tower_http::trace::TraceLayer;
+
+use std::os::unix::process::ExitStatusExt;
+
+use axum::Json;
+use hyper::StatusCode;
+use serde_derive::Serialize;
+use tokio::process::Command;
+use tracing::debug;
+
+mod exec;
 
 struct ServerAccept {
     vsl: VsockListener,
@@ -32,57 +36,62 @@ impl Accept for ServerAccept {
     }
 }
 
-/*
-pub mod exec;
-pub mod signals;
-pub mod sys;
-*/
-
-pub fn server(
-    envs: HashMap<String, String>,
-    waitpid_mutex: Arc<Mutex<()>>,
-    listener: VsockListener,
-) -> (
-    impl Future<Output = hyper::Result<()>>,
-    oneshot::Sender<(i32, bool)>,
-    mpsc::Receiver<Signal>,
-) {
+pub fn server(listener: VsockListener) {
     let app = Router::new()
         .layer(TraceLayer::new_for_http())
-        .route("/hello", get(hello))
-        .route("/status", get(status))
-        .route("/sysinfo", get(sysinfo))
-        .route("/signals/RANDOM", get(signals))
-        .route("/exitcode", get(exitcode))
-        .route("/exec", post(exec));
+        .route("/exec", post(exec_cmd));
 
-    let (tx, rx) = oneshot::channel();
-    let (tx_sig, rx_sig) = mpsc::channel(1);
-
-    (
-        // TODO: use into_make_service_connection_info()
-        axum::Server::builder(ServerAccept { vsl: listener }).serve(app.into_make_service()),
-        tx,
-        rx_sig,
-    )
+    axum::Server::builder(ServerAccept { vsl: listener }).serve(app.into_make_service());
 }
 
 // Handlers
-async fn hello() {
+async fn exec() -> impl IntoResponse {
     todo!()
 }
-async fn status() {
-    todo!()
+
+#[derive(Debug, Serialize)]
+struct ExecResponse {
+    exit_code: Option<i32>,
+    exit_signal: Option<i32>,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
 }
-async fn sysinfo() {
-    todo!()
+
+#[derive(Debug, Serialize)]
+pub struct ExecRequest {
+    cmd: Vec<String>,
 }
-async fn signals() {
-    todo!()
-}
-async fn exitcode() {
-    todo!()
-}
-async fn exec() {
-    todo!()
+
+pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> impl IntoResponse {
+    let full_cmd = payload.cmd.join(" ");
+
+    debug!("exec_cmd: {}", full_cmd);
+
+    let mut command = Command::new(payload.cmd.swap_remove(0));
+    for arg in payload.cmd.into_iter() {
+        command.arg(arg);
+    }
+
+    let output = command.output().await.unwrap();
+
+    let status = output.status;
+
+    debug!(
+        "command '{}' exited with code: {}",
+        full_cmd,
+        status
+            .code()
+            .map(|i| i.to_string())
+            .unwrap_or_else(|| "unknown".to_string())
+    );
+
+    (
+        StatusCode::OK,
+        Json(ExecResponse {
+            exit_code: status.code(),
+            exit_signal: status.signal(),
+            stderr: output.stderr,
+            stdout: output.stdout,
+        }),
+    )
 }
