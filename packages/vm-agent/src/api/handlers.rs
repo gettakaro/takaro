@@ -21,9 +21,12 @@ pub struct ExecRequest {
 pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
     let full_cmd = payload.cmd.join(" ");
 
-    tracing::debug!("exec_cmd: {}", full_cmd);
+    dbg!(&payload.cmd);
 
-    let mut command = Command::new(payload.cmd.swap_remove(0));
+    let mut command = Command::new(payload.cmd.remove(0));
+
+    dbg!(&payload.cmd);
+
     for arg in payload.cmd.into_iter() {
         command.arg(arg);
     }
@@ -57,8 +60,8 @@ mod tests {
         let request = ExecRequest {
             cmd: vec![
                 "node".to_owned(),
-                "console.log(\"Hello, world!\");".to_owned(),
                 "-e".to_owned(),
+                "console.log(\"Hello, world!\");".to_owned(),
             ],
         };
 
