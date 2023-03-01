@@ -8,7 +8,7 @@ VM_AGENT_SERVICE=./packages/vm-agent/agent-service
 cargo build --manifest-path=./packages/vm-agent/Cargo.toml
 
 # create an empty rootfs
-dd if=/dev/zero of="$FIRECRACKER_ROOTFS" bs=1M count=150
+dd if=/dev/zero of="$FIRECRACKER_ROOTFS" bs=1M count=500
 mkfs.ext4 "$FIRECRACKER_ROOTFS"
 mkdir -p /tmp/takaro/my-rootfs
 sudo mount "$FIRECRACKER_ROOTFS" /tmp/takaro/my-rootfs/
