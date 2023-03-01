@@ -64,7 +64,7 @@ mod tests {
 
         let response = exec_cmd(Json(request)).await;
 
-        assert_eq!(response.0.exit_code, Some(0));
-        assert_eq!(response.0.stdout, b"Hello, world!\n");
+        assert_eq!(response.exit_code, Some(0));
+        assert_eq!(response.stdout, b"Hello, world!\n");
     }
 }
