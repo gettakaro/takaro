@@ -1,3 +1,5 @@
+#!/bin/node
+
 import net from 'node:net';
 import http from 'node:http';
 import fetch from 'node-fetch';
