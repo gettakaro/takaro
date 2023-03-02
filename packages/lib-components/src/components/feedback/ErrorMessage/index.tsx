@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { styled } from '../../../styled';
 
 const Container = styled.div`
-  margin: 1rem 0;
+  margin: ${({ theme }) => `${theme.spacing['0_75']} 0`};
   text-align: center;
   p {
     color: ${({ theme }) => theme.colors.error};
@@ -10,13 +10,13 @@ const Container = styled.div`
 `;
 
 export interface ErrorMessageProps {
-  message?: string;
+  message: string;
 }
 
 export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
-  return message ? (
+  return (
     <Container>
       <p>{message}</p>
     </Container>
-  ) : null;
+  );
 };

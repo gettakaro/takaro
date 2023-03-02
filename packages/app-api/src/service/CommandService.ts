@@ -13,11 +13,12 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
+  FunctionUpdateDTO,
 } from './FunctionService';
 import { EventChatMessage } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService';
@@ -41,6 +42,9 @@ export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
@@ -63,8 +67,8 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
   moduleId: string;
 
   @IsOptional()
-  @IsUUID()
-  function?: string;
+  @IsString()
+  function: string;
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
@@ -84,6 +88,10 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsBoolean()
   @IsOptional()
   enabled?: boolean;
+
+  @IsOptional()
+  @IsString()
+  function?: string;
 }
 
 export class CommandService extends TakaroService<
@@ -111,7 +119,12 @@ export class CommandService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        new FunctionCreateDTO({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
@@ -128,6 +141,27 @@ export class CommandService extends TakaroService<
   }
 
   async update(id: string, item: CommandUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Command not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        new FunctionUpdateDTO({
+          code: item.function,
+        })
+      );
+    }
+
     const updated = await this.repo.update(id, item);
     return updated;
   }
@@ -148,21 +182,23 @@ export class CommandService extends TakaroService<
 
     const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
 
-    const triggeredCommands = await this.find({
-      filters: { trigger: commandName },
-    });
+    const triggeredCommands = await this.repo.getTriggeredCommands(
+      commandName,
+      gameServerId
+    );
 
-    if (triggeredCommands.results.length) {
+    if (triggeredCommands.length) {
       const authService = new AuthService(this.domainId);
       const token = await authService.getAgentToken();
       const queues = QueuesService.getInstance();
 
-      const promises = triggeredCommands.results.map(async (command) => {
+      const promises = triggeredCommands.map(async (command) => {
         return queues.queues.commands.queue.add(command.id, {
           domainId: this.domainId,
           function: command.function.code,
           itemId: command.id,
           data: chatMessage,
+          gameServerId,
           token,
         });
       });

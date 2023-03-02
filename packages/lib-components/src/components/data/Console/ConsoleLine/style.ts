@@ -14,7 +14,7 @@ export const Wrapper = styled.div<{
   pointer: ${({ canCollapse }) => (canCollapse ? 'pointer' : 'default')};
   user-select: auto;
   width: 100%;
-  padding: 1rem 0;
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[0]}`};
   border-top: 1px solid
     ${({ messageType, theme }): string => {
       if (messageType === 'error') return tint(0.4, theme.colors.error);
@@ -48,11 +48,11 @@ export const Container = styled.div<{ isCollapsed: boolean }>`
   display: grid;
   grid-template-columns: 4rem 20rem auto;
   text-align: left;
-  margin: 0;
+  margin: ${({ theme }) => theme.spacing[0]};
 `;
 
 export const IconContainer = styled.div<{ messageType: MessageType }>`
-  margin-left: 1rem;
+  margin-left: ${({ theme }) => theme.spacing['0_75']};
   svg {
     fill: ${({ theme, messageType }) => {
       if (messageType === 'debug') return theme.colors.error;
@@ -65,7 +65,7 @@ export const IconContainer = styled.div<{ messageType: MessageType }>`
 export const TimestampContainer = styled.div`
   font-family: 'inconsolata';
   font-size: 1.3rem;
-  margin-right: 0.5rem;
+  margin-right: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const TextContainer = styled.div`

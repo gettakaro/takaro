@@ -17,14 +17,16 @@ export class CronJobModel extends TakaroModel {
   enabled!: boolean;
   temporalValue!: string;
 
+  functionId: string;
+
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
+        relation: Model.BelongsToOneRelation,
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         modelClass: require('./function').FunctionModel,
         join: {
-          from: `${CRONJOB_TABLE_NAME}.id`,
+          from: `${CRONJOB_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -44,15 +46,19 @@ export class CronJobRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return CronJobModel.bindKnex(knex);
+    const model = CronJobModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<CronJobOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<CronJobModel, CronJobOutputDTO>({
       ...filters,
       extend: ['function'],
-    }).build(model.query());
+    }).build(query);
 
     return {
       total: result.total,
@@ -61,8 +67,8 @@ export class CronJobRepo extends ITakaroRepo<
   }
 
   async findOne(id: string): Promise<CronJobOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('function');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -72,8 +78,13 @@ export class CronJobRepo extends ITakaroRepo<
   }
 
   async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
-    const model = await this.getModel();
-    const res = await model.query().insert(item.toJSON()).returning('*');
+    const { query } = await this.getModel();
+    const res = await query
+      .insert({
+        ...item.toJSON(),
+        domain: this.domainId,
+      })
+      .returning('*');
 
     if (item.function) {
       await this.assign(res.id, item.function);
@@ -83,15 +94,14 @@ export class CronJobRepo extends ITakaroRepo<
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: CronJobUpdateDTO): Promise<CronJobOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
@@ -99,7 +109,7 @@ export class CronJobRepo extends ITakaroRepo<
   }
 
   async assign(id: string, functionId: string) {
-    const model = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
   }
 }

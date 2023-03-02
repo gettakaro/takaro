@@ -3,17 +3,21 @@ import {
   IsJSON,
   IsOptional,
   IsString,
+  IsUUID,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { TestReachabilityOutput } from '@takaro/gameserver';
+import { TestReachabilityOutput, CommandOutput } from '@takaro/gameserver';
 import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerService,
   GameServerUpdateDTO,
+  ModuleInstallationOutputDTO,
+  ModuleInstallDTO,
 } from '../service/GameServerService';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
@@ -32,6 +36,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators';
 import { CAPABILITIES } from '../service/RoleService';
 import { GAME_SERVER_TYPE } from '../db/gameserver';
+import { ModuleOutputArrayDTOAPI } from './ModuleController';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -71,6 +76,31 @@ class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachab
   type: GAME_SERVER_TYPE;
 }
 
+class ParamIdAndModuleId {
+  @IsUUID('4')
+  gameserverId!: string;
+
+  @IsUUID('4')
+  moduleId!: string;
+}
+
+class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
+  @Type(() => ModuleInstallDTO)
+  @ValidateNested()
+  data!: ModuleInstallationOutputDTO;
+}
+
+class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
+  @Type(() => CommandOutput)
+  @ValidateNested()
+  data!: CommandOutput;
+}
+
+class CommandExecuteInputDTO extends TakaroDTO<CommandExecuteInputDTO> {
+  @IsString()
+  @MinLength(1)
+  command!: string;
+}
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -160,5 +190,70 @@ export class GameServerController {
       data.type
     );
     return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @Get('/gameserver/:gameserverId/module/:moduleId')
+  async getModuleInstallation(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.getModuleInstallation(
+      params.gameserverId,
+      params.moduleId
+    );
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @ResponseSchema(ModuleOutputArrayDTOAPI)
+  @Get('/gameserver/:id/modules')
+  async getInstalledModules(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const res = await service.getInstalledModules(params.id);
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @Post('/gameserver/:gameserverId/modules/:moduleId')
+  async installModule(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId,
+    @Body() data: ModuleInstallDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    await service.installModule(params.gameserverId, params.moduleId, data);
+    return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Delete('/gameserver/:gameserverId/modules/:moduleId')
+  async uninstallModule(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndModuleId
+  ) {
+    const service = new GameServerService(req.domainId);
+    await service.uninstallModule(params.gameserverId, params.moduleId);
+    return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(CommandExecuteDTOAPI)
+  @Post('/gameserver/:id/command')
+  async executeCommand(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: CommandExecuteInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.executeCommand(params.id, data.command);
+    return apiResponse(result);
   }
 }

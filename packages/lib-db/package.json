@@ -11,8 +11,7 @@
     "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
     "test:integration": "ts-mocha -p ./tsconfig.json src/**/*.integration.test.ts --exit",
     "test:watch": "npm run test -- --watch",
-    "migrate:create:system": "touch ./src/migrations/system/$(date -u +\"%Y%m%d%H%M%S\").ts",
-    "migrate:create:domain": "touch ./src/migrations/domainScoped/$(date -u +\"%Y%m%d%H%M%S\").ts"
+    "migrate:create": "touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\").ts"
   },
   "keywords": [],
   "author": "",

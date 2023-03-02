@@ -38,7 +38,7 @@ export const ConsoleLine: FC<Message> = (message) => {
     let body = '';
 
     if (type === 'command') {
-      header = 'command here';
+      header = data;
       body = data;
     } else if (trace) {
       header = data;

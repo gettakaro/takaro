@@ -40,18 +40,25 @@ async function main() {
     domainRes.data.data.rootRole.id
   );
 
-  await client.gameserver.gameServerControllerCreate({
+  const gameserver = (await client.gameserver.gameServerControllerCreate({
     name: 'Test server',
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       eventInterval: 10000,
     }),
-  });
+  })).data.data;
+
+  const modules = (await client.module.moduleControllerSearch()).data.data;
+
+  for (const mod of modules) {
+    console.log(`Installing module ${mod.name}...`);
+    await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, { config: '{}' });
+  }
 
   console.log('---------------------------------');
-  console.log(`Created a domain with id ${domainRes.data.data.domain.id}`);
+  console.log(`Created a domain with id ${domainRes.data.data.createdDomain.id}`);
   console.log(
-    `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.rootUser.password}`
+    `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.password}`
   );
   console.log(
     `Created a user: ${userRes.data.data.email} / ${process.env.USER_PASSWORD}`

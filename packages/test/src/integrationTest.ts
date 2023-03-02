@@ -70,7 +70,7 @@ export class IntegrationTest<SetupData> {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
       name: `integration-${this.test.name}`.slice(0, 49),
     });
-    this.standardDomainId = createdDomain.data.data.domain.id;
+    this.standardDomainId = createdDomain.data.data.createdDomain.id;
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
@@ -122,7 +122,7 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (axios.isAxiosError(error)) {
+          if (axios.isAxiosError(error) && this.test.snapshot) {
             response = error.response;
           } else {
             throw error;

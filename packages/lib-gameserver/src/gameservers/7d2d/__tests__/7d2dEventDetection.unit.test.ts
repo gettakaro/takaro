@@ -1,6 +1,10 @@
 import { expect, sandbox } from '@takaro/test';
 import { SdtdConnectionInfo } from '../';
-import { EventPlayerConnected, GameEvents } from '../../../main';
+import {
+  EventChatMessage,
+  EventPlayerConnected,
+  GameEvents,
+} from '../../../main';
 import { SevenDaysToDieEmitter } from '../emitter';
 
 const mockSdtdConnectionInfo = new SdtdConnectionInfo({
@@ -100,5 +104,27 @@ describe('7d2d event detection', () => {
       xboxLiveId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+  });
+
+  it('[ChatMessage] Can detect chat message', async () => {
+    // Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': /ping
+    await new SevenDaysToDieEmitter(mockSdtdConnectionInfo).parseMessage({
+      // eslint-disable-next-line quotes
+      msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': fsafsafasf`,
+    });
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect(
+      (emitStub.getCalls()[0].args[1] as EventChatMessage).player
+    ).to.deep.equal({
+      name: 'Catalysm',
+      gameId: '549',
+      steamId: '76561198028175941',
+      xboxLiveId: undefined,
+    });
   });
 });

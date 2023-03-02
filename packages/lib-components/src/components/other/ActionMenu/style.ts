@@ -12,19 +12,19 @@ export const Container = styled.ul<{ elevation: Elevation }>`
   h3 {
     width: 100%;
     text-align: center;
-    margin-top: 0.25rem;
-    margin-bottom: 1rem;
+    margin-top: ${({ theme }) => theme.spacing['0_25']};
+    margin-bottom: ${({ theme }) => theme.spacing[1]};
   }
 `;
 
 export const Item = styled.li`
   display: grid;
-  grid-template-columns: 30px 1fr;
-  padding: 1rem 1rem;
-  min-width: 200px;
-  max-width: 300px;
+  grid-template-columns: ${({ theme }) => theme.spacing[4]} 1fr;
+  padding: ${({ theme }) => theme.spacing['1_5']};
+  min-width: 20rem;
+  max-width: 30rem;
   cursor: pointer;
-  min-height: 45px;
+  min-height: 4.5rem;
 
   &:first-child {
     border-top-left-radius: 0.5rem;
@@ -51,7 +51,7 @@ export const Item = styled.li`
   }
 
   svg {
-    margin-right: 1rem;
+    margin-right: ${({ theme }) => theme.spacing[1]};
     fill: ${({ theme }): string => theme.colors.primary};
   }
 `;

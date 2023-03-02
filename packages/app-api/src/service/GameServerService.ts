@@ -21,6 +21,7 @@ import { SettingsService } from './SettingsService';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base';
+import { ModuleService } from './ModuleService';
 
 export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
   @IsUUID()
@@ -54,6 +55,22 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+}
+
+export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
+  @IsJSON()
+  config: string;
+}
+
+export class ModuleInstallationOutputDTO extends TakaroDTO<ModuleInstallationOutputDTO> {
+  @IsUUID()
+  gameserverId: string;
+
+  @IsUUID()
+  moduleId: string;
+
+  @IsJSON()
+  config: string;
 }
 
 const manager = new IGameServerInMemoryManager();
@@ -130,6 +147,32 @@ export class GameServerService extends TakaroService<
     }
   }
 
+  async getModuleInstallation(gameserverId: string, moduleId: string) {
+    return this.repo.getModuleInstallation(gameserverId, moduleId);
+  }
+
+  async installModule(
+    gameserverId: string,
+    moduleId: string,
+    installDto: ModuleInstallDTO
+  ) {
+    return this.repo.installModule(gameserverId, moduleId, installDto);
+  }
+
+  async uninstallModule(gameserverId: string, moduleId: string) {
+    return this.repo.uninstallModule(gameserverId, moduleId);
+  }
+
+  async getInstalledModules(gameserverId: string) {
+    const installations = await this.repo.getInstalledModules(gameserverId);
+    const moduleService = new ModuleService(this.domainId);
+    return await Promise.all(
+      installations.map((i) => {
+        return moduleService.findOne(i.moduleId);
+      })
+    );
+  }
+
   static getGame(type: GAME_SERVER_TYPE) {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:
@@ -148,5 +191,13 @@ export class GameServerService extends TakaroService<
 
   get manager() {
     return this.gameServerManager;
+  }
+
+  async executeCommand(id: string, rawCommand: string) {
+    const gameserver = await this.repo.findOne(id);
+    const game = GameServerService.getGame(gameserver.type);
+    const instance = new game(gameserver.connectionInfo);
+
+    return instance.executeConsoleCommand(rawCommand);
   }
 }

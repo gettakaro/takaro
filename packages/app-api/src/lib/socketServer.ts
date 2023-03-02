@@ -7,7 +7,11 @@ import { instrument } from '@socket.io/admin-ui';
 import { AuthService } from '../service/AuthService';
 
 interface ServerToClientEvents {
-  gameEvent: (type: GameEvents, data: EventMapping[GameEvents]) => void;
+  gameEvent: (
+    gameserverId: string,
+    type: GameEvents,
+    data: EventMapping[GameEvents]
+  ) => void;
   pong: () => void;
 }
 

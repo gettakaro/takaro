@@ -8,8 +8,7 @@
       "updatedAt": "2022-09-24T17:31:04.915Z",
       "id": "6ecd8302-af6f-4789-ad7d-0cd370f31ae7",
       "name": "Test module",
-      "enabled": true,
-      "config": {},
+      "builtin": null,
       "cronJobs": [],
       "hooks": [],
       "commands": []

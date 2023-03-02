@@ -1,20 +1,26 @@
 import { FC, useState, useEffect } from 'react';
 import { styled } from '../../../styled';
-import { AiOutlineCopy as CopyIcon, AiOutlineCheck as CheckmarkIcon } from 'react-icons/ai';
+import {
+  AiOutlineCopy as CopyIcon,
+  AiOutlineCheck as CheckmarkIcon,
+} from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
 
 const Container = styled.div<{ maxWidth: number | undefined; copied: boolean }>`
   position: relative;
-  padding: 0;
+  padding: ${({ theme }) => theme.spacing[0]};
   outline: 0;
   width: fit-content;
 
   input {
     width: ${({ maxWidth }): string => `${maxWidth}px`};
-    padding: 8px 30px 8px 8px;
-    border: 1px solid
-      ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.gray)};
-    color: ${({ theme, copied }): string => (copied ? theme.colors.primary : theme.colors.gray)};
+    padding: ${({ theme }) =>
+      `${theme.spacing['0_75']} ${theme.spacing[4]} ${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
+    border: 0.1rem solid
+      ${({ copied, theme }): string =>
+        copied ? theme.colors.primary : theme.colors.gray};
+    color: ${({ theme, copied }): string =>
+      copied ? theme.colors.primary : theme.colors.gray};
     cursor: default;
 
     &:hover {
@@ -30,8 +36,10 @@ const IconContainer = styled.div<{ copied: boolean }>`
   right: 7px;
 
   svg {
-    fill: ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.gray)};
-    stroke: ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.gray)};
+    fill: ${({ copied, theme }): string =>
+      copied ? theme.colors.primary : theme.colors.gray};
+    stroke: ${({ copied, theme }): string =>
+      copied ? theme.colors.primary : theme.colors.gray};
     cursor: pointer;
   }
 `;
@@ -70,7 +78,11 @@ export const ClipBoard: FC<ClipBoardProps> = ({ text, maxWidth = 200 }) => {
         value={text}
       />
       <IconContainer copied={copied}>
-        {copied ? <CheckmarkIcon size={20} /> : <CopyIcon onClick={handleCopy} size={20} />}
+        {copied ? (
+          <CheckmarkIcon size={20} />
+        ) : (
+          <CopyIcon onClick={handleCopy} size={20} />
+        )}
       </IconContainer>
     </Container>
   );

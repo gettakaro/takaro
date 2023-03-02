@@ -179,10 +179,10 @@ const LogIn: FC = () => {
 
           <Divider
             label={{ labelPosition: 'center', text: 'or' }}
-            spacing="huge"
+            size="huge"
           />
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ErrorMessage message={error} />
+            {error && <ErrorMessage message={error} />}
             <TextField
               control={control}
               error={formState.errors.email}

@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2022-12-05T19:24:15.375Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "Module Assignments",
+    "snapshot": true,
+    "name": "Uninstall a module",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

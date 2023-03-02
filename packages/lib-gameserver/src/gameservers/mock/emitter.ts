@@ -4,6 +4,7 @@ import {
   EventLogLine,
   EventPlayerDisconnected,
   GameEvents,
+  EventChatMessage,
 } from '../../interfaces/events';
 import type { Faker } from '@faker-js/faker';
 import { MockConnectionInfo } from '.';
@@ -71,6 +72,13 @@ export class MockEmitter extends TakaroEmitter {
           player,
           msg: 'player-disconnected',
         });
+        break;
+      case GameEvents.CHAT_MESSAGE:
+        event = new EventChatMessage({
+          msg: '/ping',
+          player,
+        });
+
         break;
       default:
         event = new EventLogLine({
