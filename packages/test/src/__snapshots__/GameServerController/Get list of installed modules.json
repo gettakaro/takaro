@@ -27,7 +27,7 @@
               "createdAt": "2023-02-25T14:30:23.536Z",
               "updatedAt": "2023-02-25T14:30:23.537Z",
               "id": "62841ed7-aa9a-4090-9f01-d6b3df1bd24c",
-              "code": "\"use strict\";\nasync function ping() {\n    await client.gameserver.gameServerControllerExecuteCommand(gameServerId, {\n        command: 'say \"Pong!\"',\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
+              "code": "\"use strict\";\nasync function ping() {\n    await client.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: event.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
             }
           }
         ]
