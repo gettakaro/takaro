@@ -1,0 +1,9 @@
+{
+  "name": "@takaro/vm-agent",
+  "version": "0.0.1",
+  "description": "VM agent for takaro",
+  "scripts": {
+    "build": "echo 'no build yet :('",
+    "test": "echo 'no testing yet :('"
+  }
+}
