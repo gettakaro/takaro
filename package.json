@@ -13,8 +13,8 @@
     "test:integration": "npm --workspaces run --if-present test:integration",
     "test:style": "npm run lint && npm run prettier",
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
-    "lint": "npx --workspaces --if-present eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore",
-    "lint:fix": "npx --workspaces --if-present eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix",
+    "lint": "npx --workspaces eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --no-error-on-unmatched-pattern",
+    "lint:fix": "npx --workspaces --if-present eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix --no-error-on-unmatched-pattern",
     "prettier": "npx --workspaces --if-present prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prettier:fix": "npx --workspaces --if-present prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prepare": "[ -d '.husky' ] && husky install || true"
