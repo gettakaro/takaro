@@ -88,4 +88,9 @@ export class SevenDaysToDie implements IGameServer {
       success: true,
     });
   }
+
+  async sendMessage(message: string) {
+    const command = `say "${message}"`;
+    await this.apiClient.executeConsoleCommand(command);
+  }
 }
