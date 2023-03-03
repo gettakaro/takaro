@@ -52,4 +52,9 @@ export class Rust implements IGameServer {
       success: true,
     });
   }
+
+  async sendMessage(message: string) {
+    throw new errors.NotImplementedError();
+    console.log(`say "${message}"`);
+  }
 }

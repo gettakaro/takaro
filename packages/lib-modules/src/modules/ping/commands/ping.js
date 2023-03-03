@@ -1,6 +1,9 @@
 async function ping() {
-  await client.gameserver.gameServerControllerExecuteCommand(gameServerId, {
-    command: 'say "Pong!"',
+  await client.gameserver.gameServerControllerSendMessage(gameServerId, {
+    message: 'Pong!',
+    opts: {
+      recipient: event.player,
+    },
   });
 }
 
