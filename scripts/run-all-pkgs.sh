@@ -7,12 +7,12 @@ COMMAND=$COMMAND
 REGEX=$REGEX
 
 if [ -z "$COMMAND" ]; then
-  echo "COMMAND environment variable must be set"
-  exit 1
+	echo "COMMAND environment variable must be set"
+	exit 1
 fi
 
 if [ -z "$REGEX" ]; then
-  REGEX="packages\/.+"
+	REGEX="packages\/.+"
 fi
 
 echo "Running command '$COMMAND' in packages matching regex '$REGEX'"
@@ -27,10 +27,10 @@ echo "Running in following packages:"
 echo "$FILTERED_PACKAGES"
 
 # Prepare commands to run
-COMMANDS=$(echo "$FILTERED_PACKAGES" | sed -r -E "s/(packages\/.+)/\"npm run -w \1 $COMMAND\"/g")
+COMMANDS=$(echo "$FILTERED_PACKAGES" | sed -r -E "s/(packages\/.+)/\"npm run --if-present -w \1 $COMMAND\"/g")
 
 # Prepare names to link to commands (better logging output)
-NAMES=$(echo "$FILTERED_PACKAGES" | sed -r 's/(packages\/)(\w-.*)/\2/g' ) 
+NAMES=$(echo "$FILTERED_PACKAGES" | sed -r 's/(packages\/)(\w-.*)/\2/g')
 
 echo '----------------------'
 echo npx concurrently --names $(echo $NAMES | tr ' ' ',') $COMMANDS
@@ -45,9 +45,9 @@ echo ''
 echo ''
 
 if [ $SUCCESS -eq 0 ]; then
-  echo "All commands succeeded 🎉"
-  exit 0
+	echo "All commands succeeded 🎉"
+	exit 0
 else
-  echo "Some commands failed 😢"
-  exit $SUCCESS
+	echo "Some commands failed 😢"
+	exit $SUCCESS
 fi

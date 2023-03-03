@@ -1,0 +1,33 @@
+[package]
+name = "vm-agent"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc = "0.2.139"
+nix = "0.26.2"
+axum = { version = "0.6.9", features = ["macros"] }
+futures = "0.3.26"
+tokio = { version = "1.25.0", features = ["full"] }
+serde_derive = "1.0.152"
+serde = "1.0.152"
+serde_json = "1.0.93"
+tracing = "0.1"
+tower = { version = "0.4.13", features = ["full"] }
+tower-http = { version = "0.4.0", features = ["full"] }
+tokio-vsock = { version ="0.4.0" }
+hyper = "0.14.24"
+vsock = "0.3.0"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+
+
+# Optimizing for binary size, more info at https://github.com/johnthagen/min-sized-rust
+[profile.release]
+strip = true      # Automatically strip symbols from the binary.
+opt-level = "z"   # Optimize for size.
+lto = true        # Optimize at link stage, 
+
+[toolchain]
+channel = "default"
