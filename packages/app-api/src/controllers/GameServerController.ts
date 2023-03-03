@@ -4,12 +4,17 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { TestReachabilityOutput, CommandOutput } from '@takaro/gameserver';
+import {
+  TestReachabilityOutput,
+  CommandOutput,
+  IMessageOptsDTO,
+} from '@takaro/gameserver';
 import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -95,11 +100,21 @@ class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
   @ValidateNested()
   data!: CommandOutput;
 }
-
 class CommandExecuteInputDTO extends TakaroDTO<CommandExecuteInputDTO> {
   @IsString()
   @MinLength(1)
   command!: string;
+}
+
+class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  message!: string;
+
+  @Type(() => IMessageOptsDTO)
+  @ValidateNested()
+  opts!: IMessageOptsDTO;
 }
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -254,6 +269,23 @@ export class GameServerController {
   ) {
     const service = new GameServerService(req.domainId);
     const result = await service.executeCommand(params.id, data.command);
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:id/message')
+  async sendMessage(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: MessageSendInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.sendMessage(
+      params.id,
+      data.message,
+      data.opts
+    );
     return apiResponse(result);
   }
 }

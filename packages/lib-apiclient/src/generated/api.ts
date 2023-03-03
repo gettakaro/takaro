@@ -1837,6 +1837,19 @@ export interface IGamePlayer {
 /**
  *
  * @export
+ * @interface IMessageOptsDTO
+ */
+export interface IMessageOptsDTO {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof IMessageOptsDTO
+   */
+  recipient: IGamePlayer;
+}
+/**
+ *
+ * @export
  * @interface ITakaroQuery
  */
 export interface ITakaroQuery {
@@ -1936,6 +1949,25 @@ export interface LoginOutputDTOAPI {
    * @memberof LoginOutputDTOAPI
    */
   metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface MessageSendInputDTO
+ */
+export interface MessageSendInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof MessageSendInputDTO
+   */
+  message: string;
+  /**
+   *
+   * @type {IMessageOptsDTO}
+   * @memberof MessageSendInputDTO
+   */
+  opts: IMessageOptsDTO;
 }
 /**
  *
@@ -5903,6 +5935,63 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage: async (
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerSendMessage', 'id', id);
+      const localVarPath = `/gameserver/{id}/message`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        messageSendInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -6358,6 +6447,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerSendMessage(
+          id,
+          messageSendInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -6624,6 +6741,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerSendMessage(id, messageSendInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -6843,6 +6977,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerSearch(gameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Send message
+   * @param {string} id
+   * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerSendMessage(
+    id: string,
+    messageSendInputDTO?: MessageSendInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerSendMessage(id, messageSendInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

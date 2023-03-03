@@ -188,6 +188,10 @@ export class CommandService extends TakaroService<
     );
 
     if (triggeredCommands.length) {
+      this.log.debug(
+        `Found ${triggeredCommands.length} hooks that match the event`
+      );
+
       const authService = new AuthService(this.domainId);
       const token = await authService.getAgentToken();
       const queues = QueuesService.getInstance();

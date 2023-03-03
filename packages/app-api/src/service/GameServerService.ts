@@ -13,7 +13,12 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
-import { Mock, SevenDaysToDie, Rust } from '@takaro/gameserver';
+import {
+  Mock,
+  SevenDaysToDie,
+  Rust,
+  IMessageOptsDTO,
+} from '@takaro/gameserver';
 import { errors } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager';
 import { config } from '../config';
@@ -199,5 +204,12 @@ export class GameServerService extends TakaroService<
     const instance = new game(gameserver.connectionInfo);
 
     return instance.executeConsoleCommand(rawCommand);
+  }
+
+  async sendMessage(id: string, message: string, opts: IMessageOptsDTO) {
+    const gameserver = await this.repo.findOne(id);
+    const game = GameServerService.getGame(gameserver.type);
+    const instance = new game(gameserver.connectionInfo);
+    return instance.sendMessage(message, opts);
   }
 }

@@ -195,9 +195,10 @@ export class HookService extends TakaroService<
       gameServerId
     );
 
-    this.log.debug(`Found ${triggeredHooks.length} hooks that match the event`);
-
     if (triggeredHooks.length) {
+      this.log.debug(
+        `Found ${triggeredHooks.length} hooks that match the event`
+      );
       const authService = new AuthService(this.domainId);
       const token = await authService.getAgentToken();
 

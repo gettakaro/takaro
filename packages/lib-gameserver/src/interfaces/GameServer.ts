@@ -1,7 +1,13 @@
 import { TakaroEmitter } from '../TakaroEmitter';
 import { IGamePlayer } from './GamePlayer';
 import { TakaroDTO } from '@takaro/util';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CommandOutput extends TakaroDTO<CommandOutput> {
   @IsString()
@@ -21,6 +27,13 @@ export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
   reason?: string;
 }
 
+export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
+  @Type(() => IGamePlayer)
+  @ValidateNested()
+  /** When specified, will send a DM to this player instead of a global message */
+  recipient?: IGamePlayer;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
 
@@ -29,6 +42,7 @@ export interface IGameServer {
   getEventEmitter(): TakaroEmitter;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
+  sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
 
   /**
    * Try and connect to the gameserver
