@@ -8,8 +8,8 @@ use tokio::process::Command;
 pub struct ExecResponse {
     exit_code: Option<i32>,
     exit_signal: Option<i32>,
-    stdout: Vec<u8>,
-    stderr: Vec<u8>,
+    stdout: String,
+    stderr: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -46,8 +46,8 @@ pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse
     Json(ExecResponse {
         exit_code: status.code(),
         exit_signal: status.signal(),
-        stderr: output.stderr,
-        stdout: output.stdout,
+        stderr: String::from_utf8(output.stderr).unwrap(),
+        stdout: String::from_utf8(output.stdout).unwrap(),
     })
 }
 
@@ -68,6 +68,6 @@ mod tests {
         let response = exec_cmd(Json(request)).await;
 
         assert_eq!(response.exit_code, Some(0));
-        assert_eq!(response.stdout, b"Hello, world!\n");
+        assert_eq!(response.stdout, "Hello, world!\n".to_owned());
     }
 }
