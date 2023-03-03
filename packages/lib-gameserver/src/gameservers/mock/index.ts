@@ -5,9 +5,11 @@ import { IGamePlayer } from '../../interfaces/GamePlayer';
 import {
   CommandOutput,
   IGameServer,
+  IMessageOptsDTO,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer';
 import { MockEmitter } from './emitter';
+import { EventLogLine, GameEvents } from '../../interfaces/events';
 
 export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   @IsNumber()
@@ -30,9 +32,11 @@ export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
 export class Mock implements IGameServer {
   private logger = logger('Mock');
   connectionInfo: MockConnectionInfo;
+  emitter: MockEmitter;
 
   constructor(config: Record<string, unknown>) {
     this.connectionInfo = new MockConnectionInfo(config);
+    this.emitter = new MockEmitter(this.connectionInfo);
   }
 
   async getPlayer(id: string): Promise<IGamePlayer | null> {
@@ -45,8 +49,7 @@ export class Mock implements IGameServer {
   }
 
   getEventEmitter() {
-    const emitter = new MockEmitter(this.connectionInfo);
-    return emitter;
+    return this.emitter;
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
@@ -65,10 +68,34 @@ export class Mock implements IGameServer {
     }
   }
 
+  private sendLog(line: EventLogLine) {
+    this.emitter.emit(GameEvents.LOG_LINE, line);
+  }
+
   async executeConsoleCommand(rawCommand: string) {
-    return new CommandOutput({
+    const output = new CommandOutput({
       rawResult: `Command "${rawCommand}" executed successfully`,
       success: true,
     });
+
+    this.sendLog(
+      new EventLogLine({
+        msg: rawCommand,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    return output;
+  }
+
+  async sendMessage(message: string, opts: IMessageOptsDTO) {
+    const fullMessage = `Server: ${opts.recipient ? '[DM]' : ''} ${message}`;
+
+    this.sendLog(
+      new EventLogLine({
+        msg: fullMessage,
+        timestamp: new Date().toISOString(),
+      })
+    );
   }
 }
