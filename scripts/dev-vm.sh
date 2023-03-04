@@ -4,8 +4,13 @@ set -euom pipefail
 
 FC_ROOTFS="$PWD/firecracker/rootfs.ext4"
 FC_KERNEL="$PWD/firecracker/vmlinux.bin"
+
 # FC_KERNEL_BOOT_ARGS="init=/sbin/boottime_init panic=1 pci=off nomodules reboot=k tsc=reliable quiet i8042.nokbd i8042.noaux 8250.nr_uarts=0 ipv6.disable=1"
-FC_KERNEL_BOOT_ARGS="console=ttyS0 reboot=k panic=1 pci=off ipv6.disable=1"
+#
+FC_KERNEL_BOOT_ARGS="ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on"
+
+FC_MAC="02:FC:00:00:00:05"
+TAP_DEV="fc-tap0"
 
 FC_SOCKET="/tmp/takaro/firecracker.socket"
 FC_LOGFILE="$PWD/firecracker/logs.fifo"
@@ -104,7 +109,7 @@ EOF
   "drive_id": "1",
   "path_on_host": "$FC_ROOTFS",
   "is_root_device": true,
-  "is_read_only": true
+  "is_read_only": false
 }
 EOF
 
@@ -115,13 +120,13 @@ EOF
 }
 EOF
 
-	# curl_put '/network-interfaces/1' <<EOF
-	# {
-	#   "iface_id": "1",
-	#   "guest_mac": "$FC_MAC",
-	#   "host_dev_name": "$TAP_DEV"
-	# }
-	# EOF
+	curl_put '/network-interfaces/eth0' <<EOF
+{
+  "iface_id": "eth0",
+  "guest_mac": "$FC_MAC",
+  "host_dev_name": "$TAP_DEV"
+}
+EOF
 
 }
 
