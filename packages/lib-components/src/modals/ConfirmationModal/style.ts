@@ -39,7 +39,7 @@ export const Header = styled.div<{ type: AlertVariants }>`
   padding-bottom: ${({ theme }) => theme.spacing[3]};
   svg {
     fill: ${({ theme, type }) =>
-    type === 'info' ? theme.colors.primary : theme.colors.error};
+      type === 'info' ? theme.colors.primary : theme.colors.error};
   }
 
   h2 {
