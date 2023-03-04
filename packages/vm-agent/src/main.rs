@@ -51,7 +51,7 @@ async fn setup_network() -> Result<(), InitError> {
 
     handle.link().set(eth0.header.index).up().execute().await?;
 
-    tracing::debug!("netlink: adds a default route for all addresses via the host ip");
+    tracing::debug!("netlink: adds a default route for any address to the host ip");
 
     handle
         .route()
