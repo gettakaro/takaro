@@ -1,4 +1,4 @@
-import { createRef, FC, MouseEvent, useRef, useState } from 'react';
+import { createRef, FC, MouseEvent, useState } from 'react';
 import {
   EditableField,
   styled,
@@ -18,11 +18,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingDelayGroup } from '@floating-ui/react-dom-interactions';
 import { useSandpack } from '@codesandbox/sandpack-react';
-import { useDrag } from 'react-dnd';
-import { ItemTypes } from './ItemTypes';
 import { useApiClient } from 'hooks/useApiClient';
 import { useModule } from 'hooks/useModule';
-import { camelize } from './utils';
+import { FunctionType } from 'context/moduleContext';
+import { getFileName, getNewPath } from './utils';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -56,9 +55,19 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   }
 `;
 
+const NewFileContainer = styled.div<{ depth: number }>`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
+`;
+
 export interface FileProps {
   path: string;
-  selectFile?: (path: string) => void; // basically checks if it is a file or a directory
+
+  // This is a wrapper function around sandpack.openFile()
+  // in case it is undefined it means that it is a directory
+  selectFile?: (path: string) => void;
   active?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   depth: number;
@@ -77,103 +86,140 @@ export const File: FC<FileProps> = ({
 
   const fileName = path.split('/').filter(Boolean).pop()!;
   const { moduleData } = useModule();
-  const client = useApiClient();
+  const apiClient = useApiClient();
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
 
-  const newFileInputRef = useRef<HTMLInputElement>(null);
-  const [showNewFileField, setShowNewFileField] = useState(false);
-  const [newFileName, setNewFileName] = useState('');
-
-  const inputRef = useRef<HTMLInputElement>(null);
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
+  const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
 
-  const [Wrapper, open, close] = useModal();
+  const [Wrapper, openDeleteFileModal, closeDeleteFileModal] = useModal();
   const ref = createRef<HTMLDivElement>();
-  useOutsideAlerter(ref, () => close());
+  useOutsideAlerter(ref, () => closeDeleteFileModal());
 
-  const [, drag] = useDrag(() => ({
-    type: ItemTypes.FILE,
-    item: { path },
-  }));
-
-  // const extension = fileName.split('.').pop();
-
-  const onClickButton = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  // item is clicked in explorer
+  const handleOnFileClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void => {
     if (selectFile) {
       selectFile(path);
     }
+
+    // handle directory
     onClick?.(event);
   };
 
-  const handleDelete = async () => {
-    // everything underneed this is in case we are deleting a directory
-    if (!selectFile) {
-      const toDelete = Object.keys(sandpack.files).filter((filePath) =>
-        filePath.startsWith(path.slice(0, -1))
-      );
-
-      // TODO: use a regex instead
-      // --> regex: depending on curren path --> hook, command, cronjob
-      const topLvl = path.slice(1, path.slice(1).indexOf('/'));
-
-      const promises: Array<Promise<unknown>> = [];
-      for (const i of toDelete) {
-        if (moduleData.fileMap && moduleData.fileMap[i]) {
-          promises.push(
-            new Promise(async () => {
-              await client[topLvl][`${'cronJob'}ControllerRemove`](
-                moduleData.fileMap![i]
-              );
-              sandpack.deleteFile(i);
-            })
-          );
-        }
-      }
-      await Promise.all(promises);
-    }
-  };
-
-  const handleNewFile = async () => {
-    setShowNewFileField(false);
-
-    const newPath = path.slice(0, -1) + newFileName;
-
-    const hook = (
-      await client.hook.hookControllerCreate({
-        moduleId: moduleData.id!,
-        name: newPath,
-        eventType: 'log',
-        regex: `/\w+/`,
-      })
-    ).data.data;
-
-    sandpack.addFile(newPath, 'this is the content or what?');
-
-    // add file to sandpack
-  };
-
-  const handleRename = () => {
+  const handleRename = async (newFileName: string) => {
     setEditing(false);
-    const filePaths = sandpack.visibleFiles;
-    //const content = filePaths[path];
 
-    if (selectFile) {
+    const toRename = moduleData.fileMap[fileName];
+    switch (toRename.type) {
+      case FunctionType.Hooks:
+        await apiClient.hook.hookControllerUpdate(toRename.itemId, {
+          name: newFileName,
+        });
+        break;
+      case FunctionType.Commands:
+        await apiClient.command.commandControllerUpdate(toRename.itemId, {
+          name: newFileName,
+        });
+        break;
+      case FunctionType.CronJobs:
+        await apiClient.cronjob.cronJobControllerUpdate(toRename.itemId, {
+          name: newFileName,
+        });
+        break;
     }
 
-    // if file
-    //
-    //
-    // if dir
+    // change path in moduleData
+    // change path in sandpack
+    const newPath = getNewPath(path, newFileName);
+    const code = sandpack.files[path].code;
+    sandpack.files[newPath] = { code: code };
+    sandpack.setActiveFile(newPath);
+    sandpack.closeFile(path);
+    delete sandpack.files[path];
+    setInternalFileName(newFileName);
   };
+
+  const handleDelete = async () => {
+    const toDelete = moduleData.fileMap[getFileName(path)];
+
+    try {
+      switch (toDelete.type) {
+        case FunctionType.Hooks:
+          await apiClient.hook.hookControllerRemove(toDelete.itemId);
+          break;
+        case FunctionType.Commands:
+          await apiClient.command.commandControllerRemove(toDelete.itemId);
+          break;
+        case FunctionType.CronJobs:
+          await apiClient.cronjob.cronJobControllerRemove(toDelete.itemId);
+          break;
+        default:
+          throw new Error('Invalid type');
+      }
+      // delete file from sandpack
+      sandpack.closeFile(path);
+      sandpack.deleteFile(path);
+    } catch (e) {
+      // TODO: handle error
+      // deleting file failed
+      console.log(e);
+    }
+  };
+
+  const handleNewFile = async (newFileName: string) => {
+    setShowNewFileField(false);
+    const type = path.split('/').join('');
+
+    try {
+      switch (path.split('/').join('')) {
+        case FunctionType.Hooks:
+          await apiClient.hook.hookControllerCreate({
+            moduleId: moduleData.id!,
+            name: newFileName,
+            eventType: 'log',
+            regex: `/\w+/`,
+          });
+
+          break;
+        case FunctionType.Commands:
+          await apiClient.command.commandControllerCreate({
+            moduleId: moduleData.id!,
+            name: newFileName,
+            trigger: newFileName,
+          });
+          break;
+        case FunctionType.CronJobs:
+          await apiClient.cronjob.cronJobControllerCreate({
+            moduleId: moduleData.id!,
+            name: newFileName,
+            temporalValue: '0 0 * * *',
+          });
+          break;
+        default:
+          throw new Error('Invalid type');
+      }
+      const newPath = `${type}/${newFileName}`;
+
+      sandpack.updateFile({ [newPath]: { code: '' } });
+      sandpack.setActiveFile(newPath);
+      setInternalFileName(newFileName);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // add file to sandpack
 
   // handle click events
   const handleOnDeleteClick = (e: MouseEvent<SVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    open();
+    openDeleteFileModal();
   };
 
   const handleOnRenameClick = (e: MouseEvent<SVGElement>) => {
@@ -187,29 +233,6 @@ export const File: FC<FileProps> = ({
     e.stopPropagation();
     setShowNewFileField(true);
     sandpack.updateFile(`${path.slice(0, -1)}newFileeeee.tsx`);
-  };
-
-  const handleOnNewDirClick = (e: MouseEvent<SVGElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const dirName = 'new_dir_name';
-
-    // we need to open the folder
-    onClick?.(e as any); // TODO: fix this type
-
-    // add a . file
-    sandpack.addFile(
-      {
-        [`${path.slice(0, -1)}${dirName}/.`]: {
-          code: '',
-          hidden: true,
-          active: false,
-          readOnly: true,
-        },
-      },
-      ''
-    );
   };
 
   const getIcon = (): JSX.Element => {
@@ -227,7 +250,7 @@ export const File: FC<FileProps> = ({
       <ConfirmationModal
         type="error"
         title={`Delete ${selectFile ? 'file' : 'directory'} `}
-        close={close}
+        close={closeDeleteFileModal}
         description={`Are you sure you want to delete '${fileName}'? The ${
           selectFile ? 'file' : 'directory'
         } will be permanently removed.`}
@@ -257,24 +280,9 @@ export const File: FC<FileProps> = ({
     } else {
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-          <Tooltip label="Rename" placement="top">
-            <div>
-              <RenameIcon size={16} onClick={handleOnRenameClick} />
-            </div>
-          </Tooltip>
           <Tooltip label="New file" placement="top">
             <div>
               <FileIcon size={16} onClick={handleOnNewFileClick} />
-            </div>
-          </Tooltip>
-          <Tooltip label="New directory" placement="top">
-            <div>
-              <DirClosedIcon size={16} onClick={handleOnNewDirClick} />
-            </div>
-          </Tooltip>
-          <Tooltip label="Delete" placement="top">
-            <div>
-              <DeleteIcon onClick={handleOnDeleteClick} size={16} />
             </div>
           </Tooltip>
         </FloatingDelayGroup>
@@ -288,10 +296,9 @@ export const File: FC<FileProps> = ({
         isActive={active ? true : false}
         depth={depth}
         title={fileName}
-        onClick={onClickButton}
+        onClick={handleOnFileClick}
         type="button"
         role="handle"
-        ref={drag}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
@@ -299,18 +306,13 @@ export const File: FC<FileProps> = ({
           {getIcon()}
           {isEditing || selectFile ? (
             <EditableField
+              name="file"
               allowEmpty={false}
-              childRef={inputRef}
-              text={internalFileName}
               isEditing={isEditing}
               onEdited={handleRename}
-            >
-              <input
-                ref={inputRef}
-                value={internalFileName}
-                onChange={(e) => setInternalFileName(e.target.value)}
-              />
-            </EditableField>
+              editingChange={(edited) => setEditing(edited)}
+              value={internalFileName}
+            />
           ) : (
             <span>{fileName}</span>
           )}
@@ -330,21 +332,18 @@ export const File: FC<FileProps> = ({
       </Button>
 
       {showNewFileField && (
-        <div>
+        <NewFileContainer depth={depth}>
           <FileIcon size={20} />
           <EditableField
             allowEmpty={false}
-            text=""
+            name="new-file"
             isEditing={true}
-            childRef={newFileInputRef}
+            editingChange={(e) => {
+              setShowNewFileField(e);
+            }}
             onEdited={handleNewFile}
-          >
-            <input
-              ref={newFileInputRef}
-              onChange={(e) => setNewFileName(e.target.value)}
-            />
-          </EditableField>
-        </div>
+          />
+        </NewFileContainer>
       )}
       {getModal()}
     </>

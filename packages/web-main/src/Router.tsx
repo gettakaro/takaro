@@ -15,7 +15,6 @@ import {
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
-import { Modules } from 'pages/Modules';
 import { Studio } from 'pages/studio';
 import GameServerDashboard from 'pages/GameserverDashboard';
 import { Modules } from 'pages/Modules';
@@ -68,7 +67,6 @@ export const Router: FC = () => (
               element={<GameServers />}
               path={PATHS.gameServers.overview}
             />
-            <Route element={<Modules />} path={PATHS.modules} />
             <Route
               element={<GameServerDashboard />}
               path={PATHS.gameServers.dashboard}
@@ -81,7 +79,8 @@ export const Router: FC = () => (
               element={<AddGameServer />}
               path={PATHS.gameServers.update}
             />
-            <Route element={<Modules />} path={PATHS.modules} />
+            <Route element={<Modules />} path={PATHS.modules.overview} />
+
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 

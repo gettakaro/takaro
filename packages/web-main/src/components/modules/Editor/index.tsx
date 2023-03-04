@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import {
   FileTabs,
   SandpackStack,
@@ -8,15 +8,48 @@ import {
 } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import { defineTheme } from './theme';
+import { useModule } from 'hooks/useModule';
+import { useApiClient } from 'hooks/useApiClient';
+import { useDebounce, styled } from '@takaro/lib-components';
+
+const Wrapper = styled.div`
+  flex: 1;
+  padding-top: 8px;
+  background-color: ${({ theme }): string => theme.colors.primary};
+`;
+
+const StyledFileTabs = styled(FileTabs)`
+  &:hover {
+    svg {
+      fill: ${({ theme }): string => theme.colors.primary};
+      stroke: ${({ theme }): string => theme.colors.primary};
+    }
+  }
+`;
 
 export const Editor: FC = () => {
   const { code, updateCode } = useActiveCode();
   const monaco = useMonaco();
+  const client = useApiClient();
+  const debouncedCode = useDebounce<string>(code, 2000);
+  const { moduleData } = useModule();
   const { sandpack } = useSandpack();
+
+  useEffect(() => {
+    if (debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
+      client.function.functionControllerUpdate(
+        moduleData.fileMap[sandpack.activeFile].functionId,
+        { code: debouncedCode }
+      );
+    }
+  }, [debouncedCode, sandpack.activeFile]);
 
   useMemo(() => {
     if (monaco) {
       defineTheme(monaco);
+
+      // add takaro library to monaco
+      // monaco.languages.typescript.typescriptDefaults.addExtraLib("", "takaro.d.ts")
       // monaco.editor.colorizeElement(document.getElementById('code')!, {});
     }
   }, [monaco]);
@@ -28,8 +61,8 @@ export const Editor: FC = () => {
   return (
     <SandpackThemeProvider theme="auto">
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
-        <FileTabs closableTabs />
-        <div style={{ flex: 1, paddingTop: 8 }}>
+        <StyledFileTabs closableTabs />
+        <Wrapper>
           <MonacoEditor
             width="100%"
             height="100%"
@@ -44,10 +77,10 @@ export const Editor: FC = () => {
               lineNumbers: 'on',
               contextmenu: false,
               readOnly: false,
-              fontSize: 16,
+              fontSize: 24,
             }}
           />
-        </div>
+        </Wrapper>
       </SandpackStack>
     </SandpackThemeProvider>
   );

@@ -1,10 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { styled } from '../../../styled';
 import { Meta, StoryFn } from '@storybook/react';
 import { EditableFieldProps, EditableField } from '.';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { useValidationSchema } from '../../../hooks';
 
 export default {
   title: 'Inputs/EditableField',
@@ -15,6 +12,7 @@ export default {
     value: 'I am the text, double click me',
     required: true,
     label: 'label',
+    allowEmpty: false,
   },
 } as Meta<EditableFieldProps>;
 
@@ -27,37 +25,43 @@ const Container = styled.div`
 `;
 
 export const Default: StoryFn<EditableFieldProps> = (args) => {
-  type FormFields = {
-    editableField: string;
-  };
-
-  const validationSchema = useMemo(
-    () =>
-      yup.object<Record<keyof FormFields, yup.AnySchema>>({
-        editableField: yup
-          .string()
-          .min(12)
-          .required('This is a required field'),
-      }),
-    []
-  );
-
-  const { control } = useForm<FormFields>({
-    resolver: useValidationSchema(validationSchema),
-    mode: 'all',
-  });
+  const [value, setValue] = React.useState('');
 
   return (
     <Container>
       <EditableField
         name="editableField"
+        allowEmpty={args.allowEmpty}
         isEditing={args.isEditing}
         disabled={args.disabled}
         required={args.required}
-        control={control}
         value={args.value}
-        label={args.label}
+        onEdited={(value) => setValue(value)}
       />
+
+      <div>field edited: {value ? 'true' : 'false'}</div>
+    </Container>
+  );
+};
+
+export const RemoteEditEnable: StoryFn<EditableFieldProps> = (args) => {
+  const [editing, setEditing] = React.useState<boolean>(false);
+
+  return (
+    <Container>
+      This tests if we can change the state to editing from outside the
+      component
+      <EditableField
+        name="editableField"
+        allowEmpty={args.allowEmpty}
+        isEditing={editing}
+        disabled={args.disabled}
+        required={args.required}
+        value={args.value}
+        onEdited={(value) => setValue(value)}
+      />
+      <button onClick={() => setEditing(!editing)}>toggle editing state</button>
+      <span>current state: {editing ? 'true' : 'false'}</span>
     </Container>
   );
 };

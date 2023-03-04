@@ -48,7 +48,7 @@ export const Studio: FC = () => {
             width: '20%',
             height: '100vh',
           }}
-          minWidth="190px"
+          minWidth="350px"
           maxHeight="100vh"
           minHeight="100vh"
         >
@@ -58,7 +58,9 @@ export const Studio: FC = () => {
             </CollapseList.Item>
           </CollapseList>
         </Resizable>
-        <Editor />
+        <div style={{ width: '100%' }}>
+          <Editor />
+        </div>
       </Container>
     </Fragment>
   );

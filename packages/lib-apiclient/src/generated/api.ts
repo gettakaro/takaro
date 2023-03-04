@@ -650,25 +650,19 @@ export interface CronJobUpdateDTO {
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  name: string;
+  name?: string;
   /**
    *
    * @type {boolean}
    * @memberof CronJobUpdateDTO
    */
-  enabled: boolean;
+  enabled?: boolean;
   /**
    *
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  temporalValue: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobUpdateDTO
-   */
-  moduleId?: string;
+  temporalValue?: string;
   /**
    *
    * @type {string}
@@ -1753,25 +1747,19 @@ export interface HookUpdateDTO {
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  name: string;
+  name?: string;
   /**
    *
    * @type {boolean}
    * @memberof HookUpdateDTO
    */
-  enabled: boolean;
+  enabled?: boolean;
   /**
    *
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  regex: string;
-  /**
-   *
-   * @type {string}
-   * @memberof HookUpdateDTO
-   */
-  moduleId?: string;
+  regex?: string;
   /**
    *
    * @type {string}

@@ -6,50 +6,47 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useController } from 'react-hook-form';
-import { ErrorMessage } from '../ErrorMessage';
-
-import {
-  defaultInputProps,
-  defaultInputPropsFactory,
-  InputProps,
-} from '../InputProps';
-import { Label } from '../Label';
 
 import { Container } from './style';
 
-export interface EditableFieldProps extends InputProps {
+export interface EditableFieldProps {
   isEditing?: boolean;
+  editingChange?: (editing: boolean) => unknown;
   placeholder?: string;
-  onEdited?: () => unknown;
+  // fires when the input value is changed
+  onEdited?: (value: string) => unknown;
+
   disabled?: boolean;
   allowEmpty: boolean;
+  required?: boolean;
+  name: string;
+  loading?: boolean;
+
+  // defaultval
+  value?: string;
 }
 
+/*
 const defaultsApplier = defaultInputPropsFactory<EditableFieldProps>({
   ...defaultInputProps,
   required: true,
 });
+*/
 
-export const EditableField: FC<EditableFieldProps> = (props) => {
-  const {
-    isEditing = false,
-    disabled,
-    required,
-    value,
-    label,
-    size,
-    hint,
-    error,
-    name,
-    control,
-    loading,
-  } = defaultsApplier(props);
-
+export const EditableField: FC<EditableFieldProps> = ({
+  isEditing = false,
+  required = false,
+  value = '',
+  name,
+  disabled = false,
+  onEdited,
+  editingChange = () => {},
+  loading = false,
+}) => {
   const [editing, setEditing] = useState(isEditing);
+  const [inputValue, setInputValue] = useState<string>(value);
+  const [spanValue, setSpanValue] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const { field } = useController({ name, control, defaultValue: value });
 
   useEffect(() => {
     if (inputRef && inputRef.current && editing === true) {
@@ -59,8 +56,19 @@ export const EditableField: FC<EditableFieldProps> = (props) => {
   }, [editing, inputRef]);
 
   useEffect(() => {
-    if (isEditing) {
-      setEditing(true);
+    if (!editing && inputValue != spanValue) {
+      if (onEdited) {
+        onEdited(inputValue);
+      }
+      setSpanValue(inputValue);
+    }
+    editingChange(editing);
+  }, [editing]);
+
+  // change editing state when new isEditing prop is passed
+  useEffect(() => {
+    if (isEditing !== editing) {
+      setEditing(isEditing);
     }
   }, [isEditing]);
 
@@ -97,28 +105,20 @@ export const EditableField: FC<EditableFieldProps> = (props) => {
 
   return (
     <Container>
-      {label && editing && (
-        <Label
-          error={!!error}
-          size={size}
-          text={label}
-          disabled={disabled}
-          position="top"
-          required={required}
-          hint={hint}
-        />
-      )}
-
       {editing ? (
         <div onBlur={handleOnBlur} onKeyDown={(e) => handleKeyDown(e)}>
-          <input {...field} ref={inputRef} />
+          <input
+            ref={inputRef}
+            name={name}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.currentTarget.value)}
+          />
         </div>
       ) : (
         <div onClick={handleOnClick}>
-          <span>{field.value || (value as string)}</span>
+          <span>{spanValue}</span>
         </div>
       )}
-      {error && <ErrorMessage message={error.message!} />}
     </Container>
   );
 };

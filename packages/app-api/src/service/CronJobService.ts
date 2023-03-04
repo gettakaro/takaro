@@ -65,21 +65,20 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
 export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @Length(3, 50)
   @IsString()
+  @IsOptional()
   name!: string;
 
   @IsBoolean()
+  @IsOptional()
   enabled!: boolean;
 
   @IsString()
-  temporalValue!: string;
-
-  @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  temporalValue!: string;
 
   @IsOptional()
   @IsString()
-  function?: string;
+  function: string;
 }
 
 export class CronJobService extends TakaroService<

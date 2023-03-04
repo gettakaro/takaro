@@ -1,21 +1,29 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { styled, IconNavProps, IconNav } from '@takaro/lib-components';
 import {
   AiFillFile as FileIcon,
   AiFillSetting as SettingsIcon,
+  AiFillHome as HomeIcon,
 } from 'react-icons/ai';
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import {
+  CommandOutputDTO,
   CronJobOutputDTO,
   HookOutputDTO,
   ModuleOutputDTOAPI,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { ModuleContext, ModuleData } from '../context/moduleContext';
+import {
+  FunctionType,
+  ModuleContext,
+  ModuleData,
+  ModuleItemProperties,
+} from '../context/moduleContext';
+import { PATHS } from 'paths';
 
 const Container = styled.div`
   display: flex;
@@ -29,29 +37,78 @@ const ContentContainer = styled(motion.div)`
   overflow-y: auto;
 `;
 
+/* TODO:
+ * - builtin module files should be in the correct folder
+ * - Add new files, rename files (=editable field)
+ * - Delete files
+ * - package.json (optional)
+ *
+ */
+
 export const StudioFrame: FC = () => {
+  // TODO: catch 404 module id does not exist errors
   const apiClient = useApiClient();
   const { moduleId } = useParams();
 
-  const { data, isLoading, error, refetch } = useQuery<ModuleOutputDTOAPI>(
-    `module/${moduleId}`,
-    async () => (await apiClient.module.moduleControllerGetOne(moduleId!)).data
-  );
-  const [moduleData, setModuleData] = useState<Partial<ModuleData>>({});
+  const moduleItemPropertiesReducer =
+    (functionType: FunctionType) =>
+    (
+      prev: Record<string, ModuleItemProperties>,
+      item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO
+    ) => {
+      prev[item.name] = {
+        functionId: item.function.id,
+        type: functionType,
+        itemId: item.id,
+        code: item.function.code,
+      };
+      return prev;
+    };
+
+  const { data, isLoading, error, refetch, isRefetching } =
+    useQuery<ModuleOutputDTOAPI>(
+      `module/${moduleId}`,
+      async () =>
+        (await apiClient.module.moduleControllerGetOne(moduleId!)).data,
+      {
+        cacheTime: 0,
+        onSuccess: (data) => {
+          const nameToId = data.data.hooks.reduce(
+            moduleItemPropertiesReducer(FunctionType.Hooks),
+            {}
+          );
+          data.data.cronJobs.reduce(
+            moduleItemPropertiesReducer(FunctionType.CronJobs),
+            nameToId
+          );
+          data.data.commands.reduce(
+            moduleItemPropertiesReducer(FunctionType.Commands),
+            nameToId
+          );
+          setModuleData((moduleData) => ({
+            ...moduleData,
+            id: data.data.id,
+            fileMap: nameToId,
+          }));
+        },
+      }
+    );
+
+  const [moduleData, setModuleData] = useState<ModuleData>({
+    fileMap: {},
+    id: '',
+  });
   const providerModuleData = useMemo(
     () => ({ moduleData, setModuleData }),
     [moduleData, setModuleData]
   );
 
-  useEffect(() => {
-    if (data) {
-      const nameToId = data.data.hooks.reduce(nameToIdReducer, {});
-      data.data.cronJobs.reduce(nameToIdReducer, nameToId);
-      setModuleData({ ...moduleData, id: data.data.id, fileMap: nameToId });
-    }
-  }, [data]);
-
   const navigation: IconNavProps['items'] = [
+    {
+      icon: <HomeIcon />,
+      title: 'Home',
+      to: PATHS.home,
+    },
     {
       icon: <FileIcon />,
       title: 'Explorer',
@@ -60,42 +117,58 @@ export const StudioFrame: FC = () => {
     {
       icon: <SettingsIcon />,
       title: 'Settings',
-      to: '/studio/settings',
+      to: PATHS.studio.settings,
     },
   ];
 
   if (error) {
     console.log(error);
-    return <>error</>;
+    return <>{error}</>;
   }
 
-  if (isLoading) {
+  if (
+    isLoading ||
+    isRefetching ||
+    (moduleData && moduleData.id === undefined)
+  ) {
     return <>loading..</>;
   }
 
-  const createComponent = async (componentType: 'hook' | 'cronjob') => {
+  // TODO: should come from existing type
+  const createComponent = async (
+    componentType: 'hook' | 'cronjob' | 'command'
+  ) => {
     try {
+      console.log('creating hook');
       switch (componentType) {
         case 'hook':
           await apiClient.hook.hookControllerCreate({
             eventType: 'log',
             moduleId: moduleId!,
-            name: '/hooks/index.ts',
+            name: 'index.ts',
             regex: `/\w/*/`,
           });
+
           break;
         case 'cronjob':
           await apiClient.cronjob.cronJobControllerCreate({
-            name: '/cronjobs/index.ts',
+            name: 'index.ts',
             moduleId: moduleId!,
             temporalValue: '5 4 * * *',
+          });
+          break;
+        case 'command':
+          await apiClient.command.commandControllerCreate({
+            name: 'index.ts',
+            moduleId: moduleId!,
+            trigger: 'test',
           });
           break;
       }
     } catch (e) {
       console.log(e);
     }
-    refetch();
+    await refetch();
   };
 
   /*
@@ -104,10 +177,14 @@ export const StudioFrame: FC = () => {
    * We need to show a different view with a view cards
    * NOTE: This complete return and createComponent can be moved to a different file.
    */
-  if (!data?.data.hooks.length && !data?.data.cronJobs.length) {
+  if (
+    !data?.data.hooks.length &&
+    !data?.data.cronJobs.length &&
+    !data?.data.commands.length
+  ) {
     return (
       <ModuleContext.Provider value={providerModuleData}>
-        <div>there are no hooks and cron jobs yet.</div>
+        <div>there are no hooks no commands and no cron jobs yet.</div>
 
         <button
           onClick={() => {
@@ -123,44 +200,39 @@ export const StudioFrame: FC = () => {
         >
           create cronjob
         </button>
+        <button
+          onClick={() => {
+            createComponent('command');
+          }}
+        >
+          create command
+        </button>
       </ModuleContext.Provider>
     );
   }
 
-  const fileNameReducer = (
-    prev: SandpackFiles,
-    item: HookOutputDTO | CronJobOutputDTO
-  ) => {
-    prev[item.name] = { code: item.function.code };
-    return prev;
-  };
-
-  const nameToIdReducer = (
-    prev: Record<string, string>,
-    item: HookOutputDTO | CronJobOutputDTO
-  ) => {
-    prev[item.name] = item.id;
-    return prev;
-  };
-
   const getFiles = () => {
-    const files = data.data.hooks.reduce(fileNameReducer, {});
-    data.data.cronJobs.reduce(fileNameReducer, files);
+    const files = {} as SandpackFiles;
+    Object.keys(moduleData.fileMap).forEach((key) => {
+      const moduleItem = moduleData.fileMap[key];
+      // build path
+      files[`${moduleItem.type}/${key}`] = { code: moduleItem.code };
+    });
 
-    /* filemap:
-     * although the filename is unique for a module it is not unique globally.
-     * We need to use the associated ids (hookId, cronId)
-     */
-
-    console.log(files);
+    // sandpack includes a package.json by default
+    delete files['package.json'];
     return files;
   };
+  const files = getFiles();
 
   return (
     <ModuleContext.Provider value={providerModuleData}>
       <SandpackProvider
-        customSetup={{ entry: '/cronjobs/new_dir_name/temp.test.ts' }}
-        files={getFiles()}
+        // TODO: eventually this should point to the module config file
+        customSetup={{
+          entry: Object.keys(files)[0],
+        }}
+        files={files}
         prefix=""
       >
         <Container>

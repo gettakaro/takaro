@@ -29,6 +29,7 @@ export const ModuleList: FC<ModuleListProps> = ({
     autoHiddenFiles,
     prefixedPath,
     files,
+    depth,
   });
 
   return (
@@ -46,15 +47,17 @@ export const ModuleList: FC<ModuleListProps> = ({
         />
       ))}
 
-      {modules.map((file) => (
-        <File
-          key={file}
-          active={activeFile === file}
-          depth={depth}
-          path={file}
-          selectFile={selectFile}
-        />
-      ))}
+      {modules.map((file) => {
+        return (
+          <File
+            key={file}
+            active={activeFile === file}
+            depth={depth}
+            path={file}
+            selectFile={selectFile}
+          />
+        );
+      })}
     </div>
   );
 };

@@ -120,7 +120,7 @@ export const Navbar: FC = () => {
           <Users size={24} />
           <p>Users</p>
         </NavLink>
-        <NavLink to={PATHS.modules}>
+        <NavLink to={PATHS.modules.overview}>
           <Modules size={24} />
           <p>Modules</p>
         </NavLink>
