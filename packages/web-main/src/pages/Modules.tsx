@@ -42,7 +42,6 @@ export const Modules: FC = () => {
       </Helmet>
       <Page>
         <h1>Available modules</h1>
-
         <Button
           icon={<AiFillPlusCircle size={20} />}
           onClick={open}

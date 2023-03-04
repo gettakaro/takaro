@@ -18,7 +18,6 @@ export default {
 
 const Container = styled.div`
   width: 50%;
-
   input {
     width: 100%;
   }
@@ -58,7 +57,6 @@ export const RemoteEditEnable: StoryFn<EditableFieldProps> = (args) => {
         disabled={args.disabled}
         required={args.required}
         value={args.value}
-        onEdited={(value) => setValue(value)}
       />
       <button onClick={() => setEditing(!editing)}>toggle editing state</button>
       <span>current state: {editing ? 'true' : 'false'}</span>

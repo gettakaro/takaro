@@ -80,7 +80,6 @@ export const Router: FC = () => (
               path={PATHS.gameServers.update}
             />
             <Route element={<Modules />} path={PATHS.modules.overview} />
-
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 
