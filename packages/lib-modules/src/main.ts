@@ -1,5 +1,5 @@
 import { BuiltinModule } from './BuiltinModule';
-export { BuiltinModule, StandardFunctionData } from './BuiltinModule';
+export { BuiltinModule } from './BuiltinModule';
 
 import { Ping } from './modules/ping';
 
