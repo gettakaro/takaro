@@ -7,7 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: ["app-api"]
+        package:
+          [
+            {
+              name: "app-api",
+              dockerfile: "./containers/generic-app.Dockerfile",
+            },
+            {
+              name: "web-main",
+              dockerfile: "./containers/generic-web/generic-web.Dockerfile",
+            },
+          ]
 
     steps:
       - name: Checkout code
@@ -23,7 +33,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-${{ matrix.PACKAGE }}
+          DOCKER_IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-${{ matrix.package.name }}
           VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
             VERSION=nightly
@@ -65,12 +75,12 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./containers/generic-app.Dockerfile
+          file: ${{ matrix.package.name }}
           platforms: linux/amd64
           push: ${{ !startsWith(github.actor, 'dependabot') }}
           tags: ${{ steps.prep.outputs.tags }}
           build-args: |
-            PACKAGE=${{ matrix.PACKAGE }}
+            PACKAGE=${{ matrix.package.dockerfile }}
           labels: |
             org.opencontainers.image.title=${{ fromJson(steps.repo.outputs.result).name }}
             org.opencontainers.image.description=${{ fromJson(steps.repo.outputs.result).description }}
