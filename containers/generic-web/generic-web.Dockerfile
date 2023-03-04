@@ -20,7 +20,8 @@ RUN npm run -w packages/${PACKAGE} build
 FROM nginx:stable-alpine
 ARG PACKAGE
 
+COPY --from=builder /app/packages/${PACKAGE}/dist /usr/share/nginx/html
+
 COPY containers/generic-web/nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=builder /app/packages/${PACKAGE}/dist /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
