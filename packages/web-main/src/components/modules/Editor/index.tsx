@@ -30,19 +30,20 @@ const StyledFileTabs = styled(FileTabs)`
 export const Editor: FC = () => {
   const { code, updateCode } = useActiveCode();
   const monaco = useMonaco();
-  const client = useApiClient();
+  const apiClient = useApiClient();
   const debouncedCode = useDebounce<string>(code, 2000);
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
 
+  // TODO: this should be moved to react query
   useEffect(() => {
     if (debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
-      client.function.functionControllerUpdate(
+      apiClient.function.functionControllerUpdate(
         moduleData.fileMap[sandpack.activeFile].functionId,
         { code: debouncedCode }
       );
     }
-  }, [debouncedCode, sandpack.activeFile]);
+  }, [debouncedCode, sandpack.activeFile, apiClient, moduleData.fileMap]);
 
   useMemo(() => {
     if (monaco) {

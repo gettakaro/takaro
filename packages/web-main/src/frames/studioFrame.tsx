@@ -146,7 +146,7 @@ export const StudioFrame: FC = () => {
             eventType: 'log',
             moduleId: moduleId!,
             name: 'index.ts',
-            regex: `/\w/*/`,
+            regex: `/w/*/`,
           });
 
           break;

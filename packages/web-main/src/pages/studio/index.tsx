@@ -4,10 +4,7 @@ import { styled, Loading, CollapseList } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { Editor } from '../../components/modules/Editor';
 import { useQuery } from 'react-query';
-import {
-  ModuleOutputArrayDTOAPI,
-  PlayerOutputArrayDTOAPI,
-} from '@takaro/apiclient';
+import { ModuleOutputArrayDTOAPI } from '@takaro/apiclient';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from 'components/modules/FileExplorer';
 
@@ -18,7 +15,7 @@ const Container = styled.div`
 export const Studio: FC = () => {
   const client = useApiClient();
 
-  const { data, isLoading, refetch } = useQuery<ModuleOutputArrayDTOAPI>(
+  const { data, isLoading } = useQuery<ModuleOutputArrayDTOAPI>(
     'modules',
     async () => (await client.module.moduleControllerSearch()).data
   );

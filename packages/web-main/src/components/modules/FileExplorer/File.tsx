@@ -182,7 +182,7 @@ export const File: FC<FileProps> = ({
             moduleId: moduleData.id!,
             name: newFileName,
             eventType: 'log',
-            regex: `/\w+/`,
+            regex: `/w+/`,
           });
 
           break;
