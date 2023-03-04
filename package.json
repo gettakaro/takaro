@@ -98,7 +98,8 @@
     "routing-controllers": "^0.9.0",
     "safe-regex": "^2.1.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "type-fest": "^2.18.0"
+    "type-fest": "^2.18.0",
+    "yup": "^1.0.2"
   },
   "overrides": {
     "class-validator": "0.13.2",
