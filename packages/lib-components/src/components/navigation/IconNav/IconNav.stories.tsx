@@ -3,7 +3,7 @@ import { IconNav } from '.';
 import type { IconNavProps } from '.';
 import { styled } from '../../../styled';
 
-import { CollapsableList } from '../../../components';
+import { CollapseList } from '../../../components';
 import { SandpackProvider } from '@codesandbox/sandpack-react';
 
 const Container = styled.div`
@@ -55,11 +55,11 @@ export const Default: StoryFn = () => {
           maxHeight="100vh"
           minHeight="100vh"
         >
-          <CollapsableList>
-            <CollapsableList.Item title="File explorer">
+          <CollapseList>
+            <CollapseList.Item title="File explorer">
               <FileExplorer />
-            </CollapsableList.Item>
-          </CollapsableList>
+            </CollapseList.Item>
+          </CollapseList>
         </Resizable>
         <EditorContainer>
           <Editor />
