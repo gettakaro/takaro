@@ -18,7 +18,7 @@ rc-update add agetty.ttyS0 default
 echo "root:root" | chpasswd
 
 # Setup dns
-echo "nameserver 1.1.1.1" >>/etc/resolv.conf
+echo "nameserver 8.8.8.8" >>/etc/resolv.conf
 
 # Start our agent service on boot
 rc-update add agent boot

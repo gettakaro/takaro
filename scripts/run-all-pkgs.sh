@@ -33,10 +33,10 @@ COMMANDS=$(echo "$FILTERED_PACKAGES" | sed -r -E "s/(packages\/.+)/\"npm run --i
 NAMES=$(echo "$FILTERED_PACKAGES" | sed -r 's/(packages\/)(\w-.*)/\2/g')
 
 echo '----------------------'
-echo npx concurrently --kill-others-on-fail --names $(echo $NAMES | tr ' ' ',') $COMMANDS
+echo npx concurrently --names $(echo $NAMES | tr ' ' ',') $COMMANDS
 echo '----------------------'
 
-eval npx concurrently --kill-others-on-fail --names $(echo $NAMES | tr ' ' ',') $COMMANDS
+eval npx concurrently --names $(echo $NAMES | tr ' ' ',') $COMMANDS
 
 SUCCESS=$?
 

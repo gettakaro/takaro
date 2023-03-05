@@ -15,6 +15,7 @@ import {
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
+import { Studio } from 'pages/studio';
 import GameServerDashboard from 'pages/GameserverDashboard';
 import { Modules } from 'pages/Modules';
 
@@ -78,10 +79,13 @@ export const Router: FC = () => (
               element={<AddGameServer />}
               path={PATHS.gameServers.update}
             />
-            <Route element={<Modules />} path={PATHS.modules} />
+            <Route element={<Modules />} path={PATHS.modules.overview} />
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 
+          <Route element={<AuthenticatedRoute frame="studio" />}>
+            <Route element={<Studio />} path={PATHS.studio.module} />
+          </Route>
           <Route element={<LogIn />} path={PATHS.login} />
 
           {/* Page not found matches with everything => should stay at bottom */}
