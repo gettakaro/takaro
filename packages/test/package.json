@@ -5,7 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "start:dev": "tsc -w --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "swc ./src -d ./dist",
     "integration-tests": "ts-mocha -p ./tsconfig.json src/runIntegrationTest.ts"
   },
   "keywords": [],
