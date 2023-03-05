@@ -78,7 +78,7 @@ export const Editor: FC = () => {
               lineNumbers: 'on',
               contextmenu: false,
               readOnly: false,
-              fontSize: 24,
+              fontSize: 17,
             }}
           />
         </Wrapper>
