@@ -40,7 +40,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  *, a, p, div, li, h1, h2, h3, h4, h5, h6, header, footer {
+  a, p, div, li, h1, h2, h3, h4, h5, h6, header, footer {
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
