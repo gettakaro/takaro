@@ -15,13 +15,13 @@ import {
 import GameServers from 'pages/GameServers';
 import AddGameServer from 'pages/AddGameServer';
 import Players from 'pages/Players';
-import { Studio } from 'pages/studio';
 import GameServerDashboard from 'pages/GameserverDashboard';
 import { Modules } from 'pages/Modules';
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
 const Settings = lazy(() => import('./pages/Settings'));
+const Studio = lazy(() => import('./pages/studio'));
 
 // TODO: Eventually set this to the correct pages.
 const error404Pages = [
