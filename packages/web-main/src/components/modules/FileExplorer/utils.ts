@@ -49,7 +49,6 @@ export const fromPropsToModules = ({
 
 // Currently it should be possible to rename files (this includes moving) in case they remain in the same top directory: hooks, cron and command.
 export function getNewPath(path: string, newFileName: string) {
-  console.log(path, newFileName);
   const pathParts = path.split('/');
   pathParts[pathParts.length - 1] = newFileName;
   return pathParts.join('/');
