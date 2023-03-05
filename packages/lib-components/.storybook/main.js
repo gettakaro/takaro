@@ -15,6 +15,11 @@ module.exports = {
   },
   staticDirs: ['../public'],
   core: { builder: '@storybook/builder-vite' },
+  viteFinal: async (config) => {
+    // related to storybook out of memory: https://github.com/storybookjs/storybook/issues/12348
+    config.build.sourcemap = false;
+    return config;
+  },
 };
 
 /*
