@@ -9,8 +9,8 @@ import {
   PlayerApi,
   SettingsApi,
   CommandApi,
-} from '../generated';
-import { BaseApiClient, IApiClientConfig } from './baseClient';
+} from '../generated/api.js';
+import { BaseApiClient, IApiClientConfig } from './baseClient.js';
 
 export class Client extends BaseApiClient {
   constructor(config: IApiClientConfig) {

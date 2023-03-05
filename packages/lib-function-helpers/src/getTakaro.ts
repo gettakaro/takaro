@@ -1,5 +1,5 @@
 import { Client } from '@takaro/apiclient';
-import { config } from './config';
+import { config } from './config.js';
 
 export async function getTakaro(): Promise<Client> {
   const takaro = new Client({

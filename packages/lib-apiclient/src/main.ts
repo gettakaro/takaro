@@ -1,12 +1,12 @@
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
+export { AxiosResponse } from 'axios';
+import axios from 'axios';
 
-export const isAxiosError = axios.isAxiosError;
+export const { isAxiosError } = axios.default;
 
-export { AxiosResponse, AxiosError } from 'axios';
-
-export { AdminClient } from './lib/adminClient';
-export { Client } from './lib/client';
+export { AdminClient } from './lib/adminClient.js';
+export { Client } from './lib/client.js';
 
 export type ITakaroAPIAxiosResponse<T> = AxiosResponse<T>;
 
-export * from './generated/api';
+export * from './generated/api.js';

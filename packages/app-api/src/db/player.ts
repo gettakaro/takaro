@@ -1,13 +1,13 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { GAMESERVER_TABLE_NAME } from './gameserver';
-import { ITakaroRepo } from './base';
+import { GAMESERVER_TABLE_NAME } from './gameserver.js';
+import { ITakaroRepo } from './base.js';
 import {
   PlayerCreateDTO,
   PlayerOutputDTO,
   PlayerUpdateDTO,
-} from '../service/PlayerService';
+} from '../service/PlayerService.js';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 
@@ -71,7 +71,9 @@ export class PlayerRepo extends ITakaroRepo<
     ).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new PlayerOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new PlayerOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -83,7 +85,7 @@ export class PlayerRepo extends ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
-    return new PlayerOutputDTO(data);
+    return new PlayerOutputDTO().construct(data);
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputDTO> {
@@ -94,7 +96,7 @@ export class PlayerRepo extends ITakaroRepo<
         domain: this.domainId,
       })
       .returning('*');
-    return new PlayerOutputDTO(player);
+    return new PlayerOutputDTO().construct(player);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -114,7 +116,7 @@ export class PlayerRepo extends ITakaroRepo<
     const res = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new PlayerOutputDTO(res);
+    return new PlayerOutputDTO().construct(res);
   }
 
   async findGameAssociations(gameId: string) {

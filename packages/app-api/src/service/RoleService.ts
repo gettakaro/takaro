@@ -10,9 +10,9 @@ import {
   IsUUID,
   IsEnum,
 } from 'class-validator';
-import { PaginatedOutput } from '../db/base';
-import { RoleModel, RoleRepo } from '../db/role';
-import { TakaroService } from './Base';
+import { PaginatedOutput } from '../db/base.js';
+import { RoleModel, RoleRepo } from '../db/role.js';
+import { TakaroService } from './Base.js';
 
 export enum CAPABILITIES {
   'ROOT' = 'ROOT',

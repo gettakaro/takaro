@@ -1,10 +1,10 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { config } from '../config';
+import { config } from '../config.js';
 import { errors, logger } from '@takaro/util';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
-import { AuthService } from '../service/AuthService';
+import { AuthService } from '../service/AuthService.js';
 
 interface ServerToClientEvents {
   gameEvent: (

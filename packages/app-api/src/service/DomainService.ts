@@ -1,24 +1,27 @@
-import { errors } from '@takaro/util';
-import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService';
+import { errors, TakaroModelDTO, TakaroDTO } from '@takaro/util';
+import {
+  UserCreateInputDTO,
+  UserOutputDTO,
+  UserService,
+} from './UserService.js';
 import { randomBytes } from 'crypto';
 import {
   CAPABILITIES,
   RoleCreateInputDTO,
   RoleOutputDTO,
   RoleService,
-} from './RoleService';
-import { NOT_DOMAIN_SCOPED_TakaroService } from './Base';
+} from './RoleService.js';
+import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
 import { IsString, Length, ValidateNested } from 'class-validator';
-import { DomainModel, DomainRepo } from '../db/domain';
-import humanId from 'human-id';
+import { DomainModel, DomainRepo } from '../db/domain.js';
+import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
-import { GameServerService } from './GameServerService';
-import { SettingsService } from './SettingsService';
-import { TakaroDTO } from '@takaro/util';
+import { GameServerService } from './GameServerService.js';
+import { SettingsService } from './SettingsService.js';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
-import { CronJobService } from './CronJobService';
-import { ModuleService } from './ModuleService';
+import { PaginatedOutput } from '../db/base.js';
+import { CronJobService } from './CronJobService.js';
+import { ModuleService } from './ModuleService.js';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -33,10 +36,7 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   name: string;
 }
 
-export class DomainOutputDTO extends TakaroDTO<DomainOutputDTO> {
-  @IsString()
-  id: string;
-
+export class DomainOutputDTO extends TakaroModelDTO<DomainOutputDTO> {
   @IsString()
   name: string;
 }
@@ -117,7 +117,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     });
 
     const domain = await this.repo.create(
-      new DomainCreateInputDTO({ id, name: input.name })
+      await new DomainCreateInputDTO().construct({ id, name: input.name })
     );
 
     const userService = new UserService(domain.id);
@@ -128,13 +128,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     await settingsService.init();
 
     const rootRole = await roleService.createWithCapabilities(
-      new RoleCreateInputDTO({ name: 'root' }),
+      await new RoleCreateInputDTO().construct({ name: 'root' }),
       [CAPABILITIES.ROOT]
     );
 
     const password = randomBytes(20).toString('hex');
     const rootUser = await userService.create(
-      new UserCreateInputDTO({
+      await new UserCreateInputDTO().construct({
         name: 'root',
         password: password,
         email: `root@${domain.id}`,
@@ -145,7 +145,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await moduleService.seedBuiltinModules();
 
-    return new DomainCreateOutputDTO({
+    return new DomainCreateOutputDTO().construct({
       createdDomain: domain,
       rootUser,
       rootRole,

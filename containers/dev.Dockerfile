@@ -16,6 +16,7 @@ COPY scripts ./scripts
 
 COPY nodemon.json ./
 COPY jest.config.js ./
+COPY .mocharc.js ./
 
 RUN chown -R node:node /app
 

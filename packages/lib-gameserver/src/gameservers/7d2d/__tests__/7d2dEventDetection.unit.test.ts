@@ -1,11 +1,11 @@
 import { expect, sandbox } from '@takaro/test';
-import { SdtdConnectionInfo } from '../';
+import { SdtdConnectionInfo } from '../index.js';
 import {
   EventChatMessage,
   EventPlayerConnected,
   GameEvents,
-} from '../../../main';
-import { SevenDaysToDieEmitter } from '../emitter';
+} from '../../../main.js';
+import { SevenDaysToDieEmitter } from '../emitter.js';
 
 const mockSdtdConnectionInfo = new SdtdConnectionInfo({
   adminToken: 'aaa',

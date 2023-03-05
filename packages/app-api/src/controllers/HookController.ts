@@ -14,8 +14,8 @@ import {
   HookOutputDTO,
   HookService,
   HookUpdateDTO,
-} from '../service/HookService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/HookService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -29,19 +29,19 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
   @ValidateNested()
-  data!: HookOutputDTO;
+  declare data: HookOutputDTO;
 }
 
 export class HookOutputArrayDTOAPI extends APIOutput<HookOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => HookOutputDTO)
-  data!: HookOutputDTO[];
+  declare data: HookOutputDTO[];
 }
 
 class HookSearchInputAllowedFilters {
@@ -65,7 +65,7 @@ class HookSearchInputAllowedFilters {
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
-  filters!: HookSearchInputAllowedFilters;
+  declare filters: HookSearchInputAllowedFilters;
 }
 
 @OpenAPI({

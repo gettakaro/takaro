@@ -1,4 +1,4 @@
-import { config } from './config';
+import { config } from './config.js';
 
 export async function getData() {
   const rawData = config.get('data');

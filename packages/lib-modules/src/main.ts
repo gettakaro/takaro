@@ -1,7 +1,7 @@
-import { BuiltinModule } from './BuiltinModule';
-export { BuiltinModule } from './BuiltinModule';
+import { BuiltinModule } from './BuiltinModule.js';
+export { BuiltinModule } from './BuiltinModule.js';
 
-import { Ping } from './modules/ping';
+import { Ping } from './modules/ping/index.js';
 
 let cached: Array<BuiltinModule> | null = null;
 

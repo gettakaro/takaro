@@ -3,7 +3,7 @@ import { NextFunction, Response } from 'express';
 import {
   PaginationMiddleware,
   PaginatedRequest,
-} from '../paginationMiddleware';
+} from '../paginationMiddleware.js';
 import { errors } from '@takaro/util';
 
 async function runPagination(page?: number, limit?: number) {

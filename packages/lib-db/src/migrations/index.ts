@@ -1,8 +1,9 @@
-import { getKnex } from '../knex';
+import { getKnex } from '../knex.js';
 import { readdir } from 'fs/promises';
 import { Knex } from 'knex';
 import path from 'node:path';
-
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IMigration {
   name: string;
   up: (knex: Knex) => Promise<void>;

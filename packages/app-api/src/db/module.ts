@@ -1,16 +1,16 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
+import { ITakaroRepo } from './base.js';
 import { JsonObject } from 'type-fest';
-import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob';
-import { HookModel, HOOKS_TABLE_NAME } from './hook';
+import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
+import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
 import {
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleUpdateDTO,
-} from '../service/ModuleService';
-import { CommandModel, COMMANDS_TABLE_NAME } from './command';
+} from '../service/ModuleService.js';
+import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 
@@ -79,7 +79,9 @@ export class ModuleRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: result.results.map((item) => new ModuleOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new ModuleOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -95,7 +97,7 @@ export class ModuleRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new ModuleOutputDTO(data);
+    return new ModuleOutputDTO().construct(data);
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
@@ -122,6 +124,6 @@ export class ModuleRepo extends ITakaroRepo<
       .withGraphJoined('hooks')
       .withGraphJoined('commands');
 
-    return new ModuleOutputDTO(item);
+    return new ModuleOutputDTO().construct(item);
   }
 }

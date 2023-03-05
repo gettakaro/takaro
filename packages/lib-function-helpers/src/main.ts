@@ -1,2 +1,2 @@
-export { getTakaro } from './getTakaro';
-export { getData } from './getData';
+export { getTakaro } from './getTakaro.js';
+export { getData } from './getData.js';

@@ -6,8 +6,8 @@ import {
   PaginatedRequest,
   PaginationMiddleware,
 } from '@takaro/http';
-import { PlayerOutputDTO, PlayerService } from '../service/PlayerService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -19,19 +19,19 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
   @Type(() => PlayerOutputDTO)
   @ValidateNested()
-  data!: PlayerOutputDTO;
+  declare data: PlayerOutputDTO;
 }
 
 export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => PlayerOutputDTO)
-  data!: PlayerOutputDTO[];
+  declare data: PlayerOutputDTO[];
 }
 
 class PlayerSearchInputAllowedFilters {
@@ -59,7 +59,7 @@ class PlayerSearchInputAllowedFilters {
 class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
-  filters!: PlayerSearchInputAllowedFilters;
+  declare filters: PlayerSearchInputAllowedFilters;
 }
 
 @OpenAPI({

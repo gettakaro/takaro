@@ -2,7 +2,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { IGamePlayer } from '@takaro/gameserver';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
-import { PlayerService } from '../../service/PlayerService';
+import { PlayerService } from '../../service/PlayerService.js';
 
 const group = 'Event worker';
 
@@ -24,7 +24,7 @@ const tests = [
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
-      const MOCK_PLAYER = new IGamePlayer({
+      const MOCK_PLAYER = await new IGamePlayer().construct({
         ip: '169.169.169.80',
         name: 'brunkel',
         gameId: uuid(),

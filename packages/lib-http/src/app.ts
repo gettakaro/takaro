@@ -6,9 +6,9 @@ import {
   RoutingControllersOptions,
   useExpressServer,
 } from 'routing-controllers';
-import { Meta } from './controllers/meta';
-import { LoggingMiddleware } from './middleware/logger';
-import { ErrorHandler } from './middleware/errorHandler';
+import { Meta } from './controllers/meta.js';
+import { LoggingMiddleware } from './middleware/logger.js';
+import { ErrorHandler } from './middleware/errorHandler.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';

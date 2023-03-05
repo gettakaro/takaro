@@ -4,12 +4,13 @@
   "description": "An opinionated logger",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
+    "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
+    "test:integration": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.integration.test.js --exit",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],

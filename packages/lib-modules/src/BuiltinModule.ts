@@ -1,6 +1,8 @@
 import { GameEvents } from '@takaro/gameserver';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IModuleItem {
   name: string;
   function: string;

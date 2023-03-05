@@ -21,10 +21,9 @@ export class Meta {
 
   @Get('/openapi.json')
   async getOpenApi() {
-    const {
-      defaultMetadataStorage: classTransformerMeta,
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-    } = require('class-transformer/storage');
+    const { defaultMetadataStorage: classTransformerMeta } = await import(
+      'class-transformer/esm5/storage'
+    );
     const { getMetadataStorage } = await import('class-validator');
 
     const storage = getMetadataArgsStorage();

@@ -4,7 +4,7 @@ import { QueuesService } from '@takaro/queues';
 import {
   GameServerOutputDTO,
   GameServerService,
-} from '../service/GameServerService';
+} from '../service/GameServerService.js';
 
 /**
  * Handles setting up persistent connections to all game servers in the system

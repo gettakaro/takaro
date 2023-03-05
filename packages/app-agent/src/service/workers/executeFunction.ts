@@ -1,4 +1,4 @@
-import { config, EXECUTION_MODE } from '../../config';
+import { config, EXECUTION_MODE } from '../../config.js';
 import { logger, errors } from '@takaro/util';
 const log = logger('worker:function');
 import { createContext, runInContext } from 'node:vm';

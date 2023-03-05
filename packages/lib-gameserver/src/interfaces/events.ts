@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
 import { IsEnum, IsISO8601, IsString, ValidateNested } from 'class-validator';
-import { IGamePlayer } from './GamePlayer';
+import { IGamePlayer } from './GamePlayer.js';
 
 export enum GameEvents {
   LOG_LINE = 'log',
@@ -56,5 +56,5 @@ export class EventChatMessage extends BaseEvent<EventChatMessage> {
   @Type(() => IGamePlayer)
   player?: IGamePlayer;
 
-  msg: string;
+  declare msg: string;
 }

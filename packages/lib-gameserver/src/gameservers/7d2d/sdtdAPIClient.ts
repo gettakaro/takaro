@@ -1,12 +1,13 @@
-import axios, { Axios, AxiosResponse } from 'axios';
-import { SdtdConnectionInfo } from '.';
-import { CommandResponse, StatsResponse } from './apiResponses';
+import { Axios, AxiosResponse } from 'axios';
+import axios from 'axios';
+import { SdtdConnectionInfo } from './index.js';
+import { CommandResponse, StatsResponse } from './apiResponses.js';
 
 export class SdtdApiClient {
   private client: Axios;
 
   constructor(private config: SdtdConnectionInfo) {
-    this.client = axios.create({
+    this.client = axios.default.create({
       baseURL: this.url,
     });
 

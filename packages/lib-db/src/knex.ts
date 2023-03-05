@@ -1,8 +1,13 @@
-import Knex, { Knex as IKnex } from 'knex';
-import { config } from './config';
+import knexPkg from 'knex';
+import { config } from './config.js';
 import { logger } from '@takaro/util';
+import { TakaroModel } from './TakaroModel.js';
 
 const log = logger('sql');
+
+const { knex: createKnex } = knexPkg;
+
+type KnexClient = knexPkg.Knex<TakaroModel, unknown[]>;
 
 export function getKnexOptions(extra: Record<string, unknown> = {}) {
   const opts = {
@@ -19,13 +24,13 @@ export function getKnexOptions(extra: Record<string, unknown> = {}) {
   return opts;
 }
 
-let cachedKnex: IKnex | null = null;
+let cachedKnex: KnexClient | null = null;
 
-export async function getKnex(): Promise<IKnex> {
+export async function getKnex(): Promise<KnexClient> {
   if (cachedKnex) return cachedKnex;
 
   log.debug('Missed knex cache, creating new client');
-  const knex = Knex(getKnexOptions());
+  const knex = createKnex(getKnexOptions());
   const final = addLoggingMiddle(knex);
   cachedKnex = final;
   return final;
@@ -38,7 +43,7 @@ export async function disconnectKnex(): Promise<void> {
   log.info('Disconnected knex');
 }
 
-function addLoggingMiddle(knex: IKnex) {
+function addLoggingMiddle(knex: KnexClient) {
   if (config.get('mode') === 'development') {
     knex.on('query', (queryData) => {
       log.debug(queryData.sql, { data: queryData.bindings });

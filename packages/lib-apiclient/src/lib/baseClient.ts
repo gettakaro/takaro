@@ -1,9 +1,9 @@
-import { MetaApi } from '../generated';
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { MetaApi } from '../generated/api.js';
+import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore doing a workaround here specifically for package json
-import { version } from '../../package.json';
+import pkgJson from '../../package.json';
+const { version } = pkgJson;
 export interface IApiClientConfig {
   url: string;
   log?: Logger;
@@ -41,7 +41,7 @@ export class BaseApiClient {
       withCredentials: true,
     };
     this.axios = this.addAuthHeaders(
-      this.addLoggers(axios.create(axiosConfig))
+      this.addLoggers(axios.default.create(axiosConfig))
     );
 
     if (this.config.log) this.log = this.config.log;

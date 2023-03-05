@@ -1,15 +1,15 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { logger, TakaroDTO } from '@takaro/util';
 import { IsNumber } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   IMessageOptsDTO,
   TestReachabilityOutput,
-} from '../../interfaces/GameServer';
-import { MockEmitter } from './emitter';
-import { EventLogLine, GameEvents } from '../../interfaces/events';
+} from '../../interfaces/GameServer.js';
+import { MockEmitter } from './emitter.js';
+import { EventLogLine, GameEvents } from '../../interfaces/events.js';
 
 export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   @IsNumber()

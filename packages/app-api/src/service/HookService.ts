@@ -1,8 +1,8 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 import { QueuesService } from '@takaro/queues';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
-import { HookModel, HookRepo } from '../db/hook';
+import { HookModel, HookRepo } from '../db/hook.js';
 import {
   IsBoolean,
   IsEnum,
@@ -20,13 +20,13 @@ import {
   FunctionOutputDTO,
   FunctionService,
   FunctionUpdateDTO,
-} from './FunctionService';
+} from './FunctionService.js';
 import { Type } from 'class-transformer';
 import safeRegex from 'safe-regex';
 import { TakaroDTO, errors } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
-import { AuthService } from './AuthService';
+import { PaginatedOutput } from '../db/base.js';
+import { AuthService } from './AuthService.js';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -136,14 +136,14 @@ export class HookService extends TakaroService<
 
     if (item.function) {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: item.function,
         })
       );
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -151,7 +151,7 @@ export class HookService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new HookCreateDTO({ ...item, function: fnIdToAdd })
+      await new HookCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     return created;
   }
@@ -171,7 +171,7 @@ export class HookService extends TakaroService<
 
       await functionsService.update(
         fn.id,
-        new FunctionUpdateDTO({
+        await new FunctionUpdateDTO().construct({
           code: item.function,
         })
       );

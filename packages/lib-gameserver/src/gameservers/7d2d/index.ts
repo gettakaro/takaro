@@ -1,15 +1,17 @@
 import { logger, TakaroDTO } from '@takaro/util';
-import axios from 'axios';
 import { IsString, IsBoolean } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   TestReachabilityOutput,
-} from '../../interfaces/GameServer';
-import { SevenDaysToDieEmitter } from './emitter';
-import { SdtdApiClient } from './sdtdAPIClient';
+} from '../../interfaces/GameServer.js';
+import { SevenDaysToDieEmitter } from './emitter.js';
+import { SdtdApiClient } from './sdtdAPIClient.js';
 
+import axios from 'axios';
+
+const { isAxiosError } = axios.default;
 export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   @IsString()
   public readonly host!: string;
@@ -52,7 +54,7 @@ export class SevenDaysToDie implements IGameServer {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
 
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         reason = 'Network error';
 
         if (!error.response) {

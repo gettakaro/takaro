@@ -5,7 +5,7 @@ import {
   ModuleOutputDTO,
   ModuleInstallDTO,
 } from '@takaro/apiclient';
-import { CommandService } from '../CommandService';
+import { CommandService } from '../CommandService.js';
 import { QueuesService } from '@takaro/queues';
 import { EventChatMessage } from '@takaro/gameserver';
 const group = 'CommandService';
@@ -51,8 +51,10 @@ async function setup(
     )
   ).data.data;
 
+  if (!this.standardDomainId) throw new Error('No standard domain id set!');
+
   return {
-    service: new CommandService(this.standardDomainId!),
+    service: new CommandService(this.standardDomainId),
     normalCommand,
     mod,
     gameserver,

@@ -1,7 +1,7 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 import { QueuesService } from '@takaro/queues';
 
-import { CronJobModel, CronJobRepo } from '../db/cronjob';
+import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import {
   IsBoolean,
   IsOptional,
@@ -10,16 +10,16 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { AuthService } from './AuthService';
+import { AuthService } from './AuthService.js';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
   FunctionUpdateDTO,
-} from './FunctionService';
+} from './FunctionService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors } from '@takaro/util';
-import { PaginatedOutput } from '../db/base';
+import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 
 export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
@@ -109,14 +109,14 @@ export class CronJobService extends TakaroService<
 
     if (item.function) {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: item.function,
         })
       );
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -124,7 +124,7 @@ export class CronJobService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new CronJobCreateDTO({ ...item, function: fnIdToAdd })
+      await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     await this.addCronToQueue(created);
     return created;
@@ -145,7 +145,7 @@ export class CronJobService extends TakaroService<
 
       await functionsService.update(
         fn.id,
-        new FunctionUpdateDTO({
+        await new FunctionUpdateDTO().construct({
           code: item.function,
         })
       );

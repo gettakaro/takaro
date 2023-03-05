@@ -1,14 +1,14 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { FUNCTION_TABLE_NAME } from './function';
+import { ITakaroRepo } from './base.js';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,
   HookOutputDTO,
   HookUpdateDTO,
-} from '../service/HookService';
+} from '../service/HookService.js';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -25,8 +25,7 @@ export class HookModel extends TakaroModel {
     return {
       function: {
         relation: Model.BelongsToOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./function').FunctionModel,
+        modelClass: FunctionModel,
         join: {
           from: `${HOOKS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
@@ -63,7 +62,9 @@ export class HookRepo extends ITakaroRepo<
     }).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new HookOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new HookOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -75,7 +76,7 @@ export class HookRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new HookOutputDTO(data);
+    return new HookOutputDTO().construct(data);
   }
 
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
@@ -104,7 +105,7 @@ export class HookRepo extends ITakaroRepo<
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
-    return new HookOutputDTO(item);
+    return new HookOutputDTO().construct(item);
   }
 
   async assign(id: string, functionId: string) {

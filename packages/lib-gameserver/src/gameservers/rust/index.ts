@@ -1,12 +1,12 @@
 import { logger, TakaroDTO, errors } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   TestReachabilityOutput,
-} from '../../interfaces/GameServer';
-import { RustEmitter } from './emitter';
+} from '../../interfaces/GameServer.js';
+import { RustEmitter } from './emitter.js';
 
 export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
   @IsString()

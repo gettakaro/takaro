@@ -1,6 +1,6 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
-import { ModuleModel, ModuleRepo } from '../db/module';
+import { ModuleModel, ModuleRepo } from '../db/module.js';
 import {
   IsOptional,
   IsString,
@@ -15,23 +15,23 @@ import {
   CronJobOutputDTO,
   CronJobService,
   CronJobUpdateDTO,
-} from './CronJobService';
+} from './CronJobService.js';
 import {
   HookCreateDTO,
   HookOutputDTO,
   HookService,
   HookUpdateDTO,
-} from './HookService';
+} from './HookService.js';
 import { TakaroDTO } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
+import { PaginatedOutput } from '../db/base.js';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandService,
   CommandUpdateDTO,
-} from './CommandService';
+} from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 
 export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
@@ -124,9 +124,8 @@ export class ModuleService extends TakaroService<
 
     if (existing.results.length !== 1) {
       mod = await this.create(
-        new ModuleCreateDTO({
+        await new ModuleCreateDTO().construct({
           name: builtin.name,
-          domain: this.domainId,
           builtin: builtin.name,
         })
       );
@@ -139,13 +138,14 @@ export class ModuleService extends TakaroService<
         });
 
         if (existing.results.length === 1) {
-          const data = new CommandUpdateDTO(c);
-          await data.validate();
+          const data = await new CommandUpdateDTO().construct(c);
           return commandService.update(existing.results[0].id, data);
         }
 
-        const data = new CommandCreateDTO({ ...c, moduleId: mod.id });
-        await data.validate();
+        const data = await new CommandCreateDTO().construct({
+          ...c,
+          moduleId: mod.id,
+        });
         return commandService.create(data);
       })
     );
@@ -157,13 +157,14 @@ export class ModuleService extends TakaroService<
         });
 
         if (existing.results.length === 1) {
-          const data = new HookUpdateDTO(h);
-          await data.validate();
+          const data = await new HookUpdateDTO().construct(h);
           return hookService.update(existing.results[0].id, data);
         }
 
-        const data = new HookCreateDTO({ ...h, moduleId: mod.id });
-        await data.validate();
+        const data = await new HookCreateDTO().construct({
+          ...h,
+          moduleId: mod.id,
+        });
         return hookService.create(data);
       })
     );
@@ -174,13 +175,14 @@ export class ModuleService extends TakaroService<
         });
 
         if (existing.results.length === 1) {
-          const data = new CronJobUpdateDTO(c);
-          await data.validate();
+          const data = await new CronJobUpdateDTO().construct(c);
           return cronjobService.update(existing.results[0].id, data);
         }
 
-        const data = new CronJobCreateDTO({ ...c, moduleId: mod.id });
-        await data.validate();
+        const data = await new CronJobCreateDTO().construct({
+          ...c,
+          moduleId: mod.id,
+        });
         return cronjobService.create(data);
       })
     );

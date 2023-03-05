@@ -1,13 +1,13 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { FUNCTION_TABLE_NAME } from './function';
+import { ITakaroRepo } from './base.js';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandUpdateDTO,
-} from '../service/CommandService';
+} from '../service/CommandService.js';
 
 export const COMMANDS_TABLE_NAME = 'commands';
 
@@ -24,8 +24,7 @@ export class CommandModel extends TakaroModel {
     return {
       function: {
         relation: Model.BelongsToOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./function').FunctionModel,
+        modelClass: FunctionModel,
         join: {
           from: `${COMMANDS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
@@ -62,7 +61,9 @@ export class CommandRepo extends ITakaroRepo<
     }).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new CommandOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new CommandOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -74,7 +75,7 @@ export class CommandRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new CommandOutputDTO(data);
+    return new CommandOutputDTO().construct(data);
   }
 
   async create(item: CommandCreateDTO): Promise<CommandOutputDTO> {
@@ -103,7 +104,7 @@ export class CommandRepo extends ITakaroRepo<
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
-    return new CommandOutputDTO(item);
+    return new CommandOutputDTO().construct(item);
   }
 
   async assign(id: string, functionId: string) {

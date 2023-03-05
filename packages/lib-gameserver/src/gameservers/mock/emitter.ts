@@ -5,11 +5,11 @@ import {
   EventPlayerDisconnected,
   GameEvents,
   EventChatMessage,
-} from '../../interfaces/events';
+} from '../../interfaces/events.js';
 import type { Faker } from '@faker-js/faker';
-import { MockConnectionInfo } from '.';
-import { TakaroEmitter } from '../../TakaroEmitter';
-import { IGamePlayer } from '../../main';
+import { MockConnectionInfo } from './index.js';
+import { TakaroEmitter } from '../../TakaroEmitter.js';
+import { IGamePlayer } from '../../main.js';
 
 export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');

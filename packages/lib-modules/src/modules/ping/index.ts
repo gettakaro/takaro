@@ -1,4 +1,4 @@
-import { BuiltinModule } from '../../BuiltinModule';
+import { BuiltinModule } from '../../BuiltinModule.js';
 
 export class Ping extends BuiltinModule {
   constructor() {

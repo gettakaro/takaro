@@ -6,11 +6,11 @@ import {
   EventPlayerDisconnected,
   GameEvents,
   IGamePlayer,
-} from '../../main';
+} from '../../main.js';
 import { IsString } from 'class-validator';
 import { JsonObject } from 'type-fest';
-import { RustConnectionInfo } from '.';
-import { TakaroEmitter } from '../../TakaroEmitter';
+import { RustConnectionInfo } from './index.js';
+import { TakaroEmitter } from '../../TakaroEmitter.js';
 
 export class RustConfig {
   @IsString()

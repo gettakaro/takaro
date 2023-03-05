@@ -7,16 +7,19 @@ import {
 } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
+import { ITakaroRepo } from './base.js';
+import {
+  PLAYER_ON_GAMESERVER_TABLE_NAME,
+  PlayerOnGameServerModel,
+} from './player.js';
 import {
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO,
   ModuleInstallDTO,
   ModuleInstallationOutputDTO,
-} from '../service/GameServerService';
-import { MODULE_TABLE_NAME } from './module';
+} from '../service/GameServerService.js';
+import { MODULE_TABLE_NAME } from './module.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
@@ -36,10 +39,6 @@ export class GameServerModel extends TakaroModel {
   type!: GAME_SERVER_TYPE;
 
   static get relationMappings() {
-    const PlayerOnGameServerModel =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('./player.ts').PlayerOnGameServerModel;
-
     return {
       players: {
         relation: Model.HasManyRelation,
@@ -117,7 +116,9 @@ export class GameServerRepo extends ITakaroRepo<
     ).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new GameServerOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new GameServerOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -133,7 +134,7 @@ export class GameServerRepo extends ITakaroRepo<
       await decrypt(data.connectionInfo as unknown as string)
     );
 
-    return new GameServerOutputDTO({ ...data, connectionInfo });
+    return new GameServerOutputDTO().construct({ ...data, connectionInfo });
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
@@ -145,7 +146,7 @@ export class GameServerRepo extends ITakaroRepo<
       connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
     } as unknown as Partial<GameServerModel>;
     const res = await query.insert(data).returning('*');
-    return new GameServerOutputDTO({
+    return new GameServerOutputDTO().construct({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
@@ -168,7 +169,7 @@ export class GameServerRepo extends ITakaroRepo<
       connectionInfo: encryptedConnectionInfo,
     } as unknown as Partial<GameServerModel>;
     const res = await query.updateAndFetchById(id, data).returning('*');
-    return new GameServerOutputDTO({
+    return new GameServerOutputDTO().construct({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
@@ -179,7 +180,7 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await query
       .modify('domainScoped', this.domainId)
       .where({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO(res[0]);
+    return new ModuleInstallationOutputDTO().construct(res[0]);
   }
 
   async getInstalledModules(gameserverId: string) {
@@ -187,7 +188,9 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await query
       .modify('domainScoped', this.domainId)
       .where({ gameserverId });
-    return res.map((item) => new ModuleInstallationOutputDTO(item));
+    return Promise.all(
+      res.map((item) => new ModuleInstallationOutputDTO().construct(item))
+    );
   }
 
   async installModule(
@@ -212,7 +215,7 @@ export class GameServerRepo extends ITakaroRepo<
     }
 
     const res = await query.findOne({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO(res);
+    return new ModuleInstallationOutputDTO().construct(res);
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {

@@ -1,10 +1,10 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
 import {
   GameServerModel,
   GameServerRepo,
   GAME_SERVER_TYPE,
-} from '../db/gameserver';
+} from '../db/gameserver.js';
 import {
   IsEnum,
   IsJSON,
@@ -20,13 +20,13 @@ import {
   IMessageOptsDTO,
 } from '@takaro/gameserver';
 import { errors } from '@takaro/util';
-import { IGameServerInMemoryManager } from '../lib/GameServerManager';
-import { config } from '../config';
-import { SettingsService } from './SettingsService';
+import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
+import { config } from '../config.js';
+import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
-import { ModuleService } from './ModuleService';
+import { PaginatedOutput } from '../db/base.js';
+import { ModuleService } from './ModuleService.js';
 
 export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
   @IsUUID()

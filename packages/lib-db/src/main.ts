@@ -1,11 +1,11 @@
-export { TakaroModel } from './TakaroModel';
+export { TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from './TakaroModel.js';
 
-export { ITakaroQuery, QueryBuilder } from './queryBuilder';
+export { ITakaroQuery, QueryBuilder } from './queryBuilder.js';
 
-export { getKnex, disconnectKnex } from './knex';
+export { getKnex, disconnectKnex } from './knex.js';
 
-export { migrate } from './migrations';
+export { migrate } from './migrations/index.js';
 
-export * from './encryption';
+export * from './encryption.js';
 
-export { configSchema, IDbConfig } from './config';
+export { configSchema, IDbConfig } from './config.js';

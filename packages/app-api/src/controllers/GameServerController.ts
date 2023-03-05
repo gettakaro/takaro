@@ -23,8 +23,8 @@ import {
   GameServerUpdateDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallDTO,
-} from '../service/GameServerService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/GameServerService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -38,27 +38,27 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
-import { GAME_SERVER_TYPE } from '../db/gameserver';
-import { ModuleOutputArrayDTOAPI } from './ModuleController';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
+import { GAME_SERVER_TYPE } from '../db/gameserver.js';
+import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
   @ValidateNested()
-  data!: GameServerOutputDTO;
+  declare data: GameServerOutputDTO;
 }
 
 class GameServerOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => GameServerOutputDTO)
-  data!: GameServerOutputDTO[];
+  declare data: GameServerOutputDTO[];
 }
 
 class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutput> {
   @Type(() => TestReachabilityOutput)
   @ValidateNested()
-  data!: TestReachabilityOutput;
+  declare data: TestReachabilityOutput;
 }
 
 class GameServerSearchInputAllowedFilters {
@@ -70,7 +70,7 @@ class GameServerSearchInputAllowedFilters {
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedFilters)
-  filters!: GameServerSearchInputAllowedFilters;
+  declare filters: GameServerSearchInputAllowedFilters;
 }
 
 class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {
@@ -92,13 +92,13 @@ class ParamIdAndModuleId {
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
   @Type(() => ModuleInstallDTO)
   @ValidateNested()
-  data!: ModuleInstallationOutputDTO;
+  declare data: ModuleInstallationOutputDTO;
 }
 
 class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
   @Type(() => CommandOutput)
   @ValidateNested()
-  data!: CommandOutput;
+  declare data: CommandOutput;
 }
 class CommandExecuteInputDTO extends TakaroDTO<CommandExecuteInputDTO> {
   @IsString()

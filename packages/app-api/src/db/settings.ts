@@ -1,11 +1,11 @@
 import { TakaroModel } from '@takaro/db';
 import { errors } from '@takaro/util';
-import { ITakaroRepo, PaginatedOutput } from './base';
+import { ITakaroRepo, PaginatedOutput } from './base.js';
 import {
   DEFAULT_SETTINGS,
   Settings,
   SETTINGS_KEYS,
-} from '../service/SettingsService';
+} from '../service/SettingsService.js';
 
 export const SETTINGS_TABLE_NAME = 'settings';
 
@@ -73,26 +73,27 @@ export class SettingsRepo extends ITakaroRepo<
   }
 
   async create(): Promise<Settings> {
+    const defaults = await DEFAULT_SETTINGS;
     if (this.gameServerId) {
       const { query } = await this.getGameServerModel();
       const data = await query
         .insert({
           gameServerId: this.gameServerId,
           domain: this.domainId,
-          ...DEFAULT_SETTINGS.toJSON(),
+          ...defaults.toJSON(),
         })
         .returning('*');
-      return new Settings(data);
+      return new Settings().construct(data);
     }
 
     const { query } = await this.getModel();
     const res = await query
       .insert({
         domain: this.domainId,
-        ...DEFAULT_SETTINGS.toJSON(),
+        ...defaults.toJSON(),
       })
       .returning('*');
-    return new Settings(res);
+    return new Settings().construct(res);
   }
 
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
@@ -127,7 +128,7 @@ export class SettingsRepo extends ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
-    return new Settings({
+    return new Settings().construct({
       commandPrefix: data[0].commandPrefix,
       serverChatName: data[0].serverChatName,
     });

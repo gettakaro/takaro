@@ -1,14 +1,14 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
+import { ITakaroRepo } from './base.js';
 import { Model } from 'objection';
-import { CRONJOB_TABLE_NAME } from './cronjob';
+import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob.js';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionUpdateDTO,
-} from '../service/FunctionService';
-import { HOOKS_TABLE_NAME } from './hook';
+} from '../service/FunctionService.js';
+import { HOOKS_TABLE_NAME, HookModel } from './hook.js';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 
@@ -20,8 +20,7 @@ export class FunctionModel extends TakaroModel {
     return {
       cronJob: {
         relation: Model.HasOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./cronjob').CronJobModel,
+        modelClass: CronJobModel,
         join: {
           from: `${FUNCTION_TABLE_NAME}.id`,
           to: `${CRONJOB_TABLE_NAME}.id`,
@@ -29,8 +28,7 @@ export class FunctionModel extends TakaroModel {
       },
       hook: {
         relation: Model.HasOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./hook').HookModel,
+        modelClass: HookModel,
         join: {
           from: `${FUNCTION_TABLE_NAME}.id`,
           to: `${HOOKS_TABLE_NAME}.id`,
@@ -66,7 +64,9 @@ export class FunctionRepo extends ITakaroRepo<
     ).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new FunctionOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new FunctionOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -78,7 +78,7 @@ export class FunctionRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new FunctionOutputDTO(data);
+    return new FunctionOutputDTO().construct(data);
   }
 
   async create(item: FunctionCreateDTO): Promise<FunctionOutputDTO> {
@@ -89,7 +89,7 @@ export class FunctionRepo extends ITakaroRepo<
         domain: this.domainId,
       })
       .returning('*');
-    return new FunctionOutputDTO(data);
+    return new FunctionOutputDTO().construct(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -106,6 +106,6 @@ export class FunctionRepo extends ITakaroRepo<
     const result = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new FunctionOutputDTO(result);
+    return new FunctionOutputDTO().construct(result);
   }
 }
