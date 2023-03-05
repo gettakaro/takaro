@@ -10,9 +10,12 @@ export const PATHS = {
     update: '/servers/update/:serverId',
   },
   players: '/players',
-  modules: '/modules',
+  modules: {
+    overview: '/modules',
+  },
   studio: {
     module: '/studio/:moduleId',
+    settings: '/studio/:moduleId/settings',
   },
   users: '/users',
   profile: '/profile',

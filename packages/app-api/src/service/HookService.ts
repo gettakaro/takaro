@@ -88,9 +88,11 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @Length(3, 50)
   @IsString()
+  @IsOptional()
   name: string;
 
   @IsBoolean()
+  @IsOptional()
   enabled: boolean;
 
   @Validate(IsSafeRegex, {
@@ -98,11 +100,8 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
   })
   @IsString()
-  regex: string;
-
-  @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  regex: string;
 
   @IsOptional()
   @IsString()

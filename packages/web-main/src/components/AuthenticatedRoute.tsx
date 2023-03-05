@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { DashboardFrame } from '../frames/dashboardFrame';
+import { StudioFrame } from '../frames/studioFrame';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
@@ -15,7 +16,7 @@ const Container = styled.div`
 `;
 
 interface AuthenticatedRouteProps {
-  frame: 'dashboard' | 'isolated' | 'none';
+  frame: 'dashboard' | 'studio' | 'none';
 }
 
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
@@ -46,8 +47,8 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
     switch (frame) {
       case 'dashboard':
         return <DashboardFrame />;
-      case 'none':
-        return <Outlet />;
+      case 'studio':
+        return <StudioFrame />;
       default:
         return <Outlet />;
     }

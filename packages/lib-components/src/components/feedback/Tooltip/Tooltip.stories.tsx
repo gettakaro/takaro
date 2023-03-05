@@ -9,7 +9,7 @@ const Container = styled.div`
 `;
 
 export default {
-  title: 'Other/Tooltip',
+  title: 'Feedback/Tooltip',
   component: Tooltip,
   args: {
     placement: 'bottom',
