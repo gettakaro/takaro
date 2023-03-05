@@ -62,10 +62,10 @@ export interface APIOutput {
 export interface BaseEvent {
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {TakaroModelDTOCreatedAt}
    * @memberof BaseEvent
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: TakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -89,12 +89,6 @@ export const BaseEventTypeEnum = {
 
 export type BaseEventTypeEnum =
   typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
-
-/**
- * @type BaseEventTimestamp
- * @export
- */
-export type BaseEventTimestamp = string;
 
 /**
  *
@@ -769,13 +763,25 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  id: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  name: string;
+  id: string;
+  /**
+   *
+   * @type {TakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  createdAt: TakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {TakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  updatedAt: TakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -901,10 +907,10 @@ export interface EventChatMessage {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {TakaroModelDTOCreatedAt}
    * @memberof EventChatMessage
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: TakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -943,10 +949,10 @@ export interface EventPlayerConnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {TakaroModelDTOCreatedAt}
    * @memberof EventPlayerConnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: TakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -985,10 +991,10 @@ export interface EventPlayerDisconnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {TakaroModelDTOCreatedAt}
    * @memberof EventPlayerDisconnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: TakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -2909,6 +2915,37 @@ export interface SettingsSetDTO {
    */
   value: string;
 }
+/**
+ *
+ * @export
+ * @interface TakaroModelDTO
+ */
+export interface TakaroModelDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroModelDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {TakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  createdAt: TakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {TakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  updatedAt: TakaroModelDTOCreatedAt;
+}
+/**
+ * @type TakaroModelDTOCreatedAt
+ * @export
+ */
+export type TakaroModelDTOCreatedAt = string;
+
 /**
  *
  * @export

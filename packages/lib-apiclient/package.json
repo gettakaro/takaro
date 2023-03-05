@@ -11,13 +11,13 @@
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
     "test:integration": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.integration.test.js --exit",
-    "generate": "npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/"
+    "generate": "npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
+    "postgenerate": "./fix-esm.sh && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.27.2",
     "convict": "^6.2.3"
   },
   "devDependencies": {

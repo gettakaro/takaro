@@ -21,15 +21,16 @@ export class Meta {
 
   @Get('/openapi.json')
   async getOpenApi() {
-    const { defaultMetadataStorage: classTransformerMeta } = await import(
-      'class-transformer/esm5/storage'
-    );
     const { getMetadataStorage } = await import('class-validator');
+    const classTransformerStorage = await import(
+      'class-transformer/cjs/storage.js'
+    );
 
     const storage = getMetadataArgsStorage();
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: '#/components/schemas/',
-      classTransformerMetadataStorage: classTransformerMeta,
+      classTransformerMetadataStorage:
+        classTransformerStorage.defaultMetadataStorage,
       classValidatorMetadataStorage: getMetadataStorage(),
       forbidNonWhitelisted: true,
     });

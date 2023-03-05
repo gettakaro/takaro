@@ -2,8 +2,6 @@ import { MetaApi } from '../generated/api.js';
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import axios from 'axios';
 
-import pkgJson from '../../package.json';
-const { version } = pkgJson;
 export interface IApiClientConfig {
   url: string;
   log?: Logger;
@@ -36,12 +34,12 @@ export class BaseApiClient {
       baseURL: this.config.url,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': `Takaro-API-Client@${version}`,
+        'User-Agent': 'Takaro-API-Client',
       },
       withCredentials: true,
     };
     this.axios = this.addAuthHeaders(
-      this.addLoggers(axios.default.create(axiosConfig))
+      this.addLoggers(axios.create(axiosConfig))
     );
 
     if (this.config.log) this.log = this.config.log;
