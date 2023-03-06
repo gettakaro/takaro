@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
@@ -52,10 +51,6 @@ class HookSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
-
-  @IsOptional()
-  @IsBoolean()
-  enabled!: boolean;
 
   @IsOptional()
   @IsEnum(GameEvents)

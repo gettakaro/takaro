@@ -2,20 +2,12 @@ import { TakaroService } from './Base.js';
 import { hash, ITakaroQuery } from '@takaro/db';
 
 import { UserModel, UserRepo } from '../db/user.js';
-import {
-  IsEmail,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
-import { TakaroDTO } from '@takaro/util';
+import { IsEmail, IsString, Length, ValidateNested } from 'class-validator';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { RoleOutputDTO } from './RoleService.js';
 import { Exclude, Type } from 'class-transformer';
 
-export class UserOutputDTO extends TakaroDTO<UserOutputDTO> {
-  @IsUUID()
-  id: string;
+export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
   name: string;
   @IsString()

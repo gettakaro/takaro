@@ -15,7 +15,6 @@ export const HOOKS_TABLE_NAME = 'hooks';
 export class HookModel extends TakaroModel {
   static tableName = HOOKS_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   regex!: string;
   eventType!: GameEvents;
 
@@ -137,7 +136,6 @@ export class HookRepo extends ITakaroRepo<
         )
         .where({
           'hooks.eventType': eventType,
-          'hooks.enabled': true,
           'gameservers.id': gameServerId,
         })
     )

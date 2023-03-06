@@ -4,7 +4,6 @@ import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
-  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
@@ -23,7 +22,7 @@ import {
 } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import safeRegex from 'safe-regex';
-import { TakaroDTO, errors } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { AuthService } from './AuthService.js';
@@ -35,14 +34,9 @@ export class IsSafeRegex implements ValidatorConstraintInterface {
   }
 }
 
-export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
-  @IsUUID()
-  id: string;
+export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;
-
-  @IsBoolean()
-  enabled: boolean;
 
   @IsString()
   regex: string;
@@ -62,10 +56,6 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsString()
   @Length(3, 50)
   name: string;
-
-  @IsOptional()
-  @IsBoolean()
-  enabled: boolean;
 
   @Validate(IsSafeRegex, {
     message:
@@ -90,10 +80,6 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsString()
   @IsOptional()
   name: string;
-
-  @IsBoolean()
-  @IsOptional()
-  enabled: boolean;
 
   @Validate(IsSafeRegex, {
     message:

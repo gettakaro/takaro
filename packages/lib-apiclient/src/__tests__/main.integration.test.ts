@@ -1,7 +1,7 @@
-import { AdminClient, Client } from '../main';
+import { AdminClient, Client } from '../main.js';
 import { expect, integrationConfig } from '@takaro/test';
 import { AxiosResponse } from 'axios';
-import { DomainCreateOutputDTOAPI } from '../generated';
+import { DomainCreateOutputDTOAPI } from '../generated/index.js';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';
 

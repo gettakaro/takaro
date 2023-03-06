@@ -11,7 +11,6 @@ import { SdtdApiClient } from './sdtdAPIClient.js';
 
 import axios from 'axios';
 
-const { isAxiosError } = axios.default;
 export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   @IsString()
   public readonly host!: string;
@@ -27,8 +26,8 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: Record<string, unknown>) {
-    this.connectionInfo = new SdtdConnectionInfo(config);
+  constructor(config: SdtdConnectionInfo) {
+    this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
 
@@ -54,7 +53,7 @@ export class SevenDaysToDie implements IGameServer {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
 
-      if (isAxiosError(error)) {
+      if (axios.isAxiosError(error)) {
         reason = 'Network error';
 
         if (!error.response) {
@@ -71,13 +70,13 @@ export class SevenDaysToDie implements IGameServer {
         }
       }
 
-      return new TestReachabilityOutput({
+      return new TestReachabilityOutput().construct({
         connectable: false,
         reason,
       });
     }
 
-    return new TestReachabilityOutput({
+    return new TestReachabilityOutput().construct({
       connectable: true,
     });
   }
@@ -85,7 +84,7 @@ export class SevenDaysToDie implements IGameServer {
   async executeConsoleCommand(rawCommand: string) {
     const result = await this.apiClient.executeConsoleCommand(rawCommand);
 
-    return new CommandOutput({
+    return new CommandOutput().construct({
       rawResult: result.data.result,
       success: true,
     });

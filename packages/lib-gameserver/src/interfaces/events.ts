@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
-import { IsEnum, IsISO8601, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
 import { IGamePlayer } from './GamePlayer.js';
 
 export enum GameEvents {
@@ -17,19 +17,15 @@ export type EventMapping = {
   [GameEvents.CHAT_MESSAGE]: EventChatMessage;
 };
 
-export class BaseEvent<T> extends TakaroDTO<BaseEvent<T>> {
-  @IsISO8601()
-  timestamp: string;
+export class BaseEvent<T> extends TakaroDTO<T> {
+  @IsDate()
+  timestamp: Date = new Date();
 
   @IsEnum(GameEvents)
   type: string;
 
   @IsString()
   msg: string;
-
-  constructor(data: Partial<T>) {
-    super({ ...data, timestamp: new Date().toISOString() });
-  }
 }
 
 export class EventLogLine extends BaseEvent<EventLogLine> {

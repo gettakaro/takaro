@@ -9,6 +9,7 @@ import {
   FunctionUpdateDTO,
 } from '../service/FunctionService.js';
 import { HOOKS_TABLE_NAME, HookModel } from './hook.js';
+import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 
@@ -32,6 +33,14 @@ export class FunctionModel extends TakaroModel {
         join: {
           from: `${FUNCTION_TABLE_NAME}.id`,
           to: `${HOOKS_TABLE_NAME}.id`,
+        },
+      },
+      command: {
+        relation: Model.HasOneRelation,
+        modelClass: CommandModel,
+        join: {
+          from: `${FUNCTION_TABLE_NAME}.id`,
+          to: `${COMMANDS_TABLE_NAME}.id`,
         },
       },
     };

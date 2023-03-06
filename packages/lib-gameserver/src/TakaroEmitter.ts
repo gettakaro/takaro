@@ -31,7 +31,7 @@ export abstract class TakaroEmitter {
     new Map();
 
   abstract stop(): Promise<void>;
-  abstract start(config: Record<string, unknown>): Promise<void>;
+  abstract start(): Promise<void>;
 
   constructor() {
     return getErrorProxyHandler(this);

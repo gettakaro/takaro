@@ -7,7 +7,7 @@ export class SdtdApiClient {
   private client: Axios;
 
   constructor(private config: SdtdConnectionInfo) {
-    this.client = axios.default.create({
+    this.client = axios.create({
       baseURL: this.url,
     });
 

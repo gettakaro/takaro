@@ -1,7 +1,7 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { GAMESERVER_TABLE_NAME } from './gameserver.js';
+import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
 import {
   PlayerCreateDTO,
@@ -30,9 +30,6 @@ export class PlayerModel extends TakaroModel {
   epicOnlineServicesId?: string;
 
   static get relationMappings() {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const GameServerModel = require('./gameserver.ts').GameServerModel;
-
     return {
       gameServers: {
         relation: Model.ManyToManyRelation,

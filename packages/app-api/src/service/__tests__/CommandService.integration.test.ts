@@ -29,7 +29,6 @@ async function setup(
   const normalCommand = (
     await this.client.command.commandControllerCreate({
       name: 'Test command',
-      enabled: true,
       moduleId: mod.id,
       trigger: 'test',
     })
@@ -73,7 +72,7 @@ const tests = [
       const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id
@@ -92,7 +91,7 @@ const tests = [
       const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: 'test',
         }),
         this.setupData.gameserver.id
@@ -101,7 +100,7 @@ const tests = [
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id
@@ -125,7 +124,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
 
@@ -141,7 +140,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id

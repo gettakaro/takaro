@@ -1,5 +1,5 @@
 import { IsDate, IsString, validate } from 'class-validator';
-import { classToPlain } from 'class-transformer';
+import { Exclude, instanceToPlain } from 'class-transformer';
 import { logger } from '../logger.js';
 import * as errors from '../errors.js';
 
@@ -25,17 +25,17 @@ export class TakaroDTO<T> {
   }
 
   toJSON() {
-    return classToPlain(this, {});
+    return instanceToPlain(this, {});
   }
 
   async construct(data: Partial<T> = {}) {
     Object.assign(this, data);
-    // await this.validate();
+    //await this.validate();
     return this;
   }
 }
 
-export class TakaroModelDTO<T> extends TakaroDTO<T> {
+export class NOT_DOMAIN_SCOPED_TakaroModelDTO<T> extends TakaroDTO<T> {
   @IsString()
   id: string;
 
@@ -44,6 +44,12 @@ export class TakaroModelDTO<T> extends TakaroDTO<T> {
 
   @IsDate()
   updatedAt: Date;
+}
+
+export class TakaroModelDTO<T> extends NOT_DOMAIN_SCOPED_TakaroModelDTO<T> {
+  @IsString()
+  @Exclude()
+  domain: string;
 }
 
 export function isTakaroDTO<T>(value: unknown): value is TakaroDTO<T> {

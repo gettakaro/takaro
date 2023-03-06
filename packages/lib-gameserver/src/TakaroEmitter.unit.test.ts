@@ -22,7 +22,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
       })
     );
@@ -31,7 +31,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
       })
     );
@@ -47,7 +47,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
       })
     );
@@ -58,7 +58,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
       })
     );
@@ -80,7 +80,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
       })
     );
@@ -98,7 +98,7 @@ describe('TakaroEmitter', () => {
 
     await emitter.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: 'test',
         // @ts-expect-error testing validation, our types accurately detect this is invalid
         unknownProperty: 'this should trip validation',

@@ -18,8 +18,12 @@ import {
   SevenDaysToDie,
   Rust,
   IMessageOptsDTO,
+  SdtdConnectionInfo,
+  RustConnectionInfo,
+  MockConnectionInfo,
+  IGameServer,
 } from '@takaro/gameserver';
-import { errors } from '@takaro/util';
+import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
 import { config } from '../config.js';
 import { SettingsService } from './SettingsService.js';
@@ -28,9 +32,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
 
-export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
-  @IsUUID()
-  id: string;
+export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
   @IsObject()
@@ -67,7 +69,7 @@ export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
   config: string;
 }
 
-export class ModuleInstallationOutputDTO extends TakaroDTO<ModuleInstallationOutputDTO> {
+export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
   @IsUUID()
   gameserverId: string;
 
@@ -138,14 +140,14 @@ export class GameServerService extends TakaroService<
   ) {
     if (id) {
       const gameserver = await this.repo.findOne(id);
-      const game = GameServerService.getGame(gameserver.type);
-      const instance = new game(gameserver.connectionInfo);
+      const instance = await GameServerService.getGame(
+        gameserver.type,
+        gameserver.connectionInfo
+      );
 
       return instance.testReachability();
     } else if (connectionInfo && type) {
-      const game = GameServerService.getGame(type);
-      const instance = new game(connectionInfo);
-
+      const instance = await GameServerService.getGame(type, connectionInfo);
       return instance.testReachability();
     } else {
       throw new errors.BadRequestError('Missing required parameters');
@@ -178,17 +180,26 @@ export class GameServerService extends TakaroService<
     );
   }
 
-  static getGame(type: GAME_SERVER_TYPE) {
+  static async getGame(
+    type: GAME_SERVER_TYPE,
+    connectionInfo: Record<string, unknown>
+  ): Promise<IGameServer> {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-        return SevenDaysToDie;
+        return new SevenDaysToDie(
+          await new SdtdConnectionInfo().construct(connectionInfo)
+        );
       case GAME_SERVER_TYPE.RUST:
-        return Rust;
+        return new Rust(
+          await new RustConnectionInfo().construct(connectionInfo)
+        );
       case GAME_SERVER_TYPE.MOCK:
         if (config.get('mode') === 'production') {
           throw new errors.BadRequestError('Mock server is not allowed');
         }
-        return Mock;
+        return new Mock(
+          await new MockConnectionInfo().construct(connectionInfo)
+        );
       default:
         throw new errors.NotImplementedError();
     }
@@ -200,16 +211,19 @@ export class GameServerService extends TakaroService<
 
   async executeCommand(id: string, rawCommand: string) {
     const gameserver = await this.repo.findOne(id);
-    const game = GameServerService.getGame(gameserver.type);
-    const instance = new game(gameserver.connectionInfo);
-
+    const instance = await GameServerService.getGame(
+      gameserver.type,
+      gameserver.connectionInfo
+    );
     return instance.executeConsoleCommand(rawCommand);
   }
 
   async sendMessage(id: string, message: string, opts: IMessageOptsDTO) {
     const gameserver = await this.repo.findOne(id);
-    const game = GameServerService.getGame(gameserver.type);
-    const instance = new game(gameserver.connectionInfo);
+    const instance = await GameServerService.getGame(
+      gameserver.type,
+      gameserver.connectionInfo
+    );
     return instance.sendMessage(message, opts);
   }
 }

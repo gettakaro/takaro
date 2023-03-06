@@ -1,4 +1,8 @@
-import { errors, TakaroModelDTO, TakaroDTO } from '@takaro/util';
+import {
+  errors,
+  TakaroDTO,
+  NOT_DOMAIN_SCOPED_TakaroModelDTO,
+} from '@takaro/util';
 import {
   UserCreateInputDTO,
   UserOutputDTO,
@@ -36,7 +40,7 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   name: string;
 }
 
-export class DomainOutputDTO extends TakaroModelDTO<DomainOutputDTO> {
+export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
   @IsString()
   name: string;
 }

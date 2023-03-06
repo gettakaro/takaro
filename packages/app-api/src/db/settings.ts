@@ -73,14 +73,13 @@ export class SettingsRepo extends ITakaroRepo<
   }
 
   async create(): Promise<Settings> {
-    const defaults = await DEFAULT_SETTINGS;
     if (this.gameServerId) {
       const { query } = await this.getGameServerModel();
       const data = await query
         .insert({
           gameServerId: this.gameServerId,
           domain: this.domainId,
-          ...defaults.toJSON(),
+          ...DEFAULT_SETTINGS,
         })
         .returning('*');
       return new Settings().construct(data);
@@ -90,7 +89,7 @@ export class SettingsRepo extends ITakaroRepo<
     const res = await query
       .insert({
         domain: this.domainId,
-        ...defaults.toJSON(),
+        ...DEFAULT_SETTINGS,
       })
       .returning('*');
     return new Settings().construct(res);

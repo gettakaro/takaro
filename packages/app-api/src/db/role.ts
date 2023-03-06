@@ -63,19 +63,10 @@ export class RoleRepo extends ITakaroRepo<
     data: RoleModel[] | RoleModel
   ): Promise<RoleOutputDTO | RoleOutputDTO[]> {
     if (Array.isArray(data)) {
-      return Promise.all(
-        data.map(async (item) =>
-          new RoleOutputDTO().construct({
-            ...item,
-            capabilities: await Promise.all(
-              item.capabilities?.map((c) =>
-                new CapabilityOutputDTO().construct(c)
-              )
-            ),
-          })
-        )
-      );
+      return Promise.all(data.map(async (item) => this.transformToDTO(item)));
     }
+
+    if (!data.capabilities) data.capabilities = [];
 
     return new RoleOutputDTO().construct({
       ...data,

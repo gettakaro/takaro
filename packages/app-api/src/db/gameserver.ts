@@ -19,7 +19,7 @@ import {
   ModuleInstallDTO,
   ModuleInstallationOutputDTO,
 } from '../service/GameServerService.js';
-import { MODULE_TABLE_NAME } from './module.js';
+import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
@@ -62,8 +62,7 @@ class ModuleAssignmentModel extends TakaroModel {
     return {
       module: {
         relation: Model.BelongsToOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./module').ModuleModel,
+        modelClass: ModuleModel,
         join: {
           from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.moduleId`,
           to: `${MODULE_TABLE_NAME}.id`,

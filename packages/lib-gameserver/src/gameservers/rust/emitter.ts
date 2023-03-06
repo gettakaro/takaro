@@ -101,24 +101,24 @@ export class RustEmitter extends TakaroEmitter {
     // TODO: Certain events have a different type. We could split the events based on these types to improve performance.
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.message)) {
       this.logger.debug('regexje');
-      const data = this.handlePlayerConnected(e.message);
+      const data = await this.handlePlayerConnected(e.message);
       this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.message)) {
-      const data = this.handlePlayerDisconnected(e.message);
+      const data = await this.handlePlayerDisconnected(e.message);
       this.emit(GameEvents.PLAYER_DISCONNECTED, data);
     }
 
     this.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
-        timestamp: new Date().toISOString(),
+      await new EventLogLine().construct({
+        timestamp: new Date(),
         msg: e.message,
       })
     );
   }
 
-  private handlePlayerConnected(msg: string) {
+  private async handlePlayerConnected(msg: string) {
     // "msg": "169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]"
     const expSearch =
       /(?<ip>[0-9\.]+):(?<port>\d{5})\/(?<steamId>\d{17})\/(?<name>.+) joined \[(?<device>.+)\/\d{17}\]/.exec(
@@ -134,7 +134,7 @@ export class RustEmitter extends TakaroEmitter {
       expSearch.groups.name &&
       expSearch.groups.device
     ) {
-      const player = new IGamePlayer({
+      const player = await new IGamePlayer().construct({
         gameId: expSearch.groups.steamId,
         name: expSearch.groups.name,
         steamId: expSearch.groups.steamId,
@@ -144,7 +144,7 @@ export class RustEmitter extends TakaroEmitter {
 
       this.logger.debug('player: ', player);
 
-      return new EventPlayerConnected({
+      return new EventPlayerConnected().construct({
         player,
       });
     }
@@ -158,7 +158,7 @@ export class RustEmitter extends TakaroEmitter {
     throw new errors.GameServerError();
   }
 
-  private handlePlayerDisconnected(msg: string) {
+  private async handlePlayerDisconnected(msg: string) {
     // Example: 178.118.188.46:52210/76561198035925898/Emiel disconnecting: disconnect
     const expSearch =
       /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(
@@ -171,12 +171,12 @@ export class RustEmitter extends TakaroEmitter {
       expSearch.groups.platformId &&
       expSearch.groups.name
     ) {
-      const player = new IGamePlayer({
+      const player = await new IGamePlayer().construct({
         name: expSearch.groups.name,
         steamId: expSearch.groups.steamId,
       });
 
-      return new EventPlayerDisconnected({ player });
+      return new EventPlayerDisconnected().construct({ player });
     }
 
     this.logger.error(

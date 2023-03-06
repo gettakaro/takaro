@@ -1,13 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { ModuleModel, ModuleRepo } from '../db/module.js';
-import {
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 
 import { Type } from 'class-transformer';
 import {
@@ -22,7 +16,7 @@ import {
   HookService,
   HookUpdateDTO,
 } from './HookService.js';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -34,9 +28,7 @@ import {
 } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 
-export class ModuleOutputDTO extends TakaroDTO<ModuleOutputDTO> {
-  @IsUUID()
-  id!: string;
+export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
   name!: string;
 
@@ -115,7 +107,6 @@ export class ModuleService extends TakaroService<
     const commandService = new CommandService(this.domainId);
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
-
     const existing = await this.repo.find({
       filters: { builtin: builtin.name },
     });

@@ -2,7 +2,7 @@ import { DomainScoped } from '../lib/DomainScoped.js';
 import { errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService.js';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';

@@ -1,14 +1,12 @@
 import { TakaroService } from './Base.js';
 
-import { IsString, IsUUID } from 'class-validator';
+import { IsString } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 
-export class FunctionOutputDTO extends TakaroDTO<FunctionOutputDTO> {
-  @IsUUID()
-  id!: string;
+export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
   @IsString()
   code!: string;
 }

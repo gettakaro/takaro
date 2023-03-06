@@ -14,7 +14,6 @@ export const COMMANDS_TABLE_NAME = 'commands';
 export class CommandModel extends TakaroModel {
   static tableName = COMMANDS_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   trigger: string;
   helpText: string;
 
@@ -132,7 +131,6 @@ export class CommandRepo extends ITakaroRepo<
         )
         .where({
           'commands.trigger': input,
-          'commands.enabled': true,
           'gameservers.id': gameServerId,
         })
     )

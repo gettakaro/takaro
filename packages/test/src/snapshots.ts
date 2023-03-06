@@ -46,7 +46,7 @@ export async function matchSnapshot<SetupData>(
 ) {
   const snapshotPath = path.resolve(
     __dirname,
-    '__snapshots__',
+    '../src/__snapshots__',
     test.group,
     normalizePath(`${test.name}.json`)
   );

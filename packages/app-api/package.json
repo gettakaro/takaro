@@ -7,12 +7,10 @@
   "type": "module",
   "scripts": {
     "start": "node dist/main.js",
-    "start:dev": "npx concurrently --kill-others-on-fail --names \"api,tsc\" \"npm run start:dev:app\" \"npm run start:dev:tsc\"",
-    "start:dev:app": "nodemon --exec 'node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
-    "start:dev:tsc": "tsc --preserveWatchOutput --watch",
+    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
+    "test:unit": "echo 'No tests (yet :))'",
     "test:integration": "tsc -p ./tsconfig.json && mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js dist/**/*.integration.test.js --exit"
   },
   "keywords": [],

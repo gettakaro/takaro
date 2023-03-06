@@ -9,7 +9,7 @@ import {
 import type { Faker } from '@faker-js/faker';
 import { MockConnectionInfo } from './index.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
-import { IGamePlayer } from '../../main.js';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 
 export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');
@@ -21,7 +21,7 @@ export class MockEmitter extends TakaroEmitter {
 
   async start(): Promise<void> {
     const { faker } = await import('@faker-js/faker');
-
+    this.config = await this.config;
     setTimeout(() => this.fireEvent(faker), 1000);
     this.interval = setInterval(
       () => this.fireEvent(faker),
@@ -37,7 +37,7 @@ export class MockEmitter extends TakaroEmitter {
 
   private async fireEvent(faker: Faker) {
     const type = this.getRandomFromEnum();
-    const data = this.getRandomEvent(faker, type);
+    const data = await this.getRandomEvent(faker, type);
     await this.emit(type, data);
 
     this.logger.debug(`Emitted ${type}`, data);
@@ -49,7 +49,7 @@ export class MockEmitter extends TakaroEmitter {
         Math.floor(Math.random() * this.config.mockPlayers.length)
       ];
 
-    return new IGamePlayer(randomEntry);
+    return new IGamePlayer().construct(randomEntry);
   }
 
   private getRandomFromEnum() {
@@ -58,39 +58,38 @@ export class MockEmitter extends TakaroEmitter {
     return randomValue;
   }
 
-  private getRandomEvent(faker: Faker, type: string) {
+  private async getRandomEvent(faker: Faker, type: string) {
     let event;
-    const player = this.mockPlayer();
+    const player = await this.mockPlayer();
 
     switch (type) {
       case GameEvents.PLAYER_CONNECTED:
-        event = new EventPlayerConnected({ player, msg: 'player-connected' });
+        event = new EventPlayerConnected().construct({
+          player,
+          msg: 'player-connected',
+        });
 
         break;
       case GameEvents.PLAYER_DISCONNECTED:
-        event = new EventPlayerDisconnected({
+        event = new EventPlayerDisconnected().construct({
           player,
           msg: 'player-disconnected',
         });
         break;
       case GameEvents.CHAT_MESSAGE:
-        event = new EventChatMessage({
+        event = new EventChatMessage().construct({
           msg: '/ping',
           player,
         });
 
         break;
       default:
-        event = new EventLogLine({
+        event = new EventLogLine().construct({
           msg: `This is a log line :) - ${faker.random.words()}`,
         });
         break;
     }
 
-    event = new EventChatMessage({
-      msg: '/ping',
-      player,
-    });
     return event;
   }
 }

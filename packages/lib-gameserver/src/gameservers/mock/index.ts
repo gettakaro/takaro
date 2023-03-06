@@ -16,26 +16,23 @@ export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   public readonly eventInterval = 10000;
   public readonly playerPoolSize = 100;
 
-  public readonly mockPlayers: IGamePlayer[] = Array.from(
+  public readonly mockPlayers: Partial<IGamePlayer>[] = Array.from(
     Array(this.playerPoolSize).keys()
-  ).map(
-    (p) =>
-      new IGamePlayer({
-        gameId: p.toString(),
-        name: faker.internet.userName(),
-        epicOnlineServicesId: faker.random.alphaNumeric(16),
-        steamId: faker.random.alphaNumeric(16),
-        xboxLiveId: faker.random.alphaNumeric(16),
-      })
-  );
+  ).map((p) => ({
+    gameId: p.toString(),
+    name: faker.internet.userName(),
+    epicOnlineServicesId: faker.random.alphaNumeric(16),
+    steamId: faker.random.alphaNumeric(16),
+    xboxLiveId: faker.random.alphaNumeric(16),
+  }));
 }
 export class Mock implements IGameServer {
   private logger = logger('Mock');
   connectionInfo: MockConnectionInfo;
   emitter: MockEmitter;
 
-  constructor(config: Record<string, unknown>) {
-    this.connectionInfo = new MockConnectionInfo(config);
+  constructor(config: MockConnectionInfo) {
+    this.connectionInfo = config;
     this.emitter = new MockEmitter(this.connectionInfo);
   }
 
@@ -56,11 +53,11 @@ export class Mock implements IGameServer {
     const fiftyFiftyChance = Math.random() >= 0.5;
 
     if (fiftyFiftyChance) {
-      return new TestReachabilityOutput({
+      return new TestReachabilityOutput().construct({
         connectable: true,
       });
     } else {
-      return new TestReachabilityOutput({
+      return new TestReachabilityOutput().construct({
         connectable: false,
         reason:
           'Mock server has a 50% chance of being unreachable. Try again please :)',
@@ -73,15 +70,15 @@ export class Mock implements IGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string) {
-    const output = new CommandOutput({
+    const output = new CommandOutput().construct({
       rawResult: `Command "${rawCommand}" executed successfully`,
       success: true,
     });
 
     this.sendLog(
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: rawCommand,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       })
     );
 
@@ -92,9 +89,9 @@ export class Mock implements IGameServer {
     const fullMessage = `Server: ${opts.recipient ? '[DM]' : ''} ${message}`;
 
     this.sendLog(
-      new EventLogLine({
+      await new EventLogLine().construct({
         msg: fullMessage,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       })
     );
   }

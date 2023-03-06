@@ -3,7 +3,6 @@ import { QueuesService } from '@takaro/queues';
 
 import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import {
-  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
@@ -18,18 +17,13 @@ import {
   FunctionUpdateDTO,
 } from './FunctionService.js';
 import { Type } from 'class-transformer';
-import { TakaroDTO, errors } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 
-export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
-  @IsUUID()
-  id!: string;
+export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
   name!: string;
-
-  @IsBoolean()
-  enabled!: boolean;
 
   @IsString()
   temporalValue!: string;
@@ -47,10 +41,6 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @Length(3, 50)
   name!: string;
 
-  @IsOptional()
-  @IsString()
-  enabled!: boolean;
-
   @IsString()
   temporalValue!: string;
 
@@ -67,10 +57,6 @@ export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @IsString()
   @IsOptional()
   name!: string;
-
-  @IsBoolean()
-  @IsOptional()
-  enabled!: boolean;
 
   @IsString()
   @IsOptional()

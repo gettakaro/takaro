@@ -1,16 +1,13 @@
 import { TakaroService } from './Base.js';
 
 import { PlayerModel, PlayerRepo } from '../db/player.js';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { IGamePlayer } from '@takaro/gameserver';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 
-export class PlayerOutputDTO extends TakaroDTO<PlayerOutputDTO> {
-  @IsUUID()
-  id!: string;
-
+export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   name!: string;
 

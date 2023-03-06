@@ -10,7 +10,7 @@
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
-    "test:integration": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.integration.test.js --exit"
+    "test:integration": "echo 'No tests (yet :))'"
   },
   "keywords": [],
   "author": "",

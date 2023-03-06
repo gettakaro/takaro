@@ -56,7 +56,7 @@ class CommandSearchInputAllowedFilters {
   enabled!: boolean;
 }
 
-class CommandSearchInputDTO extends ITakaroQuery<CommandSearchInputAllowedFilters> {
+export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedFilters)
   declare filters: CommandSearchInputAllowedFilters;

@@ -44,10 +44,6 @@ class CronJobSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
-
-  @IsOptional()
-  @IsString()
-  enabled!: string;
 }
 
 class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {

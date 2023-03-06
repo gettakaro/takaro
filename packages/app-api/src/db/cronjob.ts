@@ -14,7 +14,6 @@ export const CRONJOB_TABLE_NAME = 'cronJobs';
 export class CronJobModel extends TakaroModel {
   static tableName = CRONJOB_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   temporalValue!: string;
 
   functionId: string;
