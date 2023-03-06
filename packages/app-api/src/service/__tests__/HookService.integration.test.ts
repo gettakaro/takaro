@@ -1,4 +1,4 @@
-import { HookService } from '../HookService';
+import { HookService } from '../HookService.js';
 import { QueuesService } from '@takaro/queues';
 import { EventPlayerConnected, EventChatMessage } from '@takaro/gameserver';
 import { IntegrationTest, sandbox, expect } from '@takaro/test';
@@ -31,7 +31,6 @@ async function setup(
   const normalHook = (
     await this.client.hook.hookControllerCreate({
       name: 'Test hook',
-      enabled: true,
       moduleId: mod.id,
       regex: '.*',
       eventType: 'player-connected',
@@ -57,8 +56,10 @@ async function setup(
   const queues = QueuesService.getInstance();
   const queueAddStub = sandbox.stub(queues.queues.hooks.queue, 'add');
 
+  if (!this.standardDomainId) throw new Error('No standard domain id set');
+
   return {
-    service: new HookService(this.standardDomainId!),
+    service: new HookService(this.standardDomainId),
     normalHook,
     mod,
     gameserver,
@@ -75,7 +76,7 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent(
-        new EventPlayerConnected({
+        await new EventPlayerConnected().construct({
           msg: 'foo connected',
         }),
         this.setupData.gameserver.id
@@ -91,7 +92,7 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: 'chat message',
         }),
         this.setupData.gameserver.id
@@ -101,7 +102,7 @@ const tests = [
 
       // But a different event type should trigger
       await this.setupData.service.handleEvent(
-        new EventPlayerConnected({
+        await new EventPlayerConnected().construct({
           msg: 'foo connected',
         }),
         this.setupData.gameserver.id
@@ -119,14 +120,13 @@ const tests = [
       // Create a new hook that only matches on "bar"
       await this.client.hook.hookControllerCreate({
         name: 'Test hook with regex',
-        enabled: true,
         moduleId: this.setupData.mod.id,
         regex: 'bar',
         eventType: 'player-connected',
       });
 
       await this.setupData.service.handleEvent(
-        new EventPlayerConnected({
+        await new EventPlayerConnected().construct({
           msg: 'foo connected',
         }),
         this.setupData.gameserver.id
@@ -135,7 +135,7 @@ const tests = [
       expect(this.setupData.queueAddStub).to.have.been.calledOnce;
 
       await this.setupData.service.handleEvent(
-        new EventPlayerConnected({
+        await new EventPlayerConnected().construct({
           msg: 'bar connected',
         }),
         this.setupData.gameserver.id

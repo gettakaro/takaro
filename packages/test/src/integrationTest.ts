@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
 
-import { ITestWithSnapshot, matchSnapshot } from './snapshots';
-import { integrationConfig } from './main';
-import { expect } from './test/expect';
-import axios from 'axios';
+import { matchSnapshot } from './snapshots.js';
+import { integrationConfig } from './main.js';
+import { expect } from './test/expect.js';
 import {
   AdminClient,
   Client,
   AxiosResponse,
   RoleCreateInputDTOCapabilitiesEnum,
+  isAxiosError,
 } from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
@@ -42,9 +42,7 @@ export class IntegrationTest<SetupData> {
     password: '',
   };
 
-  constructor(
-    public test: IIntegrationTest<SetupData> | ITestWithSnapshot<SetupData>
-  ) {
+  constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
       this.test.expectedStatus = this.test.expectedStatus ?? 200;
       this.test.filteredFields = this.test.filteredFields ?? [];
@@ -106,7 +104,7 @@ export class IntegrationTest<SetupData> {
               this.standardDomainId
             );
           } catch (error) {
-            if (!axios.isAxiosError(error)) {
+            if (!isAxiosError(error)) {
               throw error;
             }
             if (error.response?.status !== 404) {
@@ -122,7 +120,7 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (axios.isAxiosError(error) && this.test.snapshot) {
+          if (isAxiosError(error) && this.test.snapshot) {
             response = error.response;
           } else {
             throw error;
@@ -133,10 +131,7 @@ export class IntegrationTest<SetupData> {
           if (!response) {
             throw new Error('No response returned from test');
           }
-          await matchSnapshot(
-            this.test as ITestWithSnapshot<unknown>,
-            response
-          );
+          await matchSnapshot(this.test, response);
           expect(response.status).to.equal(this.test.expectedStatus);
         }
       });

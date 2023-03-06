@@ -62,7 +62,6 @@ const tests = [
     test: async function () {
       return this.client.hook.hookControllerUpdate(this.setupData.data.id, {
         name: 'Updated hook',
-        enabled: false,
         regex: '/new [regex]/g',
       });
     },

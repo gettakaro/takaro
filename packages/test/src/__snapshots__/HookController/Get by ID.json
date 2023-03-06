@@ -8,7 +8,6 @@
       "updatedAt": "2022-09-24T11:54:41.635Z",
       "id": "26a5f558-cf0d-4eba-9792-3a52f6b65b17",
       "name": "Test hook",
-      "enabled": true,
       "eventType": "log",
       "regex": "/this (is) a [regex]/g",
       "moduleId": "1a5d42fe-5d27-4ac6-bc82-2cc57197fee5",

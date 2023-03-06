@@ -1,8 +1,7 @@
 import { Job } from 'bullmq';
-import { Client } from '@takaro/apiclient';
-import { config } from '../../config';
+import { config } from '../../config.js';
 import { TakaroWorker, IJobData } from '@takaro/queues';
-import { executeFunction } from './executeFunction';
+import { executeFunction } from './executeFunction.js';
 
 export class CommandWorker extends TakaroWorker<IJobData> {
   constructor() {
@@ -11,16 +10,12 @@ export class CommandWorker extends TakaroWorker<IJobData> {
 }
 
 async function processCommand(job: Job<IJobData>) {
-  const client = new Client({
-    auth: {
-      token: job.data.token,
+  await executeFunction(
+    job.data.function,
+    {
+      ...job.data.data,
+      gameServerId: job.data.gameServerId,
     },
-    url: config.get('takaro.url'),
-  });
-
-  await executeFunction(job.data.function, {
-    client,
-    event: job.data.data,
-    gameServerId: job.data.gameServerId,
-  });
+    job.data.token
+  );
 }

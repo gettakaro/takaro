@@ -12,12 +12,12 @@ import {
   UserOutputDTO,
   UserService,
   UserUpdateDTO,
-} from '../service/UserService';
+} from '../service/UserService.js';
 import {
   AuthenticatedRequest,
   AuthService,
   LoginOutputDTO,
-} from '../service/AuthService';
+} from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -30,12 +30,12 @@ import {
   Params,
   Res,
 } from 'routing-controllers';
-import { DomainService } from '../service/DomainService';
+import { DomainService } from '../service/DomainService.js';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
+import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
-import { CAPABILITIES } from '../service/RoleService';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -58,19 +58,19 @@ export class ParamIdAndRoleId extends ParamId {
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   @Type(() => LoginOutputDTO)
   @ValidateNested()
-  data!: LoginOutputDTO;
+  declare data: LoginOutputDTO;
 }
 
 class UserOutputDTOAPI extends APIOutput<UserOutputDTO> {
   @Type(() => UserOutputDTO)
   @ValidateNested()
-  data!: UserOutputDTO;
+  declare data: UserOutputDTO;
 }
 
 class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => UserOutputDTO)
-  data!: UserOutputDTO[];
+  declare data: UserOutputDTO[];
 }
 
 class UserSearchInputAllowedFilters {
@@ -82,7 +82,7 @@ class UserSearchInputAllowedFilters {
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
-  filters!: UserSearchInputAllowedFilters;
+  declare filters: UserSearchInputAllowedFilters;
 }
 
 @OpenAPI({

@@ -1,6 +1,6 @@
-import { compareHashed, decrypt, encrypt, hash } from '../encryption';
+import { compareHashed, decrypt, encrypt, hash } from '../encryption.js';
 import { expect } from '@takaro/test';
-import { getKnex } from '../knex';
+import { getKnex } from '../knex.js';
 
 describe('Database encryption', () => {
   before(async () => {

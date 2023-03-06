@@ -1,9 +1,7 @@
-import { MetaApi } from '../generated';
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { MetaApi } from '../generated/api.js';
+import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore doing a workaround here specifically for package json
-import { version } from '../../package.json';
 export interface IApiClientConfig {
   url: string;
   log?: Logger;
@@ -36,7 +34,7 @@ export class BaseApiClient {
       baseURL: this.config.url,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': `Takaro-API-Client@${version}`,
+        'User-Agent': 'Takaro-API-Client',
       },
       withCredentials: true,
     };

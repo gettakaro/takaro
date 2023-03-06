@@ -5,7 +5,7 @@ import {
   ModuleOutputDTO,
   ModuleInstallDTO,
 } from '@takaro/apiclient';
-import { CommandService } from '../CommandService';
+import { CommandService } from '../CommandService.js';
 import { QueuesService } from '@takaro/queues';
 import { EventChatMessage } from '@takaro/gameserver';
 const group = 'CommandService';
@@ -29,7 +29,6 @@ async function setup(
   const normalCommand = (
     await this.client.command.commandControllerCreate({
       name: 'Test command',
-      enabled: true,
       moduleId: mod.id,
       trigger: 'test',
     })
@@ -51,8 +50,10 @@ async function setup(
     )
   ).data.data;
 
+  if (!this.standardDomainId) throw new Error('No standard domain id set!');
+
   return {
-    service: new CommandService(this.standardDomainId!),
+    service: new CommandService(this.standardDomainId),
     normalCommand,
     mod,
     gameserver,
@@ -71,7 +72,7 @@ const tests = [
       const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id
@@ -90,7 +91,7 @@ const tests = [
       const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: 'test',
         }),
         this.setupData.gameserver.id
@@ -99,7 +100,7 @@ const tests = [
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id
@@ -123,7 +124,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
 
@@ -139,7 +140,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        new EventChatMessage({
+        await new EventChatMessage().construct({
           msg: '/test',
         }),
         this.setupData.gameserver.id

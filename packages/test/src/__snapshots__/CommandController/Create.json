@@ -10,7 +10,6 @@
       "helpText": "No help text available",
       "name": "Test command",
       "trigger": "test",
-      "enabled": true,
       "moduleId": "d17860fe-cca6-4121-97a8-61cd8e8b7c6a",
       "function": {
         "createdAt": "2022-11-04T20:20:54.457Z",

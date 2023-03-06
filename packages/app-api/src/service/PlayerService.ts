@@ -1,16 +1,13 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
-import { PlayerModel, PlayerRepo } from '../db/player';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { PlayerModel, PlayerRepo } from '../db/player.js';
+import { IsOptional, IsString } from 'class-validator';
 import { IGamePlayer } from '@takaro/gameserver';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
+import { PaginatedOutput } from '../db/base.js';
 
-export class PlayerOutputDTO extends TakaroDTO<PlayerOutputDTO> {
-  @IsUUID()
-  id!: string;
-
+export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   name!: string;
 
@@ -106,7 +103,7 @@ export class PlayerService extends TakaroService<
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
         player = await this.create(
-          new PlayerCreateDTO({
+          await new PlayerCreateDTO().construct({
             name: playerData.name,
             steamId: playerData.steamId,
             epicOnlineServicesId: playerData.epicOnlineServicesId,

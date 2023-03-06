@@ -1,5 +1,5 @@
-import { config } from './config';
-import { getKnex } from './knex';
+import { config } from './config.js';
+import { getKnex } from './knex.js';
 
 export async function encrypt(value: string): Promise<string> {
   const knex = await getKnex();

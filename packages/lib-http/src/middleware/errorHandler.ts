@@ -5,7 +5,7 @@ import {
   HttpError,
 } from 'routing-controllers';
 import { logger, errors } from '@takaro/util';
-import { apiResponse } from '../main';
+import { apiResponse } from '../util/apiResponse.js';
 import { ValidationError } from 'class-validator';
 
 const log = logger('errorHandler');

@@ -6,8 +6,8 @@ import {
   ModuleOutputDTO,
   ModuleService,
   ModuleUpdateDTO,
-} from '../service/ModuleService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/ModuleService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -21,19 +21,19 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
   @ValidateNested()
-  data!: ModuleOutputDTO;
+  declare data: ModuleOutputDTO;
 }
 
 export class ModuleOutputArrayDTOAPI extends APIOutput<ModuleOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => ModuleOutputDTO)
-  data!: ModuleOutputDTO[];
+  declare data: ModuleOutputDTO[];
 }
 
 class ModuleSearchInputAllowedFilters {
@@ -49,7 +49,7 @@ class ModuleSearchInputAllowedFilters {
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
-  filters!: ModuleSearchInputAllowedFilters;
+  declare filters: ModuleSearchInputAllowedFilters;
 }
 
 @OpenAPI({

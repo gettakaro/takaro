@@ -6,8 +6,8 @@ import {
   CronJobOutputDTO,
   CronJobService,
   CronJobUpdateDTO,
-} from '../service/CronJobService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/CronJobService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -21,19 +21,19 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
   @Type(() => CronJobOutputDTO)
   @ValidateNested()
-  data!: CronJobOutputDTO;
+  declare data: CronJobOutputDTO;
 }
 
 export class CronJobOutputArrayDTOAPI extends APIOutput<CronJobOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => CronJobOutputDTO)
-  data!: CronJobOutputDTO[];
+  declare data: CronJobOutputDTO[];
 }
 
 class CronJobSearchInputAllowedFilters {
@@ -44,16 +44,12 @@ class CronJobSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
-
-  @IsOptional()
-  @IsString()
-  enabled!: string;
 }
 
 class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
-  filters!: CronJobSearchInputAllowedFilters;
+  declare filters: CronJobSearchInputAllowedFilters;
 }
 
 @OpenAPI({

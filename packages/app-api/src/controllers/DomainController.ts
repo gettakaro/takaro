@@ -1,12 +1,12 @@
 import { ITakaroQuery } from '@takaro/db';
-import { config } from '../config';
+import { config } from '../config.js';
 import {
   DomainCreateInputDTO,
   DomainCreateOutputDTO,
   DomainOutputDTO,
   DomainService,
   DomainUpdateInputDTO,
-} from '../service/DomainService';
+} from '../service/DomainService.js';
 import {
   createAdminAuthMiddleware,
   apiResponse,
@@ -34,19 +34,19 @@ import { IsOptional, IsString, ValidateNested } from 'class-validator';
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
   @ValidateNested()
-  data!: DomainCreateOutputDTO;
+  declare data: DomainCreateOutputDTO;
 }
 
 export class DomainOutputDTOAPI extends APIOutput<DomainOutputDTO> {
   @Type(() => DomainOutputDTO)
   @ValidateNested()
-  data!: DomainOutputDTO;
+  declare data: DomainOutputDTO;
 }
 
 export class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => DomainOutputDTO)
-  data!: DomainOutputDTO[];
+  declare data: DomainOutputDTO[];
 }
 
 export class DomainSearchInputAllowedFilters {
@@ -58,7 +58,7 @@ export class DomainSearchInputAllowedFilters {
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
-  filters!: DomainSearchInputAllowedFilters;
+  declare filters: DomainSearchInputAllowedFilters;
 }
 
 @OpenAPI({

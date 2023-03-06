@@ -1,12 +1,12 @@
 import { logger, TakaroDTO, errors } from '@takaro/util';
 import { IsString, IsNumber } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   TestReachabilityOutput,
-} from '../../interfaces/GameServer';
-import { RustEmitter } from './emitter';
+} from '../../interfaces/GameServer.js';
+import { RustEmitter } from './emitter.js';
 
 export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
   @IsString()
@@ -21,8 +21,8 @@ export class Rust implements IGameServer {
   private logger = logger('rust');
   connectionInfo: RustConnectionInfo;
 
-  constructor(config: Record<string, unknown>) {
-    this.connectionInfo = new RustConnectionInfo(config);
+  constructor(config: RustConnectionInfo) {
+    this.connectionInfo = config;
   }
 
   async getPlayer(id: string): Promise<IGamePlayer | null> {
@@ -40,14 +40,14 @@ export class Rust implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
-    return new TestReachabilityOutput({
+    return new TestReachabilityOutput().construct({
       connectable: true,
     });
   }
 
   async executeConsoleCommand(rawCommand: string) {
     throw new errors.NotImplementedError();
-    return new CommandOutput({
+    return new CommandOutput().construct({
       rawResult: `Command "${rawCommand}" executed successfully`,
       success: true,
     });
