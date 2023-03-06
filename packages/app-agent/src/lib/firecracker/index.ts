@@ -30,7 +30,6 @@ export default class Firecracker {
     this.logger = logger('firecracker');
     this.options = options;
     this.httpSock = got.extend({
-      enableUnixSockets: true,
       prefixUrl: `unix:${options.fcSocket}:`,
     });
 
