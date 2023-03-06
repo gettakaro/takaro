@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { ContextData } from '@floating-ui/react-dom-interactions';
+import { ContextData } from '@floating-ui/react';
 
 interface SelectContextValue {
   selectedIndex: number;

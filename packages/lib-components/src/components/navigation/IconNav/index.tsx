@@ -2,7 +2,7 @@ import { FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
 import { lighten } from 'polished';
-import { FloatingDelayGroup } from '@floating-ui/react-dom-interactions';
+import { FloatingDelayGroup } from '@floating-ui/react';
 import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
