@@ -21,7 +21,10 @@ FROM nginx:stable-alpine
 ARG PACKAGE
 
 COPY --from=builder /app/packages/${PACKAGE}/dist /usr/share/nginx/html
-
 COPY containers/generic-web/nginx.conf /etc/nginx/nginx.conf
 
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /app
+COPY containers/generic-web/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+CMD ["./entrypoint.sh"]
