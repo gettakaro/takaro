@@ -42,16 +42,19 @@ export const Example: StoryFn<SingleActionModalProps> = (args) => {
 ///////////////
 // ERROR
 ///////////////
-export const Error: StoryFn = () => {
+export const Error: StoryFn<SingleActionModalProps> = ({
+  actionText,
+  description,
+}) => {
   const [ModalWrapper, open, close] = useModal();
 
   return (
     <div>
       <ModalWrapper>
         <SingleActionModal
-          actionText="Go back to dashboard"
+          actionText={actionText}
           close={close}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          description={description}
           title="Payment failed!"
           type="error"
         />

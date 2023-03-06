@@ -66,7 +66,7 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
 `;
 
 export interface ToggleButtonGroupProps {
-  onChange?: (value: string | Map<string, boolean>) => void;
+  onChange?: (value: string | Map<string, boolean>) => unknown;
   orientation?: orientation;
   /// if `true` only allow one of the child ToggleButton values to be selected.
   exclusive?: boolean;
@@ -80,7 +80,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
   children,
   defaultValue,
   exclusive,
-  onChange,
+  onChange = () => {},
   orientation = 'horizontal',
   fullWidth = false,
 }) => {
@@ -118,9 +118,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
   };
 
   useEffect(() => {
-    if (onChange !== undefined) {
-      onChange(selected);
-    }
+    onChange(selected);
   }, [selected]);
 
   return (
