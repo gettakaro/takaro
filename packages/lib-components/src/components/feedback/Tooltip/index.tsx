@@ -14,7 +14,7 @@ import {
   useDismiss,
   useDelayGroupContext,
   useDelayGroup,
-} from '@floating-ui/react-dom-interactions';
+} from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { mergeRefs } from 'react-merge-refs';
 import { useTheme } from '../../../hooks';

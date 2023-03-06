@@ -1,21 +1,24 @@
-module.exports = {
-  framework: {
-    name: '@storybook/react-vite',
-    options: { fashRefresh: true },
-  },
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+import { StorybookConfig } from '@storybook/react-vite';
+
+const config: StorybookConfig = {
+  stories: [{ directory: '../src', files: '**/*.stories.@(tsx|ts)' }],
+  framework: { name: '@storybook/react-vite', options: {} },
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-links',
     '@storybook/addon-a11y',
   ],
-  features: {
-    previewCsfV3: true,
-    previewMdx2: true,
-  },
   staticDirs: ['../public'],
-  core: { builder: '@storybook/builder-vite' },
+  viteFinal: async (config) => {
+    // related to storybook out of memory: https://github.com/storybookjs/storybook/issues/12348
+    if (config.build) {
+      config.build.sourcemap = false;
+    }
+    return config;
+  },
 };
+
+export default config;
 
 /*
   const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');

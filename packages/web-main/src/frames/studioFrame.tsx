@@ -139,7 +139,6 @@ export const StudioFrame: FC = () => {
     componentType: 'hook' | 'cronjob' | 'command'
   ) => {
     try {
-      console.log('creating hook');
       switch (componentType) {
         case 'hook':
           await apiClient.hook.hookControllerCreate({

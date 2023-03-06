@@ -12,7 +12,7 @@ const Container = styled.div`
   display: flex;
 `;
 
-export const Studio: FC = () => {
+const Studio: FC = () => {
   const client = useApiClient();
 
   const { data, isLoading } = useQuery<ModuleOutputArrayDTOAPI>(
@@ -62,3 +62,5 @@ export const Studio: FC = () => {
     </Fragment>
   );
 };
+
+export default Studio;
