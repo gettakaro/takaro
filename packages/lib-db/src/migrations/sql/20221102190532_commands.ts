@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { formatAlterTableEnumSql } from '../util/alterEnum';
+import { formatAlterTableEnumSql } from '../util/alterEnum.js';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(

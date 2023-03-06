@@ -6,8 +6,8 @@ import {
   FunctionOutputDTO,
   FunctionService,
   FunctionUpdateDTO,
-} from '../service/FunctionService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/FunctionService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -21,8 +21,8 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -30,13 +30,13 @@ import { CAPABILITIES } from '../service/RoleService';
 class FunctionOutputDTOAPI extends APIOutput<FunctionOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
-  data!: FunctionOutputDTO;
+  declare data: FunctionOutputDTO;
 }
 
 class FunctionOutputArrayDTOAPI extends APIOutput<FunctionOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => FunctionOutputDTO)
-  data!: FunctionOutputDTO[];
+  declare data: FunctionOutputDTO[];
 }
 
 class FunctionSearchInputAllowedFilters {
@@ -47,7 +47,7 @@ class FunctionSearchInputAllowedFilters {
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedFilters)
-  filters!: FunctionSearchInputAllowedFilters;
+  declare filters: FunctionSearchInputAllowedFilters;
 }
 
 @OpenAPI({

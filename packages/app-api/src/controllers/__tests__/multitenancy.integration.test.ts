@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { CAPABILITIES } from '../../service/RoleService';
+import { CAPABILITIES } from '../../service/RoleService.js';
 import { DomainCreateOutputDTOAPI } from '@takaro/apiclient';
 
 const group = 'Multitenancy';

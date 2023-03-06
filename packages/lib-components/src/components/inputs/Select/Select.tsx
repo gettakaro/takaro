@@ -33,7 +33,7 @@ import {
   autoUpdate,
   FloatingOverlay,
   size,
-} from '@floating-ui/react-dom-interactions';
+} from '@floating-ui/react';
 
 import { useController } from 'react-hook-form';
 import {

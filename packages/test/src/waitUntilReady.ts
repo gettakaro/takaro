@@ -1,6 +1,6 @@
 import { Client } from '@takaro/apiclient';
 import ms from 'ms';
-import { integrationConfig } from './test/integrationConfig';
+import { integrationConfig } from './test/integrationConfig.js';
 import { logger } from '@takaro/util';
 
 const log = logger('tests');

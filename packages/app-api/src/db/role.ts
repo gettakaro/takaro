@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { Model } from 'objection';
 import {
   CAPABILITIES,
@@ -8,8 +8,8 @@ import {
   RoleOutputDTO,
   RoleUpdateInputDTO,
   CapabilityOutputDTO,
-} from '../service/RoleService';
-import { ITakaroRepo } from './base';
+} from '../service/RoleService.js';
+import { ITakaroRepo } from './base.js';
 
 export const ROLE_TABLE_NAME = 'roles';
 const CAPABILITY_ON_ROLE_TABLE_NAME = 'capabilityOnRole';
@@ -57,26 +57,22 @@ export class RoleRepo extends ITakaroRepo<
     };
   }
 
-  private transformToDTO(data: RoleModel): RoleOutputDTO;
-  private transformToDTO(data: RoleModel[]): RoleOutputDTO[];
-  private transformToDTO(
+  private transformToDTO(data: RoleModel): Promise<RoleOutputDTO>;
+  private transformToDTO(data: RoleModel[]): Promise<RoleOutputDTO[]>;
+  private async transformToDTO(
     data: RoleModel[] | RoleModel
-  ): RoleOutputDTO[] | RoleOutputDTO {
+  ): Promise<RoleOutputDTO | RoleOutputDTO[]> {
     if (Array.isArray(data)) {
-      return data.map(
-        (item) =>
-          new RoleOutputDTO({
-            ...item,
-            capabilities: item.capabilities?.map(
-              (c) => new CapabilityOutputDTO(c)
-            ),
-          })
-      );
+      return Promise.all(data.map(async (item) => this.transformToDTO(item)));
     }
 
-    return new RoleOutputDTO({
+    if (!data.capabilities) data.capabilities = [];
+
+    return new RoleOutputDTO().construct({
       ...data,
-      capabilities: data.capabilities?.map((c) => new CapabilityOutputDTO(c)),
+      capabilities: await Promise.all(
+        data.capabilities?.map((c) => new CapabilityOutputDTO().construct(c))
+      ),
     });
   }
 
@@ -88,7 +84,7 @@ export class RoleRepo extends ITakaroRepo<
     }).build(query);
     return {
       total: result.total,
-      results: this.transformToDTO(result.results),
+      results: await this.transformToDTO(result.results),
     };
   }
 

@@ -72,7 +72,6 @@ const tests = [
         {
           name: 'Updated cronJob',
           temporalValue: '0 * * * *',
-          enabled: false,
         }
       );
     },
@@ -105,20 +104,18 @@ const tests = [
     group,
     name: 'Search',
     setup: async function () {
-      const module = (
+      const mod = (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
         })
       ).data.data;
       return (
-        await this.client.cronjob.cronJobControllerCreate(
-          mockCronjob(module.id)
-        )
+        await this.client.cronjob.cronJobControllerCreate(mockCronjob(mod.id))
       ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
-        filters: { name: mockCronjob(module.id).name },
+        filters: { name: mockCronjob(this.setupData.data.moduleId).name },
       });
     },
     filteredFields: ['moduleId', 'functionId'],

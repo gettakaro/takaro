@@ -6,7 +6,6 @@
     "data": {
       "name": "Updated cronJob",
       "temporalValue": "0 * * * *",
-      "enabled": false,
       "updatedAt": "2022-09-22T13:03:36.711Z",
       "createdAt": "2022-09-22T13:03:36.690Z",
       "id": "f7ff06bc-3f63-428d-a3d1-38943483dc98",

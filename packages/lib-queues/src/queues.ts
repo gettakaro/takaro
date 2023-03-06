@@ -6,9 +6,9 @@ import {
   Job,
   QueueScheduler,
 } from 'bullmq';
-import { config } from './config';
+import { config } from './config.js';
 import { logger } from '@takaro/util';
-import { getRedisConnectionOptions } from './util/redisConnectionOptions';
+import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 const log = logger('queue');

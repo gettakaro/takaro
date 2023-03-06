@@ -16,7 +16,7 @@ import {
   AiOutlineClose as DeleteIcon,
 } from 'react-icons/ai';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FloatingDelayGroup } from '@floating-ui/react-dom-interactions';
+import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useModule } from 'hooks/useModule';

@@ -1,5 +1,5 @@
-import { DomainApi } from '../generated';
-import { BaseApiClient, IApiClientConfig } from './baseClient';
+import { DomainApi } from '../generated/index.js';
+import { BaseApiClient, IApiClientConfig } from './baseClient.js';
 
 export class AdminClient extends BaseApiClient {
   constructor(config: IApiClientConfig) {

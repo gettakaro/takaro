@@ -1,8 +1,13 @@
+import { getTakaro, getData } from '@takaro/helpers';
+
 async function ping() {
-  await client.gameserver.gameServerControllerSendMessage(gameServerId, {
+  const takaro = await getTakaro();
+  const data = await getData();
+
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: 'Pong!',
     opts: {
-      recipient: event.player,
+      recipient: data.player,
     },
   });
 }

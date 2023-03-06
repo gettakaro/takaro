@@ -1,6 +1,6 @@
 import { expect, sandbox } from '@takaro/test';
-import { GameEvents } from '../interfaces/events';
-import { Mock } from '../main';
+import { GameEvents } from '../interfaces/events.js';
+import { Mock, MockConnectionInfo } from '../main.js';
 
 describe('GameEventEmitter', () => {
   /**
@@ -9,7 +9,7 @@ describe('GameEventEmitter', () => {
    * We use @ts-expect-error so that if the compiler fails to mark these as errors, we'll know instantly
    */
   it('Has a typed event emitter', async () => {
-    const gameServer = new Mock({});
+    const gameServer = new Mock(await new MockConnectionInfo().construct({}));
     const emitter = await gameServer.getEventEmitter();
 
     const listenerSpy = sandbox.spy();

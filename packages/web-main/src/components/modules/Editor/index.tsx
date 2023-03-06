@@ -16,6 +16,23 @@ const Wrapper = styled.div`
   flex: 1;
   padding-top: 8px;
   background-color: ${({ theme }): string => theme.colors.primary};
+  
+    a,
+    p,
+    div,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    header,
+    footer {
+      font-family: 'Fira Code';
+      color: none;
+    }
+  }
 `;
 
 const StyledFileTabs = styled(FileTabs)`
@@ -48,16 +65,13 @@ export const Editor: FC = () => {
   useMemo(() => {
     if (monaco) {
       defineTheme(monaco);
+      monaco.editor.setTheme('takaro');
 
       // add takaro library to monaco
       // monaco.languages.typescript.typescriptDefaults.addExtraLib("", "takaro.d.ts")
       // monaco.editor.colorizeElement(document.getElementById('code')!, {});
     }
   }, [monaco]);
-
-  if (!monaco) {
-    return <div>'loading...'</div>;
-  }
 
   return (
     <SandpackThemeProvider theme="auto">
@@ -69,16 +83,21 @@ export const Editor: FC = () => {
             height="100%"
             language="typescript"
             theme="takaro"
+            loading={<div>loading...</div>}
             key={sandpack.activeFile}
             defaultValue={code}
+            className="code-editor"
             onChange={(value) => updateCode(value || '')}
             options={{
               minimap: { enabled: false },
               wordWrap: 'on',
               lineNumbers: 'on',
               contextmenu: false,
+              'semanticHighlighting.enabled': true,
               readOnly: false,
-              fontSize: 24,
+              fontSize: 17,
+              fontWeight: 'bold',
+              fontLigatures: false,
             }}
           />
         </Wrapper>
