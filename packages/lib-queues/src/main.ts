@@ -4,5 +4,5 @@ export {
   TakaroWorker,
   IJobData,
   IEventQueueData,
-} from './queues';
-export { queuesConfigSchema, IQueuesConfig } from './config';
+} from './queues.js';
+export { queuesConfigSchema, IQueuesConfig } from './config.js';

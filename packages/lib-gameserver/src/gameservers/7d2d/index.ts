@@ -1,14 +1,15 @@
 import { logger, TakaroDTO } from '@takaro/util';
-import axios from 'axios';
 import { IsString, IsBoolean } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   TestReachabilityOutput,
-} from '../../interfaces/GameServer';
-import { SevenDaysToDieEmitter } from './emitter';
-import { SdtdApiClient } from './sdtdAPIClient';
+} from '../../interfaces/GameServer.js';
+import { SevenDaysToDieEmitter } from './emitter.js';
+import { SdtdApiClient } from './sdtdAPIClient.js';
+
+import axios from 'axios';
 
 export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   @IsString()
@@ -25,8 +26,8 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: Record<string, unknown>) {
-    this.connectionInfo = new SdtdConnectionInfo(config);
+  constructor(config: SdtdConnectionInfo) {
+    this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
 
@@ -69,13 +70,13 @@ export class SevenDaysToDie implements IGameServer {
         }
       }
 
-      return new TestReachabilityOutput({
+      return new TestReachabilityOutput().construct({
         connectable: false,
         reason,
       });
     }
 
-    return new TestReachabilityOutput({
+    return new TestReachabilityOutput().construct({
       connectable: true,
     });
   }
@@ -83,7 +84,7 @@ export class SevenDaysToDie implements IGameServer {
   async executeConsoleCommand(rawCommand: string) {
     const result = await this.apiClient.executeConsoleCommand(rawCommand);
 
-    return new CommandOutput({
+    return new CommandOutput().construct({
       rawResult: result.data.result,
       success: true,
     });

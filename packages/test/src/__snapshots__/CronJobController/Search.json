@@ -12,7 +12,6 @@
         "updatedAt": "2022-09-22T13:03:37.494Z",
         "id": "70791103-ef49-4041-86e3-30a115fa7fa4",
         "name": "Test cronJob",
-        "enabled": true,
         "temporalValue": "0 * * * *",
         "moduleId": "441fde07-5f0c-41af-996d-47e5f5f1b97b",
         "function": {

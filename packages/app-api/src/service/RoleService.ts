@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import {
   Length,
@@ -7,12 +7,11 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   IsString,
-  IsUUID,
   IsEnum,
 } from 'class-validator';
-import { PaginatedOutput } from '../db/base';
-import { RoleModel, RoleRepo } from '../db/role';
-import { TakaroService } from './Base';
+import { PaginatedOutput } from '../db/base.js';
+import { RoleModel, RoleRepo } from '../db/role.js';
+import { TakaroService } from './Base.js';
 
 export enum CAPABILITIES {
   'ROOT' = 'ROOT',
@@ -71,17 +70,12 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
-export class CapabilityOutputDTO extends TakaroDTO<CapabilityOutputDTO> {
-  @IsUUID()
-  id: string;
-
+export class CapabilityOutputDTO extends TakaroModelDTO<CapabilityOutputDTO> {
   @IsEnum(CAPABILITIES)
   capability: CAPABILITIES;
 }
 
-export class RoleOutputDTO extends TakaroDTO<RoleOutputDTO> {
-  @IsUUID()
-  id: string;
+export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @IsString()
   name: string;
 

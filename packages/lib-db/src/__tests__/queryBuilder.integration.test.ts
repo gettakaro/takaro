@@ -1,7 +1,7 @@
-import { disconnectKnex, getKnex } from '../knex';
-import { QueryBuilder, SortDirection } from '../queryBuilder';
+import { disconnectKnex, getKnex } from '../knex.js';
+import { QueryBuilder, SortDirection } from '../queryBuilder.js';
 import { expect } from '@takaro/test';
-import { TakaroModel } from '../TakaroModel';
+import { TakaroModel } from '../TakaroModel.js';
 import { Model } from 'objection';
 
 const TEST_TABLE_USERS_NAME = 'test_users';

@@ -1,6 +1,6 @@
 import { createRef } from 'react';
-import { Story, Meta } from '@storybook/react';
-import { SingleActionModal } from '../../modals';
+import { Meta, StoryFn } from '@storybook/react';
+import { SingleActionModal, SingleActionModalProps } from '.';
 import { useModal } from '../../hooks';
 import { useSnackbar } from 'notistack';
 import { Button } from '../../components';
@@ -8,12 +8,16 @@ import { Button } from '../../components';
 export default {
   title: 'Modals/SingleAction',
   component: undefined,
-} as Meta;
+  args: {
+    actionText: 'Go back to dashboard',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    title: 'Payment successful!',
+    type: 'info',
+  },
+} as Meta<SingleActionModalProps>;
 
-///////////////
-// SUCCESS
-///////////////
-export const Success: Story = () => {
+export const Example: StoryFn<SingleActionModalProps> = (args) => {
   const [ModalWrapper, open, close] = useModal();
   const ref = createRef<HTMLDivElement>();
   const { enqueueSnackbar } = useSnackbar();
@@ -22,15 +26,12 @@ export const Success: Story = () => {
     <div>
       <ModalWrapper>
         <SingleActionModal
+          {...args}
           action={() => {
             enqueueSnackbar('Accept button pressed.', { type: 'success' });
           }}
-          actionText="Go back to dashboard"
           close={close}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
           ref={ref}
-          title="Payment successful!"
-          type="success"
         />
       </ModalWrapper>
       <Button onClick={open} text="Open Success Modal" />
@@ -41,16 +42,19 @@ export const Success: Story = () => {
 ///////////////
 // ERROR
 ///////////////
-export const Error: Story = () => {
+export const Error: StoryFn<SingleActionModalProps> = ({
+  actionText,
+  description,
+}) => {
   const [ModalWrapper, open, close] = useModal();
 
   return (
     <div>
       <ModalWrapper>
         <SingleActionModal
-          actionText="Go back to dashboard"
+          actionText={actionText}
           close={close}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          description={description}
           title="Payment failed!"
           type="error"
         />

@@ -1,4 +1,9 @@
-import { getKnex, ITakaroQuery, TakaroModel } from '@takaro/db';
+import {
+  getKnex,
+  ITakaroQuery,
+  TakaroModel,
+  NOT_DOMAIN_SCOPED_TakaroModel,
+} from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
@@ -7,7 +12,7 @@ export interface PaginatedOutput<T> {
   results: T[];
 }
 export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
-  Model extends TakaroModel,
+  Model extends NOT_DOMAIN_SCOPED_TakaroModel,
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
   UpdateDTO extends TakaroDTO<UpdateDTO>

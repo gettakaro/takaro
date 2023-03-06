@@ -1,16 +1,20 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
+import {
+  NOT_DOMAIN_SCOPED_TakaroModel,
+  ITakaroQuery,
+  QueryBuilder,
+} from '@takaro/db';
+import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base.js';
 import { errors } from '@takaro/util';
 import {
   DomainOutputDTO,
   DomainCreateInputDTO,
   DomainUpdateInputDTO,
-} from '../service/DomainService';
-import { UserRepo } from './user';
+} from '../service/DomainService.js';
+import { UserRepo } from './user.js';
 
 const TABLE_NAME = 'domains';
 
-export class DomainModel extends TakaroModel {
+export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
 }
@@ -33,7 +37,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     ).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new DomainOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new DomainOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -45,13 +51,13 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
-    return new DomainOutputDTO(data);
+    return new DomainOutputDTO().construct(data);
   }
 
   async create(item: DomainCreateInputDTO): Promise<DomainOutputDTO> {
     const { query } = await this.getModel();
     const domain = await query.insert(item.toJSON()).returning('*');
-    return new DomainOutputDTO(domain);
+    return new DomainOutputDTO().construct(domain);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -73,7 +79,7 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     const res = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new DomainOutputDTO(res);
+    return new DomainOutputDTO().construct(res);
   }
 
   async resolveDomain(email: string): Promise<string | null> {

@@ -1,20 +1,19 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { FUNCTION_TABLE_NAME } from './function';
+import { ITakaroRepo } from './base.js';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobUpdateDTO,
-} from '../service/CronJobService';
+} from '../service/CronJobService.js';
 
 export const CRONJOB_TABLE_NAME = 'cronJobs';
 
 export class CronJobModel extends TakaroModel {
   static tableName = CRONJOB_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   temporalValue!: string;
 
   functionId: string;
@@ -23,8 +22,7 @@ export class CronJobModel extends TakaroModel {
     return {
       function: {
         relation: Model.BelongsToOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./function').FunctionModel,
+        modelClass: FunctionModel,
         join: {
           from: `${CRONJOB_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
@@ -62,7 +60,9 @@ export class CronJobRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: result.results.map((item) => new CronJobOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new CronJobOutputDTO().construct(item))
+      ),
     };
   }
 
@@ -74,7 +74,7 @@ export class CronJobRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new CronJobOutputDTO(data);
+    return new CronJobOutputDTO().construct(data);
   }
 
   async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
@@ -105,7 +105,7 @@ export class CronJobRepo extends ITakaroRepo<
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
-    return new CronJobOutputDTO(item);
+    return new CronJobOutputDTO().construct(item);
   }
 
   async assign(id: string, functionId: string) {

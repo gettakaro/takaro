@@ -1,14 +1,25 @@
 import Objection, { Model } from 'objection';
 
-export class TakaroModel extends Model {
+export class NOT_DOMAIN_SCOPED_TakaroModel extends Model {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  domain: string;
+  createdAt: Date;
+  updatedAt: Date;
 
   static get idColumn() {
     return 'id';
   }
+
+  $beforeInsert() {
+    this.createdAt = new Date();
+  }
+
+  $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
+}
+
+export class TakaroModel extends NOT_DOMAIN_SCOPED_TakaroModel {
+  domain: string;
 
   static get modifiers() {
     return {
@@ -17,13 +28,5 @@ export class TakaroModel extends Model {
         query.where(`${tableName}.domain`, domainId);
       },
     };
-  }
-
-  $beforeInsert() {
-    this.createdAt = new Date().toISOString();
-  }
-
-  $beforeUpdate() {
-    this.updatedAt = new Date().toISOString();
   }
 }

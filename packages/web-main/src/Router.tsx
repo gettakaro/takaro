@@ -21,6 +21,7 @@ import { Modules } from 'pages/Modules';
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
 const Settings = lazy(() => import('./pages/Settings'));
+const Studio = lazy(() => import('./pages/studio'));
 
 // TODO: Eventually set this to the correct pages.
 const error404Pages = [
@@ -78,10 +79,13 @@ export const Router: FC = () => (
               element={<AddGameServer />}
               path={PATHS.gameServers.update}
             />
-            <Route element={<Modules />} path={PATHS.modules} />
+            <Route element={<Modules />} path={PATHS.modules.overview} />
             <Route element={<Players />} path={PATHS.players} />
           </Route>
 
+          <Route element={<AuthenticatedRoute frame="studio" />}>
+            <Route element={<Studio />} path={PATHS.studio.module} />
+          </Route>
           <Route element={<LogIn />} path={PATHS.login} />
 
           {/* Page not found matches with everything => should stay at bottom */}

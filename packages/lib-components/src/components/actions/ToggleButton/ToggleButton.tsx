@@ -26,23 +26,21 @@ export interface ToggleButtonProps {
   onChange?: (event: MouseEvent<HTMLElement>, value: unknown) => void;
   selected?: boolean;
   onClick?: () => unknown;
+  parentClickEvent?: (value: unknown) => unknown;
   value: NonNullable<string>;
 }
 
-export const ToggleButton: FC<ToggleButtonProps | any> = ({
+export const ToggleButton: FC<ToggleButtonProps> = ({
   selected = false,
   disabled = false,
   onClick = undefined,
   value,
-  parentClickEvent = undefined,
+  parentClickEvent = () => {},
   children,
 }) => {
   const handleOnClick = () => {
     if (disabled) return;
-
-    if (parentClickEvent) {
-      parentClickEvent(value);
-    }
+    parentClickEvent(value);
     if (onClick) {
       onClick();
     }

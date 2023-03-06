@@ -1,15 +1,15 @@
-import { TakaroDTO } from '@takaro/util';
+import { TakaroModelDTO } from '@takaro/util';
 import { IsString } from 'class-validator';
 import { errors } from '@takaro/util';
-import { PaginatedOutput } from '../db/base';
-import { SettingsModel, SettingsRepo } from '../db/settings';
-import { TakaroService } from './Base';
+import { PaginatedOutput } from '../db/base.js';
+import { SettingsModel, SettingsRepo } from '../db/settings.js';
+import { TakaroService } from './Base.js';
 
 export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
   serverChatName = 'serverChatName',
 }
-export class Settings extends TakaroDTO<Settings> {
+export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   commandPrefix: string;
 
@@ -17,10 +17,10 @@ export class Settings extends TakaroDTO<Settings> {
   serverChatName: string;
 }
 
-export const DEFAULT_SETTINGS: Settings = new Settings({
+export const DEFAULT_SETTINGS: Partial<Settings> = {
   commandPrefix: '/',
   serverChatName: 'Takaro',
-});
+};
 
 export class SettingsService extends TakaroService<
   SettingsModel,
@@ -94,6 +94,6 @@ export class SettingsService extends TakaroService<
 
   async getAll() {
     const all = await this.repo.getAll();
-    return new Settings(all);
+    return new Settings().construct(all);
   }
 }

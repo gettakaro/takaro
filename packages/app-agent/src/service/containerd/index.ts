@@ -1,6 +1,6 @@
 import { logger } from '@takaro/util';
 import { spawn } from 'node:child_process';
-import { config } from '../../config';
+import { config } from '../../config.js';
 
 interface IRunContainerOptions {
   image: string;

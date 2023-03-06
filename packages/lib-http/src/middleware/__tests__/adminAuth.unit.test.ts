@@ -1,8 +1,8 @@
-import { HTTP } from '../../app';
+import { HTTP } from '../../app.js';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
-import { createAdminAuthMiddleware } from '../adminAuth';
-import { ErrorHandler } from '../errorHandler';
+import { createAdminAuthMiddleware } from '../adminAuth.js';
+import { ErrorHandler } from '../errorHandler.js';
 import { Request, Response } from 'express';
 
 describe('adminAuth', () => {

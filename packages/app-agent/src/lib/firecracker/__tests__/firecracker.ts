@@ -1,5 +1,5 @@
-import Firecracker from '../index';
-import { config } from '../../../config';
+import Firecracker from '../index.js';
+import { config } from '../../../config.js';
 
 console.debug(config.get('firecracker.binary'));
 console.debug(config.get('firecracker.rootfs'));

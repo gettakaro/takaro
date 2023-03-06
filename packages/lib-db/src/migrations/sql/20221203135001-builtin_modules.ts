@@ -27,6 +27,18 @@ export async function up(knex: Knex): Promise<void> {
 
     table.unique(['builtin', 'domain']);
   });
+
+  await knex.schema.alterTable('commands', (table) => {
+    table.dropColumn('enabled');
+  });
+
+  await knex.schema.alterTable('cronJobs', (table) => {
+    table.dropColumn('enabled');
+  });
+
+  await knex.schema.alterTable('hooks', (table) => {
+    table.dropColumn('enabled');
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
@@ -34,6 +46,18 @@ export async function down(knex: Knex): Promise<void> {
     table.boolean('enabled').notNullable().defaultTo(true);
     table.json('config').defaultTo('{}');
     table.dropColumn('builtin');
+  });
+
+  await knex.schema.alterTable('commands', (table) => {
+    table.boolean('enabled');
+  });
+
+  await knex.schema.alterTable('cronJobs', (table) => {
+    table.boolean('enabled');
+  });
+
+  await knex.schema.alterTable('hooks', (table) => {
+    table.boolean('enabled');
   });
 
   await knex.schema.dropTable('moduleAssignments');

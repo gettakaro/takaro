@@ -1,25 +1,12 @@
 import path from 'node:path';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { JsonObject } from 'type-fest';
-import { expect } from './test/expect';
-import { omit } from 'lodash';
+import { expect } from './test/expect.js';
+import { omit } from 'lodash-es';
 import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
-import { IntegrationTest } from './main';
-import { IIntegrationTest } from './integrationTest';
-
-export class ITestWithSnapshot<SetupData> extends IIntegrationTest<SetupData> {
-  snapshot = true;
-  group!: string;
-  name!: string;
-  standardEnvironment?: boolean = true;
-  setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
-  teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
-  test!: (
-    this: IntegrationTest<SetupData>
-  ) => Promise<ITakaroAPIAxiosResponse<unknown>>;
-  expectedStatus?: number = 200;
-  filteredFields?: string[];
-}
+import { IIntegrationTest } from './integrationTest.js';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 function normalizePath(path: string) {
   return path.split('/').join('');
@@ -53,13 +40,13 @@ function filterFields(
   return data;
 }
 
-export async function matchSnapshot(
-  test: ITestWithSnapshot<unknown>,
+export async function matchSnapshot<SetupData>(
+  test: IIntegrationTest<SetupData>,
   response: ITakaroAPIAxiosResponse<unknown>
 ) {
   const snapshotPath = path.resolve(
     __dirname,
-    '__snapshots__',
+    '../src/__snapshots__',
     test.group,
     normalizePath(`${test.name}.json`)
   );

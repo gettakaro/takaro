@@ -1,14 +1,14 @@
-import { DomainScoped } from '../lib/DomainScoped';
+import { DomainScoped } from '../lib/DomainScoped.js';
 import { errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
-import { UserService } from '../service/UserService';
-import * as jwt from 'jsonwebtoken';
-import { config } from '../config';
+import { UserService } from '../service/UserService.js';
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
-import { CAPABILITIES } from './RoleService';
+import { CAPABILITIES } from './RoleService.js';
 
 interface IJWTPayload {
   sub: string;
@@ -62,7 +62,7 @@ export class AuthService extends DomainScoped {
         maxAge: ms(config.get('auth.jwtExpiresIn')),
       });
 
-      return new LoginOutputDTO({ token });
+      return new LoginOutputDTO().construct({ token });
     } else {
       this.log.warn('Password does not match');
       throw new errors.UnauthorizedError();

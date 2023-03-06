@@ -1,4 +1,4 @@
-import { FloatingDelayGroup } from '@floating-ui/react-dom-interactions';
+import { FloatingDelayGroup } from '@floating-ui/react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Tooltip, TooltipProps } from '.';
 import { styled } from '../../../styled';
@@ -9,7 +9,7 @@ const Container = styled.div`
 `;
 
 export default {
-  title: 'Other/Tooltip',
+  title: 'Feedback/Tooltip',
   component: Tooltip,
   args: {
     placement: 'bottom',

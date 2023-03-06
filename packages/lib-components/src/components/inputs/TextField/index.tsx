@@ -52,11 +52,8 @@ export const TextField: FC<TextFieldProps> = (props) => {
     suffix,
   } = defaultsApplier(props);
 
-  console.log(required);
-
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const { field } = useController({ name, control, defaultValue: value });
 
   const handleOnBlur = () => {

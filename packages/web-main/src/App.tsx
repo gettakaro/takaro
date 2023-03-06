@@ -9,7 +9,14 @@ import { useMemo, useState } from 'react';
 import { UserContext, UserData } from 'context/userContext';
 import { AuthContext, AuthProvider } from 'context/authContext';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // This is a temporary fix for the flashing behaviour in studio
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const defaultUserData: UserData = {
   id: null,

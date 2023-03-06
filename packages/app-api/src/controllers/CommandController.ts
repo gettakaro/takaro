@@ -12,8 +12,8 @@ import {
   CommandOutputDTO,
   CommandService,
   CommandUpdateDTO,
-} from '../service/CommandService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/CommandService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -27,19 +27,19 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { CAPABILITIES } from '../service/RoleService.js';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested()
-  data!: CommandOutputDTO;
+  declare data: CommandOutputDTO;
 }
 
 export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => CommandOutputDTO)
-  data!: CommandOutputDTO[];
+  declare data: CommandOutputDTO[];
 }
 
 class CommandSearchInputAllowedFilters {
@@ -56,10 +56,10 @@ class CommandSearchInputAllowedFilters {
   enabled!: boolean;
 }
 
-class CommandSearchInputDTO extends ITakaroQuery<CommandSearchInputAllowedFilters> {
+export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedFilters)
-  filters!: CommandSearchInputAllowedFilters;
+  declare filters: CommandSearchInputAllowedFilters;
 }
 
 @OpenAPI({

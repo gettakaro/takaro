@@ -18,7 +18,6 @@
             "updatedAt": "2023-02-25T14:30:23.540Z",
             "id": "dae5f184-7197-4de6-bf6a-ab67cb75ca2f",
             "name": "ping",
-            "enabled": true,
             "moduleId": "12b2bebc-7861-4d2d-b09d-d232d72e46d0",
             "functionId": "62841ed7-aa9a-4090-9f01-d6b3df1bd24c",
             "trigger": "ping",
@@ -27,7 +26,7 @@
               "createdAt": "2023-02-25T14:30:23.536Z",
               "updatedAt": "2023-02-25T14:30:23.537Z",
               "id": "62841ed7-aa9a-4090-9f01-d6b3df1bd24c",
-              "code": "\"use strict\";\nasync function ping() {\n    await client.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: event.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
+              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
             }
           }
         ]

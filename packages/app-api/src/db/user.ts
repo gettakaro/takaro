@@ -1,14 +1,14 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role';
+import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
+import { ITakaroRepo } from './base.js';
 import {
   UserOutputDTO,
   UserCreateInputDTO,
   UserUpdateDTO,
   UserOutputWithRolesDTO,
-} from '../service/UserService';
+} from '../service/UserService.js';
 
 const TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
@@ -68,7 +68,11 @@ export class UserRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: result.results.map((item) => new UserOutputWithRolesDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) =>
+          new UserOutputWithRolesDTO().construct(item)
+        )
+      ),
     };
   }
 
@@ -80,7 +84,7 @@ export class UserRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`User with id ${id} not found`);
     }
 
-    return new UserOutputWithRolesDTO(data);
+    return new UserOutputWithRolesDTO().construct(data);
   }
 
   async create(data: UserCreateInputDTO): Promise<UserOutputDTO> {
@@ -91,7 +95,7 @@ export class UserRepo extends ITakaroRepo<
         domain: this.domainId,
       })
       .returning('*');
-    return new UserOutputDTO(item);
+    return new UserOutputDTO().construct(item);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -105,7 +109,7 @@ export class UserRepo extends ITakaroRepo<
     const item = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new UserOutputDTO(item);
+    return new UserOutputDTO().construct(item);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

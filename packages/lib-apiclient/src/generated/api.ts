@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration';
+import { Configuration } from './configuration.js';
 import globalAxios, {
   AxiosPromise,
   AxiosInstance,
@@ -31,7 +31,7 @@ import {
   serializeDataIfNeeded,
   toPathString,
   createRequestFunction,
-} from './common';
+} from './common.js';
 // @ts-ignore
 import {
   BASE_PATH,
@@ -39,7 +39,7 @@ import {
   RequestArgs,
   BaseAPI,
   RequiredError,
-} from './base';
+} from './base.js';
 
 /**
  *
@@ -62,10 +62,10 @@ export interface APIOutput {
 export interface BaseEvent {
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof BaseEvent
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -91,12 +91,6 @@ export type BaseEventTypeEnum =
   typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
 
 /**
- * @type BaseEventTimestamp
- * @export
- */
-export type BaseEventTimestamp = string;
-
-/**
  *
  * @export
  * @interface CapabilityOutputDTO
@@ -107,13 +101,25 @@ export interface CapabilityOutputDTO {
    * @type {string}
    * @memberof CapabilityOutputDTO
    */
-  id: string;
+  capability: CapabilityOutputDTOCapabilityEnum;
   /**
    *
    * @type {string}
    * @memberof CapabilityOutputDTO
    */
-  capability: CapabilityOutputDTOCapabilityEnum;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CapabilityOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CapabilityOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const CapabilityOutputDTOCapabilityEnum = {
@@ -167,12 +173,6 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   helpText?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof CommandCreateDTO
-   */
-  enabled?: boolean;
   /**
    *
    * @type {string}
@@ -273,12 +273,6 @@ export interface CommandOutputDTO {
    * @type {string}
    * @memberof CommandOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CommandOutputDTO
-   */
   name: string;
   /**
    *
@@ -294,12 +288,6 @@ export interface CommandOutputDTO {
   helpText: string;
   /**
    *
-   * @type {boolean}
-   * @memberof CommandOutputDTO
-   */
-  enabled: boolean;
-  /**
-   *
    * @type {FunctionOutputDTO}
    * @memberof CommandOutputDTO
    */
@@ -309,7 +297,31 @@ export interface CommandOutputDTO {
    * @type {string}
    * @memberof CommandOutputDTO
    */
+  functionId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
   moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -433,12 +445,6 @@ export interface CommandUpdateDTO {
   helpText?: string;
   /**
    *
-   * @type {boolean}
-   * @memberof CommandUpdateDTO
-   */
-  enabled?: boolean;
-  /**
-   *
    * @type {string}
    * @memberof CommandUpdateDTO
    */
@@ -456,12 +462,6 @@ export interface CronJobCreateDTO {
    * @memberof CronJobCreateDTO
    */
   name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobCreateDTO
-   */
-  enabled?: string;
   /**
    *
    * @type {string}
@@ -511,19 +511,7 @@ export interface CronJobOutputDTO {
    * @type {string}
    * @memberof CronJobOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobOutputDTO
-   */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof CronJobOutputDTO
-   */
-  enabled: boolean;
   /**
    *
    * @type {string}
@@ -542,6 +530,24 @@ export interface CronJobOutputDTO {
    * @memberof CronJobOutputDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CronJobOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CronJobOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -580,12 +586,6 @@ export interface CronJobSearchInputAllowedFilters {
    * @memberof CronJobSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobSearchInputAllowedFilters
-   */
-  enabled?: string;
 }
 /**
  *
@@ -650,25 +650,13 @@ export interface CronJobUpdateDTO {
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof CronJobUpdateDTO
-   */
-  enabled: boolean;
+  name?: string;
   /**
    *
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  temporalValue: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobUpdateDTO
-   */
-  moduleId?: string;
+  temporalValue?: string;
   /**
    *
    * @type {string}
@@ -775,13 +763,25 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  id: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  name: string;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -907,10 +907,10 @@ export interface EventChatMessage {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventChatMessage
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -949,10 +949,10 @@ export interface EventPlayerConnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventPlayerConnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -991,10 +991,10 @@ export interface EventPlayerDisconnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventPlayerDisconnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -1062,13 +1062,25 @@ export interface FunctionOutputDTO {
    * @type {string}
    * @memberof FunctionOutputDTO
    */
-  id: string;
+  code: string;
   /**
    *
    * @type {string}
    * @memberof FunctionOutputDTO
    */
-  code: string;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof FunctionOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof FunctionOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -1232,12 +1244,6 @@ export interface GameServerOutputDTO {
    * @type {string}
    * @memberof GameServerOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof GameServerOutputDTO
-   */
   name: string;
   /**
    *
@@ -1251,6 +1257,24 @@ export interface GameServerOutputDTO {
    * @memberof GameServerOutputDTO
    */
   type: GameServerOutputDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof GameServerOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof GameServerOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const GameServerOutputDTOTypeEnum = {
@@ -1510,12 +1534,6 @@ export interface HookCreateDTO {
   name: string;
   /**
    *
-   * @type {boolean}
-   * @memberof HookCreateDTO
-   */
-  enabled?: boolean;
-  /**
-   *
    * @type {string}
    * @memberof HookCreateDTO
    */
@@ -1580,19 +1598,7 @@ export interface HookOutputDTO {
    * @type {string}
    * @memberof HookOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof HookOutputDTO
-   */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookOutputDTO
-   */
-  enabled: boolean;
   /**
    *
    * @type {string}
@@ -1617,6 +1623,24 @@ export interface HookOutputDTO {
    * @memberof HookOutputDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof HookOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof HookOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const HookOutputDTOEventTypeEnum = {
@@ -1666,12 +1690,6 @@ export interface HookSearchInputAllowedFilters {
    * @memberof HookSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookSearchInputAllowedFilters
-   */
-  enabled?: boolean;
   /**
    *
    * @type {string}
@@ -1753,25 +1771,13 @@ export interface HookUpdateDTO {
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookUpdateDTO
-   */
-  enabled: boolean;
+  name?: string;
   /**
    *
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  regex: string;
-  /**
-   *
-   * @type {string}
-   * @memberof HookUpdateDTO
-   */
-  moduleId?: string;
+  regex?: string;
   /**
    *
    * @type {string}
@@ -2063,6 +2069,24 @@ export interface ModuleInstallationOutputDTO {
    * @memberof ModuleInstallationOutputDTO
    */
   config: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2113,12 +2137,6 @@ export interface ModuleOutputDTO {
    * @type {string}
    * @memberof ModuleOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ModuleOutputDTO
-   */
   name: string;
   /**
    *
@@ -2144,6 +2162,24 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   commands: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2248,6 +2284,37 @@ export interface ModuleUpdateDTO {
    */
   name: string;
 }
+/**
+ *
+ * @export
+ * @interface NOTDOMAINSCOPEDTakaroModelDTO
+ */
+export interface NOTDOMAINSCOPEDTakaroModelDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * @type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt
+ * @export
+ */
+export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
+
 /**
  *
  * @export
@@ -2382,12 +2449,6 @@ export interface PlayerOutputDTO {
    * @type {string}
    * @memberof PlayerOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerOutputDTO
-   */
   name: string;
   /**
    *
@@ -2407,6 +2468,24 @@ export interface PlayerOutputDTO {
    * @memberof PlayerOutputDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2606,12 +2685,6 @@ export interface RoleOutputDTO {
    * @type {string}
    * @memberof RoleOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleOutputDTO
-   */
   name: string;
   /**
    *
@@ -2619,6 +2692,24 @@ export interface RoleOutputDTO {
    * @memberof RoleOutputDTO
    */
   capabilities: Array<any>;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2863,6 +2954,24 @@ export interface Settings {
    * @memberof Settings
    */
   serverChatName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof Settings
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof Settings
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2920,6 +3029,31 @@ export interface SettingsSetDTO {
    * @memberof SettingsSetDTO
    */
   value: string;
+}
+/**
+ *
+ * @export
+ * @interface TakaroModelDTO
+ */
+export interface TakaroModelDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroModelDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2995,12 +3129,6 @@ export interface UserOutputDTO {
    * @type {string}
    * @memberof UserOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserOutputDTO
-   */
   name: string;
   /**
    *
@@ -3008,6 +3136,24 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -3046,6 +3192,18 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}

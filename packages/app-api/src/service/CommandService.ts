@@ -1,8 +1,7 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
-import { CommandModel, CommandRepo } from '../db/command';
+import { CommandModel, CommandRepo } from '../db/command.js';
 import {
-  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
@@ -14,19 +13,17 @@ import {
   FunctionOutputDTO,
   FunctionService,
   FunctionUpdateDTO,
-} from './FunctionService';
+} from './FunctionService.js';
 import { EventChatMessage } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { Type } from 'class-transformer';
-import { TakaroDTO, errors } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
-import { SettingsService, SETTINGS_KEYS } from './SettingsService';
-import { AuthService } from './AuthService';
+import { PaginatedOutput } from '../db/base.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
+import { AuthService } from './AuthService.js';
 
-export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
-  @IsUUID()
-  id: string;
+export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
   name: string;
 
@@ -36,12 +33,12 @@ export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
   @IsString()
   helpText: string;
 
-  @IsBoolean()
-  enabled: boolean;
-
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  functionId: string;
 
   @IsUUID()
   moduleId: string;
@@ -58,10 +55,6 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
   @IsString()
   @IsOptional()
   helpText?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  enabled: boolean;
 
   @IsUUID()
   moduleId: string;
@@ -84,10 +77,6 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsString()
   @IsOptional()
   helpText?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  enabled?: boolean;
 
   @IsOptional()
   @IsString()
@@ -120,14 +109,14 @@ export class CommandService extends TakaroService<
 
     if (item.function) {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: item.function,
         })
       );
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -135,7 +124,7 @@ export class CommandService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new CommandCreateDTO({ ...item, function: fnIdToAdd })
+      await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     return created;
   }
@@ -156,7 +145,7 @@ export class CommandService extends TakaroService<
 
       await functionsService.update(
         fn.id,
-        new FunctionUpdateDTO({
+        await new FunctionUpdateDTO().construct({
           code: item.function,
         })
       );

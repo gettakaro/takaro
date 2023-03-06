@@ -7,8 +7,8 @@ import {
   RoleUpdateInputDTO,
   RoleOutputDTO,
   CAPABILITIES,
-} from '../service/RoleService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/RoleService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -23,18 +23,18 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
+import { ParamId } from '../lib/validators.js';
 
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
   @ValidateNested()
-  data!: RoleOutputDTO;
+  declare data: RoleOutputDTO;
 }
 
 export class RoleOutputArrayDTOAPI extends APIOutput<RoleOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => RoleOutputDTO)
-  data!: RoleOutputDTO[];
+  declare data: RoleOutputDTO[];
 }
 
 export class RoleSearchInputAllowedFilters {
@@ -46,7 +46,7 @@ export class RoleSearchInputAllowedFilters {
 export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedFilters)
-  filters!: RoleSearchInputAllowedFilters;
+  declare filters: RoleSearchInputAllowedFilters;
 }
 
 @OpenAPI({

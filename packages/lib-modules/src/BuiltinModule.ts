@@ -1,8 +1,8 @@
-import { GameEvents, EventMapping } from '@takaro/gameserver';
+import { GameEvents } from '@takaro/gameserver';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
-import type { Client } from '@takaro/apiclient';
-
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IModuleItem {
   name: string;
   function: string;
@@ -19,12 +19,6 @@ interface IHook extends IModuleItem {
 
 interface ICronJob extends IModuleItem {
   temporalValue: string;
-}
-
-export interface StandardFunctionData {
-  client: Client;
-  gameServerId: string;
-  event?: EventMapping[GameEvents];
 }
 
 export abstract class BuiltinModule {
