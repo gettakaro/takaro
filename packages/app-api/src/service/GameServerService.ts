@@ -25,7 +25,6 @@ import {
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
-import { config } from '../config.js';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
@@ -194,9 +193,6 @@ export class GameServerService extends TakaroService<
           await new RustConnectionInfo().construct(connectionInfo)
         );
       case GAME_SERVER_TYPE.MOCK:
-        if (config.get('mode') === 'production') {
-          throw new errors.BadRequestError('Mock server is not allowed');
-        }
         return new Mock(
           await new MockConnectionInfo().construct(connectionInfo)
         );
