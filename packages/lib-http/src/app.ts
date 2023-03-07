@@ -40,6 +40,7 @@ export class HTTP {
           if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
           } else {
+            this.logger.warn(`Origin ${origin} not allowed by CORS`);
             callback(new errors.BadRequestError('Not allowed by CORS'));
           }
         },
