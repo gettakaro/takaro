@@ -9,6 +9,7 @@ import {
   PlayerApi,
   SettingsApi,
   CommandApi,
+  VariableApi,
 } from '../generated/api.js';
 import { BaseApiClient, IApiClientConfig } from './baseClient.js';
 
@@ -140,6 +141,16 @@ export class Client extends BaseApiClient {
 
   get settings() {
     return new SettingsApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get variable() {
+    return new VariableApi(
       {
         isJsonMime: this.isJsonMime,
       },

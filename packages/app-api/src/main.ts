@@ -22,6 +22,7 @@ import { PlayerController } from './controllers/PlayerController.js';
 import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
 import { ModuleService } from './service/ModuleService.js';
+import { VariableController } from './controllers/VariableController.js';
 
 export const server = new HTTP(
   {
@@ -37,6 +38,7 @@ export const server = new HTTP(
       PlayerController,
       SettingsController,
       CommandController,
+      VariableController,
     ],
   },
   {

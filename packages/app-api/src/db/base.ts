@@ -32,9 +32,9 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
   abstract find(
     filters: ITakaroQuery<OutputDTO>
   ): Promise<PaginatedOutput<OutputDTO>>;
-  abstract findOne(id: string | number): Promise<OutputDTO | undefined>;
+  abstract findOne(id: string | number): Promise<OutputDTO>;
   abstract create(item: CreateInputDTO): Promise<OutputDTO>;
-  abstract update(id: string, item: UpdateDTO): Promise<OutputDTO | undefined>;
+  abstract update(id: string, item: UpdateDTO): Promise<OutputDTO>;
   abstract delete(id: string): Promise<boolean>;
 }
 
