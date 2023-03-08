@@ -144,6 +144,8 @@ export const CapabilityOutputDTOCapabilityEnum = {
   ManagePlayers: 'MANAGE_PLAYERS',
   ManageSettings: 'MANAGE_SETTINGS',
   ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
 export type CapabilityOutputDTOCapabilityEnum =
@@ -2650,6 +2652,8 @@ export const RoleCreateInputDTOCapabilitiesEnum = {
   ManagePlayers: 'MANAGE_PLAYERS',
   ManageSettings: 'MANAGE_SETTINGS',
   ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
 export type RoleCreateInputDTOCapabilitiesEnum =
@@ -2837,6 +2841,8 @@ export const RoleUpdateInputDTOCapabilitiesEnum = {
   ManagePlayers: 'MANAGE_PLAYERS',
   ManageSettings: 'MANAGE_SETTINGS',
   ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
 export type RoleUpdateInputDTOCapabilitiesEnum =
@@ -3294,6 +3300,184 @@ export interface UserUpdateDTO {
    * @memberof UserUpdateDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableCreateDTO
+ */
+export interface VariableCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  value: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputArrayDTOAPI
+ */
+export interface VariableOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<VariableOutputDTO>}
+   * @memberof VariableOutputArrayDTOAPI
+   */
+  data: Array<VariableOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof VariableOutputArrayDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputDTO
+ */
+export interface VariableOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof VariableOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof VariableOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputDTOAPI
+ */
+export interface VariableOutputDTOAPI {
+  /**
+   *
+   * @type {VariableOutputDTO}
+   * @memberof VariableOutputDTOAPI
+   */
+  data: VariableOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof VariableOutputDTOAPI
+   */
+  metadata: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface VariableSearchInputAllowedFilters
+ */
+export interface VariableSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  id?: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableSearchInputDTO
+ */
+export interface VariableSearchInputDTO {
+  /**
+   *
+   * @type {VariableSearchInputAllowedFilters}
+   * @memberof VariableSearchInputDTO
+   */
+  filters?: VariableSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof VariableSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof VariableSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  sortDirection?: VariableSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof VariableSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const VariableSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type VariableSearchInputDTOSortDirectionEnum =
+  typeof VariableSearchInputDTOSortDirectionEnum[keyof typeof VariableSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface VariableUpdateDTO
+ */
+export interface VariableUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  value: string;
 }
 
 /**
@@ -11039,6 +11223,597 @@ export class UserApi extends BaseAPI {
   ) {
     return UserApiFp(this.configuration)
       .userControllerUpdate(id, userUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * VariableApi - axios parameter creator
+ * @export
+ */
+export const VariableApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerCreate: async (
+      variableCreateDTO?: VariableCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/variables`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerDelete: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerDelete', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFind: async (
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/variables/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerFindOne', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerUpdate: async (
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerUpdate', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableUpdateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * VariableApi - functional programming interface
+ * @export
+ */
+export const VariableApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = VariableApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerCreate(
+      variableCreateDTO?: VariableCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerCreate(
+          variableCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerDelete(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerDelete(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerFind(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerFind(
+          variableSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerFindOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerFindOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerUpdate(
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerUpdate(
+          id,
+          variableUpdateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * VariableApi - factory interface
+ * @export
+ */
+export const VariableApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = VariableApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerCreate(
+      variableCreateDTO?: VariableCreateDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerCreate(variableCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerDelete(
+      id: string,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerDelete(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFind(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputArrayDTOAPI> {
+      return localVarFp
+        .variableControllerFind(variableSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerFindOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerUpdate(
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerUpdate(id, variableUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * VariableApi - object-oriented interface
+ * @export
+ * @class VariableApi
+ * @extends {BaseAPI}
+ */
+export class VariableApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerCreate(
+    variableCreateDTO?: VariableCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerCreate(variableCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Delete
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerDelete(id: string, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerDelete(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Find
+   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerFind(
+    variableSearchInputDTO?: VariableSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerFind(variableSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Find one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerFindOne(id: string, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerUpdate(
+    id: string,
+    variableUpdateDTO?: VariableUpdateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerUpdate(id, variableUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

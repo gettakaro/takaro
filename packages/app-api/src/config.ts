@@ -19,7 +19,10 @@ interface IHttpConfig extends IBaseConfig {
     jwtExpiresIn: string;
     cookieName: string;
   };
-  clusterMode: CLUSTER_MODE;
+  takaro: {
+    clusterMode: CLUSTER_MODE;
+    maxVariables: number;
+  };
 }
 
 const configSchema = {
@@ -81,11 +84,19 @@ const configSchema = {
       env: 'COOKIE_NAME',
     },
   },
-  clusterMode: {
-    doc: 'The mode to run the app in',
-    format: ['single', 'cluster'],
-    default: CLUSTER_MODE.SINGLE,
-    env: 'CLUSTER_MODE',
+  takaro: {
+    clusterMode: {
+      doc: 'The mode to run the app in',
+      format: ['single', 'cluster'],
+      default: CLUSTER_MODE.SINGLE,
+      env: 'CLUSTER_MODE',
+    },
+    maxVariables: {
+      doc: 'The maximum number of variables that can be stored per domain',
+      format: Number,
+      default: 1000,
+      env: 'MAX_VARIABLES',
+    },
   },
 };
 
