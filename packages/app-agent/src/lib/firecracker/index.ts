@@ -3,6 +3,7 @@ import process from 'process';
 import fs, { WriteStream } from 'fs';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
+import { config } from '../../config.js';
 
 interface FcOptions {
   binary: string;
@@ -26,11 +27,17 @@ export default class Firecracker {
 
   private readonly httpSock: Got;
 
-  constructor(options: FcOptions) {
+  constructor() {
     this.logger = logger('firecracker');
-    this.options = options;
+    this.options = {
+      agentSocket: config.get('firecracker.agentSocket'),
+      binary: config.get('firecracker.binary'),
+      fcSocket: '/tmp/takaro/firecracker.socket',
+      kernelImage: config.get('firecracker.kernelImage'),
+      rootfs: config.get('firecracker.rootfs'),
+    };
     this.httpSock = got.extend({
-      prefixUrl: `unix:${options.fcSocket}:`,
+      prefixUrl: `unix:${this.options.fcSocket}:`,
     });
 
     // this.spawn();
@@ -42,46 +49,45 @@ export default class Firecracker {
     });
   }
 
-  spawn(): ChildProcess | null {
-    this.logger.debug('spawning child process');
+  public async spawn(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.logger.debug('spawning child process');
 
-    this.child = child_process.spawn(
-      this.options.binary,
-      [
-        '--api-sock',
-        this.options.fcSocket,
-        '--log-path',
-        'logs.fifo',
-        '--level',
-        'Debug',
-        '--show-level',
-        '--show-log-origin',
-      ],
-      { detached: true }
-    );
+      this.child = child_process.spawn(
+        this.options.binary,
+        [
+          '--api-sock',
+          this.options.fcSocket,
+          '--log-path',
+          'logs.fifo',
+          '--level',
+          'Debug',
+          '--show-level',
+          '--show-log-origin',
+        ],
+        { detached: true }
+      );
 
-    return this.child;
-  }
+      if (this.child !== undefined) {
+        this.child.on('spawn', () => {
+          return resolve();
+        });
+        this.child.on('exit', () => {
+          fs.unlink(this.options.fcSocket, () => { });
+        });
+        this.child.on('close', () => {
+          fs.unlink(this.options.fcSocket, () => { });
+        });
+        this.child.on('message', (msg) => {
+          this.logger.debug('child message', msg);
+        });
 
-  setupListeners(): void {
-    if (this.child !== undefined) {
-      this.child.on('spawn', () => {
-        this.logger.debug('firecracker is running');
-      });
-      this.child.on('exit', () => {
-        fs.unlink(this.options.fcSocket, () => {});
-        this.child = undefined;
-      });
-
-      this.child.on('close', () => {
-        fs.unlink(this.options.fcSocket, () => {});
-        this.child = undefined;
-      });
-
-      this.child.on('error', () => {
-        fs.unlink(this.options.fcSocket, () => {});
-      });
-    }
+        this.child.on('error', (e) => {
+          fs.unlink(this.options.fcSocket, () => { });
+          return reject(e);
+        });
+      }
+    });
   }
 
   kill(): boolean {
@@ -92,8 +98,8 @@ export default class Firecracker {
 
       this.child = undefined;
 
-      fs.unlink(this.options.fcSocket, () => {});
-      fs.unlink(this.options.agentSocket, () => {});
+      fs.unlink(this.options.fcSocket, () => { });
+      fs.unlink(this.options.agentSocket, () => { });
     }
 
     return isKilled;
@@ -135,7 +141,6 @@ export default class Firecracker {
       });
 
       this.logger.debug('setting up network');
-
       // await this.httpSock.put('network-interfaces/enp0s25', {
       //   json: {
       //     iface_id: 'enp0s25',
@@ -187,7 +192,7 @@ export default class Firecracker {
       throw err;
     } finally {
       file?.close();
-      fs.unlink(destination, () => {});
+      fs.unlink(destination, () => { });
     }
   }
 }

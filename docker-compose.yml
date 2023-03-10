@@ -38,6 +38,12 @@ services:
     ports:
       - 6379:6379
   takaro:
+    privileged: true
+    devices:
+      - '/dev/kvm:/dev/kvm'
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
     build:
       context: .
       dockerfile: containers/dev.Dockerfile

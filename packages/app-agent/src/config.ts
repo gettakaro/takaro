@@ -136,7 +136,7 @@ const configSchema = {
     binary: {
       doc: 'Path to Firecracker binary',
       format: String,
-      default: '/usr/bin/firecracker',
+      default: '/usr/local/bin/firecracker',
       env: 'FIRECRACKER_BINARY',
     },
     kernelImage: {
