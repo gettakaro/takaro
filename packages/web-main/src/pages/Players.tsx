@@ -1,9 +1,15 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Table, Loading } from '@takaro/lib-components';
+import {
+  styled,
+  Table,
+  Loading,
+  useTableActions,
+} from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
-import { PlayerOutputArrayDTOAPI } from '@takaro/apiclient';
+import { PlayerOutputDTO } from '@takaro/apiclient';
+import { createColumnHelper } from '@tanstack/react-table';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -14,26 +20,42 @@ const TableContainer = styled.div`
 
 const Players: FC = () => {
   const client = useApiClient();
+  const { pagination } = useTableActions<PlayerOutputDTO>();
 
-  const { data, isLoading } = useQuery<PlayerOutputArrayDTOAPI>(
+  const { data, isLoading } = useQuery(
     'players',
-    async () => (await client.player.playerControllerSearch()).data
+    async () =>
+      pagination.paginate(
+        await client.player.playerControllerSearch({
+          page: pagination.paginationState.pageIndex,
+          limit: pagination.paginationState.pageSize,
+        })
+      ),
+    { keepPreviousData: true }
   );
 
-  const columDefs = [
-    { field: 'updatedAt', headerName: 'Updated' },
-    { field: 'name', headerName: 'Name', filter: 'agTextColumnFilter' },
-    { field: 'steamId', headerName: 'Steam ID', filter: 'agTextColumnFilter' },
-    {
-      field: 'epicOnlineServicesId',
-      headerName: 'EOS ID',
-      filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'xboxLiveId',
-      headerName: 'Xbox ID',
-      filter: 'agTextColumnFilter',
-    },
+  const columnHelper = createColumnHelper<PlayerOutputDTO>();
+  const columnDefs = [
+    columnHelper.accessor('updatedAt', {
+      header: 'Updated',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('name', {
+      header: 'Name',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('steamId', {
+      header: 'Steam ID',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('epicOnlineServicesId', {
+      header: 'EOS ID',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('xboxLiveId', {
+      header: 'Xbox ID',
+      cell: (info) => info.getValue(),
+    }),
   ];
 
   if (isLoading || data === undefined) {
@@ -48,10 +70,13 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
-          columnDefs={columDefs}
-          rowData={data.data}
-          width={'100%'}
-          height={'80vh'}
+          columns={columnDefs}
+          data={data.rows}
+          pagination={{
+            setPagination: pagination.setPaginationState,
+            pageCount: data.pageCount,
+            pageIndex: pagination.paginationState.pageIndex,
+          }}
         />
       </TableContainer>
     </Fragment>
