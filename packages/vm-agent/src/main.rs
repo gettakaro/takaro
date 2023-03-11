@@ -1,6 +1,6 @@
-use std::{io, net::Ipv4Addr};
 use anyhow::Error;
 use futures::TryStreamExt;
+use std::{io, net::Ipv4Addr};
 use tokio_vsock::VsockListener;
 
 const HOST: u32 = libc::VMADDR_CID_ANY;
@@ -69,7 +69,7 @@ async fn setup_network() -> Result<(), InitError> {
 async fn main() -> Result<(), InitError> {
     tracing_subscriber::fmt().init();
 
-    setup_network().await?;
+    // setup_network().await?;
 
     let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
 

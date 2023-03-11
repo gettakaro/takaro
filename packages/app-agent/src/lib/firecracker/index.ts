@@ -4,6 +4,7 @@ import fs, { WriteStream } from 'fs';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
+import { randomUUID } from 'crypto';
 
 interface FcOptions {
   binary: string;
@@ -30,9 +31,9 @@ export default class Firecracker {
   constructor() {
     this.logger = logger('firecracker');
     this.options = {
-      agentSocket: config.get('firecracker.agentSocket'),
+      agentSocket: config.get('firecracker.agentSocket') + randomUUID(),
       binary: config.get('firecracker.binary'),
-      fcSocket: '/tmp/takaro/firecracker.socket',
+      fcSocket: '/tmp/takaro/firecracker.socket' + randomUUID(),
       kernelImage: config.get('firecracker.kernelImage'),
       rootfs: config.get('firecracker.rootfs'),
     };
@@ -53,37 +54,48 @@ export default class Firecracker {
     return new Promise((resolve, reject) => {
       this.logger.debug('spawning child process');
 
-      this.child = child_process.spawn(
-        this.options.binary,
-        [
-          '--api-sock',
-          this.options.fcSocket,
-          '--log-path',
-          'logs.fifo',
-          '--level',
-          'Debug',
-          '--show-level',
-          '--show-log-origin',
-        ],
-        { detached: true }
+      this.logger.debug(
+        `binary: ${this.options.binary}; fcSocket: ${this.options.fcSocket}; rootfs: ${this.options.rootfs}; agentSocket: ${this.options.agentSocket}`
       );
+
+      this.child = child_process.spawn(this.options.binary, [
+        '--api-sock',
+        this.options.fcSocket,
+        // '--log-path',
+        // '/home/branco/dev/takaro/logs.fifo',
+        // '--level',
+        // 'Debug',
+        // '--show-level',
+        // '--show-log-origin',
+      ]);
 
       if (this.child !== undefined) {
         this.child.on('spawn', () => {
+          this.logger.debug('child process spawned');
           return resolve();
         });
         this.child.on('exit', () => {
-          fs.unlink(this.options.fcSocket, () => { });
+          this.logger.debug('child process exit');
+          fs.unlink(this.options.fcSocket, () => {});
         });
         this.child.on('close', () => {
-          fs.unlink(this.options.fcSocket, () => { });
+          this.logger.debug('child process close');
+          fs.unlink(this.options.fcSocket, () => {});
         });
         this.child.on('message', (msg) => {
           this.logger.debug('child message', msg);
         });
+        this.child.stdout?.on('data', (data) => {
+          this.logger.debug(data);
+        });
+        this.child.stderr?.on('data', (error) => {
+          this.logger.error(error);
+        });
+        // test
 
         this.child.on('error', (e) => {
-          fs.unlink(this.options.fcSocket, () => { });
+          this.logger.error(e);
+          // fs.unlink(this.options.fcSocket, () => {});
           return reject(e);
         });
       }
@@ -98,8 +110,8 @@ export default class Firecracker {
 
       this.child = undefined;
 
-      fs.unlink(this.options.fcSocket, () => { });
-      fs.unlink(this.options.agentSocket, () => { });
+      fs.unlink(this.options.fcSocket, () => {});
+      fs.unlink(this.options.agentSocket, () => {});
     }
 
     return isKilled;
@@ -116,7 +128,8 @@ export default class Firecracker {
       await this.httpSock.put('boot-source', {
         json: {
           kernel_image_path: this.options.kernelImage,
-          boot_args: 'console=ttyS0 reboot=k panic=1 pci=off',
+          boot_args:
+            'ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules quiet random.trust_cpu=on',
         },
       });
 
@@ -141,13 +154,13 @@ export default class Firecracker {
       });
 
       this.logger.debug('setting up network');
-      // await this.httpSock.put('network-interfaces/enp0s25', {
-      //   json: {
-      //     iface_id: 'enp0s25',
-      //     guest_mac: 'AA:FC:00:00:00:01',
-      //     host_dev_name: 'tap0',
-      //   },
-      // });
+      await this.httpSock.put('network-interfaces/eth0', {
+        json: {
+          iface_id: 'eth0',
+          guest_mac: '02:FC:00:00:00:05',
+          host_dev_name: 'fc-tap0',
+        },
+      });
     } catch (err) {
       this.logger.error('setting up vm failed', err);
     }
@@ -165,7 +178,7 @@ export default class Firecracker {
         })
         .json();
 
-      this.logger.info('started vm instance', responseData);
+      this.logger.info('starting vm instance', responseData);
 
       return responseData;
     } catch (err) {
@@ -192,7 +205,7 @@ export default class Firecracker {
       throw err;
     } finally {
       file?.close();
-      fs.unlink(destination, () => { });
+      fs.unlink(destination, () => {});
     }
   }
 }

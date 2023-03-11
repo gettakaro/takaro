@@ -1,9 +1,15 @@
 import { config, EXECUTION_MODE } from '../../config.js';
 import { logger } from '@takaro/util';
-const log = logger('worker:function');
 import { createContext, runInContext } from 'node:vm';
 import Firecracker from '../../lib/firecracker/index.js';
 import { VsockClient } from '../../lib/VsockClient.js';
+
+const log = logger('worker:function');
+
+function sleep(ms: number) {
+  log.debug(`sleeping for ${ms}ms`);
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export async function executeFunction(
   fn: string,
@@ -14,19 +20,21 @@ export async function executeFunction(
     return executeLocal(fn, data, token);
   }*/
 
-  console.log('before start');
+  log.debug('before start');
   const firecracker = new Firecracker();
-  console.log('before spawn');
+  log.debug('before spawn');
   await firecracker.spawn();
-  console.log('before setup');
-  await firecracker.setupVM();
-  console.log('before start');
+  log.debug('before start');
   await firecracker.startVM();
-  console.log('after start');
+  log.debug('after start');
 
-  const vsockClient = new VsockClient();
-  const result = await vsockClient.getHealth();
-  console.log('HEALLLLLLLLLLLLLLLTHHHHHHHHHHH', result);
+  await sleep(10_000);
+
+  const vsockClient = new VsockClient(firecracker.options.agentSocket);
+
+  const result = await vsockClient.exec(fn);
+
+  log.debug('HEALLLLLLLLLLLLLLLTHHHHHHHHHHH', result);
 
   /*   const containerd = new ContainerdService();
     await containerd.pullImage('hello-world');

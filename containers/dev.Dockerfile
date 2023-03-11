@@ -20,17 +20,14 @@ COPY jest.config.js ./
 COPY .mocharc.js ./
 
 
-
-
-RUN curl -Lo firecracker.tgz https://github.com/firecracker-microvm/firecracker/releases/download/v1.3.1/firecracker-v1.3.1-x86_64.tgz \
-    && mkdir firecracker \
-    && tar -xf firecracker.tgz -C firecracker \
-    && chmod +x firecracker/release-v1.3.1-x86_64 \
-    && mv firecracker/release-v1.3.1-x86_64 /usr/local/bin/firecracker \
-    && chown node:node /usr/local/bin/firecracker
-
-RUN mkdir /tmp/takaro && chown node:node /tmp/takaro
-
+# RUN curl -Lo firecracker.tgz https://github.com/firecracker-microvm/firecracker/releases/download/v1.3.1/firecracker-v1.3.1-x86_64.tgz \
+#     && mkdir firecracker \
+#     && tar -xf firecracker.tgz -C firecracker \
+#     && chmod +x firecracker/release-v1.3.1-x86_64 \
+#     && mv firecracker/release-v1.3.1-x86_64 /usr/local/bin/firecracker \
+#     && chown node:node /usr/local/bin/firecracker
+#
+# RUN mkdir /tmp/takaro && chown node:node /tmp/takaro
 
 RUN chown -R node:node /app
 

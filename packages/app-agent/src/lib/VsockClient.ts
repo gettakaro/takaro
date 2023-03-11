@@ -1,9 +1,15 @@
 import net from 'node:net';
 import http from 'node:http';
 import fetch from 'node-fetch';
-import { config } from '../config.js';
+import { logger } from '@takaro/util';
+
+const log = logger('vsockclient');
 
 class HttpAgent extends http.Agent {
+  constructor(private socketPath: string) {
+    super();
+  }
+
   createConnection(options: unknown, callback: CallableFunction) {
     this.getSocket()
       .then((socket) => {
@@ -17,18 +23,26 @@ class HttpAgent extends http.Agent {
   private getSocket() {
     return new Promise((resolve, reject) => {
       const socket = net.createConnection({
-        path: config.get('firecracker.agentSocket'),
+        path: this.socketPath,
       });
-      socket.on('connect', () => {
-        socket.write('CONNECT 8000\n');
-      });
+      socket.on('connect', () => {});
 
-      socket.on('data', () => {
+      socket.on('data', (data) => {
+        log.debug(`on data: ${data}`);
         resolve(socket);
       });
 
+      socket.on('ready', () => {
+        log.debug('ready: connecting to port 8000');
+        socket.write('CONNECT 8000\n');
+      });
+
+      socket.on('close', () => {
+        log.debug('socket closed');
+      });
+
       socket.on('error', (err) => {
-        console.log('ERROR: ', err);
+        log.error(err);
         reject(err);
       });
     });
@@ -36,12 +50,18 @@ class HttpAgent extends http.Agent {
 }
 
 export class VsockClient {
-  private customAgent = new HttpAgent();
+  customAgent: http.Agent;
+
+  constructor(agentSocket: string) {
+    this.customAgent = new HttpAgent(agentSocket);
+  }
 
   public async getHealth() {
+    log.debug('sending health request');
     const res = await fetch('http://localhost/health', {
       agent: this.customAgent,
     });
+    log.debug(res);
     return await res.text();
   }
 
@@ -54,6 +74,9 @@ export class VsockClient {
         cmd: ['node', '-e', cmd],
       }),
     });
+
+    log.debug('received response');
+
     return await res.text();
   }
 }

@@ -136,7 +136,7 @@ const configSchema = {
     binary: {
       doc: 'Path to Firecracker binary',
       format: String,
-      default: '/usr/local/bin/firecracker',
+      default: '/home/branco/.local/bin/firecracker',
       env: 'FIRECRACKER_BINARY',
     },
     kernelImage: {
@@ -148,8 +148,7 @@ const configSchema = {
     rootfs: {
       doc: 'Path to the rootfs used by the Firecracker vm',
       format: String,
-      default:
-        '/home/branco/dev/takaro/packages/app-agent/src/lib/firecracker/rootfs.ext4',
+      default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
       env: 'FIRECRACKER_ROOTFS',
     },
     socket: {

@@ -7,7 +7,8 @@
   "type": "module",
   "scripts": {
     "start": "node dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
+    "start:dev-local": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
+    "start:dev": "echo app-gent should run on the host",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "echo 'No tests (yet :))'",
