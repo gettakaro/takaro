@@ -5,6 +5,7 @@ import {
   CounterConfiguration,
 } from 'prom-client';
 import { logger } from './logger.js';
+import { ctx } from './main.js';
 
 const log = logger('metrics');
 
@@ -18,16 +19,24 @@ export function addCounter(
 ) {
   const counter = new Counter({
     ...counterConfiguration,
-    labelNames: ['status'],
+    labelNames: ['status', 'domain', 'gameServer'],
   });
 
   return async (...args: unknown[]) => {
     try {
       const result = await fn(...args);
-      counter.inc({ status: 'success' });
+      counter.inc({
+        status: 'success',
+        domain: ctx.data.domain,
+        gameServer: ctx.data.gameServer,
+      });
       return result;
     } catch (error) {
-      counter.inc({ status: 'fail' });
+      counter.inc({
+        status: 'fail',
+        domain: ctx.data.domain,
+        gameServer: ctx.data.gameServer,
+      });
       throw error;
     }
   };
