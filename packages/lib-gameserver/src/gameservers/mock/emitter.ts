@@ -46,7 +46,7 @@ export class MockEmitter extends TakaroEmitter {
   private mockPlayer() {
     const randomEntry =
       this.config.mockPlayers[
-      Math.floor(Math.random() * this.config.mockPlayers.length)
+        Math.floor(Math.random() * this.config.mockPlayers.length)
       ];
 
     return new IGamePlayer().construct(randomEntry);
