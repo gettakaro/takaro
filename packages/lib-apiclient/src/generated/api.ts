@@ -8051,6 +8051,45 @@ export const MetaApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetMetrics: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/metrics`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -8163,6 +8202,27 @@ export const MetaApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async metaGetMetrics(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetMetrics(
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -8229,6 +8289,17 @@ export const MetaApiFactory = function (
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetMetrics(options?: any): AxiosPromise<void> {
+      return localVarFp
+        .metaGetMetrics(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -8269,6 +8340,19 @@ export class MetaApi extends BaseAPI {
   public metaGetHealth(options?: AxiosRequestConfig) {
     return MetaApiFp(this.configuration)
       .metaGetHealth(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get metrics
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MetaApi
+   */
+  public metaGetMetrics(options?: AxiosRequestConfig) {
+    return MetaApiFp(this.configuration)
+      .metaGetMetrics(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -7,3 +7,5 @@ export {
 export * as errors from './errors.js';
 
 export { logger } from './logger.js';
+
+export * from './metrics.js';

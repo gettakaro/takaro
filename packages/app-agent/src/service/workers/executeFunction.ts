@@ -1,9 +1,14 @@
 import { config, EXECUTION_MODE } from '../../config.js';
-import { logger, errors } from '@takaro/util';
+import { logger, errors, addCounter } from '@takaro/util';
 const log = logger('worker:function');
 import { createContext, runInContext } from 'node:vm';
 
-export async function executeFunction(
+export const executeFunction = addCounter(executeFunctionInternal, {
+  help: 'How many functions were executed',
+  name: 'functionExecutions',
+});
+
+async function executeFunctionInternal(
   fn: string,
   data: Record<string, unknown>,
   token: string

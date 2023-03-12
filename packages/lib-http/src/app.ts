@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger, errors } from '@takaro/util';
+import { logger, errors, enableDefaultNodejsMetrics } from '@takaro/util';
 import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,
@@ -28,6 +28,7 @@ export class HTTP {
     private httpOptions: IHTTPOptions = {}
   ) {
     this.logger = logger('http');
+    enableDefaultNodejsMetrics();
     this.app = express();
     this.httpServer = createServer(this.app);
     this.app.use(bodyParser.json());
