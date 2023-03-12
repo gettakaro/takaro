@@ -8,6 +8,8 @@ import { randomUUID } from 'crypto';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
+type FcStatus = 'initializing' | 'ready' | 'running' | 'stopped';
+
 interface FcOptions {
   binary: string;
   kernelImage: string;
@@ -27,6 +29,7 @@ interface InfoReponse {
 
 export default class Firecracker {
   id: string;
+  status: FcStatus;
   options: FcOptions;
   childProcess: ChildProcess | undefined;
   log;
@@ -35,7 +38,7 @@ export default class Firecracker {
 
   constructor(args: { logLevel?: FcLogLevel }) {
     this.id = randomUUID();
-    this.log = logger('firecracker', { id: this.id });
+    this.log = logger('firecracker');
 
     this.options = {
       binary: config.get('firecracker.binary'),
@@ -60,12 +63,20 @@ export default class Firecracker {
   }
 
   public async spawn(): Promise<void> {
+    this.status = 'initializing';
+
+    const dir = '/tmp/takaro/sockets';
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
     return new Promise((resolve, reject) => {
       this.childProcess = child_process.spawn(this.options.binary, [
         '--api-sock',
         this.options.fcSocket,
         '--log-path',
-        this.options.logLevel,
+        this.options.logPath,
         '--level',
         this.options.logLevel,
         '--show-level',
@@ -74,7 +85,7 @@ export default class Firecracker {
 
       if (this.childProcess !== undefined) {
         this.childProcess.on('spawn', () => {
-          this.log.debug('child process spawned');
+          this.log.debug('child process spawned', this.options);
           return resolve();
         });
         this.childProcess.on('exit', () => {
@@ -94,6 +105,9 @@ export default class Firecracker {
           this.kill();
           return reject(e);
         });
+      } else {
+        this.log.error('could not spawn child process');
+        reject();
       }
     });
   }
@@ -163,6 +177,11 @@ export default class Firecracker {
     }
   }
 
+  async sleep(ms: number) {
+    this.log.debug(`sleeping for ${ms}ms`);
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async startVM() {
     try {
       await this.setupVM();
@@ -176,6 +195,12 @@ export default class Firecracker {
         .json();
 
       this.log.info('starting vm instance', responseData);
+
+      // TODO: remove this sleep and actually wait until the VM is ready
+      await this.sleep(5_000);
+
+      this.status = 'ready';
+      this.log.debug('ready');
 
       return responseData;
     } catch (err) {
