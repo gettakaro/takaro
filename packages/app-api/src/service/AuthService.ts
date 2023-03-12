@@ -1,5 +1,5 @@
 import { DomainScoped } from '../lib/DomainScoped.js';
-import { errors, logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { compareHashed } from '@takaro/db';
 import { UserService } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
@@ -174,6 +174,8 @@ export class AuthService extends DomainScoped {
         if (!user) {
           return next(new errors.UnauthorizedError());
         }
+
+        ctx.addData({ user: user.id, domain: payload.domainId });
 
         const allUserCapabilities = user.roles.reduce((acc, role) => {
           return [...acc, ...role.capabilities.map((c) => c.capability)];

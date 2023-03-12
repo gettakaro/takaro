@@ -31,9 +31,8 @@ export async function getKnex(): Promise<KnexClient> {
 
   log.debug('Missed knex cache, creating new client');
   const knex = createKnex(getKnexOptions());
-  const final = addLoggingMiddle(knex);
-  cachedKnex = final;
-  return final;
+  cachedKnex = knex;
+  return cachedKnex;
 }
 
 export async function disconnectKnex(): Promise<void> {
@@ -41,18 +40,4 @@ export async function disconnectKnex(): Promise<void> {
   await cachedKnex.destroy();
   cachedKnex = null;
   log.info('Disconnected knex');
-}
-
-function addLoggingMiddle(knex: KnexClient) {
-  if (config.get('mode') === 'development') {
-    knex.on('query', (queryData) => {
-      log.debug(queryData.sql, { data: queryData.bindings });
-    });
-  } else {
-    knex.on('query', (queryData) => {
-      log.debug(queryData.sql);
-    });
-  }
-
-  return knex;
 }

@@ -42,6 +42,6 @@ async function executeLocal(
     process: { env: { DATA: data, TOKEN: token } },
   });
   const output = await runInContext(fn, ctx);
-  log.debug('Executed a local function', { output });
+  log.info('Executed a local function', { output });
   return { ctx, output };
 }

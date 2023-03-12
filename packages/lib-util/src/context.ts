@@ -1,7 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { errors, logger } from './main.js';
-
-const log = logger('ctx');
+import { randomUUID } from 'node:crypto';
+import { errors } from './main.js';
 
 interface TransactionStore {
   [key: string]: string | undefined;
@@ -24,9 +23,6 @@ class Context {
     const store = this.asyncLocalStorage.getStore();
 
     if (!isValidTransactionStore(store)) {
-      log.warn(
-        'Tried to add data to ctx, but store was not initialized correctly. Are you inside an async context?'
-      );
       throw new errors.InternalServerError();
     }
 
@@ -37,10 +33,7 @@ class Context {
     const store = this.asyncLocalStorage.getStore();
 
     if (!isValidTransactionStore(store)) {
-      log.warn(
-        'Requested data from ctx, but store was not initialized correctly. Are you inside an async context?'
-      );
-      throw new errors.InternalServerError();
+      return {};
     }
 
     return store;
@@ -48,8 +41,9 @@ class Context {
 
   wrap(fn: any, metadata: TransactionStore = {}) {
     return (...args: any[]) => {
+      const txId = randomUUID();
       return this.asyncLocalStorage.run(
-        metadata,
+        { txId, ...metadata },
         fn,
         ...args
       ) as Promise<unknown>;

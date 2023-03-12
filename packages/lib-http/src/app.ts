@@ -32,6 +32,7 @@ export class HTTP {
     this.app = express();
     this.httpServer = createServer(this.app);
     this.app.use(bodyParser.json());
+    this.app.use(LoggingMiddleware);
     this.app.use(
       cors({
         credentials: true,
@@ -56,6 +57,7 @@ export class HTTP {
         validation: { whitelist: true, forbidNonWhitelisted: true },
         // eslint-disable-next-line @typescript-eslint/ban-types
         controllers: [Meta, ...(options.controllers as Function[])],
+        middlewares: [ErrorHandler],
       });
     } else {
       useExpressServer(this.app, {
@@ -63,7 +65,7 @@ export class HTTP {
         defaultErrorHandler: false,
         controllers: [Meta],
         validation: { whitelist: true, forbidNonWhitelisted: true },
-        middlewares: [LoggingMiddleware, ErrorHandler],
+        middlewares: [ErrorHandler],
       });
     }
   }

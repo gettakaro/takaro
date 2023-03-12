@@ -1,11 +1,4 @@
-import {
-  Processor,
-  Queue,
-  Worker,
-  QueueEvents,
-  Job,
-  QueueScheduler,
-} from 'bullmq';
+import { Processor, Queue, Worker, QueueEvents, QueueScheduler } from 'bullmq';
 import { config } from './config.js';
 import { logger, ctx } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
@@ -23,16 +16,8 @@ export abstract class TakaroWorker<T> extends Worker<T, unknown> {
   log = logger('worker');
 
   constructor(name: string, fn: Processor<T, unknown>) {
-    super(name, ctx.wrap(fn, { foo: 'bar' }), {
+    super(name, ctx.wrap(fn, { worker: name }), {
       connection: getRedisConnectionOptions(),
-    });
-
-    this.on('error', (err) => {
-      this.log.error(err);
-    });
-
-    this.on('completed', (job: Job<T>) => {
-      this.log.info(`Job ${job.id} completed`);
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import { logger } from '@takaro/util';
+import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
@@ -30,6 +30,10 @@ function isChatMessageEvent(a: BaseEvent<unknown>): a is EventChatMessage {
 }
 
 async function processJob(job: Job<IEventQueueData>) {
+  ctx.addData({
+    domain: job.data.domainId,
+    gameServer: job.data.gameServerId,
+  });
   log.info('Processing an event', job.data);
 
   const { type, event, domainId, gameServerId } = job.data;
