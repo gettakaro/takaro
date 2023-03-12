@@ -1,9 +1,9 @@
-import Firecracker from '../index.js';
+/* import Firecracker from '../index.js';
 import { config } from '../../../config.js';
 
 console.debug(config.get('firecracker.binary'));
 console.debug(config.get('firecracker.rootfs'));
-/*
+
 const firecracker = new Firecracker({
   binary: config.get('firecracker.binary'),
   kernelImage: config.get('firecracker.kernelImage'),
@@ -15,5 +15,4 @@ const firecracker = new Firecracker({
 firecracker
   .startVM()
   .then(() => {})
-  .catch((err) => console.log(err));
-*/
+  .catch((err) => console.log(err)); */
