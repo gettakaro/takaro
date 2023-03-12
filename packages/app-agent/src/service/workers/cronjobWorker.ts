@@ -1,6 +1,7 @@
 import { Job } from 'bullmq';
 import { config } from '../../config.js';
 import { TakaroWorker, IJobData } from '@takaro/queues';
+import { ctx } from '@takaro/util';
 import { executeFunction } from './executeFunction.js';
 
 export class CronJobWorker extends TakaroWorker<IJobData> {
@@ -10,6 +11,12 @@ export class CronJobWorker extends TakaroWorker<IJobData> {
 }
 
 async function processCronJob(job: Job<IJobData>) {
+  ctx.addData({
+    fnType: 'cron',
+    domain: job.data.domainId,
+    gameServer: job.data.gameServerId,
+  });
+
   await executeFunction(
     job.data.function,
     {

@@ -7,7 +7,7 @@ import {
   QueueScheduler,
 } from 'bullmq';
 import { config } from './config.js';
-import { logger } from '@takaro/util';
+import { logger, ctx } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
@@ -19,11 +19,13 @@ export class TakaroQueue<T> extends Queue<T> {
   }
 }
 
-export abstract class TakaroWorker<T> extends Worker<T> {
+export abstract class TakaroWorker<T> extends Worker<T, unknown> {
   log = logger('worker');
 
-  constructor(name: string, fn: Processor<T>) {
-    super(name, fn, { connection: getRedisConnectionOptions() });
+  constructor(name: string, fn: Processor<T, unknown>) {
+    super(name, ctx.wrap(fn, { foo: 'bar' }), {
+      connection: getRedisConnectionOptions(),
+    });
 
     this.on('error', (err) => {
       this.log.error(err);
