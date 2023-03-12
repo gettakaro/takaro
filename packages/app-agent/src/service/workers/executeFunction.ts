@@ -1,8 +1,8 @@
-import { config, EXECUTION_MODE } from '../../config.js';
 import { logger } from '@takaro/util';
 import { createContext, runInContext } from 'node:vm';
+import { config, EXECUTION_MODE } from '../../config.js';
 import Firecracker from '../../lib/firecracker/index.js';
-import { VsockClient } from '../../lib/VsockClient.js';
+import { VmClient } from '../../lib/vmClient.js';
 
 const log = logger('worker:function');
 
@@ -16,33 +16,24 @@ export async function executeFunction(
   data: Record<string, unknown>,
   token: string
 ) {
-  /*  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
+  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
     return executeLocal(fn, data, token);
-  }*/
+  }
 
-  log.debug('before start');
-  const firecracker = new Firecracker();
-  log.debug('before spawn');
+  const firecracker = new Firecracker({ logLevel: 'debug' });
   await firecracker.spawn();
-  log.debug('before start');
   await firecracker.startVM();
-  log.debug('after start');
 
+  // TODO: wait until VM is ready
   await sleep(10_000);
 
-  const vsockClient = new VsockClient(firecracker.options.agentSocket);
+  const vmClient = new VmClient(firecracker.options.agentSocket, 8000);
 
-  const result = await vsockClient.exec(fn);
+  const response = await vmClient.exec(fn);
 
-  log.debug('HEALLLLLLLLLLLLLLLTHHHHHHHHHHH', result);
+  log.debug('received response: ', response);
 
-  /*   const containerd = new ContainerdService();
-    await containerd.pullImage('hello-world');
-    const images = await containerd.listImages();
-    log.info(images);
-  
-    const output = await containerd.runContainer({ image: 'hello-world' });
-    log.info(output); */
+  return response;
 }
 
 /**

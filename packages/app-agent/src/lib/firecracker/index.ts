@@ -6,12 +6,16 @@ import got, { Got } from 'got';
 import { config } from '../../config.js';
 import { randomUUID } from 'crypto';
 
+type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
+
 interface FcOptions {
   binary: string;
   kernelImage: string;
   rootfs: string;
   fcSocket: string;
   agentSocket: string;
+  logPath: string;
+  logLevel: FcLogLevel;
 }
 
 interface InfoReponse {
@@ -22,27 +26,32 @@ interface InfoReponse {
 }
 
 export default class Firecracker {
-  child: ChildProcess | undefined;
+  id: string;
   options: FcOptions;
-  logger;
+  childProcess: ChildProcess | undefined;
+  log;
 
   private readonly httpSock: Got;
 
-  constructor() {
-    this.logger = logger('firecracker');
+  constructor(args: { logLevel?: FcLogLevel }) {
+    this.id = randomUUID();
+    this.log = logger('firecracker', { id: this.id });
+
     this.options = {
-      agentSocket: config.get('firecracker.agentSocket') + randomUUID(),
       binary: config.get('firecracker.binary'),
-      fcSocket: '/tmp/takaro/firecracker.socket' + randomUUID(),
       kernelImage: config.get('firecracker.kernelImage'),
       rootfs: config.get('firecracker.rootfs'),
+      fcSocket: `${config.get('firecracker.sockets')}${this.id}-fc.sock`,
+      agentSocket: `${config.get('firecracker.sockets')}${this.id}-agent.sock`,
+      logPath: config.get('firecracker.logPath'),
+      logLevel: args.logLevel ?? 'info',
     };
+
     this.httpSock = got.extend({
       prefixUrl: `unix:${this.options.fcSocket}:`,
     });
 
-    // this.spawn();
-    // this.setupListeners();
+    this.spawn();
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
@@ -52,50 +61,37 @@ export default class Firecracker {
 
   public async spawn(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.logger.debug('spawning child process');
-
-      this.logger.debug(
-        `binary: ${this.options.binary}; fcSocket: ${this.options.fcSocket}; rootfs: ${this.options.rootfs}; agentSocket: ${this.options.agentSocket}`
-      );
-
-      this.child = child_process.spawn(this.options.binary, [
+      this.childProcess = child_process.spawn(this.options.binary, [
         '--api-sock',
         this.options.fcSocket,
-        // '--log-path',
-        // '/home/branco/dev/takaro/logs.fifo',
-        // '--level',
-        // 'Debug',
-        // '--show-level',
-        // '--show-log-origin',
+        '--log-path',
+        this.options.logLevel,
+        '--level',
+        this.options.logLevel,
+        '--show-level',
+        '--show-log-origin',
       ]);
 
-      if (this.child !== undefined) {
-        this.child.on('spawn', () => {
-          this.logger.debug('child process spawned');
+      if (this.childProcess !== undefined) {
+        this.childProcess.on('spawn', () => {
+          this.log.debug('child process spawned');
           return resolve();
         });
-        this.child.on('exit', () => {
-          this.logger.debug('child process exit');
+        this.childProcess.on('exit', () => {
+          this.log.debug('child process exit');
           fs.unlink(this.options.fcSocket, () => {});
         });
-        this.child.on('close', () => {
-          this.logger.debug('child process close');
+        this.childProcess.on('close', () => {
+          this.log.debug('child process closing');
           fs.unlink(this.options.fcSocket, () => {});
         });
-        this.child.on('message', (msg) => {
-          this.logger.debug('child message', msg);
+        this.childProcess.stderr?.on('data', (error) => {
+          this.log.error(error);
         });
-        this.child.stdout?.on('data', (data) => {
-          this.logger.debug(data);
-        });
-        this.child.stderr?.on('data', (error) => {
-          this.logger.error(error);
-        });
-        // test
 
-        this.child.on('error', (e) => {
-          this.logger.error(e);
-          // fs.unlink(this.options.fcSocket, () => {});
+        this.childProcess.on('error', (e) => {
+          this.log.error(e);
+          this.kill();
           return reject(e);
         });
       }
@@ -103,12 +99,12 @@ export default class Firecracker {
   }
 
   kill(): boolean {
-    const isKilled = this.child?.kill() ?? false;
+    const isKilled = this.childProcess?.kill() ?? false;
 
     if (isKilled) {
-      this.logger.debug('cleaning up sockets');
+      this.log.debug('cleaning up sockets');
 
-      this.child = undefined;
+      this.childProcess = undefined;
 
       fs.unlink(this.options.fcSocket, () => {});
       fs.unlink(this.options.agentSocket, () => {});
@@ -123,7 +119,7 @@ export default class Firecracker {
 
   async setupVM() {
     try {
-      this.logger.debug('adding boot source');
+      this.log.debug('adding boot source');
 
       await this.httpSock.put('boot-source', {
         json: {
@@ -133,7 +129,7 @@ export default class Firecracker {
         },
       });
 
-      this.logger.debug('adding rootfs');
+      this.log.debug('adding rootfs');
 
       await this.httpSock.put('drives/rootfs', {
         json: {
@@ -144,7 +140,7 @@ export default class Firecracker {
         },
       });
 
-      this.logger.debug('setting up vsock');
+      this.log.debug('setting up vsock');
 
       await this.httpSock.put('vsock', {
         json: {
@@ -153,7 +149,8 @@ export default class Firecracker {
         },
       });
 
-      this.logger.debug('setting up network');
+      this.log.debug('setting up network');
+
       await this.httpSock.put('network-interfaces/eth0', {
         json: {
           iface_id: 'eth0',
@@ -162,7 +159,7 @@ export default class Firecracker {
         },
       });
     } catch (err) {
-      this.logger.error('setting up vm failed', err);
+      this.log.error('setting up vm failed', err);
     }
   }
 
@@ -178,11 +175,11 @@ export default class Firecracker {
         })
         .json();
 
-      this.logger.info('starting vm instance', responseData);
+      this.log.info('starting vm instance', responseData);
 
       return responseData;
     } catch (err) {
-      this.logger.error('staring vm failed', err);
+      this.log.error('staring vm failed', err);
     }
   }
 

@@ -25,16 +25,12 @@ interface IAgentConfig extends IBaseConfig {
   functions: {
     executionMode: EXECUTION_MODE;
   };
-  containerd: {
-    executablePath: string;
-    namespace: string;
-  };
   firecracker: {
     binary: string;
     kernelImage: string;
     rootfs: string;
-    socket: string;
-    agentSocket: string;
+    sockets: string;
+    logPath: string;
   };
 }
 
@@ -110,20 +106,6 @@ const configSchema = {
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
-  containerd: {
-    executablePath: {
-      doc: 'The path to the nerdctl executable',
-      format: String,
-      default: '/home/catalysm/.local/bin/nerdctl',
-      env: 'CONTAINERD_EXECUTABLE_PATH',
-    },
-    namespace: {
-      doc: 'The namespace to use for containerd',
-      format: String,
-      default: 'takaro',
-      env: 'CONTAINERD_NAMESPACE',
-    },
-  },
   takaro: {
     url: {
       doc: 'The URL of the Takaro server',
@@ -140,28 +122,28 @@ const configSchema = {
       env: 'FIRECRACKER_BINARY',
     },
     kernelImage: {
-      doc: 'Path to the kernel image used by the Firecracker vm',
+      doc: 'Path to the kernel image used by the microVM',
       format: String,
       default: '/home/branco/dev/takaro/firecracker/vmlinux.bin',
       env: 'FIRECRACKER_KERNEL_IMAGE',
     },
     rootfs: {
-      doc: 'Path to the rootfs used by the Firecracker vm',
+      doc: 'Path to the rootfs used by the microVM',
       format: String,
       default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
       env: 'FIRECRACKER_ROOTFS',
     },
-    socket: {
-      doc: 'socket (fd) to communicate with firecracker vm',
+    sockets: {
+      doc: 'Path to the socket directory used by Firecracker',
       format: String,
-      default: '/tmp/takaro/firecracker.socket',
+      default: '/tmp/takaro/sockets/',
       env: 'FIRECRACKER_SOCKET',
     },
-    agentSocket: {
-      doc: 'vsocket (fd) to communicate with agent inside firecracker vm',
+    logPath: {
+      doc: 'Path to the log file used by Firecracker',
       format: String,
-      default: '/tmp/takaro/agent.socket',
-      env: 'FIRECRACKER_AGENT_SOCKET',
+      default: '/home/branco/dev/takaro/firecracker/logs.fifo',
+      env: 'FIRECRACKER_LOG_PATH',
     },
   },
 };

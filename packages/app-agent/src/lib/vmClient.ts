@@ -3,14 +3,14 @@ import http from 'node:http';
 import fetch from 'node-fetch';
 import { logger } from '@takaro/util';
 
-const log = logger('vsockclient');
-
 class HttpAgent extends http.Agent {
-  constructor(private socketPath: string) {
+  log = logger('VmClient:HttpAgent');
+
+  constructor(private socketPath: string, private port: number) {
     super();
   }
 
-  createConnection(options: unknown, callback: CallableFunction) {
+  createConnection(_: unknown, callback: CallableFunction) {
     this.getSocket()
       .then((socket) => {
         callback(null, socket);
@@ -25,47 +25,60 @@ class HttpAgent extends http.Agent {
       const socket = net.createConnection({
         path: this.socketPath,
       });
-      socket.on('connect', () => {});
 
       socket.on('data', (data) => {
-        log.debug(`on data: ${data}`);
+        this.log.debug(`received data: ${data}`);
         resolve(socket);
       });
-
       socket.on('ready', () => {
-        log.debug('ready: connecting to port 8000');
-        socket.write('CONNECT 8000\n');
+        this.log.debug(`ready: connecting to ${this.port}`);
+        socket.write(`CONNECT ${this.port}\n`);
       });
-
       socket.on('close', () => {
-        log.debug('socket closed');
+        this.log.debug('socket closed');
       });
 
       socket.on('error', (err) => {
-        log.error(err);
+        this.log.error(err);
         reject(err);
       });
     });
   }
 }
 
-export class VsockClient {
+export class VmClient {
   customAgent: http.Agent;
+  log: ReturnType<typeof logger>;
 
-  constructor(agentSocket: string) {
-    this.customAgent = new HttpAgent(agentSocket);
+  constructor(socketPath: string, port: number) {
+    this.log = logger('VmClient', {
+      socketPath,
+      port,
+    });
+    this.customAgent = new HttpAgent(socketPath, port);
   }
 
   public async getHealth() {
-    log.debug('sending health request');
+    this.log.info('GET /health request');
+
     const res = await fetch('http://localhost/health', {
       agent: this.customAgent,
     });
-    log.debug(res);
+
+    if (res.status !== 200) {
+      const errorMessage = 'Received invalid status code';
+
+      this.log.error(errorMessage, res);
+
+      throw Error(errorMessage);
+    }
+
     return await res.text();
   }
 
   public async exec(cmd: string) {
+    this.log.info('POST /exec request');
+
     const res = await fetch('http://localhost/exec', {
       agent: this.customAgent,
       method: 'POST',
@@ -75,8 +88,14 @@ export class VsockClient {
       }),
     });
 
-    log.debug('received response');
+    if (res.status !== 200) {
+      const errorMessage = 'Received invalid status code';
 
-    return await res.text();
+      this.log.error(errorMessage, res);
+
+      throw Error(errorMessage);
+    }
+
+    return await res.json();
   }
 }
