@@ -1,6 +1,6 @@
 import { Processor, Queue, Worker, QueueEvents, QueueScheduler } from 'bullmq';
 import { config } from './config.js';
-import { logger, ctx } from '@takaro/util';
+import { logger, ctx, addCounter } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
@@ -16,9 +16,18 @@ export abstract class TakaroWorker<T> extends Worker<T, unknown> {
   log = logger('worker');
 
   constructor(name: string, fn: Processor<T, unknown>) {
-    super(name, ctx.wrap(fn, { worker: name }), {
-      connection: getRedisConnectionOptions(),
-    });
+    super(
+      name,
+      ctx.wrap(
+        addCounter(fn, {
+          name: `worker:${name}`,
+          help: `How many jobs were processed by ${name}`,
+        })
+      ),
+      {
+        connection: getRedisConnectionOptions(),
+      }
+    );
   }
 }
 export interface IJobData {

@@ -12,7 +12,6 @@ export class CommandWorker extends TakaroWorker<IJobData> {
 
 async function processCommand(job: Job<IJobData>) {
   ctx.addData({
-    fnType: 'command',
     domain: job.data.domainId,
     gameServer: job.data.gameServerId,
   });

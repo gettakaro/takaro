@@ -9,6 +9,8 @@ import { ctx } from './main.js';
 
 const log = logger('metrics');
 
+const counters = new Map<string, Counter<string>>();
+
 /**
  * Wraps a function and creates a metric that counts how many times it was called
  * @param fn Any callable function
@@ -17,10 +19,18 @@ export function addCounter(
   fn: CallableFunction,
   counterConfiguration: CounterConfiguration<string>
 ) {
-  const counter = new Counter({
-    ...counterConfiguration,
-    labelNames: ['status', 'domain', 'gameServer'],
-  });
+  if (!counters.has(counterConfiguration.name)) {
+    counters.set(
+      counterConfiguration.name,
+      new Counter({
+        ...counterConfiguration,
+        labelNames: ['status', 'domain', 'gameServer', 'user'],
+      })
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const counter = counters.get(counterConfiguration.name)!;
 
   return async (...args: unknown[]) => {
     try {
@@ -29,6 +39,7 @@ export function addCounter(
         status: 'success',
         domain: ctx.data.domain,
         gameServer: ctx.data.gameServer,
+        user: ctx.data.user,
       });
       return result;
     } catch (error) {
@@ -36,6 +47,7 @@ export function addCounter(
         status: 'fail',
         domain: ctx.data.domain,
         gameServer: ctx.data.gameServer,
+        user: ctx.data.user,
       });
       throw error;
     }

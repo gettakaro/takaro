@@ -12,7 +12,6 @@ export class HookWorker extends TakaroWorker<IJobData> {
 
 async function processHook(job: Job<IJobData>) {
   ctx.addData({
-    fnType: 'hook',
     domain: job.data.domainId,
     gameServer: job.data.gameServerId,
   });

@@ -12,7 +12,6 @@ export class CronJobWorker extends TakaroWorker<IJobData> {
 
 async function processCronJob(job: Job<IJobData>) {
   ctx.addData({
-    fnType: 'cron',
     domain: job.data.domainId,
     gameServer: job.data.gameServerId,
   });

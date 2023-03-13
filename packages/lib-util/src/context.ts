@@ -3,9 +3,9 @@ import { randomUUID } from 'node:crypto';
 import { errors } from './main.js';
 
 interface TransactionStore {
-  [key: string]: string | undefined;
   domain?: string;
   gameServer?: string;
+  user?: string;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
