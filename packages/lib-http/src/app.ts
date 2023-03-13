@@ -13,6 +13,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { metricsMiddleware } from './main.js';
+import { paginationMiddleware } from './middleware/paginationMiddleware.js';
 
 interface IHTTPOptions {
   port?: number;
@@ -35,6 +36,7 @@ export class HTTP {
     this.app.use(bodyParser.json());
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
+    this.app.use(paginationMiddleware);
     this.app.use(
       cors({
         credentials: true,
@@ -59,7 +61,6 @@ export class HTTP {
         validation: { whitelist: true, forbidNonWhitelisted: true },
         // eslint-disable-next-line @typescript-eslint/ban-types
         controllers: [Meta, ...(options.controllers as Function[])],
-        middlewares: [ErrorHandler],
       });
     } else {
       useExpressServer(this.app, {
@@ -67,9 +68,10 @@ export class HTTP {
         defaultErrorHandler: false,
         controllers: [Meta],
         validation: { whitelist: true, forbidNonWhitelisted: true },
-        middlewares: [ErrorHandler],
       });
     }
+
+    this.app.use(ErrorHandler);
   }
 
   get expressInstance() {

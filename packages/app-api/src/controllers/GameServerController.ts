@@ -15,7 +15,7 @@ import {
   CommandOutput,
   IMessageOptsDTO,
 } from '@takaro/gameserver';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import {
   GameServerCreateDTO,
   GameServerOutputDTO,
@@ -35,6 +35,7 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
@@ -42,6 +43,7 @@ import { ParamId } from '../lib/validators.js';
 import { CAPABILITIES } from '../service/RoleService.js';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
+import { Response } from 'express';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -125,17 +127,20 @@ export class GameServerController {
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @Post('/gameserver/search')
   async search(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: GameServerSearchInputDTO
   ) {
     const service = new GameServerService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
@@ -175,8 +180,8 @@ export class GameServerController {
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
-    const deletedRecord = await service.delete(params.id);
-    return apiResponse(deletedRecord);
+    await service.delete(params.id);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))

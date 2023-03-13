@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { ValidateNested, IsOptional, IsString } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import {
   VariableCreateDTO,
   VariableOutputDTO,
@@ -17,12 +17,14 @@ import {
   Post,
   Put,
   Req,
+  Res,
   UseBefore,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { CAPABILITIES } from '../service/RoleService.js';
+import { Response } from 'express';
 
 export class VariableOutputDTOAPI extends APIOutput<VariableOutputDTO> {
   @Type(() => VariableOutputDTO)
@@ -57,17 +59,20 @@ export class VariableController {
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @Post('/variables/search')
   async find(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: VariableSearchInputDTO
   ) {
     const service = new VariablesService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
@@ -110,7 +115,7 @@ export class VariableController {
   @ResponseSchema(VariableOutputDTOAPI)
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new VariablesService(req.domainId);
-    const variable = await service.delete(params.id);
-    return apiResponse(variable);
+    await service.delete(params.id);
+    return apiResponse();
   }
 }

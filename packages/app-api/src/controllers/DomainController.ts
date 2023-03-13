@@ -11,7 +11,6 @@ import {
   createAdminAuthMiddleware,
   apiResponse,
   APIOutput,
-  PaginatedRequest,
 } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
 
@@ -25,11 +24,13 @@ import {
   JsonController,
   UseBefore,
   Req,
+  Res,
 } from 'routing-controllers';
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Request, Response } from 'express';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -70,17 +71,20 @@ export class DomainController {
   @Post('/domain/search')
   @ResponseSchema(DomainOutputArrayDTOAPI)
   async search(
-    @Req() req: PaginatedRequest,
+    @Req() req: Request,
+    @Res() res: Response,
     @Body() query: DomainSearchInputDTO
   ) {
     const service = new DomainService();
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
   @Get('/domain/:id')

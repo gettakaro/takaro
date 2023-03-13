@@ -52,7 +52,7 @@ export interface APIOutput {
    * @type {MetadataOutput}
    * @memberof APIOutput
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -205,7 +205,7 @@ export interface CommandExecuteDTOAPI {
    * @type {MetadataOutput}
    * @memberof CommandExecuteDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -262,7 +262,7 @@ export interface CommandOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof CommandOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -342,7 +342,7 @@ export interface CommandOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof CommandOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -500,7 +500,7 @@ export interface CronJobOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof CronJobOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -568,7 +568,7 @@ export interface CronJobOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof CronJobOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -733,7 +733,7 @@ export interface DomainCreateOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainCreateOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -752,7 +752,7 @@ export interface DomainOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -802,7 +802,7 @@ export interface DomainOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1051,7 +1051,7 @@ export interface FunctionOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof FunctionOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1101,7 +1101,7 @@ export interface FunctionOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof FunctionOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1233,7 +1233,7 @@ export interface GameServerOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1305,7 +1305,7 @@ export interface GameServerOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1389,7 +1389,7 @@ export interface GameServerTestReachabilityDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerTestReachabilityDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1587,7 +1587,7 @@ export interface HookOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof HookOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1672,7 +1672,7 @@ export interface HookOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof HookOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1956,7 +1956,7 @@ export interface LoginOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof LoginOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1995,6 +1995,24 @@ export interface MetadataOutput {
    * @memberof MetadataOutput
    */
   error: ErrorOutput;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  limit?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  total?: number;
 }
 /**
  * @type MetadataOutputServerTime
@@ -2107,7 +2125,7 @@ export interface ModuleInstallationOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof ModuleInstallationOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2126,7 +2144,7 @@ export interface ModuleOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof ModuleOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2200,7 +2218,7 @@ export interface ModuleOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof ModuleOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2438,7 +2456,7 @@ export interface PlayerOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof PlayerOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2506,7 +2524,7 @@ export interface PlayerOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof PlayerOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2676,7 +2694,7 @@ export interface RoleOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof RoleOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2732,7 +2750,7 @@ export interface RoleOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof RoleOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2996,7 +3014,7 @@ export interface SettingsOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof SettingsOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3015,7 +3033,7 @@ export interface SettingsOutputObjectDTOAPI {
    * @type {MetadataOutput}
    * @memberof SettingsOutputObjectDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3122,7 +3140,7 @@ export interface UserOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof UserOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3178,7 +3196,7 @@ export interface UserOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof UserOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3337,7 +3355,7 @@ export interface VariableOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof VariableOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3393,7 +3411,7 @@ export interface VariableOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof VariableOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *

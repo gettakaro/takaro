@@ -6,7 +6,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
@@ -24,11 +24,13 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { CAPABILITIES } from '../service/RoleService.js';
+import { Response } from 'express';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
@@ -71,17 +73,20 @@ export class CommandController {
   @ResponseSchema(CommandOutputArrayDTOAPI)
   @Post('/command/search')
   async search(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: CommandSearchInputDTO
   ) {
     const service = new CommandService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
@@ -121,7 +126,7 @@ export class CommandController {
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
-    const deletedRecord = await service.delete(params.id);
-    return apiResponse(deletedRecord);
+    await service.delete(params.id);
+    return apiResponse();
   }
 }
