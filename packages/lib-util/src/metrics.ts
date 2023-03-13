@@ -7,8 +7,6 @@ import {
 import { logger } from './logger.js';
 import { ctx } from './main.js';
 
-const log = logger('metrics');
-
 const counters = new Map<string, Counter<string>>();
 
 /**
@@ -55,6 +53,7 @@ export function addCounter(
 }
 
 export function enableDefaultNodejsMetrics() {
+  const log = logger('metrics');
   try {
     collectDefaultMetrics();
   } catch (error) {
