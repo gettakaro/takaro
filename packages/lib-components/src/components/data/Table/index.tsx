@@ -8,6 +8,7 @@ import {
   useReactTable,
   ColumnDef,
   SortingState,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
 import { Wrapper, AscDescIcon } from './style';
 import { Pagination } from './Pagination';
@@ -46,12 +47,17 @@ export function Table<DataType extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     pageCount: pagination?.pageCount ?? -1,
-    manualPagination: true,
+
+    manualPagination: false,
     onSortingChange: setSorting,
     onPaginationChange: pagination?.setPagination ?? undefined,
     onColumnVisibilityChange: setColumnVisibility,
+
+    // Reset to the first page when page-altering state changes eg. `data` is updated, filters change, etc
+    autoResetPageIndex: true,
     enableSorting: !!sort,
     enableSortingRemoval: false,
     debugTable: true,
