@@ -1,0 +1,42 @@
+version: '3.1'
+services:
+  homer:
+    extends:
+      file: docker-compose.yml
+      service: homer
+  postgresql:
+    extends:
+      file: docker-compose.yml
+      service: postgresql
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis      
+  takaro:
+    extends:
+      file: docker-compose.yml
+      service: takaro
+
+  prometheus:
+    image: prom/prometheus:v2.40.7
+    volumes:
+      - ./containers/prometheus/:/etc/prometheus/
+      - ./_data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 13006:9090
+   
+  grafana:
+    image: grafana/grafana:9.3.6
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-takaro}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-takaro}
+    volumes:
+      - ./containers/grafana/grafana-provisioning:/etc/grafana/provisioning/
+      - ./_data/grafana:/var/lib/grafana
+    ports:
+      - "13007:3000"

@@ -58,7 +58,6 @@
     "framer-motion": "^6.5.1",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.34.0",
-    "simplebar-react": "^2.4.1",
-    "yup": "^0.32.11"
+    "simplebar-react": "^2.4.1"
   }
 }

@@ -15,12 +15,29 @@ if test -e ".env.example" && ! test -e ".env"; then
 	cp .env.example .env
 fi
 
-printHeader "Installing node dependencies"
-npm ci
-
-printHeader "Initializing database"
+printHeader "Initializing datastores"
 
 mkdir -p _data
+
+# The prometheus container runs as a user with UID and GID 65534
+# so we need to make sure the data directory is writable by that user
+if [ ! -d "./_data/prometheus" ]; then
+	mkdir -p ./_data/prometheus
+	if command -v sudo >/dev/null 2>&1; then
+		sudo chown -R 65534:65534 ./_data/prometheus
+	fi
+fi
+
+# Same for Grafana
+if [ ! -d "./_data/grafana" ]; then
+	mkdir -p ./_data/grafana
+	if command -v sudo >/dev/null 2>&1; then
+		sudo chown -R 472:472 ./_data/grafana
+	fi
+fi
+
+printHeader "Installing node dependencies"
+npm ci
 
 printHeader "Building packages"
 

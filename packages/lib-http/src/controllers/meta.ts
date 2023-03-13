@@ -4,6 +4,7 @@ import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
+import { getMetrics } from '@takaro/util';
 
 export class HealthOutputDTO {
   @IsBoolean()
@@ -84,5 +85,10 @@ export class Meta {
       </body>
     </html>
     `;
+  }
+
+  @Get('/metrics')
+  getMetrics() {
+    return getMetrics();
   }
 }
