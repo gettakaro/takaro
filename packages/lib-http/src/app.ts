@@ -12,6 +12,7 @@ import { ErrorHandler } from './middleware/errorHandler.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { metricsMiddleware } from './main.js';
 
 interface IHTTPOptions {
   port?: number;
@@ -33,6 +34,7 @@ export class HTTP {
     this.httpServer = createServer(this.app);
     this.app.use(bodyParser.json());
     this.app.use(LoggingMiddleware);
+    this.app.use(metricsMiddleware);
     this.app.use(
       cors({
         credentials: true,
