@@ -1,66 +1,91 @@
 import { FC } from 'react';
 import { styled } from '../../../styled';
-import { Button } from '../../../components/';
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    background-color: ${({ theme }) => theme.colors.white};
+    padding: 0 1rem;
+    font-weight: 400;
+
+    &.active {
+      color: ${({ theme }) => theme.colors.primary};
+    }
+  }
+`;
 
 export interface PaginationProps {
   setPageIndex: (index: number) => void;
   pageIndex: number;
+  hasPrevious: boolean;
   previousPage: () => void;
   nextPage: () => void;
-  hasPrevious: boolean;
   hasNext: boolean;
-  isLoading: boolean;
   pageCount: number;
-  pageSize: number;
-  setPageSize: (size: number) => void;
 }
-
-const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
 
 export const Pagination: FC<PaginationProps> = ({
   setPageIndex,
-  previousPage,
-  nextPage,
   hasPrevious,
+  pageIndex,
   hasNext,
   pageCount,
-  pageIndex,
-  isLoading,
+  previousPage,
+  nextPage,
 }) => {
   return (
-    <Container>
-      <Button
-        onClick={() => setPageIndex(0)}
-        disabled={!hasPrevious}
-        text="prev"
-      />
-      <Button
-        onClick={() => previousPage()}
-        disabled={!hasPrevious}
-        text={`${pageIndex + 1}`}
-      />
-      <Button onClick={() => nextPage()} disabled={!hasNext} text="next" />
+    <PaginationContainer>
+      <button onClick={() => setPageIndex(0)} disabled={!hasPrevious}>
+        {'<<'}
+      </button>
+      {/* SPECIAL CASE 1: current page is the first page (2 new pages on right) */}
+      {pageIndex === 0 && (
+        <>
+          <button
+            onClick={() => setPageIndex(0)}
+            disabled={!hasPrevious}
+            className="active"
+          >
+            1
+          </button>
+          <button onClick={() => setPageIndex(1)}>2</button>
+          <button onClick={() => setPageIndex(2)}>3</button>
+        </>
+      )}
+      {/* SPECIAL CASE 2 (current page = last page) */}
+      {pageIndex === pageCount - 1 && (
+        <>
+          <button onClick={() => setPageIndex(pageIndex - 2)}>
+            {pageIndex - 1}
+          </button>
 
-      {/*
-      <button
-        className="border rounded p-1"
-        onClick={() => setPageIndex(pageCount - 1)}
-        disabled={!hasNext}
-      >
+          <button onClick={() => setPageIndex(pageIndex - 1)}>
+            {pageIndex}
+          </button>
+
+          <button
+            className="active"
+            onClick={() => setPageIndex(pageIndex + 1)}
+          >
+            {pageIndex + 1}
+          </button>
+        </>
+      )}
+      {/* in case there is a previous page and there is a next page */}
+      {pageIndex !== pageCount - 1 && pageIndex !== 0 && (
+        <>
+          <button onClick={previousPage}>{pageIndex}</button>
+          <button className="active" onClick={() => setPageIndex(pageIndex)}>
+            {pageIndex + 1}
+          </button>
+          <button onClick={nextPage}>{pageIndex + 2}</button>
+        </>
+      )}
+      <button onClick={() => setPageIndex(pageCount - 1)} disabled={hasNext}>
         {'>>'}
       </button>
-      */}
-
-      <span className="flex items-center gap-1">
-        <div>Page</div>
-        <strong>
-          {pageIndex + 1} of {pageCount}
-        </strong>
-      </span>
-      {isLoading ? 'Loading...' : null}
-    </Container>
+    </PaginationContainer>
   );
 };

@@ -36,17 +36,18 @@ export const Container = styled.label<{
       }
       return theme.colors.text;
     }};
+  }
 
   margin: ${({ theme, position }) => {
     switch (position) {
       case 'top':
-        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['0_5']} ${theme.spacing[0]}`;
+        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['1']} ${theme.spacing[0]}`;
       case 'right':
-        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['0_5']}`;
+        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['1']}`;
       case 'bottom':
-        return `${theme.spacing['0_5']} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]}`;
+        return `${theme.spacing['1']} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]}`;
       case 'left':
-        return `${theme.spacing[0]} ${theme.spacing['0_5']} ${theme.spacing[0]} ${theme.spacing[0]}`;
+        return `${theme.spacing[0]} ${theme.spacing['1']} ${theme.spacing[0]} ${theme.spacing[0]}`;
     }
   }};
 `;
