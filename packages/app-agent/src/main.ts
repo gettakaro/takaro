@@ -19,8 +19,7 @@ let vmm: VMM | null = null;
 
 export async function getVMM() {
   if (!vmm) {
-    vmm = new VMM({ hotPoolSize: 1 });
-    await vmm.initPool();
+    vmm = new VMM();
   }
 
   return vmm;

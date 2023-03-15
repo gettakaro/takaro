@@ -53,7 +53,8 @@ services:
     volumes:
       - ./packages:/app/packages
       - ./reports:/app/reports
-      - ./firecracker:/app/firecracker
+    env_file:
+      - .env
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"

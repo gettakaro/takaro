@@ -1,28 +1,51 @@
 import { isTakaroDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
-import { IsISO8601, ValidateNested } from 'class-validator';
+import {
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { IsString } from 'class-validator';
+import { Request, Response } from 'express';
 
 interface IApiResponseOptions {
   error?: Error;
   meta?: Record<string, string | number>;
+  req: Request;
+  res: Response;
 }
 
 export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
-  const errorDetails = {
-    code: opts?.error?.name,
-    // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
-    details: opts?.error?.hasOwnProperty('details') ? opts?.error?.details : {},
+  const returnVal = {
+    meta: {
+      serverTime: new Date().toISOString(),
+      error: opts?.error && {
+        code: opts?.error?.name,
+        details: opts?.error?.hasOwnProperty('details')
+          ? // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
+            opts?.error?.details
+          : {},
+      },
+      page:
+        opts?.meta?.total || opts?.meta?.total === 0
+          ? opts?.res.locals.page
+          : undefined,
+      limit:
+        opts?.meta?.total || opts?.meta?.total === 0
+          ? opts?.res.locals.limit
+          : undefined,
+      ...opts?.meta,
+    },
+    data,
   };
 
-  let parsed = data;
-
   if (isTakaroDTO(data)) {
-    parsed = data.toJSON();
+    returnVal.data = data.toJSON();
   }
 
   if (Array.isArray(data)) {
-    parsed = data.map((item) => {
+    returnVal.data = data.map((item) => {
       if (isTakaroDTO(item)) {
         return item.toJSON();
       }
@@ -31,19 +54,12 @@ export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
     });
   }
 
-  return {
-    meta: {
-      serverTime: new Date().toISOString(),
-      error: opts?.error ? errorDetails : undefined,
-      ...opts?.meta,
-    },
-    data: parsed,
-  };
+  return returnVal;
 }
 
 class ErrorOutput {
   @IsString()
-  code!: string;
+  code?: string;
 }
 
 class MetadataOutput {
@@ -54,11 +70,32 @@ class MetadataOutput {
   @Type(() => ErrorOutput)
   @ValidateNested()
   error?: ErrorOutput;
+
+  /**
+   * The page number of the response
+   */
+  @IsNumber()
+  @IsOptional()
+  page?: number;
+
+  /**
+   * The number of items returned in the response (aka page size)
+   */
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+
+  /**
+   * The total number of items in the collection
+   */
+  @IsNumber()
+  @IsOptional()
+  total?: number;
 }
 export class APIOutput<T> extends TakaroDTO<APIOutput<T>> {
   @Type(() => MetadataOutput)
   @ValidateNested()
-  metadata!: MetadataOutput;
+  meta!: MetadataOutput;
 
   data!: T;
 }

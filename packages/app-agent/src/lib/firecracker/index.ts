@@ -4,7 +4,6 @@ import fs, { WriteStream } from 'fs';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
-import { randomUUID } from 'crypto';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
@@ -27,8 +26,8 @@ interface InfoReponse {
   app_name: string;
 }
 
-export default class Firecracker {
-  id: string;
+export default class FirecrackerClient {
+  id: number;
   status: FcStatus;
   options: FcOptions;
   childProcess: ChildProcess | undefined;
@@ -36,8 +35,8 @@ export default class Firecracker {
 
   private readonly httpSock: Got;
 
-  constructor(args: { logLevel?: FcLogLevel }) {
-    this.id = randomUUID();
+  constructor(args: { id: number; logLevel?: FcLogLevel }) {
+    this.id = args.id;
     this.log = logger('firecracker');
 
     this.options = {
@@ -54,15 +53,14 @@ export default class Firecracker {
       prefixUrl: `unix:${this.options.fcSocket}:`,
     });
 
-    this.spawn();
-
     // make sure to clean up on exit
     process.on('SIGINT', () => {
       this.kill();
+      process.exit(0);
     });
   }
 
-  public async spawn(): Promise<void> {
+  async spawn(): Promise<void> {
     this.status = 'initializing';
 
     const dir = '/tmp/takaro/sockets';
@@ -90,11 +88,10 @@ export default class Firecracker {
         });
         this.childProcess.on('exit', () => {
           this.log.debug('child process exit');
-          fs.unlink(this.options.fcSocket, () => {});
+          this.kill();
         });
         this.childProcess.on('close', () => {
           this.log.debug('child process closing');
-          fs.unlink(this.options.fcSocket, () => {});
         });
         this.childProcess.stderr?.on('data', (error) => {
           this.log.error(error);
@@ -102,7 +99,6 @@ export default class Firecracker {
 
         this.childProcess.on('error', (e) => {
           this.log.error(e);
-          this.kill();
           return reject(e);
         });
       } else {
@@ -112,19 +108,16 @@ export default class Firecracker {
     });
   }
 
-  kill(): boolean {
-    const isKilled = this.childProcess?.kill() ?? false;
+  kill() {
+    this.log.debug('killing vm');
 
-    if (isKilled) {
-      this.log.debug('cleaning up sockets');
+    this.childProcess?.kill();
+    this.childProcess = undefined;
 
-      this.childProcess = undefined;
+    fs.unlink(this.options.fcSocket, () => {});
+    fs.unlink(this.options.agentSocket, () => {});
 
-      fs.unlink(this.options.fcSocket, () => {});
-      fs.unlink(this.options.agentSocket, () => {});
-    }
-
-    return isKilled;
+    this.status = 'stopped';
   }
 
   async info(): Promise<InfoReponse> {
@@ -168,12 +161,17 @@ export default class Firecracker {
       await this.httpSock.put('network-interfaces/eth0', {
         json: {
           iface_id: 'eth0',
-          guest_mac: '02:FC:00:00:00:05',
-          host_dev_name: 'fc-tap0',
+          guest_mac: `02:FC:00:00:${Math.floor(this.id / 256)
+            .toString()
+            .padStart(2, '0')}:${Math.floor(this.id % 256)
+            .toString()
+            .padStart(2, '0')}`,
+          host_dev_name: `fc-${this.id}-tap0`,
         },
       });
     } catch (err) {
       this.log.error('setting up vm failed', err);
+      this.kill();
     }
   }
 

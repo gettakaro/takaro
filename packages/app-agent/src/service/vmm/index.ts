@@ -1,4 +1,4 @@
-import Firecracker from '../../lib/firecracker/index.js';
+import FirecrackerClient from '../../lib/firecracker/index.js';
 import { VmClient } from '../../lib/vmClient.js';
 import { logger } from '@takaro/util';
 
@@ -12,55 +12,52 @@ interface VMMOptions {
  */
 export class VMM {
   options: VMMOptions;
-  hotPool: Array<Firecracker>;
-  runningPool: Array<Firecracker>;
+  vms: Array<FirecrackerClient>;
   log;
 
-  constructor(options: VMMOptions) {
-    this.hotPool = [];
-    this.runningPool = [];
-    this.options = options;
+  constructor() {
+    this.vms = [];
     this.log = logger('VMM');
   }
-
-  async initPool() {
-    this.log.debug(`setting up a hot pool of ${this.options.hotPoolSize}`);
-
-    for (let i = 0; i < this.options.hotPoolSize; i++) {
-      this.addVM();
-    }
-  }
-
   async sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async addVM() {
-    const firecracker = new Firecracker({ logLevel: 'debug' });
-    await firecracker.startVM();
+  async createVM() {
+    const id = this.vms.length + 1;
+
+    this.log.debug(`creating a new vm with id: ${id}`);
+
+    const fcClient = new FirecrackerClient({
+      id,
+      logLevel: 'debug',
+    });
+    await fcClient.spawn();
+    await fcClient.startVM();
 
     // wait for fc to be ready
-    while (firecracker.status !== 'ready') {
-      this.log.debug(firecracker.status);
+    while (fcClient.status !== 'ready') {
+      if (fcClient.status === 'stopped') {
+        throw Error('Failed to create client');
+      }
+
+      this.log.debug(fcClient.status);
       await this.sleep(1000);
     }
 
-    this.log.debug('pushing to hotPool', firecracker.id);
+    this.vms.push(fcClient);
 
-    this.hotPool.push(firecracker);
+    return fcClient;
   }
 
-  async getVM() {
-    let firecracker;
+  async killVM(id: number) {
+    const fcClient = this.vms.at(id + 1);
 
-    // wait for a fc instance to be free
-    while (!firecracker) {
-      // firecracker = this.hotPool.pop();
-      firecracker = this.hotPool.at(0);
-      await this.sleep(20);
-    }
+    this.log.debug(`killing vm with id ${id}`);
 
-    return firecracker;
+    fcClient?.kill();
+
+    this.vms.splice(id - 1, 1);
   }
 
   async executeFunction(
@@ -68,14 +65,13 @@ export class VMM {
     _data: Record<string, unknown>,
     _token: string
   ) {
-    this.log.debug('getting vm');
-    const firecracker = await this.getVM();
-    this.log.debug('got vm', firecracker.status);
-    // this.runningPool.push(firecracker);
+    const fcClient = await this.createVM();
 
-    const vmClient = new VmClient(firecracker.options.agentSocket, 8000);
-    firecracker.status = 'running';
+    const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+    fcClient.status = 'running';
     const response = await vmClient.exec(fn);
+
+    await this.killVM(fcClient.id);
 
     return response;
   }

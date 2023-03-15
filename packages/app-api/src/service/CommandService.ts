@@ -178,7 +178,7 @@ export class CommandService extends TakaroService<
 
     if (triggeredCommands.length) {
       this.log.debug(
-        `Found ${triggeredCommands.length} hooks that match the event`
+        `Found ${triggeredCommands.length} commands that match the event`
       );
 
       const authService = new AuthService(this.domainId);

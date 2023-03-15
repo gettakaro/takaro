@@ -1,32 +1,27 @@
 import { sandbox, expect } from '@takaro/test';
-import { NextFunction, Response } from 'express';
-import {
-  PaginationMiddleware,
-  PaginatedRequest,
-} from '../paginationMiddleware.js';
+import { NextFunction, Request, Response } from 'express';
 import { errors } from '@takaro/util';
+import { paginationMiddleware } from '../paginationMiddleware.js';
 
 async function runPagination(page?: number, limit?: number) {
-  const req = { query: { page, limit } } as unknown as PaginatedRequest;
-  const res = {} as Response;
+  const req = { query: { page, limit } } as unknown as Request;
+  const res = { locals: {} } as Response;
   const next = sandbox.stub<errors.ValidationError[]>();
-  const middleware = new PaginationMiddleware();
-  await middleware.use(req, res, next as unknown as NextFunction);
-
-  return { req, next };
+  await paginationMiddleware(req, res, next as unknown as NextFunction);
+  return { req, res, next };
 }
 
 describe('pagination middleware', () => {
   it('Handles setting defaults', async () => {
-    const { req, next } = await runPagination();
-    expect(req.page).to.equal(0);
-    expect(req.limit).to.equal(100);
+    const { res, next } = await runPagination();
+    expect(res.locals.page).to.equal(0);
+    expect(res.locals.limit).to.equal(100);
     expect(next).to.have.been.calledOnce;
   });
   it('Works when pagination is passed', async () => {
-    const { req, next } = await runPagination(2, 20);
-    expect(req.page).to.equal(2);
-    expect(req.limit).to.equal(20);
+    const { res, next } = await runPagination(2, 20);
+    expect(res.locals.page).to.equal(2);
+    expect(res.locals.limit).to.equal(20);
     expect(next).to.have.been.calledOnce;
   });
   it('Handles negative limit', async () => {
