@@ -17,8 +17,7 @@ export class UserModel extends TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
 
-  email!: string;
-  password!: string;
+  idpId: string;
 
   static relationMappings = {
     roles: {
@@ -87,15 +86,16 @@ export class UserRepo extends ITakaroRepo<
     return new UserOutputWithRolesDTO().construct(data);
   }
 
-  async create(data: UserCreateInputDTO): Promise<UserOutputDTO> {
+  async create(data: UserCreateInputDTO): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
     const item = await query
       .insert({
-        ...data.toJSON(),
+        idpId: data.idpId,
+        name: data.name,
         domain: this.domainId,
       })
       .returning('*');
-    return new UserOutputDTO().construct(item);
+    return this.findOne(item.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -104,12 +104,15 @@ export class UserRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
+  async update(
+    id: string,
+    data: UserUpdateDTO
+  ): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
     const item = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new UserOutputDTO().construct(item);
+    return this.findOne(item.id);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

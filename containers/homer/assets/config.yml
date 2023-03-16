@@ -121,3 +121,8 @@ services:
         subtitle: "Dashboards!"
         url: "http://localhost:13007"
         target: "_blank"
+      - name: "Mailslurper"
+        icon: "fas fa-envelope"
+        subtitle: "Mail server"
+        url: "http://localhost:4436"
+        target: "_blank"

@@ -16,7 +16,7 @@ import {
   RoleService,
 } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsString, Length, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
@@ -26,12 +26,14 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CronJobService } from './CronJobService.js';
 import { ModuleService } from './ModuleService.js';
+import { Ory } from '../lib/ory.js';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
   name: string;
 
   @Length(3, 200)
+  @IsOptional()
   id: string;
 }
 
@@ -109,11 +111,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await cronJobService.delete(cronJob.id);
     }
 
+    await new Ory().deleteIdentitiesForDomain(id);
+
     return this.repo.delete(id);
   }
 
   async initDomain(
-    input: Omit<DomainCreateInputDTO, 'id'>
+    input: DomainCreateInputDTO
   ): Promise<DomainCreateOutputDTO> {
     const id = humanId({
       separator: '-',
@@ -141,7 +145,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await new UserCreateInputDTO().construct({
         name: 'root',
         password: password,
-        email: `root@${domain.id}`,
+        email: `root@${domain.id}.com`,
       })
     );
 

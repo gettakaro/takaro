@@ -7,7 +7,11 @@ import { GlobalStyle, SnackbarProvider, theme } from '@takaro/lib-components';
 import { Router } from 'Router';
 import { useMemo, useState } from 'react';
 import { UserContext, UserData } from 'context/userContext';
-import { AuthContext, AuthProvider } from 'context/authContext';
+import {
+  ConfigContext,
+  TakaroConfig,
+  getConfigVar,
+} from 'context/configContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,16 +30,44 @@ const defaultUserData: UserData = {
 
 function App() {
   const [userData, setUserData] = useState<Partial<UserData>>(defaultUserData);
+  const [config, setConfig] = useState<TakaroConfig>();
+  const [loading, setLoading] = useState<boolean>(true);
+
   const providerUserData = useMemo(
     () => ({ userData, setUserData }),
     [userData, setUserData]
   );
 
+  // the config can be loaded before or after the app is loaded
+  // if before window.__env__ will contain the env variables
+  // if not we need to wait until the script is loaded
+  const loadConfig = function () {
+    console.log('TIS LOADED');
+    const cfg = {
+      apiUrl: getConfigVar('REACT_APP_API'),
+      oryUrl: getConfigVar('REACT_APP_ORY_URL'),
+    };
+    setConfig(cfg as unknown as TakaroConfig);
+    setLoading(false);
+  };
+
+  const configScriptElement = document.querySelector(
+    '#global-config'
+  ) as HTMLScriptElement;
+  if (!configScriptElement) throw new Error('Forgot the public .env?');
+  configScriptElement.addEventListener('load', () => {
+    loadConfig();
+  });
+
+  if (!config && window.__env__) loadConfig();
+  if (loading) return <div>Loading...</div>;
+  if (!config) throw new Error('Initialization error');
+
   return (
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={providerUserData}>
-        <SnackbarProvider>
-          <AuthContext.Provider value={AuthProvider()}>
+        <ConfigContext.Provider value={config}>
+          <SnackbarProvider>
             <QueryClientProvider client={queryClient}>
               <GlobalStyle />
               <Helmet>
@@ -48,11 +80,11 @@ function App() {
                 <meta content="takaro.io" name="designer" />
                 <meta content="takaro" name="copyright" />
                 <meta
-                  content="Takaro is a web based gameserver manager. Bring your server(s) to the next level with Takaros advanced features! Join hundreds of other servers in a new generation of server management."
+                  content="Takaro is a web based gameserver manager. Bring your server(s) to the next level with Takaro's advanced features! Join hundreds of other servers in a new generation of server management."
                   name="description"
                 />
                 <meta
-                  content="server manager, web, cloud, open source, csmm, Catalysm, 7 Days to Die server manager,7 Days to Die, Rust, monitor"
+                  content="server manager, web, cloud, open source, Takaro, 7 Days to Die server manager,7 Days to Die, Rust, monitor"
                   name="keywords"
                 />
                 <title>Takaro</title>
@@ -65,8 +97,8 @@ function App() {
               }
               <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-          </AuthContext.Provider>
-        </SnackbarProvider>
+          </SnackbarProvider>
+        </ConfigContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>
   );

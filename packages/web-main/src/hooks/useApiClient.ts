@@ -10,7 +10,7 @@ export const useApiClient = () => {
     return cachedClient;
   }
 
-  const apiUrl = cfg?.apiUrl;
+  const apiUrl = cfg.apiUrl;
 
   if (!apiUrl) throw new Error('REACT_APP_API is not set');
 

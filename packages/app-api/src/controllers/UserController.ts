@@ -30,11 +30,10 @@ import {
   Params,
   Res,
 } from 'routing-controllers';
-import { DomainService } from '../service/DomainService.js';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { CAPABILITIES } from '../service/RoleService.js';
 
 export class GetUserDTO {
@@ -92,18 +91,16 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
 export class UserController {
   @Post('/login')
   @ResponseSchema(LoginOutputDTOAPI)
-  async login(@Body() loginReq: LoginDTO, @Res() res: Response) {
-    const domainId = await new DomainService().resolveDomain(loginReq.username);
-    const service = new AuthService(domainId);
+  async login(@Body() loginReq: LoginDTO) {
     return apiResponse(
-      await service.login(loginReq.username, loginReq.password, res)
+      await AuthService.login(loginReq.username, loginReq.password)
     );
   }
 
   @Post('/logout')
   @ResponseSchema(APIOutput)
-  async logout(@Res() res: Response) {
-    return apiResponse(await AuthService.logout(res));
+  async logout(@Req() req: Request) {
+    return apiResponse(await AuthService.logout(req));
   }
 
   @Get('/me')

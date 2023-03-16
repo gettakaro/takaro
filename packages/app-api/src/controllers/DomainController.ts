@@ -96,7 +96,7 @@ export class DomainController {
 
   @Post('/domain')
   @ResponseSchema(DomainCreateOutputDTOAPI)
-  async create(@Body() domain: Omit<DomainCreateInputDTO, 'id'>) {
+  async create(@Body() domain: DomainCreateInputDTO) {
     const service = new DomainService();
     return apiResponse(await service.initDomain(domain));
   }

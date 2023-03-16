@@ -1,7 +1,6 @@
 import { DomainScoped } from '../lib/DomainScoped.js';
 import { ctx, errors, logger } from '@takaro/util';
-import { compareHashed } from '@takaro/db';
-import { UserService } from '../service/UserService.js';
+import { UserOutputWithRolesDTO, UserService } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { NextFunction, Request, Response } from 'express';
@@ -9,6 +8,7 @@ import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { CAPABILITIES } from './RoleService.js';
+import { Ory } from '../lib/ory.js';
 
 interface IJWTPayload {
   sub: string;
@@ -32,45 +32,22 @@ export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
 const log = logger('AuthService');
 
 export class AuthService extends DomainScoped {
-  async login(
-    email: string,
-    password: string,
-    res: Response
-  ): Promise<LoginOutputDTO> {
-    const service = new UserService(this.domainId);
-    const users = await service.find({ filters: { email } });
+  static async login(name: string, password: string): Promise<LoginOutputDTO> {
+    const ory = new Ory();
 
-    if (!users.results.length) {
-      this.log.warn('User not found');
-      throw new errors.UnauthorizedError();
-    }
-
-    if (users.results.length > 1) {
-      this.log.error('Too many users found!');
-      throw new errors.UnauthorizedError();
-    }
-
-    const passwordMatches = await compareHashed(
-      password,
-      users.results[0].password
-    );
-
-    if (passwordMatches) {
-      const token = await this.signJwt({ user: { id: users.results[0].id } });
-      res.cookie(config.get('auth.cookieName'), token, {
-        httpOnly: true,
-        maxAge: ms(config.get('auth.jwtExpiresIn')),
+    try {
+      const loginRes = await ory.submitApiLogin(name, password);
+      return new LoginOutputDTO().construct({
+        token: loginRes.data.session_token,
       });
-
-      return new LoginOutputDTO().construct({ token });
-    } else {
-      this.log.warn('Password does not match');
+    } catch (error) {
+      log.warn(error);
       throw new errors.UnauthorizedError();
     }
   }
 
-  static async logout(res: Response) {
-    res.clearCookie(config.get('auth.cookieName'));
+  static async logout(req: Request) {
+    return new Ory().apiLogout(req);
   }
 
   /**
@@ -150,13 +127,21 @@ export class AuthService extends DomainScoped {
     });
   }
 
-  static getTokenFromRequest(req: AuthenticatedRequest) {
-    const tokenFromAuthHeader = req.headers['authorization']?.replace(
-      'Bearer ',
-      ''
-    );
-    const tokenFromCookie = req.cookies[config.get('auth.cookieName')];
-    return tokenFromAuthHeader || tokenFromCookie;
+  static async getUserFromReq(
+    req: AuthenticatedRequest
+  ): Promise<UserOutputWithRolesDTO | null> {
+    try {
+      const identity = await new Ory().getIdentityFromReq(req);
+      if (!identity) return null;
+      const service = new UserService(identity.domainId);
+      const users = await service.find({ filters: { idpId: identity.id } });
+
+      if (!users.results.length) return null;
+
+      return users.results[0];
+    } catch (error) {
+      return null;
+    }
   }
 
   static getAuthMiddleware(capabilities: CAPABILITIES[]) {
@@ -166,16 +151,13 @@ export class AuthService extends DomainScoped {
       next: NextFunction
     ) => {
       try {
-        const token = this.getTokenFromRequest(req);
-        const payload = await AuthService.verifyJwt(token);
-        const service = new UserService(payload.domainId);
-        const user = await service.findOne(payload.sub);
+        const user = await this.getUserFromReq(req);
 
         if (!user) {
           return next(new errors.UnauthorizedError());
         }
 
-        ctx.addData({ user: user.id, domain: payload.domainId });
+        ctx.addData({ user: user.id, domain: user.domain });
 
         const allUserCapabilities = user.roles.reduce((acc, role) => {
           return [...acc, ...role.capabilities.map((c) => c.capability)];
@@ -195,7 +177,7 @@ export class AuthService extends DomainScoped {
         }
 
         req.user = user;
-        req.domainId = payload.domainId;
+        req.domainId = user.domain;
         next();
       } catch (error) {
         log.error('Unexpected error in auth middleware', error);

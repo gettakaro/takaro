@@ -19,6 +19,7 @@ echo "Deleting data..."
 docker-compose down
 
 sudo rm -rf ./_data/db
+sudo rm -rf ./_data/ory-db
 
 docker-compose up -d
 

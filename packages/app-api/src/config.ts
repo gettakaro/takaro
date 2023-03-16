@@ -18,6 +18,8 @@ interface IHttpConfig extends IBaseConfig {
     jwtSecret: string;
     jwtExpiresIn: string;
     cookieName: string;
+    kratosUrlPublic: string;
+    kratosUrlAdmin: string;
   };
   takaro: {
     clusterMode: CLUSTER_MODE;
@@ -83,6 +85,18 @@ const configSchema = {
       default: 'takaro-token',
       env: 'COOKIE_NAME',
     },
+    kratosUrlPublic: {
+      doc: 'The URL of the Kratos public API',
+      format: String,
+      default: 'http://kratos:4433',
+      env: 'KRATOS_URL',
+    },
+    kratosUrlAdmin: {
+      doc: 'The URL of the Kratos admin API',
+      format: String,
+      default: 'http://kratos:4434',
+      env: 'KRATOS_ADMIN_URL',
+    },
   },
   takaro: {
     clusterMode: {
@@ -94,7 +108,7 @@ const configSchema = {
     maxVariables: {
       doc: 'The maximum number of variables that can be stored per domain',
       format: Number,
-      default: 1000,
+      default: 100,
       env: 'MAX_VARIABLES',
     },
   },
