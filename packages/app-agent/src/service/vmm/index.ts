@@ -13,14 +13,13 @@ interface VMMOptions {
 export class VMM {
   options: VMMOptions;
   vms: Array<FirecrackerClient>;
+  counter;
   log;
 
   constructor() {
     this.vms = [];
+    this.counter = 0;
     this.log = logger('VMM');
-  }
-  async sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async createVM() {
@@ -32,47 +31,43 @@ export class VMM {
       id,
       logLevel: 'debug',
     });
-    await fcClient.spawn();
     await fcClient.startVM();
-
-    // wait for fc to be ready
-    while (fcClient.status !== 'ready') {
-      if (fcClient.status === 'stopped') {
-        throw Error('Failed to create client');
-      }
-
-      this.log.debug(fcClient.status);
-      await this.sleep(1000);
-    }
 
     this.vms.push(fcClient);
 
     return fcClient;
   }
 
-  async killVM(id: number) {
-    const fcClient = this.vms.at(id + 1);
+  async removeVM(id: number) {
+    const fcClient = this.vms.at(id - 1);
 
     this.log.debug(`killing vm with id ${id}`);
 
-    fcClient?.kill();
+    await fcClient?.kill();
 
     this.vms.splice(id - 1, 1);
+
+    this.log.debug('current list of running vms', { vms: this.vms });
   }
 
   async executeFunction(
     fn: string,
-    _data: Record<string, unknown>,
-    _token: string
+    data: Record<string, unknown>,
+    token: string
   ) {
     const fcClient = await this.createVM();
-
     const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+
+    await vmClient.waitUntilHealthy();
+
+    this.log.debug('vm created');
+
     fcClient.status = 'running';
-    const response = await vmClient.exec(fn);
 
-    await this.killVM(fcClient.id);
+    const cmdOutput = await vmClient.exec(fn, data, token);
 
-    return response;
+    this.log.debug('function output', { cmdOutput });
+
+    await this.removeVM(fcClient.id);
   }
 }

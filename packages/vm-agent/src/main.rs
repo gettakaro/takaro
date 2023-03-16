@@ -1,6 +1,6 @@
 use anyhow::Error;
 use futures::TryStreamExt;
-use std::{io, net::Ipv4Addr};
+use std::{env, io, net::Ipv4Addr};
 use tokio_vsock::VsockListener;
 
 const HOST: u32 = libc::VMADDR_CID_ANY;
@@ -70,6 +70,16 @@ async fn main() -> Result<(), InitError> {
     tracing_subscriber::fmt().init();
 
     // setup_network().await?;
+
+    if let Err(e) = env::set_current_dir("/app") {
+        eprintln!("Failed to change directory: {}", e);
+    }
+
+    if let Ok(current_dir) = env::current_dir() {
+        tracing::info!("Current working directory: {}", current_dir.display());
+    } else {
+        tracing::error!("Failed to get current working directory");
+    }
 
     let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
 

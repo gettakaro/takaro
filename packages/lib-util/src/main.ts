@@ -11,3 +11,5 @@ export { logger } from './logger.js';
 export * from './metrics.js';
 
 export * from './context.js';
+
+export { sleep } from './sleep.js';

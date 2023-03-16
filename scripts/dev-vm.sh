@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euom pipefail
+set -euomx pipefail
 
 FC_ROOTFS="$PWD/firecracker/rootfs.ext4"
 FC_KERNEL="$PWD/firecracker/vmlinux.bin"
@@ -53,7 +53,8 @@ create_rootfs() {
 		-v /tmp/takaro/my-rootfs:/my-rootfs \
 		-v "$VM_AGENT_BINARY:/usr/local/bin/agent" \
 		-v "$VM_AGENT_SERVICE:/etc/init.d/agent" \
-		alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
+		-v "/home/branco/dev/takaro/firecracker/function-helpers-poc:/app" \
+		node:18-alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
 
 	sudo umount /tmp/takaro/my-rootfs/
 }
@@ -151,10 +152,10 @@ setup_microvm() {
 
 ######################################## MAIN SCRIPT ########################################
 
-build_vm_agent
+# build_vm_agent
 
 create_rootfs
 
-setup_microvm &
-
-start_firecracker
+# setup_microvm &
+#
+# start_firecracker

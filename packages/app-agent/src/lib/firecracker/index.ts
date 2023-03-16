@@ -1,13 +1,22 @@
 import child_process, { ChildProcess } from 'child_process';
 import process from 'process';
-import fs, { WriteStream } from 'fs';
-import { logger } from '@takaro/util';
-import got, { Got } from 'got';
+import fs from 'node:fs/promises';
+import { logger, ctx, sleep } from '@takaro/util';
+import got, { Got, RequestError } from 'got';
 import { config } from '../../config.js';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
 type FcStatus = 'initializing' | 'ready' | 'running' | 'stopped';
+
+// type VmState = 'Not started' | 'Pause' | 'Running';
+
+// interface FcInfoResponse {
+//   app_name: string;
+//   id: string;
+//   state: VmState;
+//   vmm_version: string;
+// }
 
 interface FcOptions {
   binary: string;
@@ -19,25 +28,20 @@ interface FcOptions {
   logLevel: FcLogLevel;
 }
 
-interface InfoReponse {
-  id: string;
-  state: string;
-  vmm_version: string;
-  app_name: string;
-}
-
 export default class FirecrackerClient {
   id: number;
   status: FcStatus;
   options: FcOptions;
-  childProcess: ChildProcess | undefined;
+  childProcess: ChildProcess;
   log;
 
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
     this.id = args.id;
-    this.log = logger('firecracker');
+    this.log = logger(`firecracker(${this.id})`);
+
+    ctx.addData({ vmId: this.id });
 
     this.options = {
       binary: config.get('firecracker.binary'),
@@ -45,13 +49,37 @@ export default class FirecrackerClient {
       rootfs: config.get('firecracker.rootfs'),
       fcSocket: `${config.get('firecracker.sockets')}${this.id}-fc.sock`,
       agentSocket: `${config.get('firecracker.sockets')}${this.id}-agent.sock`,
-      logPath: config.get('firecracker.logPath'),
+      logPath: `${config.get('firecracker.logPath')}${this.id}-logs.fifo`,
       logLevel: args.logLevel ?? 'info',
     };
 
     this.httpSock = got.extend({
       prefixUrl: `unix:${this.options.fcSocket}:`,
+      enableUnixSockets: true,
+      hooks: {
+        beforeRequest: [
+          (request) => {
+            this.log.debug(`➡️  ${request.method} ${request.url}`);
+          },
+        ],
+        afterResponse: [
+          (response) => {
+            this.log.debug(`⬅️  ${response.statusCode} ${response.url}`);
+            return response;
+          },
+        ],
+        beforeError: [
+          (error) => {
+            this.log.error(`❌ ${error.options.method} ${error.options.url}`, {
+              response: error.response?.body,
+            });
+            return error;
+          },
+        ],
+      },
     });
+
+    this.log.debug('constructor', this.options);
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
@@ -60,68 +88,117 @@ export default class FirecrackerClient {
     });
   }
 
-  async spawn(): Promise<void> {
+  async spawn() {
     this.status = 'initializing';
 
-    const dir = '/tmp/takaro/sockets';
+    try {
+      await this.cleanUp();
+    } catch {}
 
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      await fs.mkdir(config.get('firecracker.sockets'), { recursive: true });
+    } catch {
+      this.log.debug('sockets folder already exists');
     }
 
+    try {
+      await fs.writeFile(this.options.logPath, '');
+    } catch (err) {
+      this.log.error(err);
+      this.log.debug('log file already exists');
+    }
+
+    this.childProcess = child_process.spawn(this.options.binary, [
+      '--api-sock',
+      this.options.fcSocket,
+      '--log-path',
+      this.options.logPath,
+      '--level',
+      this.options.logLevel,
+      '--show-level',
+      '--show-log-origin',
+    ]);
+
     return new Promise((resolve, reject) => {
-      this.childProcess = child_process.spawn(this.options.binary, [
-        '--api-sock',
-        this.options.fcSocket,
-        '--log-path',
-        this.options.logPath,
-        '--level',
-        this.options.logLevel,
-        '--show-level',
-        '--show-log-origin',
-      ]);
+      if (this.childProcess === undefined) {
+        const errMessage = 'Could not create child process';
 
-      if (this.childProcess !== undefined) {
-        this.childProcess.on('spawn', () => {
-          this.log.debug('child process spawned', this.options);
-          return resolve();
-        });
-        this.childProcess.on('exit', () => {
-          this.log.debug('child process exit');
-          this.kill();
-        });
-        this.childProcess.on('close', () => {
-          this.log.debug('child process closing');
-        });
-        this.childProcess.stderr?.on('data', (error) => {
-          this.log.error(error);
-        });
+        this.log.error(errMessage);
 
-        this.childProcess.on('error', (e) => {
-          this.log.error(e);
-          return reject(e);
-        });
-      } else {
-        this.log.error('could not spawn child process');
-        reject();
+        return reject(errMessage);
       }
+
+      // this.childProcess.on('error', (err) => {
+      //   this.log.error(err);
+      // });
+
+      // this.childProcess.stdout?.on('data', (data) => {
+      //   this.log.debug('childProcess', { data: data.toString() });
+      // });
+
+      // this.childProcess.stderr?.on('data', (data) => {
+      //   this.log.error('childProcess', { data: data.toString() });
+      // });
+
+      // this.childProcess.stderr?.on('error', (data) => {
+      //   this.log.error('childProcess', { data: data.toString() });
+      // });
+
+      this.childProcess.on('exit', (code) => {
+        this.log.debug(`child process exited with code ${code}`);
+      });
+
+      this.childProcess.on('spawn', async () => {
+        this.log.debug('new child process spawned');
+        return resolve('success');
+      });
     });
   }
 
-  kill() {
-    this.log.debug('killing vm');
+  private async waitForFile(filePath: string) {
+    let stats;
 
-    this.childProcess?.kill();
-    this.childProcess = undefined;
-
-    fs.unlink(this.options.fcSocket, () => {});
-    fs.unlink(this.options.agentSocket, () => {});
-
-    this.status = 'stopped';
+    // TODO: break after a few seconds..
+    while (!stats) {
+      try {
+        stats = await fs.stat(filePath);
+        await sleep(5);
+      } catch {}
+    }
   }
 
-  async info(): Promise<InfoReponse> {
-    return await this.httpSock.get('').json();
+  async cleanUp() {
+    this.log.debug('cleaning up sockets / files');
+
+    await fs.unlink(this.options.fcSocket);
+    await fs.unlink(this.options.agentSocket);
+    await fs.unlink(this.options.logPath);
+  }
+
+  async shutdown() {
+    this.log.debug('shutting down vm...');
+
+    return await this.httpSock
+      .put('actions', {
+        json: {
+          action_type: 'SendCtrlAltDel',
+        },
+      })
+      .json();
+  }
+
+  async kill() {
+    this.log.debug('killing vm');
+
+    await this.shutdown();
+
+    await new Promise((resolve, _) => {
+      this.childProcess.on('exit', () => {
+        resolve('success');
+      });
+    });
+
+    await this.cleanUp();
   }
 
   async setupVM() {
@@ -158,74 +235,59 @@ export default class FirecrackerClient {
 
       this.log.debug('setting up network');
 
-      await this.httpSock.put('network-interfaces/eth0', {
-        json: {
-          iface_id: 'eth0',
-          guest_mac: `02:FC:00:00:${Math.floor(this.id / 256)
-            .toString()
-            .padStart(2, '0')}:${Math.floor(this.id % 256)
-            .toString()
-            .padStart(2, '0')}`,
-          host_dev_name: `fc-${this.id}-tap0`,
-        },
-      });
+      await this.httpSock
+        .put('network-interfaces/eth0', {
+          json: {
+            iface_id: 'eth0',
+            guest_mac: `02:FC:00:00:${Math.floor(this.id / 256)
+              .toString()
+              .padStart(2, '0')}:${Math.floor(this.id % 256)
+              .toString()
+              .padStart(2, '0')}`,
+            host_dev_name: `fc-${this.id}-tap0`,
+          },
+        })
+        .json();
     } catch (err) {
+      if (err instanceof RequestError) {
+        this.log.error('request: setting up vm failed', err.response);
+      }
+
       this.log.error('setting up vm failed', err);
+
       this.kill();
     }
   }
 
-  async sleep(ms: number) {
-    this.log.debug(`sleeping for ${ms}ms`);
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   async startVM() {
     try {
+      await this.spawn();
       await this.setupVM();
+      this.log.debug('setup done');
 
-      const responseData = await this.httpSock
-        .put('actions', {
-          json: {
-            action_type: 'InstanceStart',
-          },
-        })
-        .json();
+      this.log.info('starting vm instance');
 
-      this.log.info('starting vm instance', responseData);
+      await this.httpSock.put('actions', {
+        json: {
+          action_type: 'InstanceStart',
+        },
+      });
 
-      // TODO: remove this sleep and actually wait until the VM is ready
-      await this.sleep(5_000);
-
-      this.status = 'ready';
-      this.log.debug('ready');
-
-      return responseData;
+      // let vmState: VmState = 'Not started';
+      //
+      // while (vmState !== 'Running') {
+      //   try {
+      //     const info: FcInfoResponse = await this.httpSock.get('').json();
+      //     vmState = info.state;
+      //     this.log.debug(`vmState: ${vmState}`);
+      //     await sleep(1);
+      //   } catch (err) {
+      //     this.log.error(err);
+      //   }
+      // }
     } catch (err) {
       this.log.error('staring vm failed', err);
-    }
-  }
-
-  async downloadImage(url: string, destination: string): Promise<void> {
-    let file: WriteStream | undefined;
-
-    try {
-      file = fs.createWriteStream(destination, { flags: 'wx' });
-
-      if (fs.existsSync(destination)) {
-        throw Error('File already exists');
-      }
-
-      const response = await got.get(url);
-
-      if (response.statusCode === 200) {
-        response.pipe(file);
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      file?.close();
-      fs.unlink(destination, () => {});
+      this.kill();
     }
   }
 }

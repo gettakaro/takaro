@@ -9,9 +9,15 @@ export async function executeFunction(
   data: Record<string, unknown>,
   token: string
 ) {
-  const vmm = await getVMM();
+  try {
+    const vmm = await getVMM();
 
-  return await vmm.executeFunction(fn, data, token);
+    return await vmm.executeFunction(fn, data, token);
+  } catch (err) {
+    log.error('executeFunction', err);
+
+    return null;
+  }
 }
 
 /**

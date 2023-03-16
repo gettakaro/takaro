@@ -142,7 +142,7 @@ const configSchema = {
     logPath: {
       doc: 'Path to the log file used by Firecracker',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/logs.fifo',
+      default: '/home/branco/dev/takaro/firecracker/',
       env: 'FIRECRACKER_LOG_PATH',
     },
   },

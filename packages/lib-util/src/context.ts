@@ -5,7 +5,9 @@ import { errors } from './main.js';
 interface TransactionStore {
   domain?: string;
   gameServer?: string;
+  jobId?: string;
   user?: string;
+  vmId?: number;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
