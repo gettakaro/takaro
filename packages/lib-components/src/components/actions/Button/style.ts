@@ -57,7 +57,7 @@ export const Default = styled.button<{
   svg {
     display: ${({ icon, isLoading }): string =>
       icon || isLoading ? 'block' : 'none'};
-    cursor: pointer;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     fill: ${({ theme, color }) => {
       switch (color) {
         case 'white':
@@ -68,7 +68,6 @@ export const Default = styled.button<{
           return 'white';
       }
     }};
-
     stroke: white;
   }
 

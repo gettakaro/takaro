@@ -1,5 +1,4 @@
 import { styled } from '../../../styled';
-import { AiOutlineArrowDown } from 'react-icons/ai';
 import { darken } from 'polished';
 
 export const Wrapper = styled.div<{ refetching: boolean }>`
@@ -78,18 +77,10 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
   }
 
   tfoot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 3.5rem;
+    tr {
+      td {
+        padding-top: 3.5rem;
+      }
+    }
   }
-`;
-
-interface AscDescIconProps {
-  sorting: 'asc' | 'desc';
-}
-
-export const AscDescIcon = styled(AiOutlineArrowDown)<AscDescIconProps>`
-  fill: ${({ theme }) => theme.colors.primary};
-  rotate: ${({ sorting }) => (sorting === 'asc' ? 0 : 180)}deg;
 `;

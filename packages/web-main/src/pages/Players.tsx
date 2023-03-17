@@ -8,7 +8,10 @@ import {
 } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
-import { PlayerOutputDTO } from '@takaro/apiclient';
+import {
+  PlayerOutputDTO,
+  PlayerSearchInputDTOSortDirectionEnum,
+} from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 
 const TableContainer = styled.div`
@@ -20,15 +23,20 @@ const TableContainer = styled.div`
 
 const Players: FC = () => {
   const client = useApiClient();
-  const { pagination } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting } =
+    useTableActions<PlayerOutputDTO>();
 
-  const { data, isLoading } = useQuery(
-    'players',
+  const { data, isLoading, refetch } = useQuery(
+    ['players', pagination.paginationState, sorting.sortingState],
     async () =>
       pagination.paginate(
         await client.player.playerControllerSearch({
           page: pagination.paginationState.pageIndex,
           limit: pagination.paginationState.pageSize,
+          sortBy: sorting.sortingState[0]?.id,
+          sortDirection: sorting.sortingState[0]?.desc
+            ? PlayerSearchInputDTOSortDirectionEnum.Desc
+            : PlayerSearchInputDTOSortDirectionEnum.Asc,
         })
       ),
     { keepPreviousData: true }
@@ -38,23 +46,35 @@ const Players: FC = () => {
   const columnDefs = [
     columnHelper.accessor('updatedAt', {
       header: 'Updated',
+      id: 'updatedAt',
       cell: (info) => info.getValue(),
+      enableColumnFilter: false,
+      enableSorting: true,
     }),
     columnHelper.accessor('name', {
       header: 'Name',
+      id: 'name',
       cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+      enableSorting: true,
     }),
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
+      id: 'steamId',
       cell: (info) => info.getValue(),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor('epicOnlineServicesId', {
       header: 'EOS ID',
+      id: 'epicOnlineServicesId',
       cell: (info) => info.getValue(),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor('xboxLiveId', {
       header: 'Xbox ID',
+      id: 'xboxLiveId',
       cell: (info) => info.getValue(),
+      enableColumnFilter: true,
     }),
   ];
 
@@ -70,13 +90,17 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
+          refetch={refetch}
           columns={columnDefs}
-          data={data.rows}
+          data={[]}
           pagination={{
-            setPagination: pagination.setPaginationState,
+            ...pagination,
             pageCount: data.pageCount,
-            pageIndex: pagination.paginationState.pageIndex,
+            total: data.total,
           }}
+          columnFiltering={{ ...columnFilters }}
+          sorting={{ ...sorting }}
+          refetching={isLoading}
         />
       </TableContainer>
     </Fragment>

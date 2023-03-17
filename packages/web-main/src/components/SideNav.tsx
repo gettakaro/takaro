@@ -69,7 +69,7 @@ const Container = styled(motion.div)<{ toTop: boolean }>`
   width: 0;
   position: relative;
   height: 100vh;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   align-items: flex-start;
   flex-direction: column;

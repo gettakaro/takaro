@@ -29,11 +29,14 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
   function paginate(
     response: AxiosResponse<ExtendedAPIOutput<T>>
   ): Paginated<T> {
+    console.log('this fired');
     setPaginationState({
       pageIndex: paginationState.pageIndex++,
       pageSize: paginationState.pageSize,
     });
 
+    // non-null because this hook is only used when paginating.
+    // In that case the metadata will always be present.
     return {
       rows: response.data.data,
       pageCount: response.data.meta.total

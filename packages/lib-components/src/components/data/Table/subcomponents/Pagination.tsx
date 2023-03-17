@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 
 export const PaginationContainer = styled.div`
   display: flex;
@@ -83,7 +83,7 @@ export const Pagination: FC<PaginationProps> = ({
           <button onClick={nextPage}>{pageIndex + 2}</button>
         </>
       )}
-      <button onClick={() => setPageIndex(pageCount - 1)} disabled={hasNext}>
+      <button onClick={() => setPageIndex(pageCount - 1)} disabled={!hasNext}>
         {'>>'}
       </button>
     </PaginationContainer>

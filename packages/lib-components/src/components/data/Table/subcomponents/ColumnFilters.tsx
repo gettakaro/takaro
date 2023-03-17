@@ -11,9 +11,9 @@ import {
   useMergeRefs,
   useFocus,
 } from '@floating-ui/react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { ColumnFilter } from '@tanstack/react-table';
-import { Button, TextField } from '../../../components';
+import { Button, TextField } from '../../../../components';
 import { AiOutlinePlus as Plus } from 'react-icons/ai';
 import { useForm } from 'react-hook-form';
 
@@ -45,7 +45,6 @@ const FilterContainer = styled.div`
 `;
 
 export interface ColumnFiltersProps {
-  // id and value
   columnFilterState: ColumnFilter[];
   columns: string[];
 }
@@ -153,16 +152,3 @@ export const ColumnFilters: FC<ColumnFiltersProps> = ({ columns }) => {
     </>
   );
 };
-
-/*
-*      {
-        <FilterList>
-          {columnFilterState.map(({ id, value }) => (
-            <li>
-              <Chip label={`${id} is ${value}`} />
-            </li>
-          ))}
-        </FilterList>
-      }
-*
-* */

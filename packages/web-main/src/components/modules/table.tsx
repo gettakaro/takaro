@@ -28,7 +28,7 @@ export const ModulesTable: FC = () => {
   const apiClient = useApiClient();
   const { pagination } = useTableActions<ModuleOutputDTO>();
 
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, refetch } = useQuery(
     `modules`,
     async () =>
       pagination.paginate(
@@ -74,12 +74,14 @@ export const ModulesTable: FC = () => {
   return (
     <TableContainer>
       <Table
+        refetch={refetch}
         columns={columnDefs}
         data={data.rows}
         pagination={{
-          setPagination: pagination.setPaginationState,
-          pageIndex: pagination.paginationState.pageIndex,
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
           pageCount: data.pageCount,
+          total: data.total,
         }}
       />
     </TableContainer>

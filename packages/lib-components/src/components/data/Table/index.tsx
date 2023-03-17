@@ -10,15 +10,14 @@ import {
   SortingState,
   ColumnFiltersState,
   ColumnOrderState,
+  VisibilityState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, FilterContainer, Header } from './style';
-import { ColumnFilters } from './ColumnFilters';
-import { Empty, Dropdown, Button, IconButton } from '../../../components';
-import { AiOutlineFilter as Filter } from 'react-icons/ai';
+import { Wrapper, StyledTable, Header } from './style';
+import { Empty, Button } from '../../../components';
+import { AiOutlineReload as ReloadIcon } from 'react-icons/ai';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Pagination } from './Pagination';
-import { SortAndOrder } from './SortAndOrder';
+import { ColumnController, Pagination, Sorting } from './subcomponents';
 
 export interface TableProps<DataType extends object> {
   refetching?: boolean;
@@ -40,6 +39,7 @@ export interface TableProps<DataType extends object> {
     columnFiltersState: ColumnFiltersState;
     setColumnFiltersState: OnChangeFn<ColumnFiltersState>;
   };
+  refetch: () => Promise<unknown>;
 }
 
 export function Table<DataType extends object>({
@@ -49,11 +49,29 @@ export function Table<DataType extends object>({
   sorting,
   spacing = 'tight',
   pagination,
+  refetch,
   columnFiltering,
 }: TableProps<DataType>) {
-  const [showFilters, setShowFilters] = useState(false);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [refetchTimeout, setRefetchTimeout] = useState<boolean>(false);
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    columns.map((column) => {
+      if (column.id === undefined) {
+        throw new Error('Column must have an id');
+      }
+      return column.id;
+    })
+  );
+
+  const handleRefetch = () => {
+    if (!refetchTimeout) {
+      refetch();
+    }
+    setRefetchTimeout(true);
+    setTimeout(() => {
+      setRefetchTimeout(false);
+    }, 5000);
+  };
 
   const table = useReactTable({
     data,
@@ -73,6 +91,7 @@ export function Table<DataType extends object>({
     enableSortingRemoval: false,
     debugTable: true,
     onColumnOrderChange: setColumnOrder,
+
     initialState: {
       columnVisibility,
     },
@@ -87,27 +106,36 @@ export function Table<DataType extends object>({
   // empty table
   // TODO: add a border outline with an empty table message
   if (data.length === 0) {
-    return <Empty />;
+    return <Empty description="Looks like there is no data yet. " />;
   }
 
   return (
     <DndProvider backend={HTML5Backend}>
       <Wrapper refetching={refetching}>
         <Header>
-          {/* filter menu */}
+          {/* todo: filter menu 
           <Button
-            icon={<Filter />}
+            icon={<FilterIcon />}
             text="Filters"
             color="background"
             onClick={() => setShowFilters(!showFilters)}
           />
-          <SortAndOrder
+          */}
+          <ColumnController
             columns={table.getAllLeafColumns()}
             setColumnOrder={setColumnOrder}
             columnOrder={columnOrder}
           />
+          <Button
+            icon={<ReloadIcon />}
+            text="Refresh"
+            onClick={handleRefetch}
+            color="background"
+            disabled={refetchTimeout}
+          />
         </Header>
 
+        {/* todo: filter menu 
         {showFilters && (
           <FilterContainer>
             {columnFiltering && (
@@ -127,42 +155,20 @@ export function Table<DataType extends object>({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map(
-                  ({ id, colSpan, column, isPlaceholder, getContext }) => (
-                    <th
-                      key={id}
-                      colSpan={colSpan}
-                      scope="col"
-                      onClick={
-                        column.columnDef.enableSorting
-                          ? column.getToggleSortingHandler()
-                          : undefined
-                      }
-                    >
-                      {!isPlaceholder &&
-                        flexRender(column.columnDef.header, getContext())}
-
-                      {column.getCanSort() && (
-                        <Dropdown
-                          renderReference={
-                            <IconButton
-                              icon={<Filter />}
-                              size="tiny"
-                              color="secondary"
-                            />
-                          }
-                          renderFloating={
-                            <ul>
-                              <li>Filter 1</li>
-                              <li>Filter 2</li>
-                              <li>Filter 3</li>
-                            </ul>
-                          }
+                {headerGroup.headers.map(({ id, colSpan, column }) => (
+                  <th key={id} colSpan={colSpan} scope="col">
+                    <div>
+                      {column.getCanSort() && sorting !== undefined && (
+                        <Sorting
+                          header={column.columnDef.header as string}
+                          setSorting={sorting.setSortingState!}
+                          sorting={sorting.sortingState}
+                          id={column.id}
                         />
                       )}
-                    </th>
-                  )
-                )}
+                    </div>
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
@@ -178,20 +184,22 @@ export function Table<DataType extends object>({
             ))}
           </tbody>
           <tfoot>
-            {pagination && (
-              <>
-                <span>{pagination.total} results</span>
-                <Pagination
-                  pageCount={pagination.pageCount}
-                  hasNext={table.getCanNextPage()}
-                  hasPrevious={table.getCanPreviousPage()}
-                  previousPage={table.previousPage}
-                  nextPage={table.nextPage}
-                  pageIndex={table.getState().pagination.pageIndex}
-                  setPageIndex={table.setPageIndex}
-                />
-              </>
-            )}
+            <tr>
+              {pagination && (
+                <td colSpan={columns.length}>
+                  <span>{pagination.total} results</span>
+                  <Pagination
+                    pageCount={pagination.pageCount}
+                    hasNext={table.getCanNextPage()}
+                    hasPrevious={table.getCanPreviousPage()}
+                    previousPage={table.previousPage}
+                    nextPage={table.nextPage}
+                    pageIndex={table.getState().pagination.pageIndex}
+                    setPageIndex={table.setPageIndex}
+                  />
+                </td>
+              )}
+            </tr>
           </tfoot>
         </StyledTable>
       </Wrapper>

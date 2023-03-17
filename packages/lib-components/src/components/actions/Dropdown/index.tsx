@@ -6,27 +6,35 @@ import {
   autoUpdate,
   offset,
 } from '@floating-ui/react';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { styled } from '../../../styled';
 
 const FloatingContainer = styled.div`
   background-color: white;
   box-shadow: ${({ theme }) => theme.elevation[2]};
-  padding: ${({ theme }) => theme.spacing['2_5']};
+  border-radius: 0.5rem;
 `;
 
 const ReferenceContainer = styled.div`
   width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface Dropdown {
   renderFloating: JSX.Element;
   renderReference: JSX.Element;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-export const Dropdown: FC<Dropdown> = ({ renderFloating, renderReference }) => {
-  const [open, setOpen] = useState<boolean>(false);
-
+export const Dropdown: FC<Dropdown> = ({
+  renderFloating,
+  renderReference,
+  open,
+  setOpen,
+}) => {
   const { x, y, strategy, refs, context } = useFloating<HTMLDivElement>({
     open,
     onOpenChange: setOpen,

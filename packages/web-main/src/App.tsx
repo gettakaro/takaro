@@ -26,6 +26,7 @@ const defaultUserData: UserData = {
 
 function App() {
   const [userData, setUserData] = useState<Partial<UserData>>(defaultUserData);
+
   const providerUserData = useMemo(
     () => ({ userData, setUserData }),
     [userData, setUserData]
