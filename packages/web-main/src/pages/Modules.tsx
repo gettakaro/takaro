@@ -1,15 +1,10 @@
-import { createRef, FC } from 'react';
-import {
-  Button,
-  styled,
-  useModal,
-  useOutsideAlerter,
-} from '@takaro/lib-components';
-import { AiFillPlusCircle } from 'react-icons/ai';
+import { FC } from 'react';
+import { styled } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+/* import { useNavigate } from 'react-router-dom';
 import { useApiClient } from 'hooks/useApiClient';
 import { PATHS } from 'paths';
+ */
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -19,6 +14,7 @@ const Page = styled.div`
 `;
 
 export const Modules: FC = () => {
+  /*
   const navigate = useNavigate();
 
   const apiClient = useApiClient();
@@ -29,7 +25,7 @@ export const Modules: FC = () => {
       name: new Date().toISOString(),
     });
     navigate(PATHS.studio.module.replace(':moduleId', mod.data.data.id));
-  };
+  };*/
 
   return (
     <>
