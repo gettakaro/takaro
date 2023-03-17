@@ -3,11 +3,11 @@ import { Action, ActionMenu, ActionMenuProps } from '.';
 import { createRef, useEffect, useState } from 'react';
 import { styled } from '../../../styled';
 import { useOutsideAlerter } from '../../../hooks';
-import { useFloating } from '@floating-ui/react-dom';
+import { useFloating } from '@floating-ui/react';
 
 export default {
   title: 'Other/ActionMenu',
-  component: ActionMenu
+  component: ActionMenu,
 } as Meta<ActionMenuProps>;
 
 const Reference = styled.div`
@@ -38,8 +38,8 @@ export const Default: StoryFn<ActionMenuProps> = () => {
 
   return (
     <>
-      If you click outside of the gray parent component the popup will be closed.
-      The popup is positioned based on the reference element.
+      If you click outside of the gray parent component the popup will be
+      closed. The popup is positioned based on the reference element.
       <ParentContainer ref={parentRef}>
         <Reference onClick={() => setVisible(true)} ref={reference}>
           reference element
@@ -50,10 +50,38 @@ export const Default: StoryFn<ActionMenuProps> = () => {
             attributes={{ x, y, strategy }}
             ref={floating}
           >
-            <Action onClick={() => { console.log('action 1 fired'); }} text="action 1">action 1</Action>
-            <Action onClick={() => { console.log('action 2 fired'); }} text="action 2">action 2</Action>
-            <Action onClick={() => { console.log('action 3 fired'); }} text="action 3">action 3</Action>
-            <Action onClick={() => { console.log('action 4 fired'); }} text="action 4">action 4</Action>
+            <Action
+              onClick={() => {
+                console.log('action 1 fired');
+              }}
+              text="action 1"
+            >
+              action 1
+            </Action>
+            <Action
+              onClick={() => {
+                console.log('action 2 fired');
+              }}
+              text="action 2"
+            >
+              action 2
+            </Action>
+            <Action
+              onClick={() => {
+                console.log('action 3 fired');
+              }}
+              text="action 3"
+            >
+              action 3
+            </Action>
+            <Action
+              onClick={() => {
+                console.log('action 4 fired');
+              }}
+              text="action 4"
+            >
+              action 4
+            </Action>
           </ActionMenu>
         )}
       </ParentContainer>
