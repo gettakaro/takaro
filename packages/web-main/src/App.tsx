@@ -3,7 +3,11 @@ import { Helmet } from 'react-helmet';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
-import { GlobalStyle, SnackbarProvider, theme } from '@takaro/lib-components';
+import {
+  GlobalStyle,
+  SnackbarProvider,
+  darkTheme,
+} from '@takaro/lib-components';
 import { Router } from 'Router';
 import { useMemo, useState } from 'react';
 import { UserContext, UserData } from 'context/userContext';
@@ -33,7 +37,7 @@ function App() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={darkTheme}>
       <UserContext.Provider value={providerUserData}>
         <SnackbarProvider>
           <AuthContext.Provider value={AuthProvider()}>

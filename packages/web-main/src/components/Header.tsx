@@ -35,10 +35,10 @@ const InitialsBlock = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
-  margin-right: 10px;
-  border-radius: 10px;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-right: 0.5rem;
+  border-radius: 0.5rem;
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   font-weight: 800;

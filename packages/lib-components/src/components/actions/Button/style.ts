@@ -1,4 +1,5 @@
 import { styled, Color, Size, AlertVariants } from '../../../styled';
+import { lighten } from 'polished';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
@@ -14,7 +15,7 @@ export const Default = styled.button<{
   align-items: center;
   justify-content: center;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   background-size: 200% auto;
   cursor: ${({ isLoading }) => (isLoading ? 'default' : 'pointer')};
   line-height: 1.9rem;
@@ -27,6 +28,8 @@ export const Default = styled.button<{
   }
   &:hover {
     background-position: right center;
+    background-color: ${({ theme, color }) =>
+      lighten(0.1, theme.colors[color])};
   }
 
   span {

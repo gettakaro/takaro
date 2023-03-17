@@ -33,7 +33,7 @@ const Label = styled.label<{
   p {
     z-index: 20;
     color: gray;
-    background-color: white;
+    background-color: ${({ theme }) => theme.colors.background};
     font-size: 1.325rem;
     padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   }
