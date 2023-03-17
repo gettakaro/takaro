@@ -68,29 +68,33 @@ const data: User[] = [
 const columnHelper = createColumnHelper<User>();
 const columns = [
   columnHelper.accessor('firstName', {
-    cell: (info) => info.getValue(),
-    enableSorting: true,
+    id: 'firstName',
     header: 'First Name',
+    cell: (info) => info.getValue(),
   }),
   columnHelper.accessor('lastName', {
     id: 'lastName',
-    cell: (info) => <i>{info.getValue()}</i>,
     header: 'Last Name',
+    cell: (info) => <i>{info.getValue()}</i>,
   }),
   columnHelper.accessor('age', {
+    id: 'age',
     header: 'Age',
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('visits', {
-    header: () => <span>Visits</span>,
+    id: 'visits',
+    header: 'Visits',
   }),
   columnHelper.accessor('status', {
+    id: 'status',
     header: 'Status',
     cell: (info) => (
       <Chip variant="outline" color="primary" label={info.getValue()} />
     ),
   }),
   columnHelper.accessor('progress', {
+    id: 'progress',
     header: 'Profile Progress',
   }),
 ];
@@ -103,11 +107,11 @@ export default {
   },
 } as Meta<TableProps<User>>;
 
-export const VaryingWidth: StoryFn<TableProps<User>> = (args) => (
+export const TableExample: StoryFn<TableProps<User>> = (args) => (
   <Table
     data={data}
     columns={columns}
-    sort={args.sort}
+    refetch={async () => {}}
     refetching={args.refetching}
   />
 );
