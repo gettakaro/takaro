@@ -25,7 +25,7 @@ export const theme = {
   spacing,
   fontSize: {
     tiny: '1rem',
-    small: '1.3rem',
+    small: '1.2rem',
     medium: '1.825rem',
     mediumLarge: '2.825rem',
     large: '4.25rem',
