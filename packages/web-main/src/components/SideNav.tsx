@@ -23,7 +23,7 @@ const Nav = styled.nav`
 
   a {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 0.4rem;
     padding: 15px;
     display: flex;
     align-items: center;
@@ -69,7 +69,7 @@ const Container = styled(motion.div)<{ toTop: boolean }>`
   width: 0;
   position: relative;
   height: 100vh;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   display: flex;
   align-items: flex-start;
   flex-direction: column;

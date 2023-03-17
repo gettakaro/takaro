@@ -41,13 +41,13 @@ export const Container = styled.label<{
   margin: ${({ theme, position }) => {
     switch (position) {
       case 'top':
-        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['1']} ${theme.spacing[0]}`;
+        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['0_5']} ${theme.spacing[0]}`;
       case 'right':
-        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['1']}`;
+        return `${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing['0_5']}`;
       case 'bottom':
-        return `${theme.spacing['1']} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]}`;
+        return `${theme.spacing['0_5']} ${theme.spacing[0]} ${theme.spacing[0]} ${theme.spacing[0]}`;
       case 'left':
-        return `${theme.spacing[0]} ${theme.spacing['1']} ${theme.spacing[0]} ${theme.spacing[0]}`;
+        return `${theme.spacing[0]} ${theme.spacing['0_5']} ${theme.spacing[0]} ${theme.spacing[0]}`;
     }
   }};
 `;

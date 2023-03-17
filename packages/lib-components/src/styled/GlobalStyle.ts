@@ -26,6 +26,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: ${({ theme }) => theme.colors.background};
   }
 
   body{
@@ -82,7 +83,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     outline: 0;
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 2px;
-    border-radius: 5px;
+    border-radius: 0.25rem;
     border-color: transparent;
     &[readOnly]{
       cursor: not-allowed;

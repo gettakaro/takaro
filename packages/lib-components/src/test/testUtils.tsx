@@ -1,13 +1,13 @@
 import { FC, PropsWithChildren, ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { theme, GlobalStyle } from '@takaro/lib-components';
+import { lightTheme, GlobalStyle } from '@takaro/lib-components';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider } from '../helpers';
 import { MemoryRouter } from 'react-router-dom';
 
 const Providers: FC<PropsWithChildren<unknown>> = ({ children }) => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={lightTheme}>
       <SnackbarProvider>
         <MemoryRouter>
           <GlobalStyle />

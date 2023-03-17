@@ -6,12 +6,17 @@ export const PaginationContainer = styled.div`
   justify-content: flex-end;
 
   button {
-    background-color: ${({ theme }) => theme.colors.white};
+    background-color: ${({ theme }) => theme.colors.background};
     padding: 0 1rem;
     font-weight: 400;
+    color: ${({ theme }) => theme.colors.text};
 
     &.active {
       color: ${({ theme }) => theme.colors.primary};
+    }
+
+    &:disabled {
+      color: ${({ theme }) => theme.colors.textAlt};
     }
   }
 `;

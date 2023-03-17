@@ -11,7 +11,7 @@ const Container = styled.div`
 `;
 
 const ContentContainer = styled(motion.div)`
-  background-color: ${({ theme }): string => theme.colors.white};
+  background-color: ${({ theme }): string => theme.colors.background};
   width: 100%;
   opacity: 0;
   overflow-y: auto;
