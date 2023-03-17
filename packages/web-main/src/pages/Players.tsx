@@ -92,7 +92,7 @@ const Players: FC = () => {
         <Table
           refetch={refetch}
           columns={columnDefs}
-          data={[]}
+          data={data.rows}
           pagination={{
             ...pagination,
             pageCount: data.pageCount,
