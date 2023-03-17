@@ -6,12 +6,14 @@ export const Default = styled.button<{
   size: Size;
   color: ButtonColor;
   icon: boolean;
+  iconPosition: 'left' | 'right';
+  fullWidth: boolean;
   isLoading: boolean;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: fit-content;
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
   border-radius: 0.5rem;
   background-size: 200% auto;
   cursor: ${({ isLoading }) => (isLoading ? 'default' : 'pointer')};
@@ -30,10 +32,20 @@ export const Default = styled.button<{
   span {
     font-size: 1.25rem;
     font-weight: 600;
-    color: ${({ theme, color }) =>
-      color === 'white' ? theme.colors.primary : 'white'};
-    margin-left: ${({ icon, isLoading }): string =>
-      icon || isLoading ? '10px' : '0px'};
+    color: ${({ theme, color }) => {
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
+    margin-left: ${({ icon, isLoading, iconPosition }): string =>
+      iconPosition === 'left' && (icon || isLoading) ? '10px' : '0px'};
+    margin-right: ${({ icon, isLoading, iconPosition }): string =>
+      iconPosition === 'right' && (icon || isLoading) ? '10px' : '0px'};
   }
 
   &:disabled {
@@ -45,8 +57,17 @@ export const Default = styled.button<{
   svg {
     display: ${({ icon, isLoading }): string =>
       icon || isLoading ? 'block' : 'none'};
-    cursor: pointer;
-    fill: white;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+    fill: ${({ theme, color }) => {
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
     stroke: white;
   }
 

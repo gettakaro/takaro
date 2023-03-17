@@ -11,20 +11,23 @@ const Container = styled.div`
 `;
 
 const ContentContainer = styled(motion.div)`
-  background-color: ${({ theme }): string => theme.colors.background};
+  background-color: ${({ theme }): string => theme.colors.white};
   width: 100%;
   opacity: 0;
   overflow-y: auto;
 `;
 const Page = styled.div`
-  padding: 3rem 8rem;
+  padding: 3rem 6rem;
 `;
 
 export const DashboardFrame: FC = () => {
   return (
     <Container>
       <Navbar />
-      <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
+      <ContentContainer
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
         <Header />
         <Page>
           <Outlet />

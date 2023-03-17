@@ -8,7 +8,6 @@ import {
 } from '@takaro/lib-components';
 import { AiFillPlusCircle } from 'react-icons/ai';
 import { Helmet } from 'react-helmet';
-import { ModulesTable } from 'components/modules/table';
 import { useNavigate } from 'react-router-dom';
 import { useApiClient } from 'hooks/useApiClient';
 import { PATHS } from 'paths';
@@ -48,8 +47,7 @@ export const Modules: FC = () => {
           size="large"
           text="Create new module"
         />
-        <ModulesTable />
-
+        todo
         <Wrapper>
           <ConfirmationModal
             action={createNewModule}

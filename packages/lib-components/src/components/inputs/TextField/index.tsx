@@ -26,7 +26,7 @@ export interface TextFieldProps extends InputProps {
   placeholder: string;
   prefix?: string;
   suffix?: string;
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'email';
 }
 
 const defaultsApplier =
@@ -63,6 +63,13 @@ export const TextField: FC<TextFieldProps> = (props) => {
 
   const handleOnFocus = () => {
     setShowError(true);
+  };
+
+  const setType = () => {
+    if (showPassword) {
+      return 'text';
+    }
+    return type;
   };
 
   if (loading) {
@@ -116,7 +123,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
           placeholder={placeholder}
           readOnly={readOnly}
           role="presentation"
-          type={type === 'text' || showPassword ? 'search' : 'password'}
+          type={setType()}
         />
         {type === 'password' &&
           (showPassword ? (

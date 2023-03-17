@@ -40,7 +40,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  a, p, div, li, h1, h2, h3, h4, h5, h6, header, footer {
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer {
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
@@ -50,6 +50,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     padding: 0;
     box-sizing: border-box;
     color: ${({ theme }) => theme.colors.text};
+  }
+
+  p, span, div {
+    font-size: 1.4rem;
   }
 
   h1 {
@@ -109,6 +113,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
     border-radius: .8rem;
     border: none;
+
+    &:disabled {
+      cursor: default;
+    }
   }
 
   a.underline {
@@ -129,52 +137,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       -moz-outline-style: none;
     }
   }
-
-  table {
-    width: 100%;
-    border-collapse: separate; /* separate enables outer borders */
-    border-spacing: 0; /* disable inner borders */
-    border-top: 3px solid white;
-    border-bottom: 3px solid white;
-    border-radius: .5rem;
-  }
-
-  thead {
-    color: white;
-    font-size: 1.5rem;
-    th {
-      padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-      font-weight: 600;
-      background-color: white;
-      border-bottom: 3px solid ${({ theme }) => theme.colors.background};
-
-      &:first-child {
-        border-bottom-left-radius: 1rem;
-      }
-
-      &:last-child {
-        border-bottom-right-radius: 1rem;
-      }
-    }
-  }
-
-  tbody {
-    tr {
-    text-align: center;
-
-    &:last-child {
-      td {
-        border-bottom: 0;
-      }
-    }
-
-    td {
-      background-color: ${({ theme }) => theme.colors.white};
-      padding: ${({ theme }) => `${theme.spacing['2_5']} ${theme.spacing[0]}`};
-      border-bottom: 3px solid ${({ theme }) => theme.colors.background};
-    }
-  }
-}
 
 .placeholder {
     overflow: hidden;
