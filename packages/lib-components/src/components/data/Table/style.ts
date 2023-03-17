@@ -58,7 +58,7 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
     tr {
       text-align: left;
 
-      &: last-child {
+      &:last-child {
         td {
           border-bottom: 0;
         }

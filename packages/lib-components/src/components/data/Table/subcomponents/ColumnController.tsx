@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Dropdown, Button, Checkbox } from '../../../../components';
-import { useDrag, useDrop } from 'react-dnd';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { Identifier } from 'dnd-core';
 import { ColumnOrderState, Column, OnChangeFn } from '@tanstack/react-table';
 import { styled } from '../../../../styled';
@@ -10,6 +10,7 @@ import {
   AiOutlineTable as OutlineTable,
   AiOutlineMenu as DragIcon,
 } from 'react-icons/ai';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 export const Container = styled.ul`
   padding: ${({ theme }) => theme.spacing['2_5']};
@@ -46,27 +47,29 @@ export function ColumnController<DataType extends object>({
     useState<boolean>(false);
 
   return (
-    <Dropdown
-      open={openVisibleOrderMenu}
-      setOpen={setOpenVisibleOrderMenu}
-      renderFloating={
-        <Container>
-          {columns.map((column, index) => (
-            <Item
-              key={column.id}
-              column={column}
-              index={index}
-              control={control}
-              setColumnOrder={setColumnOrder}
-              columnOrder={columnOrder}
-            />
-          ))}
-        </Container>
-      }
-      renderReference={
-        <Button icon={<OutlineTable />} text="Columns" color="background" />
-      }
-    />
+    <DndProvider backend={HTML5Backend}>
+      <Dropdown
+        open={openVisibleOrderMenu}
+        setOpen={setOpenVisibleOrderMenu}
+        renderFloating={
+          <Container>
+            {columns.map((column, index) => (
+              <Item
+                key={column.id}
+                column={column}
+                index={index}
+                control={control}
+                setColumnOrder={setColumnOrder}
+                columnOrder={columnOrder}
+              />
+            ))}
+          </Container>
+        }
+        renderReference={
+          <Button icon={<OutlineTable />} text="Columns" color="background" />
+        }
+      />
+    </DndProvider>
   );
 }
 

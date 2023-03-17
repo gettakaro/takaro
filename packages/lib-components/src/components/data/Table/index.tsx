@@ -15,8 +15,6 @@ import {
 import { Wrapper, StyledTable, Header } from './style';
 import { Empty, Button } from '../../../components';
 import { AiOutlineReload as ReloadIcon } from 'react-icons/ai';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ColumnController, Pagination, Sorting } from './subcomponents';
 
 export interface TableProps<DataType extends object> {
@@ -89,7 +87,6 @@ export function Table<DataType extends object>({
     autoResetPageIndex: false,
     enableSorting: sorting !== undefined,
     enableSortingRemoval: false,
-    debugTable: true,
     onColumnOrderChange: setColumnOrder,
 
     initialState: {
@@ -103,17 +100,15 @@ export function Table<DataType extends object>({
     },
   });
 
-  // empty table
   // TODO: add a border outline with an empty table message
   if (data.length === 0) {
     return <Empty description="Looks like there is no data yet. " />;
   }
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Wrapper refetching={refetching}>
-        <Header>
-          {/* todo: filter menu 
+    <Wrapper refetching={refetching}>
+      <Header>
+        {/* todo: filter menu 
           <Button
             icon={<FilterIcon />}
             text="Filters"
@@ -121,21 +116,22 @@ export function Table<DataType extends object>({
             onClick={() => setShowFilters(!showFilters)}
           />
           */}
-          <ColumnController
-            columns={table.getAllLeafColumns()}
-            setColumnOrder={setColumnOrder}
-            columnOrder={columnOrder}
-          />
-          <Button
-            icon={<ReloadIcon />}
-            text="Refresh"
-            onClick={handleRefetch}
-            color="background"
-            disabled={refetchTimeout}
-          />
-        </Header>
 
-        {/* todo: filter menu 
+        <ColumnController
+          columns={table.getAllLeafColumns()}
+          setColumnOrder={setColumnOrder}
+          columnOrder={columnOrder}
+        />
+        <Button
+          icon={<ReloadIcon />}
+          text="Refresh"
+          onClick={handleRefetch}
+          color="background"
+          disabled={refetchTimeout}
+        />
+      </Header>
+
+      {/* todo: filter menu 
         {showFilters && (
           <FilterContainer>
             {columnFiltering && (
@@ -151,58 +147,57 @@ export function Table<DataType extends object>({
         )}
 
         {/* table */}
-        <StyledTable spacing={spacing}>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(({ id, colSpan, column }) => (
-                  <th key={id} colSpan={colSpan} scope="col">
-                    <div>
-                      {column.getCanSort() && sorting !== undefined && (
-                        <Sorting
-                          header={column.columnDef.header as string}
-                          setSorting={sorting.setSortingState!}
-                          sorting={sorting.sortingState}
-                          id={column.id}
-                        />
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(({ column, id, getContext }) => (
-                  <td key={id}>
-                    {flexRender(column.columnDef.cell, getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              {pagination && (
-                <td colSpan={columns.length}>
-                  <span>{pagination.total} results</span>
-                  <Pagination
-                    pageCount={pagination.pageCount}
-                    hasNext={table.getCanNextPage()}
-                    hasPrevious={table.getCanPreviousPage()}
-                    previousPage={table.previousPage}
-                    nextPage={table.nextPage}
-                    pageIndex={table.getState().pagination.pageIndex}
-                    setPageIndex={table.setPageIndex}
-                  />
-                </td>
-              )}
+      <StyledTable spacing={spacing}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(({ id, colSpan, column }) => (
+                <th key={id} colSpan={colSpan} scope="col">
+                  <div>
+                    {column.getCanSort() && sorting !== undefined && (
+                      <Sorting
+                        header={column.columnDef.header as string}
+                        setSorting={sorting.setSortingState!}
+                        sorting={sorting.sortingState}
+                        id={column.id}
+                      />
+                    )}
+                  </div>
+                </th>
+              ))}
             </tr>
-          </tfoot>
-        </StyledTable>
-      </Wrapper>
-    </DndProvider>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(({ column, id, getContext }) => (
+                <td key={id}>
+                  {flexRender(column.columnDef.cell, getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            {pagination && (
+              <td colSpan={columns.length}>
+                <span>{pagination.total} results</span>
+                <Pagination
+                  pageCount={pagination.pageCount}
+                  hasNext={table.getCanNextPage()}
+                  hasPrevious={table.getCanPreviousPage()}
+                  previousPage={table.previousPage}
+                  nextPage={table.nextPage}
+                  pageIndex={table.getState().pagination.pageIndex}
+                  setPageIndex={table.setPageIndex}
+                />
+              </td>
+            )}
+          </tr>
+        </tfoot>
+      </StyledTable>
+    </Wrapper>
   );
 }

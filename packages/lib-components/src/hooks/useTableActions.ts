@@ -29,7 +29,6 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
   function paginate(
     response: AxiosResponse<ExtendedAPIOutput<T>>
   ): Paginated<T> {
-    console.log('this fired');
     setPaginationState({
       pageIndex: paginationState.pageIndex++,
       pageSize: paginationState.pageSize,
