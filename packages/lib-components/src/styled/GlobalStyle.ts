@@ -53,23 +53,23 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
   p, span, div {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   h1 {
-    font-size: 4rem;
+    font-size: 3.2rem;
     font-weight: 800;
   }
   h2 {
-    font-size: 3rem;
+    font-size: 2.4rem;
     font-weight: 800;
   }
   h3 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 600;
   }
   h4 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   form {

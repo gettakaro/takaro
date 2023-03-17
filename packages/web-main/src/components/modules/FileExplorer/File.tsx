@@ -1,12 +1,14 @@
-import { createRef, FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import {
   EditableField,
   styled,
+  Button as TakaroButton,
   Tooltip,
-  useModal,
-  useOutsideAlerter,
   useTheme,
-  ConfirmationModal,
+  Dialog,
+  DialogHeading,
+  DialogContent,
+  DialogBody,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
@@ -62,6 +64,13 @@ const NewFileContainer = styled.div<{ depth: number }>`
   padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
 `;
 
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+`;
+
 export interface FileProps {
   path: string;
 
@@ -90,14 +99,11 @@ export const File: FC<FileProps> = ({
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
-
-  const [Wrapper, openDeleteFileModal, closeDeleteFileModal] = useModal();
-  const ref = createRef<HTMLDivElement>();
-  useOutsideAlerter(ref, () => closeDeleteFileModal());
 
   // item is clicked in explorer
   const handleOnFileClick = (
@@ -219,7 +225,7 @@ export const File: FC<FileProps> = ({
   const handleOnDeleteClick = (e: MouseEvent<SVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    openDeleteFileModal();
+    setOpenDialog(true);
   };
 
   const handleOnRenameClick = (e: MouseEvent<SVGElement>) => {
@@ -244,22 +250,6 @@ export const File: FC<FileProps> = ({
       <DirClosedIcon fill={theme.colors.primary} size={20} />
     );
   };
-
-  const getModal = (): JSX.Element => (
-    <Wrapper>
-      <ConfirmationModal
-        type="error"
-        title={`Delete ${selectFile ? 'file' : 'directory'} `}
-        close={closeDeleteFileModal}
-        description={`Are you sure you want to delete '${fileName}'? The ${
-          selectFile ? 'file' : 'directory'
-        } will be permanently removed.`}
-        action={handleDelete}
-        actionText="Delete"
-        ref={ref}
-      />
-    </Wrapper>
-  );
 
   const getActions = (): JSX.Element => {
     if (selectFile) {
@@ -345,7 +335,30 @@ export const File: FC<FileProps> = ({
           />
         </NewFileContainer>
       )}
-      {getModal()}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeading>Delete file</DialogHeading>
+          <DialogBody>
+            <h4>
+              Are you sure you want to delete '{fileName}'? The file will be
+              permanently removed.
+            </h4>
+            <ButtonContainer>
+              <TakaroButton
+                onClick={() => setOpenDialog(false)}
+                text="Cancel"
+                variant="clear"
+                color="background"
+              />
+              <TakaroButton
+                onClick={handleDelete}
+                text="Delete"
+                color="error"
+              />
+            </ButtonContainer>
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

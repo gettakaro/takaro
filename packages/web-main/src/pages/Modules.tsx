@@ -1,7 +1,6 @@
 import { createRef, FC } from 'react';
 import {
   Button,
-  ConfirmationModal,
   styled,
   useModal,
   useOutsideAlerter,
@@ -22,10 +21,8 @@ const Page = styled.div`
 export const Modules: FC = () => {
   const navigate = useNavigate();
 
-  const [Wrapper, open, close] = useModal();
   const apiClient = useApiClient();
   const ref = createRef<HTMLDivElement>();
-  useOutsideAlerter(ref, () => close());
 
   const createNewModule = async () => {
     const mod = await apiClient.module.moduleControllerCreate({
@@ -41,24 +38,7 @@ export const Modules: FC = () => {
       </Helmet>
       <Page>
         <h1>Available modules</h1>
-        <Button
-          icon={<AiFillPlusCircle size={20} />}
-          onClick={open}
-          size="large"
-          text="Create new module"
-        />
         todo
-        <Wrapper>
-          <ConfirmationModal
-            action={createNewModule}
-            actionText="Create new module"
-            close={close}
-            description="Are you sure you want to create a new module?"
-            ref={ref}
-            title="Create a new module"
-            type="info"
-          />
-        </Wrapper>
       </Page>
     </>
   );
