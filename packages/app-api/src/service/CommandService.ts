@@ -21,7 +21,6 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
-import { AuthService } from './AuthService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -181,8 +180,6 @@ export class CommandService extends TakaroService<
         `Found ${triggeredCommands.length} commands that match the event`
       );
 
-      const authService = new AuthService(this.domainId);
-      const token = await authService.getAgentToken();
       const queues = QueuesService.getInstance();
 
       const promises = triggeredCommands.map(async (command) => {
@@ -192,7 +189,6 @@ export class CommandService extends TakaroService<
           itemId: command.id,
           data: chatMessage,
           gameServerId,
-          token,
         });
       });
 

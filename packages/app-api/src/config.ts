@@ -13,14 +13,6 @@ interface IHttpConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
-  auth: {
-    adminSecret: string;
-    jwtSecret: string;
-    jwtExpiresIn: string;
-    cookieName: string;
-    kratosUrlPublic: string;
-    kratosUrlAdmin: string;
-  };
   takaro: {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
@@ -61,12 +53,6 @@ const configSchema = {
     },
   },
   auth: {
-    adminSecret: {
-      doc: 'The secret used to authenticate admin requests',
-      format: String,
-      default: null,
-      env: 'ADMIN_SECRET',
-    },
     jwtSecret: {
       doc: 'The secret used to sign JWTs',
       format: String,
@@ -84,18 +70,6 @@ const configSchema = {
       format: String,
       default: 'takaro-token',
       env: 'COOKIE_NAME',
-    },
-    kratosUrlPublic: {
-      doc: 'The URL of the Kratos public API',
-      format: String,
-      default: 'http://kratos:4433',
-      env: 'KRATOS_URL',
-    },
-    kratosUrlAdmin: {
-      doc: 'The URL of the Kratos admin API',
-      format: String,
-      default: 'http://kratos:4434',
-      env: 'KRATOS_ADMIN_URL',
     },
   },
   takaro: {

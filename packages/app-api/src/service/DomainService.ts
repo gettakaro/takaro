@@ -26,7 +26,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CronJobService } from './CronJobService.js';
 import { ModuleService } from './ModuleService.js';
-import { Ory } from '../lib/ory.js';
+import { ory } from '@takaro/auth';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -111,7 +111,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await cronJobService.delete(cronJob.id);
     }
 
-    await new Ory().deleteIdentitiesForDomain(id);
+    await ory.deleteIdentitiesForDomain(id);
 
     return this.repo.delete(id);
   }

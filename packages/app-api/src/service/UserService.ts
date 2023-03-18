@@ -12,7 +12,7 @@ import {
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { RoleOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
-import { Ory } from '../lib/ory.js';
+import { ory } from '@takaro/auth';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -57,11 +57,8 @@ export class UserService extends TakaroService<
   UserCreateInputDTO,
   UserUpdateDTO
 > {
-  private ory: Ory;
-
   constructor(domainId: string) {
     super(domainId);
-    this.ory = new Ory();
   }
 
   get repo() {
@@ -71,7 +68,7 @@ export class UserService extends TakaroService<
   private async extendWithOry(
     user: UserOutputWithRolesDTO
   ): Promise<UserOutputWithRolesDTO> {
-    const oryIdentity = await this.ory.getIdentity(user.idpId);
+    const oryIdentity = await ory.getIdentity(user.idpId);
     return new UserOutputWithRolesDTO().construct({
       ...user,
       email: oryIdentity.email,
@@ -96,7 +93,7 @@ export class UserService extends TakaroService<
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
-    const idpUser = await this.ory.createIdentity(
+    const idpUser = await ory.createIdentity(
       user.email,
       user.password,
       this.domainId
@@ -113,7 +110,7 @@ export class UserService extends TakaroService<
 
   async delete(id: string): Promise<boolean> {
     await this.repo.delete(id);
-    await this.ory.deleteIdentity(id);
+    await ory.deleteIdentity(id);
     return true;
   }
 

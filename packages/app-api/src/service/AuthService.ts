@@ -2,13 +2,13 @@ import { DomainScoped } from '../lib/DomainScoped.js';
 import { ctx, errors, logger } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
-import { config } from '../config.js';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { CAPABILITIES } from './RoleService.js';
-import { Ory } from '../lib/ory.js';
+import { ory } from '@takaro/auth';
+import basicAuth from 'basic-auth';
 
 interface IJWTPayload {
   sub: string;
@@ -29,12 +29,20 @@ export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
   token!: string;
 }
 
+export class TokenInputDTO extends TakaroDTO<TokenInputDTO> {
+  @IsString()
+  domainId: string;
+}
+
+export class TokenOutputDTO extends TakaroDTO<TokenOutputDTO> {
+  @IsString()
+  token!: string;
+}
+
 const log = logger('AuthService');
 
 export class AuthService extends DomainScoped {
   static async login(name: string, password: string): Promise<LoginOutputDTO> {
-    const ory = new Ory();
-
     try {
       const loginRes = await ory.submitApiLogin(name, password);
       return new LoginOutputDTO().construct({
@@ -47,7 +55,7 @@ export class AuthService extends DomainScoped {
   }
 
   static async logout(req: Request) {
-    return new Ory().apiLogout(req);
+    return ory.apiLogout(req);
   }
 
   /**
@@ -56,7 +64,7 @@ export class AuthService extends DomainScoped {
    * narrower scoped tokens (eg configurable capabilities?)
    * // TODO: ^ ^
    */
-  async getAgentToken() {
+  async getAgentToken(): Promise<TokenOutputDTO> {
     const userService = new UserService(this.domainId);
 
     const rootUser = await userService.find({
@@ -68,7 +76,9 @@ export class AuthService extends DomainScoped {
       throw new errors.InternalServerError();
     }
 
-    return await this.signJwt({ user: { id: rootUser.results[0].id } });
+    const token = await this.signJwt({ user: { id: rootUser.results[0].id } });
+
+    return new TokenOutputDTO().construct({ token });
   }
 
   async signJwt(payload: IJWTSignOptions): Promise<string> {
@@ -78,14 +88,12 @@ export class AuthService extends DomainScoped {
         sub: payload.user.id,
         domainId: this.domainId,
         iat: Math.floor(Date.now() / 1000),
-        exp:
-          Math.floor(Date.now() / 1000) +
-          ms(config.get('auth.jwtExpiresIn')) / 1000,
+        exp: Math.floor(Date.now() / 1000) + ms('5 days') / 1000,
       };
 
       jwt.sign(
         toSign,
-        config.get('auth.jwtSecret'),
+        "config.get('auth.jwtSecret')",
         { algorithm: 'HS256', issuer: 'takaro' },
         (err, token) => {
           if (err) {
@@ -113,7 +121,7 @@ export class AuthService extends DomainScoped {
 
       jwt.verify(
         token,
-        config.get('auth.jwtSecret'),
+        "config.get('auth.jwtSecret')",
         { issuer: 'takaro' },
         (err, decoded) => {
           if (err) {
@@ -131,7 +139,7 @@ export class AuthService extends DomainScoped {
     req: AuthenticatedRequest
   ): Promise<UserOutputWithRolesDTO | null> {
     try {
-      const identity = await new Ory().getIdentityFromReq(req);
+      const identity = await ory.getIdentityFromReq(req);
       if (!identity) return null;
       const service = new UserService(identity.domainId);
       const users = await service.find({ filters: { idpId: identity.id } });
@@ -184,5 +192,25 @@ export class AuthService extends DomainScoped {
         return next(new errors.ForbiddenError());
       }
     };
+  }
+
+  static adminAuthMiddleware(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
+    const credentials = basicAuth(request);
+
+    if (!credentials) {
+      log.warn('No credentials provided');
+      return next(new errors.UnauthorizedError());
+    }
+
+    if (credentials.name !== 'admin') {
+      log.warn(`Invalid username: ${credentials.name}`);
+      return next(new errors.UnauthorizedError());
+    }
+
+    return next();
   }
 }
