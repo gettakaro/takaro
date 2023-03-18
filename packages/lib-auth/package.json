@@ -1,0 +1,25 @@
+{
+  "name": "@takaro/auth",
+  "version": "0.0.1",
+  "description": "An opinionated auth handler",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
+    "test:unit": "rm -rf ./dist && tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
+    "test:integration": "echo 'No tests (yet :))'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "convict": "^6.2.3"
+  },
+  "devDependencies": {
+    "@takaro/test": "0.0.1",
+    "@types/convict": "^6.1.1"
+  }
+}
