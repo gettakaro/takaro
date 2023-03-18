@@ -3,6 +3,7 @@ import { config } from '../../config.js';
 import { TakaroWorker, IJobData } from '@takaro/queues';
 import { ctx } from '@takaro/util';
 import { executeFunction } from './executeFunction.js';
+import { ory } from '@takaro/auth';
 
 export class CronJobWorker extends TakaroWorker<IJobData> {
   constructor() {
@@ -16,12 +17,14 @@ async function processCronJob(job: Job<IJobData>) {
     gameServer: job.data.gameServerId,
   });
 
+  const token = await ory.getJobToken(job.data.domainId);
+
   await executeFunction(
     job.data.function,
     {
       ...job.data.data,
       gameServerId: job.data.gameServerId,
     },
-    job.data.token
+    token
   );
 }

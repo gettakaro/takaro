@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
@@ -11,9 +12,6 @@ interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
-  };
-  takaro: {
-    url: string;
   };
   redis: {
     host: string;
@@ -124,14 +122,6 @@ const configSchema = {
       env: 'CONTAINERD_NAMESPACE',
     },
   },
-  takaro: {
-    url: {
-      doc: 'The URL of the Takaro server',
-      format: String,
-      default: 'http://localhost:3000',
-      env: 'TAKARO_HOST',
-    },
-  },
   firecracker: {
     binary: {
       doc: 'Path to Firecracker binary',
@@ -167,7 +157,8 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IAgentConfig & IQueuesConfig>([
+export const config = new Config<IAgentConfig & IQueuesConfig & IAuthConfig>([
   configSchema,
   queuesConfigSchema,
+  authConfigSchema,
 ]);
