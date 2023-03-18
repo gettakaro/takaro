@@ -4,13 +4,13 @@ import {
   IdentityApi,
   OAuth2Api,
 } from '@ory/client';
-import { Client as OpenIdClient, Issuer } from 'openid-client';
 import { config } from './config.js';
-import { errors, logger } from '@takaro/util';
+import { errors, logger, TakaroDTO } from '@takaro/util';
 import { AdminClient as TakaroClient } from '@takaro/apiclient';
 import { createAxiosClient } from './lib/oryAxiosClient.js';
 import { paginateIdentities } from './lib/paginationHelpers.js';
 import { Request } from 'express';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 enum IDENTITY_SCHEMA {
   USER = 'user_v0',
@@ -20,6 +20,21 @@ export interface ITakaroIdentity {
   id: string;
   email: string;
   domainId: string;
+}
+
+export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
+  @IsBoolean()
+  active: boolean;
+  @IsString()
+  clientId: string;
+  @IsNumber()
+  exp: number;
+  @IsNumber()
+  iat: number;
+  @IsString()
+  iss: string;
+  @IsString()
+  sub: string;
 }
 
 function metadataTypeguard(
@@ -32,10 +47,8 @@ function metadataTypeguard(
 
 class Ory {
   private authToken: string | null = null;
-  private issuer: Issuer;
   private log = logger('ory');
 
-  private client: OpenIdClient;
   private adminClient: OAuth2Api;
   private identityClient: IdentityApi;
   private frontendClient: FrontendApi;
@@ -52,10 +65,10 @@ class Ory {
 
     this.frontendClient = new FrontendApi(
       new Configuration({
-        basePath: config.get('hydra.publicUrl'),
+        basePath: config.get('kratos.publicUrl'),
       }),
       undefined,
-      createAxiosClient(config.get('hydra.publicUrl'))
+      createAxiosClient(config.get('kratos.publicUrl'))
     );
     this.adminClient = new OAuth2Api(
       new Configuration({
@@ -64,56 +77,6 @@ class Ory {
       undefined,
       createAxiosClient(config.get('hydra.adminUrl'))
     );
-
-    this.takaro = new TakaroClient({
-      url: config.get('takaro.url'),
-      auth: {},
-    });
-  }
-
-  public async init() {
-    this.issuer = await Issuer.discover(config.get('hydra.publicUrl'));
-    this.log.debug(`Discovered issuer at ${config.get('hydra.publicUrl')}`);
-    this.client = new this.issuer.Client({
-      client_id: config.get('hydra.adminClientId'),
-      client_secret: config.get('hydra.adminClientSecret'),
-    });
-  }
-
-  public async getOidcToken(): Promise<string> {
-    const grantRes = await this.client.grant({
-      grant_type: 'client_credentials',
-    });
-
-    if (!grantRes.access_token) {
-      this.log.error('Failed to get access token');
-      throw new errors.InternalServerError();
-    }
-    console.log(grantRes);
-
-    const introspectRes = await this.adminClient.introspectOAuth2Token({
-      token: grantRes.access_token,
-    });
-    console.log(introspectRes.data);
-
-    return grantRes.access_token;
-  }
-
-  public async getJobToken(domainId: string) {
-    const oidcToken = await this.getOidcToken();
-
-    const tokenRes = await this.takaro.domain.domainControllerGetToken(
-      {
-        domainId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${oidcToken}`,
-        },
-      }
-    );
-
-    return tokenRes.data.data.token;
   }
 
   async deleteIdentitiesForDomain(domainId: string) {
@@ -254,6 +217,27 @@ class Ory {
         session_token: tokenFromAuthHeader,
       },
     });
+  }
+
+  async introspectToken(token: string): Promise<TakaroTokenDTO> {
+    const introspectRes = await this.adminClient.introspectOAuth2Token({
+      token,
+    });
+
+    const data = await new TakaroTokenDTO().construct({
+      active: introspectRes.data.active,
+      clientId: introspectRes.data.client_id,
+      exp: introspectRes.data.exp,
+      iat: introspectRes.data.iat,
+      iss: introspectRes.data.iss,
+      sub: introspectRes.data.sub,
+    });
+
+    // Check for correctness of the data
+    // DOES NOT CHECK FOR EXPIRATION
+    await data.validate();
+
+    return data;
   }
 }
 

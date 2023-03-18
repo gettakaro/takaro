@@ -45,8 +45,7 @@ services:
     volumes:
       - ./packages:/app/packages
       - ./reports:/app/reports
-    env_file:
-      - .env
+      - ./scripts:/app/scripts
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
@@ -66,8 +65,18 @@ services:
       FIRECRACKER_SOCKET: ${FIRECRACKER_SOCKET}
       FIRECRACKER_AGENT_SOCKET: ${FIRECRACKER_AGENT_SOCKET}
 
+      TAKARO_DEV_USER_PASSWORD: ${TAKARO_DEV_USER_PASSWORD}
+      TAKARO_DEV_USER_NAME: ${TAKARO_DEV_USER_NAME}
+      TAKARO_DEV_DOMAIN_NAME: ${TAKARO_DEV_DOMAIN_NAME}
+
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
+
       REACT_APP_API: http://127.0.0.1:13000
       REACT_APP_ORY_URL: http://127.0.0.1:4433
+
+      TAKARO_OAUTH_HOST: http://hydra:4444
+      TAKARO_HOST: http://takaro:3000
 
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io
 
@@ -85,10 +94,12 @@ services:
       - 12002:12002
       # Docs
       - 13005:13005
+
+
   kratos-migrate:
     image: oryd/kratos:v0.11.1
     environment:
-      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_ory:5432/ory
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     volumes:
       - ./containers/ory/kratos:/etc/config/kratos
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
@@ -102,19 +113,50 @@ services:
       - "4434:4434" # admin
     restart: on-failure
     environment:
-      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_ory:5432/ory
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
       - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
       - ./containers/ory/kratos:/etc/config/kratos
-  postgresql_ory:
+  postgresql_kratos:
     image: postgres:14
     volumes:
-      - ./_data/ory-db:/var/lib/postgresql/data
+      - ./_data/kratos-db:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ory      
+      POSTGRES_DB: kratos      
+
+
+  hydra:
+    image: oryd/hydra:v2.0.3
+    ports:
+      - "4444:4444" # Public port
+      - "4445:4445" # Admin port
+      - "5555:5555" # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    volumes:
+      - ./containers/ory/hydra:/etc/config/hydra
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+    depends_on:
+      - hydra-migrate
+  hydra-migrate:
+    image: oryd/hydra:v2.0.3
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+    command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+    volumes:
+      - ./containers/ory/hydra:/etc/config/hydra
+  postgresql_hydra:
+    image: postgres:14
+    volumes:
+      - ./_data/hydra-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: hydra   
+
   mailslurper:
     image: oryd/mailslurper:latest-smtps
     ports:

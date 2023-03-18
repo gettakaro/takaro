@@ -8,7 +8,6 @@ import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { CAPABILITIES } from './RoleService.js';
 import { ory } from '@takaro/auth';
-import basicAuth from 'basic-auth';
 
 interface IJWTPayload {
   sub: string;
@@ -192,25 +191,5 @@ export class AuthService extends DomainScoped {
         return next(new errors.ForbiddenError());
       }
     };
-  }
-
-  static adminAuthMiddleware(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    const credentials = basicAuth(request);
-
-    if (!credentials) {
-      log.warn('No credentials provided');
-      return next(new errors.UnauthorizedError());
-    }
-
-    if (credentials.name !== 'admin') {
-      log.warn(`Invalid username: ${credentials.name}`);
-      return next(new errors.UnauthorizedError());
-    }
-
-    return next();
   }
 }

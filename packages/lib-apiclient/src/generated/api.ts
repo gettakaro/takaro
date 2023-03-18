@@ -683,7 +683,7 @@ export interface DomainCreateInputDTO {
    * @type {string}
    * @memberof DomainCreateInputDTO
    */
-  id: string;
+  id?: string;
 }
 /**
  *
@@ -3101,6 +3101,51 @@ export interface TestReachabilityOutput {
 /**
  *
  * @export
+ * @interface TokenInputDTO
+ */
+export interface TokenInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TokenInputDTO
+   */
+  domainId: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenOutputDTO
+ */
+export interface TokenOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TokenOutputDTO
+   */
+  token: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenOutputDTOAPI
+ */
+export interface TokenOutputDTOAPI {
+  /**
+   *
+   * @type {TokenOutputDTO}
+   * @memberof TokenOutputDTOAPI
+   */
+  data: TokenOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof TokenOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface UserCreateInputDTO
  */
 export interface UserCreateInputDTO {
@@ -3122,6 +3167,12 @@ export interface UserCreateInputDTO {
    * @memberof UserCreateInputDTO
    */
   password: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInputDTO
+   */
+  idpId?: string;
 }
 /**
  *
@@ -3160,6 +3211,12 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
+  idpId: string;
   /**
    *
    * @type {string}
@@ -3240,6 +3297,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  idpId: string;
 }
 /**
  *
@@ -4685,12 +4748,12 @@ export const DomainApiAxiosParamCreator = function (
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate: async (
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       const localVarPath = `/domain`;
@@ -4724,7 +4787,7 @@ export const DomainApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        domainCreateInputDTO,
         localVarRequestOptions,
         configuration
       );
@@ -4778,6 +4841,58 @@ export const DomainApiAxiosParamCreator = function (
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerGetToken: async (
+      tokenInputDTO?: TokenInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/token`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication adminAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        tokenInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -4958,12 +5073,12 @@ export const DomainApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async domainControllerCreate(
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -4972,7 +5087,10 @@ export const DomainApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<DomainCreateOutputDTOAPI>
     > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.domainControllerCreate(body, options);
+        await localVarAxiosParamCreator.domainControllerCreate(
+          domainCreateInputDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -4998,6 +5116,34 @@ export const DomainApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.domainControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async domainControllerGetToken(
+      tokenInputDTO?: TokenInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<TokenOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.domainControllerGetToken(
+          tokenInputDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -5103,16 +5249,16 @@ export const DomainApiFactory = function (
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate(
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options?: any
     ): AxiosPromise<DomainCreateOutputDTOAPI> {
       return localVarFp
-        .domainControllerCreate(body, options)
+        .domainControllerCreate(domainCreateInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5128,6 +5274,21 @@ export const DomainApiFactory = function (
     ): AxiosPromise<DomainOutputDTOAPI> {
       return localVarFp
         .domainControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerGetToken(
+      tokenInputDTO?: TokenInputDTO,
+      options?: any
+    ): AxiosPromise<TokenOutputDTOAPI> {
+      return localVarFp
+        .domainControllerGetToken(tokenInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5187,14 +5348,17 @@ export class DomainApi extends BaseAPI {
   /**
    *
    * @summary Create
-   * @param {any} [body]
+   * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DomainApi
    */
-  public domainControllerCreate(body?: any, options?: AxiosRequestConfig) {
+  public domainControllerCreate(
+    domainCreateInputDTO?: DomainCreateInputDTO,
+    options?: AxiosRequestConfig
+  ) {
     return DomainApiFp(this.configuration)
-      .domainControllerCreate(body, options)
+      .domainControllerCreate(domainCreateInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5209,6 +5373,23 @@ export class DomainApi extends BaseAPI {
   public domainControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return DomainApiFp(this.configuration)
       .domainControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get token
+   * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DomainApi
+   */
+  public domainControllerGetToken(
+    tokenInputDTO?: TokenInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return DomainApiFp(this.configuration)
+      .domainControllerGetToken(tokenInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

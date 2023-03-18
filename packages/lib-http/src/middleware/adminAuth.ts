@@ -1,32 +1,32 @@
-import { NextFunction, Request, Response } from 'express';
-import { logger, errors } from '@takaro/util';
-import basicAuth from 'basic-auth';
+import { Request, Response, NextFunction } from 'express';
+import { errors, logger } from '@takaro/util';
+import { ory } from '@takaro/auth';
 
-const log = logger('middleware:authAdmin');
+const log = logger('http:middleware:adminAuth');
 
-export function createAdminAuthMiddleware(adminSecret: string) {
-  return function adminAuthMiddleware(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    const credentials = basicAuth(request);
+export async function adminAuthMiddleware(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const rawToken = request.headers['authorization']?.replace('Bearer ', '');
 
-    if (!credentials) {
-      log.warn('No credentials provided');
+    if (!rawToken) {
+      log.warn('No token provided');
       return next(new errors.UnauthorizedError());
     }
 
-    if (credentials.name !== 'admin') {
-      log.warn(`Invalid username: ${credentials.name}`);
-      return next(new errors.UnauthorizedError());
-    }
+    const token = await ory.introspectToken(rawToken);
 
-    if (credentials.pass !== adminSecret) {
-      log.warn('Invalid password');
+    if (!token.active) {
+      log.warn('Token is not active');
       return next(new errors.UnauthorizedError());
     }
 
     return next();
-  };
+  } catch (error) {
+    log.error('Unexpected error', { error });
+    next(new errors.UnauthorizedError());
+  }
 }

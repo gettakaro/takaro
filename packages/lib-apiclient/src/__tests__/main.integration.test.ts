@@ -5,7 +5,7 @@ import { DomainCreateOutputDTOAPI } from '../generated/index.js';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';
 
-const TEST_USER_NAME = 'apiClient-test-user';
+const TEST_TAKARO_DEV_USER_NAME = 'apiClient-test-user';
 
 describe('API client', () => {
   const adminClient = new AdminClient({
@@ -73,15 +73,15 @@ describe('API client', () => {
       await client.login();
 
       const user = await client.user.userControllerCreate({
-        name: TEST_USER_NAME,
+        name: TEST_TAKARO_DEV_USER_NAME,
         password: '123456789',
-        email: `${TEST_USER_NAME}@test.takaro.io`,
+        email: `${TEST_TAKARO_DEV_USER_NAME}@test.takaro.io`,
       });
 
-      expect(user.data.data.name).to.equal(TEST_USER_NAME);
+      expect(user.data.data.name).to.equal(TEST_TAKARO_DEV_USER_NAME);
 
       const usersRes = await client.user.userControllerSearch({
-        filters: { name: TEST_USER_NAME },
+        filters: { name: TEST_TAKARO_DEV_USER_NAME },
       });
 
       expect(usersRes.data.data).to.have.lengthOf(1);

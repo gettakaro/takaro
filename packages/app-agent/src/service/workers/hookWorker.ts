@@ -3,7 +3,6 @@ import { config } from '../../config.js';
 import { TakaroWorker, IJobData } from '@takaro/queues';
 import { executeFunction } from './executeFunction.js';
 import { ctx } from '@takaro/util';
-import { ory } from '@takaro/auth';
 
 export class HookWorker extends TakaroWorker<IJobData> {
   constructor() {
@@ -17,14 +16,12 @@ async function processHook(job: Job<IJobData>) {
     gameServer: job.data.gameServerId,
   });
 
-  const token = await ory.getJobToken(job.data.domainId);
-
   await executeFunction(
     job.data.function,
     {
       ...job.data.data,
       gameServerId: job.data.gameServerId,
     },
-    token
+    job.data.domainId
   );
 }

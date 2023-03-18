@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios';
 import {
   CronJobApi,
   FunctionApi,
@@ -11,11 +12,30 @@ import {
   CommandApi,
   VariableApi,
 } from '../generated/api.js';
-import { BaseApiClient, IApiClientConfig } from './baseClient.js';
+import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
-export class Client extends BaseApiClient {
+export interface IApiClientConfig extends IBaseApiClientConfig {
+  auth: {
+    username?: string;
+    password?: string;
+    token?: string;
+  };
+}
+
+export class Client extends BaseApiClient<IApiClientConfig> {
   constructor(config: IApiClientConfig) {
     super(config);
+    this.axios = this.addAuthHeaders(this.axios);
+  }
+
+  private addAuthHeaders(axios: AxiosInstance): AxiosInstance {
+    if (this.config.auth.token) {
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${this.config.auth.token}`;
+    }
+
+    return axios;
   }
 
   set username(username: string) {
@@ -24,10 +44,6 @@ export class Client extends BaseApiClient {
 
   set password(password: string) {
     this.config.auth.password = password;
-  }
-
-  set token(token: string) {
-    this.config.auth.token = token;
   }
 
   public async login() {

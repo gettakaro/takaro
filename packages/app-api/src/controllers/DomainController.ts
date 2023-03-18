@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { config } from '../config.js';
+import { adminAuthMiddleware } from '@takaro/http';
 import {
   DomainCreateInputDTO,
   DomainCreateOutputDTO,
@@ -7,11 +7,7 @@ import {
   DomainService,
   DomainUpdateInputDTO,
 } from '../service/DomainService.js';
-import {
-  createAdminAuthMiddleware,
-  apiResponse,
-  APIOutput,
-} from '@takaro/http';
+import { apiResponse, APIOutput } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
 
 import {
@@ -31,6 +27,11 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
+import {
+  TokenOutputDTO,
+  TokenInputDTO,
+  AuthService,
+} from '../service/AuthService.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -61,11 +62,16 @@ export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @Type(() => DomainSearchInputAllowedFilters)
   declare filters: DomainSearchInputAllowedFilters;
 }
+export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
+  @Type(() => TokenOutputDTO)
+  @ValidateNested()
+  declare data: TokenOutputDTO;
+}
 
 @OpenAPI({
   security: [{ adminAuth: [] }],
 })
-@UseBefore(createAdminAuthMiddleware(config.get('auth.adminSecret')))
+@UseBefore(adminAuthMiddleware)
 @JsonController()
 export class DomainController {
   @Post('/domain/search')
@@ -114,5 +120,12 @@ export class DomainController {
     const service = new DomainService();
     await service.delete(id);
     return apiResponse();
+  }
+
+  @Post('/token')
+  @ResponseSchema(TokenOutputDTOAPI)
+  async getToken(@Body() body: TokenInputDTO) {
+    const authService = new AuthService(body.domainId);
+    return apiResponse(await authService.getAgentToken());
   }
 }

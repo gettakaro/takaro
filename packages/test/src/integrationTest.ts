@@ -52,8 +52,10 @@ export class IntegrationTest<SetupData> {
     this.adminClient = new AdminClient({
       url: integrationConfig.get('host'),
       auth: {
-        adminSecret: integrationConfig.get('auth.adminSecret'),
+        clientId: integrationConfig.get('auth.adminClientId'),
+        clientSecret: integrationConfig.get('auth.adminClientSecret'),
       },
+      OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
       log: this.log,
     });
 
