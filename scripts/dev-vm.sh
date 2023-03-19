@@ -6,7 +6,6 @@ FC_ROOTFS="$PWD/firecracker/rootfs.ext4"
 FC_KERNEL="$PWD/firecracker/vmlinux.bin"
 
 # FC_KERNEL_BOOT_ARGS="init=/sbin/boottime_init panic=1 pci=off nomodules reboot=k tsc=reliable quiet i8042.nokbd i8042.noaux 8250.nr_uarts=0 ipv6.disable=1"
-#
 FC_KERNEL_BOOT_ARGS="ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on"
 
 FC_MAC="02:FC:00:00:00:05"
