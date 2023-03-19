@@ -170,6 +170,8 @@ setup_microvm() {
 
 ######################################## MAIN SCRIPT ########################################
 
+mkdir -p ./firecracker
+
 ensure_kernel
 
 build_vm_agent
@@ -178,6 +180,6 @@ build_vm_node_helper
 
 create_rootfs
 
-setup_microvm &
-
-start_firecracker
+# setup_microvm &
+#
+# start_firecracker
