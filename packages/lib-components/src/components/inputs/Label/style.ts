@@ -36,6 +36,7 @@ export const Container = styled.label<{
       }
       return theme.colors.text;
     }};
+  }
 
   margin: ${({ theme, position }) => {
     switch (position) {

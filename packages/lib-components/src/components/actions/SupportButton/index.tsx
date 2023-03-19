@@ -3,7 +3,7 @@ import { IconButton } from '..';
 import { Size } from '../../../styled';
 import { AiOutlineQuestion } from 'react-icons/ai';
 import { Tooltip } from '../../../components';
-import { Placement } from '@floating-ui/react-dom';
+import { Placement } from '@floating-ui/react';
 
 export interface SupportButtonProps {
   size?: Size;

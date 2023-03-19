@@ -1,5 +1,5 @@
 import { Monaco } from '@monaco-editor/react';
-import { theme } from '@takaro/lib-components';
+import { lightTheme as theme } from '@takaro/lib-components';
 
 /* eventually all used colors should become part of editorTheme but for now playing around with default colors to define what key has impact on what.
 const editorTheme = {

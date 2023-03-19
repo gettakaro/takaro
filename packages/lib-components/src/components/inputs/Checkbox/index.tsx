@@ -21,6 +21,7 @@ import { ErrorMessage } from '../ErrorMessage';
 
 export interface CheckboxProps extends InputProps {
   labelPosition?: 'left' | 'right';
+  onChange?: (value: boolean) => void;
 }
 
 const variants = {
@@ -64,6 +65,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
 
   useEffect(() => {
     checkbox.onChange(isChecked);
+    if (props.onChange) props.onChange(isChecked);
   }, [isChecked]);
 
   if (loading) {
@@ -79,6 +81,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
             disabled={disabled}
             required={required}
             hint={hint}
+            htmlFor={name}
             onClick={handleOnClick}
           />
         )}
@@ -99,6 +102,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
             disabled={disabled}
             required={required}
             hint={hint}
+            htmlFor={name}
             onClick={handleOnClick}
           />
         )}
@@ -117,6 +121,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
           text={label}
           disabled={disabled}
           required={required}
+          htmlFor={name}
           onClick={handleOnClick}
         />
       )}
@@ -144,6 +149,8 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
           text={label}
           disabled={disabled}
           required={required}
+          htmlFor={name}
+          onClick={handleOnClick}
           size={size}
         />
       )}

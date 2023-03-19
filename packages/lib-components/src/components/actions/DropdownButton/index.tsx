@@ -3,7 +3,7 @@ import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
 import { styled } from '../../../styled';
-import { useFloating } from '@floating-ui/react-dom';
+import { useFloating } from '@floating-ui/react';
 import { lighten } from 'polished';
 
 const Arrow = styled(ArrowIcon)`

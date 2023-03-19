@@ -1,4 +1,5 @@
 import { styled, Color, Size, AlertVariants } from '../../../styled';
+import { lighten } from 'polished';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
@@ -6,13 +7,15 @@ export const Default = styled.button<{
   size: Size;
   color: ButtonColor;
   icon: boolean;
+  iconPosition: 'left' | 'right';
+  fullWidth: boolean;
   isLoading: boolean;
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: fit-content;
-  border-radius: 0.5rem;
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
+  border-radius: 0.25rem;
   background-size: 200% auto;
   cursor: ${({ isLoading }) => (isLoading ? 'default' : 'pointer')};
   line-height: 1.9rem;
@@ -25,15 +28,27 @@ export const Default = styled.button<{
   }
   &:hover {
     background-position: right center;
+    background-color: ${({ theme, color }) =>
+      lighten(0.1, theme.colors[color])};
   }
 
   span {
     font-size: 1.25rem;
     font-weight: 600;
-    color: ${({ theme, color }) =>
-      color === 'white' ? theme.colors.primary : 'white'};
-    margin-left: ${({ icon, isLoading }): string =>
-      icon || isLoading ? '10px' : '0px'};
+    color: ${({ theme, color }) => {
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
+    margin-left: ${({ icon, isLoading, iconPosition }): string =>
+      iconPosition === 'left' && (icon || isLoading) ? '10px' : '0px'};
+    margin-right: ${({ icon, isLoading, iconPosition }): string =>
+      iconPosition === 'right' && (icon || isLoading) ? '10px' : '0px'};
   }
 
   &:disabled {
@@ -45,8 +60,17 @@ export const Default = styled.button<{
   svg {
     display: ${({ icon, isLoading }): string =>
       icon || isLoading ? 'block' : 'none'};
-    cursor: pointer;
-    fill: white;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+    fill: ${({ theme, color }) => {
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
     stroke: white;
   }
 
