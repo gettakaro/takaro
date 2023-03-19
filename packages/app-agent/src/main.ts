@@ -32,11 +32,8 @@ async function main() {
   server.expressInstance.use('/queues', BullBoardRouter);
   await server.start();
 
-  const commandWorker = new CommandWorker();
-  commandWorker.concurrency = 1;
-
   await QueuesService.getInstance().registerWorker(new CronJobWorker());
-  await QueuesService.getInstance().registerWorker(commandWorker);
+  await QueuesService.getInstance().registerWorker(new CommandWorker());
   await QueuesService.getInstance().registerWorker(new HookWorker());
 }
 
