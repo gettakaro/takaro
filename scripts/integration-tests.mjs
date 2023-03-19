@@ -1,7 +1,7 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
 import { OAuth2Api, Configuration } from '@ory/client';
 
-async function sleep(ms: number) {
+async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
