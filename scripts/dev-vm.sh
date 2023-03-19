@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euomx pipefail
+set -euom pipefail
 
 FC_ROOTFS="$PWD/firecracker/rootfs.ext4"
 FC_KERNEL="$PWD/firecracker/vmlinux.bin"
@@ -10,7 +10,7 @@ FC_KERNEL="$PWD/firecracker/vmlinux.bin"
 FC_KERNEL_BOOT_ARGS="ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on"
 
 FC_MAC="02:FC:00:00:00:05"
-TAP_DEV="fc-tap0"
+TAP_DEV="fc-1-tap0"
 
 FC_SOCKET="/tmp/takaro/firecracker.socket"
 FC_LOGFILE="$PWD/firecracker/logs.fifo"
@@ -152,10 +152,10 @@ setup_microvm() {
 
 ######################################## MAIN SCRIPT ########################################
 
-# build_vm_agent
+build_vm_agent
 
 create_rootfs
 
-# setup_microvm &
-#
-# start_firecracker
+setup_microvm &
+
+start_firecracker

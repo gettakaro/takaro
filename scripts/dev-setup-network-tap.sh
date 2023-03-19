@@ -5,7 +5,7 @@ set -euox pipefail
 MASK_SHORT="/24"
 TAP_IP="172.16.0.1"
 HOST_DEV="enp0s25"
-TAP_DEV="fc-tap0"
+TAP_DEV="fc-1-tap0"
 
 usage() {
 	echo "Usage: $(basename "$0") [-h <host dev>] [-t <tap dev>]"
