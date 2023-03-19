@@ -74,6 +74,9 @@ services:
       FIRECRACKER_SOCKET: ${FIRECRACKER_SOCKET}
       FIRECRACKER_AGENT_SOCKET: ${FIRECRACKER_AGENT_SOCKET}
 
+      TAKARO_HOST: http://takaro:3000
+      TEST_HTTP_TARGET: http://takaro:3000
+
       REACT_APP_API: http://localhost:13000
 
       CORS_ALLOWED_ORIGINS: http://localhost:13000,http://localhost:13001,http://localhost:13004,https://admin.socket.io
