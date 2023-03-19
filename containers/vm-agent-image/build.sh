@@ -7,7 +7,6 @@ set -e
 # Add required packages
 apk add --no-cache openrc     # init system
 apk add --no-cache util-linux # required for agetty
-apk add --no-cache tree
 # apk add --no-cache nodejs npm
 
 # Set up a login terminal on the serial console (ttyS0):

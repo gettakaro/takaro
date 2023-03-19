@@ -21,6 +21,8 @@ VM_AGENT_SERVICE="$PWD/packages/vm-agent/agent-service"
 VM_AGENT_IMAGE_BUILD_SCRIPT="$PWD/containers/vm-agent-image/build.sh"
 VM_AGENT_SOCKET="/tmp/takaro/agent.socket"
 
+VM_NODE_HELPER="$PWD/firecracker/vm-node-helper"
+
 CURL=(curl --silent --show-error --header "Content-Type: application/json" --unix-socket "${FC_SOCKET}" --write-out "HTTP %{http_code}")
 
 curl_put() {
@@ -41,6 +43,31 @@ curl_put() {
 	fi
 }
 
+build_vm_node_helper() {
+	rm -rf "$VM_NODE_HELPER"
+
+	mkdir -p "$VM_NODE_HELPER/node_modules/@takaro/"
+
+	cp -r -L ./node_modules/@takaro/{config,helpers,apiclient} "$VM_NODE_HELPER/node_modules/@takaro"
+
+	cat >"$VM_NODE_HELPER/package.json" <<EOF
+{
+  "name": "vm-node-helper",
+  "dependencies": {
+    "@takaro/apiclient": "*",
+    "@takaro/config": "*",
+    "@takaro/helpers": "*",
+    "axios": "^1.3.4"
+  }
+}
+EOF
+
+	(
+		cd "$VM_NODE_HELPER" || return
+		npm i
+	)
+}
+
 create_rootfs() {
 	# create an empty rootfs
 	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=500
@@ -53,7 +80,7 @@ create_rootfs() {
 		-v /tmp/takaro/my-rootfs:/my-rootfs \
 		-v "$VM_AGENT_BINARY:/usr/local/bin/agent" \
 		-v "$VM_AGENT_SERVICE:/etc/init.d/agent" \
-		-v "/home/branco/dev/takaro/firecracker/function-helpers-poc:/app" \
+		-v "$VM_NODE_HELPER:/app" \
 		node:18-alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
 
 	sudo umount /tmp/takaro/my-rootfs/
@@ -154,8 +181,10 @@ setup_microvm() {
 
 build_vm_agent
 
+build_vm_node_helper
+
 create_rootfs
 
-setup_microvm &
-
-start_firecracker
+# setup_microvm &
+#
+# start_firecracker
