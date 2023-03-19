@@ -1,12 +1,8 @@
-import { errors } from '@takaro/lib-components';
 import { UserData } from 'context/userContext';
 import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
-import { useNavigate } from 'react-router-dom';
 
-import { Configuration, FrontendApi, LoginFlow } from '@ory/client';
-import axios, { isAxiosError } from 'axios';
-import { PATHS } from 'paths';
+import { Configuration, FrontendApi } from '@ory/client';
 
 let cachedClient: FrontendApi | null = null;
 
@@ -23,7 +19,6 @@ export interface IAuthContext {
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
-  const navigate = useNavigate();
 
   if (!cachedClient) {
     cachedClient = new FrontendApi(

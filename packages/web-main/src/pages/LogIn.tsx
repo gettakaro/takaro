@@ -8,20 +8,18 @@ import {
   styled,
   errors,
   Company,
-  useQueryParams,
 } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FaDiscord as Discord, FaGoogle as Google } from 'react-icons/fa';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import * as yup from 'yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from 'hooks/useAuth';
 import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
 import { Page } from './Page';
-import { useConfig } from 'hooks/useConfig';
 import { LoginFlow } from '@ory/client';
 
 const StyledLink = styled(Link)`
@@ -104,13 +102,9 @@ const LogIn: FC = () => {
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
-  const { logIn, getCurrentFlow, createLoginFlow } = useAuth();
+  const { logIn, createLoginFlow } = useAuth();
   const { setUserData } = useUser();
   const navigate = useNavigate();
-  const query = useQueryParams();
-  const config = useConfig();
-
-  const flowId = query.get('flow');
 
   const validationSchema = useMemo(
     () =>
@@ -137,6 +131,7 @@ const LogIn: FC = () => {
         setCsrfToken(csrfAttr.value);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginFlow]);
 
   const { control, handleSubmit, formState, reset } = useForm<IFormInputs>({
