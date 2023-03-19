@@ -13,7 +13,7 @@
   "test": {
     "group": "VariableController",
     "snapshot": true,
-    "name": "Prevents creating more than config.get('takaro.maxVariables') (1000) variables",
+    "name": "Prevents creating more than config.get('takaro.maxVariables') (100) variables",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true
