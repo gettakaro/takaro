@@ -1,4 +1,9 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'], env: { ...process.env } };
 
 async function main() {
@@ -11,6 +16,7 @@ async function main() {
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
+    await sleep(5000);
     const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --format json', composeOpts);
     const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
