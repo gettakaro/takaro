@@ -1,11 +1,17 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
 import { OAuth2Api, Configuration } from '@ory/client';
 
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'], env: { ...process.env } };
 
 async function main() {
   // First, start the datastores
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
+
+  await sleep(5000);
 
   // Then, start supporting services
   await upMany(['kratos', 'hydra'], composeOpts);
@@ -13,6 +19,7 @@ async function main() {
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
+    await sleep(5000);
     const hydraAdmin = new OAuth2Api(
       new Configuration({
         basePath: 'http://localhost:4445',
