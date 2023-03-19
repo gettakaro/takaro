@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
+import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import {
@@ -36,7 +36,7 @@ export class UserModel extends TakaroModel {
 }
 
 export interface IUserFindOneOutput extends UserModel {
-  roles: Array<RoleModel & { capabilities: CapabilityModel[] }>;
+  roles: Array<RoleModel & { permissions: PermissionModel[] }>;
 }
 
 export class UserRepo extends ITakaroRepo<
@@ -62,7 +62,7 @@ export class UserRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const result = await new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
-      extend: ['roles.capabilities'],
+      extend: ['roles.permissions'],
     }).build(query);
 
     return {
@@ -77,7 +77,7 @@ export class UserRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('roles.capabilities');
+    const data = await query.findById(id).withGraphJoined('roles.permissions');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);

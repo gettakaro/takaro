@@ -1,0 +1,53 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-19T12:20:14.069Z",
+      "page": 0,
+      "limit": 100,
+      "total": 2
+    },
+    "data": [
+      {
+        "id": "4344a06f-4b66-4ac4-88c5-5e36a4813dea",
+        "createdAt": "2023-03-19T12:20:13.950Z",
+        "updatedAt": "2023-03-19T12:20:13.951Z",
+        "name": "Test role",
+        "permissions": [
+          {
+            "id": "41515403-666e-4c30-bab7-eaada9b67f71",
+            "createdAt": "2023-03-19T12:20:13.952Z",
+            "updatedAt": "2023-03-19T12:20:13.952Z",
+            "permission": "READ_ROLES",
+            "roleId": "4344a06f-4b66-4ac4-88c5-5e36a4813dea"
+          }
+        ]
+      },
+      {
+        "id": "52350537-03d5-46a4-a777-60a2f35dbed4",
+        "createdAt": "2023-03-19T12:20:13.843Z",
+        "updatedAt": "2023-03-19T12:20:13.843Z",
+        "name": "root",
+        "permissions": [
+          {
+            "id": "02bd756e-e7ac-420b-88fd-8fb04338e59c",
+            "createdAt": "2023-03-19T12:20:13.845Z",
+            "updatedAt": "2023-03-19T12:20:13.845Z",
+            "permission": "ROOT",
+            "roleId": "52350537-03d5-46a4-a777-60a2f35dbed4"
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "snapshot": true,
+    "group": "Auth",
+    "name": "Can access resource with permissions",
+    "filteredFields": [
+      "roleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

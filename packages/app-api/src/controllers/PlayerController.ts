@@ -16,7 +16,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
@@ -64,7 +64,7 @@ class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters>
 })
 @JsonController()
 export class PlayerController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(PlayerOutputArrayDTOAPI)
   @Post('/player/search')
   async search(
@@ -85,7 +85,7 @@ export class PlayerController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(PlayerOutputDTOAPI)
   @Get('/player/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

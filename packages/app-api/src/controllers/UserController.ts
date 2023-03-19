@@ -34,7 +34,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Request, Response } from 'express';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -111,7 +111,7 @@ export class UserController {
     return apiResponse(user);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
   @ResponseSchema(UserOutputArrayDTOAPI)
   @Post('/user/search')
   async search(
@@ -132,7 +132,7 @@ export class UserController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Get('/user/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -140,7 +140,7 @@ export class UserController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
   async create(
@@ -151,7 +151,7 @@ export class UserController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
   async update(
@@ -163,7 +163,7 @@ export class UserController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -174,8 +174,8 @@ export class UserController {
 
   @UseBefore(
     AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_USERS,
-      CAPABILITIES.MANAGE_ROLES,
+      PERMISSIONS.MANAGE_USERS,
+      PERMISSIONS.MANAGE_ROLES,
     ])
   )
   @Post('/user/:id/role/:roleId')
@@ -190,8 +190,8 @@ export class UserController {
 
   @UseBefore(
     AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_USERS,
-      CAPABILITIES.MANAGE_ROLES,
+      PERMISSIONS.MANAGE_USERS,
+      PERMISSIONS.MANAGE_ROLES,
     ])
   )
   @Delete('/user/:id/role/:roleId')

@@ -10,7 +10,6 @@ import {
 } from './UserService.js';
 import { randomBytes } from 'crypto';
 import {
-  CAPABILITIES,
   RoleCreateInputDTO,
   RoleOutputDTO,
   RoleService,
@@ -26,7 +25,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CronJobService } from './CronJobService.js';
 import { ModuleService } from './ModuleService.js';
-import { ory } from '@takaro/auth';
+import { ory, PERMISSIONS } from '@takaro/auth';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -135,9 +134,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await settingsService.init();
 
-    const rootRole = await roleService.createWithCapabilities(
+    const rootRole = await roleService.createWithPermissions(
       await new RoleCreateInputDTO().construct({ name: 'root' }),
-      [CAPABILITIES.ROOT]
+      [PERMISSIONS.ROOT]
     );
 
     const password = randomBytes(20).toString('hex');

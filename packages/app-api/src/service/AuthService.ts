@@ -6,8 +6,7 @@ import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
-import { CAPABILITIES } from './RoleService.js';
-import { ory } from '@takaro/auth';
+import { ory, PERMISSIONS } from '@takaro/auth';
 
 interface IJWTPayload {
   sub: string;
@@ -60,7 +59,7 @@ export class AuthService extends DomainScoped {
   /**
    * This is a token to be used by app-agent to execute functions
    * For now, just the root token but in the future, we can have
-   * narrower scoped tokens (eg configurable capabilities?)
+   * narrower scoped tokens (eg configurable permissions?)
    * // TODO: ^ ^
    */
   async getAgentToken(): Promise<TokenOutputDTO> {
@@ -151,7 +150,7 @@ export class AuthService extends DomainScoped {
     }
   }
 
-  static getAuthMiddleware(capabilities: CAPABILITIES[]) {
+  static getAuthMiddleware(permissions: PERMISSIONS[]) {
     return async (
       req: AuthenticatedRequest,
       res: Response,
@@ -166,20 +165,20 @@ export class AuthService extends DomainScoped {
 
         ctx.addData({ user: user.id, domain: user.domain });
 
-        const allUserCapabilities = user.roles.reduce((acc, role) => {
-          return [...acc, ...role.capabilities.map((c) => c.capability)];
-        }, [] as CAPABILITIES[]);
+        const allUserPermissions = user.roles.reduce((acc, role) => {
+          return [...acc, ...role.permissions.map((c) => c.permission)];
+        }, [] as PERMISSIONS[]);
 
-        const hasAllCapabilities = capabilities.every((capability) =>
-          allUserCapabilities.includes(capability)
+        const hasAllPermissions = permissions.every((permission) =>
+          allUserPermissions.includes(permission)
         );
 
-        const userHasRootCapability = allUserCapabilities.includes(
-          CAPABILITIES.ROOT
+        const userHasRootPermission = allUserPermissions.includes(
+          PERMISSIONS.ROOT
         );
 
-        if (!hasAllCapabilities && !userHasRootCapability) {
-          log.warn(`User ${user.id} does not have all capabilities`);
+        if (!hasAllPermissions && !userHasRootPermission) {
+          log.warn(`User ${user.id} does not have all permissions`);
           return next(new errors.ForbiddenError());
         }
 

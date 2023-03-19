@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
@@ -59,7 +59,7 @@ class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilter
 })
 @JsonController()
 export class CronJobController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_CRONJOBS]))
   @ResponseSchema(CronJobOutputArrayDTOAPI)
   @Post('/cronjob/search')
   async search(
@@ -80,7 +80,7 @@ export class CronJobController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_CRONJOBS]))
   @ResponseSchema(CronJobOutputDTOAPI)
   @Get('/cronjob/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -88,7 +88,7 @@ export class CronJobController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
   @ResponseSchema(CronJobOutputDTOAPI)
   @Post('/cronjob')
   async create(
@@ -99,7 +99,7 @@ export class CronJobController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
   @ResponseSchema(CronJobOutputDTOAPI)
   @Put('/cronjob/:id')
   async update(
@@ -111,7 +111,7 @@ export class CronJobController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
   @ResponseSchema(APIOutput)
   @Delete('/cronjob/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

@@ -93,67 +93,6 @@ export type BaseEventTypeEnum =
 /**
  *
  * @export
- * @interface CapabilityOutputDTO
- */
-export interface CapabilityOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof CapabilityOutputDTO
-   */
-  capability: CapabilityOutputDTOCapabilityEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof CapabilityOutputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof CapabilityOutputDTO
-   */
-  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof CapabilityOutputDTO
-   */
-  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-}
-
-export const CapabilityOutputDTOCapabilityEnum = {
-  Root: 'ROOT',
-  ManageUsers: 'MANAGE_USERS',
-  ReadUsers: 'READ_USERS',
-  ManageRoles: 'MANAGE_ROLES',
-  ReadRoles: 'READ_ROLES',
-  ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
-  ReadFunctions: 'READ_FUNCTIONS',
-  ManageFunctions: 'MANAGE_FUNCTIONS',
-  ReadCronjobs: 'READ_CRONJOBS',
-  ManageCronjobs: 'MANAGE_CRONJOBS',
-  ReadHooks: 'READ_HOOKS',
-  ManageHooks: 'MANAGE_HOOKS',
-  ReadCommands: 'READ_COMMANDS',
-  ManageCommands: 'MANAGE_COMMANDS',
-  ReadModules: 'READ_MODULES',
-  ManageModules: 'MANAGE_MODULES',
-  ReadPlayers: 'READ_PLAYERS',
-  ManagePlayers: 'MANAGE_PLAYERS',
-  ManageSettings: 'MANAGE_SETTINGS',
-  ReadSettings: 'READ_SETTINGS',
-  ReadVariables: 'READ_VARIABLES',
-  ManageVariables: 'MANAGE_VARIABLES',
-} as const;
-
-export type CapabilityOutputDTOCapabilityEnum =
-  typeof CapabilityOutputDTOCapabilityEnum[keyof typeof CapabilityOutputDTOCapabilityEnum];
-
-/**
- *
- * @export
  * @interface CommandCreateDTO
  */
 export interface CommandCreateDTO {
@@ -2411,6 +2350,67 @@ export type ParamKeyKeyEnum =
 /**
  *
  * @export
+ * @interface PermissionOutputDTO
+ */
+export interface PermissionOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  permission: PermissionOutputDTOPermissionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+
+export const PermissionOutputDTOPermissionEnum = {
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
+} as const;
+
+export type PermissionOutputDTOPermissionEnum =
+  typeof PermissionOutputDTOPermissionEnum[keyof typeof PermissionOutputDTOPermissionEnum];
+
+/**
+ *
+ * @export
  * @interface PlayerCreateDTO
  */
 export interface PlayerCreateDTO {
@@ -2645,10 +2645,10 @@ export interface RoleCreateInputDTO {
    * @type {Array<string>}
    * @memberof RoleCreateInputDTO
    */
-  capabilities: Array<RoleCreateInputDTOCapabilitiesEnum>;
+  permissions: Array<RoleCreateInputDTOPermissionsEnum>;
 }
 
-export const RoleCreateInputDTOCapabilitiesEnum = {
+export const RoleCreateInputDTOPermissionsEnum = {
   Root: 'ROOT',
   ManageUsers: 'MANAGE_USERS',
   ReadUsers: 'READ_USERS',
@@ -2674,8 +2674,8 @@ export const RoleCreateInputDTOCapabilitiesEnum = {
   ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
-export type RoleCreateInputDTOCapabilitiesEnum =
-  typeof RoleCreateInputDTOCapabilitiesEnum[keyof typeof RoleCreateInputDTOCapabilitiesEnum];
+export type RoleCreateInputDTOPermissionsEnum =
+  typeof RoleCreateInputDTOPermissionsEnum[keyof typeof RoleCreateInputDTOPermissionsEnum];
 
 /**
  *
@@ -2713,7 +2713,7 @@ export interface RoleOutputDTO {
    * @type {Array<any>}
    * @memberof RoleOutputDTO
    */
-  capabilities: Array<any>;
+  permissions: Array<any>;
   /**
    *
    * @type {string}
@@ -2834,10 +2834,10 @@ export interface RoleUpdateInputDTO {
    * @type {Array<string>}
    * @memberof RoleUpdateInputDTO
    */
-  capabilities: Array<RoleUpdateInputDTOCapabilitiesEnum>;
+  permissions: Array<RoleUpdateInputDTOPermissionsEnum>;
 }
 
-export const RoleUpdateInputDTOCapabilitiesEnum = {
+export const RoleUpdateInputDTOPermissionsEnum = {
   Root: 'ROOT',
   ManageUsers: 'MANAGE_USERS',
   ReadUsers: 'READ_USERS',
@@ -2863,8 +2863,8 @@ export const RoleUpdateInputDTOCapabilitiesEnum = {
   ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
-export type RoleUpdateInputDTOCapabilitiesEnum =
-  typeof RoleUpdateInputDTOCapabilitiesEnum[keyof typeof RoleUpdateInputDTOCapabilitiesEnum];
+export type RoleUpdateInputDTOPermissionsEnum =
+  typeof RoleUpdateInputDTOPermissionsEnum[keyof typeof RoleUpdateInputDTOPermissionsEnum];
 
 /**
  *
@@ -3078,6 +3078,49 @@ export interface TakaroModelDTO {
    * @memberof TakaroModelDTO
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroTokenDTO
+ */
+export interface TakaroTokenDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TakaroTokenDTO
+   */
+  active: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  clientId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroTokenDTO
+   */
+  exp: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroTokenDTO
+   */
+  iat: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  iss: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  sub: string;
 }
 /**
  *

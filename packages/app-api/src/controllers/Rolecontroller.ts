@@ -6,7 +6,6 @@ import {
   RoleService,
   RoleUpdateInputDTO,
   RoleOutputDTO,
-  CAPABILITIES,
 } from '../service/RoleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
@@ -26,7 +25,7 @@ import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
-
+import { PERMISSIONS } from '@takaro/auth';
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
   @ValidateNested()
@@ -56,7 +55,7 @@ export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
 })
 @JsonController()
 export class RoleController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES]))
   @Post('/role/search')
   @ResponseSchema(RoleOutputArrayDTOAPI)
   async search(
@@ -77,7 +76,7 @@ export class RoleController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES]))
   @Get('/role/:id')
   @ResponseSchema(RoleOutputDTOAPI)
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -85,7 +84,7 @@ export class RoleController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
   @Post('/role')
   @ResponseSchema(RoleOutputDTOAPI)
   async create(
@@ -94,11 +93,11 @@ export class RoleController {
   ) {
     const service = new RoleService(req.domainId);
     return apiResponse(
-      await service.createWithCapabilities(data, data.capabilities)
+      await service.createWithPermissions(data, data.permissions)
     );
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
   @ResponseSchema(RoleOutputDTOAPI)
   @Put('/role/:id')
   async update(
@@ -107,11 +106,11 @@ export class RoleController {
     @Body() data: RoleUpdateInputDTO
   ) {
     const service = new RoleService(req.domainId);
-    await service.setCapabilities(params.id, data.capabilities);
+    await service.setPermissions(params.id, data.permissions);
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
   @ResponseSchema(APIOutput)
   @Delete('/role/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

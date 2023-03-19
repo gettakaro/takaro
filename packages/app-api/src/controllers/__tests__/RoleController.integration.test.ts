@@ -1,6 +1,6 @@
 import { IntegrationTest } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
-import { CAPABILITIES } from '../../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 const group = 'RoleController';
 
@@ -13,7 +13,7 @@ const tests = [
       return (
         await this.client.role.roleControllerCreate({
           name: 'Test role',
-          capabilities: [CAPABILITIES.MANAGE_ROLES],
+          permissions: [PERMISSIONS.MANAGE_ROLES],
         })
       ).data.data;
     },
@@ -39,14 +39,14 @@ const tests = [
       return (
         await this.client.role.roleControllerCreate({
           name: 'Test role',
-          capabilities: [CAPABILITIES.MANAGE_ROLES],
+          permissions: [PERMISSIONS.MANAGE_ROLES],
         })
       ).data.data;
     },
     test: async function () {
       return this.client.role.roleControllerUpdate(this.setupData.id, {
         name: 'New name',
-        capabilities: [CAPABILITIES.MANAGE_ROLES, CAPABILITIES.MANAGE_USERS],
+        permissions: [PERMISSIONS.MANAGE_ROLES, PERMISSIONS.MANAGE_USERS],
       });
     },
     filteredFields: ['roleId'],
@@ -58,7 +58,7 @@ const tests = [
     test: async function () {
       return this.client.role.roleControllerUpdate('invalid-id', {
         name: 'New name',
-        capabilities: [CAPABILITIES.MANAGE_ROLES, CAPABILITIES.MANAGE_USERS],
+        permissions: [PERMISSIONS.MANAGE_ROLES, PERMISSIONS.MANAGE_USERS],
       });
     },
     expectedStatus: 400,
@@ -72,7 +72,7 @@ const tests = [
       return (
         await this.client.role.roleControllerCreate({
           name: 'Test role',
-          capabilities: [CAPABILITIES.MANAGE_ROLES],
+          permissions: [PERMISSIONS.MANAGE_ROLES],
         })
       ).data.data;
     },
@@ -99,7 +99,7 @@ const tests = [
       return (
         await this.client.role.roleControllerCreate({
           name: 'Test role',
-          capabilities: [CAPABILITIES.MANAGE_ROLES],
+          permissions: [PERMISSIONS.MANAGE_ROLES],
         })
       ).data.data;
     },
