@@ -31,6 +31,7 @@ module.exports = {
         https: require.resolve('https-browserify'),
         zlib: require.resolve('browserify-zlib'),
         path: require.resolve('path-browserify'),
+        Buffer: require.resolve('buffer'),
         cluster: false,
         os: false,
         fs: false,

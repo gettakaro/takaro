@@ -1,7 +1,6 @@
 import { DomainApi } from '../generated/index.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
-import { Client as OpenIdClient, Issuer, TokenSet } from 'openid-client';
-import { errors } from '@takaro/util';
+import type { Client as OpenIdClient, Issuer, TokenSet } from 'openid-client';
 import { AxiosInstance } from 'axios';
 
 export interface IAdminApiClientConfig extends IBaseApiClientConfig {
@@ -23,6 +22,7 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
   }
 
   private async getIssuer() {
+    const { Issuer } = await import('openid-client');
     if (!this.cachedIssuer) {
       this.cachedIssuer = await Issuer.discover(this.config.OAuth2URL);
       this.log.debug(`Discovered issuer at ${this.config.OAuth2URL}`);
@@ -46,7 +46,7 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
 
     if (!grantRes.access_token) {
       this.log.error('Failed to get access token');
-      throw new errors.InternalServerError();
+      throw new Error('Failed to get access token');
     }
 
     return grantRes;
