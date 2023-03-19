@@ -27,6 +27,11 @@ async function main() {
 
   await upOne('takaro', composeOpts);
 
+  // Wait for a bit for everything to settle
+  // When the dev container starts, it boots up pretty much everything
+  // which is really heavy on CPU
+  await sleep(30000);
+
   let failed = false;
 
   try {
