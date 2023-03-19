@@ -1,17 +1,9 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
-import { OAuth2Api, Configuration } from '@ory/client';
-
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'], env: { ...process.env } };
 
 async function main() {
   // First, start the datastores
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
-
-  await sleep(5000);
 
   // Then, start supporting services
   await upMany(['kratos', 'hydra'], composeOpts);
@@ -19,21 +11,12 @@ async function main() {
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
-    await sleep(5000);
-    const hydraAdmin = new OAuth2Api(
-      new Configuration({
-        basePath: 'http://localhost:4445',
-      }));
+    const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --format json', composeOpts);
+    const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
-    const { data: { client_id, client_secret } } = await hydraAdmin.createOAuth2Client({
-      oAuth2Client: {
-        grant_types: ['client_credentials'],
-      }
-    });
-
-    console.log('Created OAuth admin client', { client_id });
-    composeOpts.env.ADMIN_CLIENT_ID = client_id;
-    composeOpts.env.ADMIN_CLIENT_SECRET = client_secret;
+    console.log('Created OAuth admin client', { clientId: parsedClientOutput.clientId });
+    composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
+    composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
 
   await upOne('takaro', composeOpts);
