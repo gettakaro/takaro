@@ -1,10 +1,12 @@
 import { FC, ReactElement, cloneElement } from 'react';
 import { Company } from '../../components';
 import { useTheme } from '../../hooks';
-import { lighten } from 'polished';
 import { styled } from '../../styled';
 import { Link } from 'react-router-dom';
-import { AiOutlineRight, AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
+import {
+  AiOutlineRight,
+  AiOutlineArrowRight as ArrowRightIcon,
+} from 'react-icons/ai';
 
 const Container = styled.div`
   width: 700px;
@@ -90,20 +92,20 @@ const IconContainer = styled.div`
   justify-content: center;
   padding: 1rem;
   border-radius: 15%;
-  background-color: ${({ theme }) => lighten(0.35, theme.colors.primary)};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   margin-right: 2rem;
 `;
 
 export interface Error404Props {
-  pages?: Page[],
-  homeRoute: string,
+  pages?: Page[];
+  homeRoute: string;
 }
 
 interface Page {
-  icon: ReactElement,
-  title: string,
-  description: string,
-  to: string,
+  icon: ReactElement;
+  title: string;
+  description: string;
+  to: string;
 }
 
 export const Error404: FC<Error404Props> = ({ pages, homeRoute }) => {
@@ -115,28 +117,33 @@ export const Error404: FC<Error404Props> = ({ pages, homeRoute }) => {
       <p className="error">404</p>
       <h3>This page does not exist.</h3>
       <p>The page you are looking for could not be found.</p>
-      {pages && pages.length && <>
-        <h4>Popular pages</h4>
-        <ul>
-          {
-            pages.map(({ icon, title, description, to }) => (
+      {pages && pages.length && (
+        <>
+          <h4>Popular pages</h4>
+          <ul>
+            {pages.map(({ icon, title, description, to }) => (
               <li>
                 <Link to={to}>
                   <ChevronRightIcon />
-                  <IconContainer>{cloneElement(icon, { size: 24, fill: theme.colors.primary })}</IconContainer>
+                  <IconContainer>
+                    {cloneElement(icon, {
+                      size: 24,
+                      fill: theme.colors.primary,
+                    })}
+                  </IconContainer>
                   <div>
                     <h5>{title}</h5>
                     <p>{description}</p>
                   </div>
                 </Link>
               </li>
-            ))
-          }
-        </ul>
-      </>
-      }
-      <HomeLink to={homeRoute}>Or go back home <ArrowRightIcon /> </HomeLink>
+            ))}
+          </ul>
+        </>
+      )}
+      <HomeLink to={homeRoute}>
+        Or go back home <ArrowRightIcon />{' '}
+      </HomeLink>
     </Container>
   );
 };
-

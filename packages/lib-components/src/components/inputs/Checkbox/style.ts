@@ -6,7 +6,6 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 `;
 
 export const Input = styled.input`
@@ -31,8 +30,8 @@ export const CheckboxContainer = styled.div<{
 }>`
   display: flex;
   position: relative;
-  width: 2.3rem;
-  height: 2.3rem;
+  min-width: 2.3rem;
+  min-height: 2.3rem;
   align-items: center;
   justify-content: center;
   border: 0.1rem solid

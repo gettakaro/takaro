@@ -3,7 +3,7 @@ import { lighten } from 'polished';
 
 export const Wrapper = styled.div`
   position: relative;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) =>
     `${theme.spacing['2_5']} ${theme.spacing[6]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
   box-shadow: ${({ theme }) => theme.elevation[4]};

@@ -1,32 +1,32 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2023-02-25T14:30:23.616Z"
+      "serverTime": "2023-03-19T13:10:09.290Z"
     },
     "data": [
       {
-        "createdAt": "2023-02-25T14:30:23.528Z",
-        "updatedAt": "2023-02-25T14:30:23.529Z",
-        "id": "12b2bebc-7861-4d2d-b09d-d232d72e46d0",
+        "id": "0ee9dbde-79bb-4977-9db2-0f92bc897c21",
+        "createdAt": "2023-03-19T13:10:09.205Z",
+        "updatedAt": "2023-03-19T13:10:09.206Z",
         "name": "ping",
         "builtin": "ping",
         "cronJobs": [],
         "hooks": [],
         "commands": [
           {
-            "createdAt": "2023-02-25T14:30:23.538Z",
-            "updatedAt": "2023-02-25T14:30:23.540Z",
-            "id": "dae5f184-7197-4de6-bf6a-ab67cb75ca2f",
+            "id": "67803cb5-319a-41ac-a038-e0fccc5a5dd6",
+            "createdAt": "2023-03-19T13:10:09.215Z",
+            "updatedAt": "2023-03-19T13:10:09.217Z",
             "name": "ping",
-            "moduleId": "12b2bebc-7861-4d2d-b09d-d232d72e46d0",
-            "functionId": "62841ed7-aa9a-4090-9f01-d6b3df1bd24c",
             "trigger": "ping",
             "helpText": "Replies with pong, useful for testing if the connection works",
+            "functionId": "2736b69a-0f31-428d-8bd9-f344798c32be",
+            "moduleId": "0ee9dbde-79bb-4977-9db2-0f92bc897c21",
             "function": {
-              "createdAt": "2023-02-25T14:30:23.536Z",
-              "updatedAt": "2023-02-25T14:30:23.537Z",
-              "id": "62841ed7-aa9a-4090-9f01-d6b3df1bd24c",
-              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
+              "id": "2736b69a-0f31-428d-8bd9-f344798c32be",
+              "createdAt": "2023-03-19T13:10:09.213Z",
+              "updatedAt": "2023-03-19T13:10:09.213Z",
+              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
             }
           }
         ]

@@ -2,10 +2,8 @@
 
 set -euox pipefail
 
-MASK_SHORT="/24"
-TAP_IP="172.16.0.1"
-HOST_DEV="enp0s25"
-TAP_DEV="fc-tap0"
+source "$PWD/.env.example"
+source "$PWD/.env"
 
 usage() {
 	echo "Usage: $(basename "$0") [-h <host dev>] [-t <tap dev>]"

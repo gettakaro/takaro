@@ -50,6 +50,7 @@ const myFormat = printf((info) => {
 });
 
 const simpleFormat = combine(
+  addCtx(),
   errors({ stack: true }),
   timestamp({
     format: 'isoDateTime',

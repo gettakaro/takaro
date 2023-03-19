@@ -6,6 +6,7 @@ import { QueuesService } from '@takaro/queues';
 import { CronJobWorker } from './service/workers/cronjobWorker.js';
 import { CommandWorker } from './service/workers/commandWorker.js';
 import { HookWorker } from './service/workers/hookWorker.js';
+import { VMM } from './service/vmm/index.js';
 
 const log = logger('agent');
 
@@ -17,8 +18,20 @@ export const server = new HTTP(
   }
 );
 
+let vmm: VMM | null = null;
+
+export async function getVMM() {
+  if (!vmm) {
+    vmm = new VMM();
+  }
+
+  return vmm;
+}
+
 async function main() {
   log.info('Starting...');
+  await getVMM();
+
   config.validate();
   log.info('✅ Config validated');
 

@@ -13,7 +13,7 @@ export const InputContainer = styled.div`
   flex-direction: row;
 
   &.placeholder {
-    height: 44px;
+    height: 4.4rem;
   }
 
   .icon {
@@ -49,8 +49,8 @@ export const PrefixContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
 `;
 
 export const SuffixContainer = styled.div`
@@ -59,8 +59,8 @@ export const SuffixContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
 `;
 
 export const Input = styled.input<{
@@ -72,12 +72,13 @@ export const Input = styled.input<{
   width: 100%;
   padding-left: ${({ hasIcon, theme }): string =>
     hasIcon ? theme.spacing[7] : theme.spacing['1_5']};
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   font-size: 1.5rem;
   border: 2px solid
     ${({ theme, hasError }): string =>
       hasError ? theme.colors.error : theme.colors.background};
-  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
+
   ::selection {
     background-color: ${({ theme }) => theme.colors.primary};
     color: white;
@@ -95,8 +96,7 @@ export const Input = styled.input<{
   }
   ::placeholder {
     text-transform: capitalize;
-    font-weight: 600;
-    color: ${({ theme }): string => theme.colors.gray};
+    color: ${({ theme }): string => theme.colors.textAlt};
   }
   &[readOnly]::placeholder {
     border-color: ${({ theme }) => theme.colors.background};

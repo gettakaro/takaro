@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../src/styled/theme';
+import { darkTheme } from '../src/styled';
 import { GlobalStyle } from '../src/styled/GlobalStyle';
 import { MemoryRouter } from 'react-router-dom';
 import { SnackbarProvider } from '../src/helpers/getSnackbarProvider';
@@ -11,7 +11,7 @@ import { Preview } from '@storybook/react';
 export default {
   decorators: [
     (Story) => (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={darkTheme}>
         <MemoryRouter initialEntries={['/']}>
           <SnackbarProvider>
             <StepperProvider>

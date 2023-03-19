@@ -9,3 +9,8 @@ export type { IconButtonProps } from './IconButton';
 
 export { SupportButton } from './SupportButton';
 export type { SupportButtonProps } from './SupportButton';
+
+export { DropdownButton } from './DropdownButton';
+export type { DropdownButtonProps } from './DropdownButton';
+
+export { Dropdown } from './Dropdown';

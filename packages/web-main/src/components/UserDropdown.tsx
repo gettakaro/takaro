@@ -5,18 +5,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   AiOutlineLogout as LogOut,
   AiOutlineUser as User,
-  AiOutlineSetting as Settings
+  AiOutlineSetting as Settings,
 } from 'react-icons/ai';
 
 import { useSnackbar } from 'notistack';
 import { useAuth } from 'hooks/useAuth';
 import { PATHS } from 'paths';
 
-
 const Container = styled(motion.div)`
   width: 250px;
   min-height: 200px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   position: absolute;
   right: -100px;
   top: 125px;
@@ -106,7 +105,10 @@ export const UserDropDown: FC = () => {
   }
 
   return (
-    <Container animate={{ right: '10px' }} transition={{ type: 'spring', bounce: 0.6 }}>
+    <Container
+      animate={{ right: '10px' }}
+      transition={{ type: 'spring', bounce: 0.6 }}
+    >
       <HeaderIcon>
         <Settings fill="white" size={24} />
       </HeaderIcon>

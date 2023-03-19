@@ -1,8 +1,9 @@
-import { config, EXECUTION_MODE } from '../../config.js';
-import { logger, errors } from '@takaro/util';
+import { config } from '../../config.js';
+import { logger } from '@takaro/util';
 import { AdminClient } from '@takaro/apiclient';
+import { getVMM } from '../../main.js';
+
 const log = logger('worker:function');
-import { createContext, runInContext } from 'node:vm';
 
 const takaro = new AdminClient({
   url: config.get('takaro.url'),
@@ -26,37 +27,13 @@ export async function executeFunction(
   data: Record<string, unknown>,
   domainId: string
 ) {
-  const token = await getJobToken(domainId);
+  try {
+    const vmm = await getVMM();
+    const token = await getJobToken(domainId);
+    return await vmm.executeFunction(fn, data, token);
+  } catch (err) {
+    log.error('executeFunction', err);
 
-  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
-    return executeLocal(fn, data, token);
+    return null;
   }
-
-  throw new errors.NotImplementedError();
-
-  /*   const containerd = new ContainerdService();
-    await containerd.pullImage('hello-world');
-    const images = await containerd.listImages();
-    log.info(images);
-  
-    const output = await containerd.runContainer({ image: 'hello-world' });
-    log.info(output); */
-}
-
-/**
- * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, this is not production ready !!!!!!!!!!!!!!!!!
- *
- */
-async function executeLocal(
-  fn: string,
-  data: Record<string, unknown>,
-  token: string
-) {
-  const ctx = createContext({
-    exports: {},
-    process: { env: { DATA: data, TOKEN: token } },
-  });
-  const output = await runInContext(fn, ctx);
-  log.info('Executed a local function', { output });
-  return { ctx, output };
 }
