@@ -1,18 +1,38 @@
 version: '3.1'
 services:
   postgresql:
-    image: postgres:14
-    ports:
-      - "5432:5432"   
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}        
+    extends:
+      file: docker-compose.yml
+      service: postgresql   
 
   redis:
-    image: redis
-    ports:
-      - 6379:6379    
+    extends:
+      file: docker-compose.yml
+      service: redis      
+  kratos:
+    extends:
+      file: docker-compose.yml
+      service: kratos
+  kratos-migrate:
+    extends:
+      file: docker-compose.yml
+      service: kratos-migrate      
+  postgresql_kratos:
+    extends:
+      file: docker-compose.yml
+      service: postgresql_kratos      
+  hydra:
+    extends:
+      file: docker-compose.yml
+      service: hydra
+  hydra-migrate:
+    extends:
+      file: docker-compose.yml
+      service: hydra-migrate   
+  postgresql_hydra:
+    extends:
+      file: docker-compose.yml
+      service: postgresql_hydra             
   takaro:
     build:
       context: .
