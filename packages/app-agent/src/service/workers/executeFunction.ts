@@ -1,33 +1,30 @@
-import { config, EXECUTION_MODE } from '../../config.js';
-import { logger, errors } from '@takaro/util';
-const log = logger('worker:function');
+import { logger } from '@takaro/util';
 import { createContext, runInContext } from 'node:vm';
+import { getVMM } from '../../main.js';
+
+const log = logger('worker:function');
 
 export async function executeFunction(
   fn: string,
   data: Record<string, unknown>,
   token: string
 ) {
-  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
-    return executeLocal(fn, data, token);
+  try {
+    const vmm = await getVMM();
+
+    return await vmm.executeFunction(fn, data, token);
+  } catch (err) {
+    log.error('executeFunction', err);
+
+    return null;
   }
-
-  throw new errors.NotImplementedError();
-
-  /*   const containerd = new ContainerdService();
-    await containerd.pullImage('hello-world');
-    const images = await containerd.listImages();
-    log.info(images);
-  
-    const output = await containerd.runContainer({ image: 'hello-world' });
-    log.info(output); */
 }
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, this is not production ready !!!!!!!!!!!!!!!!!
  *
  */
-async function executeLocal(
+async function _executeLocal(
   fn: string,
   data: Record<string, unknown>,
   token: string

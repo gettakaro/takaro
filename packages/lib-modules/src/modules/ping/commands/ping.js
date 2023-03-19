@@ -4,7 +4,7 @@ async function ping() {
   const takaro = await getTakaro();
   const data = await getData();
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
     message: 'Pong!',
     opts: {
       recipient: data.player,

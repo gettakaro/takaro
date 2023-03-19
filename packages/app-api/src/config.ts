@@ -94,7 +94,7 @@ const configSchema = {
     maxVariables: {
       doc: 'The maximum number of variables that can be stored per domain',
       format: Number,
-      default: 1000,
+      default: 100,
       env: 'MAX_VARIABLES',
     },
   },

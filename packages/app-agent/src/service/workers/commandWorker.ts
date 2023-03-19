@@ -14,6 +14,7 @@ async function processCommand(job: Job<IJobData>) {
   ctx.addData({
     domain: job.data.domainId,
     gameServer: job.data.gameServerId,
+    jobId: job.id,
   });
 
   await executeFunction(

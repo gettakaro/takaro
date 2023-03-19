@@ -2,31 +2,15 @@
 
 set -euom pipefail
 
-FC_ROOTFS="$PWD/firecracker/rootfs.ext4"
-FC_KERNEL="$PWD/firecracker/vmlinux.bin"
+source "$PWD/.env.example"
+source "$PWD/.env"
 
-# FC_KERNEL_BOOT_ARGS="init=/sbin/boottime_init panic=1 pci=off nomodules reboot=k tsc=reliable quiet i8042.nokbd i8042.noaux 8250.nr_uarts=0 ipv6.disable=1"
-#
-FC_KERNEL_BOOT_ARGS="ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on"
-
-FC_MAC="02:FC:00:00:00:05"
-TAP_DEV="fc-tap0"
-
-FC_SOCKET="/tmp/takaro/firecracker.socket"
-FC_LOGFILE="$PWD/firecracker/logs.fifo"
-FC_METRICS="$PWD/firecracker/metrics.fifo"
-
-VM_AGENT_BINARY="$PWD/packages/vm-agent/target/x86_64-unknown-linux-musl/debug/vm-agent"
-VM_AGENT_SERVICE="$PWD/packages/vm-agent/agent-service"
-VM_AGENT_IMAGE_BUILD_SCRIPT="$PWD/containers/vm-agent-image/build.sh"
-VM_AGENT_SOCKET="/tmp/takaro/agent.socket"
-
-CURL=(curl --silent --show-error --header "Content-Type: application/json" --unix-socket "${FC_SOCKET}" --write-out "HTTP %{http_code}")
+CURL=(curl --show-error --header "Content-Type: application/json" --unix-socket "${FC_SOCKET}" --write-out "HTTP %{http_code}")
 
 curl_put() {
 	local URL_PATH="$1"
 	local OUTPUT RC
-	OUTPUT="$("${CURL[@]}" -X PUT --data @- "http://localhost/${URL_PATH#/}" 2>&1)"
+	OUTPUT="$("${CURL[@]}" -X PUT --data @- "http://localhost/${URL_PATH#/}")"
 	RC="$?"
 	if [ "$RC" -ne 0 ]; then
 		echo "Error: curl PUT ${URL_PATH} failed with exit code $RC, output:"
@@ -38,6 +22,40 @@ curl_put() {
 		echo "Error: curl PUT ${URL_PATH} failed with non-2xx HTTP status code, output:"
 		echo "$OUTPUT"
 		return 1
+	fi
+}
+
+build_vm_node_helper() {
+	rm -rf "$VM_NODE_HELPER"
+
+	mkdir -p "$VM_NODE_HELPER/node_modules/@takaro/"
+
+	cp -r -L ./node_modules/@takaro/{config,helpers,apiclient} "$VM_NODE_HELPER/node_modules/@takaro"
+
+	cat >"$VM_NODE_HELPER/package.json" <<EOF
+{
+  "name": "vm-node-helper",
+  "dependencies": {
+    "@takaro/apiclient": "*",
+    "@takaro/config": "*",
+    "@takaro/helpers": "*",
+    "axios": "^1.3.4"
+  }
+}
+EOF
+
+	(
+		cd "$VM_NODE_HELPER" || return
+		npm i
+	)
+}
+
+ensure_kernel() {
+	ARCH="$(uname -m)"
+
+	if [ ! -e "$FC_KERNEL" ]; then
+		wget -q "https://s3.amazonaws.com/spec.ccfc.min/ci-artifacts/kernels/$ARCH/vmlinux-5.10.bin" -O "$FC_KERNEL"
+		echo "Saved kernel at $FC_KERNEL"
 	fi
 }
 
@@ -53,7 +71,8 @@ create_rootfs() {
 		-v /tmp/takaro/my-rootfs:/my-rootfs \
 		-v "$VM_AGENT_BINARY:/usr/local/bin/agent" \
 		-v "$VM_AGENT_SERVICE:/etc/init.d/agent" \
-		alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
+		-v "$VM_NODE_HELPER:/app" \
+		node:18-alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
 
 	sudo umount /tmp/takaro/my-rootfs/
 }
@@ -151,7 +170,11 @@ setup_microvm() {
 
 ######################################## MAIN SCRIPT ########################################
 
+ensure_kernel
+
 build_vm_agent
+
+build_vm_node_helper
 
 create_rootfs
 
