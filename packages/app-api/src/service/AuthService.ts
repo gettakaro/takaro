@@ -7,6 +7,7 @@ import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
+import { config } from '../config.js';
 
 interface IJWTPayload {
   sub: string;
@@ -91,7 +92,7 @@ export class AuthService extends DomainScoped {
 
       jwt.sign(
         toSign,
-        "config.get('auth.jwtSecret')",
+        config.get('auth.jwtSecret'),
         { algorithm: 'HS256', issuer: 'takaro' },
         (err, token) => {
           if (err) {
@@ -119,7 +120,7 @@ export class AuthService extends DomainScoped {
 
       jwt.verify(
         token,
-        "config.get('auth.jwtSecret')",
+        config.get('auth.jwtSecret'),
         { issuer: 'takaro' },
         (err, decoded) => {
           if (err) {

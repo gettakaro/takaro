@@ -13,6 +13,10 @@ interface IHttpConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
+  auth: {
+    jwtSecret: string;
+    jwtExpiresIn: string;
+  };
   takaro: {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
@@ -64,12 +68,6 @@ const configSchema = {
       format: String,
       default: '1 day',
       env: 'JWT_EXPIRES_IN',
-    },
-    cookieName: {
-      doc: 'The name of the cookie used to store the JWT',
-      format: String,
-      default: 'takaro-token',
-      env: 'COOKIE_NAME',
     },
   },
   takaro: {
