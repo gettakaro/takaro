@@ -105,8 +105,6 @@ services:
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
   kratos:
-    depends_on:
-      - kratos-migrate
     image: oryd/kratos:v0.11.1
     ports:
       - "4433:4433" # public
@@ -139,8 +137,6 @@ services:
       - ./containers/ory/hydra:/etc/config/hydra
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
-    depends_on:
-      - hydra-migrate
   hydra-migrate:
     image: oryd/hydra:v2.0.3
     environment:
