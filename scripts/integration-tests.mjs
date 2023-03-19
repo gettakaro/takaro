@@ -11,7 +11,7 @@ async function main() {
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
 
   // Then, start supporting services
-  await upMany(['kratos', 'hydra'], composeOpts);
+  await upMany(['kratos', 'hydra', 'kratos-migrate', 'hydra-migrate'], composeOpts);
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
