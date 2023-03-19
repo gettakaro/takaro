@@ -170,6 +170,8 @@ setup_microvm() {
 
 ######################################## MAIN SCRIPT ########################################
 
+mkdir -p ./firecracker
+
 ensure_kernel
 
 build_vm_agent
