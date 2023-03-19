@@ -20,7 +20,7 @@ async function main() {
     const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --format json', composeOpts);
     const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
-    console.log('Created OAuth admin client', { clientId: parsedClientOutput.clientId });
+    console.log('Created OAuth admin client', { clientId: parsedClientOutput.client_id });
     composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
     composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
