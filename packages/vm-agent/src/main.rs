@@ -18,7 +18,7 @@ enum InitError {
     Error(#[from] Error),
 }
 
-async fn setup_network() -> Result<(), InitError> {
+async fn setup_network() -> anyhow::Result<()> {
     let (connection, handle, _) = rtnetlink::new_connection().unwrap();
 
     tokio::spawn(connection);

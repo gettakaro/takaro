@@ -154,13 +154,13 @@ export default class FirecrackerClient {
 
     await this.shutdown();
 
+    await this.cleanUp();
+
     await new Promise((resolve, _) => {
       this.childProcess.on('exit', () => {
         resolve('success');
       });
     });
-
-    await this.cleanUp();
   }
 
   async setupVM() {
