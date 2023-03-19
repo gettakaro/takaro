@@ -9,13 +9,13 @@ const PORT: u32 = 8000;
 #[derive(Debug, thiserror::Error)]
 enum InitError {
     #[error("an unhandled IO error occurred: {}", 0)]
-    UnhandledIoError(#[from] io::Error),
+    IoError(#[from] io::Error),
 
     #[error("an unhandled netlink error occurred: {}", 0)]
-    UnhandledNetlinkError(#[from] rtnetlink::Error),
+    NetlinkError(#[from] rtnetlink::Error),
 
     #[error("an unhandled error occurred: {}", 0)]
-    UnhandledError(#[from] Error),
+    Error(#[from] Error),
 }
 
 async fn setup_network() -> Result<(), InitError> {
@@ -66,26 +66,26 @@ async fn setup_network() -> Result<(), InitError> {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), InitError> {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
-    // setup_network().await?;
+    setup_network().await?;
 
     if let Err(e) = env::set_current_dir("/app") {
-        eprintln!("Failed to change directory: {}", e);
+        tracing::error!("failed to change directory: {}", e);
     }
 
     if let Ok(current_dir) = env::current_dir() {
-        tracing::info!("Current working directory: {}", current_dir.display());
+        tracing::info!("current working directory: {}", current_dir.display());
     } else {
-        tracing::error!("Failed to get current working directory");
+        tracing::error!("cailed to get current working directory");
     }
 
     let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
 
     tracing::info!("listening on {HOST}:{PORT}");
 
-    vm_agent::api::server(listener).await.unwrap();
+    vm_agent::api::server(listener).await?;
 
     Ok(())
 }
