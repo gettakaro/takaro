@@ -178,6 +178,6 @@ build_vm_node_helper
 
 create_rootfs
 
-setup_microvm &
-
-start_firecracker
+# setup_microvm &
+#
+# start_firecracker
