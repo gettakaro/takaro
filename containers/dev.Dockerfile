@@ -4,8 +4,7 @@ ENV NODE_ENV=development
 
 WORKDIR /app
 
-# might need iproute2
-RUN apt-get install git curl libc6 -y
+RUN apt-get install git -y
 
 RUN npm install -g npm@8
 
