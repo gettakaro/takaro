@@ -2,6 +2,14 @@ import net from 'node:net';
 import http from 'node:http';
 import fetch from 'node-fetch';
 import { logger, sleep } from '@takaro/util';
+import { config } from '../config.js';
+
+interface ExecOutput {
+  exit_code: number;
+  exit_signal: string | null;
+  stdout: string | null;
+  stderr: string | null;
+}
 
 class HttpAgent extends http.Agent {
   log = logger('VmClient:HttpAgent');
@@ -27,7 +35,7 @@ class HttpAgent extends http.Agent {
       });
 
       socket.on('data', (data) => {
-        this.log.debug(`received data: ${data}`);
+        this.log.silly(`received data: ${data}`);
         resolve(socket);
       });
       socket.on('ready', () => {
@@ -89,35 +97,28 @@ export class VmClient {
   public async exec(fn: string, data: Record<string, unknown>, token: string) {
     this.log.info('POST /exec request', { fn });
 
-    const env = [
-      `DATA='${JSON.stringify(data)}'`,
-      `API_TOKEN='${token}'`,
-      'API_URL="http://192.168.0.103"',
-    ];
+    const env = {
+      data,
+      api_token: token,
+      api_url: config.get('takaro.url'),
+    };
 
-    const cmd = [...env, 'node', '--input-type=module', '-e', fn];
+    const cmd = ['node', '--input-type=module', '-e', fn];
 
-    this.log.debug('cmd', cmd);
-
-    const res = await fetch('http://localhost/exec', {
+    const response = await fetch('http://localhost/exec', {
       agent: this.customAgent,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         cmd,
-        // cmd: ['node', '-v'],
-        // cmd: ['tree'],
+        env,
       }),
     });
 
-    if (res.status !== 200) {
-      const errorMessage = 'Received invalid status code';
+    const output = (await response.json()) as unknown as ExecOutput;
 
-      this.log.error(errorMessage, res);
-
-      throw Error(errorMessage);
+    if (output.exit_code === 1) {
+      this.log.error('Function returned an error', output);
     }
-
-    return await res.text();
   }
 }

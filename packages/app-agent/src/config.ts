@@ -110,7 +110,7 @@ const configSchema = {
     url: {
       doc: 'The URL of the Takaro server',
       format: String,
-      default: 'http://localhost:3000',
+      default: 'http://192.168.0.103:13000',
       env: 'TAKARO_HOST',
     },
   },

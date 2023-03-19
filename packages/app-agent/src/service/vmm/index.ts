@@ -2,23 +2,16 @@ import FirecrackerClient from '../../lib/firecracker/index.js';
 import { VmClient } from '../../lib/vmClient.js';
 import { logger } from '@takaro/util';
 
-interface VMMOptions {
-  hotPoolSize: number;
-}
-
 /*
  * Virtual Machine Manager
  * Responsible for managing firecracker microVMs
  */
 export class VMM {
-  options: VMMOptions;
   vms: Array<FirecrackerClient>;
-  counter;
   log;
 
   constructor() {
     this.vms = [];
-    this.counter = 0;
     this.log = logger('VMM');
   }
 
@@ -46,8 +39,6 @@ export class VMM {
     await fcClient?.kill();
 
     this.vms.splice(id - 1, 1);
-
-    this.log.debug('current list of running vms', { vms: this.vms });
   }
 
   async executeFunction(
@@ -64,9 +55,7 @@ export class VMM {
 
     fcClient.status = 'running';
 
-    const cmdOutput = await vmClient.exec(fn, data, token);
-
-    this.log.debug('function output', { cmdOutput });
+    await vmClient.exec(fn, data, token);
 
     await this.removeVM(fcClient.id);
   }
