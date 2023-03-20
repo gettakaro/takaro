@@ -38,10 +38,11 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
     return { issuer: this.cachedIssuer, client: this.cachedClient };
   }
 
-  private async getOidcToken(): Promise<TokenSet> {
+  public async getOidcToken(): Promise<TokenSet> {
     const { client } = await this.getIssuer();
     const grantRes = await client.grant({
       grant_type: 'client_credentials',
+      audience: 't:api:admin',
     });
 
     if (!grantRes.access_token) {

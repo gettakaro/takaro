@@ -17,7 +17,7 @@ async function main() {
   // If not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
     await sleep(5000);
-    const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --format json', composeOpts);
+    const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json', composeOpts);
     const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
     console.log('Created OAuth admin client', { clientId: parsedClientOutput.client_id });

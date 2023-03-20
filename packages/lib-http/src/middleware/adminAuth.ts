@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { errors, logger } from '@takaro/util';
-import { ory } from '@takaro/auth';
+import { ory, AUDIENCES } from '@takaro/auth';
 
 const log = logger('http:middleware:adminAuth');
 
@@ -21,12 +21,17 @@ export async function adminAuthMiddleware(
 
     if (!token.active) {
       log.warn('Token is not active');
-      return next(new errors.UnauthorizedError());
+      return next(new errors.ForbiddenError());
+    }
+
+    if (!token.aud.includes(AUDIENCES.TAKARO_API_ADMIN)) {
+      log.warn('Token is not for admin API', { token });
+      return next(new errors.ForbiddenError());
     }
 
     return next();
   } catch (error) {
     log.error('Unexpected error', { error });
-    next(new errors.UnauthorizedError());
+    next(new errors.ForbiddenError());
   }
 }

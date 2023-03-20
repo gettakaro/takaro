@@ -16,6 +16,11 @@ enum IDENTITY_SCHEMA {
   USER = 'user_v0',
 }
 
+export enum AUDIENCES {
+  // Used for various sysadmin tasks in the Takaro API
+  TAKARO_API_ADMIN = 't:api:admin',
+}
+
 export interface ITakaroIdentity {
   id: string;
   email: string;
@@ -35,6 +40,8 @@ export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
   iss: string;
   @IsString()
   sub: string;
+  @IsString({ each: true })
+  aud: string[];
 }
 
 function metadataTypeguard(
@@ -77,6 +84,10 @@ class Ory {
       undefined,
       createAxiosClient(config.get('hydra.adminUrl'))
     );
+  }
+
+  get OAuth2URL() {
+    return config.get('hydra.publicUrl');
   }
 
   async deleteIdentitiesForDomain(domainId: string) {
@@ -227,17 +238,48 @@ class Ory {
     const data = await new TakaroTokenDTO().construct({
       active: introspectRes.data.active,
       clientId: introspectRes.data.client_id,
+      aud: introspectRes.data.aud,
       exp: introspectRes.data.exp,
       iat: introspectRes.data.iat,
       iss: introspectRes.data.iss,
       sub: introspectRes.data.sub,
     });
 
-    // Check for correctness of the data
-    // DOES NOT CHECK FOR EXPIRATION
-    await data.validate();
+    try {
+      // Check for correctness of the data
+      // DOES NOT CHECK FOR EXPIRATION
+      await data.validate();
+    } catch (error) {
+      this.log.warn('Introspected token has invalid shape', { error });
+      throw new errors.ForbiddenError();
+    }
 
     return data;
+  }
+
+  // Currently, this is only used for creating the admin-auth client.
+  // ...In the future we should make this more generic and allow for
+  // creating any API client perhaps?
+  async createOIDCClient(): Promise<{
+    clientId: string;
+    clientSecret: string;
+  }> {
+    const client = await this.adminClient.createOAuth2Client({
+      oAuth2Client: {
+        grant_types: ['client_credentials'],
+        audience: [AUDIENCES.TAKARO_API_ADMIN],
+      },
+    });
+
+    if (!client.data.client_id || !client.data.client_secret) {
+      this.log.error('Could not create OIDC client', { client });
+      throw new errors.InternalServerError();
+    }
+
+    return {
+      clientId: client.data.client_id,
+      clientSecret: client.data.client_secret,
+    };
   }
 }
 
