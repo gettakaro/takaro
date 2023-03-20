@@ -61,7 +61,7 @@ ensure_kernel() {
 
 create_rootfs() {
 	# create an empty rootfs
-	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=500
+	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=85
 	mkfs.ext4 "$FC_ROOTFS"
 	mkdir -p /tmp/takaro/my-rootfs
 
@@ -72,13 +72,13 @@ create_rootfs() {
 		-v "$VM_AGENT_BINARY:/usr/local/bin/agent" \
 		-v "$VM_AGENT_SERVICE:/etc/init.d/agent" \
 		-v "$VM_NODE_HELPER:/app" \
-		node:18-alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
+		alpine sh <"$VM_AGENT_IMAGE_BUILD_SCRIPT"
 
 	sudo umount /tmp/takaro/my-rootfs/
 }
 
 build_vm_agent() {
-	cargo build --manifest-path=./packages/vm-agent/Cargo.toml
+	cargo build --release --manifest-path=./packages/vm-agent/Cargo.toml
 }
 
 start_firecracker() {
