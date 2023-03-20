@@ -61,7 +61,7 @@ ensure_kernel() {
 
 create_rootfs() {
 	# create an empty rootfs
-	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=75
+	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=85
 	mkfs.ext4 "$FC_ROOTFS"
 	mkdir -p /tmp/takaro/my-rootfs
 
