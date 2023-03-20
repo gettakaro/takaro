@@ -1,16 +1,19 @@
 # Authentication
 
-Takaro is a multi-tenant application. Each tenant (domain) has its own isolated set of data.
+Takaro uses [Ory Kratos](https://www.ory.sh/kratos/) for identity management. For some backend machine-to-machine authorization, it uses [Ory Hydra](https://www.ory.sh/hydra/) which implements the OpenID Connect protocol.
 
-Some API routes are domain-scoped while others (think of domain management routes) use admin authentication.
+Takaro is a multi-tenant application. Each tenant (domain) has its own isolated set of data. Some API routes are domain-scoped while others (think of domain management routes) use admin authentication.
+
 
 ## Admin authentication
 
-Admin authentication uses basic authentication. The username is `admin` and the password is defined by the env var `ADMIN_SECRET`.
+Since admin authentication is used mostly for automation, it uses OpenID Connect using the client credentials flow. After installing the auth services, you can create a client using the Ory Hydra CLI (or the admin API).
 
 ```sh
-curl -X POST localhost:13000/domain -H "Content-Type: application/json" -u admin:${ADMIN_SECRET} --data '{"name": "test-domain"}' | jq
+hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
 ```
+
+This will return a client ID and secret, note these down. You can now use these credentials to get an access token. The `lib-apiclient` library automatically handles this. (See [lib-apiclient](../../packages/lib-apiclient/README.md))
 
 ## Domain-scoped authentication
 
@@ -20,14 +23,4 @@ First, a domain must be created using admin authentication. When creating a doma
 curl -X POST localhost:13000/domain -H "Content-Type: application/json" -u admin:${ADMIN_SECRET} --data '{"name": "test-domain"}' | jq
 ```
 
-Domain-scoped authentication uses bearer authentication. To retrieve a token, you must first login with a valid user account, we can use the root account from the previous step.
-
-```sh
-curl -X POST localhost:13000/login -H "Content-Type: application/json" --data '{"username": "root@test-domain", "password": "${PASSWORD}"}' | jq
-```
-
-We can now start using the api! For example, requesting a list of users
-
-```sh
-curl localhost:13000/user -H "Content-Type: application/json"  -H "Authorization: Bearer ${TOKEN}" | jq
-```
+You can now use these credentials on the main dashboard. Visit /api.html of the service you want to interact with to see the API documentation.

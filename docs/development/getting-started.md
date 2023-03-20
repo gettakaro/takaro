@@ -38,11 +38,17 @@ docker-compose up --build
 
 There is a dashboard available where all the services are listed. You can access it at http://localhost:13337
 
+You will need to create an admin client for the following configuration scripts. Set the `ADMIN_CLIENT_ID` and `ADMIN_CLIENT_SECRET` in your .env file. Give the containers a restart after you've done this.
+
+```bash
+docker-compose exec hydra hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
+```
+
 Optionally (but recommended!), you can set up some testing data automatically.
 
 ```bash
-# Take a look at the .env file and adjust as needed
-node ./scripts/dev-data.mjs
+# Generate data for the standard development setup
+docker-compose exec takaro node scripts/dev-data.mjs
 ```
 
 ### Working on app-agent
