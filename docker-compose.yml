@@ -4,6 +4,7 @@ services:
   homer:
     image: b4bz/homer
     container_name: homer
+    restart: always
     volumes:
       - ./containers/homer/assets:/www/assets
     ports:
