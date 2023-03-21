@@ -1,3 +1,9 @@
+import { tracing } from '@takaro/util';
+
+tracing.start({
+  serviceName: 'app-api',
+});
+
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';

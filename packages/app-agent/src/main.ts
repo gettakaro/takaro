@@ -1,3 +1,9 @@
+import { tracing } from '@takaro/util';
+
+tracing.start({
+  serviceName: 'app-agent',
+});
+
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
 import { config } from './config.js';
