@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-19T12:20:13.763Z",
+      "error": {
+        "code": "ForbiddenError",
+        "details": {}
+      }
+    },
+    "data": {}
+  },
+  "status": 403,
+  "test": {
+    "snapshot": true,
+    "group": "Auth",
+    "name": "Cannot access resource without permissions",
+    "expectedStatus": 403,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

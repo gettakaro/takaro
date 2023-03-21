@@ -12,8 +12,10 @@ const url = 'http://localhost:13000';
 const adminClient = new AdminClient({
   url,
   auth: {
-    adminSecret: 'ADMIN_SECRET',
+    clientId: config.get('hydra.adminClientId'),
+    clientSecret: config.get('hydra.adminClientSecret'),
   },
+  OAuth2URL: config.get('hydra.publicUrl'),
 });
 
 const createdDomain = await this.adminClient.domain.domainControllerCreate({

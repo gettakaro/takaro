@@ -25,7 +25,6 @@ import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { AuthService } from './AuthService.js';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -184,8 +183,6 @@ export class HookService extends TakaroService<
       this.log.debug(
         `Found ${triggeredHooks.length} hooks that match the event`
       );
-      const authService = new AuthService(this.domainId);
-      const token = await authService.getAgentToken();
 
       await Promise.all(
         triggeredHooks.map(async (hook) => {
@@ -195,7 +192,6 @@ export class HookService extends TakaroService<
             domainId: this.domainId,
             function: hook.function.code,
             gameServerId,
-            token,
           });
         })
       );

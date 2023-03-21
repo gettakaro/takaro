@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { CapabilityModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
+import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import {
@@ -17,8 +17,7 @@ export class UserModel extends TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
 
-  email!: string;
-  password!: string;
+  idpId: string;
 
   static relationMappings = {
     roles: {
@@ -37,7 +36,7 @@ export class UserModel extends TakaroModel {
 }
 
 export interface IUserFindOneOutput extends UserModel {
-  roles: Array<RoleModel & { capabilities: CapabilityModel[] }>;
+  roles: Array<RoleModel & { permissions: PermissionModel[] }>;
 }
 
 export class UserRepo extends ITakaroRepo<
@@ -63,7 +62,7 @@ export class UserRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const result = await new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
-      extend: ['roles.capabilities'],
+      extend: ['roles.permissions'],
     }).build(query);
 
     return {
@@ -78,7 +77,7 @@ export class UserRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('roles.capabilities');
+    const data = await query.findById(id).withGraphJoined('roles.permissions');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);
@@ -87,15 +86,16 @@ export class UserRepo extends ITakaroRepo<
     return new UserOutputWithRolesDTO().construct(data);
   }
 
-  async create(data: UserCreateInputDTO): Promise<UserOutputDTO> {
+  async create(data: UserCreateInputDTO): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
     const item = await query
       .insert({
-        ...data.toJSON(),
+        idpId: data.idpId,
+        name: data.name,
         domain: this.domainId,
       })
       .returning('*');
-    return new UserOutputDTO().construct(item);
+    return this.findOne(item.id);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -104,12 +104,15 @@ export class UserRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
+  async update(
+    id: string,
+    data: UserUpdateDTO
+  ): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
     const item = await query
       .updateAndFetchById(id, data.toJSON())
       .returning('*');
-    return new UserOutputDTO().construct(item);
+    return this.findOne(item.id);
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

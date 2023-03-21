@@ -10,13 +10,12 @@ import {
 } from './UserService.js';
 import { randomBytes } from 'crypto';
 import {
-  CAPABILITIES,
   RoleCreateInputDTO,
   RoleOutputDTO,
   RoleService,
 } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsString, Length, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
@@ -26,12 +25,14 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CronJobService } from './CronJobService.js';
 import { ModuleService } from './ModuleService.js';
+import { ory, PERMISSIONS } from '@takaro/auth';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
   name: string;
 
   @Length(3, 200)
+  @IsOptional()
   id: string;
 }
 
@@ -109,11 +110,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await cronJobService.delete(cronJob.id);
     }
 
+    await ory.deleteIdentitiesForDomain(id);
+
     return this.repo.delete(id);
   }
 
   async initDomain(
-    input: Omit<DomainCreateInputDTO, 'id'>
+    input: DomainCreateInputDTO
   ): Promise<DomainCreateOutputDTO> {
     const id = humanId({
       separator: '-',
@@ -131,9 +134,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await settingsService.init();
 
-    const rootRole = await roleService.createWithCapabilities(
+    const rootRole = await roleService.createWithPermissions(
       await new RoleCreateInputDTO().construct({ name: 'root' }),
-      [CAPABILITIES.ROOT]
+      [PERMISSIONS.ROOT]
     );
 
     const password = randomBytes(20).toString('hex');
@@ -141,7 +144,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await new UserCreateInputDTO().construct({
         name: 'root',
         password: password,
-        email: `root@${domain.id}`,
+        email: `root@${domain.id}.com`,
       })
     );
 

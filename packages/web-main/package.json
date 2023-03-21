@@ -35,6 +35,14 @@
     ]
   },
   "devDependencies": {
-    "@hookform/devtools": "^4.2.2"
+    "@hookform/devtools": "^4.2.2",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "path-browserify": "^1.0.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0"
   }
 }

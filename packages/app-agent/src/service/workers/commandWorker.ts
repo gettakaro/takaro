@@ -23,6 +23,6 @@ async function processCommand(job: Job<IJobData>) {
       ...job.data.data,
       gameServerId: job.data.gameServerId,
     },
-    job.data.token
+    job.data.domainId
   );
 }

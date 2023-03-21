@@ -1,39 +1,39 @@
+import { config } from '../../config.js';
 import { logger } from '@takaro/util';
-import { createContext, runInContext } from 'node:vm';
+import { AdminClient } from '@takaro/apiclient';
 import { getVMM } from '../../main.js';
 
 const log = logger('worker:function');
 
+const takaro = new AdminClient({
+  url: config.get('takaro.url'),
+  auth: {
+    clientId: config.get('hydra.adminClientId'),
+    clientSecret: config.get('hydra.adminClientSecret'),
+  },
+  OAuth2URL: config.get('hydra.publicUrl'),
+});
+
+async function getJobToken(domainId: string) {
+  const tokenRes = await takaro.domain.domainControllerGetToken({
+    domainId,
+  });
+
+  return tokenRes.data.data.token;
+}
+
 export async function executeFunction(
   fn: string,
   data: Record<string, unknown>,
-  token: string
+  domainId: string
 ) {
   try {
     const vmm = await getVMM();
-
+    const token = await getJobToken(domainId);
     return await vmm.executeFunction(fn, data, token);
   } catch (err) {
     log.error('executeFunction', err);
 
     return null;
   }
-}
-
-/**
- * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, this is not production ready !!!!!!!!!!!!!!!!!
- *
- */
-async function _executeLocal(
-  fn: string,
-  data: Record<string, unknown>,
-  token: string
-) {
-  const ctx = createContext({
-    exports: {},
-    process: { env: { DATA: data, TOKEN: token } },
-  });
-  const output = await runInContext(fn, ctx);
-  log.info('Executed a local function', { output });
-  return { ctx, output };
 }

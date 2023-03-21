@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { CAPABILITIES } from '../../service/RoleService.js';
 import { DomainCreateOutputDTOAPI } from '@takaro/apiclient';
+import { PERMISSIONS } from '@takaro/auth';
 
 const group = 'Multitenancy';
 
@@ -13,7 +13,7 @@ const tests = [
       // Create a role in standard domain
       await this.client.role.roleControllerCreate({
         name: 'Test role',
-        capabilities: [CAPABILITIES.READ_ROLES],
+        permissions: [PERMISSIONS.READ_ROLES],
       });
 
       // Create a new domain and login to that

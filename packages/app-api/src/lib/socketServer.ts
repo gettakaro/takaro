@@ -112,16 +112,6 @@ class SocketServer {
     try {
       let token = null;
 
-      if (socket.handshake.headers.cookie) {
-        const parsedCookies: Record<string, string> =
-          socket.handshake.headers.cookie.split(';').reduce((acc, cookie) => {
-            const [key, value] = cookie.split('=');
-            return { ...acc, [key.trim()]: decodeURIComponent(value) };
-          }, {});
-
-        token = parsedCookies[config.get('auth.cookieName')];
-      }
-
       if (socket.handshake.auth.token) {
         token = socket.handshake.auth.token;
       }

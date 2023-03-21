@@ -29,7 +29,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
@@ -69,7 +69,7 @@ export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
 })
 @JsonController()
 export class CommandController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_COMMANDS]))
   @ResponseSchema(CommandOutputArrayDTOAPI)
   @Post('/command/search')
   async search(
@@ -90,7 +90,7 @@ export class CommandController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Get('/command/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -98,7 +98,7 @@ export class CommandController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Post('/command')
   async create(
@@ -109,7 +109,7 @@ export class CommandController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Put('/command/:id')
   async update(
@@ -121,7 +121,7 @@ export class CommandController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(APIOutput)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

@@ -8,13 +8,13 @@
       "updatedAt": "2022-09-11T20:36:44.565Z",
       "id": "17cd82f2-710e-4b6c-a4c3-94f488904aa8",
       "name": "Test role",
-      "capabilities": [
+      "permissions": [
         {
           "createdAt": "2022-09-11T20:36:44.570Z",
           "updatedAt": "2022-09-11T20:36:44.570Z",
           "id": "b1e2b8e5-c4b8-408e-a358-38b63a36cee1",
           "roleId": "17cd82f2-710e-4b6c-a4c3-94f488904aa8",
-          "capability": "MANAGE_ROLES"
+          "permission": "MANAGE_ROLES"
         }
       ]
     }

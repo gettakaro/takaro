@@ -33,7 +33,6 @@ export abstract class TakaroWorker<T> extends Worker<T, unknown> {
 export interface IJobData {
   function: string;
   domainId: string;
-  token: string;
   /**
    * The id of the item that triggered this job (cronjobId, commandId or hookId)
    */

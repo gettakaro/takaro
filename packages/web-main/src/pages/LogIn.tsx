@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from 'react';
+import { FC, useState, useMemo, useEffect } from 'react';
 import {
   Button,
   Divider,
@@ -20,6 +20,7 @@ import { useAuth } from 'hooks/useAuth';
 import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
 import { Page } from './Page';
+import { LoginFlow } from '@ory/client';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -93,12 +94,15 @@ const Container = styled.div`
 interface IFormInputs {
   email: string;
   password: string;
+  csrf_token: string;
 }
 
 const LogIn: FC = () => {
   const [loading, setLoading] = useState(false);
+  const [loginFlow, setLoginFlow] = useState<LoginFlow>();
+  const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
-  const { logIn } = useAuth();
+  const { logIn, createLoginFlow } = useAuth();
   const { setUserData } = useUser();
   const navigate = useNavigate();
 
@@ -114,6 +118,22 @@ const LogIn: FC = () => {
     []
   );
 
+  useEffect(() => {
+    if (loginFlow) {
+      const csrfAttr = loginFlow.ui.nodes[0].attributes;
+      // @ts-expect-error Bad ory client types :(
+      setCsrfToken(csrfAttr.value);
+    } else {
+      createLoginFlow().then((flow) => {
+        setLoginFlow(flow);
+        const csrfAttr = flow.ui.nodes[0].attributes;
+        // @ts-expect-error Bad ory client types :(
+        setCsrfToken(csrfAttr.value);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginFlow]);
+
   const { control, handleSubmit, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: useValidationSchema(validationSchema),
@@ -123,8 +143,13 @@ const LogIn: FC = () => {
     setLoading(true);
     setError(undefined);
     try {
-      if (setUserData) {
-        const userData = await logIn(email, password);
+      if (setUserData && loginFlow?.id) {
+        const userData = await logIn(
+          loginFlow?.id,
+          email,
+          password,
+          csrfToken!
+        );
         setUserData(userData);
         navigate(PATHS.home);
       }

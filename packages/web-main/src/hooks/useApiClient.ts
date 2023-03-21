@@ -1,19 +1,16 @@
 import { Client } from '@takaro/apiclient';
+import { useConfig } from './useConfig';
 
 let cachedClient: Client | null = null;
 
-declare global {
-  interface Window {
-    __env__: Record<string, string>;
-  }
-}
-
 export const useApiClient = () => {
+  const cfg = useConfig();
+
   if (cachedClient) {
     return cachedClient;
   }
 
-  const apiUrl = window.__env__.REACT_APP_API || process.env.REACT_APP_API;
+  const apiUrl = cfg.apiUrl;
 
   if (!apiUrl) throw new Error('REACT_APP_API is not set');
 
