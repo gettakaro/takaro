@@ -2,12 +2,15 @@ import { styled } from '../../../styled';
 import { lighten, darken } from 'polished';
 import { motion } from 'framer-motion';
 
+export const Wrapper = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing['1_5']};
+`;
+
 export const Container = styled.div`
   position: relative;
-  display: inline-block;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: row;
   text-align: left;
-  padding: ${({ theme }) => theme.spacing['0_5']};
   margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
@@ -48,7 +51,7 @@ export const Dot = styled(motion.span)<{
     ${({ theme, isChecked }) =>
       isChecked ? theme.colors.primary : theme.colors.gray};
   background-color: ${({ theme, readOnly, isChecked }) => {
-    let color = isChecked ? theme.colors.primary : theme.colors.white;
+    let color = isChecked ? theme.colors.primary : theme.colors.background;
     if (readOnly) {
       color = theme.colors.white;
     }

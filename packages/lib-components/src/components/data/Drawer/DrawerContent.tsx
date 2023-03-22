@@ -1,4 +1,7 @@
 import { styled } from '../../../styled';
+import { getTransition } from '../../../helpers';
+import { motion } from 'framer-motion';
+
 import {
   FloatingFocusManager,
   FloatingOverlay,
@@ -6,29 +9,29 @@ import {
   useMergeRefs,
 } from '@floating-ui/react';
 import { forwardRef } from 'react';
-import { useDialogContext } from './DialogContext';
-import SimpleBar from 'simplebar-react';
+import { useDrawerContext } from './DrawerContext';
 
 const StyledFloatingOverlay = styled(FloatingOverlay)`
   background: rgba(0, 0, 0, 0.8);
   display: grid;
-  place-items: center;
+  place-items: end;
+  max-height: 100vh;
 `;
 
-const Container = styled.div`
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: ${({ theme }) => theme.elevation[4]};
-  margin: 15px;
-  min-width: 300px;
+const Container = styled(motion.div)`
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing['2_5']}`};
+  width: 460px;
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 100%;
 `;
 
-export const DialogContent = forwardRef<
+export const DrawerContent = forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement>
 >((props, propRef) => {
-  const { context: floatingContext, ...context } = useDialogContext();
+  const { context: floatingContext, ...context } = useDrawerContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
   return (
@@ -41,8 +44,16 @@ export const DialogContent = forwardRef<
               aria-labelledby={context.labelId}
               aria-describedby={context.descriptionId}
               {...context.getFloatingProps(props)}
+              initial={{ x: '100%' }}
+              animate={{
+                x: 0,
+              }}
+              exit={{
+                x: '100%',
+              }}
+              transition={getTransition()}
             >
-              <SimpleBar>{props.children}</SimpleBar>
+              {props.children}
             </Container>
           </FloatingFocusManager>
         </StyledFloatingOverlay>

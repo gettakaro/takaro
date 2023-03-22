@@ -16,6 +16,7 @@ export interface InputProps extends DefaultInputProps {
   label?: string;
   error?: FieldError;
   hint?: string;
+  description?: string;
   value?: unknown;
 }
 

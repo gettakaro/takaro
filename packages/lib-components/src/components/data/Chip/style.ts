@@ -28,9 +28,9 @@ export const Container = styled.div<{
 
   ${({ theme, color, outline }): string => {
     if (!outline) {
-      return 'border: 2px solid transparent;';
+      return 'border: 0.1rem solid transparent;';
     }
-    return `border: 2px solid ${theme.colors[color]};`;
+    return `border: 0.1rem solid ${theme.colors[color]};`;
   }}
 
   span {
@@ -39,7 +39,7 @@ export const Container = styled.div<{
     margin-left: ${({ hasAvatar, theme }) =>
       hasAvatar ? theme.spacing['0_5'] : 0};
     font-weight: 600;
-    font-size: 1.225rem;
+    font-size: ${({ theme }) => theme.fontSize.small};
 
     ${({ theme, color, outline }) => {
       if (!outline) {

@@ -146,6 +146,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
       {error && showError && <ErrorMessage message={error.message!} />}
+      {props.description && <p>{props.description}</p>}
     </Container>
   );
 };

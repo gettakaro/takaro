@@ -1,5 +1,5 @@
 import { forwardRef, HTMLProps, useId, useLayoutEffect } from 'react';
-import { useDialogContext } from './DialogContext';
+import { useDrawerContext } from './DrawerContext';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { styled } from '../../../styled';
 import { Tooltip } from '../../../components';
@@ -8,10 +8,7 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  h4 {
-    font-size: ${({ theme }) => theme.fontSize.tiny};
-  }
+  padding: ${({ theme }) => theme.spacing['2_5']} 0;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
@@ -19,9 +16,9 @@ interface DialogHeadingProps extends HTMLProps<HTMLHeadingElement> {
   hasClose?: boolean;
 }
 
-export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
-  function DialogHeading({ children, hasClose = true, ...props }, ref) {
-    const { setLabelId, setOpen } = useDialogContext();
+export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
+  ({ children, hasClose = true, ...props }, ref) => {
+    const { setLabelId, setOpen } = useDrawerContext();
     const id = useId();
 
     useLayoutEffect(() => {
@@ -31,12 +28,16 @@ export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
 
     return (
       <Container>
-        <h4 {...props} ref={ref} id={id}>
+        <h3 {...props} ref={ref} id={id}>
           {children}
-        </h4>
+        </h3>
         {hasClose && (
-          <Tooltip label="Close dialog">
-            <CloseIcon cursor="pointer" onClick={() => setOpen(false)} />
+          <Tooltip label="Close drawer">
+            <CloseIcon
+              size={18}
+              onClick={() => setOpen(false)}
+              cursor="pointer"
+            />
           </Tooltip>
         )}
       </Container>

@@ -4,7 +4,6 @@ import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
 import { styled } from '../../../styled';
 import { useFloating } from '@floating-ui/react';
-import { lighten } from 'polished';
 
 const Arrow = styled(ArrowIcon)`
   transform: rotate(90deg);
@@ -28,7 +27,6 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
 
   &:hover {
     border-color:${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
     svg {
       fill: ${({ theme }) => theme.colors.primary};
     }
@@ -53,7 +51,6 @@ const CurrentAction = styled.div`
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
     border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
   }
   &:active {
     background-color: transparent;

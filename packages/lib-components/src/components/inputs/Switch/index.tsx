@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
 import { Skeleton, Label } from '../../../components';
-import { Container, Dot, Line, ContentContainer } from './style';
+import { Wrapper, Container, Dot, Line, ContentContainer } from './style';
 import { useController } from 'react-hook-form';
 import {
   defaultInputProps,
@@ -47,31 +47,34 @@ export const Switch: FC<InputProps> = (props) => {
   }
 
   return (
-    <Container>
-      {label && (
-        <Label
-          htmlFor={name}
-          text={label}
-          position="top"
-          error={!!error}
-          size={size}
-          required={required}
-          onClick={handleOnClick}
-          hint={hint}
-          disabled={disabled}
-        />
-      )}
-      <ContentContainer onClick={handleOnClick}>
-        <Line readOnly={readOnly} isChecked={isChecked}>
-          <Dot
-            animate={{ right: isChecked ? '-2px' : '15px' }}
-            readOnly={readOnly}
-            isChecked={isChecked}
-            layout
-            transition={getTransition()}
+    <Wrapper>
+      <Container>
+        {label && (
+          <Label
+            htmlFor={name}
+            text={label}
+            position="top"
+            error={!!error}
+            size={size}
+            required={required}
+            onClick={handleOnClick}
+            hint={hint}
+            disabled={disabled}
           />
-        </Line>
-      </ContentContainer>
-    </Container>
+        )}
+        <ContentContainer onClick={handleOnClick}>
+          <Line readOnly={readOnly} isChecked={isChecked}>
+            <Dot
+              animate={{ right: isChecked ? '-2px' : '15px' }}
+              readOnly={readOnly}
+              isChecked={isChecked}
+              layout
+              transition={getTransition()}
+            />
+          </Line>
+        </ContentContainer>
+      </Container>
+      <p>{props.description}</p>
+    </Wrapper>
   );
 };

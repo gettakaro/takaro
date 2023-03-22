@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { styled } from '../../../styled';
-import { IoMdArrowDropright as ArrowRightIcon } from 'react-icons/io';
+import { IoMdArrowDropup as ArrowUp } from 'react-icons/io';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../../hooks';
 
@@ -12,7 +12,6 @@ export const CollapseList: FC<PropsWithChildren> & {
 };
 
 interface ItemProps {
-  actions?: string[];
   collapsed?: boolean;
   title: string;
 }
@@ -20,12 +19,16 @@ interface ItemProps {
 const Header = styled.div<{ isCollapsed: boolean }>`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   cursor: pointer;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
-  border-bottom: 0.1rem solid ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
+  border-radius: 0.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
+
   svg {
     transform: ${({ isCollapsed }) =>
-      isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)'};
+      isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'};
     transition: transform 0.1s ease-in-out;
   }
   span {
@@ -47,8 +50,8 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
         isCollapsed={isCollapsed}
         onClick={() => setIsCollapsed((prev) => !prev)}
       >
-        <ArrowRightIcon size={18} />
         <span>{title}</span>
+        <ArrowUp size={18} />
       </Header>
       <AnimatePresence>
         {!isCollapsed && (
@@ -67,7 +70,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
                 open: { y: 0 },
                 collapsed: { y: -6 },
               }}
-              transition={{ duration: 0.125 }}
+              transition={{ duration: 0.125, ease: 'linear' }}
               style={{
                 transformOrigin: 'top center',
                 padding: `${theme.spacing[1]} 0`,
