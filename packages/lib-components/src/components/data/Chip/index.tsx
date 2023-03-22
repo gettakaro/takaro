@@ -17,6 +17,7 @@ export interface ChipProps {
   onDelete?: () => void;
   color?: ChipColor;
   variant?: Variant;
+  isLoading?: boolean;
 }
 
 export const Chip: FC<ChipProps> = ({
@@ -27,8 +28,25 @@ export const Chip: FC<ChipProps> = ({
   disabled = false,
   onClick = undefined,
   onDelete = undefined,
-  dot
+  isLoading = false,
+  dot,
 }) => {
+  if (isLoading) {
+    return (
+      <Container
+        clickable={onClick !== undefined}
+        color={color}
+        disabled={disabled}
+        hasAvatar={!!avatar}
+        outline={false}
+        onClick={onClick ? onClick : undefined}
+        className="placeholder"
+      >
+        <>{label}</>
+      </Container>
+    );
+  }
+
   return (
     <Container
       clickable={onClick !== undefined}

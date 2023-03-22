@@ -1,4 +1,5 @@
-import { Meta, Story, StoryFn, StoryObj } from '@storybook/react';
+import React from 'react';
+import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Avatar, Chip, ChipProps } from '../../data';
 
@@ -29,7 +30,7 @@ export default {
     disabled: false,
     dot: false,
     variant: 'default',
-  }
+  },
 } as Meta<ChipProps>;
 
 export const Default: StoryFn<ChipProps> = (args) => <Chip {...args} />;
@@ -37,21 +38,36 @@ export const Default: StoryFn<ChipProps> = (args) => <Chip {...args} />;
 export const ClickableChip: StoryObj<ChipProps> = {
   args: {
     label: 'Clickable chip',
-    onClick: () => {/* */ },
-  }
+    onClick: () => {
+      /* */
+    },
+  },
 };
 export const DeletableChip: StoryObj<ChipProps> = {
   args: {
     label: 'Deletable chip',
-    onDelete: () => {/* */ },
-  }
+    onDelete: () => {
+      /* */
+    },
+  },
+};
+
+export const LoadingChip: StoryObj<ChipProps> = {
+  args: {
+    label: 'loading chip',
+    isLoading: true,
+  },
 };
 
 export const AvatarChip: StoryObj<ChipProps> = {
   args: {
     label: 'Avatar chip',
-    avatar: <Avatar alt="avatar" size="tiny">NC</Avatar>
-  }
+    avatar: (
+      <Avatar alt="avatar" size="tiny">
+        NC
+      </Avatar>
+    ),
+  },
 };
 
 export const Examples = () => (
@@ -62,8 +78,12 @@ export const Examples = () => (
     <Chip label="Outlined Chip" variant="outline" />
     <Chip color="secondary" label="secondary outlined Chip" variant="outline" />
 
-
     <Chip color="tertiary" dot label="Tertiary chip with dot" />
-    <Chip color="quaternary" dot label="Quaternary outlined Chip with dot" variant="outline" />
+    <Chip
+      color="quaternary"
+      dot
+      label="Quaternary outlined Chip with dot"
+      variant="outline"
+    />
   </>
 );

@@ -14,6 +14,7 @@ export const Container = styled.div<{
   padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing[1]}`};
   border-radius: 1.5rem;
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
+  margin: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
 
   svg {
     margin-left: ${({ theme }) => theme.spacing['0_5']};
@@ -39,7 +40,7 @@ export const Container = styled.div<{
     margin-left: ${({ hasAvatar, theme }) =>
       hasAvatar ? theme.spacing['0_5'] : 0};
     font-weight: 600;
-    font-size: 1.225rem;
+    font-size: ${({ theme }) => theme.fontSize.tiny};
 
     ${({ theme, color, outline }) => {
       if (!outline) {

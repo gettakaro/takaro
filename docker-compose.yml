@@ -52,7 +52,6 @@ services:
       #LOGGING_MINIMAL: "true"
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
       REDIS_HOST: redis
-      ADMIN_SECRET: ${ADMIN_SECRET}
       JWT_SECRET: ${JWT_SECRET}
       FUNCTIONS_EXECUTION_MODE: local
       POSTGRES_USER: ${POSTGRES_USER}
@@ -97,7 +96,6 @@ services:
       # Docs
       - 13005:13005
 
-
   kratos-migrate:
     image: oryd/kratos:v0.11.1
     environment:
@@ -109,8 +107,8 @@ services:
   kratos:
     image: oryd/kratos:v0.11.1
     ports:
-      - "4433:4433" # public
-      - "4434:4434" # admin
+      - '4433:4433' # public
+      - '4434:4434' # admin
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
@@ -125,15 +123,14 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: kratos      
-
+      POSTGRES_DB: kratos
 
   hydra:
     image: oryd/hydra:v2.0.3
     ports:
-      - "4444:4444" # Public port
-      - "4445:4445" # Admin port
-      - "5555:5555" # Port for hydra token user
+      - '4444:4444' # Public port
+      - '4445:4445' # Admin port
+      - '5555:5555' # Port for hydra token user
     command: serve -c /etc/config/hydra/hydra.yml all --dev
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
@@ -153,12 +150,12 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: hydra   
+      POSTGRES_DB: hydra
 
   mailslurper:
     image: oryd/mailslurper:latest-smtps
     ports:
-      - "4436:4436"
-      - "4437:4437"
+      - '4436:4436'
+      - '4437:4437'
 volumes:
   pgadmin:

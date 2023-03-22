@@ -46,7 +46,6 @@ function App() {
   // if before window.__env__ will contain the env variables
   // if not we need to wait until the script is loaded
   const loadConfig = function () {
-    console.log('TIS LOADED');
     const cfg = {
       apiUrl: getConfigVar('REACT_APP_API'),
       oryUrl: getConfigVar('REACT_APP_ORY_URL'),
