@@ -1,4 +1,3 @@
-export * as tracing from './tracing.js';
 export { Sentry } from './sentry.js';
 
 export {

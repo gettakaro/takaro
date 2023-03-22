@@ -17,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jenniferplusplus/opentelemetry-instrumentation-bullmq": "^0.2.2",
     "@opentelemetry/api": "^1.4.1",
     "@opentelemetry/auto-instrumentations-node": "^0.36.4",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.36.1",

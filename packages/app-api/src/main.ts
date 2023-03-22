@@ -1,9 +1,3 @@
-import { tracing } from '@takaro/util';
-
-tracing.start({
-  serviceName: 'app-api',
-});
-
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
@@ -57,6 +51,8 @@ const log = logger('main');
 
 async function main() {
   log.info('Starting...');
+  await QueuesService.getInstance().registerWorker(new EventsWorker());
+
   config.validate();
   log.info('✅ Config validated');
 
@@ -92,8 +88,6 @@ async function main() {
 
     await gameServerService.manager.init(domain.id, gameServersDecrypted);
   }
-
-  await QueuesService.getInstance().registerWorker(new EventsWorker());
 }
 
 main();
