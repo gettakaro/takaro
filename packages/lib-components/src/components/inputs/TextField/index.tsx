@@ -54,7 +54,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
 
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { field } = useController({ name, control, defaultValue: value });
+  const { field } = useController({ name, control, defaultValue: value ?? '' });
 
   const handleOnBlur = () => {
     field.onBlur();
