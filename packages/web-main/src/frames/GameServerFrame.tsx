@@ -4,6 +4,7 @@ import { ErrorFallback, styled } from '@takaro/lib-components';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar, NavbarLink } from 'components/Navbar';
+import { Page } from '../pages/Page';
 import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
@@ -31,9 +32,6 @@ const ContentContainer = styled(motion.div)`
   width: 100%;
   opacity: 0;
   overflow-y: auto;
-`;
-const Page = styled.div`
-  padding: 3rem 6rem;
 `;
 
 // the default value is required to make the type checker happy.
@@ -66,7 +64,7 @@ export const ServerFrame: FC = () => {
       onError: () => {
         // TODO: we probably should show an error page instead of a snackbar, but fine for now
         enqueueSnackbar('Server not found', { variant: 'default' });
-        navigate(PATHS.home());
+        // navigate(PATHS.home());
       },
     }
   );
