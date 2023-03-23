@@ -17,14 +17,13 @@ const Container = styled.div`
   }
 `;
 
-export interface ErrorProps {
+export interface ErrorFallbackProps {
   message?: string;
-  actionMessage?: string;
-  actionTo?: string;
   showIcon?: boolean;
 }
 
-export const Error: FC<ErrorProps> = ({
+// This should be used as a fallback component for error boundaries.
+export const ErrorFallback: FC<ErrorFallbackProps> = ({
   message = 'Something went wrong.',
   showIcon = true,
 }) => {

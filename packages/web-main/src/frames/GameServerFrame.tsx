@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { styled } from '@takaro/lib-components';
+import { ErrorFallback, styled } from '@takaro/lib-components';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar, NavbarLink } from 'components/Navbar';
@@ -19,6 +19,7 @@ import {
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
+import { ErrorBoundary } from '@sentry/react';
 
 const Container = styled.div`
   display: flex;
@@ -108,7 +109,9 @@ export const ServerFrame: FC = () => {
         >
           <Header />
           <Page>
-            <Outlet />
+            <ErrorBoundary fallback={<ErrorFallback />}>
+              <Outlet />
+            </ErrorBoundary>
           </Page>
         </ContentContainer>
       </Container>
