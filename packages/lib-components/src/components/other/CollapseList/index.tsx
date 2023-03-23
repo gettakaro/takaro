@@ -64,6 +64,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
             animate="open"
             exit="collapsed"
             style={{ padding: theme.spacing[1], overflowX: 'hidden' }}
+            transition={{ duration: 0.125, ease: 'linear' }}
           >
             <motion.div
               variants={{

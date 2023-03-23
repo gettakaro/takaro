@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { Meta, StoryFn } from '@storybook/react';
@@ -19,7 +19,9 @@ import {
   Switch,
 } from '../../../components';
 import { styled } from '../../../styled';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { useValidationSchema } from '../../../hooks';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -35,12 +37,37 @@ export default {
   component: Drawer,
 } as Meta;
 
+interface FormFields {
+  name: string;
+  description: string;
+  priceType: 'fixed' | 'variable';
+  generateLicenseKeys: boolean;
+  redirectAfterPurchase: boolean;
+  onStoreFront: boolean;
+}
+
 export const Default: StoryFn = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { control } = useForm();
+
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        name: yup.string().required('Name is a required field.'),
+        description: yup
+          .string()
+          .required('Password is a required field.')
+          .min(20, 'description must be at least 20 characters'),
+        priceType: yup.mixed().oneOf(['fixed', 'variable']),
+      }),
+    []
+  );
+
+  const { handleSubmit, control } = useForm<FormFields>({
+    resolver: useValidationSchema(validationSchema),
+  });
 
   // this should be typed ofcourse
-  const handleSubmit = (data: unknown) => {
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {
     console.log(data);
     setOpen(false);
   };
@@ -55,7 +82,7 @@ export const Default: StoryFn = () => {
             <Status>
               Status: <Chip label="active" color="success" variant="outline" />
             </Status>
-            <form id="myform" onSubmit={handleSubmit}>
+            <form id="myform" onSubmit={handleSubmit(onSubmit)}>
               <CollapseList>
                 <CollapseList.Item title="General">
                   <TextField

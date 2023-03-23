@@ -85,6 +85,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-width: 2px;
     border-radius: 0.25rem;
     border-color: transparent;
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    color: ${({ theme }) => theme.colors.text};
     &[readOnly]{
       cursor: not-allowed;
       &:focus {

@@ -1,6 +1,7 @@
 import { styled } from '../../../styled';
 import { getTransition } from '../../../helpers';
 import { motion } from 'framer-motion';
+import SimpleBar from 'simplebar-react';
 
 import {
   FloatingFocusManager,
@@ -20,7 +21,6 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
 
 const Container = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing['2_5']}`};
   width: 460px;
   height: 100vh;
   max-height: 100vh;
@@ -53,7 +53,9 @@ export const DrawerContent = forwardRef<
               }}
               transition={getTransition()}
             >
-              {props.children}
+              <SimpleBar style={{ maxHeight: '92vh' }}>
+                {props.children}
+              </SimpleBar>
             </Container>
           </FloatingFocusManager>
         </StyledFloatingOverlay>

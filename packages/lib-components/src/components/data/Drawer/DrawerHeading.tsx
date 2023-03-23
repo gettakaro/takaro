@@ -8,8 +8,8 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: ${({ theme }) => theme.spacing['2_5']} 0;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing['2_5']}`};
 `;
 
 interface DialogHeadingProps extends HTMLProps<HTMLHeadingElement> {

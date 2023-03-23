@@ -1,10 +1,9 @@
 import { FC, PropsWithChildren, useId, useLayoutEffect } from 'react';
 import { useDrawerContext } from './DrawerContext';
 import { styled } from '../../../styled';
-import SimpleBar from 'simplebar-react';
 
 const Container = styled.div`
-  padding-bottom: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing['2_5']}`};
 `;
 
 export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {
@@ -16,9 +15,5 @@ export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {
     return () => setLabelId(undefined);
   }, [id, setLabelId]);
 
-  return (
-    <SimpleBar style={{ maxHeight: '100%' }}>
-      <Container>starts here{children} ends here</Container>
-    </SimpleBar>
-  );
+  return <Container>{children}</Container>;
 };
