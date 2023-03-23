@@ -1,3 +1,4 @@
+import { EnvVars } from 'EnvVars';
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useConfig } from './useConfig';
@@ -32,7 +33,7 @@ export const useSocket = () => {
 
   const apiUrl = cfg?.apiUrl;
 
-  if (!apiUrl) throw new Error('REACT_APP_API is not set');
+  if (!apiUrl) throw new Error(`${EnvVars.VITE_API} is not set`);
 
   socket = io(apiUrl, {
     withCredentials: true,

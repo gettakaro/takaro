@@ -1,4 +1,5 @@
 import { Client } from '@takaro/apiclient';
+import { EnvVars } from 'EnvVars';
 import { useConfig } from './useConfig';
 
 let cachedClient: Client | null = null;
@@ -12,7 +13,7 @@ export const useApiClient = () => {
 
   const apiUrl = cfg.apiUrl;
 
-  if (!apiUrl) throw new Error('REACT_APP_API is not set');
+  if (!apiUrl) throw new Error(`${EnvVars.VITE_API} is not defined`);
 
   cachedClient = new Client({
     url: apiUrl,
