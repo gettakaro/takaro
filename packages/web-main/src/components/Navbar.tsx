@@ -108,7 +108,7 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
 
       <Nav>
         {links.map(({ path, label, icon }) => (
-          <NavLink to={path} key={path}>
+          <NavLink to={path} key={path} end>
             {cloneElement(icon, { size: 24 })}
             <p>{label}</p>
           </NavLink>
