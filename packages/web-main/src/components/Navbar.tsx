@@ -57,7 +57,7 @@ const Nav = styled.nav`
   }
 `;
 
-const Container = styled(motion.div)<{ toTop: boolean }>`
+const Container = styled(motion.div)`
   width: 0;
   position: relative;
   height: 100vh;
@@ -65,7 +65,7 @@ const Container = styled(motion.div)<{ toTop: boolean }>`
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  justify-content: ${({ toTop }) => (toTop ? 'flex-start' : 'center')};
+  justify-content: flex-start;
   padding: 20px 30px 40px 30px;
 
   .company-icon {
@@ -98,7 +98,6 @@ interface NavbarProps {
 export const Navbar: FC<NavbarProps> = ({ links }) => {
   return (
     <Container
-      toTop={true}
       animate={{ width: 325 }}
       transition={{ duration: 1, type: 'spring', bounce: 0.6 }}
     >
