@@ -6,19 +6,21 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 
-const TracingSDK = new NodeSDK({
-  traceExporter: new OTLPTraceExporter({
-    url: 'http://tempo:4317',
-  }),
-  instrumentations: [getNodeAutoInstrumentations()],
-  resource: resources.Resource.default(),
-});
+if (process.env.TRACING_ENABLED === 'true') {
+  const TracingSDK = new NodeSDK({
+    traceExporter: new OTLPTraceExporter({
+      url: process.env.TRACING_ENDPOINT,
+    }),
+    instrumentations: [getNodeAutoInstrumentations()],
+    resource: resources.Resource.default(),
+  });
 
-TracingSDK.addResource(
-  new resources.Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: process.env.TAKARO_SERVICE,
-  })
-);
+  TracingSDK.addResource(
+    new resources.Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: process.env.TAKARO_SERVICE,
+    })
+  );
 
-console.log('STARTING TRACING');
-TracingSDK.start();
+  console.log('Starting Takaro Tracing');
+  TracingSDK.start();
+}
