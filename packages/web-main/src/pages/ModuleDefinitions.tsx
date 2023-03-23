@@ -13,7 +13,7 @@ const Page = styled.div`
   }
 `;
 
-export const Modules: FC = () => {
+export const ModuleDefinitions: FC = () => {
   /*
   const navigate = useNavigate();
 
