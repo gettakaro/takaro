@@ -16,9 +16,7 @@ const container = document.getElementById('root')!;
 const root = createRoot(container);
 
 Sentry.init({
-  dsn: 'https://680aa3da69d1403087badf79abed972c@o387782.ingest.sentry.io/5632900',
-  // TODO: should have events come from different environments.
-  environment: 'dev', // also have a 'prod' | 'stg' | 'QA' | 'dev'
+  dsn: 'https://1f9c7d5b5d7d43da938d9a3ec6215633@o387782.ingest.sentry.io/4504889880018944',
   integrations: [
     new BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV6Instrumentation(
