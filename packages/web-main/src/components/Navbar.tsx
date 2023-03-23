@@ -1,18 +1,10 @@
-import { FC } from 'react';
+import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 import { darken } from 'polished';
 import { motion } from 'framer-motion';
 
 import { Link } from 'react-router-dom';
-import {
-  AiOutlineAppstore as Dashboard,
-  AiOutlineSetting as Settings,
-  AiOutlineFunction as Modules,
-  AiOutlineDatabase as GameServers,
-  AiOutlineBook as Book,
-  AiOutlineUser as Users,
-  AiOutlineIdcard as Players,
-} from 'react-icons/ai';
+import { AiOutlineBook as DocumentationIcon } from 'react-icons/ai';
 import { Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 
@@ -93,47 +85,41 @@ const Container = styled(motion.div)<{ toTop: boolean }>`
   }
 `;
 
-export const Navbar: FC = () => {
+export interface NavbarLink {
+  path: string;
+  label: string;
+  icon: ReactElement;
+}
+
+interface NavbarProps {
+  links: NavbarLink[];
+}
+
+export const Navbar: FC<NavbarProps> = ({ links }) => {
   return (
     <Container
       toTop={true}
       animate={{ width: 325 }}
       transition={{ duration: 1, type: 'spring', bounce: 0.6 }}
     >
-      <Link className="company-icon" to={PATHS.home}>
+      <Link className="company-icon" to={PATHS.home()}>
         <Company />
       </Link>
+
       <Nav>
-        <NavLink to={PATHS.home}>
-          <Dashboard size={24} />
-          <p>Dashboard</p>
-        </NavLink>
-        <NavLink to={PATHS.gameServers.overview}>
-          <GameServers size={24} />
-          <p>Servers</p>
-        </NavLink>
-        <NavLink to={PATHS.players}>
-          <Players size={24} />
-          <p>Players</p>
-        </NavLink>
-        <NavLink to={PATHS.users}>
-          <Users size={24} />
-          <p>Users</p>
-        </NavLink>
-        <NavLink to={PATHS.modules.overview}>
-          <Modules size={24} />
-          <p>Modules</p>
-        </NavLink>
-        <NavLink to={PATHS.settings}>
-          <Settings size={24} />
-          <p>Settings</p>
-        </NavLink>
+        {links.map(({ path, label, icon }) => (
+          <NavLink to={path} key={path}>
+            {cloneElement(icon, { size: 24 })}
+            <p>{label}</p>
+          </NavLink>
+        ))}
+
         <a
           href="https://docs.takaro.io"
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Book size={24} />
+          <DocumentationIcon size={24} />
           <p>Documentation</p>
         </a>
       </Nav>

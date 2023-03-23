@@ -1,3 +1,5 @@
+// todo: this is deprecated in favor of a dialog version
+
 import { FC, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
@@ -128,7 +130,7 @@ const AddGameServer: FC = () => {
         });
         refetch();
       }
-      navigate(PATHS.gameServers.overview);
+      navigate(PATHS.gameServer.dashboard(serverId!));
     } catch (error) {
       setError(JSON.stringify(error));
     } finally {

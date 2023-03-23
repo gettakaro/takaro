@@ -1,11 +1,12 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { DashboardFrame } from '../frames/dashboardFrame';
-import { StudioFrame } from '../frames/studioFrame';
+import { GlobalFrame } from '../frames/GlobalFrame';
+import { StudioFrame } from '../frames/StudioFrame';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
+import { ServerFrame } from 'frames/GameServerFrame';
 
 const Container = styled.div`
   width: 100vw;
@@ -16,7 +17,7 @@ const Container = styled.div`
 `;
 
 interface AuthenticatedRouteProps {
-  frame: 'dashboard' | 'studio' | 'none';
+  frame: 'global' | 'studio' | 'gameserver';
 }
 
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
@@ -32,7 +33,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
       setIsAuth(true);
       setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
-      navigate(PATHS.login);
+      navigate(PATHS.login());
     } finally {
       isLoading(false);
     }
@@ -45,8 +46,10 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   function handleFrame() {
     switch (frame) {
-      case 'dashboard':
-        return <DashboardFrame />;
+      case 'global':
+        return <GlobalFrame />;
+      case 'gameserver':
+        return <ServerFrame />;
       case 'studio':
         return <StudioFrame />;
       default:

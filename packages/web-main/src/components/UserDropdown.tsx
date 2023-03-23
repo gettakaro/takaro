@@ -93,7 +93,7 @@ export const UserDropDown: FC = () => {
       const loggedOut = await logOut();
       if (loggedOut) {
         enqueueSnackbar('You logged out successfully', { variant: 'default' });
-        navigate(PATHS.login);
+        navigate(PATHS.login());
         return;
       }
       throw new errors.FailedLogOutError('');
@@ -114,7 +114,7 @@ export const UserDropDown: FC = () => {
       </HeaderIcon>
       <h3>Settings</h3>
       <Content>
-        <Link to={PATHS.profile}>
+        <Link to={PATHS.profile()}>
           <User size={24} /> <p>Profile</p>
         </Link>
         <li onClick={handleLogOut}>
