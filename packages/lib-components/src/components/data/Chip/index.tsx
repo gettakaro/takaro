@@ -1,7 +1,7 @@
 // TODO: refactor component
 // TODO: add boolean dot prop
 
-import { FC, ReactNode } from 'react';
+import { forwardRef, ReactNode } from 'react';
 import { AiOutlineClose as Icon } from 'react-icons/ai';
 import { Container, Dot } from './style';
 import { AlertVariants, Color, Variant } from '../../../styled/types';
@@ -20,46 +20,53 @@ export interface ChipProps {
   isLoading?: boolean;
 }
 
-export const Chip: FC<ChipProps> = ({
-  avatar,
-  color = 'gray',
-  variant = 'default',
-  label,
-  disabled = false,
-  onClick = undefined,
-  onDelete = undefined,
-  isLoading = false,
-  dot,
-}) => {
-  if (isLoading) {
+export const Chip = forwardRef<HTMLDivElement, ChipProps>(
+  (
+    {
+      avatar,
+      color = 'gray',
+      variant = 'default',
+      label,
+      disabled = false,
+      onClick = undefined,
+      onDelete = undefined,
+      isLoading = false,
+      dot,
+    },
+    ref
+  ) => {
+    if (isLoading) {
+      return (
+        <Container
+          ref={ref}
+          clickable={onClick !== undefined}
+          color={color}
+          disabled={disabled}
+          hasAvatar={!!avatar}
+          outline={false}
+          onClick={onClick ? onClick : undefined}
+          className="placeholder"
+        >
+          <>{label}</>
+        </Container>
+      );
+    }
+
     return (
       <Container
+        ref={ref}
         clickable={onClick !== undefined}
         color={color}
         disabled={disabled}
         hasAvatar={!!avatar}
-        outline={false}
         onClick={onClick ? onClick : undefined}
-        className="placeholder"
+        outline={variant !== 'default'}
       >
-        <>{label}</>
+        {dot && <Dot color={color} outline={variant !== 'default'} />}
+        {avatar}
+        <span>{label}</span>
+        {onDelete && <Icon onClick={onDelete} size={14} />}
       </Container>
     );
   }
-
-  return (
-    <Container
-      clickable={onClick !== undefined}
-      color={color}
-      disabled={disabled}
-      hasAvatar={!!avatar}
-      onClick={onClick ? onClick : undefined}
-      outline={variant !== 'default'}
-    >
-      {dot && <Dot color={color} outline={variant !== 'default'} />}
-      {avatar}
-      <span>{label}</span>
-      {onDelete && <Icon onClick={onDelete} size={14} />}
-    </Container>
-  );
-};
+);
