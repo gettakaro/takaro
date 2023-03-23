@@ -7,6 +7,7 @@ import { useUser } from '../hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { ServerFrame } from 'frames/GameServerFrame';
+import { setUser } from '@sentry/react';
 
 const Container = styled.div`
   width: 100vw;
@@ -30,6 +31,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
   const handleAuth = useCallback(async () => {
     try {
       const user = await getSession();
+      setUser({ id: user.id! });
       setIsAuth(true);
       setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {

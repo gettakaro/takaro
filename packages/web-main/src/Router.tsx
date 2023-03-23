@@ -1,22 +1,21 @@
 import { FC, lazy, Suspense } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 
-import { Error404, LoadingPage } from '@takaro/lib-components';
+import { PageNotFound, LoadingPage } from '@takaro/lib-components';
 import { AnimatePresence } from 'framer-motion';
 import Dashboard from 'pages/Dashboard';
 import { PATHS } from 'paths';
 import { AuthenticatedRoute } from 'components/AuthenticatedRoute';
-import {
-  AiOutlineBook,
-  AiOutlineMenu,
-  AiOutlineWifi,
-  AiOutlineShop,
-} from 'react-icons/ai';
+
 import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
+import { withSentryReactRouterV6Routing } from '@sentry/react';
+
+const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
+
 const LogIn = lazy(() => import('./pages/LogIn'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Studio = lazy(() => import('./pages/studio'));
@@ -29,40 +28,13 @@ const GameServerSettings = lazy(
 const GameServerModules = lazy(
   () => import('./pages/gameserver/GameServerModules')
 );
-
-// TODO: Eventually set this to the correct pages.
-const error404Pages = [
-  {
-    icon: <AiOutlineBook />,
-    title: 'Documentation',
-    description: 'Learn how to integrate our tools with your app',
-    to: '',
-  },
-  {
-    icon: <AiOutlineMenu />,
-    title: 'Api reference',
-    description: 'A complete API reference for our libraries',
-    to: '',
-  },
-  {
-    icon: <AiOutlineWifi />,
-    title: 'Guides',
-    description: 'Installation guides that cover popular setups',
-    to: '',
-  },
-  {
-    icon: <AiOutlineShop />,
-    title: 'Blog',
-    description: 'Read our latest news and articles',
-    to: '',
-  },
-];
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 export const Router: FC = () => (
   <BrowserRouter>
     <AnimatePresence exitBeforeEnter>
       <Suspense fallback={<LoadingPage />}>
-        <Routes>
+        <SentryRoutes>
           {/* ======================== Global ======================== */}
           <Route
             element={<AuthenticatedRoute frame="global" />}
@@ -108,13 +80,8 @@ export const Router: FC = () => (
           <Route element={<LogIn />} path={PATHS.login()} />
 
           {/* Page not found matches with everything => should stay at bottom */}
-          <Route
-            element={
-              <Error404 pages={error404Pages} homeRoute={PATHS.home()} />
-            }
-            path="*"
-          />
-        </Routes>
+          <Route element={<NotFound />} path="*" />
+        </SentryRoutes>
       </Suspense>
     </AnimatePresence>
   </BrowserRouter>

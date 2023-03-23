@@ -1,13 +1,19 @@
-import { Meta, Story } from '@storybook/react';
-import { Error404, Error404Props } from '.';
-import { AiOutlineBook, AiOutlineMenu, AiOutlineWifi, AiOutlineShop } from 'react-icons/ai';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
+import { PageNotFound, PageNotFoundProps } from '.';
+import {
+  AiOutlineBook,
+  AiOutlineMenu,
+  AiOutlineWifi,
+  AiOutlineShop,
+} from 'react-icons/ai';
 
 export default {
   title: 'Views/Error404',
-  component: Error404
+  component: PageNotFound,
 } as Meta;
 
-export const Default: Story<Error404Props> = () => {
+export const Default: StoryFn<PageNotFoundProps> = () => {
   const pages = [
     {
       icon: <AiOutlineBook />,
@@ -32,7 +38,7 @@ export const Default: Story<Error404Props> = () => {
       title: 'Blog',
       description: 'Read our latest news and articles',
       to: '',
-    }
+    },
   ];
-  return <Error404 pages={pages} homeRoute="/" />;
+  return <PageNotFound pages={pages} homeRoute="/" />;
 };
