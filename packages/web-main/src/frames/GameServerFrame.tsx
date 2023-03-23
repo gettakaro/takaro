@@ -1,9 +1,10 @@
 import { FC, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { styled } from '@takaro/lib-components';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { ErrorFallback, LoadingPage, styled } from '@takaro/lib-components';
+import { Outlet } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar, NavbarLink } from 'components/Navbar';
+import { Page } from '../pages/Page';
 import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
@@ -18,7 +19,7 @@ import {
   GameServerOutputDTOTypeEnum,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { useSnackbar } from 'notistack';
+import { ErrorBoundary } from '@sentry/react';
 
 const Container = styled.div`
   display: flex;
@@ -30,9 +31,6 @@ const ContentContainer = styled(motion.div)`
   width: 100%;
   opacity: 0;
   overflow-y: auto;
-`;
-const Page = styled.div`
-  padding: 3rem 6rem;
 `;
 
 // the default value is required to make the type checker happy.
@@ -50,11 +48,9 @@ export const ServerFrame: FC = () => {
     defaultGameServerData
   );
   const { serverId } = useParams();
-  const navigate = useNavigate();
   const apiClient = useApiClient();
-  const { enqueueSnackbar } = useSnackbar();
 
-  const { isLoading } = useQuery<GameServerOutputDTO>(
+  const { isLoading, isError } = useQuery<GameServerOutputDTO>(
     `gameserver/${serverId}`,
     async () => {
       return (await apiClient.gameserver.gameServerControllerGetOne(serverId!))
@@ -62,11 +58,6 @@ export const ServerFrame: FC = () => {
     },
     {
       onSuccess: (data: GameServerOutputDTO) => setGameServerData({ ...data }),
-      onError: () => {
-        // TODO: we probably should show an error page instead of a snackbar, but fine for now
-        enqueueSnackbar('Server not found', { variant: 'default' });
-        navigate(PATHS.home());
-      },
     }
   );
 
@@ -94,10 +85,6 @@ export const ServerFrame: FC = () => {
     },
   ];
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <GameServerContext.Provider value={providerGameServerData}>
       <Container>
@@ -108,7 +95,10 @@ export const ServerFrame: FC = () => {
         >
           <Header />
           <Page>
-            <Outlet />
+            <ErrorBoundary fallback={<ErrorFallback />}>
+              {isLoading && <LoadingPage />}
+              {isError ? <div>Server not found</div> : <Outlet />}
+            </ErrorBoundary>
           </Page>
         </ContentContainer>
       </Container>

@@ -7,8 +7,8 @@ const fontSize = {
   small: '1.2rem',
   medium: '1.825rem',
   mediumLarge: '2.825rem',
-  large: '4.25rem',
-  huge: '6rem',
+  large: '3.420rem',
+  huge: '4.2rem',
 };
 
 export const lightTheme = {

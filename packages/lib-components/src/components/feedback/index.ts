@@ -13,8 +13,8 @@ export { NetworkDetector } from './NetworkDetector';
 export { NotificationBanner } from './NotificationBanner';
 export type { NotificationBannerProps } from './NotificationBanner';
 
-export { Error } from './Error';
-export type { ErrorProps } from './Error';
+export { ErrorFallback } from './ErrorFallback';
+export type { ErrorFallbackProps } from './ErrorFallback';
 
 export { ProgressBar } from './ProgressBar';
 export type { ProgressBarProps } from './ProgressBar';
@@ -22,5 +22,8 @@ export type { ProgressBarProps } from './ProgressBar';
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
 
-export { ErrorMessage } from './ErrorMessage/';
-export type { ErrorMessageProps } from './ErrorMessage/';
+export { ErrorMessage } from './ErrorMessage';
+export type { ErrorMessageProps } from './ErrorMessage';
+
+export { PageNotFound } from './PageNotFound';
+export type { PageNotFoundProps } from './PageNotFound';

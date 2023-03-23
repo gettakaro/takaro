@@ -1,3 +1,4 @@
+import { EnvVars } from 'EnvVars';
 import { createContext } from 'react';
 
 export interface TakaroConfig {
@@ -11,8 +12,19 @@ declare global {
   }
 }
 
-export function getConfigVar(name: string) {
-  return window.__env__[name] || process.env[name];
+export function getConfigVar(name: EnvVars) {
+  if (window.__env__[name]) {
+    return window.__env__[name];
+  }
+
+  console.log(import.meta.env);
+  // if not found in env.js, vite automatically loads all env vars with VITE_ prefix
+  switch (name) {
+    case EnvVars.VITE_API:
+      return import.meta.env.VITE_API;
+    case EnvVars.VITE_ORY_URL:
+      return import.meta.env.VITE_ORY_URL;
+  }
 }
 
 export const ConfigContext = createContext<TakaroConfig>(

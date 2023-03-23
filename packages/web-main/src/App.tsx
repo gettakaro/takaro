@@ -8,7 +8,7 @@ import {
   SnackbarProvider,
   darkTheme,
 } from '@takaro/lib-components';
-import { Router } from 'Router';
+import { Router } from './Router';
 import { useMemo, useState } from 'react';
 import { UserContext, UserData } from 'context/userContext';
 import {
@@ -16,6 +16,7 @@ import {
   TakaroConfig,
   getConfigVar,
 } from 'context/configContext';
+import { EnvVars } from 'EnvVars';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,8 +48,8 @@ function App() {
   // if not we need to wait until the script is loaded
   const loadConfig = function () {
     const cfg = {
-      apiUrl: getConfigVar('REACT_APP_API'),
-      oryUrl: getConfigVar('REACT_APP_ORY_URL'),
+      apiUrl: getConfigVar(EnvVars.VITE_API),
+      oryUrl: getConfigVar(EnvVars.VITE_ORY_URL),
     };
     setConfig(cfg as unknown as TakaroConfig);
     setLoading(false);
