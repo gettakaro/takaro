@@ -2,7 +2,6 @@ import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@takaro/lib-components';
 import { AiFillPlusCircle } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
 
 const GameServers: FC = () => {
   return (

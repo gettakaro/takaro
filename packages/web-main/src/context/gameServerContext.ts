@@ -1,13 +1,13 @@
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { Dispatch, createContext } from 'react';
 
-export interface GameServerContext {
+export interface IGameServerContext {
   gameServerData: GameServerData;
   setGameServerData: Dispatch<GameServerData>;
 }
 
 export interface GameServerData extends GameServerOutputDTO {}
 
-export const GameServerContext = createContext<GameServerContext>(
-  null as unknown as GameServerContext
+export const GameServerContext = createContext<IGameServerContext>(
+  null as unknown as IGameServerContext
 );

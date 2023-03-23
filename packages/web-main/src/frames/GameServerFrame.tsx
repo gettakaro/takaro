@@ -63,9 +63,9 @@ export const ServerFrame: FC = () => {
     {
       onSuccess: (data: GameServerOutputDTO) => setGameServerData({ ...data }),
       onError: () => {
-        // TODO: we probably should show an error page instead of a snackbar.
-        //enqueueSnackbar('Server not found', { variant: 'default' });
-        //navigate(PATHS.home());
+        // TODO: we probably should show an error page instead of a snackbar, but fine for now
+        enqueueSnackbar('Server not found', { variant: 'default' });
+        navigate(PATHS.home());
       },
     }
   );
