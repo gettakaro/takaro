@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import { Chip, Dropdown, styled } from '@takaro/lib-components';
+import { Chip, Dropdown, styled, Tooltip } from '@takaro/lib-components';
+import { FloatingDelayGroup } from '@floating-ui/react';
 import {
   GameServerOutputDTO,
   GameServerSearchInputDTO,
@@ -22,6 +23,11 @@ const Container = styled.div`
   border-radius: 5px;
   cursor: pointer;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateX(-5px);
+  }
 `;
 
 const EmptyContainer = styled(Container)`
@@ -98,11 +104,20 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
             }
           />
         </Header>
-        <Chip label={type} />
-        <Chip
-          label={`${data.data.connectable ? 'online' : 'Offline'}`}
-          color={data.data.connectable ? 'success' : 'error'}
-        />
+        <FloatingDelayGroup delay={{ open: 400, close: 200 }}>
+          <Tooltip label="Game server type" placement="bottom">
+            <Chip label={type} />
+          </Tooltip>
+          <Tooltip
+            label="Can Takaro connect with your game server"
+            placement="bottom"
+          >
+            <Chip
+              label={`${data.data.connectable ? 'connected' : 'disconnected'}`}
+              color={data.data.connectable ? 'success' : 'error'}
+            />
+          </Tooltip>
+        </FloatingDelayGroup>
       </Body>
       <Footer>
         {/* currently empty but could hold, fast navigation to certain pages of server e.g. console */}

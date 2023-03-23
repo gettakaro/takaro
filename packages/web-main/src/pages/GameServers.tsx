@@ -37,11 +37,6 @@ const GameServers: FC = () => {
       <Helmet>
         <title>Gameservers - Takaro</title>
       </Helmet>
-      <Button
-        icon={<AiFillPlusCircle size={20} />}
-        onClick={() => {}}
-        text="Add gameserver"
-      />
       <List>
         {data.data.map((gameServer) => (
           <GameServerCard key={gameServer.id} {...gameServer} />

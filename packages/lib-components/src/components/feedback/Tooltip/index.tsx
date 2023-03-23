@@ -27,7 +27,7 @@ export interface TooltipProps {
 }
 
 const Container = styled(motion.div)<{ elevation: Elevation }>`
-  background: #222;
+  background: ${({ theme }) => theme.colors.background};
   color: white;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
