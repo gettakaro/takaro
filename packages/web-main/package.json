@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@sentry/react": "^7.44.2",
+    "@sentry/tracing": "^7.44.2",
     "@takaro/lib-components": "0.0.1",
     "react-query": "^3.39.2",
     "socket.io-client": "^4.5.2",
