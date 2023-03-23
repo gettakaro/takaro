@@ -5,9 +5,12 @@
     "composite": true,
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "./tsconfig.vite.json"
+    }
+  ]
 }

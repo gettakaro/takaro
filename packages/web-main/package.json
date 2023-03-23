@@ -2,16 +2,10 @@
   "name": "web-main",
   "version": "0.0.1",
   "private": true,
-  "dependencies": {
-    "@takaro/lib-components": "0.0.1",
-    "react-query": "^3.39.2",
-    "socket.io-client": "^4.5.2",
-    "typescript": "^4.7.4",
-    "web-vitals": "^2.1.4"
-  },
   "scripts": {
-    "start:dev": "PORT=13001 craco start",
-    "build": "BUILD_PATH='./dist' craco build",
+    "start:dev": "vite dev --port 13001 --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo 'no tests :('",
     "test:watch": "echo 'no tests :('",
     "eject": "craco eject"
@@ -34,8 +28,16 @@
       "last 1 safari version"
     ]
   },
+  "dependencies": {
+    "@takaro/lib-components": "0.0.1",
+    "react-query": "^3.39.2",
+    "socket.io-client": "^4.5.2",
+    "typescript": "^4.7.4",
+    "web-vitals": "^2.1.4"
+  },
   "devDependencies": {
     "@hookform/devtools": "^4.2.2",
+    "@vitejs/plugin-react": "^3.1.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -43,6 +45,8 @@
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "vite": "^4.2.1",
+    "vite-tsconfig-paths": "^4.0.7"
   }
 }

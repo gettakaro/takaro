@@ -2,7 +2,7 @@
 # Homepage configuration
 # See https://fontawesome.com/v5/search for icons options
 
-title: "Dev dashboard"
+title: "Dashboard"
 subtitle: "Takaro"
 logo: "logo.png"
 # icon: "fas fa-skull-crossbones" # Optional icon
@@ -53,12 +53,20 @@ message:
 links:
   - name: "Github"
     icon: "fab fa-github"
-    url: "https://github.com/niekcandaele/takaro"
-    target: "_blank" # optional html a tag target attribute
+    url: "https://github.com/gettakaro/takaro"
+    target: "_blank"
   - name: "Docs"
-    icon: "fab fa-book"
+    icon: "fa fa-book"
     url: "https://docs.takaro.io"
-    target: "_blank" # optional html a tag target attribute
+    target: "_blank"
+  - name: "Roadmap"
+    icon: "fa fa-tasks"
+    url: "https://github.com/orgs/gettakaro/projects/1?query=is%3Aopen+sort%3Aupdated-desc"
+    target: "_blank"
+  - name: "Monitoring"
+    icon: "fa fa-chart-line"
+    url: "https://takaro.grafana.net"
+    target: "_blank"
 #  - name: "Wiki"
 #    icon: "fas fa-book"
 #    url: "https://www.wikipedia.org/"
