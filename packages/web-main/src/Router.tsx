@@ -15,6 +15,9 @@ import {
 import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
+import { withSentryReactRouterV6Routing } from '@sentry/react';
+
+const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -62,7 +65,7 @@ export const Router: FC = () => (
   <BrowserRouter>
     <AnimatePresence exitBeforeEnter>
       <Suspense fallback={<LoadingPage />}>
-        <Routes>
+        <SentryRoutes>
           {/* ======================== Global ======================== */}
           <Route
             element={<AuthenticatedRoute frame="global" />}
@@ -114,7 +117,7 @@ export const Router: FC = () => (
             }
             path="*"
           />
-        </Routes>
+        </SentryRoutes>
       </Suspense>
     </AnimatePresence>
   </BrowserRouter>
