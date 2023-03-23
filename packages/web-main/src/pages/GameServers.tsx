@@ -42,9 +42,7 @@ const GameServers: FC = () => {
       </Helmet>
       <Button
         icon={<AiFillPlusCircle size={20} />}
-        onClick={() => {
-          navigate(PATHS.gameServers.create);
-        }}
+        onClick={() => {}}
         text="Add gameserver"
       />
       <List>

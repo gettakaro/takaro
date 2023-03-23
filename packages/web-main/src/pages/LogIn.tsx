@@ -151,7 +151,7 @@ const LogIn: FC = () => {
           csrfToken!
         );
         setUserData(userData);
-        navigate(PATHS.home);
+        navigate(PATHS.home());
       }
     } catch (error) {
       reset();

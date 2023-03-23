@@ -45,10 +45,7 @@ export const ModulesTable: FC = () => {
     columnHelper.accessor('name', {
       header: 'Name',
       cell: ({ row }) => (
-        <TableLink
-          type="normal"
-          to={PATHS.studio.module.replace(':moduleId', row.id)}
-        >
+        <TableLink type="normal" to={PATHS.studio.module(row.id)}>
           {row.original.name}
         </TableLink>
       ),

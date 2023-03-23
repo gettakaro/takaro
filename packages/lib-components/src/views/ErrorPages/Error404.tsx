@@ -122,7 +122,7 @@ export const Error404: FC<Error404Props> = ({ pages, homeRoute }) => {
           <h4>Popular pages</h4>
           <ul>
             {pages.map(({ icon, title, description, to }) => (
-              <li>
+              <li key={`${title}-${to}`}>
                 <Link to={to}>
                   <ChevronRightIcon />
                   <IconContainer>

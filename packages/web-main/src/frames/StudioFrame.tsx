@@ -107,7 +107,7 @@ export const StudioFrame: FC = () => {
     {
       icon: <HomeIcon />,
       title: 'Home',
-      to: PATHS.home,
+      to: PATHS.home(),
     },
     {
       icon: <FileIcon />,
@@ -117,7 +117,7 @@ export const StudioFrame: FC = () => {
     {
       icon: <SettingsIcon />,
       title: 'Settings',
-      to: PATHS.studio.settings,
+      to: PATHS.studio.settings(module.id),
     },
   ];
 

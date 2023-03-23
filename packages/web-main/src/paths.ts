@@ -1,22 +1,25 @@
 export const PATHS = {
-  home: '/',
-  login: '/login',
-  settings: '/settings',
-  settingsGameserver: '/settings/:serverId',
-  gameServers: {
-    dashboard: '/servers/:serverId',
-    overview: '/servers',
-    create: '/servers/create',
-    update: '/servers/update/:serverId',
+  home: () => '/',
+  login: () => '/login',
+  users: () => '/users',
+  profile: () => '/profile',
+  players: () => '/players',
+  settings: () => '/settings',
+  gameServers: () => '/servers',
+  moduleDefinitions: () => '/modules',
+
+  gameServer: {
+    dashboard: (serverId: string) => `/server/${serverId}`,
+    settings: (serverId: string) => `/server/${serverId}/settings`,
+    modules: (serverId: string) => `/server/${serverId}/modules`,
   },
-  players: '/players',
+
   modules: {
-    overview: '/modules',
+    module: (moduleId: string) => `/modules/${moduleId}`,
   },
+
   studio: {
-    module: '/studio/:moduleId',
-    settings: '/studio/:moduleId/settings',
+    module: (moduleId: string) => `/studio/${moduleId}`,
+    settings: (moduleId: string) => `/studio/${moduleId}/settings`,
   },
-  users: '/users',
-  profile: '/profile',
 };
