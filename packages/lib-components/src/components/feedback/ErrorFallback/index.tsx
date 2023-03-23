@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { styled } from '../../../styled';
-import { AiOutlineApi as ErrorIcon } from 'react-icons/ai';
+import { AiOutlineCrown as ErrorIcon } from 'react-icons/ai';
 
 const Wrapper = styled.div`
   display: grid;
@@ -15,9 +15,6 @@ const Container = styled.div`
   max-width: 600px;
   align-items: center;
   text-align: center;
-  h3 {
-    font-size: ${({ theme }) => theme.fontSize.medium};
-  }
   p {
     margin-bottom: ${({ theme }) => theme.spacing['1_5']};
   }
@@ -31,15 +28,15 @@ export interface ErrorFallbackProps {
 
 // This should be used as a fallback component for error boundaries.
 export const ErrorFallback: FC<ErrorFallbackProps> = ({
-  title = 'Woops, we ran into an error!',
-  description = 'Thank you for giving us extra work.',
+  title = 'Sorry king, we ran into an error!',
+  description = 'But thank you for giving us extra work.',
   showIcon = true,
 }) => {
   return (
     <Wrapper>
       <Container>
         {showIcon && <ErrorIcon size={80} />}
-        <h3>{title}</h3>
+        <h2>{title}</h2>
         <p>{description}</p>
       </Container>
     </Wrapper>
