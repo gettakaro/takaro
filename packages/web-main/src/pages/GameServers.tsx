@@ -1,8 +1,6 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { AiFillPlusCircle } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
-import { PATHS } from 'paths';
 import { useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { styled, Button } from '@takaro/lib-components';
@@ -19,7 +17,6 @@ const List = styled.ul`
 `;
 
 const GameServers: FC = () => {
-  const navigate = useNavigate();
   const client = useApiClient();
 
   const { data, isLoading } = useQuery<GameServerOutputArrayDTOAPI>(
@@ -50,7 +47,9 @@ const GameServers: FC = () => {
           <GameServerCard key={gameServer.id} {...gameServer} />
         ))}
         <EmptyGameServerCard
-          onClick={() => navigate(PATHS.gameServers.create)}
+          onClick={() => {
+            /* blocked by <drawer /> */
+          }}
         />
       </List>
     </Fragment>

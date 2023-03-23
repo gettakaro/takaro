@@ -82,7 +82,7 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
   }
 
   return (
-    <Container onClick={() => navigate(`${PATHS.gameServers.overview}/${id}`)}>
+    <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
           <h3>{name}</h3>

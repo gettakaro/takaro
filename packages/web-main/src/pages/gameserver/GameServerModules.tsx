@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 const GameServerModules: FC = () => {
-  return <div>game server settings</div>;
+  return <div>game server modules</div>;
 };
 
 export default GameServerModules;
