@@ -1,4 +1,4 @@
-import { Control, FieldError, FieldValues } from 'react-hook-form';
+import { Control, FieldValues } from 'react-hook-form';
 import { Size } from '../../styled';
 
 interface DefaultInputProps {
@@ -14,7 +14,6 @@ export interface InputProps extends DefaultInputProps {
   name: string;
   /// These can just have undefined as default value.
   label?: string;
-  error?: FieldError;
   hint?: string;
   description?: string;
   value?: unknown;

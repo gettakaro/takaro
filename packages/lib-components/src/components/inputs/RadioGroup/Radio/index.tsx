@@ -33,7 +33,6 @@ export const Radio: FC<RadioProps> = (props) => {
     name,
     size,
     required,
-    error,
     value,
     selected,
     setSelected,
@@ -54,7 +53,10 @@ export const Radio: FC<RadioProps> = (props) => {
     }
   }, [selected]);
 
-  const { field } = useController({
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
     name,
     control,
     defaultValue: selected ?? value,

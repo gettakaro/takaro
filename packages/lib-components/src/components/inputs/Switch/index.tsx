@@ -18,7 +18,6 @@ export const Switch: FC<InputProps> = (props) => {
     name,
     required,
     disabled,
-    error,
     hint,
     label,
     loading,
@@ -26,7 +25,10 @@ export const Switch: FC<InputProps> = (props) => {
     value = false,
   } = defaultsApplier(props);
 
-  const { field } = useController({ name, control, defaultValue: value });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control, defaultValue: value });
   const [isChecked, setChecked] = useState(field.value);
 
   function handleOnClick(): void {
