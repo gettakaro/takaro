@@ -81,7 +81,6 @@ const SettingsPage: FC = () => {
           control={control}
           label={key}
           name={key}
-          error={formState.errors[key]}
           placeholder=""
           key={key}
         />
