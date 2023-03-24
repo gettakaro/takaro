@@ -71,17 +71,6 @@ class SocketServer {
         next: (err?: Error | undefined) => void
       ) => this.logMiddleware(socket, next)
     );
-    this.io.use(
-      (
-        socket: Socket<
-          ClientToServerEvents,
-          ServerToClientEvents,
-          InterServerEvents,
-          SocketData
-        >,
-        next: (err?: Error | undefined) => void
-      ) => this.authMiddleware(socket, next)
-    );
 
     this.io.on('connection', (socket) => {
       socket.on('ping', () => {
