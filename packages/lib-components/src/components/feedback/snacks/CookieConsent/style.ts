@@ -5,7 +5,7 @@ export const Wrapper = styled.div`
   border: 0.2rem solid ${({ theme }) => theme.colors.primary};
   padding: ${({ theme }) => theme.spacing['1_5']};
   max-width: 450px;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   box-shadow: ${({ theme }) => theme.elevation[4]};
 
   & > p {
@@ -71,7 +71,7 @@ export const CookieTypeContainer = styled.div<{ active: boolean }>`
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
   padding: ${({ theme }) =>
     `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing[1]}`};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -90,7 +90,7 @@ export const NecessaryCookieContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   padding: ${({ theme }) => `${theme.spacing['1_5']} ${theme.spacing[2]}`};
   margin-bottom: ${({ theme }) => theme.spacing[1]};
   background-color: ${({ theme }) => lighten(0, theme.colors.primary)};

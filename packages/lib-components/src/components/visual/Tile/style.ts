@@ -7,7 +7,7 @@ export const Container = styled.div<{
 }>`
   width: 300px;
   height: 285px;
-  border-radius: 15px;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   box-shadow: 1px 14px 15px -12px #00000023;
   display: flex;
   align-items: center;

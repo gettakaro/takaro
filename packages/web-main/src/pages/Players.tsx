@@ -13,6 +13,7 @@ import {
   PlayerSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
+import { QueryKeys } from 'queryKeys';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -27,7 +28,7 @@ const Players: FC = () => {
     useTableActions<PlayerOutputDTO>();
 
   const { data, isLoading, refetch } = useQuery(
-    ['players', pagination.paginationState, sorting.sortingState],
+    [QueryKeys.players.list, pagination.paginationState, sorting.sortingState],
     async () =>
       pagination.paginate(
         await client.player.playerControllerSearch({

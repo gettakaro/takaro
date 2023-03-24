@@ -8,6 +8,7 @@ import { Settings, SettingsOutputObjectDTOAPI } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import { QueryKeys } from 'queryKeys';
 
 interface IFormInputs {
   commandPrefix: string;
@@ -33,9 +34,9 @@ const SettingsPage: FC = () => {
   const apiClient = useApiClient();
   const { serverId } = useParams();
 
-  const { data, isLoading } = useQuery<SettingsOutputObjectDTOAPI['data']>(
-    `settings`,
-    async function () {
+  const { data, isLoading } = useQuery<SettingsOutputObjectDTOAPI['data']>({
+    queryKey: QueryKeys.settings,
+    queryFn: async () => {
       const data = (
         await apiClient.settings.settingsControllerGet(undefined, serverId)
       ).data.data;
@@ -44,8 +45,8 @@ const SettingsPage: FC = () => {
         setValue(key, value!!);
       });
       return data;
-    }
-  );
+    },
+  });
 
   const validationSchema = useMemo(() => {
     const schema = {};
@@ -55,11 +56,10 @@ const SettingsPage: FC = () => {
     return yup.object(schema);
   }, [data]);
 
-  const { control, handleSubmit, formState, setValue, getValues } =
-    useForm<IFormInputs>({
-      mode: 'onSubmit',
-      resolver: useValidationSchema(validationSchema),
-    });
+  const { control, handleSubmit, setValue, getValues } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
+  });
 
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
     const formValues = getValues();
@@ -98,9 +98,6 @@ const SettingsPage: FC = () => {
         <Button
           icon={<AiFillSave />}
           isLoading={isLoading}
-          onClick={() => {
-            /* dummy */
-          }}
           text="Save"
           type="submit"
           variant="default"

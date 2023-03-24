@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 const ColumnList = styled.ul`
   background-color: white;
   width: fit-content;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 const ColumnListItem = styled.li<{ isSelected: boolean }>`
@@ -36,7 +36,7 @@ const FilterContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   padding: ${({ theme }) => theme.spacing[3]};
   box-shadow: ${({ theme }) => theme.elevation[3]};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   div {
     display: flex;
     flex-direction: row;

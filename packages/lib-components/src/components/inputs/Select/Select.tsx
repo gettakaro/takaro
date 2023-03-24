@@ -41,7 +41,6 @@ import {
   defaultInputPropsFactory,
   defaultInputProps,
 } from '../InputProps';
-import { ErrorMessage } from '../ErrorMessage';
 
 export interface SelectProps extends InputProps {
   render: (selectedIndex: number) => React.ReactNode;
@@ -60,7 +59,6 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     render,
     children,
     control,
-    value,
     disabled,
     hint,
     loading,
@@ -83,14 +81,12 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
   } = useController({
     name,
     control,
-    defaultValue: Math.max(0, listContentRef.current.indexOf(value)),
   });
 
   const [open, setOpen] = useState(false);
-  const [showError] = useState<boolean>(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, listContentRef.current.indexOf(value))
+    Math.max(0, listContentRef.current.indexOf(field.value))
   );
 
   const [pointer, setPointer] = useState(false);
@@ -104,17 +100,16 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
-      /* TODO: is this rem, px? something else? */
       offset(5),
-      flip({ padding: 8 }),
+      flip({ fallbackPlacements: ['top', 'bottom'], padding: 10 }),
       size({
         apply({ rects, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
+            width: `${rects.reference.width}px`, // based on the width of currently selected element
             maxHeight: `${availableHeight}px`,
           });
         },
-        padding: 8,
+        padding: 10,
       }),
     ],
   });
@@ -219,8 +214,9 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
         >
           {render(selectedIndex - 1)}
           <ArrowIcon size={18} isOpen={open} />
+
+          {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>
-        {error && showError && <ErrorMessage message={error.message!} />}
         {open && (
           <FloatingOverlay lockScroll>
             <FloatingFocusManager

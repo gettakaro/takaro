@@ -60,7 +60,7 @@ const CurrentAction = styled.div`
 const Container = styled.div`
   display: flex;
   align-items: center;
-  border-radius: 0.8rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   width: max-content;
 
   &:hover ${DropdownActionContainer} {

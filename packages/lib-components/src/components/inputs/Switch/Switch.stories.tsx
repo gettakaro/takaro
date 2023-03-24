@@ -9,7 +9,6 @@ import { Button } from '../..';
 const Wrapper = styled.div`
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
 
   & > div {
     margin: 0 auto;

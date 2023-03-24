@@ -26,13 +26,13 @@ export const ContentContainer = styled.div`
 export const Line = styled.span<{ isChecked: boolean; readOnly: boolean }>`
   display: block;
   width: 100%;
-  border-radius: 2rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   height: 0.9rem;
   transition: background 0.2s ease-in-out;
   background: ${({ theme, readOnly, isChecked }): string => {
     let color = isChecked
       ? lighten(0.2, theme.colors.primary)
-      : theme.colors.gray;
+      : theme.colors.backgroundAlt;
     if (readOnly) {
       color = darken(0.2, theme.colors.gray);
     }
@@ -49,9 +49,9 @@ export const Dot = styled(motion.span)<{
   height: 1.8rem;
   border: 0.1rem solid
     ${({ theme, isChecked }) =>
-      isChecked ? theme.colors.primary : theme.colors.gray};
+      isChecked ? theme.colors.primary : theme.colors.primary};
   background-color: ${({ theme, readOnly, isChecked }) => {
-    let color = isChecked ? theme.colors.primary : theme.colors.background;
+    let color = isChecked ? theme.colors.primary : theme.colors.primary;
     if (readOnly) {
       color = theme.colors.white;
     }

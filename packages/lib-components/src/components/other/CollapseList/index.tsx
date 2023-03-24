@@ -22,9 +22,8 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   justify-content: space-between;
   cursor: pointer;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
-  background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 0.5rem;
-  margin-bottom: ${({ theme }) => theme.spacing[1]};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
 
   svg {
     transform: ${({ isCollapsed }) =>
@@ -63,7 +62,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
             initial="collapsed"
             animate="open"
             exit="collapsed"
-            style={{ padding: theme.spacing[1], overflowX: 'hidden' }}
+            style={{ padding: theme.spacing['0_5'], overflowX: 'hidden' }}
             transition={{ duration: 0.125, ease: 'linear' }}
           >
             <motion.div
