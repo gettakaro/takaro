@@ -104,6 +104,7 @@
     "react-dom": "^18.2.0",
     "react-merge-refs": "^2.0.1",
     "react-scripts": "5.0.1",
+    "redis": "^4.6.5",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.10.1",
     "routing-controllers-openapi": "^4.0.0",

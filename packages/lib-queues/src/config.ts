@@ -24,7 +24,6 @@ export interface IQueuesConfig extends IBaseConfig {
     port: number;
     username: string;
     password: string;
-    tlsCa: string;
   };
 }
 
@@ -53,12 +52,6 @@ export const queuesConfigSchema = {
       format: String,
       default: '',
       env: 'REDIS_PASSWORD',
-    },
-    tlsCa: {
-      doc: 'Optional TLS certificate, if the redis server is using TLS',
-      format: String,
-      default: '',
-      env: 'REDIS_TLS_CA',
     },
   },
   queues: {

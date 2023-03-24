@@ -8,6 +8,12 @@ export interface IDbConfig extends IBaseConfig {
     password: string;
     database: string;
   };
+  redis: {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+  };
   systemSchema: string;
   baseDomainSchema: string;
   encryptionKey: string;
@@ -44,6 +50,32 @@ export const configSchema = {
       format: String,
       default: 'postgres',
       env: 'POSTGRES_DB',
+    },
+  },
+  redis: {
+    host: {
+      doc: 'The host of the redis server',
+      format: String,
+      default: 'localhost',
+      env: 'REDIS_HOST',
+    },
+    port: {
+      doc: 'The port of the redis server',
+      format: Number,
+      default: 6379,
+      env: 'REDIS_PORT',
+    },
+    username: {
+      doc: 'The username of the redis server',
+      format: String,
+      default: '',
+      env: 'REDIS_USERNAME',
+    },
+    password: {
+      doc: 'The password of the redis server',
+      format: String,
+      default: '',
+      env: 'REDIS_PASSWORD',
     },
   },
   systemSchema: {
