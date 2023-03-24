@@ -14,10 +14,8 @@ interface IHttpConfig extends IBaseConfig {
     allowedOrigins: string[];
   };
   auth: {
-    adminSecret: string;
     jwtSecret: string;
     jwtExpiresIn: string;
-    cookieName: string;
   };
   takaro: {
     clusterMode: CLUSTER_MODE;
@@ -59,12 +57,6 @@ const configSchema = {
     },
   },
   auth: {
-    adminSecret: {
-      doc: 'The secret used to authenticate admin requests',
-      format: String,
-      default: null,
-      env: 'ADMIN_SECRET',
-    },
     jwtSecret: {
       doc: 'The secret used to sign JWTs',
       format: String,
@@ -77,12 +69,6 @@ const configSchema = {
       default: '1 day',
       env: 'JWT_EXPIRES_IN',
     },
-    cookieName: {
-      doc: 'The name of the cookie used to store the JWT',
-      format: String,
-      default: 'takaro-token',
-      env: 'COOKIE_NAME',
-    },
   },
   takaro: {
     clusterMode: {
@@ -94,7 +80,7 @@ const configSchema = {
     maxVariables: {
       doc: 'The maximum number of variables that can be stored per domain',
       format: Number,
-      default: 1000,
+      default: 100,
       env: 'MAX_VARIABLES',
     },
   },

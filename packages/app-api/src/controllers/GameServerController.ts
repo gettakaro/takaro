@@ -40,7 +40,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
 import { Response } from 'express';
@@ -123,7 +123,7 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 })
 @JsonController()
 export class GameServerController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @Post('/gameserver/search')
   async search(
@@ -144,7 +144,7 @@ export class GameServerController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Get('/gameserver/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -152,7 +152,7 @@ export class GameServerController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Post('/gameserver')
   async create(
@@ -163,7 +163,7 @@ export class GameServerController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Put('/gameserver/:id')
   async update(
@@ -175,7 +175,7 @@ export class GameServerController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -184,7 +184,7 @@ export class GameServerController {
     return apiResponse();
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @Get('/gameserver/:id/reachability')
   async testReachabilityForId(
@@ -196,7 +196,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @Post('/gameserver/reachability')
   async testReachability(
@@ -212,7 +212,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Get('/gameserver/:gameserverId/module/:moduleId')
   async getModuleInstallation(
@@ -227,7 +227,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleOutputArrayDTOAPI)
   @Get('/gameserver/:id/modules')
   async getInstalledModules(
@@ -239,7 +239,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Post('/gameserver/:gameserverId/modules/:moduleId')
   async installModule(
@@ -252,7 +252,7 @@ export class GameServerController {
     return apiResponse();
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Delete('/gameserver/:gameserverId/modules/:moduleId')
   async uninstallModule(
@@ -264,7 +264,7 @@ export class GameServerController {
     return apiResponse();
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(CommandExecuteDTOAPI)
   @Post('/gameserver/:id/command')
   async executeCommand(
@@ -277,7 +277,7 @@ export class GameServerController {
     return apiResponse(result);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:id/message')
   async sendMessage(

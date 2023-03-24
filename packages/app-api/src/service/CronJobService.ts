@@ -9,7 +9,6 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { AuthService } from './AuthService.js';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
@@ -156,14 +155,11 @@ export class CronJobService extends TakaroService<
   }
 
   private async addCronToQueue(item: CronJobOutputDTO) {
-    const authService = new AuthService(this.domainId);
-
     await this.queues.queues.cronjobs.queue.add(
       item.id,
       {
         function: item.function.code,
         domainId: this.domainId,
-        token: await authService.getAgentToken(),
         itemId: item.id,
         gameServerId: 'any',
       },

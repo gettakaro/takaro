@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 @OpenAPI({
@@ -57,7 +57,7 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
 })
 @JsonController()
 export class FunctionController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_FUNCTIONS]))
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @Post('/function/search')
   async search(
@@ -78,7 +78,7 @@ export class FunctionController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Get('/function/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -86,7 +86,7 @@ export class FunctionController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
   async create(
@@ -97,7 +97,7 @@ export class FunctionController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
   async update(
@@ -109,7 +109,7 @@ export class FunctionController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(APIOutput)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

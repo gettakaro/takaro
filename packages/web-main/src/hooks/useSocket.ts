@@ -1,16 +1,13 @@
+import { EnvVars } from 'EnvVars';
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useConfig } from './useConfig';
 
 let socket: Socket<never, never> | null = null;
 
-declare global {
-  interface Window {
-    __env__: Record<string, string>;
-  }
-}
-
 export const useSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
+  const cfg = useConfig();
 
   useEffect(() => {
     if (!socket) return;
@@ -34,9 +31,9 @@ export const useSocket = () => {
     return { socket, isConnected };
   }
 
-  const apiUrl = window.__env__.REACT_APP_API || process.env.REACT_APP_API;
+  const apiUrl = cfg?.apiUrl;
 
-  if (!apiUrl) throw new Error('REACT_APP_API is not set');
+  if (!apiUrl) throw new Error(`${EnvVars.VITE_API} is not set`);
 
   socket = io(apiUrl, {
     withCredentials: true,

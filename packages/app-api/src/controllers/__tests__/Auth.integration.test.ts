@@ -1,6 +1,6 @@
-import { IntegrationTest, logInWithCapabilities } from '@takaro/test';
+import { IntegrationTest, logInWithPermissions } from '@takaro/test';
 import { RoleSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
-import { CAPABILITIES } from '../../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 const group = 'Auth';
 
@@ -8,9 +8,9 @@ const tests = [
   new IntegrationTest({
     snapshot: true,
     group,
-    name: 'Cannot access resource without capability',
+    name: 'Cannot access resource without permissions',
     setup: async function () {
-      await logInWithCapabilities(this.client, [CAPABILITIES.READ_USERS]);
+      await logInWithPermissions(this.client, [PERMISSIONS.READ_USERS]);
     },
     test: async function () {
       return this.client.role.roleControllerSearch({
@@ -23,10 +23,10 @@ const tests = [
   new IntegrationTest({
     snapshot: true,
     group,
-    name: 'Can access resource with capability',
+    name: 'Can access resource with permissions',
     filteredFields: ['roleId'],
     setup: async function () {
-      await logInWithCapabilities(this.client, [CAPABILITIES.READ_ROLES]);
+      await logInWithPermissions(this.client, [PERMISSIONS.READ_ROLES]);
     },
     test: async function () {
       return this.client.role.roleControllerSearch({

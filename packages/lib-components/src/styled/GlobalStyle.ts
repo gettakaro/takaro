@@ -53,25 +53,23 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     color: ${({ theme }) => theme.colors.text};
   }
 
-  p, span, div {
-    font-size: 1.3rem;
+  p, span, div, h4 {
+    font-size: ${({ theme }) => theme.fontSize.small};
   }
 
   h1 {
-    font-size: 3.2rem;
+    font-size: ${({ theme }) => theme.fontSize.large}
     font-weight: 800;
   }
   h2 {
-    font-size: 2.4rem;
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge}
     font-weight: 800;
   }
   h3 {
-    font-size: 1.8rem;
+    font-size: ${({ theme }) => theme.fontSize.medium}
     font-weight: 600;
   }
-  h4 {
-    font-size: 1.3rem;
-  }
+
 
   form {
     display: block;

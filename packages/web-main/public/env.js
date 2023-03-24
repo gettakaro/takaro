@@ -1,3 +1,4 @@
 window.__env__ = {
-  REACT_APP_API: '',
+  VITE_API: '',
+  VITE_ORY_URL: '',
 };

@@ -18,6 +18,10 @@ fi
 printHeader "Initializing datastores"
 
 mkdir -p _data
+mkdir -p _data/db
+mkdir -p _data/kratos-db
+mkdir -p _data/hydra-db
+ls -la _data
 
 # The prometheus container runs as a user with UID and GID 65534
 # so we need to make sure the data directory is writable by that user
@@ -44,11 +48,12 @@ printHeader "Building packages"
 # These require a specific order for the first build...
 npm run-script -w packages/lib-config build
 npm run-script -w packages/lib-util build
+npm run-script -w packages/lib-apiclient build
+npm run-script -w packages/lib-auth build
 npm run-script -w packages/lib-http build
 npm run-script -w packages/lib-db build
 npm run-script -w packages/lib-gameserver build
 npm run-script -w packages/lib-queues build
-npm run-script -w packages/lib-apiclient build
 npm run-script -w packages/lib-function-helpers build
 npm run-script -w packages/lib-modules build
 

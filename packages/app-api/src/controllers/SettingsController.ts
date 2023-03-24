@@ -25,7 +25,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 class GetSettingsOneInput extends TakaroDTO<GetSettingsOneInput> {
   @IsString()
@@ -87,7 +87,7 @@ class SettingsSetDTO {
 })
 @JsonController()
 export class SettingsController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Get('/settings/:key')
   async getOne(
@@ -103,7 +103,7 @@ export class SettingsController {
     return apiResponse(await service.get(params.key));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
   @ResponseSchema(SettingsOutputObjectDTOAPI)
   @Get('/settings')
   async get(
@@ -124,7 +124,7 @@ export class SettingsController {
     }
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Post('/settings/:key')
   async set(

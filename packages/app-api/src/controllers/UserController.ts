@@ -30,12 +30,11 @@ import {
   Params,
   Res,
 } from 'routing-controllers';
-import { DomainService } from '../service/DomainService.js';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { Response } from 'express';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { Request, Response } from 'express';
+import { PERMISSIONS } from '@takaro/auth';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -92,18 +91,16 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
 export class UserController {
   @Post('/login')
   @ResponseSchema(LoginOutputDTOAPI)
-  async login(@Body() loginReq: LoginDTO, @Res() res: Response) {
-    const domainId = await new DomainService().resolveDomain(loginReq.username);
-    const service = new AuthService(domainId);
+  async login(@Body() loginReq: LoginDTO) {
     return apiResponse(
-      await service.login(loginReq.username, loginReq.password, res)
+      await AuthService.login(loginReq.username, loginReq.password)
     );
   }
 
   @Post('/logout')
   @ResponseSchema(APIOutput)
-  async logout(@Res() res: Response) {
-    return apiResponse(await AuthService.logout(res));
+  async logout(@Req() req: Request) {
+    return apiResponse(await AuthService.logout(req));
   }
 
   @Get('/me')
@@ -114,7 +111,7 @@ export class UserController {
     return apiResponse(user);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
   @ResponseSchema(UserOutputArrayDTOAPI)
   @Post('/user/search')
   async search(
@@ -135,7 +132,7 @@ export class UserController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Get('/user/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -143,7 +140,7 @@ export class UserController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
   async create(
@@ -154,7 +151,7 @@ export class UserController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
   async update(
@@ -166,7 +163,7 @@ export class UserController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
   @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -177,8 +174,8 @@ export class UserController {
 
   @UseBefore(
     AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_USERS,
-      CAPABILITIES.MANAGE_ROLES,
+      PERMISSIONS.MANAGE_USERS,
+      PERMISSIONS.MANAGE_ROLES,
     ])
   )
   @Post('/user/:id/role/:roleId')
@@ -193,8 +190,8 @@ export class UserController {
 
   @UseBefore(
     AuthService.getAuthMiddleware([
-      CAPABILITIES.MANAGE_USERS,
-      CAPABILITIES.MANAGE_ROLES,
+      PERMISSIONS.MANAGE_USERS,
+      PERMISSIONS.MANAGE_ROLES,
     ])
   )
   @Delete('/user/:id/role/:roleId')

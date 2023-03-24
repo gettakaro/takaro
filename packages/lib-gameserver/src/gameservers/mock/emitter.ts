@@ -90,6 +90,11 @@ export class MockEmitter extends TakaroEmitter {
         break;
     }
 
+    event = new EventChatMessage().construct({
+      msg: '/ping',
+      player,
+    });
+
     return event;
   }
 }

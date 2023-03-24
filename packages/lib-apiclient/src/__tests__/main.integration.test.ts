@@ -1,18 +1,18 @@
-import { AdminClient, Client } from '../main.js';
+import { AdminClient } from '../main.js';
 import { expect, integrationConfig } from '@takaro/test';
 import { AxiosResponse } from 'axios';
 import { DomainCreateOutputDTOAPI } from '../generated/index.js';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';
 
-const TEST_USER_NAME = 'apiClient-test-user';
-
 describe('API client', () => {
   const adminClient = new AdminClient({
     url: integrationConfig.get('host'),
     auth: {
-      adminSecret: integrationConfig.get('auth.adminSecret'),
+      clientId: integrationConfig.get('auth.adminClientId'),
+      clientSecret: integrationConfig.get('auth.adminClientSecret'),
     },
+    OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
   });
 
   describe('Meta controller', () => {
@@ -57,36 +57,6 @@ describe('API client', () => {
           domain.data.data.createdDomain.id
         );
       }
-    });
-
-    it('Can create and delete a user', async () => {
-      if (!domain) throw new Error('Domain not created');
-
-      const client = new Client({
-        url: integrationConfig.get('host'),
-        auth: {
-          username: domain.data.data.rootUser.email,
-          password: domain.data.data.password,
-        },
-      });
-
-      await client.login();
-
-      const user = await client.user.userControllerCreate({
-        name: TEST_USER_NAME,
-        password: '123456789',
-        email: `${TEST_USER_NAME}@test.takaro.io`,
-      });
-
-      expect(user.data.data.name).to.equal(TEST_USER_NAME);
-
-      const usersRes = await client.user.userControllerSearch({
-        filters: { name: TEST_USER_NAME },
-      });
-
-      expect(usersRes.data.data).to.have.lengthOf(1);
-
-      await client.user.userControllerRemove(user.data.data.id);
     });
   });
 });

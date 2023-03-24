@@ -8,7 +8,7 @@ import {
   AdminClient,
   Client,
   AxiosResponse,
-  RoleCreateInputDTOCapabilitiesEnum,
+  RoleCreateInputDTOPermissionsEnum,
   isAxiosError,
 } from '@takaro/apiclient';
 
@@ -52,8 +52,10 @@ export class IntegrationTest<SetupData> {
     this.adminClient = new AdminClient({
       url: integrationConfig.get('host'),
       auth: {
-        adminSecret: integrationConfig.get('auth.adminSecret'),
+        clientId: integrationConfig.get('auth.adminClientId'),
+        clientSecret: integrationConfig.get('auth.adminClientSecret'),
       },
+      OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
       log: this.log,
     });
 
@@ -139,13 +141,13 @@ export class IntegrationTest<SetupData> {
   }
 }
 
-export async function logInWithCapabilities(
+export async function logInWithPermissions(
   client: Client,
-  capabilities: RoleCreateInputDTOCapabilitiesEnum[]
+  permissions: RoleCreateInputDTOPermissionsEnum[]
 ): Promise<Client> {
   const role = await client.role.roleControllerCreate({
     name: 'Test role',
-    capabilities,
+    permissions,
   });
   const user = await client.user.userControllerCreate({
     email: integrationConfig.get('auth.username'),

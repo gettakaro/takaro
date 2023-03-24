@@ -17,12 +17,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "convict": "^6.2.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.2",
-    "@takaro/test": "0.0.1",
-    "@types/convict": "^6.1.1"
+    "@takaro/test": "0.0.1"
   }
 }

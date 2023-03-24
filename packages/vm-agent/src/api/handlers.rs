@@ -1,7 +1,7 @@
-use std::os::unix::process::ExitStatusExt;
-
 use axum::{debug_handler, Json};
 use serde_derive::{Deserialize, Serialize};
+use std::env;
+use std::os::unix::process::ExitStatusExt;
 use tokio::process::Command;
 
 #[derive(Debug, Serialize)]
@@ -12,20 +12,37 @@ pub struct ExecResponse {
     stderr: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
+pub struct NodeEnv {
+    api_url: String,
+    api_token: String,
+    data: serde_json::value::Value,
+}
+
+impl NodeEnv {
+    pub fn load(&self) {
+        env::set_var("API_URL", &self.api_url);
+        env::set_var("API_TOKEN", &self.api_token);
+        env::set_var(
+            "DATA",
+            serde_json::to_string(&self.data).unwrap_or("".to_owned()),
+        );
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExecRequest {
     cmd: Vec<String>,
+    env: NodeEnv,
 }
 
 #[debug_handler]
 pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
+    payload.env.load();
+
     let full_cmd = payload.cmd.join(" ");
 
-    dbg!(&payload.cmd);
-
     let mut command = Command::new(payload.cmd.remove(0));
-
-    dbg!(&payload.cmd);
 
     for arg in payload.cmd.into_iter() {
         command.arg(arg);
@@ -54,6 +71,7 @@ pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::env;
 
     #[tokio::test]
     async fn test_exec_cmd_hello_world() {
@@ -63,11 +81,45 @@ mod tests {
                 "-e".to_owned(),
                 "console.log(\"Hello, world!\");".to_owned(),
             ],
+            env: NodeEnv::default(),
         };
 
         let response = exec_cmd(Json(request)).await;
 
         assert_eq!(response.exit_code, Some(0));
         assert_eq!(response.stdout, "Hello, world!\n".to_owned());
+    }
+
+    #[tokio::test]
+    async fn test_exec_cmd_loads_env() {
+        let mock_env = NodeEnv {
+            api_url: "http://localhost/".to_owned(),
+            api_token: "very_secure_token".to_owned(),
+            data: serde_json::json!("{\"player\": {}}"),
+        };
+
+        let request = ExecRequest {
+            cmd: vec![
+                "node".to_owned(),
+                "-e".to_owned(),
+                "console.log(\"Hello, world!\");".to_owned(),
+            ],
+            env: mock_env.clone(),
+        };
+
+        exec_cmd(Json(request)).await;
+
+        assert_eq!(
+            env::var("API_URL").unwrap_or("".to_owned()),
+            mock_env.api_url
+        );
+        assert_eq!(
+            env::var("API_TOKEN").unwrap_or("".to_owned()),
+            mock_env.api_token
+        );
+        assert_eq!(
+            env::var("DATA").unwrap_or("".to_owned()),
+            serde_json::to_string(&mock_env.data).unwrap_or("".to_owned())
+        );
     }
 }

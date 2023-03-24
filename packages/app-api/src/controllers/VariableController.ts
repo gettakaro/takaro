@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 export class VariableOutputDTOAPI extends APIOutput<VariableOutputDTO> {
@@ -55,7 +55,7 @@ class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilt
 })
 @JsonController()
 export class VariableController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_VARIABLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @Post('/variables/search')
   async find(
@@ -77,7 +77,7 @@ export class VariableController {
   }
 
   @Get('/variables/:id')
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_VARIABLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
   async findOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new VariablesService(req.domainId);
@@ -86,7 +86,7 @@ export class VariableController {
   }
 
   @Put('/variables/:id')
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_VARIABLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
   async update(
     @Req() req: AuthenticatedRequest,
@@ -99,7 +99,7 @@ export class VariableController {
   }
 
   @Post('/variables')
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_VARIABLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
   async create(
     @Req() req: AuthenticatedRequest,
@@ -111,7 +111,7 @@ export class VariableController {
   }
 
   @Delete('/variables/:id')
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_VARIABLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new VariablesService(req.domainId);

@@ -18,6 +18,7 @@ const Container = styled.header`
     text-transform: capitalize;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.text};
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
 
     svg {
       margin-right: 2rem;

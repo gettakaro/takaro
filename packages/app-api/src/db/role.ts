@@ -3,20 +3,20 @@ import { errors } from '@takaro/util';
 import _ from 'lodash-es';
 import { Model } from 'objection';
 import {
-  CAPABILITIES,
   RoleCreateInputDTO,
   RoleOutputDTO,
   RoleUpdateInputDTO,
-  CapabilityOutputDTO,
+  PermissionOutputDTO,
 } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 export const ROLE_TABLE_NAME = 'roles';
-const CAPABILITY_ON_ROLE_TABLE_NAME = 'capabilityOnRole';
+const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
 
-export class CapabilityModel extends TakaroModel {
-  static tableName = CAPABILITY_ON_ROLE_TABLE_NAME;
-  capability!: CAPABILITIES;
+export class PermissionModel extends TakaroModel {
+  static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
+  permission!: PERMISSIONS;
   roleId!: string;
 }
 
@@ -24,15 +24,15 @@ export class RoleModel extends TakaroModel {
   static tableName = ROLE_TABLE_NAME;
   name!: string;
 
-  capabilities!: CapabilityModel[];
+  permissions!: PermissionModel[];
 
   static relationMappings = {
-    capabilities: {
+    permissions: {
       relation: Model.HasManyRelation,
-      modelClass: CapabilityModel,
+      modelClass: PermissionModel,
       join: {
         from: `${ROLE_TABLE_NAME}.id`,
-        to: `${CAPABILITY_ON_ROLE_TABLE_NAME}.roleId`,
+        to: `${PERMISSION_ON_ROLE_TABLE_NAME}.roleId`,
       },
     },
   };
@@ -66,12 +66,12 @@ export class RoleRepo extends ITakaroRepo<
       return Promise.all(data.map(async (item) => this.transformToDTO(item)));
     }
 
-    if (!data.capabilities) data.capabilities = [];
+    if (!data.permissions) data.permissions = [];
 
     return new RoleOutputDTO().construct({
       ...data,
-      capabilities: await Promise.all(
-        data.capabilities?.map((c) => new CapabilityOutputDTO().construct(c))
+      permissions: await Promise.all(
+        data.permissions?.map((c) => new PermissionOutputDTO().construct(c))
       ),
     });
   }
@@ -80,7 +80,7 @@ export class RoleRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const result = await new QueryBuilder<RoleModel, RoleOutputDTO>({
       ...filters,
-      extend: ['capabilities'],
+      extend: ['permissions'],
     }).build(query);
     return {
       total: result.total,
@@ -90,7 +90,7 @@ export class RoleRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<RoleOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('capabilities');
+    const data = await query.findById(id).withGraphJoined('permissions');
 
     if (!data) {
       throw new errors.NotFoundError();
@@ -103,7 +103,7 @@ export class RoleRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const data = await query
       .insert({
-        ..._.omit(item.toJSON(), 'capabilities'),
+        ..._.omit(item.toJSON(), 'permissions'),
         domain: this.domainId,
       })
       .returning('*');
@@ -130,29 +130,29 @@ export class RoleRepo extends ITakaroRepo<
 
     const { query } = await this.getModel();
     await query
-      .updateAndFetchById(id, _.omit(data.toJSON(), 'capabilities'))
+      .updateAndFetchById(id, _.omit(data.toJSON(), 'permissions'))
       .returning('*');
     const item = await this.findOne(id);
     return item;
   }
 
-  async addCapabilityToRole(roleId: string, capability: CAPABILITIES) {
-    return CapabilityModel.bindKnex(await this.getKnex())
+  async addPermissionToRole(roleId: string, permission: PERMISSIONS) {
+    return PermissionModel.bindKnex(await this.getKnex())
       .query()
       .insert({
         roleId,
-        capability,
+        permission,
         domain: this.domainId,
       });
   }
 
-  async removeCapabilityFromRole(roleId: string, capability: CAPABILITIES) {
-    return CapabilityModel.bindKnex(await this.getKnex())
+  async removePermissionFromRole(roleId: string, permission: PERMISSIONS) {
+    return PermissionModel.bindKnex(await this.getKnex())
       .query()
       .modify('domainScoped', this.domainId)
       .where({
         roleId,
-        capability,
+        permission,
       })
       .del();
   }

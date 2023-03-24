@@ -12,13 +12,13 @@
         "updatedAt": "2022-09-11T21:03:57.721Z",
         "id": "dfbe12bb-a875-4dbb-bf3d-54eaa403beba",
         "name": "Test role",
-        "capabilities": [
+        "permissions": [
           {
             "createdAt": "2022-09-11T21:03:57.723Z",
             "updatedAt": "2022-09-11T21:03:57.724Z",
             "id": "374e6c3c-fe49-4f89-ad09-8e1020ba89da",
             "roleId": "dfbe12bb-a875-4dbb-bf3d-54eaa403beba",
-            "capability": "MANAGE_ROLES"
+            "permission": "MANAGE_ROLES"
           }
         ]
       }

@@ -1,11 +1,13 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-import { randomUUID } from 'node:crypto';
+import { AsyncLocalStorage } from 'async_hooks';
+import crypto from 'crypto';
 import { errors } from './main.js';
 
 interface TransactionStore {
   domain?: string;
   gameServer?: string;
+  jobId?: string;
   user?: string;
+  vmId?: number;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
@@ -41,7 +43,7 @@ class Context {
 
   wrap(fn: any, metadata: TransactionStore = {}) {
     return (...args: any[]) => {
-      const txId = randomUUID();
+      const txId = crypto.randomUUID();
       return this.asyncLocalStorage.run(
         { txId, ...metadata },
         fn,

@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
-import { CAPABILITIES } from '../service/RoleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
@@ -59,7 +59,7 @@ class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters>
 })
 @JsonController()
 export class ModuleController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_MODULES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(ModuleOutputArrayDTOAPI)
   @Post('/module/search')
   async search(
@@ -80,7 +80,7 @@ export class ModuleController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_MODULES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(ModuleOutputDTOAPI)
   @Get('/module/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -88,7 +88,7 @@ export class ModuleController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_MODULES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(ModuleOutputDTOAPI)
   @Post('/module')
   async create(
@@ -99,7 +99,7 @@ export class ModuleController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_MODULES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(ModuleOutputDTOAPI)
   @Put('/module/:id')
   async update(
@@ -111,7 +111,7 @@ export class ModuleController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_MODULES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(APIOutput)
   @Delete('/module/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
