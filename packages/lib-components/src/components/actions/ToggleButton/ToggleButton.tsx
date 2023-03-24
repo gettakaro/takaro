@@ -1,23 +1,25 @@
 import { FC, ReactNode, MouseEvent } from 'react';
 import { styled } from '../../../styled';
-import { darken } from 'polished';
 
 const Item = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
   color: none;
-  background-color: none;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   display: block;
   border-radius: 0;
   width: 100%;
   position: relative;
-  border: 0.2rem solid ${({ theme }): string => theme.colors.gray};
   border-left: none;
   background-color: ${({ theme, isSelected, isDisabled }) =>
     isSelected
-      ? darken(0.1, theme.colors.gray)
+      ? theme.colors.primary
       : isDisabled
-      ? 'darkgray'
+      ? theme.colors.gray
       : 'none'};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'pointer')};
+
+  svg {
+    fill: ${({ theme }) => theme.colors.text};
+  }
 `;
 
 export interface ToggleButtonProps {

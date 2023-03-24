@@ -5,10 +5,10 @@ import { spacing } from './spacing';
 const fontSize = {
   tiny: '1rem',
   small: '1.2rem',
-  medium: '1.825rem',
-  mediumLarge: '2.825rem',
-  large: '3.420rem',
-  huge: '4.2rem',
+  medium: '1.325rem',
+  mediumLarge: '1.825rem',
+  large: '4.25rem',
+  huge: '6rem',
 };
 
 export const lightTheme = {
@@ -46,13 +46,13 @@ export const darkTheme: ThemeType = {
     secondary: '#353535',
     tertiary: '#be81f6',
     quaternary: '#e5cc4d',
-    placeholder: '#f5f5f5',
-    placeholderHighlight: '#ffffff',
+    placeholder: '202020',
+    placeholderHighlight: '#555555',
     white: '#ffffff',
     gray: '#0e0e0e',
     shade: '#eaf8f0',
     text: '#c2c2c2',
-    textAlt: '#b1b1b1',
+    textAlt: '#a1a1a1',
     background: '#151515',
     backgroundAlt: '#202020',
     info: '#664de5',

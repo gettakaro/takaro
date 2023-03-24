@@ -11,9 +11,10 @@ export const Container = styled.div`
 export const InputContainer = styled.div<{ fields: number }>`
   display: grid;
   position relative;
-  margin: ${({ theme }) => `${theme.spacing['2_5']} auto`};
-  grid-gap: 1rem;
+  margin: ${({ theme }) => `${theme.spacing['2']} auto`};
+  grid-gap: 2rem;
   grid-template-columns: repeat(${({ fields }) => fields}, 60px);
+  height: 60px;
 `;
 
 export const LoadingField = styled.div`
@@ -24,8 +25,9 @@ export const LoadingField = styled.div`
 
 export const Input = styled.input<{ hasError: boolean; isDisabled: boolean }>`
   width: 100%;
-  font-size: 3rem;
-  border-radius: 1rem;
+  font-size: ${({ theme }) => theme.fontSize.large};
+  border-radius: 0.8rem;
+  padding: 0;
   text-align: center;
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
   border: 0.2rem solid

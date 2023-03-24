@@ -41,7 +41,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer {
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
@@ -83,6 +83,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-width: 2px;
     border-radius: 0.25rem;
     border-color: transparent;
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    color: ${({ theme }) => theme.colors.text};
     &[readOnly]{
       cursor: not-allowed;
       &:focus {

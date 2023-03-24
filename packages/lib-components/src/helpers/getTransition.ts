@@ -1,7 +1,8 @@
-export function getTransition() {
+import { Transition } from 'framer-motion';
+
+export function getTransition(): Transition {
   return {
-    type: 'spring',
-    stiffness: 700,
-    damping: 30,
+    type: 'linear',
+    duration: 0.125,
   };
 }

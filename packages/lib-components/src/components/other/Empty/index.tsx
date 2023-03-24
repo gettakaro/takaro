@@ -29,7 +29,10 @@ export interface EmptyProps {
   imageStyle?: CSSProperties;
 }
 
-export const Empty: FC<EmptyProps> = ({ description = 'No Data', image, imageStyle }) => {
+export const Empty: FC<EmptyProps> = ({
+  description = 'No Data',
+  imageStyle,
+}) => {
   return (
     <Container>
       {/* TODO: fix custom image support */}

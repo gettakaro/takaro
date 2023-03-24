@@ -22,7 +22,7 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
   &::after {
     position: absolute;
     content: '';
-    border-bottom: 2px solid ${({ theme }) => theme.colors.background};
+    border-bottom: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
     width: 100%;
     top: 22px;
     left: calc(50% + 20px);
@@ -57,7 +57,7 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
   }}
 
   @media (max-width: 768px) {
-    font-size: 1.5rem;
+    font-size: ${({ theme }) => theme.fontSize.small};
   }
 `;
 
@@ -86,12 +86,12 @@ export const StepCounter = styled.div<{
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.CURRENT
       ? theme.colors.primary
-      : theme.colors.white};
+      : theme.colors.backgroundAlt};
   transition: all 0.2s ease-in-out;
   margin-bottom: ${({ theme }) => theme.spacing[1]};
   color: ${({ theme, stepState }) =>
     stepState !== StepStates.OTHER ? theme.colors.white : theme.colors.text};
-  font-size: 1.5rem;
+  font-size: ${({ theme }) => theme.fontSize.small};
   font-weight: 500;
   cursor: ${({ stepState, canStepBack }) =>
     stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit'};
