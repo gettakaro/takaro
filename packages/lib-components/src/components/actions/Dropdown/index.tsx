@@ -10,8 +10,8 @@ import { FC } from 'react';
 import { styled } from '../../../styled';
 
 const FloatingContainer = styled.div`
-  background-color: white;
-  box-shadow: ${({ theme }) => theme.elevation[2]};
+  background-color: ${({ theme }) => theme.colors.background};
+  box-shadow: ${({ theme }) => theme.elevation[3]};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 

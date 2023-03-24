@@ -10,21 +10,24 @@ import {
 } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { QueryKeys } from 'queryKeys';
 
 const List = styled.ul`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: ${({ theme }) => theme.spacing['2']};
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-auto-rows: 160px;
+  gap: ${({ theme }) => theme.spacing['1_5']};
 `;
 
 const GameServers: FC = () => {
   const client = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>(
-    'gameSevers',
-    async () => (await client.gameserver.gameServerControllerSearch()).data
-  );
+  const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>({
+    queryKey: QueryKeys.gameserver.list,
+    queryFn: async () =>
+      (await client.gameserver.gameServerControllerSearch()).data,
+  });
 
   if (isLoading) {
     return <Fragment>Loading...</Fragment>;

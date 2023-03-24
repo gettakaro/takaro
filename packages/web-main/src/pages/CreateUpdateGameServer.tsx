@@ -10,20 +10,24 @@ import {
   TextField,
   useValidationSchema,
   styled,
-  Switch,
-  ErrorMessage,
-  Loading,
   DrawerContent,
   DrawerHeading,
   Drawer,
   CollapseList,
+  Tooltip,
+  Switch,
+  ErrorMessage,
 } from '@takaro/lib-components';
 import * as yup from 'yup';
-import { AiFillQuestionCircle as TestConnectionIcon } from 'react-icons/ai';
 import {
+  GameServerCreateDTO,
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTOAPI,
-  GameServerTestReachabilityInputDTO,
+  GameServerTestReachabilityDTOAPI,
+  GameServerUpdateDTO,
+  MockConnectionInfo,
+  RustConnectionInfo,
+  SdtdConnectionInfo,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { useNavigate } from 'react-router-dom';
@@ -34,11 +38,18 @@ import {
   DrawerBody,
   DrawerFooter,
 } from '@takaro/lib-components/src/components/data/Drawer';
+import * as Sentry from '@sentry/react';
+import { QueryKeys } from 'queryKeys';
+
+type ConnectionInfo =
+  | MockConnectionInfo
+  | RustConnectionInfo
+  | SdtdConnectionInfo;
 
 interface IFormInputs {
   name: string;
   type: GameServerCreateDTOTypeEnum;
-  connectionInfo: Record<string, unknown>;
+  connectionInfo: ConnectionInfo;
 }
 
 const ButtonContainer = styled.div`
@@ -47,14 +58,33 @@ const ButtonContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
+const connectionInfoValidationSchemaMap = {
+  [GameServerCreateDTOTypeEnum.Sevendaystodie]: yup.object({
+    host: yup.string().required(),
+    adminUser: yup.string().required(),
+    adminToken: yup.string().required(),
+    useTls: yup.bool().required(),
+  }),
+  [GameServerCreateDTOTypeEnum.Mock]: yup.object({
+    eventInteveral: yup.number().required(),
+    playerPoolSize: yup.number().required(),
+  }),
+  [GameServerCreateDTOTypeEnum.Rust]: yup.object({
+    host: yup.string().required(),
+    rconPort: yup.number().required(),
+    rconPassword: yup.string().required(),
+    useTls: yup.bool().required(),
+  }),
+};
+
 const CreateUpdateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [isConnectable, setIsConnectable] = useState(false);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const apiClient = useApiClient();
   const { serverId } = useParams();
+  const [gameServerType, setGameServerType] =
+    useState<GameServerCreateDTOTypeEnum>(GameServerCreateDTOTypeEnum.Rust);
 
   useEffect(() => {
     if (!open) {
@@ -65,94 +95,120 @@ const CreateUpdateGameServer: FC = () => {
   const validationSchema = useMemo(
     () =>
       yup.object({
-        name: yup.string().required('Must provide a name for the server.'),
+        name: yup
+          .string()
+          .min(4)
+          .max(25)
+          .required('Must provide a name for the server.'),
         type: yup
           .mixed()
           .oneOf([Object.values(GameServerCreateDTOTypeEnum)])
           .required('Must provide a type for the server.'),
-        'connectionInfo.eventInterval': yup
-          .number()
-          .min(100, 'Must be at least 100 ms'),
+        connectionInfo: connectionInfoValidationSchemaMap[gameServerType],
       }),
-    []
+    [gameServerType]
   );
 
-  const checkReachability = useMutation({
-    mutationFn: async (info: GameServerTestReachabilityInputDTO) => {
-      const res =
-        await apiClient.gameserver.gameServerControllerTestReachability(info);
+  const testReachability = useMutation({
+    mutationKey: ['server-reachability', serverId],
+    mutationFn: async (info: ConnectionInfo) => {
+      console.log(info);
+      apiClient.gameserver.gameServerControllerTestReachability();
+    },
+    onError: (data: GameServerTestReachabilityDTOAPI) => {
+      setError(data.data.reason!);
+    },
+  });
 
-      setIsConnectable(res.data.data.connectable);
-      setError(res.data.data.reason);
+  const createGameServer = useMutation({
+    mutationKey: ['server-create', serverId],
+    mutationFn: async (gameServer: GameServerCreateDTO) => {
+      apiClient.gameserver.gameServerControllerCreate(gameServer);
+    },
+  });
 
-      return res;
+  const updateGameServer = useMutation({
+    mutationKey: ['server-update', serverId],
+    mutationFn: async (gameServer: GameServerUpdateDTO) => {
+      apiClient.gameserver.gameServerControllerUpdate(serverId!, gameServer);
     },
   });
 
   const { control, handleSubmit, watch, setValue } = useForm<IFormInputs>({
-    mode: 'onSubmit',
+    mode: 'onChange',
     resolver: useValidationSchema(validationSchema),
+    defaultValues: {
+      type: gameServerType,
+    },
   });
 
-  const { isLoading, refetch } = useQuery<
-    GameServerOutputDTOAPI['data'] | null
-  >(`gameserver/${serverId}`, async () => {
-    if (!serverId) return null;
-    const resp = (
-      await apiClient.gameserver.gameServerControllerGetOne(serverId)
-    ).data.data;
-    setValue('name', resp.name);
-    setValue('type', resp.type);
-    setValue('connectionInfo', resp.connectionInfo as Record<string, unknown>);
-    return resp;
-  });
+  useEffect(() => {
+    setGameServerType(watch('type'));
+  }, [watch('type')]);
+
+  const { isLoading } = useQuery<GameServerOutputDTOAPI['data'] | null>(
+    `gameserver/${serverId}`,
+    async () => {
+      if (!serverId) return null;
+      const resp = (
+        await apiClient.gameserver.gameServerControllerGetOne(serverId)
+      ).data.data;
+      setValue('name', resp.name);
+      setValue('type', resp.type);
+      setGameServerType(resp.type);
+      return resp;
+    }
+  );
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({
     name,
     type,
     connectionInfo,
   }) => {
-    setLoading(true);
-    setError(undefined);
+    setError('');
+    let filteredConnInfo = Object.fromEntries(
+      Object.entries(connectionInfo).filter(([_, v]) => v != null)
+    );
+
+    await testReachability.mutateAsync(filteredConnInfo as ConnectionInfo);
 
     try {
       if (!serverId) {
-        await apiClient.gameserver.gameServerControllerCreate({
-          connectionInfo: JSON.stringify(connectionInfo),
+        await createGameServer.mutateAsync({
           name,
           type,
+          connectionInfo: JSON.stringify(filteredConnInfo),
         });
       } else {
-        await apiClient.gameserver.gameServerControllerUpdate(serverId, {
-          connectionInfo: JSON.stringify(connectionInfo),
+        await updateGameServer.mutateAsync({
           name,
           type,
+          connectionInfo: JSON.stringify(filteredConnInfo),
         });
-        refetch();
       }
-      navigate(PATHS.gameServer.dashboard(serverId!));
+      navigate(PATHS.gameServers.overview());
     } catch (error) {
-      setError(JSON.stringify(error));
-    } finally {
-      setLoading(false);
+      Sentry.captureException(error);
     }
   };
 
-  const connectionInfoMap = {
+  const ConnectionInfoFields = {
     [GameServerCreateDTOTypeEnum.Sevendaystodie]: [
       <TextField
         control={control}
         label="IP (or FQDN), including port"
         name="connectionInfo.host"
         placeholder="12.34.56.78:1234"
-        key={'host'}
+        key="host"
+        loading={isLoading}
       />,
       <TextField
         control={control}
         label="Admin user"
         name="connectionInfo.adminUser"
         placeholder=""
-        key={'adminUser'}
+        key="adminuser"
+        loading={isLoading}
       />,
       <TextField
         control={control}
@@ -160,13 +216,15 @@ const CreateUpdateGameServer: FC = () => {
         name="connectionInfo.adminToken"
         type="password"
         placeholder=""
-        key={'adminToken'}
+        key="adminToken"
+        loading={isLoading}
       />,
       <>
         <Switch
           label="Use TLS"
           name="connectionInfo.useTls"
           control={control}
+          loading={isLoading}
         />
       </>,
     ],
@@ -177,7 +235,8 @@ const CreateUpdateGameServer: FC = () => {
         name="connectionInfo.eventInterval"
         description="How often the server should send events to the backend (in ms)"
         placeholder="500"
-        key={'eventInterval'}
+        key="eventInterval"
+        loading={isLoading}
       />,
       <TextField
         control={control}
@@ -185,7 +244,8 @@ const CreateUpdateGameServer: FC = () => {
         name="connectionInfo.playerPoolSize"
         description="How large is the pool of fake players"
         placeholder="100"
-        key={'playerPoolSize'}
+        key="playerPoolSize"
+        loading={isLoading}
       />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
@@ -194,14 +254,16 @@ const CreateUpdateGameServer: FC = () => {
         label="Server IP"
         name="connectionInfo.host"
         placeholder="12.34.56.78"
-        key={'host'}
+        key="host"
+        loading={isLoading}
       />,
       <TextField
         control={control}
         label="RCON Port"
         name="connectionInfo.rconPort"
         placeholder=""
-        key={'rconPort'}
+        key="rconPort"
+        loading={isLoading}
       />,
       <TextField
         control={control}
@@ -209,31 +271,35 @@ const CreateUpdateGameServer: FC = () => {
         name="connectionInfo.rconPassword"
         type="password"
         placeholder=""
-        key={'rconPassword'}
+        key="rconPassword"
+        loading={isLoading}
       />,
       <>
         <Switch
           label="Use TLS"
           name="connectionInfo.useTls"
           control={control}
+          loading={isLoading}
         />
       </>,
     ],
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  const gameTypeOptions = [
-    { name: 'Rust', value: GameServerCreateDTOTypeEnum.Rust },
-    {
-      name: '7 Days to die',
-      value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-    },
+  const gameTypeSelectOptions = [
     {
       name: 'Mock (testing purposes)',
       value: GameServerCreateDTOTypeEnum.Mock,
+      show: import.meta.env.DEV,
+    },
+    {
+      name: 'Rust',
+      value: GameServerCreateDTOTypeEnum.Rust,
+      show: true,
+    },
+    {
+      name: '7 Days to die',
+      value: GameServerCreateDTOTypeEnum.Sevendaystodie,
+      show: true,
     },
   ];
 
@@ -245,12 +311,12 @@ const CreateUpdateGameServer: FC = () => {
         </DrawerHeading>
         <DrawerBody>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} name="addupdategamserver">
+            <form onSubmit={handleSubmit(onSubmit)} id="addupdategamserver">
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
                   label="Server name"
-                  loading={loading}
+                  loading={isLoading}
                   name="name"
                   placeholder="My cool server"
                   required
@@ -261,43 +327,33 @@ const CreateUpdateGameServer: FC = () => {
                   name="type"
                   label="Game server"
                   required={true}
+                  loading={isLoading}
                   render={(selectedIndex) => (
                     <div>
-                      {gameTypeOptions[selectedIndex]?.name ?? 'Select...'}
+                      {gameTypeSelectOptions[selectedIndex]?.name ??
+                        'Select...'}
                     </div>
                   )}
                 >
                   <OptionGroup label="Games">
-                    {gameTypeOptions.map(({ name, value }) => (
-                      <Option key={name} value={value}>
-                        <div>
-                          <span>{name}</span>
-                        </div>
-                      </Option>
-                    ))}
+                    {gameTypeSelectOptions
+                      .filter(({ show }) => show)
+                      .map(({ name, value }) => (
+                        <Option key={name} value={value}>
+                          <div>
+                            <span>{name}</span>
+                          </div>
+                        </Option>
+                      ))}
                   </OptionGroup>
                 </Select>
               </CollapseList.Item>
-              {connectionInfoMap[watch('type')] && (
+              {watch('type') !== undefined && (
                 <CollapseList.Item title="Connection info">
-                  {connectionInfoMap[watch('type')]}
-                  {error && <ErrorMessage message={error} />}
-                  <Button
-                    icon={<TestConnectionIcon />}
-                    isLoading={checkReachability.isLoading}
-                    onClick={() => {
-                      checkReachability.mutate({
-                        connectionInfo: JSON.stringify(watch('connectionInfo')),
-                        type: watch('type'),
-                      });
-                    }}
-                    fullWidth={true}
-                    text="Test connection"
-                    type="button"
-                    variant="default"
-                  />
+                  {ConnectionInfoFields[watch('type')]}
                 </CollapseList.Item>
               )}
+              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
         </DrawerBody>
@@ -308,13 +364,14 @@ const CreateUpdateGameServer: FC = () => {
               onClick={() => setOpen(false)}
               color="background"
             />
-            <Button
-              fullWidth
-              text="Save changes"
-              type="submit"
-              form="addupdategamserver"
-              disabled={!isConnectable}
-            />
+            <Tooltip label="You need to test the connection before we can save">
+              <Button
+                fullWidth
+                text="Save changes"
+                type="submit"
+                form="addupdategamserver"
+              />
+            </Tooltip>
           </ButtonContainer>
         </DrawerFooter>
       </DrawerContent>

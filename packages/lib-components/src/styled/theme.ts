@@ -17,7 +17,7 @@ const borderRadius = {
   // For medium components like buttons, inputs and similar components
   medium: '0.5rem',
   // For large components like modals and similar components
-  large: '1rem',
+  large: '0.8rem',
 };
 
 export const lightTheme = {

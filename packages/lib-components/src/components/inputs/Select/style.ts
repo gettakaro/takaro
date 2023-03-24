@@ -30,6 +30,7 @@ export const SelectButton = styled.div<{ isOpen: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
   outline: 0;
   min-height: 4.3rem;
+  position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 2px solid
     ${({ theme, isOpen }) =>

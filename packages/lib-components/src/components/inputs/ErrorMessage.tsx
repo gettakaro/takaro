@@ -8,6 +8,7 @@ const Container = styled(motion.div)`
   display: flex;
   align-items: center;
   bottom: ${({ theme }) => `-${theme.spacing[6]}`};
+  left: 0;
   height: auto;
   background-color: ${({ theme }): string => theme.colors.error};
   overflow: hidden;

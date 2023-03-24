@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeading,
   Dropdown,
+  MenuList,
   styled,
   Tooltip,
 } from '@takaro/lib-components';
@@ -26,15 +27,15 @@ import { useMutation, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 
 const Container = styled.div`
-  min-width: 350px;
-  height: 150px;
-  border-radius: ${({ theme }) => theme.borderRadius.large}
-  cursor: pointer;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  transition: transform 0.2s ease-in-out;
+  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
 
   &:hover {
-    transform: translateX(-5px);
+    background-color: ${({ theme }) => theme.colors.secondary};
+  }
+  &:active {
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -44,6 +45,7 @@ const EmptyContainer = styled(Container)`
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.background};
   border: 3px dashed ${({ theme }) => theme.colors.backgroundAlt};
+  cursor: pointer;
   h3 {
     margin-left: ${({ theme }) => theme.spacing[1]};
   }
@@ -58,25 +60,30 @@ const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 `;
 
-const Body = styled.div`
-  height: 100px;
-  padding: ${({ theme }) => theme.spacing[2]};
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  h3 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
+  p {
+    width: fit-content;
+    text-transform: lowercase;
+  }
 `;
 
-const Footer = styled.div`
-  background-color: ${({ theme }) => theme.colors.secondary};
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  height: 50px;
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 160px;
+  padding: ${({ theme }) => theme.spacing[2]};
 `;
 
 const StyledDialogBody = styled(DialogBody)`
   h2 {
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-  div {
-    display: flex;
-    flex-grow: 1;
   }
 `;
 
@@ -127,41 +134,38 @@ export const GameServerCard: FC<GameServerCardProps> = ({
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
-          <h3>{name}</h3>
+          {!isLoading && data && (
+            <Tooltip label="Takaro server reachability" placement="bottom">
+              <div>{data.data.connectable ? 'online' : 'offline'}</div>
+            </Tooltip>
+          )}
           <Dropdown
             open={openDropdown}
             setOpen={setOpenDropdown}
-            renderReference={<MenuIcon size={18} />}
+            renderReference={<MenuIcon size={18} cursor="pointer" />}
             renderFloating={
-              <ul>
-                <li onClick={handleOnEditClick}>Edit server</li>
-                <li onClick={handleOnDeleteClick}>Delete server</li>
-              </ul>
+              <MenuList>
+                <MenuList.item onClick={handleOnEditClick}>
+                  Edit server
+                </MenuList.item>
+                <MenuList.item onClick={handleOnDeleteClick}>
+                  Delete server
+                </MenuList.item>
+              </MenuList>
             }
           />
         </Header>
         <FloatingDelayGroup delay={{ open: 400, close: 200 }}>
-          <Tooltip label="Game server type" placement="bottom">
-            <Chip label={type} />
-          </Tooltip>
-          {!isLoading && data && (
-            <Tooltip
-              label="Can Takaro connect with your game server"
-              placement="bottom"
-            >
-              <Chip
-                label={`${
-                  data.data.connectable ? 'connected' : 'disconnected'
-                }`}
-                color={data.data.connectable ? 'success' : 'error'}
-              />
-            </Tooltip>
-          )}
+          <TitleContainer>
+            <h3>{name}</h3>
+            <div>
+              <Tooltip label="Game server type" placement="bottom">
+                <p>{type}</p>
+              </Tooltip>
+            </div>
+          </TitleContainer>
         </FloatingDelayGroup>
       </Body>
-      <Footer>
-        {/* currently empty but could hold, fast navigation to certain pages of server e.g. console */}
-      </Footer>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
