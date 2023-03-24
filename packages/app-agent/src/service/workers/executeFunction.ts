@@ -30,7 +30,7 @@ export async function executeFunction(
   try {
     const vmm = await getVMM();
     const token = await getJobToken(domainId);
-    return await vmm.executeFunction(fn, data, token);
+    await vmm.executeFunction(fn, data, token);
   } catch (err) {
     log.error('executeFunction', err);
 

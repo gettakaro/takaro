@@ -4,10 +4,13 @@ sidebar_position: 10
 
 ### Required
 
-- Local binary of Firecracker
-- Rustup should be installed
+- Firecracker installed
+- Rustup installed
 
 ```sh
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+apt install musl build-essential musl-tools
+
 rustup target add x86_64-unknown-linux-musl
+
+./scripts/dev-vm.sh
 ```

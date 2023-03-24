@@ -95,9 +95,10 @@ export default class FirecrackerClient {
     }
 
     try {
+      await fs.rm(this.options.logPath, { force: true });
       await fs.writeFile(this.options.logPath, '');
-    } catch {
-      this.log.debug('log file already exists');
+    } catch (error) {
+      this.log.warn(`Error while creating log file: ${error}`);
     }
   }
 
@@ -128,6 +129,18 @@ export default class FirecrackerClient {
 
       this.childProcess.on('exit', (code) => {
         this.log.debug(`child process exited with code ${code}`);
+      });
+
+      this.childProcess.on('error', (err) => {
+        this.log.error(`child process error: ${err.message}`);
+      });
+
+      this.childProcess.stderr?.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+      });
+
+      this.childProcess.stdout?.on('data', (data) => {
+        console.log(`stdout: ${data}`);
       });
 
       this.childProcess.on('spawn', async () => {
@@ -221,13 +234,24 @@ export default class FirecrackerClient {
 
       this.log.info('starting vm instance...');
 
-      await this.httpSock.put('actions', {
+      const instanceStartRes = await this.httpSock.put('actions', {
         json: {
           action_type: 'InstanceStart',
         },
       });
+
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log('INSTANCE START');
+      console.log(instanceStartRes.body);
     } catch (err) {
-      this.log.error('staring vm failed', err);
+      this.log.error('starting vm failed', err);
       this.kill();
     }
   }

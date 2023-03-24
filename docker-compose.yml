@@ -37,6 +37,12 @@ services:
     ports:
       - 6379:6379
   takaro:
+    privileged: true
+    devices:
+      - '/dev/kvm:/dev/kvm'  
+      - '/dev/net/tun:/dev/net/tun'  
+    group_add:
+      - 108
     build:
       context: .
       dockerfile: containers/dev.Dockerfile
@@ -47,12 +53,13 @@ services:
       - ./packages:/app/packages
       - ./reports:/app/reports
       - ./scripts:/app/scripts
+      - ./firecracker:/app/firecracker
+      - /tmp/takaro:/tmp/takaro
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
       REDIS_HOST: redis
-      ADMIN_SECRET: ${ADMIN_SECRET}
       JWT_SECRET: ${JWT_SECRET}
       FUNCTIONS_EXECUTION_MODE: local
       POSTGRES_USER: ${POSTGRES_USER}
@@ -61,10 +68,16 @@ services:
       POSTGRES_HOST: postgresql
       POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
 
-      FIRECRACKER_BINARY: ${FC_BINARY}
-      FIRECRACKER_ROOTFS: ${FC_ROOTFS}
-      FIRECRACKER_SOCKET: ${FC_SOCKET}
-      FIRECRACKER_AGENT_SOCKET: ${VM_AGENT_SOCKET}
+      FIRECRACKER_BINARY: /usr/local/bin/firecracker/firecracker-v1.3.1-x86_64
+      FIRECRACKER_ROOTFS: /app/firecracker/rootfs.ext4
+      FIRECRACKER_SOCKET: /tmp/takaro/sockets/
+      FIRECRACKER_LOG_PATH: /tmp/takaro/logs/
+      FIRECRACKER_KERNEL_IMAGE: /app/firecracker/vmlinux.bin
+#      HOST_DEV: "eth0@if398"
+#      TAP_DEV: "fc-1-tap0"
+#      TAP_IP: "172.16.0.1"
+#      MASK_SHORT: "/24"
+
 
       TAKARO_HOST: http://takaro:3000
       TEST_HTTP_TARGET: http://takaro:3000

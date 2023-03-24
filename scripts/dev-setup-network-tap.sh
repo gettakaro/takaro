@@ -1,9 +1,12 @@
 #!/bin/bash
 
-set -euox pipefail
+#set -euo pipefail
 
-source "$PWD/.env.example"
-source "$PWD/.env"
+TAP_DEV=fc-1-tap0
+HOST_DEV=eth0@if504
+FC_MAC="02:FC:00:00:00:05"
+TAP_IP="172.16.0.1"
+MASK_SHORT="/24"
 
 usage() {
 	echo "Usage: $(basename "$0") [-h <host dev>] [-t <tap dev>]"
