@@ -29,7 +29,6 @@ export const RadioGroup: FC<RadioGroupProps> = (props) => {
     name,
     size,
     label,
-    error,
     options,
     required,
     disabled,
@@ -58,7 +57,6 @@ export const RadioGroup: FC<RadioGroupProps> = (props) => {
               selected={selected === value}
               setSelected={setSelected}
               value={value}
-              error={error}
               size={size}
               required={required}
               disabled={disabled}

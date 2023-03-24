@@ -2,7 +2,7 @@ import { FC, PropsWithChildren } from 'react';
 import { Elevation, Size, styled } from '../../../styled';
 
 const Container = styled.div<{ size: Size; elevation: Elevation }>`
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: 0.6rem;
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
   box-shadow: ${({ theme, elevation }): string => theme.elevation[elevation]};

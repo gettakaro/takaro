@@ -11,10 +11,14 @@ export const RadioContainer = styled.div<{
   readOnly: boolean;
   isSelected: boolean;
 }>`
-  display: flex;
-  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 2.1rem;
+  min-height: 2.1rem;
   width: 2.1rem;
   height: 2.1rem;
+  max-width: 2.1rem;
+  max-height: 2.1rem;
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
@@ -25,7 +29,7 @@ export const RadioContainer = styled.div<{
     }};
 
   background-color: ${({ theme, readOnly }) =>
-    readOnly ? theme.colors.gray : theme.colors.white};
+    readOnly ? theme.colors.gray : theme.colors.backgroundAlt};
   border-radius: 50%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   z-index: 1;
@@ -44,17 +48,14 @@ export const Inner = styled(motion.div)<{
   isSelected: boolean;
   readOnly: boolean;
 }>`
-  display: ${({ isSelected }): string => (isSelected ? 'flex' : 'none')};
-  width: 50%;
-  height: 50%;
-  align-items: center;
-  border-radius: 90%;
-  justify-content: center;
+  width: ${({ theme }) => theme.spacing['1_5']};
+  height: ${({ theme }) => theme.spacing['1_5']};
   z-index: 2;
+  border-radius: 50%;
   background-color: ${({ theme, readOnly }) =>
     readOnly ? theme.colors.gray : theme.colors.primary};
   opacity: ${({ isSelected }): number => (isSelected ? 1 : 0)};
-  transition: 0.2s opacity ease-in-out cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: 0.1s opacity linear cubic-bezier(0.215, 0.61, 0.355, 1);
 `;
 
 export const Input = styled.input`

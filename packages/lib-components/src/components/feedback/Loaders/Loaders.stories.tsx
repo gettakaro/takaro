@@ -1,6 +1,12 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Spinner as SpinnerComponent, SpinnerProps, Loading, LoadingProps } from '..';
+import {
+  Spinner as SpinnerComponent,
+  SpinnerProps,
+  Loading,
+  LoadingProps,
+} from '..';
 
 const WrapperDecorator = styled.div`
   display: flex;
@@ -17,8 +23,8 @@ const WrapperDecorator = styled.div`
 export default {
   title: 'Feedback/Spinner',
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
-  subcomponents: { SpinnerComponent, Loading }
-} as Meta;
+  subcomponents: { SpinnerComponent, Loading },
+} as Meta<SpinnerProps>;
 
 export const Spinner: StoryFn<SpinnerProps> = (args) => (
   <SpinnerComponent {...args} />

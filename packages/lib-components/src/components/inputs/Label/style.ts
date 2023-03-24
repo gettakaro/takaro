@@ -18,8 +18,9 @@ export const Container = styled.label<{
   }};
 
   width: 100%;
-  font-size: 1.4rem;
+  font-size: ${({ theme }): string => theme.fontSize.small};
   font-weight: 500;
+  cursor: pointer;
   text-transform: capitalize;
   display: flex;
   align-items: center;

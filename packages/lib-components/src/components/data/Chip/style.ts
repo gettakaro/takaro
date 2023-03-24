@@ -29,9 +29,9 @@ export const Container = styled.div<{
 
   ${({ theme, color, outline }): string => {
     if (!outline) {
-      return 'border: 2px solid transparent;';
+      return 'border: 0.1rem solid transparent;';
     }
-    return `border: 2px solid ${theme.colors[color]};`;
+    return `border: 0.1rem solid ${theme.colors[color]};`;
   }}
 
   span {

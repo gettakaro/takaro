@@ -40,7 +40,6 @@ export const SliderComponent: FC<SliderProps> = (props) => {
     value = max / 2,
     required,
     marks = [],
-    error,
     disabled,
     loading,
     label,
@@ -50,7 +49,10 @@ export const SliderComponent: FC<SliderProps> = (props) => {
     showDots,
   } = defaultsApplier(props);
 
-  const { field: slider } = useController({
+  const {
+    field: slider,
+    fieldState: { error },
+  } = useController({
     name,
     control,
     defaultValue: value,

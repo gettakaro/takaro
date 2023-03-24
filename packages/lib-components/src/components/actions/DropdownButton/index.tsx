@@ -4,7 +4,6 @@ import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
 import { styled } from '../../../styled';
 import { useFloating } from '@floating-ui/react';
-import { lighten } from 'polished';
 
 const Arrow = styled(ArrowIcon)`
   transform: rotate(90deg);
@@ -22,13 +21,12 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   cursor: pointer;
   width: 3.2rem;
   border: .2rem solid ${({ theme, isVisible }) =>
-    isVisible ? theme.colors.primary : theme.colors.gray}};
+    isVisible ? theme.colors.primary : theme.colors.backgroundAlt}};
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
 
   &:hover {
     border-color:${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
     svg {
       fill: ${({ theme }) => theme.colors.primary};
     }
@@ -44,16 +42,15 @@ const CurrentAction = styled.div`
   cursor: pointer;
   min-width: 10rem;
   color: ${({ theme }) => theme.colors.text};
-  border-top: 0.2rem solid ${({ theme }) => theme.colors.gray};
-  border-left: 0.2rem solid ${({ theme }) => theme.colors.gray};
-  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.gray};
+  border-top: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-left: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
   text-align: center;
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
     border-color: ${({ theme }) => theme.colors.primary};
-    background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
   }
   &:active {
     background-color: transparent;

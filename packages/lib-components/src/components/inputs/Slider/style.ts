@@ -93,8 +93,8 @@ export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
 
 
   .rc-slider-dot {
-    background-color: ${({ theme }): string => theme.colors.gray};
-    border-color: ${({ theme }): string => theme.colors.gray};
+    background-color: ${({ theme }): string => theme.colors.primary};
+    border-color: ${({ theme }): string => theme.colors.primary};
 
     ${({ size }) => {
       switch (size) {

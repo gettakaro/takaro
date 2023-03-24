@@ -28,7 +28,6 @@ const defaultsApplier =
 
 export const CodeField: FC<CodeFieldProps> = (props) => {
   const {
-    error,
     loading,
     control,
     name,
@@ -47,6 +46,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   const {
     field: { ...inputProps },
+    fieldState: { error },
   } = useController({ name, control, defaultValue: value });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 

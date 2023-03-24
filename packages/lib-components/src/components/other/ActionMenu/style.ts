@@ -7,7 +7,7 @@ export const Container = styled.ul<{ elevation: Elevation }>`
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   border-radius: 0.5rem;
   border: 2px solid ${({ theme }) => theme.colors.background};
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.background};
 
   h3 {
     width: 100%;
