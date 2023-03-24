@@ -21,7 +21,7 @@ const GameServers: FC = () => {
   const client = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery<GameServerOutputArrayDTOAPI>(
+  const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>(
     'gameSevers',
     async () => (await client.gameserver.gameServerControllerSearch()).data
   );
@@ -41,7 +41,11 @@ const GameServers: FC = () => {
       </Helmet>
       <List>
         {data.data.map((gameServer) => (
-          <GameServerCard key={gameServer.id} {...gameServer} />
+          <GameServerCard
+            key={gameServer.id}
+            {...gameServer}
+            refetch={refetch}
+          />
         ))}
         <EmptyGameServerCard
           onClick={() => navigate(PATHS.gameServers.create())}

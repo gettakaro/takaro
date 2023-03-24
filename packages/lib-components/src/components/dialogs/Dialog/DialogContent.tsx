@@ -7,7 +7,6 @@ import {
 } from '@floating-ui/react';
 import { forwardRef } from 'react';
 import { useDialogContext } from './DialogContext';
-import SimpleBar from 'simplebar-react';
 
 const StyledFloatingOverlay = styled(FloatingOverlay)`
   background: rgba(0, 0, 0, 0.8);
@@ -22,6 +21,7 @@ const Container = styled.div`
   box-shadow: ${({ theme }) => theme.elevation[4]};
   margin: 15px;
   min-width: 300px;
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 export const DialogContent = forwardRef<
@@ -42,7 +42,7 @@ export const DialogContent = forwardRef<
               aria-describedby={context.descriptionId}
               {...context.getFloatingProps(props)}
             >
-              <SimpleBar>{props.children}</SimpleBar>
+              {props.children}
             </Container>
           </FloatingFocusManager>
         </StyledFloatingOverlay>

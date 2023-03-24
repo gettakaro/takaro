@@ -1,5 +1,15 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Chip, Dropdown, styled, Tooltip } from '@takaro/lib-components';
+import {
+  Button,
+  Chip,
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogHeading,
+  Dropdown,
+  styled,
+  Tooltip,
+} from '@takaro/lib-components';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import {
   GameServerOutputDTO,
@@ -12,7 +22,7 @@ import {
   AiOutlinePlus as PlusIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 
 const Container = styled.div`
@@ -60,10 +70,28 @@ const Footer = styled.div`
   height: 50px;
 `;
 
-interface GameServerCardProps extends GameServerOutputDTO {}
+const StyledDialogBody = styled(DialogBody)`
+  h2 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
+  div {
+    display: flex;
+    flex-grow: 1;
+  }
+`;
 
-export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
-  const [open, setOpen] = useState<boolean>(false);
+interface GameServerCardProps extends GameServerOutputDTO {
+  refetch: () => unknown;
+}
+
+export const GameServerCard: FC<GameServerCardProps> = ({
+  id,
+  name,
+  type,
+  refetch,
+}) => {
+  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
   const apiClient = useApiClient();
   const navigate = useNavigate();
 
@@ -74,11 +102,25 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
         .data
   );
 
-  const handleOnEdit = (e: MouseEvent): void => {
+  const handleOnEditClick = (e: MouseEvent): void => {
+    e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
   };
-  const handleOnDelete = () => {
-    /* TODO */
+  const handleOnDeleteClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenDialog(true);
+  };
+
+  const { mutateAsync, isLoading: isDeleting } = useMutation({
+    mutationFn: async () =>
+      await apiClient.gameserver.gameServerControllerRemove(id),
+  });
+
+  const handleOnDelete = async (e: MouseEvent) => {
+    e.stopPropagation();
+    await mutateAsync();
+    setOpenDialog(false);
+    refetch();
   };
 
   return (
@@ -87,15 +129,13 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
         <Header>
           <h3>{name}</h3>
           <Dropdown
-            open={open}
-            setOpen={setOpen}
-            renderReference={
-              <MenuIcon size={18} onClick={() => setOpen(true)} />
-            }
+            open={openDropdown}
+            setOpen={setOpenDropdown}
+            renderReference={<MenuIcon size={18} />}
             renderFloating={
               <ul>
-                <li onClick={handleOnEdit}>Edit server</li>
-                <li onClick={handleOnDelete}>Delete server</li>
+                <li onClick={handleOnEditClick}>Edit server</li>
+                <li onClick={handleOnDeleteClick}>Delete server</li>
               </ul>
             }
           />
@@ -122,6 +162,23 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
       <Footer>
         {/* currently empty but could hold, fast navigation to certain pages of server e.g. console */}
       </Footer>
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent>
+          <DialogHeading>gameserver </DialogHeading>
+          <StyledDialogBody size="medium">
+            <h2>Delete gameserver</h2>
+            <p>Are you sure you want to delete `{name}`?</p>
+            <Button
+              isLoading={isDeleting}
+              onClick={(e) => handleOnDelete(e)}
+              fullWidth
+              text={`Delete gameserver`}
+              color="error"
+            />
+          </StyledDialogBody>
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 };
