@@ -114,7 +114,7 @@ const LogIn: FC = () => {
     []
   );
 
-  const { control, handleSubmit, formState, reset } = useForm<IFormInputs>({
+  const { control, handleSubmit, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: useValidationSchema(validationSchema),
   });
@@ -185,7 +185,6 @@ const LogIn: FC = () => {
             {error && <ErrorMessage message={error} />}
             <TextField
               control={control}
-              error={formState.errors.email}
               label="Email"
               loading={loading}
               name="email"
@@ -194,7 +193,6 @@ const LogIn: FC = () => {
             />
             <TextField
               control={control}
-              error={formState.errors.password}
               label="Password"
               loading={loading}
               name="password"

@@ -29,9 +29,7 @@ const Container = styled.div<{ expanded: boolean }>`
       `;
     }
   }}
-  h5 {
-    color: white;
-    font-size: 1.5rem;
+  h4 {
     font-weight: 700;
   }
   svg {
@@ -43,7 +41,7 @@ const Container = styled.div<{ expanded: boolean }>`
 `;
 
 const Content = styled.div<{ expanded: boolean }>`
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   height: ${({ expanded }): string => (expanded ? 'auto' : '0')};
   padding: ${({ expanded, theme }): string =>
     expanded ? theme.spacing[1] : theme.spacing[0]};
@@ -67,7 +65,7 @@ export const DrawerSnack = forwardRef<
   return (
     <Wrapper ref={ref}>
       <Container expanded={expanded}>
-        <h5>{message}</h5>
+        <h4>{message}</h4>
         <div>
           <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
           <CloseIcon onClick={handleClose} size={20} />

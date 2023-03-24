@@ -21,7 +21,7 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   cursor: pointer;
   width: 3.2rem;
   border: .2rem solid ${({ theme, isVisible }) =>
-    isVisible ? theme.colors.primary : theme.colors.gray}};
+    isVisible ? theme.colors.primary : theme.colors.backgroundAlt}};
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
 
@@ -42,9 +42,9 @@ const CurrentAction = styled.div`
   cursor: pointer;
   min-width: 10rem;
   color: ${({ theme }) => theme.colors.text};
-  border-top: 0.2rem solid ${({ theme }) => theme.colors.gray};
-  border-left: 0.2rem solid ${({ theme }) => theme.colors.gray};
-  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.gray};
+  border-top: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-left: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
   text-align: center;

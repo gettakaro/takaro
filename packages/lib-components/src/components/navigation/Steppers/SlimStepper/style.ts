@@ -24,7 +24,6 @@ export const StepperHeaderItem = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: orange;
   flex: 1;
   ${({ theme, stepState }) => {
     if (stepState === StepStates.COMPLETE) {
@@ -50,10 +49,10 @@ export const StepperHeaderItem = styled.div<{
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.COMPLETE || stepState === StepStates.CURRENT
       ? theme.colors.primary
-      : lighten(0.32, theme.colors.primary)};
+      : theme.colors.backgroundAlt};
 
   @media (max-width: 768px) {
-    font-size: 1.5rem;
+    font-size: ${({ theme }) => theme.fontSize.small};
   }
 `;
 
@@ -77,7 +76,7 @@ export const Dot = styled.div<{ stepState: StepStates }>`
         right: calc(-.7rem/2);
         width: .7rem;
         height: .7rem;
-        background-color: ${lighten(0.2, theme.colors.primary)};
+        background-color: ${theme.colors.background};
       `;
     }
   }}
