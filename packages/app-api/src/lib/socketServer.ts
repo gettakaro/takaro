@@ -1,10 +1,11 @@
 import { Server, Socket } from 'socket.io';
-import { Server as HttpServer } from 'http';
+import { IncomingMessage, Server as HttpServer, ServerResponse } from 'http';
 import { config } from '../config.js';
-import { errors, logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
-import { AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { NextFunction, Response } from 'express';
 
 interface ServerToClientEvents {
   gameEvent: (
@@ -71,6 +72,25 @@ class SocketServer {
         next: (err?: Error | undefined) => void
       ) => this.logMiddleware(socket, next)
     );
+
+    const authMiddleware = ctx.wrap(
+      'socket:auth',
+      AuthService.getAuthMiddleware([])
+    );
+    this.io.engine.use(
+      (
+        req: IncomingMessage,
+        res: ServerResponse<IncomingMessage>,
+        next: NextFunction
+      ) => {
+        return authMiddleware(
+          req as AuthenticatedRequest,
+          res as Response,
+          next
+        );
+      }
+    );
+
     this.io.use(
       (
         socket: Socket<
@@ -80,7 +100,7 @@ class SocketServer {
           SocketData
         >,
         next: (err?: Error | undefined) => void
-      ) => this.authMiddleware(socket, next)
+      ) => this.routerMiddleware(socket, next)
     );
 
     this.io.on('connection', (socket) => {
@@ -100,7 +120,7 @@ class SocketServer {
     this.io.to(domainId).emit(event, ...data);
   }
 
-  private async authMiddleware(
+  private async routerMiddleware(
     socket: Socket<
       ClientToServerEvents,
       ServerToClientEvents,
@@ -110,21 +130,15 @@ class SocketServer {
     next: (err?: Error | undefined) => void
   ) {
     try {
-      let token = null;
-
-      if (socket.handshake.auth.token) {
-        token = socket.handshake.auth.token;
+      const ctxData = ctx.data;
+      if (!ctxData.domain) {
+        this.log.error('No domain found in context');
+        return next(new errors.UnauthorizedError());
       }
-
-      if (!token) return next(new errors.UnauthorizedError());
-
-      const payload = await AuthService.verifyJwt(token);
-
-      socket.join(payload.domainId);
-      this.log.warn('TODO: Implement auth for io server :)' + token);
+      socket.join(ctxData.domain);
       next();
     } catch (error) {
-      this.log.error('Unknown error when authenticating socket', error);
+      this.log.error('Unknown error when routing socket', error);
       next(new errors.UnauthorizedError());
     }
   }
