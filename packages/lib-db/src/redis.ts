@@ -9,6 +9,13 @@ class RedisClass {
 
   private clients = new Map<string, RedisClient>();
 
+  /**
+   * Get a Redis client from the cache, or create a new one.
+   * The client will already be connected.
+   * @param name Name for the client, used to cache the client.
+   * @param extra Any extra Redis options to pass to the client.
+   * @returns
+   */
   async getClient(
     name: string,
     extra: RedisClientOptions = {}
@@ -32,6 +39,15 @@ class RedisClass {
     await client.connect();
     this.clients.set(name, client);
     return client;
+  }
+
+  /**
+   * Disconnect all clients and clear the cache.
+   */
+  async destroy() {
+    for (const client of this.clients.values()) {
+      await client.disconnect();
+    }
   }
 }
 

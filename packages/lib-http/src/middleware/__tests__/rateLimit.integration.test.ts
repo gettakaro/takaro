@@ -63,6 +63,10 @@ describe('rateLimit middleware', () => {
     await redis.flushAll();
   });
 
+  after(async () => {
+    await Redis.destroy();
+  });
+
   it('should limit requests', async () => {
     const agent = supertest(http.expressInstance);
     agent.get('/low-limit').set('X-Forwarded-For', '127.0.0.2');
