@@ -65,8 +65,8 @@ services:
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
 
-      REACT_APP_API: http://127.0.0.1:13000
-      REACT_APP_ORY_URL: http://127.0.0.1:4433
+      VITE_API: http://127.0.0.1:13000
+      VITE_ORY_URL: http://127.0.0.1:4433
 
       TAKARO_OAUTH_HOST: http://hydra:4444
       TAKARO_HOST: http://takaro:3000
