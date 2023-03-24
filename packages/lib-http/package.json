@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "i": "^0.3.7",
+    "rate-limiter-flexible": "^2.4.1",
     "zod": "^3.17.10"
   },
   "devDependencies": {
