@@ -50,8 +50,8 @@ npm run-script -w packages/lib-config build
 npm run-script -w packages/lib-util build
 npm run-script -w packages/lib-apiclient build
 npm run-script -w packages/lib-auth build
-npm run-script -w packages/lib-http build
 npm run-script -w packages/lib-db build
+npm run-script -w packages/lib-http build
 npm run-script -w packages/lib-gameserver build
 npm run-script -w packages/lib-queues build
 npm run-script -w packages/lib-function-helpers build

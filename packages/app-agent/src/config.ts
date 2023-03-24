@@ -13,13 +13,6 @@ interface IAgentConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
-  redis: {
-    host: string;
-    port: number;
-    username: string;
-    password: string;
-    tlsCa: string;
-  };
   functions: {
     executionMode: EXECUTION_MODE;
   };
@@ -62,38 +55,6 @@ const configSchema = {
       format: Array,
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
-    },
-  },
-  redis: {
-    host: {
-      doc: 'The host of the redis server',
-      format: String,
-      default: 'localhost',
-      env: 'REDIS_HOST',
-    },
-    port: {
-      doc: 'The port of the redis server',
-      format: Number,
-      default: 6379,
-      env: 'REDIS_PORT',
-    },
-    username: {
-      doc: 'The username of the redis server',
-      format: String,
-      default: '',
-      env: 'REDIS_USERNAME',
-    },
-    password: {
-      doc: 'The password of the redis server',
-      format: String,
-      default: '',
-      env: 'REDIS_PASSWORD',
-    },
-    tlsCa: {
-      doc: 'Optional TLS certificate, if the redis server is using TLS',
-      format: String,
-      default: '',
-      env: 'REDIS_TLS_CA',
     },
   },
   functions: {
