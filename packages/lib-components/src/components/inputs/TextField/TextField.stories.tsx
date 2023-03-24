@@ -1,3 +1,4 @@
+import React from 'react';
 import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
@@ -42,11 +43,7 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
     []
   );
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormFields>({
+  const { control, handleSubmit } = useForm<FormFields>({
     defaultValues: {
       name: '',
     },
@@ -68,7 +65,6 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
           placeholder={args.placeholder}
           required={args.required}
           hint={args.hint}
-          error={errors.name}
         />
         <TextField
           control={control}
@@ -78,7 +74,6 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
           prefix={args.prefix}
           required={args.required}
           hint={args.hint}
-          error={errors.name}
         />
         <TextField
           control={control}
@@ -88,7 +83,6 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
           suffix={args.suffix}
           required={args.required}
           hint={args.hint}
-          error={errors.name}
         />
         <TextField
           control={control}
@@ -99,7 +93,6 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
           suffix={args.suffix}
           required={args.required}
           hint={args.hint}
-          error={errors.name}
         />
         <Button type="submit" text="Submit form" size="large" />
       </form>
@@ -108,9 +101,9 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
   );
 };
 
-export const Password: StoryFn<FieldProps> = (args) => {
+export const Password: StoryFn<TextFieldProps> = (args) => {
   type FormFields = { password: string };
-  const { control, formState } = useForm<FormFields>({
+  const { control } = useForm<FormFields>({
     defaultValues: {
       password: '',
     },
@@ -126,7 +119,6 @@ export const Password: StoryFn<FieldProps> = (args) => {
         type="password"
         hint={args.hint}
         required={args.required}
-        error={formState.errors.password}
       />
     </Wrapper>
   );

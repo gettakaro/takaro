@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Action } from '../../../components';
 import { DropdownButton, DropdownButtonProps } from '.';
@@ -18,7 +18,7 @@ export default {
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
 } as Meta;
 
-export const Default: Story<DropdownButtonProps> = () => {
+export const Default: StoryFn<DropdownButtonProps> = () => {
   return (
     <DropdownButton>
       <Action

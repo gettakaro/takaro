@@ -18,9 +18,9 @@ const Container = styled.div<{ maxWidth: number | undefined; copied: boolean }>`
       `${theme.spacing['0_75']} ${theme.spacing[4]} ${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
     border: 0.1rem solid
       ${({ copied, theme }): string =>
-        copied ? theme.colors.primary : theme.colors.gray};
+        copied ? theme.colors.primary : theme.colors.background};
     color: ${({ theme, copied }): string =>
-      copied ? theme.colors.primary : theme.colors.gray};
+      copied ? theme.colors.primary : theme.colors.text};
     cursor: default;
 
     &:hover {
@@ -31,15 +31,14 @@ const Container = styled.div<{ maxWidth: number | undefined; copied: boolean }>`
 
 const IconContainer = styled.div<{ copied: boolean }>`
   position: absolute;
-  background-color: white;
   top: 7px;
   right: 7px;
 
   svg {
     fill: ${({ copied, theme }): string =>
-      copied ? theme.colors.primary : theme.colors.gray};
+      copied ? theme.colors.primary : theme.colors.background};
     stroke: ${({ copied, theme }): string =>
-      copied ? theme.colors.primary : theme.colors.gray};
+      copied ? theme.colors.primary : theme.colors.background};
     cursor: pointer;
   }
 `;

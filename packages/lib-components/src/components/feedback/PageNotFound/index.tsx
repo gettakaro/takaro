@@ -1,7 +1,7 @@
 import { FC, ReactElement, cloneElement } from 'react';
-import { Company } from '../../components';
-import { useTheme } from '../../hooks';
-import { styled } from '../../styled';
+import { Company } from '../../../components';
+import { useTheme } from '../../../hooks';
+import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
 import {
   AiOutlineRight,
@@ -96,7 +96,7 @@ const IconContainer = styled.div`
   margin-right: 2rem;
 `;
 
-export interface Error404Props {
+export interface PageNotFoundProps {
   pages?: Page[];
   homeRoute: string;
 }
@@ -108,7 +108,7 @@ interface Page {
   to: string;
 }
 
-export const Error404: FC<Error404Props> = ({ pages, homeRoute }) => {
+export const PageNotFound: FC<PageNotFoundProps> = ({ pages, homeRoute }) => {
   const theme = useTheme();
 
   return (

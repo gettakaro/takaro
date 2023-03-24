@@ -39,7 +39,6 @@ export const TextField: FC<TextFieldProps> = (props) => {
     value,
     label,
     hint,
-    error,
     disabled,
     required,
     name,
@@ -54,7 +53,14 @@ export const TextField: FC<TextFieldProps> = (props) => {
 
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { field } = useController({ name, control, defaultValue: value });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    name,
+    control,
+    defaultValue: value,
+  });
 
   const handleOnBlur = () => {
     field.onBlur();
@@ -146,6 +152,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
       {error && showError && <ErrorMessage message={error.message!} />}
+      {props.description && <p>{props.description}</p>}
     </Container>
   );
 };

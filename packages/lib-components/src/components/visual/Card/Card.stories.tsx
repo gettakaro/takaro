@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Card, CardProps } from '.';
@@ -28,7 +29,7 @@ export const Default: StoryFn<CardProps> = (args) => (
 
 const Container = styled.div`
   border-radius: 1rem;
-  background-color: white;
+  background-color: ${({ theme }): string => theme.colors.background};
   padding: 2rem;
 `;
 

@@ -23,11 +23,15 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
 
   button {
     flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
-    border: 2px solid ${({ theme }): string => theme.colors.gray};
+    border: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
     border-bottom: ${({ orientation, theme }) =>
-      orientation === 'horizontal' ? `2px solid ${theme.colors.gray}` : 'none'};
+      orientation === 'horizontal'
+        ? `2px solid ${theme.colors.backgroundAlt}`
+        : 'none'};
     border-right: ${({ orientation, theme }) =>
-      orientation === 'vertical' ? `2px solid ${theme.colors.gray}` : 'none'};
+      orientation === 'vertical'
+        ? `2px solid ${theme.colors.backgroundAlt}`
+        : 'none'};
 
     &:first-child {
       ${({ orientation }) => {
@@ -51,13 +55,13 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
           return `
             border-top-right-radius: 5px;
             border-bottom-right-radius: 5px;
-            border-right: 2px solid ${theme.colors.gray};
+            border-right: 2px solid ${theme.colors.backgroundAlt};
           `;
         } else {
           return `
             border-bottom-right-radius: 5px;
             border-bottom-left-radius: 5px;
-            border-bottom: 2px solid ${theme.colors.gray};
+            border-bottom: 2px solid ${theme.colors.backgroundAlt};
       `;
         }
       }}
@@ -84,16 +88,12 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
   orientation = 'horizontal',
   fullWidth = false,
 }) => {
-  /* TODO: set correct type
-   * if true: string
-   * if false: Map<string, boolean>
-   */
-  const [selected, setSelected] = useState<any>(
+  const [selected, setSelected] = useState<string | Map<string, boolean>>(
     exclusive ? defaultValue || '' : handleDefaultValueNonExclusive()
   );
 
   function handleDefaultValueNonExclusive() {
-    const m = new Map();
+    const m = new Map<string, boolean>();
     selected as Map<string, boolean>;
 
     Children.forEach(children, (child) => {
@@ -113,7 +113,14 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
       return setSelected(value);
     } else {
       // handle case that each button has a seperate state
-      setSelected(new Map(selected.set(value, !selected.get(value))));
+      setSelected(
+        new Map(
+          (selected as Map<string, boolean>).set(
+            value,
+            !(selected as Map<string, boolean>).get(value)
+          )
+        )
+      );
     }
   };
 
@@ -130,7 +137,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
             {
               selected: exclusive
                 ? selected == child.props.value
-                : selected.get(child.props.value),
+                : (selected as Map<string, boolean>).get(child.props.value),
               parentClickEvent: clickEvent,
               orientation: orientation,
             }

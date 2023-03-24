@@ -1,15 +1,15 @@
+import React from 'react';
 import { useMemo, useState } from 'react';
-import { Button } from '../..';
 import { Meta, StoryFn } from '@storybook/react';
 import { RadioGroup, RadioGroupProps } from '.';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useValidationSchema } from '../../..';
-import { DevTool } from '@hookform/devtools';
 import * as yup from 'yup';
 import { Radio } from './Radio';
+import { Button } from '../../../components';
 
 export default {
-  title: 'Inputs/RadioGroup/Default',
+  title: 'Inputs/RadioGroup',
   component: RadioGroup,
   subcomponents: { Radio },
   args: {
@@ -56,14 +56,7 @@ export const OnChange: StoryFn<RadioGroupProps> = (args) => {
             { label: 'female', labelPosition: 'right', value: 'f' },
           ]}
         />
-        <Button
-          onClick={() => {
-            /* */
-          }}
-          text="submit"
-          type="submit"
-        />
-        <DevTool control={control} />
+        <Button text="submit" type="submit" />
       </form>
       <div>Result: {result}</div>
     </>

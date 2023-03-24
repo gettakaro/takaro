@@ -63,7 +63,6 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     value,
     disabled,
     hint,
-    error,
     loading,
   } = defaultsApplier(props);
 
@@ -78,7 +77,10 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     ) ?? []),
   ]);
 
-  const { field } = useController({
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
     name,
     control,
     defaultValue: Math.max(0, listContentRef.current.indexOf(value)),

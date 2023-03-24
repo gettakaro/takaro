@@ -45,10 +45,12 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
     value,
     labelPosition,
     hint,
-    error,
   } = defaultsApplier(props);
 
-  const { field: checkbox } = useController({
+  const {
+    field: checkbox,
+    fieldState: { error },
+  } = useController({
     name,
     control,
     defaultValue: value,

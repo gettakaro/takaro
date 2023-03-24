@@ -41,7 +41,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer {
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
@@ -53,25 +53,23 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     color: ${({ theme }) => theme.colors.text};
   }
 
-  p, span, div {
-    font-size: 1.3rem;
+  p, span, div, h4 {
+    font-size: ${({ theme }) => theme.fontSize.small};
   }
 
   h1 {
-    font-size: 3.2rem;
+    font-size: ${({ theme }) => theme.fontSize.large}
     font-weight: 800;
   }
   h2 {
-    font-size: 2.4rem;
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge}
     font-weight: 800;
   }
   h3 {
-    font-size: 1.8rem;
+    font-size: ${({ theme }) => theme.fontSize.medium}
     font-weight: 600;
   }
-  h4 {
-    font-size: 1.3rem;
-  }
+
 
   form {
     display: block;
@@ -85,6 +83,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-width: 2px;
     border-radius: 0.25rem;
     border-color: transparent;
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    color: ${({ theme }) => theme.colors.text};
     &[readOnly]{
       cursor: not-allowed;
       &:focus {
