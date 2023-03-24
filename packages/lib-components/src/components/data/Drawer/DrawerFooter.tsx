@@ -5,6 +5,7 @@ export const Container = styled.div`
   width: 100%;
   position: fixed;
   bottom: 0;
+  z-index: 10;
 
   padding: ${({ theme }) => theme.spacing[2]};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
