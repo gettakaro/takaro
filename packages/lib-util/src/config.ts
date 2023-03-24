@@ -6,6 +6,9 @@ interface ILoggerConfig extends IBaseConfig {
     json: boolean;
     minimal: boolean;
   };
+  sentry: {
+    dsn: string;
+  };
 }
 
 const configSchema = {
@@ -27,6 +30,14 @@ const configSchema = {
       doc: 'Log minimal data, use for local development.',
       env: 'LOGGING_MINIMAL',
       format: Boolean,
+    },
+  },
+  sentry: {
+    dsn: {
+      default: '',
+      doc: 'The Sentry DSN to use.',
+      env: 'SENTRY_DSN',
+      format: String,
     },
   },
 };

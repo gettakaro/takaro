@@ -9,7 +9,7 @@ const log = logger('http');
  * This middleware is called very early in the request lifecycle, so it's
  * we leverage this fact to inject the context tracking at this stage
  */
-export const LoggingMiddleware = ctx.wrap(loggingMiddleware);
+export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware);
 
 async function loggingMiddleware(
   req: Request,
