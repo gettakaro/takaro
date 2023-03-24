@@ -1,14 +1,7 @@
-import {
-  Processor,
-  Queue,
-  Worker,
-  QueueEvents,
-  Job,
-  QueueScheduler,
-} from 'bullmq';
-import { config } from './config';
-import { logger } from '@takaro/util';
-import { getRedisConnectionOptions } from './util/redisConnectionOptions';
+import { Processor, Queue, Worker, QueueEvents, QueueScheduler } from 'bullmq';
+import { config } from './config.js';
+import { logger, ctx, addCounter } from '@takaro/util';
+import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 const log = logger('queue');
@@ -19,29 +12,36 @@ export class TakaroQueue<T> extends Queue<T> {
   }
 }
 
-export abstract class TakaroWorker<T> extends Worker<T> {
+export abstract class TakaroWorker<T> extends Worker<T, unknown> {
   log = logger('worker');
 
-  constructor(name: string, fn: Processor<T>) {
-    super(name, fn, { connection: getRedisConnectionOptions() });
-
-    this.on('error', (err) => {
-      this.log.error(err);
-    });
-
-    this.on('completed', (job: Job<T>) => {
-      this.log.info(`Job ${job.id} completed`);
-    });
+  constructor(name: string, fn: Processor<T, unknown>) {
+    super(
+      name,
+      ctx.wrap(
+        addCounter(fn, {
+          name: `worker:${name}`,
+          help: `How many jobs were processed by ${name}`,
+        })
+      ),
+      {
+        connection: getRedisConnectionOptions(),
+      }
+    );
   }
 }
 export interface IJobData {
   function: string;
   domainId: string;
-  token: string;
   /**
    * The id of the item that triggered this job (cronjobId, commandId or hookId)
    */
   itemId: string;
+
+  /**
+   * The id of the gameserver that triggered this job
+   */
+  gameServerId: string;
   /**
    * Additional data that can be passed to the job
    * Typically, this depends on what triggered the job

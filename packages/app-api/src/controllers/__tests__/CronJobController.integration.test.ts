@@ -6,6 +6,7 @@ const group = 'CronJobController';
 const mockCronjob = (moduleId: string) => ({
   name: 'Test cronJob',
   temporalValue: '0 * * * *',
+  function: 'console.log("test")',
   moduleId,
 });
 
@@ -31,7 +32,7 @@ const tests = [
         this.setupData.data.id
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<void>({
     snapshot: true,
@@ -47,7 +48,7 @@ const tests = [
         mockCronjob(module.id)
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
@@ -71,11 +72,10 @@ const tests = [
         {
           name: 'Updated cronJob',
           temporalValue: '0 * * * *',
-          enabled: false,
         }
       );
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
@@ -98,30 +98,27 @@ const tests = [
         this.setupData.data.id
       );
     },
-    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<CronJobOutputDTOAPI>({
     snapshot: true,
     group,
     name: 'Search',
     setup: async function () {
-      const module = (
+      const mod = (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
         })
       ).data.data;
       return (
-        await this.client.cronjob.cronJobControllerCreate(
-          mockCronjob(module.id)
-        )
+        await this.client.cronjob.cronJobControllerCreate(mockCronjob(mod.id))
       ).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
-        filters: { name: mockCronjob(module.id).name },
+        filters: { name: mockCronjob(this.setupData.data.moduleId).name },
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId'],
   }),
 ];
 

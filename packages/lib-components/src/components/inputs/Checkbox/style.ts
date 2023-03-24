@@ -6,17 +6,6 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing['2_5']};
-`;
-
-export const Label = styled.label<{ position: 'left' | 'right' }>`
-  margin: ${({ theme, position }) =>
-    position === 'left'
-      ? `0 ${theme.spacing['1_5']} 0 0`
-      : `0 0 0 ${theme.spacing['1_5']}`};
-  cursor: pointer;
-  font-size: 1.5rem;
-  user-select: none;
 `;
 
 export const Input = styled.input`
@@ -36,23 +25,33 @@ export const BackgroundContainer = styled(motion.div)`
 export const CheckboxContainer = styled.div<{
   isChecked?: boolean;
   readOnly: boolean;
+  error: boolean;
+  disabled: boolean;
 }>`
   display: flex;
   position: relative;
-  width: 2.3rem;
-  height: 2.3rem;
+  min-width: 2.3rem;
+  min-height: 2.3rem;
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
-    ${({ theme, readOnly, isChecked }): string =>
-      readOnly
-        ? theme.colors.lightGray
-        : isChecked
-        ? theme.colors.primary
-        : theme.colors.gray};
+    ${({ theme, isChecked, error, disabled }): string => {
+      if (disabled) {
+        return theme.colors.gray;
+      }
+      if (isChecked) {
+        return theme.colors.primary;
+      }
+      if (error) {
+        return theme.colors.error;
+      }
+      return theme.colors.gray;
+    }};
+
   border-radius: 6px;
-  transition: box-shadow 0.125s linear, border-color 0.15s linear;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  transition: box-shadow 100ms linear, border-color 100ms linear;
+  cursor: ${({ readOnly, disabled }) =>
+    readOnly || disabled ? 'not-allowed' : 'pointer'};
   z-index: 1;
   overflow: visible;
   &.placeholder {

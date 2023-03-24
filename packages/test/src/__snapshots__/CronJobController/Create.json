@@ -10,9 +10,8 @@
       "createdAt": "2022-09-22T13:03:36.311Z",
       "updatedAt": "2022-09-22T13:03:36.316Z",
       "id": "bcd3d3a2-b418-44a2-b2a8-f01024728384",
-      "enabled": true,
       "function": {
-        "code": ""
+        "code": "console.log(\"test\")"
       }
     }
   },
@@ -21,7 +20,8 @@
     "group": "CronJobController",
     "name": "Create",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

@@ -1,13 +1,17 @@
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { config } from '../config';
+import { config } from '../config.js';
 import { errors, logger } from '@takaro/util';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
-import { AuthService } from '../service/AuthService';
+import { AuthService } from '../service/AuthService.js';
 
 interface ServerToClientEvents {
-  gameEvent: (type: GameEvents, data: EventMapping[GameEvents]) => void;
+  gameEvent: (
+    gameserverId: string,
+    type: GameEvents,
+    data: EventMapping[GameEvents]
+  ) => void;
   pong: () => void;
 }
 
@@ -107,16 +111,6 @@ class SocketServer {
   ) {
     try {
       let token = null;
-
-      if (socket.handshake.headers.cookie) {
-        const parsedCookies: Record<string, string> =
-          socket.handshake.headers.cookie.split(';').reduce((acc, cookie) => {
-            const [key, value] = cookie.split('=');
-            return { ...acc, [key.trim()]: decodeURIComponent(value) };
-          }, {});
-
-        token = parsedCookies[config.get('auth.cookieName')];
-      }
 
       if (socket.handshake.auth.token) {
         token = socket.handshake.auth.token;

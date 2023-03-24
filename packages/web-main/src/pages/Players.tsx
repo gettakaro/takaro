@@ -1,9 +1,18 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Table, Loading } from '@takaro/lib-components';
+import {
+  styled,
+  Table,
+  Loading,
+  useTableActions,
+} from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from 'react-query';
-import { PlayerOutputArrayDTOAPI } from '@takaro/apiclient';
+import {
+  PlayerOutputDTO,
+  PlayerSearchInputDTOSortDirectionEnum,
+} from '@takaro/apiclient';
+import { createColumnHelper } from '@tanstack/react-table';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -14,26 +23,59 @@ const TableContainer = styled.div`
 
 const Players: FC = () => {
   const client = useApiClient();
+  const { pagination, columnFilters, sorting } =
+    useTableActions<PlayerOutputDTO>();
 
-  const { data, isLoading } = useQuery<PlayerOutputArrayDTOAPI>(
-    'players',
-    async () => (await client.player.playerControllerSearch()).data
+  const { data, isLoading, refetch } = useQuery(
+    ['players', pagination.paginationState, sorting.sortingState],
+    async () =>
+      pagination.paginate(
+        await client.player.playerControllerSearch({
+          page: pagination.paginationState.pageIndex,
+          limit: pagination.paginationState.pageSize,
+          sortBy: sorting.sortingState[0]?.id,
+          sortDirection: sorting.sortingState[0]?.desc
+            ? PlayerSearchInputDTOSortDirectionEnum.Desc
+            : PlayerSearchInputDTOSortDirectionEnum.Asc,
+        })
+      ),
+    { keepPreviousData: true }
   );
 
-  const columDefs = [
-    { field: 'updatedAt', headerName: 'Updated' },
-    { field: 'name', headerName: 'Name', filter: 'agTextColumnFilter' },
-    { field: 'steamId', headerName: 'Steam ID', filter: 'agTextColumnFilter' },
-    {
-      field: 'epicOnlineServicesId',
-      headerName: 'EOS ID',
-      filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'xboxLiveId',
-      headerName: 'Xbox ID',
-      filter: 'agTextColumnFilter',
-    },
+  const columnHelper = createColumnHelper<PlayerOutputDTO>();
+  const columnDefs = [
+    columnHelper.accessor('updatedAt', {
+      header: 'Updated',
+      id: 'updatedAt',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: false,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('name', {
+      header: 'Name',
+      id: 'name',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('steamId', {
+      header: 'Steam ID',
+      id: 'steamId',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+    }),
+    columnHelper.accessor('epicOnlineServicesId', {
+      header: 'EOS ID',
+      id: 'epicOnlineServicesId',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+    }),
+    columnHelper.accessor('xboxLiveId', {
+      header: 'Xbox ID',
+      id: 'xboxLiveId',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+    }),
   ];
 
   if (isLoading || data === undefined) {
@@ -48,10 +90,17 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
-          columnDefs={columDefs}
-          rowData={data.data}
-          width={'100%'}
-          height={'80vh'}
+          refetch={refetch}
+          columns={columnDefs}
+          data={data.rows}
+          pagination={{
+            ...pagination,
+            pageCount: data.pageCount,
+            total: data.total,
+          }}
+          columnFiltering={{ ...columnFilters }}
+          sorting={{ ...sorting }}
+          refetching={isLoading}
         />
       </TableContainer>
     </Fragment>

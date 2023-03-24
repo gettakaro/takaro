@@ -17,8 +17,8 @@ const Dashboard: FC = () => {
       setLastPong(new Date().toISOString());
     });
 
-    socket.on('gameEvent', (type, data) => {
-      setLastEvent(`${type} - ${JSON.stringify(data)}`);
+    socket.on('gameEvent', (gameserverId, type, data) => {
+      setLastEvent(`${gameserverId} - ${type} - ${JSON.stringify(data)}`);
     });
 
     return () => {

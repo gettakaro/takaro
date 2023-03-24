@@ -1,10 +1,13 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { DashboardFrame } from '../frames/dashboardFrame';
+import { GlobalFrame } from '../frames/GlobalFrame';
+import { StudioFrame } from '../frames/StudioFrame';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
+import { ServerFrame } from 'frames/GameServerFrame';
+import { setUser } from '@sentry/react';
 
 const Container = styled.div`
   width: 100vw;
@@ -15,7 +18,7 @@ const Container = styled.div`
 `;
 
 interface AuthenticatedRouteProps {
-  frame: 'dashboard' | 'isolated' | 'none';
+  frame: 'global' | 'studio' | 'gameserver';
 }
 
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
@@ -28,10 +31,11 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
   const handleAuth = useCallback(async () => {
     try {
       const user = await getSession();
+      setUser({ id: user.id! });
       setIsAuth(true);
       setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
-      navigate(PATHS.login);
+      navigate(PATHS.login());
     } finally {
       isLoading(false);
     }
@@ -44,10 +48,12 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   function handleFrame() {
     switch (frame) {
-      case 'dashboard':
-        return <DashboardFrame />;
-      case 'none':
-        return <Outlet />;
+      case 'global':
+        return <GlobalFrame />;
+      case 'gameserver':
+        return <ServerFrame />;
+      case 'studio':
+        return <StudioFrame />;
       default:
         return <Outlet />;
     }

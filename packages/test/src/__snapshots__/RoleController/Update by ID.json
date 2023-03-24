@@ -8,20 +8,20 @@
       "updatedAt": "2022-09-11T20:36:45.281Z",
       "id": "befa3242-a031-4241-831b-2eb3a62963a2",
       "name": "New name",
-      "capabilities": [
+      "permissions": [
         {
           "createdAt": "2022-09-11T20:36:45.263Z",
           "updatedAt": "2022-09-11T20:36:45.263Z",
           "id": "196c5fa5-9beb-4416-bf01-63e73890050e",
           "roleId": "befa3242-a031-4241-831b-2eb3a62963a2",
-          "capability": "MANAGE_ROLES"
+          "permission": "MANAGE_ROLES"
         },
         {
           "createdAt": "2022-09-11T20:36:45.276Z",
           "updatedAt": "2022-09-11T20:36:45.277Z",
           "id": "78b96bd6-83e8-46ea-9145-2a6dedcc40b4",
           "roleId": "befa3242-a031-4241-831b-2eb3a62963a2",
-          "capability": "MANAGE_USERS"
+          "permission": "MANAGE_USERS"
         }
       ]
     }

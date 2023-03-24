@@ -1,8 +1,6 @@
-export { HTTP } from './app';
+export { HTTP } from './app.js';
 
-export { createAdminAuthMiddleware } from './middleware/adminAuth';
-export {
-  PaginatedRequest,
-  PaginationMiddleware,
-} from './middleware/paginationMiddleware';
-export { apiResponse, APIOutput } from './util/apiResponse';
+export * from './middleware/metrics.js';
+export { adminAuthMiddleware } from './middleware/adminAuth.js';
+export { paginationMiddleware } from './middleware/paginationMiddleware.js';
+export { apiResponse, APIOutput } from './util/apiResponse.js';

@@ -14,12 +14,13 @@ interface IHttpConfig extends IBaseConfig {
     allowedOrigins: string[];
   };
   auth: {
-    adminSecret: string;
     jwtSecret: string;
     jwtExpiresIn: string;
-    cookieName: string;
   };
-  clusterMode: CLUSTER_MODE;
+  takaro: {
+    clusterMode: CLUSTER_MODE;
+    maxVariables: number;
+  };
 }
 
 const configSchema = {
@@ -56,12 +57,6 @@ const configSchema = {
     },
   },
   auth: {
-    adminSecret: {
-      doc: 'The secret used to authenticate admin requests',
-      format: String,
-      default: null,
-      env: 'ADMIN_SECRET',
-    },
     jwtSecret: {
       doc: 'The secret used to sign JWTs',
       format: String,
@@ -74,18 +69,20 @@ const configSchema = {
       default: '1 day',
       env: 'JWT_EXPIRES_IN',
     },
-    cookieName: {
-      doc: 'The name of the cookie used to store the JWT',
-      format: String,
-      default: 'takaro-token',
-      env: 'COOKIE_NAME',
-    },
   },
-  clusterMode: {
-    doc: 'The mode to run the app in',
-    format: ['single', 'cluster'],
-    default: CLUSTER_MODE.SINGLE,
-    env: 'CLUSTER_MODE',
+  takaro: {
+    clusterMode: {
+      doc: 'The mode to run the app in',
+      format: ['single', 'cluster'],
+      default: CLUSTER_MODE.SINGLE,
+      env: 'CLUSTER_MODE',
+    },
+    maxVariables: {
+      doc: 'The maximum number of variables that can be stored per domain',
+      format: Number,
+      default: 100,
+      env: 'MAX_VARIABLES',
+    },
   },
 };
 

@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration';
+import { Configuration } from './configuration.js';
 import globalAxios, {
   AxiosPromise,
   AxiosInstance,
@@ -31,7 +31,7 @@ import {
   serializeDataIfNeeded,
   toPathString,
   createRequestFunction,
-} from './common';
+} from './common.js';
 // @ts-ignore
 import {
   BASE_PATH,
@@ -39,7 +39,7 @@ import {
   RequestArgs,
   BaseAPI,
   RequiredError,
-} from './base';
+} from './base.js';
 
 /**
  *
@@ -52,7 +52,7 @@ export interface APIOutput {
    * @type {MetadataOutput}
    * @memberof APIOutput
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -62,10 +62,10 @@ export interface APIOutput {
 export interface BaseEvent {
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof BaseEvent
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -89,59 +89,6 @@ export const BaseEventTypeEnum = {
 
 export type BaseEventTypeEnum =
   typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
-
-/**
- * @type BaseEventTimestamp
- * @export
- */
-export type BaseEventTimestamp = string;
-
-/**
- *
- * @export
- * @interface CapabilityOutputDTO
- */
-export interface CapabilityOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof CapabilityOutputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CapabilityOutputDTO
-   */
-  capability: CapabilityOutputDTOCapabilityEnum;
-}
-
-export const CapabilityOutputDTOCapabilityEnum = {
-  Root: 'ROOT',
-  ManageUsers: 'MANAGE_USERS',
-  ReadUsers: 'READ_USERS',
-  ManageRoles: 'MANAGE_ROLES',
-  ReadRoles: 'READ_ROLES',
-  ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
-  ReadFunctions: 'READ_FUNCTIONS',
-  ManageFunctions: 'MANAGE_FUNCTIONS',
-  ReadCronjobs: 'READ_CRONJOBS',
-  ManageCronjobs: 'MANAGE_CRONJOBS',
-  ReadHooks: 'READ_HOOKS',
-  ManageHooks: 'MANAGE_HOOKS',
-  ReadCommands: 'READ_COMMANDS',
-  ManageCommands: 'MANAGE_COMMANDS',
-  ReadModules: 'READ_MODULES',
-  ManageModules: 'MANAGE_MODULES',
-  ReadPlayers: 'READ_PLAYERS',
-  ManagePlayers: 'MANAGE_PLAYERS',
-  ManageSettings: 'MANAGE_SETTINGS',
-  ReadSettings: 'READ_SETTINGS',
-} as const;
-
-export type CapabilityOutputDTOCapabilityEnum =
-  typeof CapabilityOutputDTOCapabilityEnum[keyof typeof CapabilityOutputDTOCapabilityEnum];
 
 /**
  *
@@ -169,12 +116,6 @@ export interface CommandCreateDTO {
   helpText?: string;
   /**
    *
-   * @type {boolean}
-   * @memberof CommandCreateDTO
-   */
-  enabled?: boolean;
-  /**
-   *
    * @type {string}
    * @memberof CommandCreateDTO
    */
@@ -185,6 +126,63 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   function?: string;
+}
+/**
+ *
+ * @export
+ * @interface CommandExecuteDTOAPI
+ */
+export interface CommandExecuteDTOAPI {
+  /**
+   *
+   * @type {CommandOutput}
+   * @memberof CommandExecuteDTOAPI
+   */
+  data: CommandOutput;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CommandExecuteDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CommandExecuteInputDTO
+ */
+export interface CommandExecuteInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandExecuteInputDTO
+   */
+  command: string;
+}
+/**
+ *
+ * @export
+ * @interface CommandOutput
+ */
+export interface CommandOutput {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutput
+   */
+  rawResult: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CommandOutput
+   */
+  success: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutput
+   */
+  errorMessage?: string;
 }
 /**
  *
@@ -203,7 +201,7 @@ export interface CommandOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof CommandOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -211,12 +209,6 @@ export interface CommandOutputArrayDTOAPI {
  * @interface CommandOutputDTO
  */
 export interface CommandOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof CommandOutputDTO
-   */
-  id: string;
   /**
    *
    * @type {string}
@@ -237,16 +229,40 @@ export interface CommandOutputDTO {
   helpText: string;
   /**
    *
-   * @type {boolean}
-   * @memberof CommandOutputDTO
-   */
-  enabled: boolean;
-  /**
-   *
    * @type {FunctionOutputDTO}
    * @memberof CommandOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  functionId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -265,7 +281,7 @@ export interface CommandOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof CommandOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -370,10 +386,10 @@ export interface CommandUpdateDTO {
   helpText?: string;
   /**
    *
-   * @type {boolean}
+   * @type {string}
    * @memberof CommandUpdateDTO
    */
-  enabled?: boolean;
+  function?: string;
 }
 /**
  *
@@ -387,12 +403,6 @@ export interface CronJobCreateDTO {
    * @memberof CronJobCreateDTO
    */
   name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobCreateDTO
-   */
-  enabled?: string;
   /**
    *
    * @type {string}
@@ -429,7 +439,7 @@ export interface CronJobOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof CronJobOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -442,19 +452,7 @@ export interface CronJobOutputDTO {
    * @type {string}
    * @memberof CronJobOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobOutputDTO
-   */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof CronJobOutputDTO
-   */
-  enabled: boolean;
   /**
    *
    * @type {string}
@@ -467,6 +465,30 @@ export interface CronJobOutputDTO {
    * @memberof CronJobOutputDTO
    */
   function: FunctionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CronJobOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CronJobOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -485,7 +507,7 @@ export interface CronJobOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof CronJobOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -505,12 +527,6 @@ export interface CronJobSearchInputAllowedFilters {
    * @memberof CronJobSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobSearchInputAllowedFilters
-   */
-  enabled?: string;
 }
 /**
  *
@@ -575,25 +591,19 @@ export interface CronJobUpdateDTO {
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof CronJobUpdateDTO
-   */
-  enabled: boolean;
+  name?: string;
   /**
    *
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  temporalValue: string;
+  temporalValue?: string;
   /**
    *
    * @type {string}
    * @memberof CronJobUpdateDTO
    */
-  moduleId?: string;
+  function?: string;
 }
 /**
  *
@@ -612,7 +622,7 @@ export interface DomainCreateInputDTO {
    * @type {string}
    * @memberof DomainCreateInputDTO
    */
-  id: string;
+  id?: string;
 }
 /**
  *
@@ -625,7 +635,7 @@ export interface DomainCreateOutputDTO {
    * @type {DomainOutputDTO}
    * @memberof DomainCreateOutputDTO
    */
-  domain: DomainOutputDTO;
+  createdDomain: DomainOutputDTO;
   /**
    *
    * @type {UserOutputDTO}
@@ -662,7 +672,7 @@ export interface DomainCreateOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainCreateOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -681,7 +691,7 @@ export interface DomainOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -694,13 +704,25 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  id: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof DomainOutputDTO
    */
-  name: string;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof DomainOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -719,7 +741,7 @@ export interface DomainOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof DomainOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -826,10 +848,10 @@ export interface EventChatMessage {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventChatMessage
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -868,10 +890,10 @@ export interface EventPlayerConnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventPlayerConnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -910,10 +932,10 @@ export interface EventPlayerDisconnected {
   player: IGamePlayer;
   /**
    *
-   * @type {BaseEventTimestamp}
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventPlayerDisconnected
    */
-  timestamp: BaseEventTimestamp;
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
@@ -968,7 +990,7 @@ export interface FunctionOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof FunctionOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -981,13 +1003,25 @@ export interface FunctionOutputDTO {
    * @type {string}
    * @memberof FunctionOutputDTO
    */
-  id: string;
+  code: string;
   /**
    *
    * @type {string}
    * @memberof FunctionOutputDTO
    */
-  code: string;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof FunctionOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof FunctionOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -1006,7 +1040,7 @@ export interface FunctionOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof FunctionOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1138,7 +1172,7 @@ export interface GameServerOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1146,12 +1180,6 @@ export interface GameServerOutputArrayDTOAPI {
  * @interface GameServerOutputDTO
  */
 export interface GameServerOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof GameServerOutputDTO
-   */
-  id: string;
   /**
    *
    * @type {string}
@@ -1170,6 +1198,24 @@ export interface GameServerOutputDTO {
    * @memberof GameServerOutputDTO
    */
   type: GameServerOutputDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof GameServerOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof GameServerOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const GameServerOutputDTOTypeEnum = {
@@ -1198,7 +1244,7 @@ export interface GameServerOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1282,7 +1328,7 @@ export interface GameServerTestReachabilityDTOAPI {
    * @type {MetadataOutput}
    * @memberof GameServerTestReachabilityDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1429,12 +1475,6 @@ export interface HookCreateDTO {
   name: string;
   /**
    *
-   * @type {boolean}
-   * @memberof HookCreateDTO
-   */
-  enabled?: boolean;
-  /**
-   *
    * @type {string}
    * @memberof HookCreateDTO
    */
@@ -1486,7 +1526,7 @@ export interface HookOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof HookOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1499,19 +1539,7 @@ export interface HookOutputDTO {
    * @type {string}
    * @memberof HookOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof HookOutputDTO
-   */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookOutputDTO
-   */
-  enabled: boolean;
   /**
    *
    * @type {string}
@@ -1530,6 +1558,30 @@ export interface HookOutputDTO {
    * @memberof HookOutputDTO
    */
   eventType: HookOutputDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof HookOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof HookOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const HookOutputDTOEventTypeEnum = {
@@ -1559,7 +1611,7 @@ export interface HookOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof HookOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1579,12 +1631,6 @@ export interface HookSearchInputAllowedFilters {
    * @memberof HookSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookSearchInputAllowedFilters
-   */
-  enabled?: boolean;
   /**
    *
    * @type {string}
@@ -1666,25 +1712,19 @@ export interface HookUpdateDTO {
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof HookUpdateDTO
-   */
-  enabled: boolean;
+  name?: string;
   /**
    *
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  regex: string;
+  regex?: string;
   /**
    *
    * @type {string}
    * @memberof HookUpdateDTO
    */
-  moduleId?: string;
+  function?: string;
 }
 /**
  *
@@ -1744,6 +1784,19 @@ export interface IGamePlayer {
 /**
  *
  * @export
+ * @interface IMessageOptsDTO
+ */
+export interface IMessageOptsDTO {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof IMessageOptsDTO
+   */
+  recipient: IGamePlayer;
+}
+/**
+ *
+ * @export
  * @interface ITakaroQuery
  */
 export interface ITakaroQuery {
@@ -1796,31 +1849,6 @@ export type ITakaroQuerySortDirectionEnum =
 /**
  *
  * @export
- * @interface LoginCreateDTO
- */
-export interface LoginCreateDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  userId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  domain: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginCreateDTO
-   */
-  email: string;
-}
-/**
- *
- * @export
  * @interface LoginDTO
  */
 export interface LoginDTO {
@@ -1848,30 +1876,6 @@ export interface LoginOutputDTO {
    * @type {string}
    * @memberof LoginOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  userId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  email: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
-  domain: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LoginOutputDTO
-   */
   token: string;
 }
 /**
@@ -1891,20 +1895,26 @@ export interface LoginOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof LoginOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
  * @export
- * @interface LoginUpdateDTO
+ * @interface MessageSendInputDTO
  */
-export interface LoginUpdateDTO {
+export interface MessageSendInputDTO {
   /**
    *
    * @type {string}
-   * @memberof LoginUpdateDTO
+   * @memberof MessageSendInputDTO
    */
-  email: string;
+  message: string;
+  /**
+   *
+   * @type {IMessageOptsDTO}
+   * @memberof MessageSendInputDTO
+   */
+  opts: IMessageOptsDTO;
 }
 /**
  *
@@ -1924,6 +1934,24 @@ export interface MetadataOutput {
    * @memberof MetadataOutput
    */
   error: ErrorOutput;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  limit?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MetadataOutput
+   */
+  total?: number;
 }
 /**
  * @type MetadataOutputServerTime
@@ -1958,16 +1986,85 @@ export interface ModuleCreateDTO {
   name: string;
   /**
    *
-   * @type {boolean}
+   * @type {string}
    * @memberof ModuleCreateDTO
    */
-  enabled?: boolean;
+  builtin?: string;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallDTO
+ */
+export interface ModuleInstallDTO {
   /**
    *
-   * @type {object}
-   * @memberof ModuleCreateDTO
+   * @type {string}
+   * @memberof ModuleInstallDTO
    */
-  config?: object;
+  config: string;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallationOutputDTO
+ */
+export interface ModuleInstallationOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  moduleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  config: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallationOutputDTOAPI
+ */
+export interface ModuleInstallationOutputDTOAPI {
+  /**
+   *
+   * @type {ModuleInstallDTO}
+   * @memberof ModuleInstallationOutputDTOAPI
+   */
+  data: ModuleInstallDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleInstallationOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1986,7 +2083,7 @@ export interface ModuleOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof ModuleOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -1999,25 +2096,13 @@ export interface ModuleOutputDTO {
    * @type {string}
    * @memberof ModuleOutputDTO
    */
-  id: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof ModuleOutputDTO
    */
-  name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ModuleOutputDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleOutputDTO
-   */
-  config: object;
+  builtin?: string;
   /**
    *
    * @type {Array<CronJobOutputDTO>}
@@ -2036,6 +2121,24 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   commands: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ModuleOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2054,7 +2157,7 @@ export interface ModuleOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof ModuleOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2074,12 +2177,6 @@ export interface ModuleSearchInputAllowedFilters {
    * @memberof ModuleSearchInputAllowedFilters
    */
   name?: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ModuleSearchInputAllowedFilters
-   */
-  enabled?: boolean;
 }
 /**
  *
@@ -2145,19 +2242,38 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   name: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ModuleUpdateDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleUpdateDTO
-   */
-  config?: object;
 }
+/**
+ *
+ * @export
+ * @interface NOTDOMAINSCOPEDTakaroModelDTO
+ */
+export interface NOTDOMAINSCOPEDTakaroModelDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof NOTDOMAINSCOPEDTakaroModelDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * @type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt
+ * @export
+ */
+export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
+
 /**
  *
  * @export
@@ -2170,6 +2286,25 @@ export interface ParamId {
    * @memberof ParamId
    */
   id: string;
+}
+/**
+ *
+ * @export
+ * @interface ParamIdAndModuleId
+ */
+export interface ParamIdAndModuleId {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndModuleId
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndModuleId
+   */
+  moduleId: string;
 }
 /**
  *
@@ -2211,6 +2346,67 @@ export const ParamKeyKeyEnum = {
 
 export type ParamKeyKeyEnum =
   typeof ParamKeyKeyEnum[keyof typeof ParamKeyKeyEnum];
+
+/**
+ *
+ * @export
+ * @interface PermissionOutputDTO
+ */
+export interface PermissionOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  permission: PermissionOutputDTOPermissionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+
+export const PermissionOutputDTOPermissionEnum = {
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
+} as const;
+
+export type PermissionOutputDTOPermissionEnum =
+  typeof PermissionOutputDTOPermissionEnum[keyof typeof PermissionOutputDTOPermissionEnum];
 
 /**
  *
@@ -2260,7 +2456,7 @@ export interface PlayerOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof PlayerOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2268,12 +2464,6 @@ export interface PlayerOutputArrayDTOAPI {
  * @interface PlayerOutputDTO
  */
 export interface PlayerOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerOutputDTO
-   */
-  id: string;
   /**
    *
    * @type {string}
@@ -2298,6 +2488,24 @@ export interface PlayerOutputDTO {
    * @memberof PlayerOutputDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2316,7 +2524,7 @@ export interface PlayerOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof PlayerOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2437,10 +2645,10 @@ export interface RoleCreateInputDTO {
    * @type {Array<string>}
    * @memberof RoleCreateInputDTO
    */
-  capabilities: Array<RoleCreateInputDTOCapabilitiesEnum>;
+  permissions: Array<RoleCreateInputDTOPermissionsEnum>;
 }
 
-export const RoleCreateInputDTOCapabilitiesEnum = {
+export const RoleCreateInputDTOPermissionsEnum = {
   Root: 'ROOT',
   ManageUsers: 'MANAGE_USERS',
   ReadUsers: 'READ_USERS',
@@ -2462,10 +2670,12 @@ export const RoleCreateInputDTOCapabilitiesEnum = {
   ManagePlayers: 'MANAGE_PLAYERS',
   ManageSettings: 'MANAGE_SETTINGS',
   ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
-export type RoleCreateInputDTOCapabilitiesEnum =
-  typeof RoleCreateInputDTOCapabilitiesEnum[keyof typeof RoleCreateInputDTOCapabilitiesEnum];
+export type RoleCreateInputDTOPermissionsEnum =
+  typeof RoleCreateInputDTOPermissionsEnum[keyof typeof RoleCreateInputDTOPermissionsEnum];
 
 /**
  *
@@ -2484,7 +2694,7 @@ export interface RoleOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof RoleOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2497,19 +2707,31 @@ export interface RoleOutputDTO {
    * @type {string}
    * @memberof RoleOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleOutputDTO
-   */
   name: string;
   /**
    *
    * @type {Array<any>}
    * @memberof RoleOutputDTO
    */
-  capabilities: Array<any>;
+  permissions: Array<any>;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2528,7 +2750,7 @@ export interface RoleOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof RoleOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2612,10 +2834,10 @@ export interface RoleUpdateInputDTO {
    * @type {Array<string>}
    * @memberof RoleUpdateInputDTO
    */
-  capabilities: Array<RoleUpdateInputDTOCapabilitiesEnum>;
+  permissions: Array<RoleUpdateInputDTOPermissionsEnum>;
 }
 
-export const RoleUpdateInputDTOCapabilitiesEnum = {
+export const RoleUpdateInputDTOPermissionsEnum = {
   Root: 'ROOT',
   ManageUsers: 'MANAGE_USERS',
   ReadUsers: 'READ_USERS',
@@ -2637,10 +2859,12 @@ export const RoleUpdateInputDTOCapabilitiesEnum = {
   ManagePlayers: 'MANAGE_PLAYERS',
   ManageSettings: 'MANAGE_SETTINGS',
   ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
 } as const;
 
-export type RoleUpdateInputDTOCapabilitiesEnum =
-  typeof RoleUpdateInputDTOCapabilitiesEnum[keyof typeof RoleUpdateInputDTOCapabilitiesEnum];
+export type RoleUpdateInputDTOPermissionsEnum =
+  typeof RoleUpdateInputDTOPermissionsEnum[keyof typeof RoleUpdateInputDTOPermissionsEnum];
 
 /**
  *
@@ -2754,6 +2978,24 @@ export interface Settings {
    * @memberof Settings
    */
   serverChatName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof Settings
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof Settings
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2772,7 +3014,7 @@ export interface SettingsOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof SettingsOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2791,7 +3033,7 @@ export interface SettingsOutputObjectDTOAPI {
    * @type {MetadataOutput}
    * @memberof SettingsOutputObjectDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2815,6 +3057,74 @@ export interface SettingsSetDTO {
 /**
  *
  * @export
+ * @interface TakaroModelDTO
+ */
+export interface TakaroModelDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroModelDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroModelDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroTokenDTO
+ */
+export interface TakaroTokenDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TakaroTokenDTO
+   */
+  active: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  clientId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroTokenDTO
+   */
+  exp: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroTokenDTO
+   */
+  iat: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  iss: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroTokenDTO
+   */
+  sub: string;
+}
+/**
+ *
+ * @export
  * @interface TestReachabilityOutput
  */
 export interface TestReachabilityOutput {
@@ -2830,6 +3140,51 @@ export interface TestReachabilityOutput {
    * @memberof TestReachabilityOutput
    */
   reason?: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenInputDTO
+ */
+export interface TokenInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TokenInputDTO
+   */
+  domainId: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenOutputDTO
+ */
+export interface TokenOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TokenOutputDTO
+   */
+  token: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenOutputDTOAPI
+ */
+export interface TokenOutputDTOAPI {
+  /**
+   *
+   * @type {TokenOutputDTO}
+   * @memberof TokenOutputDTOAPI
+   */
+  data: TokenOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof TokenOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2855,6 +3210,12 @@ export interface UserCreateInputDTO {
    * @memberof UserCreateInputDTO
    */
   password: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserCreateInputDTO
+   */
+  idpId?: string;
 }
 /**
  *
@@ -2873,7 +3234,7 @@ export interface UserOutputArrayDTOAPI {
    * @type {MetadataOutput}
    * @memberof UserOutputArrayDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2886,12 +3247,6 @@ export interface UserOutputDTO {
    * @type {string}
    * @memberof UserOutputDTO
    */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserOutputDTO
-   */
   name: string;
   /**
    *
@@ -2899,6 +3254,30 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
+  idpId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -2917,7 +3296,7 @@ export interface UserOutputDTOAPI {
    * @type {MetadataOutput}
    * @memberof UserOutputDTOAPI
    */
-  metadata: MetadataOutput;
+  meta: MetadataOutput;
 }
 /**
  *
@@ -2939,6 +3318,18 @@ export interface UserOutputWithRolesDTO {
   id: string;
   /**
    *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
    * @type {string}
    * @memberof UserOutputWithRolesDTO
    */
@@ -2949,6 +3340,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  idpId: string;
 }
 /**
  *
@@ -3027,6 +3424,184 @@ export interface UserUpdateDTO {
    * @memberof UserUpdateDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableCreateDTO
+ */
+export interface VariableCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  value: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputArrayDTOAPI
+ */
+export interface VariableOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<VariableOutputDTO>}
+   * @memberof VariableOutputArrayDTOAPI
+   */
+  data: Array<VariableOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof VariableOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputDTO
+ */
+export interface VariableOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof VariableOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof VariableOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface VariableOutputDTOAPI
+ */
+export interface VariableOutputDTOAPI {
+  /**
+   *
+   * @type {VariableOutputDTO}
+   * @memberof VariableOutputDTOAPI
+   */
+  data: VariableOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof VariableOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface VariableSearchInputAllowedFilters
+ */
+export interface VariableSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  id?: string;
+}
+/**
+ *
+ * @export
+ * @interface VariableSearchInputDTO
+ */
+export interface VariableSearchInputDTO {
+  /**
+   *
+   * @type {VariableSearchInputAllowedFilters}
+   * @memberof VariableSearchInputDTO
+   */
+  filters?: VariableSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof VariableSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof VariableSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  sortDirection?: VariableSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof VariableSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const VariableSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type VariableSearchInputDTOSortDirectionEnum =
+  typeof VariableSearchInputDTOSortDirectionEnum[keyof typeof VariableSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface VariableUpdateDTO
+ */
+export interface VariableUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  value: string;
 }
 
 /**
@@ -4216,12 +4791,12 @@ export const DomainApiAxiosParamCreator = function (
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate: async (
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       const localVarPath = `/domain`;
@@ -4255,7 +4830,7 @@ export const DomainApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        body,
+        domainCreateInputDTO,
         localVarRequestOptions,
         configuration
       );
@@ -4309,6 +4884,58 @@ export const DomainApiAxiosParamCreator = function (
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerGetToken: async (
+      tokenInputDTO?: TokenInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/token`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication adminAuth required
+      // http bearer authentication required
+      await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        tokenInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -4489,12 +5116,12 @@ export const DomainApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async domainControllerCreate(
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options?: AxiosRequestConfig
     ): Promise<
       (
@@ -4503,7 +5130,10 @@ export const DomainApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<DomainCreateOutputDTOAPI>
     > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.domainControllerCreate(body, options);
+        await localVarAxiosParamCreator.domainControllerCreate(
+          domainCreateInputDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -4529,6 +5159,34 @@ export const DomainApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.domainControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async domainControllerGetToken(
+      tokenInputDTO?: TokenInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<TokenOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.domainControllerGetToken(
+          tokenInputDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -4634,16 +5292,16 @@ export const DomainApiFactory = function (
     /**
      *
      * @summary Create
-     * @param {any} [body]
+     * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     domainControllerCreate(
-      body?: any,
+      domainCreateInputDTO?: DomainCreateInputDTO,
       options?: any
     ): AxiosPromise<DomainCreateOutputDTOAPI> {
       return localVarFp
-        .domainControllerCreate(body, options)
+        .domainControllerCreate(domainCreateInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4659,6 +5317,21 @@ export const DomainApiFactory = function (
     ): AxiosPromise<DomainOutputDTOAPI> {
       return localVarFp
         .domainControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get token
+     * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerGetToken(
+      tokenInputDTO?: TokenInputDTO,
+      options?: any
+    ): AxiosPromise<TokenOutputDTOAPI> {
+      return localVarFp
+        .domainControllerGetToken(tokenInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4718,14 +5391,17 @@ export class DomainApi extends BaseAPI {
   /**
    *
    * @summary Create
-   * @param {any} [body]
+   * @param {DomainCreateInputDTO} [domainCreateInputDTO] DomainCreateInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DomainApi
    */
-  public domainControllerCreate(body?: any, options?: AxiosRequestConfig) {
+  public domainControllerCreate(
+    domainCreateInputDTO?: DomainCreateInputDTO,
+    options?: AxiosRequestConfig
+  ) {
     return DomainApiFp(this.configuration)
-      .domainControllerCreate(body, options)
+      .domainControllerCreate(domainCreateInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -4740,6 +5416,23 @@ export class DomainApi extends BaseAPI {
   public domainControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return DomainApiFp(this.configuration)
       .domainControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get token
+   * @param {TokenInputDTO} [tokenInputDTO] TokenInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DomainApi
+   */
+  public domainControllerGetToken(
+    tokenInputDTO?: TokenInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return DomainApiFp(this.configuration)
+      .domainControllerGetToken(tokenInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5442,6 +6135,173 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerExecuteCommand: async (
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerExecuteCommand', 'id', id);
+      const localVarPath = `/gameserver/{id}/command`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandExecuteInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetInstalledModules: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetInstalledModules', 'id', id);
+      const localVarPath = `/gameserver/{id}/modules`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get module installation
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation: async (
+      gameserverId: string,
+      moduleId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGetModuleInstallation',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGetModuleInstallation',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/module/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5482,6 +6342,77 @@ export const GameServerApiAxiosParamCreator = function (
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule: async (
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerInstallModule',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerInstallModule',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/modules/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        moduleInstallDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -5588,6 +6519,63 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage: async (
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerSendMessage', 'id', id);
+      const localVarPath = `/gameserver/{id}/message`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        messageSendInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -5662,6 +6650,68 @@ export const GameServerApiAxiosParamCreator = function (
 
       const localVarRequestOptions = {
         method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule: async (
+      gameserverId: string,
+      moduleId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUninstallModule',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUninstallModule',
+        'moduleId',
+        moduleId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/modules/{moduleId}`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
         ...baseOptions,
         ...options,
       };
@@ -5782,6 +6832,96 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerExecuteCommand(
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandExecuteDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerExecuteCommand(
+          id,
+          commandExecuteInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetInstalledModules(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetInstalledModules(
+          id,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Get module installation
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetModuleInstallation(
+      gameserverId: string,
+      moduleId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleInstallationOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetModuleInstallation(
+          gameserverId,
+          moduleId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5798,6 +6938,40 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerInstallModule(
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleInstallationOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerInstallModule(
+          gameserverId,
+          moduleId,
+          moduleInstallDTO,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -5857,6 +7031,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerSendMessage(
+          id,
+          messageSendInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -5902,6 +7104,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerTestReachabilityForId(
           id,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUninstallModule(
+      gameserverId: string,
+      moduleId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerUninstallModule(
+          gameserverId,
+          moduleId,
           options
         );
       return createRequestFunction(
@@ -5973,6 +7203,59 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerExecuteCommand(
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options?: any
+    ): AxiosPromise<CommandExecuteDTOAPI> {
+      return localVarFp
+        .gameServerControllerExecuteCommand(id, commandExecuteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetInstalledModules(
+      id: string,
+      options?: any
+    ): AxiosPromise<ModuleOutputArrayDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetInstalledModules(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get module installation
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation(
+      gameserverId: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetModuleInstallation(
+          gameserverId,
+          moduleId,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -5984,6 +7267,30 @@ export const GameServerApiFactory = function (
     ): AxiosPromise<GameServerOutputDTOAPI> {
       return localVarFp
         .gameServerControllerGetOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Install module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule(
+      gameserverId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerInstallModule(
+          gameserverId,
+          moduleId,
+          moduleInstallDTO,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -6018,6 +7325,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerSendMessage(id, messageSendInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -6047,6 +7371,23 @@ export const GameServerApiFactory = function (
     ): AxiosPromise<GameServerTestReachabilityDTOAPI> {
       return localVarFp
         .gameServerControllerTestReachabilityForId(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Uninstall module
+     * @param {string} gameserverId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule(
+      gameserverId: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerUninstallModule(gameserverId, moduleId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -6095,6 +7436,65 @@ export class GameServerApi extends BaseAPI {
 
   /**
    *
+   * @summary Execute command
+   * @param {string} id
+   * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerExecuteCommand(
+    id: string,
+    commandExecuteInputDTO?: CommandExecuteInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerExecuteCommand(id, commandExecuteInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get installed modules
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetInstalledModules(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetInstalledModules(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get module installation
+   * @param {string} gameserverId
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetModuleInstallation(
+    gameserverId: string,
+    moduleId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetModuleInstallation(
+        gameserverId,
+        moduleId,
+        options
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -6104,6 +7504,32 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Install module
+   * @param {string} gameserverId
+   * @param {string} moduleId
+   * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerInstallModule(
+    gameserverId: string,
+    moduleId: string,
+    moduleInstallDTO?: ModuleInstallDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerInstallModule(
+        gameserverId,
+        moduleId,
+        moduleInstallDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6135,6 +7561,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerSearch(gameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Send message
+   * @param {string} id
+   * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerSendMessage(
+    id: string,
+    messageSendInputDTO?: MessageSendInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerSendMessage(id, messageSendInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6172,6 +7617,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerTestReachabilityForId(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Uninstall module
+   * @param {string} gameserverId
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUninstallModule(
+    gameserverId: string,
+    moduleId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUninstallModule(gameserverId, moduleId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6829,6 +8293,45 @@ export const MetaApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetMetrics: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/metrics`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6941,6 +8444,27 @@ export const MetaApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async metaGetMetrics(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetMetrics(
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7007,6 +8531,17 @@ export const MetaApiFactory = function (
     },
     /**
      *
+     * @summary Get metrics
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetMetrics(options?: any): AxiosPromise<void> {
+      return localVarFp
+        .metaGetMetrics(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get open api
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7047,6 +8582,19 @@ export class MetaApi extends BaseAPI {
   public metaGetHealth(options?: AxiosRequestConfig) {
     return MetaApiFp(this.configuration)
       .metaGetHealth(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get metrics
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MetaApi
+   */
+  public metaGetMetrics(options?: AxiosRequestConfig) {
+    return MetaApiFp(this.configuration)
+      .metaGetMetrics(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -10001,6 +11549,597 @@ export class UserApi extends BaseAPI {
   ) {
     return UserApiFp(this.configuration)
       .userControllerUpdate(id, userUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * VariableApi - axios parameter creator
+ * @export
+ */
+export const VariableApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerCreate: async (
+      variableCreateDTO?: VariableCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/variables`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerDelete: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerDelete', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFind: async (
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/variables/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerFindOne', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerUpdate: async (
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerUpdate', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        variableUpdateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * VariableApi - functional programming interface
+ * @export
+ */
+export const VariableApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = VariableApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerCreate(
+      variableCreateDTO?: VariableCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerCreate(
+          variableCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerDelete(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerDelete(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerFind(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputArrayDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerFind(
+          variableSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerFindOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerFindOne(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerUpdate(
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<VariableOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.variableControllerUpdate(
+          id,
+          variableUpdateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * VariableApi - factory interface
+ * @export
+ */
+export const VariableApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = VariableApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerCreate(
+      variableCreateDTO?: VariableCreateDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerCreate(variableCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerDelete(
+      id: string,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerDelete(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Find
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFind(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputArrayDTOAPI> {
+      return localVarFp
+        .variableControllerFind(variableSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerFindOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerUpdate(
+      id: string,
+      variableUpdateDTO?: VariableUpdateDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputDTOAPI> {
+      return localVarFp
+        .variableControllerUpdate(id, variableUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * VariableApi - object-oriented interface
+ * @export
+ * @class VariableApi
+ * @extends {BaseAPI}
+ */
+export class VariableApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerCreate(
+    variableCreateDTO?: VariableCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerCreate(variableCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Delete
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerDelete(id: string, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerDelete(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Find
+   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerFind(
+    variableSearchInputDTO?: VariableSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerFind(variableSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Find one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerFindOne(id: string, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerUpdate(
+    id: string,
+    variableUpdateDTO?: VariableUpdateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return VariableApiFp(this.configuration)
+      .variableControllerUpdate(id, variableUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

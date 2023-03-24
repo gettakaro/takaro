@@ -1,8 +1,8 @@
 import { expect, sandbox } from '@takaro/test';
 import { SinonStub } from 'sinon';
-import { RustEmitter, RustEvent, RustEventType } from '../emitter';
-import { GameEvents, IGamePlayer } from '../../../main';
-import { RustConnectionInfo } from '..';
+import { RustEmitter, RustEvent, RustEventType } from '../emitter.js';
+import { GameEvents, IGamePlayer } from '../../../main.js';
+import { RustConnectionInfo } from '../index.js';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   message:
@@ -12,7 +12,7 @@ const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   stacktrace: '',
 };
 
-const MOCK_PLAYER = new IGamePlayer({
+const MOCK_PLAYER = new IGamePlayer().construct({
   ip: '169.169.169.80',
   name: 'brunkel',
   gameId: '76561198021481871',
@@ -20,7 +20,7 @@ const MOCK_PLAYER = new IGamePlayer({
   device: 'windows',
 });
 
-const MOCK_CONNECTION_INFO = new RustConnectionInfo({
+const MOCK_CONNECTION_INFO = new RustConnectionInfo().construct({
   host: 'localhost',
   rconPassword: 'aaa',
   rconPort: '28016',
@@ -35,7 +35,7 @@ describe('rust event detection', () => {
   });
 
   it('[PlayerConnected]: Can detect simple player connected', async () => {
-    await new RustEmitter(MOCK_CONNECTION_INFO).parseMessage(
+    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(
       MOCK_RUST_PLAYER_CONNECTED
     );
 
@@ -45,6 +45,8 @@ describe('rust event detection', () => {
       GameEvents.PLAYER_CONNECTED
     );
 
-    expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(MOCK_PLAYER);
+    expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(
+      await MOCK_PLAYER
+    );
   });
 });

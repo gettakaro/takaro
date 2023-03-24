@@ -2,76 +2,91 @@ import {
   FC,
   KeyboardEvent,
   MouseEvent,
-  MutableRefObject,
-  PropsWithChildren,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
-import { styled } from '../../../styled';
+import { Container } from './style';
 
 export interface EditableFieldProps {
-  text?: string;
   isEditing?: boolean;
+  editingChange?: (editing: boolean) => unknown;
   placeholder?: string;
+  // fires when the input value is changed
+  onEdited?: (value: string) => unknown;
+
   disabled?: boolean;
   allowEmpty: boolean;
-  childRef: MutableRefObject<HTMLInputElement | null>;
+  required?: boolean;
+  name: string;
+  loading?: boolean;
+
+  // defaultval
+  value?: string;
 }
 
-const Container = styled.div`
-  input {
-    border: 1px solid ${({ theme }) => theme.colors.gray};
-  }
-`;
+/*
+const defaultsApplier = defaultInputPropsFactory<EditableFieldProps>({
+  ...defaultInputProps,
+  required: true,
+});
+*/
 
-const ErrorMessage = styled.span`
-  display: block;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.error};
-`;
-
-export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
-  text,
-  placeholder,
+export const EditableField: FC<EditableFieldProps> = ({
   isEditing = false,
+  required = false,
+  value = '',
+  name,
   disabled = false,
-  allowEmpty,
-  children,
-  childRef,
+  onEdited,
+  editingChange = () => {},
+  loading = false,
 }) => {
   const [editing, setEditing] = useState(isEditing);
-  const [error, setError] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>(value);
+  const [spanValue, setSpanValue] = useState<string>(value);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (childRef && childRef.current && editing === true) {
-      childRef.current.focus();
-      childRef.current.select();
+    if (inputRef && inputRef.current && editing === true) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
-  }, [editing, childRef]);
+  }, [editing, inputRef]);
 
   useEffect(() => {
-    setEditing(editing);
+    if (!editing && inputValue != spanValue) {
+      if (onEdited) {
+        onEdited(inputValue);
+      }
+      setSpanValue(inputValue);
+    }
+    editingChange(editing);
   }, [editing]);
+
+  // change editing state when new isEditing prop is passed
+  useEffect(() => {
+    if (isEditing !== editing) {
+      setEditing(isEditing);
+    }
+  }, [isEditing]);
 
   // handle focus change
   const handleKeyDown = ({ key }: KeyboardEvent) => {
     const keys = ['Escape', 'Tab', 'Enter'];
 
-    if (!allowEmpty && childRef.current?.value == '') {
-      setError('Field cannot be empty!');
+    if (required && inputRef.current?.value == '') {
       return;
     }
 
-    if (keys.indexOf(key) > -1 && childRef.current && !disabled) {
-      setError('');
+    if (keys.indexOf(key) > -1 && inputRef.current && !disabled) {
       setEditing(false);
     }
   };
 
   const handleOnBlur = () => {
-    if (!allowEmpty && childRef.current?.value == '') {
-      setError('field cannot be empty!');
+    if (required && inputRef.current?.value == '') {
       return;
     }
     setEditing(false);
@@ -84,16 +99,24 @@ export const EditableField: FC<PropsWithChildren<EditableFieldProps>> = ({
     }
   };
 
+  if (loading) {
+    return <div>loading</div>;
+  }
+
   return (
     <Container>
       {editing ? (
         <div onBlur={handleOnBlur} onKeyDown={(e) => handleKeyDown(e)}>
-          {children}
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <input
+            ref={inputRef}
+            name={name}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.currentTarget.value)}
+          />
         </div>
       ) : (
         <div onClick={handleOnClick}>
-          <span>{text || placeholder}</span>
+          <span>{spanValue}</span>
         </div>
       )}
     </Container>

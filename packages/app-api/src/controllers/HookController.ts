@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
@@ -7,15 +6,15 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,
   HookOutputDTO,
   HookService,
   HookUpdateDTO,
-} from '../service/HookService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/HookService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -26,22 +25,24 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { PERMISSIONS } from '@takaro/auth';
+import { Response } from 'express';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
   @ValidateNested()
-  data!: HookOutputDTO;
+  declare data: HookOutputDTO;
 }
 
 export class HookOutputArrayDTOAPI extends APIOutput<HookOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => HookOutputDTO)
-  data!: HookOutputDTO[];
+  declare data: HookOutputDTO[];
 }
 
 class HookSearchInputAllowedFilters {
@@ -54,10 +55,6 @@ class HookSearchInputAllowedFilters {
   name!: string;
 
   @IsOptional()
-  @IsBoolean()
-  enabled!: boolean;
-
-  @IsOptional()
   @IsEnum(GameEvents)
   eventType!: GameEvents;
 }
@@ -65,7 +62,7 @@ class HookSearchInputAllowedFilters {
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
-  filters!: HookSearchInputAllowedFilters;
+  declare filters: HookSearchInputAllowedFilters;
 }
 
 @OpenAPI({
@@ -73,25 +70,28 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
 })
 @JsonController()
 export class HookController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_HOOKS]))
   @ResponseSchema(HookOutputArrayDTOAPI)
   @Post('/hook/search')
   async search(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: HookSearchInputDTO
   ) {
     const service = new HookService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_HOOKS]))
   @ResponseSchema(HookOutputDTOAPI)
   @Get('/hook/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -99,7 +99,7 @@ export class HookController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
   @ResponseSchema(HookOutputDTOAPI)
   @Post('/hook')
   async create(@Req() req: AuthenticatedRequest, @Body() data: HookCreateDTO) {
@@ -107,7 +107,7 @@ export class HookController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
   @ResponseSchema(HookOutputDTOAPI)
   @Put('/hook/:id')
   async update(
@@ -119,12 +119,12 @@ export class HookController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
   @ResponseSchema(APIOutput)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new HookService(req.domainId);
-    const deletedRecord = await service.delete(params.id);
-    return apiResponse(deletedRecord);
+    await service.delete(params.id);
+    return apiResponse();
   }
 }

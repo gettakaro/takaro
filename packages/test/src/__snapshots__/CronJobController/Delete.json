@@ -3,15 +3,13 @@
     "meta": {
       "serverTime": "2022-09-22T13:03:37.135Z"
     },
-    "data": true
+    "data": {}
   },
   "status": 200,
   "test": {
     "group": "CronJobController",
     "name": "Delete",
-    "filteredFields": [
-      "moduleId"
-    ],
+    "filteredFields": [],
     "expectedStatus": 200,
     "standardEnvironment": true
   }

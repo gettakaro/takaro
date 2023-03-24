@@ -4,22 +4,21 @@
   "description": "REST API for Takaro",
   "main": "dist/main.js",
   "types": "main.ts",
+  "type": "module",
   "scripts": {
     "start": "node dist/main.js",
-    "start:dev": "npx concurrently --kill-others-on-fail --names \"api,tests-compiler\" \"npm run start:dev:app\" \"npm run start:dev:test-compiler\"",
-    "start:dev:app": "nodemon --exec 'node --inspect=0.0.0.0:12001 -r ts-node/register src/main.ts'  --config ../../nodemon.json",
-    "start:dev:test-compiler": "tsc --preserveWatchOutput --watch",
+    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "ts-mocha -p ./tsconfig.json src/**/*.unit.test.ts",
-    "test:integration": "ts-mocha -p ./tsconfig.json --timeout 60000 --file ../test/src/waitUntilReady.ts src/**/*.integration.test.ts --exit",
-    "test:watch": "npm run test -- --watch"
+    "test:unit": "echo 'No tests (yet :))'",
+    "test:integration": "tsc -p ./tsconfig.json && mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js dist/**/*.integration.test.js --exit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@takaro/db": "0.0.1",
+    "@takaro/modules": "0.0.1",
     "@takaro/http": "0.0.1",
     "@socket.io/admin-ui": "^0.5.0",
     "basic-auth": "^2.0.1",

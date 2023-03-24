@@ -2,25 +2,27 @@ import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
-import { migrateSystem } from '@takaro/db';
-import { DomainController } from './controllers/DomainController';
+import { migrate } from '@takaro/db';
+import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
-import { config } from './config';
-import { UserController } from './controllers/UserController';
-import { RoleController } from './controllers/Rolecontroller';
-import { GameServerController } from './controllers/GameServerController';
-import { DomainService } from './service/DomainService';
-import { GameServerService } from './service/GameServerService';
-import { FunctionController } from './controllers/FunctionController';
-import { CronJobController } from './controllers/CronJobController';
-import { ModuleController } from './controllers/ModuleController';
-import { EventsWorker } from './workers/eventWorker';
+import { config } from './config.js';
+import { UserController } from './controllers/UserController.js';
+import { RoleController } from './controllers/Rolecontroller.js';
+import { GameServerController } from './controllers/GameServerController.js';
+import { DomainService } from './service/DomainService.js';
+import { GameServerService } from './service/GameServerService.js';
+import { FunctionController } from './controllers/FunctionController.js';
+import { CronJobController } from './controllers/CronJobController.js';
+import { ModuleController } from './controllers/ModuleController.js';
+import { EventsWorker } from './workers/eventWorker.js';
 import { QueuesService } from '@takaro/queues';
-import { getSocketServer } from './lib/socketServer';
-import { HookController } from './controllers/HookController';
-import { PlayerController } from './controllers/PlayerController';
-import { SettingsController } from './controllers/SettingsController';
-import { CommandController } from './controllers/CommandController';
+import { getSocketServer } from './lib/socketServer.js';
+import { HookController } from './controllers/HookController.js';
+import { PlayerController } from './controllers/PlayerController.js';
+import { SettingsController } from './controllers/SettingsController.js';
+import { CommandController } from './controllers/CommandController.js';
+import { ModuleService } from './service/ModuleService.js';
+import { VariableController } from './controllers/VariableController.js';
 
 export const server = new HTTP(
   {
@@ -36,6 +38,7 @@ export const server = new HTTP(
       PlayerController,
       SettingsController,
       CommandController,
+      VariableController,
     ],
   },
   {
@@ -51,8 +54,9 @@ async function main() {
   config.validate();
   log.info('✅ Config validated');
 
-  log.info('📖 Ensuring database is up to date');
-  await migrateSystem();
+  log.info('📖 Running database migrations');
+  await migrate();
+
   log.info('🦾 Database up to date');
 
   getSocketServer(server.server as HttpServer);
@@ -60,16 +64,19 @@ async function main() {
 
   log.info('🚀 Server started');
 
-  log.info('🔌 Starting all game servers');
-
   const domainService = new DomainService();
   const domains = await domainService.find({});
 
   for (const domain of domains.results) {
+    log.info('🌱 Seeding database with builtin modules');
+    const moduleService = new ModuleService(domain.id);
+    await moduleService.seedBuiltinModules();
+
+    log.info('🔌 Starting all game servers');
     const gameServerService = new GameServerService(domain.id);
     const gameServers = await gameServerService.find({});
 
-    // GameService.find() does not decrypted the connectioninfo's
+    // GameService.find() does not decrypt the connectioninfo
     const gameServersDecrypted = await Promise.all(
       gameServers.results.map(async (gameserver) => {
         const gs = await gameServerService.findOne(gameserver.id);

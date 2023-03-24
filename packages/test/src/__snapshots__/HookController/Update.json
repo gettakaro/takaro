@@ -5,7 +5,6 @@
     },
     "data": {
       "name": "Updated hook",
-      "enabled": false,
       "regex": "/new [regex]/g",
       "updatedAt": "2022-09-24T11:54:42.447Z",
       "createdAt": "2022-09-24T11:54:42.425Z",
@@ -22,7 +21,8 @@
     "group": "HookController",
     "name": "Update",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

@@ -10,7 +10,6 @@
       "updatedAt": "2022-11-04T20:20:54.853Z",
       "createdAt": "2022-11-04T20:20:54.832Z",
       "id": "7f7ffd6d-7c83-4807-a727-705f3c5e267c",
-      "enabled": true,
       "moduleId": "87d28ef1-640c-4870-8b7a-78568a368d7e",
       "function": {
         "createdAt": "2022-11-04T20:20:54.829Z",
@@ -26,7 +25,8 @@
     "snapshot": true,
     "name": "Update",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

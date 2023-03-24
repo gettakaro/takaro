@@ -11,8 +11,8 @@ import {
   Settings,
   SettingsService,
   SETTINGS_KEYS,
-} from '../service/SettingsService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/SettingsService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -25,7 +25,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { CAPABILITIES } from '../service/RoleService';
+import { PERMISSIONS } from '@takaro/auth';
 
 class GetSettingsOneInput extends TakaroDTO<GetSettingsOneInput> {
   @IsString()
@@ -51,7 +51,7 @@ export class GetSettingsInput extends TakaroDTO<GetSettingsInput> {
 
 export class SettingsOutputDTOAPI extends APIOutput<Settings[SETTINGS_KEYS]> {
   @IsString()
-  data!: Settings[SETTINGS_KEYS];
+  declare data: Settings[SETTINGS_KEYS];
 }
 
 export class SettingsOutputObjectDTOAPI extends APIOutput<
@@ -59,7 +59,7 @@ export class SettingsOutputObjectDTOAPI extends APIOutput<
 > {
   @Type(() => Settings)
   @ValidateNested()
-  data!: Record<SETTINGS_KEYS, string>;
+  declare data: Record<SETTINGS_KEYS, string>;
 }
 
 class ParamKey {
@@ -87,7 +87,7 @@ class SettingsSetDTO {
 })
 @JsonController()
 export class SettingsController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Get('/settings/:key')
   async getOne(
@@ -103,7 +103,7 @@ export class SettingsController {
     return apiResponse(await service.get(params.key));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
   @ResponseSchema(SettingsOutputObjectDTOAPI)
   @Get('/settings')
   async get(
@@ -124,7 +124,7 @@ export class SettingsController {
     }
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Post('/settings/:key')
   async set(

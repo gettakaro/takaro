@@ -4,6 +4,7 @@ import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
+import { getMetrics } from '@takaro/util';
 
 export class HealthOutputDTO {
   @IsBoolean()
@@ -21,16 +22,16 @@ export class Meta {
 
   @Get('/openapi.json')
   async getOpenApi() {
-    const {
-      defaultMetadataStorage: classTransformerMeta,
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-    } = require('class-transformer/storage');
     const { getMetadataStorage } = await import('class-validator');
+    const classTransformerStorage = await import(
+      'class-transformer/cjs/storage.js'
+    );
 
     const storage = getMetadataArgsStorage();
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: '#/components/schemas/',
-      classTransformerMetadataStorage: classTransformerMeta,
+      classTransformerMetadataStorage:
+        classTransformerStorage.defaultMetadataStorage,
       classValidatorMetadataStorage: getMetadataStorage(),
       forbidNonWhitelisted: true,
     });
@@ -84,5 +85,10 @@ export class Meta {
       </body>
     </html>
     `;
+  }
+
+  @Get('/metrics')
+  getMetrics() {
+    return getMetrics();
   }
 }

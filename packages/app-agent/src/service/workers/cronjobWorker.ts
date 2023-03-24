@@ -1,8 +1,8 @@
 import { Job } from 'bullmq';
-import { Client } from '@takaro/apiclient';
-import { config } from '../../config';
+import { config } from '../../config.js';
 import { TakaroWorker, IJobData } from '@takaro/queues';
-import { executeFunction } from './executeFunction';
+import { ctx } from '@takaro/util';
+import { executeFunction } from './executeFunction.js';
 
 export class CronJobWorker extends TakaroWorker<IJobData> {
   constructor() {
@@ -11,12 +11,17 @@ export class CronJobWorker extends TakaroWorker<IJobData> {
 }
 
 async function processCronJob(job: Job<IJobData>) {
-  const client = new Client({
-    auth: {
-      token: job.data.token,
-    },
-    url: config.get('takaro.url'),
+  ctx.addData({
+    domain: job.data.domainId,
+    gameServer: job.data.gameServerId,
   });
 
-  await executeFunction(job.data.function, client);
+  await executeFunction(
+    job.data.function,
+    {
+      ...job.data.data,
+      gameServerId: job.data.gameServerId,
+    },
+    job.data.domainId
+  );
 }

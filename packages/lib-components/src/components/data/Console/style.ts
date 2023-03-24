@@ -1,5 +1,5 @@
 import { styled } from '../../../styled';
-import { Button } from '../../inputs/Button';
+import { Button } from '../../';
 
 export const Wrapper = styled.div`
   height: auto;

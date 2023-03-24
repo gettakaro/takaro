@@ -1,10 +1,10 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
 import {
   GameServerModel,
   GameServerRepo,
   GAME_SERVER_TYPE,
-} from '../db/gameserver';
+} from '../db/gameserver.js';
 import {
   IsEnum,
   IsJSON,
@@ -13,18 +13,25 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
-import { Mock, SevenDaysToDie, Rust } from '@takaro/gameserver';
-import { errors } from '@takaro/util';
-import { IGameServerInMemoryManager } from '../lib/GameServerManager';
-import { config } from '../config';
-import { SettingsService } from './SettingsService';
+import {
+  Mock,
+  SevenDaysToDie,
+  Rust,
+  IMessageOptsDTO,
+  SdtdConnectionInfo,
+  RustConnectionInfo,
+  MockConnectionInfo,
+  IGameServer,
+} from '@takaro/gameserver';
+import { errors, TakaroModelDTO } from '@takaro/util';
+import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
+import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
+import { PaginatedOutput } from '../db/base.js';
+import { ModuleService } from './ModuleService.js';
 
-export class GameServerOutputDTO extends TakaroDTO<GameServerOutputDTO> {
-  @IsUUID()
-  id: string;
+export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
   @IsObject()
@@ -54,6 +61,22 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+}
+
+export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
+  @IsJSON()
+  config: string;
+}
+
+export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
+  @IsUUID()
+  gameserverId: string;
+
+  @IsUUID()
+  moduleId: string;
+
+  @IsJSON()
+  config: string;
 }
 
 const manager = new IGameServerInMemoryManager();
@@ -116,31 +139,63 @@ export class GameServerService extends TakaroService<
   ) {
     if (id) {
       const gameserver = await this.repo.findOne(id);
-      const game = GameServerService.getGame(gameserver.type);
-      const instance = new game(gameserver.connectionInfo);
+      const instance = await GameServerService.getGame(
+        gameserver.type,
+        gameserver.connectionInfo
+      );
 
       return instance.testReachability();
     } else if (connectionInfo && type) {
-      const game = GameServerService.getGame(type);
-      const instance = new game(connectionInfo);
-
+      const instance = await GameServerService.getGame(type, connectionInfo);
       return instance.testReachability();
     } else {
       throw new errors.BadRequestError('Missing required parameters');
     }
   }
 
-  static getGame(type: GAME_SERVER_TYPE) {
+  async getModuleInstallation(gameserverId: string, moduleId: string) {
+    return this.repo.getModuleInstallation(gameserverId, moduleId);
+  }
+
+  async installModule(
+    gameserverId: string,
+    moduleId: string,
+    installDto: ModuleInstallDTO
+  ) {
+    return this.repo.installModule(gameserverId, moduleId, installDto);
+  }
+
+  async uninstallModule(gameserverId: string, moduleId: string) {
+    return this.repo.uninstallModule(gameserverId, moduleId);
+  }
+
+  async getInstalledModules(gameserverId: string) {
+    const installations = await this.repo.getInstalledModules(gameserverId);
+    const moduleService = new ModuleService(this.domainId);
+    return await Promise.all(
+      installations.map((i) => {
+        return moduleService.findOne(i.moduleId);
+      })
+    );
+  }
+
+  static async getGame(
+    type: GAME_SERVER_TYPE,
+    connectionInfo: Record<string, unknown>
+  ): Promise<IGameServer> {
     switch (type) {
       case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-        return SevenDaysToDie;
+        return new SevenDaysToDie(
+          await new SdtdConnectionInfo().construct(connectionInfo)
+        );
       case GAME_SERVER_TYPE.RUST:
-        return Rust;
+        return new Rust(
+          await new RustConnectionInfo().construct(connectionInfo)
+        );
       case GAME_SERVER_TYPE.MOCK:
-        if (config.get('mode') === 'production') {
-          throw new errors.BadRequestError('Mock server is not allowed');
-        }
-        return Mock;
+        return new Mock(
+          await new MockConnectionInfo().construct(connectionInfo)
+        );
       default:
         throw new errors.NotImplementedError();
     }
@@ -148,5 +203,23 @@ export class GameServerService extends TakaroService<
 
   get manager() {
     return this.gameServerManager;
+  }
+
+  async executeCommand(id: string, rawCommand: string) {
+    const gameserver = await this.repo.findOne(id);
+    const instance = await GameServerService.getGame(
+      gameserver.type,
+      gameserver.connectionInfo
+    );
+    return instance.executeConsoleCommand(rawCommand);
+  }
+
+  async sendMessage(id: string, message: string, opts: IMessageOptsDTO) {
+    const gameserver = await this.repo.findOne(id);
+    const instance = await GameServerService.getGame(
+      gameserver.type,
+      gameserver.connectionInfo
+    );
+    return instance.sendMessage(message, opts);
   }
 }

@@ -7,15 +7,22 @@ import {
 } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './player';
+import { ITakaroRepo } from './base.js';
+import {
+  PLAYER_ON_GAMESERVER_TABLE_NAME,
+  PlayerOnGameServerModel,
+} from './player.js';
 import {
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO,
-} from '../service/GameServerService';
+  ModuleInstallDTO,
+  ModuleInstallationOutputDTO,
+} from '../service/GameServerService.js';
+import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
+const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
@@ -32,10 +39,6 @@ export class GameServerModel extends TakaroModel {
   type!: GAME_SERVER_TYPE;
 
   static get relationMappings() {
-    const PlayerOnGameServerModel =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('./player.ts').PlayerOnGameServerModel;
-
     return {
       players: {
         relation: Model.HasManyRelation,
@@ -43,6 +46,34 @@ export class GameServerModel extends TakaroModel {
         join: {
           from: `${GAMESERVER_TABLE_NAME}.id`,
           to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+        },
+      },
+    };
+  }
+}
+
+class ModuleAssignmentModel extends TakaroModel {
+  static tableName = MODULE_ASSIGNMENTS_TABLE_NAME;
+  gameserverId: string;
+  moduleId: string;
+  config: string;
+
+  static get relationMappings() {
+    return {
+      module: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleModel,
+        join: {
+          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.moduleId`,
+          to: `${MODULE_TABLE_NAME}.id`,
+        },
+      },
+      gameserver: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: GameServerModel,
+        join: {
+          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.gameserverId`,
+          to: `${GAMESERVER_TABLE_NAME}.id`,
         },
       },
     };
@@ -61,23 +92,38 @@ export class GameServerRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return GameServerModel.bindKnex(knex);
+    const model = GameServerModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
+  async getAssignmentsModel() {
+    const knex = await this.getKnex();
+    const model = ModuleAssignmentModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<GameServerOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(
       filters
-    ).build(model.query());
+    ).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new GameServerOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new GameServerOutputDTO().construct(item))
+      ),
     };
   }
 
   async findOne(id: string): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id);
+    const { query } = await this.getModel();
+    const data = await query.findById(id);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -87,26 +133,27 @@ export class GameServerRepo extends ITakaroRepo<
       await decrypt(data.connectionInfo as unknown as string)
     );
 
-    return new GameServerOutputDTO({ ...data, connectionInfo });
+    return new GameServerOutputDTO().construct({ ...data, connectionInfo });
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
+      domain: this.domainId,
       connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
     } as unknown as Partial<GameServerModel>;
-    const res = await model.query().insert(data).returning('*');
-    return new GameServerOutputDTO({
+    const res = await query.insert(data).returning('*');
+    return new GameServerOutputDTO().construct({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
@@ -114,16 +161,65 @@ export class GameServerRepo extends ITakaroRepo<
     id: string,
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
       ...item.toJSON(),
       connectionInfo: encryptedConnectionInfo,
     } as unknown as Partial<GameServerModel>;
-    const res = await model.query().updateAndFetchById(id, data).returning('*');
-    return new GameServerOutputDTO({
+    const res = await query.updateAndFetchById(id, data).returning('*');
+    return new GameServerOutputDTO().construct({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
+  }
+
+  async getModuleInstallation(gameserverId: string, moduleId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query
+      .modify('domainScoped', this.domainId)
+      .where({ gameserverId, moduleId });
+    return new ModuleInstallationOutputDTO().construct(res[0]);
+  }
+
+  async getInstalledModules(gameserverId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query
+      .modify('domainScoped', this.domainId)
+      .where({ gameserverId });
+    return Promise.all(
+      res.map((item) => new ModuleInstallationOutputDTO().construct(item))
+    );
+  }
+
+  async installModule(
+    gameserverId: string,
+    moduleId: string,
+    installDto: ModuleInstallDTO
+  ) {
+    const { query, model } = await this.getAssignmentsModel();
+    const data: Partial<ModuleAssignmentModel> = {
+      gameserverId,
+      moduleId,
+      config: installDto.config,
+      domain: this.domainId,
+    };
+
+    const existing = await query.where({ gameserverId, moduleId });
+
+    if (existing.length > 0) {
+      await query.updateAndFetchById(existing[0].id, data);
+    } else {
+      await model.query().insert(data);
+    }
+
+    const res = await query.findOne({ gameserverId, moduleId });
+    return new ModuleInstallationOutputDTO().construct(res);
+  }
+
+  async uninstallModule(gameserverId: string, moduleId: string) {
+    const { query } = await this.getAssignmentsModel();
+    const res = await query.delete().where({ gameserverId, moduleId });
+    return !!res;
   }
 }

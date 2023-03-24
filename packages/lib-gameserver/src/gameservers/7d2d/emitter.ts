@@ -2,14 +2,15 @@ import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
+  EventChatMessage,
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-} from '../../interfaces/events';
-import { SdtdConnectionInfo } from '.';
-import { TakaroEmitter } from '../../TakaroEmitter';
-import { IGamePlayer } from '../../main';
+} from '../../interfaces/events.js';
+import { SdtdConnectionInfo } from './index.js';
+import { TakaroEmitter } from '../../TakaroEmitter.js';
+import { IGamePlayer } from '../../main.js';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -18,6 +19,8 @@ interface I7DaysToDieEvent extends JsonObject {
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]: /(Player connected,)/,
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
+  [GameEvents.CHAT_MESSAGE]:
+    /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
 };
 
 export class SevenDaysToDieEmitter extends TakaroEmitter {
@@ -62,25 +65,32 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     }
 
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(logLine.msg)) {
-      const data = this.handlePlayerConnected(logLine);
+      const data = await this.handlePlayerConnected(logLine);
       await this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
 
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(logLine.msg)) {
-      const data = this.handlePlayerDisconnected(logLine);
+      const data = await this.handlePlayerDisconnected(logLine);
       await this.emit(GameEvents.PLAYER_DISCONNECTED, data);
+    }
+
+    if (EventRegexMap[GameEvents.CHAT_MESSAGE].test(logLine.msg)) {
+      const data = await this.handleChatMessage(logLine);
+      if (data) {
+        await this.emit(GameEvents.CHAT_MESSAGE, data);
+      }
     }
 
     await this.emit(
       GameEvents.LOG_LINE,
-      new EventLogLine({
-        timestamp: new Date().toISOString(),
+      await new EventLogLine().construct({
+        timestamp: new Date(),
         msg: logLine.msg,
       })
     );
   }
 
-  private handlePlayerConnected(logLine: I7DaysToDieEvent) {
+  private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
     const nameMatches = /name=(.+), (pltfmid=|steamid=)/.exec(logLine.msg);
     const gameIdMatches = /entityid=([\d]+),/.exec(logLine.msg);
     const platformIdMatches = /pltfmid=(.+), crossid=/.exec(logLine.msg);
@@ -104,8 +114,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerConnected({
-      player: new IGamePlayer({
+    return new EventPlayerConnected().construct({
+      player: await new IGamePlayer().construct({
         name,
         gameId,
         steamId,
@@ -114,7 +124,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       }),
     });
   }
-  private handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
+  private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
     const nameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
     const entityIDMatch = /EntityID=(\d+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', OwnerID=/.exec(logLine.msg);
@@ -134,13 +144,47 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerDisconnected({
-      player: new IGamePlayer({
+    return new EventPlayerDisconnected().construct({
+      player: await new IGamePlayer().construct({
         name,
         gameId,
         steamId,
         xboxLiveId,
       }),
+    });
+  }
+
+  private async handleChatMessage(logLine: I7DaysToDieEvent) {
+    const match = EventRegexMap[GameEvents.CHAT_MESSAGE].exec(logLine.msg);
+    if (!match) throw new Error('Could not parse chat message');
+
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse chat message');
+
+    const { platformId, entityId, name, message } = groups;
+
+    const xboxLiveId = platformId.startsWith('XBL_')
+      ? platformId.replace('XBL_', '')
+      : undefined;
+    const steamId = platformId.startsWith('Steam_')
+      ? platformId.replace('Steam_', '')
+      : undefined;
+
+    if (
+      (platformId === '-non-player-' && name !== 'Server') ||
+      entityId === '-1'
+    ) {
+      return;
+    }
+
+    return new EventChatMessage().construct({
+      player: await new IGamePlayer().construct({
+        name,
+        steamId,
+        xboxLiveId,
+        gameId: entityId,
+      }),
+      msg: message.trim(),
     });
   }
 

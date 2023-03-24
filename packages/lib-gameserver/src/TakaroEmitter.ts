@@ -4,7 +4,7 @@ import {
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-} from './interfaces/events';
+} from './interfaces/events.js';
 import { isTakaroDTO, errors, logger } from '@takaro/util';
 import { isPromise } from 'util/types';
 
@@ -31,7 +31,7 @@ export abstract class TakaroEmitter {
     new Map();
 
   abstract stop(): Promise<void>;
-  abstract start(config: Record<string, unknown>): Promise<void>;
+  abstract start(): Promise<void>;
 
   constructor() {
     return getErrorProxyHandler(this);

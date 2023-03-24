@@ -8,15 +8,17 @@ config();
 const adminClient = new AdminClient({
   url: process.env.TAKARO_HOST,
   auth: {
-    adminSecret: process.env.ADMIN_SECRET,
+    clientId: process.env.ADMIN_CLIENT_ID,
+    clientSecret: process.env.ADMIN_CLIENT_SECRET,
   },
+  OAuth2URL: process.env.TAKARO_OAUTH_HOST,
 });
 
 async function main() {
-  const userEmail = `${process.env.USER_NAME}@${process.env.DOMAIN_NAME}.local`;
+  const userEmail = `${process.env.TAKARO_DEV_USER_NAME}@${process.env.TAKARO_DEV_DOMAIN_NAME}.local`;
 
   const domainRes = await adminClient.domain.domainControllerCreate({
-    name: process.env.DOMAIN_NAME,
+    name: process.env.TAKARO_DEV_DOMAIN_NAME,
   });
 
   const client = new Client({
@@ -31,8 +33,8 @@ async function main() {
 
   const userRes = await client.user.userControllerCreate({
     email: userEmail,
-    password: process.env.USER_PASSWORD,
-    name: process.env.USER_NAME,
+    password: process.env.TAKARO_DEV_USER_PASSWORD,
+    name: process.env.TAKARO_DEV_USER_NAME,
   });
 
   await client.user.userControllerAssignRole(
@@ -40,21 +42,28 @@ async function main() {
     domainRes.data.data.rootRole.id
   );
 
-  await client.gameserver.gameServerControllerCreate({
+  const gameserver = (await client.gameserver.gameServerControllerCreate({
     name: 'Test server',
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       eventInterval: 10000,
     }),
-  });
+  })).data.data;
+
+  const modules = (await client.module.moduleControllerSearch()).data.data;
+
+  for (const mod of modules) {
+    console.log(`Installing module ${mod.name}...`);
+    await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, { config: '{}' });
+  }
 
   console.log('---------------------------------');
-  console.log(`Created a domain with id ${domainRes.data.data.domain.id}`);
+  console.log(`Created a domain with id ${domainRes.data.data.createdDomain.id}`);
   console.log(
-    `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.rootUser.password}`
+    `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.password}`
   );
   console.log(
-    `Created a user: ${userRes.data.data.email} / ${process.env.USER_PASSWORD}`
+    `Created a user: ${userRes.data.data.email} / ${process.env.TAKARO_DEV_USER_PASSWORD}`
   );
 }
 

@@ -1,18 +1,13 @@
 import { ITakaroQuery } from '@takaro/db';
-import { config } from '../config';
+import { adminAuthMiddleware } from '@takaro/http';
 import {
   DomainCreateInputDTO,
   DomainCreateOutputDTO,
   DomainOutputDTO,
   DomainService,
   DomainUpdateInputDTO,
-} from '../service/DomainService';
-import {
-  createAdminAuthMiddleware,
-  apiResponse,
-  APIOutput,
-  PaginatedRequest,
-} from '@takaro/http';
+} from '../service/DomainService.js';
+import { apiResponse, APIOutput } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
 
 import {
@@ -25,28 +20,35 @@ import {
   JsonController,
   UseBefore,
   Req,
+  Res,
 } from 'routing-controllers';
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Request, Response } from 'express';
+import {
+  TokenOutputDTO,
+  TokenInputDTO,
+  AuthService,
+} from '../service/AuthService.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
   @ValidateNested()
-  data!: DomainCreateOutputDTO;
+  declare data: DomainCreateOutputDTO;
 }
 
 export class DomainOutputDTOAPI extends APIOutput<DomainOutputDTO> {
   @Type(() => DomainOutputDTO)
   @ValidateNested()
-  data!: DomainOutputDTO;
+  declare data: DomainOutputDTO;
 }
 
 export class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => DomainOutputDTO)
-  data!: DomainOutputDTO[];
+  declare data: DomainOutputDTO[];
 }
 
 export class DomainSearchInputAllowedFilters {
@@ -58,29 +60,37 @@ export class DomainSearchInputAllowedFilters {
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
-  filters!: DomainSearchInputAllowedFilters;
+  declare filters: DomainSearchInputAllowedFilters;
+}
+export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
+  @Type(() => TokenOutputDTO)
+  @ValidateNested()
+  declare data: TokenOutputDTO;
 }
 
 @OpenAPI({
   security: [{ adminAuth: [] }],
 })
-@UseBefore(createAdminAuthMiddleware(config.get('auth.adminSecret')))
+@UseBefore(adminAuthMiddleware)
 @JsonController()
 export class DomainController {
   @Post('/domain/search')
   @ResponseSchema(DomainOutputArrayDTOAPI)
   async search(
-    @Req() req: PaginatedRequest,
+    @Req() req: Request,
+    @Res() res: Response,
     @Body() query: DomainSearchInputDTO
   ) {
     const service = new DomainService();
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
   @Get('/domain/:id')
@@ -92,7 +102,7 @@ export class DomainController {
 
   @Post('/domain')
   @ResponseSchema(DomainCreateOutputDTOAPI)
-  async create(@Body() domain: Omit<DomainCreateInputDTO, 'id'>) {
+  async create(@Body() domain: DomainCreateInputDTO) {
     const service = new DomainService();
     return apiResponse(await service.initDomain(domain));
   }
@@ -110,5 +120,12 @@ export class DomainController {
     const service = new DomainService();
     await service.delete(id);
     return apiResponse();
+  }
+
+  @Post('/token')
+  @ResponseSchema(TokenOutputDTOAPI)
+  async getToken(@Body() body: TokenInputDTO) {
+    const authService = new AuthService(body.domainId);
+    return apiResponse(await authService.getAgentToken());
   }
 }

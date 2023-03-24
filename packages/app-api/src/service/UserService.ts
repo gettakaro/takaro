@@ -1,30 +1,28 @@
-import { TakaroService } from './Base';
-import { hash, ITakaroQuery } from '@takaro/db';
+import { TakaroService } from './Base.js';
+import { ITakaroQuery } from '@takaro/db';
 
-import { UserModel, UserRepo } from '../db/user';
-import { DomainService } from './DomainService';
+import { UserModel, UserRepo } from '../db/user.js';
 import {
   IsEmail,
+  IsOptional,
   IsString,
-  IsUUID,
   Length,
   ValidateNested,
 } from 'class-validator';
-import { TakaroDTO } from '@takaro/util';
-import { RoleOutputDTO } from './RoleService';
-import { Exclude, Type } from 'class-transformer';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { RoleOutputDTO } from './RoleService.js';
+import { Type } from 'class-transformer';
+import { ory } from '@takaro/auth';
 
-export class UserOutputDTO extends TakaroDTO<UserOutputDTO> {
-  @IsUUID()
-  id: string;
+export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
   name: string;
+
   @IsString()
   email: string;
 
   @IsString()
-  @Exclude()
-  password: string;
+  idpId: string;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
@@ -40,9 +38,12 @@ export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   @IsEmail()
   email: string;
 
-  // We're using Blowfish based hashing in the database, which has a max length of 72 characters
-  @Length(8, 70)
+  @IsString()
   password: string;
+
+  @IsString()
+  @IsOptional()
+  idpId?: string;
 }
 
 export class UserUpdateDTO extends TakaroDTO<UserUpdateDTO> {
@@ -56,32 +57,61 @@ export class UserService extends TakaroService<
   UserCreateInputDTO,
   UserUpdateDTO
 > {
+  constructor(domainId: string) {
+    super(domainId);
+  }
+
   get repo() {
     return new UserRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<UserOutputDTO>) {
-    return this.repo.find(filters);
+  private async extendWithOry(
+    user: UserOutputWithRolesDTO
+  ): Promise<UserOutputWithRolesDTO> {
+    const oryIdentity = await ory.getIdentity(user.idpId);
+    return new UserOutputWithRolesDTO().construct({
+      ...user,
+      email: oryIdentity.email,
+    });
   }
 
-  findOne(id: string) {
-    return this.repo.findOne(id);
+  async find(filters: ITakaroQuery<UserOutputDTO>) {
+    const result = await this.repo.find(filters);
+    const extendedWithOry = {
+      ...result,
+      results: await Promise.all(
+        result.results.map(this.extendWithOry.bind(this))
+      ),
+    };
+
+    return extendedWithOry;
+  }
+
+  async findOne(id: string) {
+    const user = await this.repo.findOne(id);
+    return this.extendWithOry.bind(this)(user);
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
-    user.password = await hash(user.password);
-    const domainService = new DomainService();
+    const idpUser = await ory.createIdentity(
+      user.email,
+      user.password,
+      this.domainId
+    );
+    user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
-    await domainService.addLogin(createdUser, this.domainId);
-    return createdUser;
+    return this.extendWithOry.bind(this)(createdUser);
   }
 
   async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
-    return this.repo.update(id, data);
+    await this.repo.update(id, data);
+    return this.extendWithOry.bind(this)(await this.repo.findOne(id));
   }
 
   async delete(id: string): Promise<boolean> {
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+    await ory.deleteIdentity(id);
+    return true;
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

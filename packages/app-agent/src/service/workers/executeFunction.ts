@@ -1,33 +1,39 @@
-import { config, EXECUTION_MODE } from '../../config';
-import { logger, errors } from '@takaro/util';
-import { ContainerdService } from '../containerd';
+import { config } from '../../config.js';
+import { logger } from '@takaro/util';
+import { AdminClient } from '@takaro/apiclient';
+import { getVMM } from '../../main.js';
+
 const log = logger('worker:function');
-import { Client } from '@takaro/apiclient';
-import { createContext, runInContext } from 'node:vm';
 
-export async function executeFunction(fn: string, client: Client) {
-  if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
-    return executeLocal(fn, client);
-  }
+const takaro = new AdminClient({
+  url: config.get('takaro.url'),
+  auth: {
+    clientId: config.get('hydra.adminClientId'),
+    clientSecret: config.get('hydra.adminClientSecret'),
+  },
+  OAuth2URL: config.get('hydra.publicUrl'),
+});
 
-  throw new errors.NotImplementedError();
+async function getJobToken(domainId: string) {
+  const tokenRes = await takaro.domain.domainControllerGetToken({
+    domainId,
+  });
 
-  const containerd = new ContainerdService();
-  await containerd.pullImage('hello-world');
-  const images = await containerd.listImages();
-  log.info(images);
-
-  const output = await containerd.runContainer({ image: 'hello-world' });
-  log.info(output);
+  return tokenRes.data.data.token;
 }
 
-/**
- * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, this is not production ready !!!!!!!!!!!!!!!!!
- *
- */
-async function executeLocal(fn: string, client: Client) {
-  const ctx = createContext({ client });
-  const output = runInContext(fn, ctx);
-  log.debug('Executed a local function', { output });
-  return { ctx, output };
+export async function executeFunction(
+  fn: string,
+  data: Record<string, unknown>,
+  domainId: string
+) {
+  try {
+    const vmm = await getVMM();
+    const token = await getJobToken(domainId);
+    return await vmm.executeFunction(fn, data, token);
+  } catch (err) {
+    log.error('executeFunction', err);
+
+    return null;
+  }
 }

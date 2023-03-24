@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-08T19:17:04.268Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

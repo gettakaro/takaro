@@ -1,0 +1,48 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-19T13:10:09.290Z"
+    },
+    "data": [
+      {
+        "id": "0ee9dbde-79bb-4977-9db2-0f92bc897c21",
+        "createdAt": "2023-03-19T13:10:09.205Z",
+        "updatedAt": "2023-03-19T13:10:09.206Z",
+        "name": "ping",
+        "builtin": "ping",
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [
+          {
+            "id": "67803cb5-319a-41ac-a038-e0fccc5a5dd6",
+            "createdAt": "2023-03-19T13:10:09.215Z",
+            "updatedAt": "2023-03-19T13:10:09.217Z",
+            "name": "ping",
+            "trigger": "ping",
+            "helpText": "Replies with pong, useful for testing if the connection works",
+            "functionId": "2736b69a-0f31-428d-8bd9-f344798c32be",
+            "moduleId": "0ee9dbde-79bb-4977-9db2-0f92bc897c21",
+            "function": {
+              "id": "2736b69a-0f31-428d-8bd9-f344798c32be",
+              "createdAt": "2023-03-19T13:10:09.213Z",
+              "updatedAt": "2023-03-19T13:10:09.213Z",
+              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "GameServerController",
+    "snapshot": true,
+    "name": "Get list of installed modules",
+    "filteredFields": [
+      "functionId",
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

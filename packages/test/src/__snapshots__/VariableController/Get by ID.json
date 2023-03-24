@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-08T19:16:29.924Z"
+    },
+    "data": {
+      "id": "16ac0226-db2e-4e99-b6d0-bd404ff0ef8c",
+      "createdAt": "2023-03-08T19:16:29.916Z",
+      "updatedAt": "2023-03-08T19:16:29.916Z",
+      "key": "Test variable",
+      "value": "Test value"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Get by ID",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

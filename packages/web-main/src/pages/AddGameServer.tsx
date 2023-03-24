@@ -1,3 +1,5 @@
+// todo: this is deprecated in favor of a dialog version
+
 import { FC, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
@@ -128,7 +130,7 @@ const AddGameServer: FC = () => {
         });
         refetch();
       }
-      navigate(PATHS.gameServers.overview);
+      navigate(PATHS.gameServer.dashboard(serverId!));
     } catch (error) {
       setError(JSON.stringify(error));
     } finally {
@@ -142,7 +144,6 @@ const AddGameServer: FC = () => {
         control={control}
         label="IP (or FQDN), including port"
         name="connectionInfo.host"
-        error={formState.errors['connectionInfo.host']}
         placeholder="12.34.56.78:1234"
         key={'host'}
       />,
@@ -150,7 +151,6 @@ const AddGameServer: FC = () => {
         control={control}
         label="Admin user"
         name="connectionInfo.adminUser"
-        error={formState.errors['connectionInfo.adminUser']}
         placeholder=""
         key={'adminUser'}
       />,
@@ -159,7 +159,6 @@ const AddGameServer: FC = () => {
         label="Admin token"
         name="connectionInfo.adminToken"
         type="password"
-        error={formState.errors['connectionInfo.adminToken']}
         placeholder=""
         key={'adminToken'}
       />,
@@ -175,7 +174,6 @@ const AddGameServer: FC = () => {
         name="connectionInfo.eventInterval"
         hint="How often the server should send events to the backend (in ms)"
         placeholder="500"
-        error={formState.errors['connectionInfo.eventInterval']}
         key={'eventInterval'}
       />,
       <TextField
@@ -184,7 +182,6 @@ const AddGameServer: FC = () => {
         name="connectionInfo.playerPoolSize"
         hint="How large is the pool of fake players"
         placeholder="100"
-        error={formState.errors['connectionInfo.playerPoolSize']}
         key={'playerPoolSize'}
       />,
     ],
@@ -193,7 +190,6 @@ const AddGameServer: FC = () => {
         control={control}
         label="Server IP"
         name="connectionInfo.host"
-        error={formState.errors['connectionInfo.host']}
         placeholder="12.34.56.78"
         key={'host'}
       />,
@@ -201,7 +197,6 @@ const AddGameServer: FC = () => {
         control={control}
         label="RCON Port"
         name="connectionInfo.rconPort"
-        error={formState.errors['connectionInfo.rconPort']}
         placeholder=""
         key={'rconPort'}
       />,
@@ -209,7 +204,6 @@ const AddGameServer: FC = () => {
         control={control}
         label="RCON Password"
         name="connectionInfo.rconPassword"
-        error={formState.errors['connectionInfo.rconPassword']}
         type="password"
         placeholder=""
         key={'rconPassword'}
@@ -245,7 +239,6 @@ const AddGameServer: FC = () => {
             <div>
               <TextField
                 control={control}
-                error={formState.errors.name}
                 label="Server name"
                 loading={loading}
                 name="name"
@@ -254,7 +247,6 @@ const AddGameServer: FC = () => {
               />
               <Select
                 control={control}
-                error={formState.errors.type}
                 name="type"
                 label="Game server"
                 render={(selectedIndex) => (
@@ -274,7 +266,7 @@ const AddGameServer: FC = () => {
                 </OptionGroup>
               </Select>
             </div>
-            <ErrorMessage message={error} />
+            {error && <ErrorMessage message={error} />}
 
             <Row>
               <Button

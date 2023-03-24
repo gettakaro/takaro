@@ -1,7 +1,6 @@
 import React from 'react';
 import { styled } from '../../../styled';
 import { Meta, StoryFn } from '@storybook/react';
-import { useRef, useState } from 'react';
 import { EditableFieldProps, EditableField } from '.';
 
 export default {
@@ -10,39 +9,57 @@ export default {
   args: {
     disabled: false,
     isEditing: false,
-    text: 'I am the text, double click me',
+    value: 'I am the text, double click me',
+    required: true,
+    label: 'label',
     allowEmpty: false,
   },
 } as Meta<EditableFieldProps>;
 
 const Container = styled.div`
   width: 50%;
-
   input {
     width: 100%;
   }
 `;
 
 export const Default: StoryFn<EditableFieldProps> = (args) => {
-  const [text, setText] = useState(args.text);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = React.useState('');
 
   return (
     <Container>
       <EditableField
-        text={text}
-        childRef={inputRef}
-        isEditing={args.isEditing}
-        placeholder={args.placeholder}
-        disabled={args.disabled}
+        name="editableField"
         allowEmpty={args.allowEmpty}
-      >
-        <input
-          onChange={(e) => setText(e.target.value)}
-          ref={inputRef}
-          value={text}
-        />
-      </EditableField>
+        isEditing={args.isEditing}
+        disabled={args.disabled}
+        required={args.required}
+        value={args.value}
+        onEdited={(value) => setValue(value)}
+      />
+
+      <div>field edited: {value ? 'true' : 'false'}</div>
+    </Container>
+  );
+};
+
+export const RemoteEditEnable: StoryFn<EditableFieldProps> = (args) => {
+  const [editing, setEditing] = React.useState<boolean>(false);
+
+  return (
+    <Container>
+      This tests if we can change the state to editing from outside the
+      component
+      <EditableField
+        name="editableField"
+        allowEmpty={args.allowEmpty}
+        isEditing={editing}
+        disabled={args.disabled}
+        required={args.required}
+        value={args.value}
+      />
+      <button onClick={() => setEditing(!editing)}>toggle editing state</button>
+      <span>current state: {editing ? 'true' : 'false'}</span>
     </Container>
   );
 };

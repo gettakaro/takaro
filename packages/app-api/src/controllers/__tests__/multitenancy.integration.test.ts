@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { CAPABILITIES } from '../../service/RoleService';
 import { DomainCreateOutputDTOAPI } from '@takaro/apiclient';
+import { PERMISSIONS } from '@takaro/auth';
 
 const group = 'Multitenancy';
 
@@ -13,7 +13,7 @@ const tests = [
       // Create a role in standard domain
       await this.client.role.roleControllerCreate({
         name: 'Test role',
-        capabilities: [CAPABILITIES.READ_ROLES],
+        permissions: [PERMISSIONS.READ_ROLES],
       });
 
       // Create a new domain and login to that
@@ -49,7 +49,7 @@ const tests = [
     teardown: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
       await this.adminClient.domain.domainControllerRemove(
-        this.setupData.data.domain.id
+        this.setupData.data.createdDomain.id
       );
     },
   }),

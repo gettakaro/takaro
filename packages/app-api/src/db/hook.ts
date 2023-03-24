@@ -1,32 +1,32 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { FUNCTION_TABLE_NAME } from './function';
+import { ITakaroRepo } from './base.js';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,
   HookOutputDTO,
   HookUpdateDTO,
-} from '../service/HookService';
+} from '../service/HookService.js';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
 export class HookModel extends TakaroModel {
   static tableName = HOOKS_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   regex!: string;
   eventType!: GameEvents;
+
+  functionId: string;
 
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./function').FunctionModel,
+        relation: Model.BelongsToOneRelation,
+        modelClass: FunctionModel,
         join: {
-          from: `${HOOKS_TABLE_NAME}.id`,
+          from: `${HOOKS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -46,35 +46,44 @@ export class HookRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return HookModel.bindKnex(knex);
+    const model = HookModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<HookOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<HookModel, HookOutputDTO>({
       ...filters,
       extend: ['function'],
-    }).build(model.query());
+    }).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new HookOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new HookOutputDTO().construct(item))
+      ),
     };
   }
 
   async findOne(id: string): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('function');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new HookOutputDTO(data);
+    return new HookOutputDTO().construct(data);
   }
 
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().insert(item.toJSON());
+    const { query } = await this.getModel();
+    const data = await query.insert({
+      ...item.toJSON(),
+      domain: this.domainId,
+    });
 
     if (item.function) {
       await this.assign(data.id, item.function);
@@ -84,23 +93,63 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: HookUpdateDTO): Promise<HookOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
-    return new HookOutputDTO(item);
+    return new HookOutputDTO().construct(item);
   }
 
   async assign(id: string, functionId: string) {
-    const model = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
+  }
+
+  async getTriggeredHooks(
+    eventType: GameEvents,
+    msg: string,
+    gameServerId: string
+  ): Promise<HookOutputDTO[]> {
+    const { query } = await this.getModel();
+
+    const hookIds: string[] = (
+      await query
+        .select('hooks.id as hookId')
+        .innerJoin('functions', 'hooks.functionId', 'functions.id')
+        .innerJoin('modules', 'hooks.moduleId', 'modules.id')
+        .innerJoin(
+          'moduleAssignments',
+          'moduleAssignments.moduleId',
+          'modules.id'
+        )
+        .innerJoin(
+          'gameservers',
+          'moduleAssignments.gameserverId',
+          'gameservers.id'
+        )
+        .where({
+          'hooks.eventType': eventType,
+          'gameservers.id': gameServerId,
+        })
+    )
+      // @ts-expect-error Knex is confused because we start from the 'normal' query object
+      // but we create a query that does NOT produce a Model
+      .map((x) => x.hookId);
+
+    const hooksMatchingEvent = await Promise.all(
+      hookIds.map((id) => this.findOne(id))
+    );
+
+    return hooksMatchingEvent.filter((hook) => {
+      const regex = new RegExp(hook.regex);
+      return regex.test(msg);
+    });
   }
 }

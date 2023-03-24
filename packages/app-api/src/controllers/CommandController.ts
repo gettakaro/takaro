@@ -6,14 +6,14 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandService,
   CommandUpdateDTO,
-} from '../service/CommandService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/CommandService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -24,22 +24,24 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { PERMISSIONS } from '@takaro/auth';
+import { Response } from 'express';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested()
-  data!: CommandOutputDTO;
+  declare data: CommandOutputDTO;
 }
 
 export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => CommandOutputDTO)
-  data!: CommandOutputDTO[];
+  declare data: CommandOutputDTO[];
 }
 
 class CommandSearchInputAllowedFilters {
@@ -56,10 +58,10 @@ class CommandSearchInputAllowedFilters {
   enabled!: boolean;
 }
 
-class CommandSearchInputDTO extends ITakaroQuery<CommandSearchInputAllowedFilters> {
+export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedFilters)
-  filters!: CommandSearchInputAllowedFilters;
+  declare filters: CommandSearchInputAllowedFilters;
 }
 
 @OpenAPI({
@@ -67,25 +69,28 @@ class CommandSearchInputDTO extends ITakaroQuery<CommandSearchInputAllowedFilter
 })
 @JsonController()
 export class CommandController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_COMMANDS]))
   @ResponseSchema(CommandOutputArrayDTOAPI)
   @Post('/command/search')
   async search(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: CommandSearchInputDTO
   ) {
     const service = new CommandService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Get('/command/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -93,7 +98,7 @@ export class CommandController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Post('/command')
   async create(
@@ -104,7 +109,7 @@ export class CommandController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(CommandOutputDTOAPI)
   @Put('/command/:id')
   async update(
@@ -116,12 +121,12 @@ export class CommandController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_COMMANDS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @ResponseSchema(APIOutput)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
-    const deletedRecord = await service.delete(params.id);
-    return apiResponse(deletedRecord);
+    await service.delete(params.id);
+    return apiResponse();
   }
 }

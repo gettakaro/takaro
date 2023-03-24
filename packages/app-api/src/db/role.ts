@@ -1,21 +1,22 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { Model } from 'objection';
 import {
-  CAPABILITIES,
   RoleCreateInputDTO,
   RoleOutputDTO,
   RoleUpdateInputDTO,
-} from '../service/RoleService';
-import { ITakaroRepo } from './base';
+  PermissionOutputDTO,
+} from '../service/RoleService.js';
+import { ITakaroRepo } from './base.js';
+import { PERMISSIONS } from '@takaro/auth';
 
 export const ROLE_TABLE_NAME = 'roles';
-const CAPABILITY_ON_ROLE_TABLE_NAME = 'capabilityOnRole';
+const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
 
-export class CapabilityModel extends TakaroModel {
-  static tableName = CAPABILITY_ON_ROLE_TABLE_NAME;
-  capability!: CAPABILITIES;
+export class PermissionModel extends TakaroModel {
+  static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
+  permission!: PERMISSIONS;
   roleId!: string;
 }
 
@@ -23,15 +24,15 @@ export class RoleModel extends TakaroModel {
   static tableName = ROLE_TABLE_NAME;
   name!: string;
 
-  capabilities!: CapabilityModel[];
+  permissions!: PermissionModel[];
 
   static relationMappings = {
-    capabilities: {
+    permissions: {
       relation: Model.HasManyRelation,
-      modelClass: CapabilityModel,
+      modelClass: PermissionModel,
       join: {
         from: `${ROLE_TABLE_NAME}.id`,
-        to: `${CAPABILITY_ON_ROLE_TABLE_NAME}.roleId`,
+        to: `${PERMISSION_ON_ROLE_TABLE_NAME}.roleId`,
       },
     },
   };
@@ -49,50 +50,72 @@ export class RoleRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return RoleModel.bindKnex(knex);
+    const model = RoleModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
+  private transformToDTO(data: RoleModel): Promise<RoleOutputDTO>;
+  private transformToDTO(data: RoleModel[]): Promise<RoleOutputDTO[]>;
+  private async transformToDTO(
+    data: RoleModel[] | RoleModel
+  ): Promise<RoleOutputDTO | RoleOutputDTO[]> {
+    if (Array.isArray(data)) {
+      return Promise.all(data.map(async (item) => this.transformToDTO(item)));
+    }
+
+    if (!data.permissions) data.permissions = [];
+
+    return new RoleOutputDTO().construct({
+      ...data,
+      permissions: await Promise.all(
+        data.permissions?.map((c) => new PermissionOutputDTO().construct(c))
+      ),
+    });
   }
 
   async find(filters: ITakaroQuery<RoleOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<RoleModel, RoleOutputDTO>({
       ...filters,
-      extend: ['capabilities'],
-    }).build(model.query());
+      extend: ['permissions'],
+    }).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new RoleOutputDTO(item)),
+      results: await this.transformToDTO(result.results),
     };
   }
 
   async findOne(id: string): Promise<RoleOutputDTO> {
-    const model = await this.getModel();
-    const data = await model
-      .query()
-      .findById(id)
-      .withGraphJoined('capabilities');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('permissions');
 
     if (!data) {
       throw new errors.NotFoundError();
     }
 
-    return new RoleOutputDTO(data);
+    return this.transformToDTO(data);
   }
 
   async create(item: RoleCreateInputDTO): Promise<RoleOutputDTO> {
-    const model = await this.getModel();
-    const data = await model
-      .query()
-      .insert(_.omit(item.toJSON(), 'capabilities'))
+    const { query } = await this.getModel();
+    const data = await query
+      .insert({
+        ..._.omit(item.toJSON(), 'permissions'),
+        domain: this.domainId,
+      })
       .returning('*');
-    return new RoleOutputDTO(data);
+    return this.transformToDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
 
     if (data === 0) {
       throw new errors.NotFoundError();
@@ -105,30 +128,31 @@ export class RoleRepo extends ITakaroRepo<
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
-    const model = await this.getModel();
-    await model
-      .query()
-      .updateAndFetchById(id, _.omit(data.toJSON(), 'capabilities'))
+    const { query } = await this.getModel();
+    await query
+      .updateAndFetchById(id, _.omit(data.toJSON(), 'permissions'))
       .returning('*');
     const item = await this.findOne(id);
     return item;
   }
 
-  async addCapabilityToRole(roleId: string, capability: CAPABILITIES) {
-    return CapabilityModel.bindKnex(await this.getKnex())
+  async addPermissionToRole(roleId: string, permission: PERMISSIONS) {
+    return PermissionModel.bindKnex(await this.getKnex())
       .query()
       .insert({
         roleId,
-        capability,
+        permission,
+        domain: this.domainId,
       });
   }
 
-  async removeCapabilityFromRole(roleId: string, capability: CAPABILITIES) {
-    return CapabilityModel.bindKnex(await this.getKnex())
+  async removePermissionFromRole(roleId: string, permission: PERMISSIONS) {
+    return PermissionModel.bindKnex(await this.getKnex())
       .query()
+      .modify('domainScoped', this.domainId)
       .where({
         roleId,
-        capability,
+        permission,
       })
       .del();
   }

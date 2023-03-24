@@ -10,13 +10,13 @@ const Container = styled.div`
 `;
 
 export interface ErrorMessageProps {
-  message?: string;
+  message: string;
 }
 
 export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
-  return message ? (
+  return (
     <Container>
       <p>{message}</p>
     </Container>
-  ) : null;
+  );
 };

@@ -1,37 +1,66 @@
 import baseStyled, { ThemedStyledInterface } from 'styled-components';
-import { elevation } from './elevation';
+import { elevationLight, elevationDark } from './elevation';
 import { spacing } from './spacing';
 
-export const theme = {
+const fontSize = {
+  tiny: '1rem',
+  small: '1.2rem',
+  medium: '1.325rem',
+  mediumLarge: '1.825rem',
+  large: '4.25rem',
+  huge: '6rem',
+};
+
+export const lightTheme = {
+  elevation: elevationLight,
+  spacing,
+  fontSize,
   colors: {
-    primary: '#664DE5',
+    primary: '#664de5',
     secondary: '#030917',
     tertiary: '#be81f6',
     quaternary: '#e5cc4d',
     placeholder: '#f5f5f5',
     placeholderHighlight: '#ffffff',
-    shade: '#EAF8F0',
+    shade: '#eaf8f0',
     white: '#ffffff',
-    gray: '#d3d3d3',
-    lightGray: '#748BA7',
-    background: '#e8edf5',
-    text: '#030917',
-    info: '#664DE5',
-    success: '#3CCD6A',
+    gray: '#4e525c',
+    background: '#f9f9f9',
+    backgroundAlt: '#e9e9e9',
+    text: '#030303',
+    textAlt: '#636363',
+    info: '#664de5',
+    success: '#3ccd6A',
     warning: '#f57c00',
-    error: '#FF4252',
-  },
-  elevation,
-  spacing,
-  fontSize: {
-    tiny: '1rem',
-    small: '1.3rem',
-    medium: '1.825rem',
-    mediumLarge: '2.825rem',
-    large: '4.25rem',
-    huge: '6rem',
+    error: '#ff4252',
   },
 };
 
-export type ThemeType = typeof theme;
+// todo: this should be the color of modals:#343434
+export const darkTheme: ThemeType = {
+  elevation: elevationDark,
+  spacing,
+  fontSize,
+  colors: {
+    primary: '#664DE5',
+    secondary: '#353535',
+    tertiary: '#be81f6',
+    quaternary: '#e5cc4d',
+    placeholder: '202020',
+    placeholderHighlight: '#555555',
+    white: '#ffffff',
+    gray: '#0e0e0e',
+    shade: '#eaf8f0',
+    text: '#c2c2c2',
+    textAlt: '#a1a1a1',
+    background: '#151515',
+    backgroundAlt: '#202020',
+    info: '#664de5',
+    success: '#3ccd6A',
+    warning: '#f57c00',
+    error: '#ff4252',
+  },
+};
+
+export type ThemeType = typeof lightTheme;
 export const styled = baseStyled as ThemedStyledInterface<ThemeType>;

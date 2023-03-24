@@ -1,8 +1,7 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 
-import { CommandModel, CommandRepo } from '../db/command';
+import { CommandModel, CommandRepo } from '../db/command.js';
 import {
-  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
@@ -13,19 +12,17 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
-} from './FunctionService';
+  FunctionUpdateDTO,
+} from './FunctionService.js';
 import { EventChatMessage } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
-import { SettingsService, SETTINGS_KEYS } from './SettingsService';
-import { AuthService } from './AuthService';
+import { PaginatedOutput } from '../db/base.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 
-export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
-  @IsUUID()
-  id: string;
+export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
   name: string;
 
@@ -35,12 +32,15 @@ export class CommandOutputDTO extends TakaroDTO<CommandOutputDTO> {
   @IsString()
   helpText: string;
 
-  @IsBoolean()
-  enabled: boolean;
-
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  functionId: string;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
@@ -55,16 +55,12 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
   @IsOptional()
   helpText?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  enabled: boolean;
-
   @IsUUID()
   moduleId: string;
 
   @IsOptional()
-  @IsUUID()
-  function?: string;
+  @IsString()
+  function: string;
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
@@ -81,9 +77,9 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsOptional()
   helpText?: string;
 
-  @IsBoolean()
   @IsOptional()
-  enabled?: boolean;
+  @IsString()
+  function?: string;
 }
 
 export class CommandService extends TakaroService<
@@ -111,10 +107,15 @@ export class CommandService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        await new FunctionCreateDTO().construct({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -122,12 +123,33 @@ export class CommandService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new CommandCreateDTO({ ...item, function: fnIdToAdd })
+      await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     return created;
   }
 
   async update(id: string, item: CommandUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Command not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        await new FunctionUpdateDTO().construct({
+          code: item.function,
+        })
+      );
+    }
+
     const updated = await this.repo.update(id, item);
     return updated;
   }
@@ -148,22 +170,25 @@ export class CommandService extends TakaroService<
 
     const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
 
-    const triggeredCommands = await this.find({
-      filters: { trigger: commandName },
-    });
+    const triggeredCommands = await this.repo.getTriggeredCommands(
+      commandName,
+      gameServerId
+    );
 
-    if (triggeredCommands.results.length) {
-      const authService = new AuthService(this.domainId);
-      const token = await authService.getAgentToken();
+    if (triggeredCommands.length) {
+      this.log.debug(
+        `Found ${triggeredCommands.length} commands that match the event`
+      );
+
       const queues = QueuesService.getInstance();
 
-      const promises = triggeredCommands.results.map(async (command) => {
+      const promises = triggeredCommands.map(async (command) => {
         return queues.queues.commands.queue.add(command.id, {
           domainId: this.domainId,
           function: command.function.code,
           itemId: command.id,
           data: chatMessage,
-          token,
+          gameServerId,
         });
       });
 

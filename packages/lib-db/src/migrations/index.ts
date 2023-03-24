@@ -1,8 +1,9 @@
-import { getKnex, NOT_DOMAIN_SCOPED_getKnex } from '../knex';
+import { getKnex } from '../knex.js';
 import { readdir } from 'fs/promises';
 import { Knex } from 'knex';
 import path from 'node:path';
-
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IMigration {
   name: string;
   up: (knex: Knex) => Promise<void>;
@@ -10,14 +11,12 @@ interface IMigration {
 }
 
 class TakaroMigrationSource {
-  constructor(public readonly directory: string) {}
-
   // Hack to get around ts compiler/monorepo/dynamic import weirdness
   // See: https://github.com/TypeStrong/ts-node/discussions/1290
   private dynamicImport = new Function('specifier', 'return import(specifier)');
 
   async getMigrations() {
-    const folderPath = path.join(__dirname, this.directory);
+    const folderPath = path.join(__dirname, 'sql');
     const files = await readdir(folderPath);
     const migrations = files
       .filter((file) => file.endsWith('.js'))
@@ -44,17 +43,9 @@ class TakaroMigrationSource {
   }
 }
 
-export async function migrateSystem() {
-  const knex = await NOT_DOMAIN_SCOPED_getKnex();
-  await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+export async function migrate() {
+  const knex = await getKnex();
   await knex.migrate.latest({
-    migrationSource: new TakaroMigrationSource('system'),
-  });
-}
-
-export async function migrateDomain(domainId: string) {
-  const knex = await getKnex(domainId);
-  await knex.migrate.latest({
-    migrationSource: new TakaroMigrationSource('domainScoped'),
+    migrationSource: new TakaroMigrationSource(),
   });
 }

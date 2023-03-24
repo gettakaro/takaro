@@ -12,6 +12,9 @@ export const Default: StoryFn = (args) => {
       <CollapseList.Item title="Files">
         <div> I am a container showcasing the files</div>
       </CollapseList.Item>
+      <CollapseList.Item title="Settings">
+        <div> I am a container showcasing the settings</div>
+      </CollapseList.Item>
     </CollapseList>
   );
 };

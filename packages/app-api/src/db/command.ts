@@ -1,31 +1,31 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base';
-import { FUNCTION_TABLE_NAME } from './function';
+import { ITakaroRepo } from './base.js';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandUpdateDTO,
-} from '../service/CommandService';
+} from '../service/CommandService.js';
 
 export const COMMANDS_TABLE_NAME = 'commands';
 
 export class CommandModel extends TakaroModel {
   static tableName = COMMANDS_TABLE_NAME;
   name!: string;
-  enabled!: boolean;
   trigger: string;
   helpText: string;
+
+  functionId: string;
 
   static get relationMappings() {
     return {
       function: {
-        relation: Model.HasOneRelation,
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        modelClass: require('./function').FunctionModel,
+        relation: Model.BelongsToOneRelation,
+        modelClass: FunctionModel,
         join: {
-          from: `${COMMANDS_TABLE_NAME}.id`,
+          from: `${COMMANDS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
@@ -45,35 +45,44 @@ export class CommandRepo extends ITakaroRepo<
 
   async getModel() {
     const knex = await this.getKnex();
-    return CommandModel.bindKnex(knex);
+    const model = CommandModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
   }
 
   async find(filters: ITakaroQuery<CommandOutputDTO>) {
-    const model = await this.getModel();
+    const { query } = await this.getModel();
     const result = await new QueryBuilder<CommandModel, CommandOutputDTO>({
       ...filters,
       extend: ['function'],
-    }).build(model.query());
+    }).build(query);
     return {
       total: result.total,
-      results: result.results.map((item) => new CommandOutputDTO(item)),
+      results: await Promise.all(
+        result.results.map((item) => new CommandOutputDTO().construct(item))
+      ),
     };
   }
 
   async findOne(id: string): Promise<CommandOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().findById(id).withGraphJoined('function');
+    const { query } = await this.getModel();
+    const data = await query.findById(id).withGraphJoined('function');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new CommandOutputDTO(data);
+    return new CommandOutputDTO().construct(data);
   }
 
   async create(item: CommandCreateDTO): Promise<CommandOutputDTO> {
-    const model = await this.getModel();
-    const data = await model.query().insert(item.toJSON());
+    const { query } = await this.getModel();
+    const data = await query.insert({
+      ...item.toJSON(),
+      domain: this.domainId,
+    });
 
     if (item.function) {
       await this.assign(data.id, item.function);
@@ -83,23 +92,52 @@ export class CommandRepo extends ITakaroRepo<
   }
 
   async delete(id: string): Promise<boolean> {
-    const model = await this.getModel();
-    const data = await model.query().deleteById(id);
+    const { query } = await this.getModel();
+    const data = await query.deleteById(id);
     return !!data;
   }
 
   async update(id: string, data: CommandUpdateDTO): Promise<CommandOutputDTO> {
-    const model = await this.getModel();
-    const item = await model
-      .query()
+    const { query } = await this.getModel();
+    const item = await query
       .updateAndFetchById(id, data.toJSON())
       .withGraphFetched('function');
 
-    return new CommandOutputDTO(item);
+    return new CommandOutputDTO().construct(item);
   }
 
   async assign(id: string, functionId: string) {
-    const model = await this.getModel();
-    await model.relatedQuery('function').for(id).relate(functionId);
+    const { query } = await this.getModel();
+    await query.updateAndFetchById(id, { functionId });
+  }
+
+  async getTriggeredCommands(input: string, gameServerId: string) {
+    const { query } = await this.getModel();
+
+    const commandIds: string[] = (
+      await query
+        .select('commands.id as commandId')
+        .innerJoin('functions', 'commands.functionId', 'functions.id')
+        .innerJoin('modules', 'commands.moduleId', 'modules.id')
+        .innerJoin(
+          'moduleAssignments',
+          'moduleAssignments.moduleId',
+          'modules.id'
+        )
+        .innerJoin(
+          'gameservers',
+          'moduleAssignments.gameserverId',
+          'gameservers.id'
+        )
+        .where({
+          'commands.trigger': input,
+          'gameservers.id': gameServerId,
+        })
+    )
+      // @ts-expect-error Knex is confused because we start from the 'normal' query object
+      // but we create a query that does NOT produce a CommandModel
+      .map((x) => x.commandId);
+
+    return Promise.all(commandIds.map((commandId) => this.findOne(commandId)));
   }
 }

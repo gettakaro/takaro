@@ -1,28 +1,35 @@
 import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
-import { Skeleton } from '../../../components';
-import { Container, Dot, Line, Label, ContentContainer } from './style';
-import { useController, Control } from 'react-hook-form';
+import { Skeleton, Label } from '../../../components';
+import { Wrapper, Container, Dot, Line, ContentContainer } from './style';
+import { useController } from 'react-hook-form';
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  InputProps,
+} from '../InputProps';
 
-export interface SwitchProps {
-  name: string;
-  control: Control<any>;
-  loading?: boolean;
-  readOnly?: boolean;
-  defaultValue?: boolean;
-  label?: string;
-}
+const defaultsApplier = defaultInputPropsFactory<InputProps>(defaultInputProps);
 
-export const Switch: FC<SwitchProps> = ({
-  name,
-  control,
-  loading = false,
-  label,
-  readOnly = false,
-  defaultValue = false,
-}) => {
-  const [isChecked, setChecked] = useState(defaultValue);
-  const { field } = useController({ name, control });
+export const Switch: FC<InputProps> = (props) => {
+  const {
+    readOnly,
+    size,
+    name,
+    required,
+    disabled,
+    hint,
+    label,
+    loading,
+    control,
+    value = false,
+  } = defaultsApplier(props);
+
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control, defaultValue: value });
+  const [isChecked, setChecked] = useState(field.value);
 
   function handleOnClick(): void {
     setChecked(!isChecked);
@@ -42,19 +49,34 @@ export const Switch: FC<SwitchProps> = ({
   }
 
   return (
-    <Container>
-      {label && <Label htmlFor={name}>{label}</Label>}
-      <ContentContainer onClick={handleOnClick}>
-        <Line readOnly={readOnly} isChecked={isChecked}>
-          <Dot
-            animate={{ right: isChecked ? '-2px' : '15px' }}
-            readOnly={readOnly}
-            isChecked={isChecked}
-            layout
-            transition={getTransition()}
+    <Wrapper>
+      <Container>
+        {label && (
+          <Label
+            htmlFor={name}
+            text={label}
+            position="top"
+            error={!!error}
+            size={size}
+            required={required}
+            onClick={handleOnClick}
+            hint={hint}
+            disabled={disabled}
           />
-        </Line>
-      </ContentContainer>
-    </Container>
+        )}
+        <ContentContainer onClick={handleOnClick}>
+          <Line readOnly={readOnly} isChecked={isChecked}>
+            <Dot
+              animate={{ right: isChecked ? '-2px' : '15px' }}
+              readOnly={readOnly}
+              isChecked={isChecked}
+              layout
+              transition={getTransition()}
+            />
+          </Line>
+        </ContentContainer>
+      </Container>
+      <p>{props.description}</p>
+    </Wrapper>
   );
 };

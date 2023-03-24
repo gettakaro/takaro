@@ -1,8 +1,14 @@
 import { HTTP } from '@takaro/http';
-import { config } from './config';
-import { BullBoardRouter } from './controllers/bullboard';
+import { logger } from '@takaro/util';
+import { config } from './config.js';
+import { BullBoardRouter } from './controllers/bullboard.js';
 import { QueuesService } from '@takaro/queues';
-import { CronJobWorker } from './service/workers/cronjobWorker';
+import { CronJobWorker } from './service/workers/cronjobWorker.js';
+import { CommandWorker } from './service/workers/commandWorker.js';
+import { HookWorker } from './service/workers/hookWorker.js';
+import { VMM } from './service/vmm/index.js';
+
+const log = logger('agent');
 
 export const server = new HTTP(
   {},
@@ -12,12 +18,30 @@ export const server = new HTTP(
   }
 );
 
+let vmm: VMM | null = null;
+
+export async function getVMM() {
+  if (!vmm) {
+    vmm = new VMM();
+  }
+
+  return vmm;
+}
+
 async function main() {
+  log.info('Starting...');
+  await getVMM();
+
   config.validate();
+  log.info('✅ Config validated');
+
   server.expressInstance.use('/queues', BullBoardRouter);
   await server.start();
+  log.info('🚀 Server started');
 
   await QueuesService.getInstance().registerWorker(new CronJobWorker());
+  await QueuesService.getInstance().registerWorker(new CommandWorker());
+  await QueuesService.getInstance().registerWorker(new HookWorker());
 }
 
 main();

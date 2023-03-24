@@ -26,6 +26,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: ${({ theme }) => theme.colors.background};
   }
 
   body{
@@ -40,37 +41,35 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  *, a, p, div, li, h1, h2, h3, h4, h5, h6, header, footer {
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     margin: 0;
-    user-select: none;
     padding: 0;
     box-sizing: border-box;
     color: ${({ theme }) => theme.colors.text};
   }
 
+  p, span, div, h4 {
+    font-size: ${({ theme }) => theme.fontSize.small};
+  }
+
   h1 {
-    font-size: 4rem;
+    font-size: ${({ theme }) => theme.fontSize.large}
     font-weight: 800;
   }
   h2 {
-    font-size: 3rem;
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge}
     font-weight: 800;
   }
   h3 {
-    font-size: 2rem;
+    font-size: ${({ theme }) => theme.fontSize.medium}
     font-weight: 600;
   }
-  h4 {
-    font-size: 1.5rem;
-  }
-  p, span, div {
-    font-size: 1.4rem;
-  }
+
 
   form {
     display: block;
@@ -82,8 +81,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     outline: 0;
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 2px;
-    border-radius: 5px;
+    border-radius: 0.25rem;
     border-color: transparent;
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    color: ${({ theme }) => theme.colors.text};
     &[readOnly]{
       cursor: not-allowed;
       &:focus {
@@ -113,6 +114,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
     border-radius: .8rem;
     border: none;
+
+    &:disabled {
+      cursor: default;
+    }
   }
 
   a.underline {
@@ -133,52 +138,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       -moz-outline-style: none;
     }
   }
-
-  table {
-    width: 100%;
-    border-collapse: separate; /* separate enables outer borders */
-    border-spacing: 0; /* disable inner borders */
-    border-top: 3px solid white;
-    border-bottom: 3px solid white;
-    border-radius: .5rem;
-  }
-
-  thead {
-    color: white;
-    font-size: 1.5rem;
-    th {
-      padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-      font-weight: 600;
-      background-color: white;
-      border-bottom: 3px solid ${({ theme }) => theme.colors.background};
-
-      &:first-child {
-        border-bottom-left-radius: 1rem;
-      }
-
-      &:last-child {
-        border-bottom-right-radius: 1rem;
-      }
-    }
-  }
-
-  tbody {
-    tr {
-    text-align: center;
-
-    &:last-child {
-      td {
-        border-bottom: 0;
-      }
-    }
-
-    td {
-      background-color: ${({ theme }) => theme.colors.white};
-      padding: ${({ theme }) => `${theme.spacing['2_5']} ${theme.spacing[0]}`};
-      border-bottom: 3px solid ${({ theme }) => theme.colors.background};
-    }
-  }
-}
 
 .placeholder {
     overflow: hidden;
@@ -206,13 +165,4 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   /* notistack snackbar styling */
   ${SnackBarStyles}
 
-  /* rc-slider */
-  .rc-slider-tooltip-inner {
-    background-color: ${({ theme }) => theme.colors.primary}!important;
-    font-weight: 600;
-  }
-
-  .rc-slider-tooltip-arrow {
-    border-top-color: ${({ theme }) => theme.colors.primary}!important;
-  }
-`;
+  `;

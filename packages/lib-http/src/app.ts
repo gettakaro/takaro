@@ -1,17 +1,19 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger, errors } from '@takaro/util';
+import { logger, errors, enableDefaultNodejsMetrics } from '@takaro/util';
 import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,
   useExpressServer,
 } from 'routing-controllers';
-import { Meta } from './controllers/meta';
-import { LoggingMiddleware } from './middleware/logger';
-import { ErrorHandler } from './middleware/errorHandler';
+import { Meta } from './controllers/meta.js';
+import { LoggingMiddleware } from './middleware/logger.js';
+import { ErrorHandler } from './middleware/errorHandler.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { metricsMiddleware } from './main.js';
+import { paginationMiddleware } from './middleware/paginationMiddleware.js';
 
 interface IHTTPOptions {
   port?: number;
@@ -28,9 +30,13 @@ export class HTTP {
     private httpOptions: IHTTPOptions = {}
   ) {
     this.logger = logger('http');
+    enableDefaultNodejsMetrics();
     this.app = express();
     this.httpServer = createServer(this.app);
     this.app.use(bodyParser.json());
+    this.app.use(LoggingMiddleware);
+    this.app.use(metricsMiddleware);
+    this.app.use(paginationMiddleware);
     this.app.use(
       cors({
         credentials: true,
@@ -40,6 +46,7 @@ export class HTTP {
           if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
           } else {
+            this.logger.warn(`Origin ${origin} not allowed by CORS`);
             callback(new errors.BadRequestError('Not allowed by CORS'));
           }
         },
@@ -61,9 +68,10 @@ export class HTTP {
         defaultErrorHandler: false,
         controllers: [Meta],
         validation: { whitelist: true, forbidNonWhitelisted: true },
-        middlewares: [LoggingMiddleware, ErrorHandler],
       });
     }
+
+    this.app.use(ErrorHandler);
   }
 
   get expressInstance() {

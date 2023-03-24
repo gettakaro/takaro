@@ -1,14 +1,13 @@
-import { DomainScoped } from '../lib/DomainScoped';
-import { errors, logger } from '@takaro/util';
-import { compareHashed } from '@takaro/db';
-import { UserService } from '../service/UserService';
-import * as jwt from 'jsonwebtoken';
-import { config } from '../config';
+import { DomainScoped } from '../lib/DomainScoped.js';
+import { ctx, errors, logger } from '@takaro/util';
+import { UserOutputWithRolesDTO, UserService } from '../service/UserService.js';
+import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
-import { CAPABILITIES } from './RoleService';
+import { ory, PERMISSIONS } from '@takaro/auth';
+import { config } from '../config.js';
 
 interface IJWTPayload {
   sub: string;
@@ -29,57 +28,42 @@ export class LoginOutputDTO extends TakaroDTO<LoginOutputDTO> {
   token!: string;
 }
 
+export class TokenInputDTO extends TakaroDTO<TokenInputDTO> {
+  @IsString()
+  domainId: string;
+}
+
+export class TokenOutputDTO extends TakaroDTO<TokenOutputDTO> {
+  @IsString()
+  token!: string;
+}
+
 const log = logger('AuthService');
 
 export class AuthService extends DomainScoped {
-  async login(
-    email: string,
-    password: string,
-    res: Response
-  ): Promise<LoginOutputDTO> {
-    const service = new UserService(this.domainId);
-    const users = await service.find({ filters: { email } });
-
-    if (!users.results.length) {
-      this.log.warn('User not found');
-      throw new errors.UnauthorizedError();
-    }
-
-    if (users.results.length > 1) {
-      this.log.error('Too many users found!');
-      throw new errors.UnauthorizedError();
-    }
-
-    const passwordMatches = await compareHashed(
-      password,
-      users.results[0].password
-    );
-
-    if (passwordMatches) {
-      const token = await this.signJwt({ user: { id: users.results[0].id } });
-      res.cookie(config.get('auth.cookieName'), token, {
-        httpOnly: true,
-        maxAge: ms(config.get('auth.jwtExpiresIn')),
+  static async login(name: string, password: string): Promise<LoginOutputDTO> {
+    try {
+      const loginRes = await ory.submitApiLogin(name, password);
+      return new LoginOutputDTO().construct({
+        token: loginRes.data.session_token,
       });
-
-      return new LoginOutputDTO({ token });
-    } else {
-      this.log.warn('Password does not match');
+    } catch (error) {
+      log.warn(error);
       throw new errors.UnauthorizedError();
     }
   }
 
-  static async logout(res: Response) {
-    res.clearCookie(config.get('auth.cookieName'));
+  static async logout(req: Request) {
+    return ory.apiLogout(req);
   }
 
   /**
    * This is a token to be used by app-agent to execute functions
    * For now, just the root token but in the future, we can have
-   * narrower scoped tokens (eg configurable capabilities?)
+   * narrower scoped tokens (eg configurable permissions?)
    * // TODO: ^ ^
    */
-  async getAgentToken() {
+  async getAgentToken(): Promise<TokenOutputDTO> {
     const userService = new UserService(this.domainId);
 
     const rootUser = await userService.find({
@@ -91,7 +75,9 @@ export class AuthService extends DomainScoped {
       throw new errors.InternalServerError();
     }
 
-    return await this.signJwt({ user: { id: rootUser.results[0].id } });
+    const token = await this.signJwt({ user: { id: rootUser.results[0].id } });
+
+    return new TokenOutputDTO().construct({ token });
   }
 
   async signJwt(payload: IJWTSignOptions): Promise<string> {
@@ -101,9 +87,7 @@ export class AuthService extends DomainScoped {
         sub: payload.user.id,
         domainId: this.domainId,
         iat: Math.floor(Date.now() / 1000),
-        exp:
-          Math.floor(Date.now() / 1000) +
-          ms(config.get('auth.jwtExpiresIn')) / 1000,
+        exp: Math.floor(Date.now() / 1000) + ms('5 days') / 1000,
       };
 
       jwt.sign(
@@ -150,50 +134,57 @@ export class AuthService extends DomainScoped {
     });
   }
 
-  static getTokenFromRequest(req: AuthenticatedRequest) {
-    const tokenFromAuthHeader = req.headers['authorization']?.replace(
-      'Bearer ',
-      ''
-    );
-    const tokenFromCookie = req.cookies[config.get('auth.cookieName')];
-    return tokenFromAuthHeader || tokenFromCookie;
+  static async getUserFromReq(
+    req: AuthenticatedRequest
+  ): Promise<UserOutputWithRolesDTO | null> {
+    try {
+      const identity = await ory.getIdentityFromReq(req);
+      if (!identity) return null;
+      const service = new UserService(identity.domainId);
+      const users = await service.find({ filters: { idpId: identity.id } });
+
+      if (!users.results.length) return null;
+
+      return users.results[0];
+    } catch (error) {
+      return null;
+    }
   }
 
-  static getAuthMiddleware(capabilities: CAPABILITIES[]) {
+  static getAuthMiddleware(permissions: PERMISSIONS[]) {
     return async (
       req: AuthenticatedRequest,
       res: Response,
       next: NextFunction
     ) => {
       try {
-        const token = this.getTokenFromRequest(req);
-        const payload = await AuthService.verifyJwt(token);
-        const service = new UserService(payload.domainId);
-        const user = await service.findOne(payload.sub);
+        const user = await this.getUserFromReq(req);
 
         if (!user) {
           return next(new errors.UnauthorizedError());
         }
 
-        const allUserCapabilities = user.roles.reduce((acc, role) => {
-          return [...acc, ...role.capabilities.map((c) => c.capability)];
-        }, [] as CAPABILITIES[]);
+        ctx.addData({ user: user.id, domain: user.domain });
 
-        const hasAllCapabilities = capabilities.every((capability) =>
-          allUserCapabilities.includes(capability)
+        const allUserPermissions = user.roles.reduce((acc, role) => {
+          return [...acc, ...role.permissions.map((c) => c.permission)];
+        }, [] as PERMISSIONS[]);
+
+        const hasAllPermissions = permissions.every((permission) =>
+          allUserPermissions.includes(permission)
         );
 
-        const userHasRootCapability = allUserCapabilities.includes(
-          CAPABILITIES.ROOT
+        const userHasRootPermission = allUserPermissions.includes(
+          PERMISSIONS.ROOT
         );
 
-        if (!hasAllCapabilities && !userHasRootCapability) {
-          log.warn(`User ${user.id} does not have all capabilities`);
+        if (!hasAllPermissions && !userHasRootPermission) {
+          log.warn(`User ${user.id} does not have all permissions`);
           return next(new errors.ForbiddenError());
         }
 
         req.user = user;
-        req.domainId = payload.domainId;
+        req.domainId = user.domain;
         next();
       } catch (error) {
         log.error('Unexpected error in auth middleware', error);

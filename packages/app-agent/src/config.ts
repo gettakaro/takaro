@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
@@ -12,9 +13,6 @@ interface IAgentConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
-  takaro: {
-    url: string;
-  };
   redis: {
     host: string;
     port: number;
@@ -25,9 +23,12 @@ interface IAgentConfig extends IBaseConfig {
   functions: {
     executionMode: EXECUTION_MODE;
   };
-  containerd: {
-    executablePath: string;
-    namespace: string;
+  firecracker: {
+    binary: string;
+    kernelImage: string;
+    rootfs: string;
+    sockets: string;
+    logPath: string;
   };
 }
 
@@ -103,31 +104,42 @@ const configSchema = {
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
-  containerd: {
-    executablePath: {
-      doc: 'The path to the nerdctl executable',
+  firecracker: {
+    binary: {
+      doc: 'Path to Firecracker binary',
       format: String,
-      default: '/home/catalysm/.local/bin/nerdctl',
-      env: 'CONTAINERD_EXECUTABLE_PATH',
+      default: '/usr/bin/firecracker',
+      env: 'FIRECRACKER_BINARY',
     },
-    namespace: {
-      doc: 'The namespace to use for containerd',
+    kernelImage: {
+      doc: 'Path to the kernel image used by the microVM',
       format: String,
-      default: 'takaro',
-      env: 'CONTAINERD_NAMESPACE',
+      default: '/home/branco/dev/takaro/firecracker/vmlinux.bin',
+      env: 'FIRECRACKER_KERNEL_IMAGE',
     },
-  },
-  takaro: {
-    url: {
-      doc: 'The URL of the Takaro server',
+    rootfs: {
+      doc: 'Path to the rootfs used by the microVM',
       format: String,
-      default: 'http://localhost:3000',
-      env: 'TAKARO_HOST',
+      default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
+      env: 'FIRECRACKER_ROOTFS',
+    },
+    sockets: {
+      doc: 'Path to the socket directory used by Firecracker',
+      format: String,
+      default: '/tmp/takaro/sockets/',
+      env: 'FIRECRACKER_SOCKET',
+    },
+    logPath: {
+      doc: 'Path to the log file used by Firecracker',
+      format: String,
+      default: '/home/branco/dev/takaro/firecracker/',
+      env: 'FIRECRACKER_LOG_PATH',
     },
   },
 };
 
-export const config = new Config<IAgentConfig & IQueuesConfig>([
+export const config = new Config<IAgentConfig & IQueuesConfig & IAuthConfig>([
   configSchema,
   queuesConfigSchema,
+  authConfigSchema,
 ]);

@@ -1,18 +1,10 @@
-import { MetaApi } from '../generated';
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { MetaApi } from '../generated/api.js';
+import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore doing a workaround here specifically for package json
-import { version } from '../../package.json';
-export interface IApiClientConfig {
+export interface IBaseApiClientConfig {
   url: string;
   log?: Logger;
-  auth: {
-    token?: string;
-    username?: string;
-    password?: string;
-    adminSecret?: string;
-  };
 }
 
 interface Logger {
@@ -22,7 +14,7 @@ interface Logger {
   debug: (msg: string, meta?: unknown) => void;
 }
 
-export class BaseApiClient {
+export class BaseApiClient<T extends IBaseApiClientConfig> {
   protected axios: AxiosInstance;
   protected log: Logger = {
     error: console.error,
@@ -31,39 +23,22 @@ export class BaseApiClient {
     debug: console.log,
   };
 
-  constructor(protected readonly config: IApiClientConfig) {
+  constructor(protected readonly config: T) {
     const axiosConfig: AxiosRequestConfig = {
       baseURL: this.config.url,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': `Takaro-API-Client@${version}`,
+        'User-Agent': 'Takaro-API-Client',
       },
       withCredentials: true,
     };
-    this.axios = this.addAuthHeaders(
-      this.addLoggers(axios.create(axiosConfig))
-    );
+    this.axios = this.addLoggers(axios.create(axiosConfig));
 
     if (this.config.log) this.log = this.config.log;
   }
 
   isJsonMime(mime: string) {
     return mime === 'application/json';
-  }
-
-  private addAuthHeaders(axios: AxiosInstance): AxiosInstance {
-    if (this.config.auth.token) {
-      axios.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${this.config.auth.token}`;
-    } else if (this.config.auth.adminSecret) {
-      axios.defaults.auth = {
-        username: 'admin',
-        password: this.config.auth.adminSecret,
-      };
-    }
-
-    return axios;
   }
 
   private addLoggers(axios: AxiosInstance): AxiosInstance {
@@ -100,13 +75,11 @@ export class BaseApiClient {
         }
 
         this.log.error(`☠️ Request errored: ${error.message}`, {
-          error,
           details,
           status: error.response?.status,
           statusText: error.response?.statusText,
-          method: error.config.method,
-          url: error.config.url,
-          headers: error.response?.headers,
+          method: error.config?.method,
+          url: error.config?.url,
           response: error.response?.data,
         });
         return Promise.reject(error);

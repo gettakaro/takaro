@@ -1,14 +1,36 @@
 import { upOne, upMany, logs, exec } from 'docker-compose';
 
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'], env: { ...process.env } };
 
 async function main() {
   // First, start the datastores
-  await upMany(['postgresql', 'redis'], composeOpts);
+  await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
 
+  // Then, start supporting services
+  await upMany(['kratos', 'hydra', 'kratos-migrate', 'hydra-migrate'], composeOpts);
 
-  // Once all data stores are initialized, we can start the app itself
+  // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
+  // If not set, create them
+  if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
+    await sleep(5000);
+    const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json', composeOpts);
+    const parsedClientOutput = JSON.parse(rawClientOutput.out);
+
+    console.log('Created OAuth admin client', { clientId: parsedClientOutput.client_id });
+    composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
+    composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
+  }
+
   await upOne('takaro', composeOpts);
+
+  // Wait for a bit for everything to settle
+  // When the dev container starts, it boots up pretty much everything
+  // which is really heavy on CPU
+  await sleep(30000);
 
   let failed = false;
 

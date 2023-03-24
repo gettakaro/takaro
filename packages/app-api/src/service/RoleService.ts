@@ -1,5 +1,6 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
 import {
   Length,
@@ -7,44 +8,19 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   IsString,
-  IsUUID,
   IsEnum,
 } from 'class-validator';
-import { PaginatedOutput } from '../db/base';
-import { RoleModel, RoleRepo } from '../db/role';
-import { TakaroService } from './Base';
-
-export enum CAPABILITIES {
-  'ROOT' = 'ROOT',
-  'MANAGE_USERS' = 'MANAGE_USERS',
-  'READ_USERS' = 'READ_USERS',
-  'MANAGE_ROLES' = 'MANAGE_ROLES',
-  'READ_ROLES' = 'READ_ROLES',
-  'MANAGE_GAMESERVERS' = 'MANAGE_GAMESERVERS',
-  'READ_GAMESERVERS' = 'READ_GAMESERVERS',
-  'READ_FUNCTIONS' = 'READ_FUNCTIONS',
-  'MANAGE_FUNCTIONS' = 'MANAGE_FUNCTIONS',
-  'READ_CRONJOBS' = 'READ_CRONJOBS',
-  'MANAGE_CRONJOBS' = 'MANAGE_CRONJOBS',
-  'READ_HOOKS' = 'READ_HOOKS',
-  'MANAGE_HOOKS' = 'MANAGE_HOOKS',
-  'READ_COMMANDS' = 'READ_COMMANDS',
-  'MANAGE_COMMANDS' = 'MANAGE_COMMANDS',
-  'READ_MODULES' = 'READ_MODULES',
-  'MANAGE_MODULES' = 'MANAGE_MODULES',
-  'READ_PLAYERS' = 'READ_PLAYERS',
-  'MANAGE_PLAYERS' = 'MANAGE_PLAYERS',
-  'MANAGE_SETTINGS' = 'MANAGE_SETTINGS',
-  'READ_SETTINGS' = 'READ_SETTINGS',
-}
+import { PaginatedOutput } from '../db/base.js';
+import { RoleModel, RoleRepo } from '../db/role.js';
+import { TakaroService } from './Base.js';
 
 @ValidatorConstraint()
-export class IsCapabilityArray implements ValidatorConstraintInterface {
-  public async validate(capabilities: CAPABILITIES[]) {
+export class IsPermissionArray implements ValidatorConstraintInterface {
+  public async validate(permissions: PERMISSIONS[]) {
     return (
-      Array.isArray(capabilities) &&
-      capabilities.every((capability) =>
-        Object.values(CAPABILITIES).includes(capability)
+      Array.isArray(permissions) &&
+      permissions.every((permission) =>
+        Object.values(PERMISSIONS).includes(permission)
       )
     );
   }
@@ -54,16 +30,16 @@ export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsEnum(CAPABILITIES, { each: true })
-  capabilities: CAPABILITIES[];
+  @IsEnum(PERMISSIONS, { each: true })
+  permissions: PERMISSIONS[];
 }
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsEnum(CAPABILITIES, { each: true })
-  capabilities: CAPABILITIES[];
+  @IsEnum(PERMISSIONS, { each: true })
+  permissions: PERMISSIONS[];
 }
 
 export class SearchRoleInputDTO {
@@ -71,23 +47,18 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
-export class CapabilityOutputDTO {
-  @IsUUID()
-  id: string;
-
-  @IsEnum(CAPABILITIES)
-  capability: CAPABILITIES;
+export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
+  @IsEnum(PERMISSIONS)
+  permission: PERMISSIONS;
 }
 
-export class RoleOutputDTO extends TakaroDTO<RoleOutputDTO> {
-  @IsUUID()
-  id: string;
+export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @IsString()
   name: string;
 
   @IsArray()
-  @Type(() => CapabilityOutputDTO)
-  capabilities: CapabilityOutputDTO[];
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class RoleService extends TakaroService<
@@ -111,7 +82,7 @@ export class RoleService extends TakaroService<
   }
 
   async create(item: RoleCreateInputDTO): Promise<RoleOutputDTO> {
-    return this.createWithCapabilities(item, item.capabilities);
+    return this.createWithPermissions(item, item.permissions);
   }
 
   async update(id: string, item: RoleUpdateInputDTO): Promise<RoleOutputDTO> {
@@ -122,36 +93,36 @@ export class RoleService extends TakaroService<
     return this.repo.delete(id);
   }
 
-  async createWithCapabilities(
+  async createWithPermissions(
     role: RoleCreateInputDTO,
-    capabilities: CAPABILITIES[]
+    permissions: PERMISSIONS[]
   ): Promise<RoleOutputDTO> {
     const createdRole = await this.repo.create(role);
     await Promise.all(
-      capabilities.map((capability) => {
-        return this.repo.addCapabilityToRole(createdRole.id, capability);
+      permissions.map((permission) => {
+        return this.repo.addPermissionToRole(createdRole.id, permission);
       })
     );
 
     return this.repo.findOne(createdRole.id);
   }
 
-  async setCapabilities(roleId: string, capabilities: CAPABILITIES[]) {
+  async setPermissions(roleId: string, permissions: PERMISSIONS[]) {
     const role = await this.repo.findOne(roleId);
 
-    const toRemove = role.capabilities.filter(
-      (capability) => !capabilities.includes(capability.capability)
+    const toRemove = role.permissions.filter(
+      (permission) => !permissions.includes(permission.permission)
     );
-    const toAdd = capabilities.filter(
-      (capability) =>
-        !role.capabilities.map((cap) => cap.capability).includes(capability)
+    const toAdd = permissions.filter(
+      (permission) =>
+        !role.permissions.map((cap) => cap.permission).includes(permission)
     );
 
-    const removePromises = toRemove.map((capability) => {
-      return this.repo.removeCapabilityFromRole(roleId, capability.capability);
+    const removePromises = toRemove.map((permission) => {
+      return this.repo.removePermissionFromRole(roleId, permission.permission);
     });
-    const addPromises = toAdd.map((capability) => {
-      return this.repo.addCapabilityToRole(roleId, capability);
+    const addPromises = toAdd.map((permission) => {
+      return this.repo.addPermissionToRole(roleId, permission);
     });
 
     await Promise.all([...removePromises, ...addPromises]);

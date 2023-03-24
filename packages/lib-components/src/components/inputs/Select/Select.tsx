@@ -13,13 +13,11 @@ import { SelectContext } from './context';
 import {
   GroupLabel,
   SelectButton,
-  Label,
-  LabelContainer,
   SelectContainer,
   ArrowIcon,
-  ErrorContainer,
-  Error,
+  Container,
 } from './style';
+import { Label } from '../../../components';
 
 import {
   useFloating,
@@ -33,34 +31,41 @@ import {
   useDismiss,
   FloatingFocusManager,
   autoUpdate,
-  size,
   FloatingOverlay,
-} from '@floating-ui/react-dom-interactions';
+  size,
+} from '@floating-ui/react';
 
-import { Control, FieldError, useController } from 'react-hook-form';
+import { useController } from 'react-hook-form';
+import {
+  InputProps,
+  defaultInputPropsFactory,
+  defaultInputProps,
+} from '../InputProps';
+import { ErrorMessage } from '../ErrorMessage';
 
-export interface SelectProps {
+export interface SelectProps extends InputProps {
   render: (selectedIndex: number) => React.ReactNode;
-  defaultValue?: string;
-  control: Control<any, object>;
-  error?: FieldError;
-  name: string;
-  label?: string;
-  hint?: string;
-  required?: boolean;
 }
 
-// TODO: implement required (but this should only be done after the label reimplementation.
+const defaultsApplier =
+  defaultInputPropsFactory<PropsWithChildren<SelectProps>>(defaultInputProps);
 
-export const Select: FC<PropsWithChildren<SelectProps>> = ({
-  children,
-  defaultValue,
-  control,
-  name,
-  error,
-  label,
-  render,
-}) => {
+// TODO: implement required (but this should only be done after the label reimplementation.
+export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
+  const {
+    required,
+    name,
+    size: componentSize,
+    label,
+    render,
+    children,
+    control,
+    value,
+    disabled,
+    hint,
+    loading,
+  } = defaultsApplier(props);
+
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
     'Select...',
@@ -72,17 +77,20 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
     ) ?? []),
   ]);
 
-  const { field } = useController({
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
     name,
     control,
-    defaultValue: Math.max(0, listContentRef.current.indexOf(defaultValue)),
+    defaultValue: Math.max(0, listContentRef.current.indexOf(value)),
   });
 
   const [open, setOpen] = useState(false);
-  const [showError] = useState<boolean>(false);
+  const [showError] = useState<boolean>(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, listContentRef.current.indexOf(defaultValue))
+    Math.max(0, listContentRef.current.indexOf(value))
   );
 
   const [pointer, setPointer] = useState(false);
@@ -173,6 +181,10 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
     ) ?? []),
   ];
 
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
   return (
     <SelectContext.Provider
       value={{
@@ -186,53 +198,61 @@ export const Select: FC<PropsWithChildren<SelectProps>> = ({
         dataRef: context.dataRef,
       }}
     >
-      {label && (
-        <LabelContainer>
-          <Label showError={showError}>{label}</Label>
-        </LabelContainer>
-      )}
-      <SelectButton
-        {...getReferenceProps({
-          ref: reference,
-        })}
-        isOpen={open}
-      >
-        {render(selectedIndex - 1)}
-        <ArrowIcon size={18} isOpen={open} />
-      </SelectButton>
-      {error && (
-        <ErrorContainer showError={!open && showError}>
-          <Error>{error.message}</Error>
-        </ErrorContainer>
-      )}
-      {open && (
-        <FloatingOverlay lockScroll>
-          <FloatingFocusManager context={context} initialFocus={selectedIndex}>
-            <SelectContainer
-              {...getFloatingProps({
-                ref: floating,
-                style: {
-                  position: strategy,
-                  top: y ?? 0,
-                  left: x ?? 0,
-                  overflow: 'auto',
-                },
-                onPointerMove() {
-                  setPointer(true);
-                },
-                onKeyDown(event) {
-                  setPointer(false);
-                  if (event.key === 'Tab') {
-                    setOpen(false);
-                  }
-                },
-              })}
+      <Container>
+        {label && (
+          <Label
+            error={!!error}
+            text={label}
+            required={required}
+            position="top"
+            size={componentSize}
+            disabled={disabled}
+            hint={hint}
+            onClick={() => setOpen(!open)}
+          />
+        )}
+        <SelectButton
+          {...getReferenceProps({
+            ref: reference,
+          })}
+          isOpen={open}
+        >
+          {render(selectedIndex - 1)}
+          <ArrowIcon size={18} isOpen={open} />
+        </SelectButton>
+        {error && showError && <ErrorMessage message={error.message!} />}
+        {open && (
+          <FloatingOverlay lockScroll>
+            <FloatingFocusManager
+              context={context}
+              initialFocus={selectedIndex}
             >
-              {options}
-            </SelectContainer>
-          </FloatingFocusManager>
-        </FloatingOverlay>
-      )}
+              <SelectContainer
+                {...getFloatingProps({
+                  ref: floating,
+                  style: {
+                    position: strategy,
+                    top: y ?? 0,
+                    left: x ?? 0,
+                    overflow: 'auto',
+                  },
+                  onPointerMove() {
+                    setPointer(true);
+                  },
+                  onKeyDown(event) {
+                    setPointer(false);
+                    if (event.key === 'Tab') {
+                      setOpen(false);
+                    }
+                  },
+                })}
+              >
+                {options}
+              </SelectContainer>
+            </FloatingFocusManager>
+          </FloatingOverlay>
+        )}
+      </Container>
     </SelectContext.Provider>
   );
 };

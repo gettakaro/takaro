@@ -10,7 +10,6 @@
       "helpText": "No help text available",
       "name": "Test command",
       "trigger": "test",
-      "enabled": true,
       "moduleId": "e69569d5-3bcb-4506-bae4-fd20de9c4c20",
       "function": {
         "createdAt": "2022-11-04T20:20:54.053Z",
@@ -26,7 +25,8 @@
     "snapshot": true,
     "name": "Get by ID",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

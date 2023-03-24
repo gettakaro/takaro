@@ -1,13 +1,13 @@
 import { IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { APIOutput, apiResponse, PaginatedRequest } from '@takaro/http';
+import { APIOutput, apiResponse } from '@takaro/http';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
   FunctionUpdateDTO,
-} from '../service/FunctionService';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService';
+} from '../service/FunctionService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -18,11 +18,13 @@ import {
   Req,
   Put,
   Params,
+  Res,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators';
-import { CAPABILITIES } from '../service/RoleService';
+import { ParamId } from '../lib/validators.js';
+import { PERMISSIONS } from '@takaro/auth';
+import { Response } from 'express';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -30,13 +32,13 @@ import { CAPABILITIES } from '../service/RoleService';
 class FunctionOutputDTOAPI extends APIOutput<FunctionOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
-  data!: FunctionOutputDTO;
+  declare data: FunctionOutputDTO;
 }
 
 class FunctionOutputArrayDTOAPI extends APIOutput<FunctionOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => FunctionOutputDTO)
-  data!: FunctionOutputDTO[];
+  declare data: FunctionOutputDTO[];
 }
 
 class FunctionSearchInputAllowedFilters {
@@ -47,7 +49,7 @@ class FunctionSearchInputAllowedFilters {
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedFilters)
-  filters!: FunctionSearchInputAllowedFilters;
+  declare filters: FunctionSearchInputAllowedFilters;
 }
 
 @OpenAPI({
@@ -55,25 +57,28 @@ class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
 })
 @JsonController()
 export class FunctionController {
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_FUNCTIONS]))
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @Post('/function/search')
   async search(
-    @Req() req: AuthenticatedRequest & PaginatedRequest,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
     @Body() query: FunctionSearchInputDTO
   ) {
     const service = new FunctionService(req.domainId);
     const result = await service.find({
       ...query,
-      page: req.page,
-      limit: req.limit,
+      page: res.locals.page,
+      limit: res.locals.limit,
     });
     return apiResponse(result.results, {
-      meta: { page: req.page, limit: req.limit, total: result.total },
+      meta: { total: result.total },
+      req,
+      res,
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.READ_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Get('/function/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -81,7 +86,7 @@ export class FunctionController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
   async create(
@@ -92,7 +97,7 @@ export class FunctionController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
   async update(
@@ -104,12 +109,12 @@ export class FunctionController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([CAPABILITIES.MANAGE_FUNCTIONS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
   @ResponseSchema(APIOutput)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
-    const deletedRecord = await service.delete(params.id);
-    return apiResponse(deletedRecord);
+    await service.delete(params.id);
+    return apiResponse();
   }
 }

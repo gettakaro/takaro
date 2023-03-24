@@ -103,19 +103,8 @@ export const CookieConsentSnack = forwardRef<
         </strong>
       </div>
       <ButtonContainer>
-        <Button
-          onClick={() => {
-            /* Not sure what we should do here */
-          }}
-          text="Decline"
-        />
-        <Button
-          onClick={() => {
-            /* */
-          }}
-          text="Accept"
-          type="submit"
-        />
+        <Button text="Decline" />
+        <Button text="Accept" type="submit" />
       </ButtonContainer>
     </Wrapper>
   );

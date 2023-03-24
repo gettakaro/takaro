@@ -1,34 +1,28 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 import { QueuesService } from '@takaro/queues';
 
-import { CronJobModel, CronJobRepo } from '../db/cronjob';
+import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import {
-  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
   Length,
   ValidateNested,
 } from 'class-validator';
-import { AuthService } from './AuthService';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
-} from './FunctionService';
+  FunctionUpdateDTO,
+} from './FunctionService.js';
 import { Type } from 'class-transformer';
-import { TakaroDTO } from '@takaro/util';
-import { PaginatedOutput } from '../db/base';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
+import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 
-export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
-  @IsUUID()
-  id!: string;
+export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
   name!: string;
-
-  @IsBoolean()
-  enabled!: boolean;
 
   @IsString()
   temporalValue!: string;
@@ -36,16 +30,15 @@ export class CronJobOutputDTO extends TakaroDTO<CronJobOutputDTO> {
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @IsString()
   @Length(3, 50)
   name!: string;
-
-  @IsOptional()
-  @IsString()
-  enabled!: boolean;
 
   @IsString()
   temporalValue!: string;
@@ -54,24 +47,23 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   moduleId!: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
   function?: string;
 }
 
 export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @Length(3, 50)
   @IsString()
+  @IsOptional()
   name!: string;
 
-  @IsBoolean()
-  enabled!: boolean;
-
   @IsString()
+  @IsOptional()
   temporalValue!: string;
 
-  @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  @IsString()
+  function: string;
 }
 
 export class CronJobService extends TakaroService<
@@ -101,10 +93,15 @@ export class CronJobService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        await new FunctionCreateDTO().construct({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -112,12 +109,33 @@ export class CronJobService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new CronJobCreateDTO({ ...item, function: fnIdToAdd })
+      await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     await this.addCronToQueue(created);
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Cronjob not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        await new FunctionUpdateDTO().construct({
+          code: item.function,
+        })
+      );
+    }
+
     await this.removeCronFromQueue(id);
     const updated = await this.repo.update(id, item);
     await this.addCronToQueue(updated);
@@ -137,15 +155,13 @@ export class CronJobService extends TakaroService<
   }
 
   private async addCronToQueue(item: CronJobOutputDTO) {
-    const authService = new AuthService(this.domainId);
-
     await this.queues.queues.cronjobs.queue.add(
       item.id,
       {
         function: item.function.code,
         domainId: this.domainId,
-        token: await authService.getAgentToken(),
         itemId: item.id,
+        gameServerId: 'any',
       },
       {
         repeat: this.getRepeatableOpts(item),

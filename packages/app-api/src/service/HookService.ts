@@ -1,9 +1,9 @@
-import { TakaroService } from './Base';
+import { TakaroService } from './Base.js';
 import { QueuesService } from '@takaro/queues';
+import { GameEvents, EventMapping } from '@takaro/gameserver';
 
-import { HookModel, HookRepo } from '../db/hook';
+import { HookModel, HookRepo } from '../db/hook.js';
 import {
-  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
@@ -18,13 +18,13 @@ import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionService,
-} from './FunctionService';
+  FunctionUpdateDTO,
+} from './FunctionService.js';
 import { Type } from 'class-transformer';
-import { GameEvents } from '@takaro/gameserver';
 import safeRegex from 'safe-regex';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base';
+import { PaginatedOutput } from '../db/base.js';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -33,14 +33,9 @@ export class IsSafeRegex implements ValidatorConstraintInterface {
   }
 }
 
-export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
-  @IsUUID()
-  id: string;
+export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;
-
-  @IsBoolean()
-  enabled: boolean;
 
   @IsString()
   regex: string;
@@ -51,16 +46,15 @@ export class HookOutputDTO extends TakaroDTO<HookOutputDTO> {
 
   @IsEnum(GameEvents)
   eventType: GameEvents;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsString()
   @Length(3, 50)
   name: string;
-
-  @IsOptional()
-  @IsBoolean()
-  enabled: boolean;
 
   @Validate(IsSafeRegex, {
     message:
@@ -76,28 +70,27 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   eventType: GameEvents;
 
   @IsOptional()
-  @IsUUID()
+  @IsString()
   function?: string;
 }
 
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @Length(3, 50)
   @IsString()
+  @IsOptional()
   name: string;
-
-  @IsBoolean()
-  enabled: boolean;
 
   @Validate(IsSafeRegex, {
     message:
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
   })
   @IsString()
+  @IsOptional()
   regex: string;
 
-  @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  @IsString()
+  function?: string;
 }
 
 export class HookService extends TakaroService<
@@ -127,10 +120,15 @@ export class HookService extends TakaroService<
     let fnIdToAdd: string | null = null;
 
     if (item.function) {
-      fnIdToAdd = item.function;
+      const newFn = await functionsService.create(
+        await new FunctionCreateDTO().construct({
+          code: item.function,
+        })
+      );
+      fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        new FunctionCreateDTO({
+        await new FunctionCreateDTO().construct({
           code: '',
         })
       );
@@ -138,16 +136,65 @@ export class HookService extends TakaroService<
     }
 
     const created = await this.repo.create(
-      new HookCreateDTO({ ...item, function: fnIdToAdd })
+      await new HookCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
+    const existing = await this.repo.findOne(id);
+
+    if (!existing) {
+      throw new errors.NotFoundError('Hook not found');
+    }
+
+    if (item.function) {
+      const functionsService = new FunctionService(this.domainId);
+      const fn = await functionsService.findOne(existing.function.id);
+      if (!fn) {
+        throw new errors.NotFoundError('Function not found');
+      }
+
+      await functionsService.update(
+        fn.id,
+        await new FunctionUpdateDTO().construct({
+          code: item.function,
+        })
+      );
+    }
+
     const updated = await this.repo.update(id, item);
     return updated;
   }
 
   async delete(id: string): Promise<boolean> {
     return this.repo.delete(id);
+  }
+
+  async handleEvent(eventData: EventMapping[GameEvents], gameServerId: string) {
+    this.log.debug('Handling hooks', { eventData });
+
+    const triggeredHooks = await this.repo.getTriggeredHooks(
+      eventData.type,
+      eventData.msg,
+      gameServerId
+    );
+
+    if (triggeredHooks.length) {
+      this.log.debug(
+        `Found ${triggeredHooks.length} hooks that match the event`
+      );
+
+      await Promise.all(
+        triggeredHooks.map(async (hook) => {
+          return this.queues.queues.hooks.queue.add(hook.id, {
+            itemId: hook.id,
+            data: eventData,
+            domainId: this.domainId,
+            function: hook.function.code,
+            gameServerId,
+          });
+        })
+      );
+    }
   }
 }

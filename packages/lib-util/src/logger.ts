@@ -1,14 +1,20 @@
-import { config } from './config';
+import { config } from './config.js';
 import winston from 'winston';
 import { JsonObject } from 'type-fest';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
+import { ctx } from './context.js';
 
 const { colorize, timestamp, printf, combine, json, errors } = winston.format;
 
 config.validate();
 
+const addCtx = winston.format((info: winston.Logform.TransformableInfo) => {
+  return { ...ctx.data, ...info };
+});
+
 const myFormat = printf((info) => {
   const { level, message, namespace, timestamp } = info;
+
   const cleanMeta = omit(
     info,
     'level',
@@ -16,18 +22,20 @@ const myFormat = printf((info) => {
     'namespace',
     'timestamp',
     'service',
-    'labels'
+    'labels',
+    'txId'
   );
 
   let metaString = '';
-
-  try {
-    metaString = `| ${JSON.stringify(
-      cleanMeta,
-      Object.getOwnPropertyNames(cleanMeta)
-    )}`;
-  } catch (e) {
-    metaString = '| Invalid Meta Information';
+  if (Object.getOwnPropertyNames(cleanMeta).length) {
+    try {
+      metaString = `| ${JSON.stringify(
+        cleanMeta,
+        Object.getOwnPropertyNames(cleanMeta)
+      )}`;
+    } catch (e) {
+      metaString = '| Invalid Meta Information';
+    }
   }
 
   const paddedNamespace = `[${namespace}]`.padEnd(10);
@@ -42,13 +50,16 @@ const myFormat = printf((info) => {
 });
 
 const simpleFormat = combine(
+  addCtx(),
   errors({ stack: true }),
-  timestamp(),
+  timestamp({
+    format: 'isoDateTime',
+  }),
   colorize(),
   myFormat
 );
 
-const jsonFormat = combine(json());
+const jsonFormat = combine(addCtx(), json());
 
 let level = config.get('logging.level');
 

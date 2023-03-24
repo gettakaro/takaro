@@ -39,7 +39,10 @@ const SettingsPage: FC = () => {
       const data = (
         await apiClient.settings.settingsControllerGet(undefined, serverId)
       ).data.data;
-      await mapSettings(data, async (key, value) => setValue(key, value!!));
+      await mapSettings(data, async (key, value) => {
+        if (key === 'id' || key === 'createdAt' || key === 'updatedAt') return;
+        setValue(key, value!!);
+      });
       return data;
     }
   );
@@ -61,7 +64,7 @@ const SettingsPage: FC = () => {
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
     const formValues = getValues();
 
-    await mapSettings(formValues, async (key, value) =>
+    await mapSettings(formValues as Settings, async (key, value) =>
       apiClient.settings.settingsControllerSet(key, {
         value: value!!,
         gameServerId: serverId,
@@ -78,7 +81,6 @@ const SettingsPage: FC = () => {
           control={control}
           label={key}
           name={key}
-          error={formState.errors[key]}
           placeholder=""
           key={key}
         />
