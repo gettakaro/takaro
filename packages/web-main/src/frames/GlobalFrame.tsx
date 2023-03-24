@@ -39,7 +39,7 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Servers',
-      path: PATHS.gameServers(),
+      path: PATHS.gameServers.overview(),
       icon: <GameServersIcon />,
     },
     {

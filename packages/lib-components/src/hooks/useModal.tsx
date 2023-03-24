@@ -25,7 +25,7 @@ export const Container = styled(motion.div)`
   padding: ${({ theme }) =>
     `${theme.spacing['2_5']} ${theme.spacing['2_5']} ${theme.spacing['1']} ${theme.spacing['2_5']}`};
   box-shadow: ${({ theme }) => theme.elevation[3]}
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   p {
     text-align: left;
     margin-top: ${({ theme }) => theme.spacing['1']} ;

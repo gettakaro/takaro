@@ -10,7 +10,7 @@ export const Container = styled(motion.div)<{
 }>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   margin: ${({ theme }) => `${theme.spacing['1_5']} auto`};
   h2 {
@@ -79,7 +79,7 @@ export const ButtonContainer = styled.div<{
     margin-right: ${({ theme }) => theme.spacing[2]};
     padding: ${({ theme }) =>
       `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
-    border-radius: 0.5rem;
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     background-color: ${({ theme, variant }): string =>
       lighten('0.2', theme.colors[variant])};
     font-size: 1.3rem;

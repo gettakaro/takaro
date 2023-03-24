@@ -8,8 +8,7 @@ const Container = styled.div`
   margin: 5rem 0;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: 7rem 3rem;
-  border-radius: 2rem;
-
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   h2 {
     font-size: 3.5rem;
     font-weight: 800;

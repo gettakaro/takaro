@@ -7,7 +7,6 @@ const Wrapper = styled.div`
   margin: 0 auto;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
   text-align: left;
 
   & > div {
@@ -40,5 +39,5 @@ export default {
   title: 'Navigation/TabSwitch',
   component: TabSwitch,
   subcomponents: { TabSwitchTwoItems, TabSwitchThreeItems },
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
 } as Meta;

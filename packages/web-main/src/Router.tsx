@@ -11,6 +11,7 @@ import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
 import { withSentryReactRouterV6Routing } from '@sentry/react';
+import CreateUpdateGameServer from 'pages/CreateUpdateGameServer';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -42,7 +43,19 @@ export const Router: FC = () => (
           >
             <Route element={<Dashboard />} path={PATHS.home()} />
             <Route element={<Settings />} path={PATHS.settings()} />
-            <Route element={<GameServers />} path={PATHS.gameServers()} />
+            <Route
+              element={<GameServers />}
+              path={PATHS.gameServers.overview()}
+            >
+              <Route
+                element={<CreateUpdateGameServer />}
+                path={PATHS.gameServers.create()}
+              />
+              <Route
+                element={<CreateUpdateGameServer />}
+                path={PATHS.gameServers.update(':serverId')}
+              />
+            </Route>
             <Route element={<Players />} path={PATHS.players()} />
             <Route
               element={<ModuleDefinitions />}

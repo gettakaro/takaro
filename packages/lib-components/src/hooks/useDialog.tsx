@@ -36,7 +36,7 @@ export function useDialog({
     useClick(context, {
       enabled: controlledOpen == null,
     }),
-    useDismiss(context, { outsidePressEvent: 'mousedown' }),
+    useDismiss(context, { outsidePressEvent: 'mousedown', bubbles: false }),
     useRole(context),
   ]);
 

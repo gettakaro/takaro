@@ -28,16 +28,18 @@ export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
 
     return (
       <Container>
-        <h3 {...props} ref={ref} id={id}>
+        <h2 {...props} ref={ref} id={id}>
           {children}
-        </h3>
+        </h2>
         {hasClose && (
-          <Tooltip label="Close drawer">
-            <CloseIcon
-              size={18}
-              onClick={() => setOpen(false)}
-              cursor="pointer"
-            />
+          <Tooltip label="Close">
+            <div>
+              <CloseIcon
+                size={18}
+                onClick={() => setOpen(false)}
+                cursor="pointer"
+              />
+            </div>
           </Tooltip>
         )}
       </Container>

@@ -47,7 +47,6 @@ function App() {
   // if before window.__env__ will contain the env variables
   // if not we need to wait until the script is loaded
   const loadConfig = function () {
-    console.log('TIS LOADED');
     const cfg = {
       apiUrl: getConfigVar(EnvVars.VITE_API),
       oryUrl: getConfigVar(EnvVars.VITE_ORY_URL),

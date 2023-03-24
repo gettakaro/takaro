@@ -20,6 +20,7 @@ import {
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
 import { ErrorBoundary } from '@sentry/react';
+import { QueryKeys } from 'queryKeys';
 
 const Container = styled.div`
   display: flex;
@@ -50,16 +51,13 @@ export const ServerFrame: FC = () => {
   const { serverId } = useParams();
   const apiClient = useApiClient();
 
-  const { isLoading, isError } = useQuery<GameServerOutputDTO>(
-    `gameserver/${serverId}`,
-    async () => {
-      return (await apiClient.gameserver.gameServerControllerGetOne(serverId!))
-        .data.data;
-    },
-    {
-      onSuccess: (data: GameServerOutputDTO) => setGameServerData({ ...data }),
-    }
-  );
+  const { isLoading, isError } = useQuery<GameServerOutputDTO>({
+    queryKey: QueryKeys.gameserver.id(serverId!),
+    queryFn: async () =>
+      (await apiClient.gameserver.gameServerControllerGetOne(serverId!)).data
+        .data,
+    onSuccess: (data: GameServerOutputDTO) => setGameServerData({ ...data }),
+  });
 
   const providerGameServerData = useMemo(
     () => ({ gameServerData, setGameServerData }),

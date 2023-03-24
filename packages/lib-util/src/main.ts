@@ -1,3 +1,5 @@
+export { Sentry } from './sentry.js';
+
 export {
   TakaroDTO,
   TakaroModelDTO,

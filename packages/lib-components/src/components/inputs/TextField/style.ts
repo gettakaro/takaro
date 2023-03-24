@@ -46,7 +46,7 @@ export const InputContainer = styled.div`
     margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
     right: ${({ theme }) => theme.spacing[2]};
     cursor: pointer;
-    fill: ${({ theme }) => theme.colors.gray};
+    fill: ${({ theme }) => theme.colors.text};
   }
 `;
 

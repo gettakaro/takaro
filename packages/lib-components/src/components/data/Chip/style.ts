@@ -12,7 +12,7 @@ export const Container = styled.div<{
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing[1]}`};
-  border-radius: 1.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
 
   svg {
@@ -39,7 +39,7 @@ export const Container = styled.div<{
     margin-left: ${({ hasAvatar, theme }) =>
       hasAvatar ? theme.spacing['0_5'] : 0};
     font-weight: 600;
-    font-size: ${({ theme }) => theme.fontSize.small};
+    font-size: ${({ theme }) => theme.fontSize.tiny};
 
     ${({ theme, color, outline }) => {
       if (!outline) {

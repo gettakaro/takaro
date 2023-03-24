@@ -19,7 +19,7 @@ export const BackgroundContainer = styled(motion.div)`
   height: 2.3rem;
   background-color: ${({ theme }) => theme.colors.primary};
   z-index: 0;
-  border-radius: 0.6rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
 `;
 
 export const CheckboxContainer = styled.div<{
@@ -48,7 +48,7 @@ export const CheckboxContainer = styled.div<{
       return theme.colors.gray;
     }};
 
-  border-radius: 6px;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   transition: box-shadow 100ms linear, border-color 100ms linear;
   cursor: ${({ readOnly, disabled }) =>
     readOnly || disabled ? 'not-allowed' : 'pointer'};
@@ -56,7 +56,7 @@ export const CheckboxContainer = styled.div<{
   overflow: visible;
   &.placeholder {
     border: none; /* Otherwise the border does not have the animation */
-    border-radius: 0.4rem;
+    border-radius: ${({ theme }) => theme.borderRadius.small};
     width: 2.4rem;
     height: 2.4rem;
     cursor: default;
