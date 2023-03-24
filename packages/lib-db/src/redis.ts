@@ -45,7 +45,8 @@ class RedisClass {
    * Disconnect all clients and clear the cache.
    */
   async destroy() {
-    for (const client of this.clients.values()) {
+    for (const [name, client] of this.clients.entries()) {
+      this.log.debug(`Disconnecting Redis client ${name}`);
       await client.disconnect();
     }
   }

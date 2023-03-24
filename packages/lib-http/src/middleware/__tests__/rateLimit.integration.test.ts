@@ -14,10 +14,10 @@ describe('rateLimit middleware', () => {
     class TestController {
       @Get('/low-limit')
       @UseBefore(
-        createRateLimitMiddleware({
+        await createRateLimitMiddleware({
           max: 5,
           windowSeconds: 5,
-          useInMemory: true,
+          useInMemory: false,
         })
       )
       getLow() {
@@ -26,10 +26,10 @@ describe('rateLimit middleware', () => {
 
       @Get('/high-limit')
       @UseBefore(
-        createRateLimitMiddleware({
+        await createRateLimitMiddleware({
           max: 15,
           windowSeconds: 5,
-          useInMemory: true,
+          useInMemory: false,
         })
       )
       getHigh() {
@@ -40,7 +40,7 @@ describe('rateLimit middleware', () => {
       @UseBefore((req: Request, res: Response, next: NextFunction) => {
         ctx.addData({ user: req.query.user as string });
         next();
-      }, createRateLimitMiddleware({ max: 5, windowSeconds: 5, useInMemory: true }))
+      }, await createRateLimitMiddleware({ max: 5, windowSeconds: 5, useInMemory: false }))
       getAuthenticated() {
         return 'Hello World';
       }
