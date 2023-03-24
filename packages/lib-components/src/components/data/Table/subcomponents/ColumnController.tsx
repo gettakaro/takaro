@@ -14,6 +14,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 
 export const Container = styled.ul`
   padding: ${({ theme }) => theme.spacing['2_5']};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 
   li {
     display: flex;

@@ -5,13 +5,19 @@ export const PATHS = {
   profile: () => '/profile',
   players: () => '/players',
   settings: () => '/settings',
-  gameServers: () => '/servers',
   moduleDefinitions: () => '/modules',
+
+  gameServers: {
+    overview: () => '/servers',
+    create: () => `/servers/create`,
+    update: (serverId: string) => `/servers/update/${serverId}`,
+  },
 
   gameServer: {
     dashboard: (serverId: string) => `/server/${serverId}`,
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
+    update: (serverId: string) => `/server/${serverId}/update`,
   },
 
   modules: {

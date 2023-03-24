@@ -21,7 +21,7 @@ export const FilterContainer = styled.div`
 export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
   width: 100%;
   border-spacing: 0; /* disable inner borders */
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   text-align: left;
   background-color: ${({ theme }) => theme.colors.background};
 

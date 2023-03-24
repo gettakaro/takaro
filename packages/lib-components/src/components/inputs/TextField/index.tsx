@@ -59,7 +59,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
   } = useController({
     name,
     control,
-    defaultValue: value,
+    defaultValue: value ?? '',
   });
 
   const handleOnBlur = () => {

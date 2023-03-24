@@ -1,7 +1,8 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { SliderComponent, SliderProps } from '.';
 import { useForm } from 'react-hook-form';
+import { SliderComponent, SliderProps } from '.';
 import 'rc-slider/assets/index.css';
 
 const Wrapper = styled.div`
@@ -12,7 +13,7 @@ const Wrapper = styled.div`
   height: 50vh;
   padding: 2rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 export default {

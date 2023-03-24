@@ -6,7 +6,6 @@ import { Button } from '../..';
 
 const WrapperDecorator = styled.div`
   padding: 5rem;
-  border-radius: 1rem;
   background-color: ${({ theme }): string => theme.colors.background};
   span {
     font-weight: 900;
@@ -28,7 +27,6 @@ export const Default: StoryFn<CardProps> = (args) => (
 );
 
 const Container = styled.div`
-  border-radius: 1rem;
   background-color: ${({ theme }): string => theme.colors.background};
   padding: 2rem;
 `;

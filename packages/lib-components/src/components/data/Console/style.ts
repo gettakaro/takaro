@@ -5,7 +5,7 @@ export const Wrapper = styled.div`
   height: auto;
   background-color: ${({ theme }) => theme.colors.background};
   position: relative;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 export const StyledButton = styled(Button)`
   position: absolute;

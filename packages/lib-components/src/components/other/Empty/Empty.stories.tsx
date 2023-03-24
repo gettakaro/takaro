@@ -4,7 +4,7 @@ import { styled } from '../../../styled';
 
 const Wrapper = styled.div`
   padding: 5rem;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   span {
     font-weight: 900;
   }
@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 export default {
   title: 'Other/Empty',
   component: Empty,
-  decorators: [(story) => <Wrapper>{story()}</Wrapper>]
+  decorators: [(story) => <Wrapper>{story()}</Wrapper>],
 } as Meta<EmptyProps>;
 
 export const Default: StoryFn<EmptyProps> = (args) => <Empty {...args} />;
@@ -21,13 +21,16 @@ export const Default: StoryFn<EmptyProps> = (args) => <Empty {...args} />;
 export const CustomDescription: StoryObj<EmptyProps> = {
   ...Default,
   args: {
-    description: 'custom description'
-  }
+    description: 'custom description',
+  },
 };
 export const CustomStyledSpan: StoryObj<EmptyProps> = {
   ...Default,
   args: {
-    description: <span className="custom-styled-span">custom description with custom styling</span>
-  }
+    description: (
+      <span className="custom-styled-span">
+        custom description with custom styling
+      </span>
+    ),
+  },
 };
-

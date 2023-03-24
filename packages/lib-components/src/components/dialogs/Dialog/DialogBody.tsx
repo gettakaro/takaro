@@ -7,17 +7,32 @@ const Container = styled.div<{ size: Size }>`
   flex-flow: column nowrap;
   align-items: center;
   width: 100%;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing[4]};
 
-  ${({ size }) => {
+  p {
+    margin-bottom: ${({ theme }) => theme.spacing[2]};
+  }
+
+  ${({ size, theme }) => {
     switch (size) {
       case 'tiny':
       case 'small':
-        return 'max-width: 370px';
+        return `
+            max-width: 450px;
+            padding: ${theme.spacing[2]};
+          `;
       case 'medium':
-        return 'max-width: 400px';
+        return `
+          max-width: 500px;
+          padding: ${theme.spacing[3]};
+         `;
       case 'large':
       case 'huge':
-        return 'max-width: 500px';
+        return `
+          max-width: 600px;
+          padding: ${theme.spacing[4]};
+          `;
     }
   }};
 `;

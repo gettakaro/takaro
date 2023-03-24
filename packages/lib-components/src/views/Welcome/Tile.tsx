@@ -12,7 +12,7 @@ const Container = styled.div`
   -moz-box-pack: end;
   justify-content: space-between;
   align-items: center;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   border: 2px solid rgba(0, 0, 0, 0);
   box-shadow: rgba(3, 27, 78, 0.15) 0 6px 20px -5px;
   background-color: #ffffff;

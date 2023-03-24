@@ -21,7 +21,7 @@ const Container = styled(motion.div)`
   top: 125px;
   box-shadow: 1px 14px 15px -12px #00000023;
   padding: 50px 15px 15px 15px;
-  border-radius: 10px;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   z-index: 10;
   cursor: auto;
   h3 {
@@ -65,7 +65,7 @@ const Content = styled.ul`
     justify-content: flex-start;
     cursor: pointer;
     padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
     color: ${({ theme }): string => theme.colors.secondary};

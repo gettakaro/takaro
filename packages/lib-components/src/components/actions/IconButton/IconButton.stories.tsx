@@ -9,7 +9,6 @@ const Wrapper = styled.div`
   justify-content: space-evenly;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
 `;
 
 export default {

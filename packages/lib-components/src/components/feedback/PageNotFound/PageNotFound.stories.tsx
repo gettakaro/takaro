@@ -9,7 +9,7 @@ import {
 } from 'react-icons/ai';
 
 export default {
-  title: 'Views/Error404',
+  title: 'Views/PageNotFound',
   component: PageNotFound,
 } as Meta;
 

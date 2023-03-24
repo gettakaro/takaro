@@ -3,7 +3,7 @@ import { Elevation, Size, styled } from '../../../styled';
 
 const Container = styled.div<{ size: Size; elevation: Elevation }>`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: 0.6rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
   box-shadow: ${({ theme, elevation }): string => theme.elevation[elevation]};
   color: ${({ theme }) => theme.colors.text};

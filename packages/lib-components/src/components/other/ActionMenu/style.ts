@@ -5,7 +5,7 @@ export const Container = styled.ul<{ elevation: Elevation }>`
   flex-direction: column;
   width: fit-content;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   border: 2px solid ${({ theme }) => theme.colors.background};
   background-color: ${({ theme }) => theme.colors.background};
 
