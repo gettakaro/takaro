@@ -26,7 +26,7 @@ export const ContentContainer = styled.div`
 export const Line = styled.span<{ isChecked: boolean; readOnly: boolean }>`
   display: block;
   width: 100%;
-  border-radius: 2rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   height: 0.9rem;
   transition: background 0.2s ease-in-out;
   background: ${({ theme, readOnly, isChecked }): string => {

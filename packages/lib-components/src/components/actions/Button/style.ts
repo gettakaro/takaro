@@ -15,7 +15,7 @@ export const Default = styled.button<{
   align-items: center;
   justify-content: center;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
-  border-radius: 0.25rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-size: 200% auto;
   cursor: ${({ isLoading }) => (isLoading ? 'default' : 'pointer')};
   line-height: 1.9rem;

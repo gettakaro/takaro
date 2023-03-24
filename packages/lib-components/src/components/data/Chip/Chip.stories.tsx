@@ -10,7 +10,6 @@ const Wrapper = styled.div`
   justify-content: center;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
   text-align: left;
 
   & > div {

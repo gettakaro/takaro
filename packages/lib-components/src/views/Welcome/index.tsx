@@ -50,7 +50,7 @@ const Grid = styled.div`
 const LongTitle = styled.div`
   grid-area: title;
   border: 0 none;
-  border-radius: 15px;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   padding: 3rem 2rem;
   min-height: 80px;
   background-color: white;
@@ -62,7 +62,7 @@ const LongTitle = styled.div`
 `;
 
 const ShortTitle = styled.div`
-  border-radius: 15px;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   padding: 3rem 2rem;
   grid-area: skip;
   background-color: white;

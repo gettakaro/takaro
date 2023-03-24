@@ -11,7 +11,7 @@ const Container = styled(motion.div)`
   height: auto;
   background-color: ${({ theme }): string => theme.colors.error};
   overflow: hidden;
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   z-index: 5;
 `;
 

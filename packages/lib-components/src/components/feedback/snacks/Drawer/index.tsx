@@ -8,7 +8,7 @@ import {
 
 const Wrapper = styled.div`
   box-shadow: ${({ theme }) => theme.elevation[4]};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   width: 300px;
 `;
 
@@ -19,7 +19,7 @@ const Container = styled.div<{ expanded: boolean }>`
   min-height: 0;
   background-color: ${({ theme }) => theme.colors.primary};
   padding: ${({ theme }) => theme.spacing[1]};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 
   ${({ expanded }) => {
     if (expanded) {
@@ -48,7 +48,7 @@ const Content = styled.div<{ expanded: boolean }>`
   will-change: height;
   transition: height 0.2s ease-in-out;
   overflow: hidden;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 export const DrawerSnack = forwardRef<

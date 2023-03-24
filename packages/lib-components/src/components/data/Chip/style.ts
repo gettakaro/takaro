@@ -12,7 +12,7 @@ export const Container = styled.div<{
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing[1]}`};
-  border-radius: 1.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
   margin: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
 

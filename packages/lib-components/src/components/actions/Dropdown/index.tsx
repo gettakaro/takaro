@@ -12,7 +12,7 @@ import { styled } from '../../../styled';
 const FloatingContainer = styled.div`
   background-color: white;
   box-shadow: ${({ theme }) => theme.elevation[2]};
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
 const ReferenceContainer = styled.div`

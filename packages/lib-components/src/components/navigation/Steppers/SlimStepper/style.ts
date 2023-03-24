@@ -13,7 +13,7 @@ export const StepperHeader = styled.div`
   justify-content: center;
   width: 35vw;
   height: 0.7rem;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   margin: auto;
 `;
 export const StepperHeaderItem = styled.div<{

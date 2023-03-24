@@ -39,7 +39,7 @@ const InitialsBlock = styled.div`
   width: 4.5rem;
   height: 4.5rem;
   margin-right: 0.5rem;
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   font-weight: 800;

@@ -15,7 +15,7 @@ const Nav = styled.nav`
 
   a {
     width: 100%;
-    border-radius: 0.4rem;
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     padding: 15px;
     display: flex;
     align-items: center;

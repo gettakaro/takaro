@@ -91,7 +91,7 @@ const IconContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  border-radius: 15%;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   margin-right: 2rem;
 `;

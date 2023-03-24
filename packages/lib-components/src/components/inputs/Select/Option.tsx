@@ -7,7 +7,7 @@ const OptionContainer = styled.div<{ isSelected: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
-  border-radius: 0.4rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   text-align: left;
   display: flex;
   align-items: center;

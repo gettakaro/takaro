@@ -14,7 +14,7 @@ export const SelectContainer = styled.div`
   padding: ${({ theme }) => theme.spacing['0_75']};
   outline: 0;
   border: 0.2rem solid ${({ theme }) => theme.colors.primary};
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
 `;
@@ -34,7 +34,7 @@ export const SelectButton = styled.div<{ isOpen: boolean }>`
   border: 2px solid
     ${({ theme, isOpen }) =>
       isOpen ? theme.colors.primary : theme.colors.backgroundAlt};
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 
   & > div {

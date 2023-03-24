@@ -81,7 +81,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     outline: 0;
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 2px;
-    border-radius: 0.25rem;
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
@@ -112,7 +112,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 700;
     padding: ${({ theme }) =>
       `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
-    border-radius: .8rem;
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     border: none;
 
     &:disabled {
@@ -142,7 +142,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 .placeholder {
     overflow: hidden;
     position: relative;
-    border-radius: 10px;
+    border-radius: ${({ theme }): string => theme.borderRadius.large};
     background-color: ${({ theme }): string => theme.colors.placeholder};
     &::before {
       content: '';

@@ -16,10 +16,10 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
-  padding: 15px;
-  border-radius: 8px;
+  padding: ${({ theme }) => theme.spacing['1_5']};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   box-shadow: ${({ theme }) => theme.elevation[4]};
-  margin: 15px;
+  margin: ${({ theme }) => theme.spacing['1_5']};
   min-width: 300px;
   border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
 `;

@@ -23,7 +23,7 @@ export const List = styled.ul<{ color: string }>`
         return 'border: .4rem solid none;';
     }
   }}
-  border-radius: 2rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   color: ${({ theme }): string => theme.colors.text};
   margin-bottom: ${({ theme }) => theme.spacing[7]};
 `;
@@ -38,7 +38,7 @@ export const Item = styled.li<{ selected: boolean; white: boolean }>`
   text-align: center;
   padding: ${({ theme }) => theme.spacing['1_5']};
   font-weight: 800;
-  border-radius: 1.225rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   transition: all 0.2s ease-in-out;
   position: relative;
   width: 100%;
@@ -53,7 +53,7 @@ export const Item = styled.li<{ selected: boolean; white: boolean }>`
 `;
 export const Background = styled(motion.div)`
   position: absolute;
-  border-radius: 1.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   width: 101%;
   top: 0;
   left: 0;

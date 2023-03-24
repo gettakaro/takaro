@@ -28,7 +28,7 @@ import { useApiClient } from 'hooks/useApiClient';
 const Container = styled.div`
   min-width: 350px;
   height: 150px;
-  border-radius: 5px;
+  border-radius: ${({ theme }) => theme.borderRadius.large}
   cursor: pointer;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   transition: transform 0.2s ease-in-out;

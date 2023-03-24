@@ -23,7 +23,7 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   cursor: pointer;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: 0.25rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
 
   svg {
     transform: ${({ isCollapsed }) =>

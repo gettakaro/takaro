@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   padding: ${({ theme }) =>
     `${theme.spacing['2_5']} ${theme.spacing[6]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
   box-shadow: ${({ theme }) => theme.elevation[4]};
-  border-radius: 0.8rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 export const ContentContainer = styled.div`
