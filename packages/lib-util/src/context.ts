@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import crypto from 'crypto';
 import { errors } from './main.js';
+import { Span, trace, Tracer } from '@opentelemetry/api';
 
 interface TransactionStore {
   domain?: string;
@@ -41,14 +41,46 @@ class Context {
     return store;
   }
 
-  wrap(fn: any, metadata: TransactionStore = {}) {
+  wrapContext(fn: any, metadata: TransactionStore = {}) {
     return (...args: any[]) => {
-      const txId = crypto.randomUUID();
       return this.asyncLocalStorage.run(
-        { txId, ...metadata },
+        metadata,
         fn,
         ...args
       ) as Promise<unknown>;
+    };
+  }
+
+  private setContextAttributes(obj: TransactionStore, span: Span) {
+    Object.entries(obj).forEach(([key, value]) => {
+      span.setAttribute(key, value);
+    });
+  }
+
+  /**
+   * Wraps a function with opentelemetry tracing AND custom context tracking
+   * @param name Name of the span
+   * @param fn Abitrary function
+   * @returns A wrapped function that will start a span and end it when the function is done
+   */
+  wrap(name: string, fn: any) {
+    const ctxWrapped = this.wrapContext(fn);
+    return (...args: any[]) => {
+      return new Promise((resolve, reject) => {
+        const tracer: Tracer = trace.getTracer('takaro-generic-tracer');
+        tracer.startActiveSpan(name, (span: Span) => {
+          this.setContextAttributes(this.data, span);
+          ctxWrapped(...args)
+            .then((res) => {
+              span.end();
+              resolve(res);
+            })
+            .catch((err) => {
+              span.end();
+              reject(err);
+            });
+        });
+      });
     };
   }
 }

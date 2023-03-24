@@ -80,7 +80,10 @@ services:
       VITE_ORY_URL: http://127.0.0.1:4433
 
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io
-
+      
+      TRACING_ENABLED: "false"
+      TRACING_ENDPOINT: "http://tempo:4317"
+      TAKARO_SERVICE: "dev-takaro"
     ports:
       # api
       - 13000:3000
@@ -112,7 +115,6 @@ services:
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
-      - LOG_LEVEL=trace
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
       - ./containers/ory/kratos:/etc/config/kratos

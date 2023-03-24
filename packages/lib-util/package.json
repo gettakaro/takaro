@@ -17,6 +17,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@opentelemetry/api": "^1.4.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.36.4",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.36.1",
+    "@opentelemetry/sdk-node": "^0.36.1",
+    "@opentelemetry/semantic-conventions": "^1.10.1",
+    "@sentry/opentelemetry-node": "^7.44.2",
     "@takaro/config": "0.0.1",
     "winston": "^3.8.1"
   },
