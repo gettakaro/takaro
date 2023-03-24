@@ -1,6 +1,6 @@
 // todo: this is deprecated in favor of a dialog version
 
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
@@ -13,9 +13,13 @@ import {
   Switch,
   ErrorMessage,
   Loading,
+  DrawerContent,
+  DrawerHeading,
+  Drawer,
+  CollapseList,
 } from '@takaro/lib-components';
 import * as yup from 'yup';
-import { AiFillPlusCircle, AiFillQuestionCircle } from 'react-icons/ai';
+import { AiFillQuestionCircle as TestConnectionIcon } from 'react-icons/ai';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTOAPI,
@@ -26,6 +30,10 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import {
+  DrawerBody,
+  DrawerFooter,
+} from '@takaro/lib-components/src/components/data/Drawer';
 
 interface IFormInputs {
   name: string;
@@ -33,33 +41,26 @@ interface IFormInputs {
   connectionInfo: Record<string, unknown>;
 }
 
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  background-color: ${({ theme }) => theme.colors.white};
-  border-radius: 1.5rem;
-`;
-
-const Row = styled.div`
+const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-const SubContainer = styled.div`
-  width: 50%;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const AddGameServer: FC = () => {
+const CreateUpdateGameServer: FC = () => {
+  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isConnectable, setIsConnectable] = useState(false);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const apiClient = useApiClient();
   const { serverId } = useParams();
+
+  useEffect(() => {
+    if (!open) {
+      navigate(PATHS.gameServers.overview());
+    }
+  }, [open, navigate]);
 
   const validationSchema = useMemo(
     () =>
@@ -88,11 +89,10 @@ const AddGameServer: FC = () => {
     },
   });
 
-  const { control, handleSubmit, formState, watch, setValue } =
-    useForm<IFormInputs>({
-      mode: 'onSubmit',
-      resolver: useValidationSchema(validationSchema),
-    });
+  const { control, handleSubmit, watch, setValue } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    resolver: useValidationSchema(validationSchema),
+  });
 
   const { isLoading, refetch } = useQuery<
     GameServerOutputDTOAPI['data'] | null
@@ -163,8 +163,11 @@ const AddGameServer: FC = () => {
         key={'adminToken'}
       />,
       <>
-        <p>use TLS?</p>
-        <Switch name="connectionInfo.useTls" control={control} />
+        <Switch
+          label="Use TLS"
+          name="connectionInfo.useTls"
+          control={control}
+        />
       </>,
     ],
     [GameServerCreateDTOTypeEnum.Mock]: [
@@ -172,7 +175,7 @@ const AddGameServer: FC = () => {
         control={control}
         label="Event interval"
         name="connectionInfo.eventInterval"
-        hint="How often the server should send events to the backend (in ms)"
+        description="How often the server should send events to the backend (in ms)"
         placeholder="500"
         key={'eventInterval'}
       />,
@@ -180,7 +183,7 @@ const AddGameServer: FC = () => {
         control={control}
         label="Player pool size"
         name="connectionInfo.playerPoolSize"
-        hint="How large is the pool of fake players"
+        description="How large is the pool of fake players"
         placeholder="100"
         key={'playerPoolSize'}
       />,
@@ -209,8 +212,11 @@ const AddGameServer: FC = () => {
         key={'rconPassword'}
       />,
       <>
-        <p>use TLS?</p>
-        <Switch name="connectionInfo.useTls" control={control} />
+        <Switch
+          label="Use TLS"
+          name="connectionInfo.useTls"
+          control={control}
+        />
       </>,
     ],
   };
@@ -232,81 +238,88 @@ const AddGameServer: FC = () => {
   ];
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Container>
-          <SubContainer>
-            <div>
-              <TextField
-                control={control}
-                label="Server name"
-                loading={loading}
-                name="name"
-                placeholder="My cool server"
-                required
-              />
-              <Select
-                control={control}
-                name="type"
-                label="Game server"
-                render={(selectedIndex) => (
-                  <div>
-                    {gameTypeOptions[selectedIndex]?.name ?? 'Select...'}
-                  </div>
-                )}
-              >
-                <OptionGroup label="Games">
-                  {gameTypeOptions.map(({ name, value }) => (
-                    <Option key={name} value={value}>
-                      <div>
-                        <span>{name}</span>
-                      </div>
-                    </Option>
-                  ))}
-                </OptionGroup>
-              </Select>
-            </div>
-            {error && <ErrorMessage message={error} />}
-
-            <Row>
-              <Button
-                icon={<AiFillQuestionCircle />}
-                isLoading={checkReachability.isLoading}
-                onClick={() => {
-                  checkReachability.mutate({
-                    connectionInfo: JSON.stringify(watch('connectionInfo')),
-                    type: watch('type'),
-                  });
-                }}
-                text="Test connection"
-                type="button"
-                variant="default"
-              />
-              {isConnectable && (
-                <Button
-                  icon={<AiFillPlusCircle />}
-                  isLoading={loading}
-                  onClick={() => {
-                    /* dummy */
-                  }}
-                  text="Save"
-                  type="submit"
-                  color="success"
-                  variant="default"
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerContent>
+        <DrawerHeading>
+          {serverId ? 'Update game server' : 'Create game server'}
+        </DrawerHeading>
+        <DrawerBody>
+          <CollapseList>
+            <form onSubmit={handleSubmit(onSubmit)} name="addupdategamserver">
+              <CollapseList.Item title="General">
+                <TextField
+                  control={control}
+                  label="Server name"
+                  loading={loading}
+                  name="name"
+                  placeholder="My cool server"
+                  required
                 />
+
+                <Select
+                  control={control}
+                  name="type"
+                  label="Game server"
+                  required={true}
+                  render={(selectedIndex) => (
+                    <div>
+                      {gameTypeOptions[selectedIndex]?.name ?? 'Select...'}
+                    </div>
+                  )}
+                >
+                  <OptionGroup label="Games">
+                    {gameTypeOptions.map(({ name, value }) => (
+                      <Option key={name} value={value}>
+                        <div>
+                          <span>{name}</span>
+                        </div>
+                      </Option>
+                    ))}
+                  </OptionGroup>
+                </Select>
+              </CollapseList.Item>
+              {connectionInfoMap[watch('type')] && (
+                <CollapseList.Item title="Connection info">
+                  {connectionInfoMap[watch('type')]}
+                  {error && <ErrorMessage message={error} />}
+                  <Button
+                    icon={<TestConnectionIcon />}
+                    isLoading={checkReachability.isLoading}
+                    onClick={() => {
+                      checkReachability.mutate({
+                        connectionInfo: JSON.stringify(watch('connectionInfo')),
+                        type: watch('type'),
+                      });
+                    }}
+                    fullWidth={true}
+                    text="Test connection"
+                    type="button"
+                    variant="default"
+                  />
+                </CollapseList.Item>
               )}
-            </Row>
-          </SubContainer>
-
-          <SubContainer>
-            <h2>Connection info</h2>
-
-            {connectionInfoMap[watch('type')]}
-          </SubContainer>
-        </Container>
-      </form>
-    </>
+            </form>
+          </CollapseList>
+        </DrawerBody>
+        <DrawerFooter>
+          <ButtonContainer>
+            <Button
+              text="Cancel"
+              onClick={() => setOpen(false)}
+              color="background"
+            />
+            <Button
+              fullWidth
+              text="Save changes"
+              type="submit"
+              form="addupdategamserver"
+              disabled={!isConnectable}
+            />
+          </ButtonContainer>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
-export default AddGameServer;
+export default CreateUpdateGameServer;

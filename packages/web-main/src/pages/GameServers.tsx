@@ -1,14 +1,15 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { AiFillPlusCircle } from 'react-icons/ai';
 import { useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { styled, Button } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 import { GameServerOutputArrayDTOAPI } from '@takaro/apiclient';
 import {
   EmptyGameServerCard,
   GameServerCard,
 } from '../components/GameServerCard';
+import { PATHS } from 'paths';
+import { useNavigate, Outlet } from 'react-router-dom';
 
 const List = styled.ul`
   display: grid;
@@ -18,6 +19,7 @@ const List = styled.ul`
 
 const GameServers: FC = () => {
   const client = useApiClient();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery<GameServerOutputArrayDTOAPI>(
     'gameSevers',
@@ -42,11 +44,10 @@ const GameServers: FC = () => {
           <GameServerCard key={gameServer.id} {...gameServer} />
         ))}
         <EmptyGameServerCard
-          onClick={() => {
-            /* blocked by <drawer /> */
-          }}
+          onClick={() => navigate(PATHS.gameServers.create())}
         />
       </List>
+      <Outlet />
     </Fragment>
   );
 };

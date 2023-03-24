@@ -7,7 +7,7 @@ export const Container = styled.div`
   bottom: 0;
 
   padding: ${({ theme }) => theme.spacing[2]};
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 export const DrawerFooter: FC<PropsWithChildren> = ({ children }) => {

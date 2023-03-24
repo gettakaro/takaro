@@ -162,6 +162,14 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     }
   }
 
+  .simplebar-mask {
+    &:focus-visible {
+      border: none;
+    }
+  }
+
+  
+
   /* notistack snackbar styling */
   ${SnackBarStyles}
 

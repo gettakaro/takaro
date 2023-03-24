@@ -1,11 +1,9 @@
-import { FC, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { Chip, Dropdown, styled, Tooltip } from '@takaro/lib-components';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import {
   GameServerOutputDTO,
-  GameServerSearchInputDTO,
   GameServerTestReachabilityDTOAPI,
-  GameServerTestReachabilityInputDTO,
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
@@ -76,16 +74,12 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
         .data
   );
 
-  const handleOnEdit = () => {
-    /* TODO */
+  const handleOnEdit = (e: MouseEvent): void => {
+    navigate(PATHS.gameServers.update(id));
   };
   const handleOnDelete = () => {
     /* TODO */
   };
-
-  if (!data || isLoading) {
-    return <div>no data yet, loading</div>;
-  }
 
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
@@ -95,7 +89,9 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
           <Dropdown
             open={open}
             setOpen={setOpen}
-            renderReference={<MenuIcon size={18} />}
+            renderReference={
+              <MenuIcon size={18} onClick={() => setOpen(true)} />
+            }
             renderFloating={
               <ul>
                 <li onClick={handleOnEdit}>Edit server</li>
@@ -108,15 +104,19 @@ export const GameServerCard: FC<GameServerCardProps> = ({ id, name, type }) => {
           <Tooltip label="Game server type" placement="bottom">
             <Chip label={type} />
           </Tooltip>
-          <Tooltip
-            label="Can Takaro connect with your game server"
-            placement="bottom"
-          >
-            <Chip
-              label={`${data.data.connectable ? 'connected' : 'disconnected'}`}
-              color={data.data.connectable ? 'success' : 'error'}
-            />
-          </Tooltip>
+          {!isLoading && data && (
+            <Tooltip
+              label="Can Takaro connect with your game server"
+              placement="bottom"
+            >
+              <Chip
+                label={`${
+                  data.data.connectable ? 'connected' : 'disconnected'
+                }`}
+                color={data.data.connectable ? 'success' : 'error'}
+              />
+            </Tooltip>
+          )}
         </FloatingDelayGroup>
       </Body>
       <Footer>

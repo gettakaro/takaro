@@ -17,7 +17,6 @@ export function getConfigVar(name: EnvVars) {
     return window.__env__[name];
   }
 
-  console.log(import.meta.env);
   // if not found in env.js, vite automatically loads all env vars with VITE_ prefix
   switch (name) {
     case EnvVars.VITE_API:

@@ -50,7 +50,14 @@ export const Dropdown: FC<Dropdown> = ({
 
   return (
     <>
-      <ReferenceContainer ref={refs.setReference} {...getReferenceProps()}>
+      <ReferenceContainer
+        ref={refs.setReference}
+        {...getReferenceProps({
+          onClick(event) {
+            event.stopPropagation();
+          },
+        })}
+      >
         {renderReference}
       </ReferenceContainer>
       {open && (

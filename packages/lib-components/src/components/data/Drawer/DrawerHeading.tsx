@@ -28,9 +28,9 @@ export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
 
     return (
       <Container>
-        <h3 {...props} ref={ref} id={id}>
+        <h2 {...props} ref={ref} id={id}>
           {children}
-        </h3>
+        </h2>
         {hasClose && (
           <Tooltip label="Close drawer">
             <CloseIcon

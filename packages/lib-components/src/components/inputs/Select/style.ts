@@ -30,9 +30,10 @@ export const SelectButton = styled.div<{ isOpen: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
   outline: 0;
   min-height: 4.3rem;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 2px solid
     ${({ theme, isOpen }) =>
-      isOpen ? theme.colors.primary : theme.colors.background};
+      isOpen ? theme.colors.primary : theme.colors.backgroundAlt};
   border-radius: 0.5rem;
   margin-bottom: ${({ theme }) => theme.spacing['2_5']};
 
@@ -56,5 +57,5 @@ export const GroupLabel = styled.li`
 
 export const ArrowIcon = styled(AiOutlineDown)<{ isOpen: boolean }>`
   fill: ${({ theme, isOpen }) =>
-    isOpen ? theme.colors.primary : theme.colors.background};
+    isOpen ? theme.colors.primary : theme.colors.text};
 `;
