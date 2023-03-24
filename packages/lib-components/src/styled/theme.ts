@@ -7,7 +7,7 @@ const fontSize = {
   small: '1.2rem',
   medium: '1.325rem',
   mediumLarge: '1.825rem',
-  large: '4.25rem',
+  large: '2.425rem',
   huge: '6rem',
 };
 

@@ -1,7 +1,7 @@
 import { FC, lazy, Suspense } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 
-import { PageNotFound, LoadingPage } from '@takaro/lib-components';
+import { LoadingPage } from '@takaro/lib-components';
 import { AnimatePresence } from 'framer-motion';
 import Dashboard from 'pages/Dashboard';
 import { PATHS } from 'paths';
