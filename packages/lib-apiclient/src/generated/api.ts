@@ -93,6 +93,154 @@ export type BaseEventTypeEnum =
 /**
  *
  * @export
+ * @interface CommandArgumentCreateDTO
+ */
+export interface CommandArgumentCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentCreateDTO
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentCreateDTO
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentCreateDTO
+   */
+  defaultValue?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof CommandArgumentCreateDTO
+   */
+  position?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentCreateDTO
+   */
+  commandId: string;
+}
+/**
+ *
+ * @export
+ * @interface CommandArgumentDTOAPI
+ */
+export interface CommandArgumentDTOAPI {
+  /**
+   *
+   * @type {CommandArgumentOutputDTO}
+   * @memberof CommandArgumentDTOAPI
+   */
+  data: CommandArgumentOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof CommandArgumentDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface CommandArgumentOutputDTO
+ */
+export interface CommandArgumentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentOutputDTO
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentOutputDTO
+   */
+  helpText: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentOutputDTO
+   */
+  defaultValue: string;
+  /**
+   *
+   * @type {number}
+   * @memberof CommandArgumentOutputDTO
+   */
+  position: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandArgumentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof CommandArgumentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface CommandArgumentUpdateDTO
+ */
+export interface CommandArgumentUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentUpdateDTO
+   */
+  type?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentUpdateDTO
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandArgumentUpdateDTO
+   */
+  defaultValue?: string;
+}
+/**
+ *
+ * @export
  * @interface CommandCreateDTO
  */
 export interface CommandCreateDTO {
@@ -245,6 +393,12 @@ export interface CommandOutputDTO {
    * @memberof CommandOutputDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {Array<CommandArgumentOutputDTO>}
+   * @memberof CommandOutputDTO
+   */
+  arguments: Array<CommandArgumentOutputDTO>;
   /**
    *
    * @type {string}
@@ -833,6 +987,18 @@ export interface ErrorOutput {
    * @memberof ErrorOutput
    */
   code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorOutput
+   */
+  message: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorOutput
+   */
+  details: string;
 }
 /**
  *
@@ -3121,6 +3287,12 @@ export interface TakaroTokenDTO {
    * @memberof TakaroTokenDTO
    */
   sub: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof TakaroTokenDTO
+   */
+  aud: Array<string>;
 }
 /**
  *
@@ -3664,6 +3836,56 @@ export const CommandApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreateArgument: async (
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command/argument`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandArgumentCreateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -3724,6 +3946,54 @@ export const CommandApiAxiosParamCreator = function (
       // verify required parameter 'id' is not null or undefined
       assertParamExists('commandControllerRemove', 'id', id);
       const localVarPath = `/command/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'DELETE',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemoveArgument: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerRemoveArgument', 'id', id);
+      const localVarPath = `/command/argument/{id}`.replace(
         `{${'id'}}`,
         encodeURIComponent(String(id))
       );
@@ -3865,6 +4135,63 @@ export const CommandApiAxiosParamCreator = function (
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdateArgument: async (
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerUpdateArgument', 'id', id);
+      const localVarPath = `/command/argument/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandArgumentUpdateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -3894,6 +4221,34 @@ export const CommandApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.commandControllerCreate(
           commandCreateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerCreateArgument(
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandArgumentDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerCreateArgument(
+          commandArgumentCreateDTO,
           options
         );
       return createRequestFunction(
@@ -3943,6 +4298,31 @@ export const CommandApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.commandControllerRemove(id, options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerRemoveArgument(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerRemoveArgument(
+          id,
+          options
+        );
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -4009,6 +4389,37 @@ export const CommandApiFp = function (configuration?: Configuration) {
         configuration
       );
     },
+    /**
+     *
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerUpdateArgument(
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommandArgumentDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerUpdateArgument(
+          id,
+          commandArgumentUpdateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
   };
 };
 
@@ -4036,6 +4447,21 @@ export const CommandApiFactory = function (
     ): AxiosPromise<CommandOutputDTOAPI> {
       return localVarFp
         .commandControllerCreate(commandCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreateArgument(
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options?: any
+    ): AxiosPromise<CommandArgumentDTOAPI> {
+      return localVarFp
+        .commandControllerCreateArgument(commandArgumentCreateDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4070,6 +4496,21 @@ export const CommandApiFactory = function (
     },
     /**
      *
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemoveArgument(
+      id: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .commandControllerRemoveArgument(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -4098,6 +4539,23 @@ export const CommandApiFactory = function (
     ): AxiosPromise<CommandOutputDTOAPI> {
       return localVarFp
         .commandControllerUpdate(id, commandUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdateArgument(
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options?: any
+    ): AxiosPromise<CommandArgumentDTOAPI> {
+      return localVarFp
+        .commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -4129,6 +4587,23 @@ export class CommandApi extends BaseAPI {
 
   /**
    *
+   * @summary Create argument
+   * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerCreateArgument(
+    commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerCreateArgument(commandArgumentCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -4152,6 +4627,23 @@ export class CommandApi extends BaseAPI {
   public commandControllerRemove(id: string, options?: AxiosRequestConfig) {
     return CommandApiFp(this.configuration)
       .commandControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove argument
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerRemoveArgument(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerRemoveArgument(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -4188,6 +4680,25 @@ export class CommandApi extends BaseAPI {
   ) {
     return CommandApiFp(this.configuration)
       .commandControllerUpdate(id, commandUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update argument
+   * @param {string} id
+   * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerUpdateArgument(
+    id: string,
+    commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
