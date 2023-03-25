@@ -1,8 +1,8 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
 
-export class Ping extends BuiltinModule {
+export class Utils extends BuiltinModule {
   constructor() {
-    super('ping');
+    super('utils');
 
     this.commands = [
       {
@@ -11,6 +11,13 @@ export class Ping extends BuiltinModule {
         trigger: 'ping',
         helpText:
           'Replies with pong, useful for testing if the connection works',
+      },
+      {
+        function: '',
+        name: 'help',
+        trigger: 'help',
+        helpText:
+          'The text you are reading right now, displays information about commands',
       },
     ];
   }
