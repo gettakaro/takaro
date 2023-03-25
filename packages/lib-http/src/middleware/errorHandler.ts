@@ -33,7 +33,12 @@ export async function ErrorHandler(
 
   if (originalError.name === 'UniqueViolationError') {
     status = 409;
-    parsedError = new errors.ConflictError(parsedError.message);
+    parsedError = new errors.ConflictError('Unique constraint violation');
+  }
+
+  if (originalError.name === 'NotNullViolationError') {
+    status = 400;
+    parsedError = new errors.BadRequestError('Missing required field');
   }
 
   if (originalError instanceof errors.TakaroError) {
