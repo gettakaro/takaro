@@ -22,6 +22,7 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
+import { parseCommand } from '../lib/commandParser.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -59,7 +60,8 @@ export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutp
   helpText: string;
 
   @IsString()
-  defaultValue: string;
+  @IsOptional()
+  defaultValue?: string;
 
   @IsNumber()
   position: number;
@@ -245,14 +247,19 @@ export class CommandService extends TakaroService<
         `Found ${triggeredCommands.length} commands that match the event`
       );
 
+      const parsedCommands = triggeredCommands.map((c) => ({
+        db: c,
+        parsed: parseCommand(chatMessage.msg, c),
+      }));
+
       const queues = QueuesService.getInstance();
 
-      const promises = triggeredCommands.map(async (command) => {
-        return queues.queues.commands.queue.add(command.id, {
+      const promises = parsedCommands.map(async ({ parsed, db }) => {
+        return queues.queues.commands.queue.add(db.id, {
           domainId: this.domainId,
-          function: command.function.code,
-          itemId: command.id,
-          data: chatMessage,
+          function: db.function.code,
+          itemId: db.id,
+          data: parsed,
           gameServerId,
         });
       });

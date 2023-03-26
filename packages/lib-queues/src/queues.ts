@@ -48,7 +48,7 @@ export interface IJobData {
    * Additional data that can be passed to the job
    * Typically, this depends on what triggered the job
    */
-  data?: EventMapping[GameEvents];
+  data?: Record<string, unknown> | EventMapping[GameEvents];
 }
 
 export interface IEventQueueData {

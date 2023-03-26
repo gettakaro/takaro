@@ -107,7 +107,10 @@ export class CommandRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('function');
+    const data = await query
+      .findById(id)
+      .withGraphJoined('function')
+      .withGraphJoined('arguments');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);

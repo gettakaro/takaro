@@ -5,9 +5,9 @@ describe('BuiltInModule', () => {
   it('Can load module items', async () => {
     const mods = await getModules();
 
-    const pingModule = mods.find((mod) => mod.name === 'ping');
+    const utilsModule = mods.find((mod) => mod.name === 'utils');
 
-    expect(pingModule).to.not.be.undefined;
-    expect(pingModule?.commands).to.have.length(1);
+    expect(utilsModule).to.not.be.undefined;
+    expect(utilsModule?.commands).to.have.length(1);
   });
 });
