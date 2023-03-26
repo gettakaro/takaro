@@ -5,6 +5,8 @@ on: [push]
 jobs:
   docker:
     runs-on: ubuntu-latest
+    outputs:
+      docker_tag: ${{ steps.prep.outputs.version }}
     strategy:
       matrix:
         package:
@@ -108,4 +110,4 @@ jobs:
 
       - run: npx zx scripts/integration-tests.mjs
         env:
-          DOCKER_TAG: ${{ steps.prep.outputs.version }}
+          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
