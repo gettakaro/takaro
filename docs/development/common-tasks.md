@@ -26,6 +26,18 @@ Or, if you want to zoom in to one test, you can use the full name of the test
 docker-compose exec takaro npm -w packages/app-api run test:integration -- -g "SettingsController - Can get all settings with a filter"
 ```
 
+### Integration tests
+
+Takaro is a complex system, getting it to run in a test environment is not trivial. We use a combination of Docker, Docker Compose and a custom script to get everything running. 
+
+```sh
+# Assumes you have a running dev environment
+
+DOCKER_TAG=latest npx zx scripts/integration-tests.mjs
+```
+
+See the [Github Actions config](.github/workflows) for more details.
+
 ### Debugging tests
 
 If you wish to see logs when testing you can add the `LOGGING_LEVEL` env to your script

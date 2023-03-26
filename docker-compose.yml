@@ -50,7 +50,6 @@ services:
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
       REDIS_HOST: redis
       JWT_SECRET: ${JWT_SECRET}
       FUNCTIONS_EXECUTION_MODE: local
@@ -138,6 +137,7 @@ services:
       - ./containers/ory/hydra:/etc/config/hydra
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+      - URLS_SELF_ISSUER=http://hydra:4444/       
   hydra-migrate:
     image: oryd/hydra:v2.0.3
     environment:

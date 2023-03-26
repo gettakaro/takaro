@@ -4,6 +4,8 @@ services:
     image: postgres:14
     ports:
       - "5432:5432"   
+    volumes:
+      - postgresql:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -14,47 +16,57 @@ services:
       file: docker-compose.yml
       service: redis      
   kratos:
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}  
     extends:
       file: docker-compose.yml
       service: kratos
   kratos-migrate:
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}
     extends:
       file: docker-compose.yml
       service: kratos-migrate      
   postgresql_kratos:
     image: postgres:14
+    volumes:
+      - postgresql_kratos:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: kratos     
+      POSTGRES_DB: ${POSTGRES_DB}      
   hydra:
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB} 
+      - URLS_SELF_ISSUER=http://127.0.0.1:4444/ 
     extends:
       file: docker-compose.yml
       service: hydra
 
   hydra-migrate:
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB}
+
     extends:
       file: docker-compose.yml
       service: hydra-migrate   
   postgresql_hydra:
     image: postgres:14
+    volumes:
+      - postgresql_hydra:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: hydra        
-  takaro:
-    build:
-      context: .
-      dockerfile: containers/dev.Dockerfile
-
+      POSTGRES_DB: ${POSTGRES_DB}        
+  takaro_api:
+    image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
+    container_name: takaro_api
     volumes:
       - ./reports:/app/reports      
     environment:
       LOGGING_LEVEL: debug
       #LOGGING_MINIMAL: "true"
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}"
       REDIS_HOST: "redis"
-      ADMIN_SECRET: "${ADMIN_SECRET}"
       JWT_SECRET: "${JWT_SECRET}"
       FUNCTIONS_EXECUTION_MODE: "local"
       POSTGRES_USER: ${POSTGRES_USER}
@@ -64,22 +76,14 @@ services:
       POSTGRES_ENCRYPTION_KEY: "${POSTGRES_ENCRYPTION_KEY}"
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
-
-      VITE_API: http://127.0.0.1:13000
-      VITE_ORY_URL: http://127.0.0.1:4433
-
       TAKARO_OAUTH_HOST: http://hydra:4444
       TAKARO_HOST: http://takaro:3000
-
     ports:
     # api
       - 13000:3000
       - 12001:12001
-    # web-main
-      - 13001:13001
-    # lib-components storybook
-      - 13002:13002
-    # agent  
-      - 13004:3001
+
 volumes:
-    pgadmin:      
+  postgresql:
+  postgresql_hydra:
+  postgresql_kratos:
