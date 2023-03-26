@@ -1,4 +1,3 @@
-#!npx zx
 import { randomUUID } from 'crypto';
 import { upMany, logs, exec, upAll, down } from 'docker-compose';
 import { $ } from 'zx';
