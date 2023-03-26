@@ -42,16 +42,11 @@ async function main() {
     composeOpts
   );
   await sleep(1000);
-  await logs(
-    ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
-    composeOpts
-  );
 
   // Then, start supporting services
   await upMany(['kratos-migrate', 'hydra-migrate'], composeOpts);
   console.log('Waiting for SQL migrations to finish...');
   await sleep(1000);
-  await logs(['kratos-migrate', 'hydra-migrate'], composeOpts);
 
   await upMany(['kratos', 'hydra'], composeOpts);
 
@@ -88,6 +83,7 @@ async function main() {
       POSTGRES_PASSWORD: `${POSTGRES_PASSWORD}`,
       POSTGRES_DB: `${process.env.POSTGRES_DB}`,
       POSTGRES_HOST: '127.0.0.1 ',
+      POSTGRES_ENCRYPTION_KEY: randomUUID(),
       TAKARO_OAUTH_ADMIN_HOST: 'http://127.0.0.1:4445',
       KRATOS_ADMIN_URL: 'http://127.0.0.1:4434',
       TAKARO_OAUTH_HOST: 'http://127.0.0.1:4444 ',
@@ -104,12 +100,11 @@ async function main() {
     await $`npm test`;
   } catch (error) {
     console.error('Tests failed');
-    console.error(error);
     failed = true;
   }
 
-  await cleanUp();
   await logs(['takaro_api'], composeOpts);
+  await cleanUp();
 
   if (failed) {
     process.exit(1);

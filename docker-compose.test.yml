@@ -12,8 +12,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}  
 
   redis:
-    ports:
-      - "6379:6379"
     extends:
       file: docker-compose.yml
       service: redis      
