@@ -20,6 +20,7 @@
             "helpText": "Replies with pong, useful for testing if the connection works",
             "functionId": "096bdc63-f763-43fb-9674-509028da6eab",
             "moduleId": "da82251c-20e9-40aa-89f8-613010e68c85",
+            "arguments": [],
             "function": {
               "id": "096bdc63-f763-43fb-9674-509028da6eab",
               "createdAt": "2023-03-25T22:44:29.338Z",
@@ -36,6 +37,7 @@
             "helpText": "The text you are reading right now, displays information about commands",
             "functionId": "1c0460f4-2eae-4dec-aded-bf792882a30d",
             "moduleId": "da82251c-20e9-40aa-89f8-613010e68c85",
+            "arguments": [],
             "function": {
               "id": "1c0460f4-2eae-4dec-aded-bf792882a30d",
               "createdAt": "2023-03-25T22:44:29.339Z",

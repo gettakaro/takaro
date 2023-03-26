@@ -144,7 +144,8 @@ export class ModuleRepo extends ITakaroRepo<
       .withGraphJoined('cronJobs.function')
       .withGraphJoined('hooks.function')
       .withGraphJoined('commands.function')
-      .withGraphJoined('commands.arguments');
+      .withGraphJoined('commands.arguments')
+      .orderBy('commands.name', 'DESC');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
