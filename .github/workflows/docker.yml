@@ -61,7 +61,7 @@ jobs:
         env:
           VERSION: ${{ steps.prep.outputs.version }}
         run: |
-          mkdir -p ./pr
+          mkdir -p ./version
           echo $VERSION > ./version/version
       - uses: actions/upload-artifact@v3
         with:
