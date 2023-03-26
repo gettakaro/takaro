@@ -81,15 +81,27 @@ async function main() {
   let failed = false;
 
   try {
-    process.env.TEST_HTTP_TARGET = 'http://127.0.0.1:13000';
-    await $`echo "Running tests against ${process.env.TEST_HTTP_TARGET}"`;
     // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
     // So we're hacking it like this instead :)
+    const testVars = {
+      POSTGRES_USER: `${process.env.POSTGRES_USER}`,
+      POSTGRES_PASSWORD: `${POSTGRES_PASSWORD}`,
+      POSTGRES_DB: `${process.env.POSTGRES_DB}`,
+      POSTGRES_HOST: '127.0.0.1 ',
+      TAKARO_OAUTH_ADMIN_HOST: 'http://127.0.0.1:4445',
+      KRATOS_ADMIN_URL: 'http://127.0.0.1:4434',
+      TAKARO_OAUTH_HOST: 'http://127.0.0.1:4444 ',
+      TEST_HTTP_TARGET: 'http://127.0.0.1:13000',
+      ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
+      ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
+      REDIS_HOST: '127.0.0.1',
+    };
 
-
-
-    $.prefix += `POSTGRES_USER=${process.env.POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${process.env.POSTGRES_DB} POSTGRES_HOST=127.0.0.1 TAKARO_OAUTH_ADMIN_HOST=http://127.0.0.1:4445 KRATOS_ADMIN_URL=http://127.0.0.1:4434 TAKARO_OAUTH_HOST=http://127.0.0.1:4444 TEST_HTTP_TARGET=${process.env.TEST_HTTP_TARGET} ADMIN_CLIENT_ID=${composeOpts.env.ADMIN_CLIENT_ID} ADMIN_CLIENT_SECRET=${composeOpts.env.ADMIN_CLIENT_SECRET}`;
-    await $` npm test`;
+    for (const [key, value] of Object.entries(testVars)) {
+      $.prefix += `${key}=${value} `;
+    }
+    console.log('Running tests with config', testVars);
+    await $`npm test`;
   } catch (error) {
     console.error('Tests failed');
     console.error(error);
