@@ -23,5 +23,5 @@ before(async () => {
 
   log.info('Waiting for app to be healthy');
 
-  await client.waitUntilHealthy(ms('10 minutes'));
+  await client.waitUntilHealthy(ms('5 minutes'));
 });
