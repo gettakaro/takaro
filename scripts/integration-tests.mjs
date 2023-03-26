@@ -1,62 +1,116 @@
-import { upOne, upMany, logs, exec } from 'docker-compose';
+#!npx zx
+import { randomUUID } from 'crypto';
+import { upMany, logs, exec, upAll, down } from 'docker-compose';
+import { $ } from 'zx';
 
 async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const composeOpts = { log: true, composeOptions: ['-f', 'docker-compose.test.yml'], env: { ...process.env } };
+// These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
+const POSTGRES_PASSWORD = randomUUID();
+const POSTGRES_ENCRYPTION_KEY = randomUUID();
+
+process.env = {
+  ...process.env,
+  POSTGRES_USER: 'takaro-test',
+  POSTGRES_DB: 'takaro-test-db',
+  POSTGRES_PASSWORD,
+  POSTGRES_ENCRYPTION_KEY,
+};
+
+const composeOpts = {
+  log: true,
+  composeOptions: ['-f', 'docker-compose.test.yml'],
+  env: {
+    ...process.env,
+  },
+};
+
+async function cleanUp() {
+  console.log('Cleaning up any old data or containers...');
+  await down({
+    ...composeOpts,
+    commandOptions: ['--remove-orphans', '--volumes'],
+  });
+}
 
 async function main() {
-  // First, start the datastores
-  await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
+  await cleanUp();
+  console.log('Bringing up datastores');
+  await upMany(
+    ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
+    composeOpts
+  );
+  await sleep(1000);
+  await logs(
+    ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
+    composeOpts
+  );
 
   // Then, start supporting services
-  await upMany(['kratos', 'hydra', 'kratos-migrate', 'hydra-migrate'], composeOpts);
+  await upMany(['kratos-migrate', 'hydra-migrate'], composeOpts);
+  console.log('Waiting for SQL migrations to finish...');
+  await sleep(1000);
+  await logs(['kratos-migrate', 'hydra-migrate'], composeOpts);
+
+  await upMany(['kratos', 'hydra'], composeOpts);
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
-  if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
+  if (
+    !composeOpts.env.ADMIN_CLIENT_ID ||
+    !composeOpts.env.ADMIN_CLIENT_SECRET
+  ) {
     await sleep(5000);
-    const rawClientOutput = await exec('hydra', 'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json', composeOpts);
+    const rawClientOutput = await exec(
+      'hydra',
+      'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json',
+      composeOpts
+    );
     const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
-    console.log('Created OAuth admin client', { clientId: parsedClientOutput.client_id });
+    console.log('Created OAuth admin client', {
+      clientId: parsedClientOutput.client_id,
+    });
     composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
     composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
 
-  await upOne('takaro', composeOpts);
-
-  // Wait for a bit for everything to settle
-  // When the dev container starts, it boots up pretty much everything
-  // which is really heavy on CPU
-  await sleep(30000);
+  await upAll(composeOpts);
 
   let failed = false;
 
   try {
-    await exec('takaro', 'npm test', composeOpts);
+    process.env.TEST_HTTP_TARGET = 'http://127.0.0.1:13000';
+    await $`echo "Running tests against ${process.env.TEST_HTTP_TARGET}"`;
+    // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
+    // So we're hacking it like this instead :)
+
+
+
+    $.prefix += `POSTGRES_USER=${process.env.POSTGRES_USER} POSTGRES_PASSWORD=${POSTGRES_PASSWORD} POSTGRES_DB=${process.env.POSTGRES_DB} POSTGRES_HOST=127.0.0.1 TAKARO_OAUTH_ADMIN_HOST=http://127.0.0.1:4445 KRATOS_ADMIN_URL=http://127.0.0.1:4434 TAKARO_OAUTH_HOST=http://127.0.0.1:4444 TEST_HTTP_TARGET=${process.env.TEST_HTTP_TARGET} ADMIN_CLIENT_ID=${composeOpts.env.ADMIN_CLIENT_ID} ADMIN_CLIENT_SECRET=${composeOpts.env.ADMIN_CLIENT_SECRET}`;
+    await $` npm test`;
   } catch (error) {
     console.error('Tests failed');
     console.error(error);
     failed = true;
   }
 
-  await logs(['postgresql', 'redis', 'takaro'], composeOpts);
+  await cleanUp();
+  await logs(['takaro_api'], composeOpts);
 
   if (failed) {
     process.exit(1);
   }
 }
 
-
 main()
-  .then(res => {
+  .then((res) => {
     console.log(res);
     process.exit(0);
   })
-  .catch(e => {
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   });
-

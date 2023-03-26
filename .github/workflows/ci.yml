@@ -1,17 +1,46 @@
 name: Node.js CI
 
-on: [pull_request, push]
+on:
+  workflow_run:
+    workflows: ["Docker"]
+    types:
+      - completed
 
 jobs:
   node-ci:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
       matrix:
         node-version: [18.x]
-        postgres-version: [14]
-        redis-version: [6]
 
     steps:
+      - name: "Download artifact"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "version"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/version.zip`, Buffer.from(download.data));
+
+      - name: "Unzip artifact"
+        run: |
+          unzip version.zip
+          echo ::set-output name=version::$(cat version)
+
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -19,10 +48,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: ./scripts/dev-init.sh
-      - run: npm run test:style
-      - run: node scripts/integration-tests.mjs
+
+      - run: scripts/integration-tests.mjs
         env:
-          POSTGRES_USER: takaro-user
-          POSTGRES_PASSWORD: takaro-pw
-          POSTGRES_DB: takaro-db
-          POSTGRES_ENCRYPTION_KEY: takaro-encryption-key
+          DOCKER_TAG: ${{ steps.version.outputs.version }}
