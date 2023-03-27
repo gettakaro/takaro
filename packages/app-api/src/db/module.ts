@@ -86,6 +86,7 @@ export class ModuleRepo extends ITakaroRepo<
         'cronJobs.function',
         'hooks.function',
         'commands.function',
+        'commands.arguments',
       ],
     }).build(query);
 
@@ -142,7 +143,9 @@ export class ModuleRepo extends ITakaroRepo<
       .findById(id)
       .withGraphJoined('cronJobs.function')
       .withGraphJoined('hooks.function')
-      .withGraphJoined('commands.function');
+      .withGraphJoined('commands.function')
+      .withGraphJoined('commands.arguments')
+      .orderBy('commands.name', 'DESC');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -169,12 +172,8 @@ export class ModuleRepo extends ITakaroRepo<
 
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .updateAndFetchById(id, data.toJSON())
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks')
-      .withGraphJoined('commands');
+    const item = await query.updateAndFetchById(id, data.toJSON());
 
-    return new ModuleOutputDTO().construct(item);
+    return this.findOne(item.id);
   }
 }

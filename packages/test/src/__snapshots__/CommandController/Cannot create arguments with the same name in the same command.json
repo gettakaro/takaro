@@ -1,7 +1,6 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2023-02-25T13:00:57.405Z",
       "error": {
         "code": "ConflictError",
         "message": "Unique constraint violation"
@@ -11,13 +10,15 @@
   },
   "status": 409,
   "test": {
-    "group": "HookController",
+    "group": "CommandController",
     "snapshot": true,
-    "name": "Does not allow creating 2 hooks with the same name inside the same module",
-    "expectedStatus": 409,
+    "name": "Cannot create arguments with the same name in the same command",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId",
+      "commandId"
     ],
+    "expectedStatus": 409,
     "standardEnvironment": true
   }
 }

@@ -1,4 +1,4 @@
-import { isTakaroDTO, TakaroDTO } from '@takaro/util';
+import { errors, isTakaroDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import {
   IsISO8601,
@@ -6,60 +6,21 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { IsString } from 'class-validator';
+import {
+  IsString,
+  ValidationError as ClassValidatorError,
+} from 'class-validator';
 import { Request, Response } from 'express';
-
-interface IApiResponseOptions {
-  error?: Error;
-  meta?: Record<string, string | number>;
-  req: Request;
-  res: Response;
-}
-
-export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions) {
-  const returnVal = {
-    meta: {
-      serverTime: new Date().toISOString(),
-      error: opts?.error && {
-        code: opts?.error?.name,
-        details: opts?.error?.hasOwnProperty('details')
-          ? // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
-            opts?.error?.details
-          : {},
-      },
-      page:
-        opts?.meta?.total || opts?.meta?.total === 0
-          ? opts?.res.locals.page
-          : undefined,
-      limit:
-        opts?.meta?.total || opts?.meta?.total === 0
-          ? opts?.res.locals.limit
-          : undefined,
-      ...opts?.meta,
-    },
-    data,
-  };
-
-  if (isTakaroDTO(data)) {
-    returnVal.data = data.toJSON();
-  }
-
-  if (Array.isArray(data)) {
-    returnVal.data = data.map((item) => {
-      if (isTakaroDTO(item)) {
-        return item.toJSON();
-      }
-
-      return item;
-    });
-  }
-
-  return returnVal;
-}
 
 class ErrorOutput {
   @IsString()
   code?: string;
+
+  @IsString()
+  message?: string;
+
+  @IsString()
+  details?: string | ClassValidatorError[];
 }
 
 class MetadataOutput {
@@ -98,4 +59,60 @@ export class APIOutput<T> extends TakaroDTO<APIOutput<T>> {
   meta!: MetadataOutput;
 
   data!: T;
+}
+
+interface IApiResponseOptions {
+  error?: Error;
+  meta?: Record<string, string | number>;
+  req: Request;
+  res: Response;
+}
+
+export function apiResponse(
+  data: unknown = {},
+  opts?: IApiResponseOptions
+): APIOutput<unknown> {
+  const returnVal = new APIOutput<unknown>();
+
+  returnVal.meta = new MetadataOutput();
+  returnVal.data = {};
+
+  if (opts?.error) {
+    returnVal.meta.error = new ErrorOutput();
+
+    returnVal.meta.error.code = String(opts.error.name);
+
+    if ('details' in opts.error) {
+      if (opts.error instanceof errors.ValidationError) {
+        returnVal.meta.error.details = opts.error
+          .details as ClassValidatorError[];
+      } else {
+        returnVal.meta.error.details = String(opts.error.details);
+      }
+    } else {
+      returnVal.meta.error.message = String(opts.error.message);
+    }
+  }
+
+  if (opts?.meta) {
+    returnVal.meta.page = opts?.res.locals.page;
+    returnVal.meta.limit = opts?.res.locals.limit;
+    returnVal.meta.total = opts?.meta.total as number;
+  }
+
+  if (isTakaroDTO(data)) {
+    returnVal.data = data.toJSON();
+  } else if (Array.isArray(data)) {
+    returnVal.data = data.map((item) => {
+      if (isTakaroDTO(item)) {
+        return item.toJSON();
+      }
+
+      return item;
+    });
+  } else {
+    returnVal.data = data;
+  }
+
+  return returnVal;
 }

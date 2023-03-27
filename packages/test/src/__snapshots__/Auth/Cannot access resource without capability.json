@@ -3,8 +3,7 @@
     "meta": {
       "serverTime": "2022-09-11T21:20:41.481Z",
       "error": {
-        "code": "ForbiddenError",
-        "details": {}
+        "code": "ForbiddenError"
       }
     },
     "data": {}
