@@ -4,9 +4,8 @@ import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
 const group = 'Module Assignments';
 
 const defaultSetup = async function () {
-  const modules = await this.client.module.moduleControllerSearch({
-    filters: { name: 'ping' },
-  });
+  const modules = await this.client.module.moduleControllerSearch();
+
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
     connectionInfo: '{}',
     type: 'MOCK',

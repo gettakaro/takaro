@@ -4,7 +4,7 @@
       "serverTime": "2023-03-19T16:31:18.096Z",
       "error": {
         "code": "BadRequestError",
-        "details": {}
+        "message": "Too many variables"
       }
     },
     "data": {}

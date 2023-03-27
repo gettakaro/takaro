@@ -2,19 +2,19 @@ import Objection, { Model } from 'objection';
 
 export class NOT_DOMAIN_SCOPED_TakaroModel extends Model {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 
   static get idColumn() {
     return 'id';
   }
 
   $beforeInsert() {
-    this.createdAt = new Date();
+    this.createdAt = new Date().toISOString();
   }
 
   $beforeUpdate() {
-    this.updatedAt = new Date();
+    this.updatedAt = new Date().toISOString();
   }
 }
 

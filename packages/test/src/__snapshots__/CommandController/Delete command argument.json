@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-25T21:36:04.926Z"
+    },
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Delete command argument",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
