@@ -32,7 +32,7 @@ import {
 import { useApiClient } from 'hooks/useApiClient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router-dom';
 import {
   DrawerBody,
@@ -40,6 +40,7 @@ import {
 } from '@takaro/lib-components/src/components/data/Drawer';
 import * as Sentry from '@sentry/react';
 import { QueryKeys } from 'queryKeys';
+import { useSnackbar } from 'notistack';
 
 type ConnectionInfo =
   | MockConnectionInfo
@@ -66,8 +67,8 @@ const connectionInfoValidationSchemaMap = {
     useTls: yup.bool().required(),
   }),
   [GameServerCreateDTOTypeEnum.Mock]: yup.object({
-    eventInteveral: yup.number().required(),
-    playerPoolSize: yup.number().required(),
+    eventInterval: yup.number().min(500).required(),
+    playerPoolSize: yup.number().max(200).required(),
   }),
   [GameServerCreateDTOTypeEnum.Rust]: yup.object({
     host: yup.string().required(),
@@ -83,6 +84,8 @@ const CreateUpdateGameServer: FC = () => {
   const navigate = useNavigate();
   const apiClient = useApiClient();
   const { serverId } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
   const [gameServerType, setGameServerType] =
     useState<GameServerCreateDTOTypeEnum>(GameServerCreateDTOTypeEnum.Rust);
 
@@ -111,9 +114,8 @@ const CreateUpdateGameServer: FC = () => {
 
   const testReachability = useMutation({
     mutationKey: ['server-reachability', serverId],
-    mutationFn: async (info: ConnectionInfo) => {
-      console.log(info);
-      apiClient.gameserver.gameServerControllerTestReachability();
+    mutationFn: async (info) => {
+      apiClient.gameserver.gameServerControllerTestReachability(info!);
     },
     onError: (data: GameServerTestReachabilityDTOAPI) => {
       setError(data.data.reason!);
@@ -125,6 +127,10 @@ const CreateUpdateGameServer: FC = () => {
     mutationFn: async (gameServer: GameServerCreateDTO) => {
       apiClient.gameserver.gameServerControllerCreate(gameServer);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries(QueryKeys.gameserver.list);
+      enqueueSnackbar('Server has been created', { variant: 'default' });
+    },
   });
 
   const updateGameServer = useMutation({
@@ -132,6 +138,7 @@ const CreateUpdateGameServer: FC = () => {
     mutationFn: async (gameServer: GameServerUpdateDTO) => {
       apiClient.gameserver.gameServerControllerUpdate(serverId!, gameServer);
     },
+    onSuccess: () => queryClient.invalidateQueries(QueryKeys.gameserver.list),
   });
 
   const { control, handleSubmit, watch, setValue } = useForm<IFormInputs>({
@@ -170,9 +177,9 @@ const CreateUpdateGameServer: FC = () => {
       Object.entries(connectionInfo).filter(([_, v]) => v != null)
     );
 
-    await testReachability.mutateAsync(filteredConnInfo as ConnectionInfo);
-
     try {
+      await testReachability.mutateAsync(filteredConnInfo as ConnectionInfo);
+
       if (!serverId) {
         await createGameServer.mutateAsync({
           name,
