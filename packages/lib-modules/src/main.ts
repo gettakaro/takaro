@@ -1,13 +1,13 @@
 import { BuiltinModule } from './BuiltinModule.js';
 export { BuiltinModule } from './BuiltinModule.js';
 
-import { Ping } from './modules/ping/index.js';
+import { Utils } from './modules/utils/index.js';
 
 let cached: Array<BuiltinModule> | null = null;
 
 export async function getModules(): Promise<Array<BuiltinModule>> {
   if (!cached) {
-    cached = [new Ping()];
+    cached = [new Utils()];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
 

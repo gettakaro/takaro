@@ -11,6 +11,7 @@
       "name": "Test command",
       "trigger": "test",
       "moduleId": "e69569d5-3bcb-4506-bae4-fd20de9c4c20",
+      "arguments": [],
       "function": {
         "createdAt": "2022-11-04T20:20:54.053Z",
         "updatedAt": "2022-11-04T20:20:54.058Z",

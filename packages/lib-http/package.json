@@ -9,7 +9,7 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
+    "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js --exit",
     "test:integration": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.integration.test.js --exit"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "i": "^0.3.7",
+    "rate-limiter-flexible": "^2.4.1",
     "zod": "^3.17.10"
   },
   "devDependencies": {
