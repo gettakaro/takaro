@@ -18,7 +18,7 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
   place-items: end;
   max-height: 100vh;
   max-width: 100vw;
-  overflow-x: hidden !important;
+  overflow: hidden !important;
 `;
 
 const Container = styled(motion.div)`
