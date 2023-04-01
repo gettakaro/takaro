@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 0
+    },
+    "data": []
+  },
+  "status": 200,
+  "test": {
+    "snapshot": true,
+    "group": "Auth",
+    "name": "[agent flow] can request a token from API to execute jobs",
+    "filteredFields": [
+      "token"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-25T21:39:18.704Z"
+    },
+    "data": {
+      "id": "2a20421e-3790-4afd-be81-93af9954b3f7",
+      "createdAt": "2023-03-25T21:39:18.700Z",
+      "updatedAt": "2023-03-25T21:39:18.701Z",
+      "name": "Test argument",
+      "position": 0,
+      "type": "string",
+      "helpText": null,
+      "defaultValue": null,
+      "commandId": "83fa72bf-dcf9-47b9-9c89-72883d46503d"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Create command argument",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "commandId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

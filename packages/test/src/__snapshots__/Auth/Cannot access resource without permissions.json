@@ -4,7 +4,7 @@
       "serverTime": "2023-03-19T12:20:13.763Z",
       "error": {
         "code": "ForbiddenError",
-        "details": {}
+        "message": "Forbidden"
       }
     },
     "data": {}

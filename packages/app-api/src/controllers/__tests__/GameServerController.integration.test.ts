@@ -90,14 +90,14 @@ const tests = [
       const modules = (await this.client.module.moduleControllerSearch()).data
         .data;
 
-      const pingModule = modules.find((m) => m.name === 'ping');
-      if (!pingModule) {
-        throw new Error('Ping module not found');
+      const utilsModule = modules.find((m) => m.name === 'utils');
+      if (!utilsModule) {
+        throw new Error('Utils module not found');
       }
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.id,
-        pingModule.id,
+        utilsModule.id,
         { config: '{}' }
       );
 

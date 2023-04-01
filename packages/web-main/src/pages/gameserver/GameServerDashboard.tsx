@@ -51,7 +51,6 @@ const GameServerDashboard: FC = () => {
                 gameServerData.id,
                 { command }
               );
-
             return {
               type: 'command',
               data: result.data.data.rawResult,

@@ -103,3 +103,10 @@ export class ConflictError extends TakaroError {
     this.http = 409;
   }
 }
+
+export class TooManyRequestsError extends TakaroError {
+  constructor(message = 'Too many requests') {
+    super(message);
+    this.http = 429;
+  }
+}
