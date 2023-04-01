@@ -1,8 +1,4 @@
-import { logger } from './logger.js';
-
 class Health {
-  private log = logger('health');
-
   private hooks = new Map<string, CallableFunction>();
 
   public registerHook(name: string, hook: CallableFunction) {
@@ -15,14 +11,12 @@ class Health {
 
   public async check() {
     try {
-      this.log.debug(`Evaluating ${this.hooks.size} health hooks`);
       const results = await Promise.all(
         Array.from(this.hooks.values()).map((hook) => hook())
       );
 
       return results.every((result) => result);
     } catch (error) {
-      this.log.error(error);
       return false;
     }
   }
