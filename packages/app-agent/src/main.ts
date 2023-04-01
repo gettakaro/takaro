@@ -44,4 +44,8 @@ async function main() {
   await QueuesService.getInstance().registerWorker(new HookWorker());
 }
 
+process.on('uncaughtException', (err) => {
+  log.error('uncaughtException', err);
+});
+
 main();

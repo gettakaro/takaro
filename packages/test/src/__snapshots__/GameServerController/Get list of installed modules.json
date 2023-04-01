@@ -3,47 +3,47 @@
     "meta": {},
     "data": [
       {
-        "id": "da82251c-20e9-40aa-89f8-613010e68c85",
-        "createdAt": "2023-03-25T22:44:29.329Z",
-        "updatedAt": "2023-03-25T22:44:29.330Z",
+        "id": "f6cd5ccd-30c0-488a-b41d-f52a32dd2dd0",
+        "createdAt": "2023-04-01T18:47:01.590Z",
+        "updatedAt": "2023-04-01T18:47:01.591Z",
         "name": "utils",
         "builtin": "utils",
         "cronJobs": [],
         "hooks": [],
         "commands": [
           {
-            "id": "6449224a-1a92-4402-bbd6-7bc0a5b22ee4",
-            "createdAt": "2023-03-25T22:44:29.340Z",
-            "updatedAt": "2023-03-25T22:44:29.342Z",
+            "id": "69e6df45-fc82-4b8f-afbd-0c8ba5815d5f",
+            "createdAt": "2023-04-01T18:47:01.607Z",
+            "updatedAt": "2023-04-01T18:47:01.610Z",
             "name": "ping",
             "trigger": "ping",
             "helpText": "Replies with pong, useful for testing if the connection works",
-            "functionId": "096bdc63-f763-43fb-9674-509028da6eab",
-            "moduleId": "da82251c-20e9-40aa-89f8-613010e68c85",
-            "arguments": [],
+            "functionId": "e4600d03-26d4-4dc3-8c70-831d2253843f",
+            "moduleId": "f6cd5ccd-30c0-488a-b41d-f52a32dd2dd0",
             "function": {
-              "id": "096bdc63-f763-43fb-9674-509028da6eab",
-              "createdAt": "2023-03-25T22:44:29.338Z",
-              "updatedAt": "2023-03-25T22:44:29.338Z",
-              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
-            }
+              "id": "e4600d03-26d4-4dc3-8c70-831d2253843f",
+              "createdAt": "2023-04-01T18:47:01.603Z",
+              "updatedAt": "2023-04-01T18:47:01.604Z",
+              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function ping() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    console.log(data);\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Pong!',\n        opts: {\n            recipient: data.player,\n        },\n    });\n}\nping();\n//# sourceMappingURL=ping.js.map"
+            },
+            "arguments": []
           },
           {
-            "id": "82061dbb-cb68-4590-a01e-3290001024be",
-            "createdAt": "2023-03-25T22:44:29.341Z",
-            "updatedAt": "2023-03-25T22:44:29.343Z",
+            "id": "85da6fad-d94a-4c2b-b5d2-d76a2ed4cbdc",
+            "createdAt": "2023-04-01T18:47:01.609Z",
+            "updatedAt": "2023-04-01T18:47:01.612Z",
             "name": "help",
             "trigger": "help",
             "helpText": "The text you are reading right now, displays information about commands",
-            "functionId": "1c0460f4-2eae-4dec-aded-bf792882a30d",
-            "moduleId": "da82251c-20e9-40aa-89f8-613010e68c85",
-            "arguments": [],
+            "functionId": "9e474409-06ad-4c72-8f7f-03abcf4ea0a5",
+            "moduleId": "f6cd5ccd-30c0-488a-b41d-f52a32dd2dd0",
             "function": {
-              "id": "1c0460f4-2eae-4dec-aded-bf792882a30d",
-              "createdAt": "2023-03-25T22:44:29.339Z",
-              "updatedAt": "2023-03-25T22:44:29.339Z",
-              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function help() {\n    const takaro = await getTakaro();\n    const data = await getData();\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = enabledModules.data.data.map((mod) => {\n        return mod.commands;\n    });\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Available commands:',\n    });\n    for (const mod of moduleCommands) {\n        await Promise.all(mod.map(async (command) => {\n            await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n                message: `${command.name}: ${command.helpText}`,\n            });\n        }));\n    }\n}\nhelp();\n//# sourceMappingURL=help.js.map"
-            }
+              "id": "9e474409-06ad-4c72-8f7f-03abcf4ea0a5",
+              "createdAt": "2023-04-01T18:47:01.605Z",
+              "updatedAt": "2023-04-01T18:47:01.606Z",
+              "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function help() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = enabledModules.data.data.map((mod) => {\n        return mod.commands;\n    });\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: 'Available commands:',\n    });\n    for (const mod of moduleCommands) {\n        await Promise.all(mod.map(async (command) => {\n            await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n                message: `${command.name}: ${command.helpText}`,\n            });\n        }));\n    }\n}\nhelp();\n//# sourceMappingURL=help.js.map"
+            },
+            "arguments": []
           }
         ]
       }
@@ -56,7 +56,8 @@
     "name": "Get list of installed modules",
     "filteredFields": [
       "functionId",
-      "moduleId"
+      "moduleId",
+      "code"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
