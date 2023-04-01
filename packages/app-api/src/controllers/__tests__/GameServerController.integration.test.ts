@@ -105,7 +105,7 @@ const tests = [
         this.setupData.id
       );
     },
-    filteredFields: ['functionId', 'moduleId'],
+    filteredFields: ['functionId', 'moduleId', 'code'],
   }),
 ];
 

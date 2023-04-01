@@ -4,7 +4,7 @@ import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 export enum EXECUTION_MODE {
-  CONTAINERD = 'containerd',
+  FIRECRACKER = 'firecracker',
   LOCAL = 'local',
 }
 
@@ -60,8 +60,8 @@ const configSchema = {
   functions: {
     executionMode: {
       doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
-      format: [EXECUTION_MODE.CONTAINERD, EXECUTION_MODE.LOCAL],
-      default: EXECUTION_MODE.CONTAINERD,
+      format: [EXECUTION_MODE.FIRECRACKER, EXECUTION_MODE.LOCAL],
+      default: EXECUTION_MODE.FIRECRACKER,
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
