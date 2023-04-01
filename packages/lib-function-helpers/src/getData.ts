@@ -1,7 +1,10 @@
-import { config } from './config.js';
-
 export async function getData() {
-  const rawData = config.get('data');
+  const rawData = process.env.DATA;
+
+  if (!rawData) {
+    console.error('Failed to get data');
+    throw new Error('Failed to get data');
+  }
 
   try {
     const parsed = JSON.parse(rawData);
