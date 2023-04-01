@@ -10,7 +10,6 @@ export const Wrapper = styled.div<{
   display: flex;
   flex-direction: row;
   font-family: 'inconsolata';
-  font-size: 1.3rem;
   pointer: ${({ canCollapse }) => (canCollapse ? 'pointer' : 'default')};
   user-select: auto;
   width: 100%;
@@ -20,21 +19,21 @@ export const Wrapper = styled.div<{
       if (messageType === 'error') return tint(0.4, theme.colors.error);
       if (messageType === 'warning') return tint(0.4, theme.colors.warning);
       if (messageType === 'command') return tint(0.4, theme.colors.primary);
-      return 'none';
+      return theme.colors.backgroundAlt;
     }};
   border-bottom: 1px solid
     ${({ messageType, theme }): string => {
       if (messageType === 'error') return tint(0.4, theme.colors.error);
       if (messageType === 'warning') return tint(0.4, theme.colors.warning);
       if (messageType === 'command') return tint(0.4, theme.colors.primary);
-      return 'none';
+      return theme.colors.backgroundAlt;
     }};
 
   background-color: ${({ messageType, theme }): string => {
     if (messageType === 'error') return tint(0.6, theme.colors.error);
     if (messageType === 'warning') return tint(0.6, theme.colors.warning);
     if (messageType === 'command') return tint(0.6, theme.colors.primary);
-    return 'none';
+    return theme.colors.backgroundAlt;
   }};
 
   &:last-child {

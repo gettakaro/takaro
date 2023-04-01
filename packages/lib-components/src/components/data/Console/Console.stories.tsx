@@ -1,7 +1,8 @@
-import { Meta, Story } from '@storybook/react';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Dispatch, SetStateAction } from 'react';
 import { Console as ConsoleComponent } from '../Console';
-import { Message, MessageType } from './ConsoleInterface';
+import { Message, MessageType } from './MessageModel';
 
 export default {
   title: 'Data/Console',
@@ -16,7 +17,7 @@ const MessageTypeMap: MessageType[] = [
   'error',
 ];
 
-export const Console: Story = () => {
+export const Console: StoryFn = () => {
   function listenerFactory(setter: Dispatch<SetStateAction<Message[]>>) {
     const interval = setInterval(() => {
       const r = Math.floor(Math.random() * 5);
@@ -27,7 +28,7 @@ export const Console: Story = () => {
       };
 
       setter((prev: Message[]) => [...prev, newMessage]);
-    }, 1000);
+    }, 2000);
 
     return {
       on: () => {
