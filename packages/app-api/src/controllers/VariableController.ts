@@ -42,12 +42,20 @@ class VariableSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   id!: string;
+
+  @IsOptional()
+  @IsString()
+  key!: string;
 }
 
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => VariableSearchInputAllowedFilters)
   declare filters: VariableSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => VariableSearchInputAllowedFilters)
+  declare search: VariableSearchInputAllowedFilters;
 }
 
 @OpenAPI({

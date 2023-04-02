@@ -12,6 +12,11 @@ export class ITakaroQuery<T> {
   };
 
   @IsOptional()
+  search?: {
+    [key in keyof T]?: string;
+  };
+
+  @IsOptional()
   @IsNumber()
   page?: number;
 
@@ -56,6 +61,17 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       .where(filters)
       .page(pagination.page, pagination.limit)
       .orderBy(sorting.sortBy, sorting.sortDirection);
+
+    if (this.query.search) {
+      for (const search in this.query.search) {
+        if (Object.prototype.hasOwnProperty.call(this.query.search, search)) {
+          const searchVal = this.query.search[search];
+          if (searchVal) {
+            qry.andWhere(`${tableName}.${search}`, 'like', `%${searchVal}%`);
+          }
+        }
+      }
+    }
 
     for (const extend of this.query.extend ?? []) {
       qry.withGraphJoined(extend);

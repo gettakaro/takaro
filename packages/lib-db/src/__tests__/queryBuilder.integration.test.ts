@@ -126,4 +126,26 @@ describe('QueryBuilder', () => {
     expect(res.results).to.have.lengthOf(1);
     expect(res.results[0].author?.name).to.equal('test1');
   });
+
+  it('Can do partial matching of strings', async () => {
+    await TestUserModel.query().insert({ name: 'test1' });
+    await TestUserModel.query().insert({ name: 'test2' });
+    await TestUserModel.query().insert({ name: 'test3' });
+
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
+      search: {
+        name: 'test',
+      },
+    }).build(TestUserModel.query());
+
+    expect(res.results).to.have.lengthOf(3);
+
+    const res2 = await new QueryBuilder<TestUserModel, TestUserModel>({
+      search: {
+        name: '1',
+      },
+    }).build(TestUserModel.query());
+
+    expect(res2.results).to.have.lengthOf(1);
+  });
 });

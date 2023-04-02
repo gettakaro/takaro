@@ -181,7 +181,7 @@ export interface CommandArgumentOutputDTO {
    * @type {string}
    * @memberof CommandArgumentOutputDTO
    */
-  defaultValue: string;
+  defaultValue?: string;
   /**
    *
    * @type {number}
@@ -274,6 +274,12 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {Array<CommandArgumentCreateDTO>}
+   * @memberof CommandCreateDTO
+   */
+  arguments?: Array<CommandArgumentCreateDTO>;
 }
 /**
  *
@@ -476,6 +482,12 @@ export interface CommandSearchInputDTO {
   filters?: CommandSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof CommandSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
    * @type {number}
    * @memberof CommandSearchInputDTO
    */
@@ -544,6 +556,12 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {Array<CommandArgumentCreateDTO>}
+   * @memberof CommandUpdateDTO
+   */
+  arguments?: Array<CommandArgumentCreateDTO>;
 }
 /**
  *
@@ -694,6 +712,12 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   filters?: CronJobSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof CronJobSearchInputDTO
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -922,6 +946,12 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   filters?: DomainSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof DomainSearchInputDTO
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -1235,6 +1265,12 @@ export interface FunctionSearchInputDTO {
   filters?: FunctionSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof FunctionSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
    * @type {number}
    * @memberof FunctionSearchInputDTO
    */
@@ -1437,6 +1473,12 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   filters?: GameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof GameServerSearchInputDTO
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -1829,6 +1871,12 @@ export interface HookSearchInputDTO {
   filters?: HookSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof HookSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
    * @type {number}
    * @memberof HookSearchInputDTO
    */
@@ -1972,6 +2020,12 @@ export interface ITakaroQuery {
    * @memberof ITakaroQuery
    */
   filters?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ITakaroQuery
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -2356,6 +2410,12 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   filters?: ModuleSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof ModuleSearchInputDTO
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -2743,6 +2803,12 @@ export interface PlayerSearchInputDTO {
   filters?: PlayerSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof PlayerSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
    * @type {number}
    * @memberof PlayerSearchInputDTO
    */
@@ -2943,6 +3009,12 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   filters?: RoleSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof RoleSearchInputDTO
+   */
+  search?: any;
   /**
    *
    * @type {number}
@@ -3546,6 +3618,12 @@ export interface UserSearchInputDTO {
   filters?: UserSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof UserSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
    * @type {number}
    * @memberof UserSearchInputDTO
    */
@@ -3703,6 +3781,12 @@ export interface VariableSearchInputAllowedFilters {
    * @memberof VariableSearchInputAllowedFilters
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  key?: string;
 }
 /**
  *
@@ -3716,6 +3800,12 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   filters?: VariableSearchInputAllowedFilters;
+  /**
+   *
+   * @type {VariableSearchInputAllowedFilters}
+   * @memberof VariableSearchInputDTO
+   */
+  search?: VariableSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -8919,6 +9009,45 @@ export const MetaApiAxiosParamCreator = function (
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetReadiness: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/readyz`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -9015,6 +9144,29 @@ export const MetaApiFp = function (configuration?: Configuration) {
         configuration
       );
     },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async metaGetReadiness(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HealthOutputDTO>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.metaGetReadiness(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
   };
 };
 
@@ -9071,6 +9223,17 @@ export const MetaApiFactory = function (
     metaGetOpenApiHtml(options?: any): AxiosPromise<void> {
       return localVarFp
         .metaGetOpenApiHtml(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetReadiness(options?: any): AxiosPromise<HealthOutputDTO> {
+      return localVarFp
+        .metaGetReadiness(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9132,6 +9295,19 @@ export class MetaApi extends BaseAPI {
   public metaGetOpenApiHtml(options?: AxiosRequestConfig) {
     return MetaApiFp(this.configuration)
       .metaGetOpenApiHtml(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get readiness
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MetaApi
+   */
+  public metaGetReadiness(options?: AxiosRequestConfig) {
+    return MetaApiFp(this.configuration)
+      .metaGetReadiness(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
