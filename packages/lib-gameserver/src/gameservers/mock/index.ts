@@ -6,6 +6,7 @@ import {
   CommandOutput,
   IGameServer,
   IMessageOptsDTO,
+  IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
@@ -36,6 +37,10 @@ export class Mock implements IGameServer {
     this.emitter = new MockEmitter(this.connectionInfo);
   }
 
+  getEventEmitter() {
+    return this.emitter;
+  }
+
   async getPlayer(id: string): Promise<IGamePlayer | null> {
     this.logger.debug('getPlayer', id);
     return null;
@@ -45,8 +50,12 @@ export class Mock implements IGameServer {
     return [];
   }
 
-  getEventEmitter() {
-    return this.emitter;
+  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
+    return {
+      x: parseInt(faker.random.numeric(), 10),
+      y: parseInt(faker.random.numeric(), 10),
+      z: parseInt(faker.random.numeric(), 10),
+    };
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
@@ -91,6 +100,15 @@ export class Mock implements IGameServer {
     this.sendLog(
       await new EventLogLine().construct({
         msg: fullMessage,
+        timestamp: new Date(),
+      })
+    );
+  }
+
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+    this.sendLog(
+      await new EventLogLine().construct({
+        msg: `Teleporting ${player.name} to ${x}, ${y}, ${z}`,
         timestamp: new Date(),
       })
     );

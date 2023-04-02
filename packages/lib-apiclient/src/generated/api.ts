@@ -3369,6 +3369,37 @@ export interface TakaroTokenDTO {
 /**
  *
  * @export
+ * @interface TeleportPlayerInputDTO
+ */
+export interface TeleportPlayerInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof TeleportPlayerInputDTO
+   */
+  playerGameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TeleportPlayerInputDTO
+   */
+  x: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TeleportPlayerInputDTO
+   */
+  y: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TeleportPlayerInputDTO
+   */
+  z: number;
+}
+/**
+ *
+ * @export
  * @interface TestReachabilityOutput
  */
 export interface TestReachabilityOutput {
@@ -7177,6 +7208,63 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Teleport player
+     * @param {string} id
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTeleportPlayer: async (
+      id: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerTeleportPlayer', 'id', id);
+      const localVarPath = `/gameserver/{id}/teleportPlayer`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        teleportPlayerInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -7660,6 +7748,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Teleport player
+     * @param {string} id
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTeleportPlayer(
+      id: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerTeleportPlayer(
+          id,
+          teleportPlayerInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -7943,6 +8059,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Teleport player
+     * @param {string} id
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTeleportPlayer(
+      id: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerTeleportPlayer(id, teleportPlayerInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -8181,6 +8314,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerSendMessage(id, messageSendInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Teleport player
+   * @param {string} id
+   * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerTeleportPlayer(
+    id: string,
+    teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerTeleportPlayer(id, teleportPlayerInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
