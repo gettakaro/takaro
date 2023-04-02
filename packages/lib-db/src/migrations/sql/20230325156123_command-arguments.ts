@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('commandId').notNullable();
 
     table
-      .foreign('commandId')
+      .string('commandId')
       .references('commands.id')
       .onDelete('CASCADE')
       .notNullable();
