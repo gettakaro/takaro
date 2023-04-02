@@ -12,21 +12,45 @@ async function help() {
     return mod.commands;
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: 'Available commands:',
-  });
+  if (data.arguments.command === 'all') {
+    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+      message: 'Available commands:',
+    });
 
-  for (const mod of moduleCommands) {
-    await Promise.all(
-      mod.map(async (command) => {
-        await takaro.gameserver.gameServerControllerSendMessage(
-          data.gameServerId,
-          {
-            message: `${command.name}: ${command.helpText}`,
-          }
-        );
-      })
-    );
+    for (const mod of moduleCommands) {
+      await Promise.all(
+        mod.map(async (command) => {
+          await takaro.gameserver.gameServerControllerSendMessage(
+            data.gameServerId,
+            {
+              message: `${command.name}: ${command.helpText}`,
+            }
+          );
+        })
+      );
+    }
+  } else {
+    const allCommandsFlat = moduleCommands.flat();
+    const requestedCommand = allCommandsFlat.find((c) => {
+      return c.name === data.arguments.command;
+    });
+
+    if (!requestedCommand) {
+      await takaro.gameserver.gameServerControllerSendMessage(
+        data.gameServerId,
+        {
+          message:
+            'Unknown command, use this command without arguments to see all available commands.',
+        }
+      );
+    } else {
+      await takaro.gameserver.gameServerControllerSendMessage(
+        data.gameServerId,
+        {
+          message: `${requestedCommand.name}: ${requestedCommand.helpText}`,
+        }
+      );
+    }
   }
 }
 
