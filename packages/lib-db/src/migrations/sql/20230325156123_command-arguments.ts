@@ -9,10 +9,9 @@ export async function up(knex: Knex): Promise<void> {
     table.string('helpText');
     table.string('defaultValue');
     table.smallint('position').notNullable();
-    table.uuid('commandId').notNullable();
 
     table
-      .string('commandId')
+      .uuid('commandId')
       .references('commands.id')
       .onDelete('CASCADE')
       .notNullable();
