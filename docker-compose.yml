@@ -15,6 +15,8 @@ services:
     image: postgres:14
     volumes:
       - ./_data/db:/var/lib/postgresql/data
+    ports:
+      - 127.0.0.1:13100:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -119,6 +121,8 @@ services:
       - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
     image: postgres:14
+    ports:
+      - 127.0.0.1:13101:5432    
     volumes:
       - ./_data/kratos-db:/var/lib/postgresql/data
     environment:
@@ -147,6 +151,8 @@ services:
       - ./containers/ory/hydra:/etc/config/hydra
   postgresql_hydra:
     image: postgres:14
+    ports:
+      - 127.0.0.1:13102:5432    
     volumes:
       - ./_data/hydra-db:/var/lib/postgresql/data
     environment:
