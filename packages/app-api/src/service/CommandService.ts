@@ -24,6 +24,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
+import { GameServerService } from './GameServerService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -296,9 +297,22 @@ export class CommandService extends TakaroService<
         `Found ${triggeredCommands.length} commands that match the event`
       );
 
+      if (!chatMessage.player) {
+        this.log.error('Chat message does not have a player attached to it');
+        throw new errors.InternalServerError();
+      }
+
+      const gameServerService = new GameServerService(this.domainId);
+      const playerLocation = await (
+        await gameServerService.getGame(gameServerId)
+      ).getPlayerLocation(chatMessage.player);
+
       const parsedCommands = triggeredCommands.map((c) => ({
         db: c,
-        parsed: parseCommand(chatMessage.msg, c),
+        parsed: {
+          ...parseCommand(chatMessage.msg, c),
+          player: { ...chatMessage.player, location: playerLocation },
+        },
       }));
 
       const queues = QueuesService.getInstance();
