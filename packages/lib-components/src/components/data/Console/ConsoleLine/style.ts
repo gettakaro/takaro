@@ -41,7 +41,6 @@ export const IconContainer = styled.div<{ messageType: MessageType }>`
 
 export const TimestampContainer = styled.div`
   font-family: 'inconsolata';
-  font-size: 1.2rem;
   margin-right: ${({ theme }) => theme.spacing['0_5']};
 `;
 
@@ -74,5 +73,5 @@ export const Body = styled.div<{ isCollapsed: boolean; type: MessageType }>`
 export const StyledExpandIcon = styled(EnterIcon)`
   position: absolute;
   cursor: pointer;
-  right: 2rem;
+  right: ${({ theme }) => theme.spacing['2']};
 `;
