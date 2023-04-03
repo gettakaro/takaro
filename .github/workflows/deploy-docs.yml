@@ -34,6 +34,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - run: npm ci
+
       - run: npm -w packages/web-docs run export
 
       - name: Upload artifact
