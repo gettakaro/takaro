@@ -1,16 +1,12 @@
----
-sidebar_position: 5
----
+import { Callout } from 'nextra-theme-docs'
 
 # Encryption
 
 Takaro needs to store certain sensitive data in the database which must be protected. The [pgcrypto PostgreSQL module](https://www.postgresql.org/docs/current/pgcrypto.html) is leveraged for this. This module will automatically get installed by `app-api` on boot up, if it is not already installed. Please note that if you are not using a standard PostgreSQL installation method, this module might not be available out-of-the-box for you.
 
-:::caution
-
-Because encryption-related actions happen inside the database, that means that sensitive data is transmitted in clear text between the application and the database. You should securely connect to your database (e.g. using TLS) to prevent this data from being intercepted.
-
-:::
+<Callout type="warning">
+  Because encryption-related actions happen inside the database, that means that sensitive data is transmitted in clear text between the application and the database. You should securely connect to your database (e.g. using TLS) to prevent this data from being intercepted.
+</Callout>
 
 ## Encryption/Decryption
 

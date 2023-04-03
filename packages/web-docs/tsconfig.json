@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": true,
+    "jsx": "preserve"
+  }
+}

@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Repo setup
 
 This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).

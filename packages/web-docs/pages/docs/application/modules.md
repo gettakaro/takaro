@@ -1,11 +1,6 @@
----
-sidebar_position: 1
-slug: /
----
-
 # Modules
 
-You can create your own features in Takaro using Modules. 
+You can create your own features in Takaro using Modules.
 
 Each modules consists of one or more of the following components:
 
@@ -27,13 +22,13 @@ Cronjobs are triggered based on time. This can be a simple repeating pattern lik
 
 ## Commands
 
-Commands are triggered by a user. They are triggered when a player sends a chat message starting with the configured command prefix. Note that this means that commands are a *manual* action, unlike Hooks and Cronjobs which are triggered with any user-intervention.
+Commands are triggered by a user. They are triggered when a player sends a chat message starting with the configured command prefix. Note that this means that commands are a _manual_ action, unlike Hooks and Cronjobs which are triggered with any user-intervention.
 
 Commands support parameters, allowing you to pass data to the Function. For example, you can create a command that allows players to teleport to a specific location. The command could look like `/teleport homeBase`
 
 # Configuration
 
-Every Module can have a certain configuration, allowing you to customize it's behavior without having to edit any code. Every Hook, Cronjob and Command will be able to read this config. 
+Every Module can have a certain configuration, allowing you to customize it's behavior without having to edit any code. Every Hook, Cronjob and Command will be able to read this config.
 
 As a contrived example, a config like the following exists
 

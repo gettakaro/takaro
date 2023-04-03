@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Database
 
 ## Multi-tenancy
@@ -16,12 +12,12 @@ erDiagram
       string id PK
       string name
     }
-    
+
     gameServer {
       string id PK
       string name
       enum type
-      json connectionInfo 
+      json connectionInfo
     }
 
     settings {
@@ -45,7 +41,7 @@ erDiagram
       string id PK
       string name
     }
-    
+
     player {
       string id PK
       string platformId
@@ -58,7 +54,7 @@ erDiagram
       string gameServerId FK
       string gameId
     }
-    
+
     function {
       string id PK
       string name

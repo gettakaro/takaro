@@ -1,12 +1,8 @@
----
-sidebar_position: 4
----
-
 # Functions isolation
 
-Takaro uses Kata containers to run containers isolated by VMs. 
+Takaro uses Kata containers to run containers isolated by VMs.
 
-![](./img/functions-infra.png)
+![](../../assets/functions-infra.png)
 
 ## containerd communications
 
@@ -14,14 +10,13 @@ We can use the [Docker Engine API](https://docs.docker.com/engine/api/v1.41/) to
 
 ## Installing Kata containers on Hetzner
 
-
 - TODO: This needs to be packaged up somehow. Maybe we can create an image with Packer?
 - TODO: I used the CentOS Stream 8 image from Hetzner. I think this is the same/similar as Rocky Linux? We can also use the snapd install method if we want to stick with Ubuntu servers.
 - TODO: Using Qemu as a backend now. If we switch to Firecracker, creating containers should become a lot faster.
 
 Kata containers has some specific requirements to be installed. At time of writing, I (Cata) have a machine setup on Hetzner. These are the steps I took:
 
-Start with a CentOS 8 machine. 
+Start with a CentOS 8 machine.
 
 Install Kata containers:
 
@@ -51,7 +46,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin    
+sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 sudo systemctl enable docker
 sudo systemctl start docker
@@ -77,6 +72,5 @@ curl -L -o nerdctl.tar.gz https://github.com/containerd/nerdctl/releases/downloa
 sudo tar xzf nerdctl.tar.gz --directory=/usr/local
 
 ```
-
 
 `nerdctl run --runtime "io.containerd.kata.v2" hello-world`

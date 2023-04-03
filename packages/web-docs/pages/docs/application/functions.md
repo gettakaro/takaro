@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Functions
 
 Functions are a Takaro object, they are the actual code that is executed when a Hook, Cronjob or Command is triggered. Functions are written in JavaScript and can be created in the Takaro Web UI.

@@ -1,7 +1,3 @@
----
-sidebar_position: 6
----
-
 # Common tasks and snippets
 
 ## Running tests
@@ -28,7 +24,7 @@ docker-compose exec takaro npm -w packages/app-api run test:integration -- -g "S
 
 ### Integration tests
 
-Takaro is a complex system, getting it to run in a test environment is not trivial. We use a combination of Docker, Docker Compose and a custom script to get everything running. 
+Takaro is a complex system, getting it to run in a test environment is not trivial. We use a combination of Docker, Docker Compose and a custom script to get everything running.
 
 ```sh
 # Assumes you have a running dev environment
