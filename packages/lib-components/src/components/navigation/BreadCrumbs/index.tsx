@@ -4,13 +4,20 @@ import { styled } from '../../../styled';
 const Crumbs = styled.div`
   & > * {
     display: inline-block;
-    margin-right: ${({ theme }) => theme.spacing['0_75']};
+    margin-right: ${({ theme }) => theme.spacing['0_5']};
   }
 
   div {
+    a {
+      &:hover {
+        color: ${({ theme }) => theme.colors.primary};
+      }
+      text-transform: capitalize;
+    }
+
     &:after {
       content: '/';
-      margin-left: ${({ theme }) => theme.spacing['0_75']};
+      margin-left: ${({ theme }) => theme.spacing['0_5']};
     }
     &:last-child:after {
       display: none;
