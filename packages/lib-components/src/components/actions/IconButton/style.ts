@@ -5,7 +5,7 @@ export const Default = styled.button<{ size: Size; color: Color }>`
   align-items: center;
   justify-content: center;
   transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1) 0s;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   border: 3px solid transparent;
   background-clip: padding-box;
   cursor: pointer;

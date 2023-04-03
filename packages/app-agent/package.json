@@ -6,9 +6,8 @@
   "types": "main.ts",
   "type": "module",
   "scripts": {
-    "start": "node dist/main.js",
-    "start:dev-local": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12002 dist/main.js'  --config ../../nodemon.json",
-    "start:dev": "echo app-gent should run on the host",
+    "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
+    "start:dev": "nodemon --exec 'npm run build && node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12002 dist/main.js'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "echo 'No tests (yet :))'",

@@ -4,7 +4,7 @@ import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
-import { getMetrics } from '@takaro/util';
+import { getMetrics, health } from '@takaro/util';
 
 export class HealthOutputDTO {
   @IsBoolean()
@@ -14,10 +14,15 @@ export class HealthOutputDTO {
 export class Meta {
   @Get('/healthz')
   @ResponseSchema(HealthOutputDTO)
-  getHealth() {
-    return {
-      healthy: true,
-    };
+  async getHealth() {
+    return { healthy: true };
+  }
+
+  @Get('/readyz')
+  @ResponseSchema(HealthOutputDTO)
+  async getReadiness() {
+    const healthy = await health.check();
+    return { healthy };
   }
 
   @Get('/openapi.json')

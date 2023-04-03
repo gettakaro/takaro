@@ -7,14 +7,24 @@ const fontSize = {
   small: '1.2rem',
   medium: '1.325rem',
   mediumLarge: '1.825rem',
-  large: '4.25rem',
+  large: '2.425rem',
   huge: '6rem',
+};
+
+const borderRadius = {
+  // For tiny components like checkboxes, tags and labels
+  small: '0.25rem',
+  // For medium components like buttons, inputs and similar components
+  medium: '0.5rem',
+  // For large components like modals and similar components
+  large: '0.8rem',
 };
 
 export const lightTheme = {
   elevation: elevationLight,
   spacing,
   fontSize,
+  borderRadius,
   colors: {
     primary: '#664de5',
     secondary: '#030917',
@@ -41,6 +51,7 @@ export const darkTheme: ThemeType = {
   elevation: elevationDark,
   spacing,
   fontSize,
+  borderRadius,
   colors: {
     primary: '#664DE5',
     secondary: '#353535',

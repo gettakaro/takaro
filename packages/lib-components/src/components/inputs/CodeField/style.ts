@@ -19,14 +19,14 @@ export const InputContainer = styled.div<{ fields: number }>`
 
 export const LoadingField = styled.div`
   width: 100%;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   height: 60px;
 `;
 
 export const Input = styled.input<{ hasError: boolean; isDisabled: boolean }>`
   width: 100%;
   font-size: ${({ theme }) => theme.fontSize.large};
-  border-radius: 0.8rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   padding: 0;
   text-align: center;
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};

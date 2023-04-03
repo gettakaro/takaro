@@ -1,6 +1,11 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger, errors, enableDefaultNodejsMetrics } from '@takaro/util';
+import {
+  logger,
+  errors,
+  enableDefaultNodejsMetrics,
+  Sentry,
+} from '@takaro/util';
 import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,
@@ -33,6 +38,7 @@ export class HTTP {
     enableDefaultNodejsMetrics();
     this.app = express();
     this.httpServer = createServer(this.app);
+    this.app.use(Sentry.Handlers.requestHandler());
     this.app.use(bodyParser.json());
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
@@ -70,6 +76,8 @@ export class HTTP {
         validation: { whitelist: true, forbidNonWhitelisted: true },
       });
     }
+
+    this.app.use(Sentry.Handlers.errorHandler());
 
     this.app.use(ErrorHandler);
   }

@@ -1,26 +1,25 @@
 import { styled } from '../../../styled';
-import { Button } from '../../';
 
 export const Wrapper = styled.div`
-  height: auto;
-  background-color: ${({ theme }) => theme.colors.background};
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   position: relative;
-  border-radius: 1rem;
-`;
-export const StyledButton = styled(Button)`
-  position: absolute;
-  top: 1rem;
-  right: 10px;
-  z-index: 2;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
-export const Container = styled.div`
-  overflow: visible;
-  min-height: 80vh;
+export const Header = styled.div`
+  background-color: ${({ theme }) => theme.colors.secondary};
+  height: 50px;
   display: flex;
-  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
+  align-items: center;
   justify-content: flex-end;
-  align-items: flex-start;
-  padding-top: ${({ theme }) => theme.spacing[5]};
-  z-index: 1;
+  padding: 0 ${({ theme }) => theme.spacing[1]};
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+`;
+
+export const MessageContainer = styled.div`
+  min-height: 550px;
+  height: calc(100% - 50px);
 `;

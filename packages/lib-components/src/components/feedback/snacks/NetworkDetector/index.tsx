@@ -10,7 +10,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1.2rem;
-  border-radius: 10px;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   width: 300px;
   background-color: white;
   box-shadow: ${({ theme }): string => theme.elevation[4]};

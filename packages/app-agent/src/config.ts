@@ -4,7 +4,7 @@ import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 export enum EXECUTION_MODE {
-  CONTAINERD = 'containerd',
+  FIRECRACKER = 'firecracker',
   LOCAL = 'local',
 }
 
@@ -12,13 +12,6 @@ interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
-  };
-  redis: {
-    host: string;
-    port: number;
-    username: string;
-    password: string;
-    tlsCa: string;
   };
   functions: {
     executionMode: EXECUTION_MODE;
@@ -64,43 +57,11 @@ const configSchema = {
       env: 'CORS_ALLOWED_ORIGINS',
     },
   },
-  redis: {
-    host: {
-      doc: 'The host of the redis server',
-      format: String,
-      default: 'localhost',
-      env: 'REDIS_HOST',
-    },
-    port: {
-      doc: 'The port of the redis server',
-      format: Number,
-      default: 6379,
-      env: 'REDIS_PORT',
-    },
-    username: {
-      doc: 'The username of the redis server',
-      format: String,
-      default: '',
-      env: 'REDIS_USERNAME',
-    },
-    password: {
-      doc: 'The password of the redis server',
-      format: String,
-      default: '',
-      env: 'REDIS_PASSWORD',
-    },
-    tlsCa: {
-      doc: 'Optional TLS certificate, if the redis server is using TLS',
-      format: String,
-      default: '',
-      env: 'REDIS_TLS_CA',
-    },
-  },
   functions: {
     executionMode: {
       doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
-      format: [EXECUTION_MODE.CONTAINERD, EXECUTION_MODE.LOCAL],
-      default: EXECUTION_MODE.CONTAINERD,
+      format: [EXECUTION_MODE.FIRECRACKER, EXECUTION_MODE.LOCAL],
+      default: EXECUTION_MODE.FIRECRACKER,
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },

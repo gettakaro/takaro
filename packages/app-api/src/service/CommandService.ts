@@ -2,6 +2,7 @@ import { TakaroService } from './Base.js';
 
 import { CommandModel, CommandRepo } from '../db/command.js';
 import {
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -18,9 +19,11 @@ import { EventChatMessage } from '@takaro/gameserver';
 import { QueuesService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
+import { ICommand, ICommandArgument } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
+import { parseCommand } from '../lib/commandParser.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -41,9 +44,34 @@ export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
 
   @IsUUID()
   moduleId: string;
+
+  @Type(() => CommandArgumentOutputDTO)
+  @ValidateNested({ each: true })
+  arguments: CommandArgumentOutputDTO[];
 }
 
-export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
+export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutputDTO> {
+  @IsString()
+  name: string;
+
+  @IsString()
+  type: string;
+
+  @IsString()
+  helpText: string;
+
+  @IsString()
+  @IsOptional()
+  defaultValue?: string;
+
+  @IsNumber()
+  position: number;
+}
+
+export class CommandCreateDTO
+  extends TakaroDTO<CommandCreateDTO>
+  implements ICommand
+{
   @IsString()
   @Length(3, 50)
   name: string;
@@ -61,6 +89,38 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> {
   @IsOptional()
   @IsString()
   function: string;
+
+  @Type(() => CommandArgumentCreateDTO)
+  @ValidateNested({ each: true })
+  @IsOptional()
+  arguments?: ICommandArgument[];
+}
+
+export class CommandArgumentCreateDTO
+  extends TakaroDTO<CommandArgumentCreateDTO>
+  implements ICommandArgument
+{
+  @IsString()
+  @Length(3, 50)
+  name: string;
+
+  @IsString()
+  type: string;
+
+  @IsString()
+  @IsOptional()
+  helpText?: string;
+
+  @IsString()
+  @IsOptional()
+  defaultValue?: string;
+
+  @IsNumber()
+  @IsOptional()
+  position?: number;
+
+  @IsUUID()
+  commandId: string;
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
@@ -80,6 +140,30 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsOptional()
   @IsString()
   function?: string;
+
+  @Type(() => CommandArgumentCreateDTO)
+  @ValidateNested({ each: true })
+  @IsOptional()
+  arguments?: ICommandArgument[];
+}
+
+export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO> {
+  @IsString()
+  @Length(3, 50)
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  type?: string;
+
+  @IsString()
+  @IsOptional()
+  helpText?: string;
+
+  @IsString()
+  @IsOptional()
+  defaultValue?: string;
 }
 
 export class CommandService extends TakaroService<
@@ -125,6 +209,18 @@ export class CommandService extends TakaroService<
     const created = await this.repo.create(
       await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
+
+    if (item.arguments) {
+      await Promise.all(
+        item.arguments.map(async (a) => {
+          return this.createArgument(
+            created.id,
+            await new CommandArgumentCreateDTO().construct(a)
+          );
+        })
+      );
+    }
+
     return created;
   }
 
@@ -146,6 +242,26 @@ export class CommandService extends TakaroService<
         fn.id,
         await new FunctionUpdateDTO().construct({
           code: item.function,
+        })
+      );
+    }
+
+    if (item.arguments) {
+      // Delete existing args first
+      const existingArgs = existing.arguments;
+      await Promise.all(
+        existingArgs.map(async (a) => {
+          return this.deleteArgument(a.id);
+        })
+      );
+
+      // Create new args
+      await Promise.all(
+        item.arguments.map(async (a) => {
+          return this.createArgument(
+            id,
+            await new CommandArgumentCreateDTO().construct(a)
+          );
         })
       );
     }
@@ -180,19 +296,38 @@ export class CommandService extends TakaroService<
         `Found ${triggeredCommands.length} commands that match the event`
       );
 
+      const parsedCommands = triggeredCommands.map((c) => ({
+        db: c,
+        parsed: parseCommand(chatMessage.msg, c),
+      }));
+
       const queues = QueuesService.getInstance();
 
-      const promises = triggeredCommands.map(async (command) => {
-        return queues.queues.commands.queue.add(command.id, {
+      const promises = parsedCommands.map(async ({ parsed, db }) => {
+        return queues.queues.commands.queue.add(db.id, {
           domainId: this.domainId,
-          function: command.function.code,
-          itemId: command.id,
-          data: chatMessage,
+          function: db.function.code,
+          itemId: db.id,
+          data: parsed,
           gameServerId,
         });
       });
 
       await Promise.all(promises);
     }
+  }
+
+  async createArgument(commandId: string, arg: CommandArgumentCreateDTO) {
+    const created = await this.repo.createArgument(commandId, arg);
+    return created;
+  }
+
+  async updateArgument(argumentId: string, arg: CommandArgumentUpdateDTO) {
+    const updated = await this.repo.updateArgument(argumentId, arg);
+    return updated;
+  }
+
+  async deleteArgument(argumentId: string) {
+    return this.repo.deleteArgument(argumentId);
   }
 }

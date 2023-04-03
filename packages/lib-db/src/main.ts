@@ -9,3 +9,5 @@ export { migrate } from './migrations/index.js';
 export * from './encryption.js';
 
 export { configSchema, IDbConfig } from './config.js';
+
+export { Redis } from './redis.js';

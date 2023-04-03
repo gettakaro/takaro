@@ -137,18 +137,30 @@ export class AuthService extends DomainScoped {
   static async getUserFromReq(
     req: AuthenticatedRequest
   ): Promise<UserOutputWithRolesDTO | null> {
+    let user: UserOutputWithRolesDTO | null = null;
     try {
       const identity = await ory.getIdentityFromReq(req);
-      if (!identity) return null;
-      const service = new UserService(identity.domainId);
-      const users = await service.find({ filters: { idpId: identity.id } });
+      if (identity) {
+        const service = new UserService(identity.domainId);
+        const users = await service.find({ filters: { idpId: identity.id } });
+        if (!users.results.length) return null;
 
-      if (!users.results.length) return null;
-
-      return users.results[0];
+        user = users.results[0];
+      }
     } catch (error) {
-      return null;
+      // Not an ory session, so check for a JWT
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      const payload = await this.verifyJwt(token);
+      req.user = { id: payload.sub };
+      req.domainId = payload.domainId;
+
+      const service = new UserService(payload.domainId);
+      const users = await service.find({ filters: { id: payload.sub } });
+      if (!users.results.length) return null;
+      user = users.results[0];
     }
+
+    return user;
   }
 
   static getAuthMiddleware(permissions: PERMISSIONS[]) {

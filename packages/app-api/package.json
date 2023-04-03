@@ -6,11 +6,11 @@
   "types": "main.ts",
   "type": "module",
   "scripts": {
-    "start": "node dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 dist/main.js'  --config ../../nodemon.json",
+    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
+    "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12001 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "echo 'No tests (yet :))'",
+    "test:unit": "tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
     "test:integration": "tsc -p ./tsconfig.json && mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js dist/**/*.integration.test.js --exit"
   },
   "keywords": [],

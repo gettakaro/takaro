@@ -20,7 +20,7 @@ const IndeterminateProgress = styled.div<{ color: Color }>`
   position: relative;
   background-color: ${({ theme }) => theme.colors.background};
   height: 1rem;
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   overflow: hidden;
   will-change: translateX, scaleX;
 
@@ -32,7 +32,7 @@ const IndeterminateProgress = styled.div<{ color: Color }>`
     background-color: ${({ theme, color }) => theme.colors[color]};
     animation: ${indeterminateAnimation} 5s infinite linear;
     transform-origin: 0% 50%;
-    border-radius: 1rem;
+    border-radius: ${({ theme }) => theme.borderRadius.large};
     background-color: ${({ theme, color }) => theme.colors[color]};
   }
 `;
@@ -50,7 +50,7 @@ const Progress = styled.div<{ color: Color; progress: number }>`
   position: relative;
   background-color: ${({ theme }) => theme.colors.background};
   height: ${({ theme }) => theme.spacing[1]};
-  border-radius: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   overflow: hidden;
 
   &::after {

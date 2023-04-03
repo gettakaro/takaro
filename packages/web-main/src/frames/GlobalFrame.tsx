@@ -14,6 +14,7 @@ import {
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
+import { Page } from '../pages/Page';
 
 const Container = styled.div`
   display: flex;
@@ -26,9 +27,6 @@ const ContentContainer = styled(motion.div)`
   opacity: 0;
   overflow-y: auto;
 `;
-const Page = styled.div`
-  padding: 3rem 6rem;
-`;
 
 export const GlobalFrame: FC = () => {
   const links: NavbarLink[] = [
@@ -39,7 +37,7 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Servers',
-      path: PATHS.gameServers(),
+      path: PATHS.gameServers.overview(),
       icon: <GameServersIcon />,
     },
     {

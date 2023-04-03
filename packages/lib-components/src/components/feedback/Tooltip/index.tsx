@@ -27,11 +27,11 @@ export interface TooltipProps {
 }
 
 const Container = styled(motion.div)<{ elevation: Elevation }>`
-  background: #222;
+  background: ${({ theme }) => theme.colors.background};
   color: white;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
-  border-radius: 0.6rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['0_75']}`};
   font-size: 1.4rem;
   width: max-content;

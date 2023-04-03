@@ -1,41 +1,16 @@
 import { styled } from '../../../../styled';
-import { MessageType } from '../ConsoleInterface';
-import { tint } from 'polished';
+import { MessageType } from '../MessageModel';
 import { BsChevronExpand as EnterIcon } from 'react-icons/bs';
 
 export const Wrapper = styled.div<{
-  canCollapse: boolean;
   messageType: MessageType;
 }>`
   display: flex;
   flex-direction: row;
+  position: relative;
   font-family: 'inconsolata';
-  font-size: 1.3rem;
-  pointer: ${({ canCollapse }) => (canCollapse ? 'pointer' : 'default')};
-  user-select: auto;
   width: 100%;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[0]}`};
-  border-top: 1px solid
-    ${({ messageType, theme }): string => {
-      if (messageType === 'error') return tint(0.4, theme.colors.error);
-      if (messageType === 'warning') return tint(0.4, theme.colors.warning);
-      if (messageType === 'command') return tint(0.4, theme.colors.primary);
-      return 'none';
-    }};
-  border-bottom: 1px solid
-    ${({ messageType, theme }): string => {
-      if (messageType === 'error') return tint(0.4, theme.colors.error);
-      if (messageType === 'warning') return tint(0.4, theme.colors.warning);
-      if (messageType === 'command') return tint(0.4, theme.colors.primary);
-      return 'none';
-    }};
-
-  background-color: ${({ messageType, theme }): string => {
-    if (messageType === 'error') return tint(0.6, theme.colors.error);
-    if (messageType === 'warning') return tint(0.6, theme.colors.warning);
-    if (messageType === 'command') return tint(0.6, theme.colors.primary);
-    return 'none';
-  }};
+  background-color: ${({ theme }): string => theme.colors.backgroundAlt};
 
   &:last-child {
     border-bottom: none;
@@ -44,15 +19,17 @@ export const Wrapper = styled.div<{
 
 export const Container = styled.div<{ isCollapsed: boolean }>`
   max-width: 100%;
-  vertical-align: top;
+  width: 100%;
   display: grid;
-  grid-template-columns: 4rem 20rem auto;
+  align-content: start;
+  height: fit-content;
+  grid-template-columns: 4rem 20rem 1fr;
   text-align: left;
   margin: ${({ theme }) => theme.spacing[0]};
 `;
 
 export const IconContainer = styled.div<{ messageType: MessageType }>`
-  margin-left: ${({ theme }) => theme.spacing['0_75']};
+  padding-left: ${({ theme }) => theme.spacing['0_75']};
   svg {
     fill: ${({ theme, messageType }) => {
       if (messageType === 'debug') return theme.colors.error;
@@ -64,13 +41,13 @@ export const IconContainer = styled.div<{ messageType: MessageType }>`
 
 export const TimestampContainer = styled.div`
   font-family: 'inconsolata';
-  font-size: 1.3rem;
   margin-right: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const TextContainer = styled.div`
   font-family: 'inconsolata';
-  font-size: 1.4rem;
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const CollapsedContainer = styled.div`
@@ -84,19 +61,16 @@ export const Header = styled.div<{ isCollapsed: boolean; type: MessageType }>`
   align-items: center;
   p {
     font-family: 'inconsolata';
-    font-size: 1.4rem;
-    user-select: auto;
   }
 `;
 
 export const Body = styled.div<{ isCollapsed: boolean; type: MessageType }>`
   display: ${({ isCollapsed }) => (isCollapsed ? 'none' : 'block')};
   font-family: 'inconsolata';
-  font-size: 1.4rem;
 `;
 
 export const StyledExpandIcon = styled(EnterIcon)`
   position: absolute;
   cursor: pointer;
-  right: 2rem;
+  right: ${({ theme }) => theme.spacing['2']};
 `;

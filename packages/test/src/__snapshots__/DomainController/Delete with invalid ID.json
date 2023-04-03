@@ -4,7 +4,7 @@
       "serverTime": "2022-09-11T21:22:45.213Z",
       "error": {
         "code": "NotFoundError",
-        "details": {}
+        "message": "Not found"
       }
     },
     "data": {}

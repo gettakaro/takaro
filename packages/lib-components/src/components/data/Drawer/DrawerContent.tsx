@@ -17,10 +17,12 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
   display: grid;
   place-items: end;
   max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden !important;
 `;
 
 const Container = styled(motion.div)`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.background};
   width: 460px;
   height: 100vh;
   max-height: 100vh;

@@ -1,4 +1,4 @@
-import { Processor, Queue, Worker, QueueEvents, QueueScheduler } from 'bullmq';
+import { Processor, Worker, Queue, QueueEvents } from 'bullmq';
 import { config } from './config.js';
 import { logger, ctx, addCounter } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
@@ -16,14 +16,16 @@ export abstract class TakaroWorker<T> extends Worker<T, unknown> {
   log = logger('worker');
 
   constructor(name: string, fn: Processor<T, unknown>) {
+    const label = `worker:${name}`;
     super(
       name,
       ctx.wrap(
+        label,
         addCounter(fn, {
-          name: `worker:${name}`,
+          name: label,
           help: `How many jobs were processed by ${name}`,
         })
-      ),
+      ) as Processor<T, unknown>,
       {
         connection: getRedisConnectionOptions(),
       }
@@ -46,7 +48,7 @@ export interface IJobData {
    * Additional data that can be passed to the job
    * Typically, this depends on what triggered the job
    */
-  data?: EventMapping[GameEvents];
+  data?: Record<string, unknown> | EventMapping[GameEvents];
 }
 
 export interface IEventQueueData {
@@ -72,36 +74,24 @@ export class QueuesService {
   private queuesMap = {
     commands: {
       queue: new TakaroQueue<IJobData>(config.get('queues.commands.name')),
-      scheduler: new QueueScheduler(config.get('queues.commands.name'), {
-        connection: getRedisConnectionOptions(),
-      }),
       events: new QueueEvents(config.get('queues.commands.name'), {
         connection: getRedisConnectionOptions(),
       }),
     },
     cronjobs: {
       queue: new TakaroQueue<IJobData>(config.get('queues.cronjobs.name')),
-      scheduler: new QueueScheduler(config.get('queues.cronjobs.name'), {
-        connection: getRedisConnectionOptions(),
-      }),
       events: new QueueEvents(config.get('queues.cronjobs.name'), {
         connection: getRedisConnectionOptions(),
       }),
     },
     hooks: {
       queue: new TakaroQueue<IJobData>(config.get('queues.hooks.name')),
-      scheduler: new QueueScheduler(config.get('queues.hooks.name'), {
-        connection: getRedisConnectionOptions(),
-      }),
       events: new QueueEvents(config.get('queues.hooks.name'), {
         connection: getRedisConnectionOptions(),
       }),
     },
     events: {
       queue: new TakaroQueue<IEventQueueData>(config.get('queues.events.name')),
-      scheduler: new QueueScheduler(config.get('queues.events.name'), {
-        connection: getRedisConnectionOptions(),
-      }),
       events: new QueueEvents(config.get('queues.events.name'), {
         connection: getRedisConnectionOptions(),
       }),

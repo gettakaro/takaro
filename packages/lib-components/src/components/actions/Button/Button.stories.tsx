@@ -10,7 +10,6 @@ const Wrapper = styled.div`
   grid-gap: 2rem;
   padding: 5rem;
   background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
 
   div {
     button {

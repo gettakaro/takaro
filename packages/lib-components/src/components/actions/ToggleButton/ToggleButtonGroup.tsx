@@ -34,16 +34,16 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
         : 'none'};
 
     &:first-child {
-      ${({ orientation }) => {
+      ${({ orientation, theme }) => {
         if (orientation == 'horizontal') {
           return `
-            border-top-left-radius: 5px;
-            border-bottom-left-radius: 5px;
+            border-top-left-radius: ${theme.borderRadius.medium};
+            border-bottom-left-radius: ${theme.borderRadius.medium};
           `;
         } else {
           return `
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
+        border-top-left-radius: ${theme.borderRadius.medium};
+        border-top-right-radius: ${theme.borderRadius.medium};
           `;
         }
       }}
@@ -53,14 +53,14 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
       ${({ orientation, theme }) => {
         if (orientation == 'horizontal') {
           return `
-            border-top-right-radius: 5px;
-            border-bottom-right-radius: 5px;
+            border-top-right-radius: ${theme.borderRadius.medium};
+            border-bottom-right-radius: ${theme.borderRadius.medium};
             border-right: 2px solid ${theme.colors.backgroundAlt};
           `;
         } else {
           return `
-            border-bottom-right-radius: 5px;
-            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: ${theme.borderRadius.medium};
+            border-bottom-left-radius: ${theme.borderRadius.medium};
             border-bottom: 2px solid ${theme.colors.backgroundAlt};
       `;
         }

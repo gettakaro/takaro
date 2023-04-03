@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
-import _ from 'lodash-es';
+import { omit } from 'lodash-es';
 import { Model } from 'objection';
 import {
   RoleCreateInputDTO,
@@ -103,7 +103,7 @@ export class RoleRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const data = await query
       .insert({
-        ..._.omit(item.toJSON(), 'permissions'),
+        ...omit(item.toJSON(), 'permissions'),
         domain: this.domainId,
       })
       .returning('*');
@@ -130,7 +130,7 @@ export class RoleRepo extends ITakaroRepo<
 
     const { query } = await this.getModel();
     await query
-      .updateAndFetchById(id, _.omit(data.toJSON(), 'permissions'))
+      .updateAndFetchById(id, omit(data.toJSON(), 'permissions'))
       .returning('*');
     const item = await this.findOne(id);
     return item;

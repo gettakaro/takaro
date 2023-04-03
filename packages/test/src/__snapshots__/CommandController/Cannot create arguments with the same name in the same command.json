@@ -1,0 +1,24 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ConflictError",
+        "message": "Unique constraint violation"
+      }
+    },
+    "data": {}
+  },
+  "status": 409,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Cannot create arguments with the same name in the same command",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "commandId"
+    ],
+    "expectedStatus": 409,
+    "standardEnvironment": true
+  }
+}

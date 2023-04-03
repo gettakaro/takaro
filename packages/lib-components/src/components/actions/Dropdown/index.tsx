@@ -10,9 +10,9 @@ import { FC } from 'react';
 import { styled } from '../../../styled';
 
 const FloatingContainer = styled.div`
-  background-color: white;
-  box-shadow: ${({ theme }) => theme.elevation[2]};
-  border-radius: 0.5rem;
+  background-color: ${({ theme }) => theme.colors.background};
+  box-shadow: ${({ theme }) => theme.elevation[3]};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
 const ReferenceContainer = styled.div`
@@ -50,7 +50,14 @@ export const Dropdown: FC<Dropdown> = ({
 
   return (
     <>
-      <ReferenceContainer ref={refs.setReference} {...getReferenceProps()}>
+      <ReferenceContainer
+        ref={refs.setReference}
+        {...getReferenceProps({
+          onClick(event) {
+            event.stopPropagation();
+          },
+        })}
+      >
         {renderReference}
       </ReferenceContainer>
       {open && (

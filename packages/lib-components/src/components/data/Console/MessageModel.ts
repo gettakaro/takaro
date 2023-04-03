@@ -4,5 +4,6 @@ export interface Message {
   type: MessageType;
   timestamp: string;
   data: string;
-  trace?: string;
+  // in case it is a command
+  result?: string;
 }

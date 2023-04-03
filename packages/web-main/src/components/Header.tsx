@@ -1,6 +1,11 @@
 import { FC, useState, createRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { styled, getInitials, useOutsideAlerter } from '@takaro/lib-components';
+import {
+  styled,
+  getInitials,
+  useOutsideAlerter,
+  BreadCrumbs,
+} from '@takaro/lib-components';
 import { useUser } from 'hooks/useUser';
 import { UserDropDown } from './UserDropdown';
 
@@ -11,19 +16,6 @@ const Container = styled.header`
   justify-content: space-between;
   align-items: flex-end;
   position: relative;
-  h2 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: capitalize;
-    font-weight: 500;
-    color: ${({ theme }) => theme.colors.text};
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
-
-    svg {
-      margin-right: 2rem;
-    }
-  }
 `;
 
 const User = styled.div`
@@ -39,7 +31,7 @@ const InitialsBlock = styled.div`
   width: 4.5rem;
   height: 4.5rem;
   margin-right: 0.5rem;
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   font-weight: 800;
@@ -60,6 +52,18 @@ const Name = styled.div`
   }
 `;
 
+const Left = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  h2 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+    font-size: ${({ theme }) => theme.fontSize.large};
+    text-transform: capitalize;
+  }
+`;
+
 export const Header: FC = () => {
   const { userData } = useUser();
   const location = useLocation();
@@ -70,7 +74,10 @@ export const Header: FC = () => {
   });
   return (
     <Container>
-      <h2>{location.pathname.split('/')[1] || 'dashboard'}</h2>
+      <Left>
+        <h2>{location.pathname.split('/')[1] || 'dashboard'}</h2>
+        <BreadCrumbs />
+      </Left>
       <User
         onClick={() => setUserDropDownVisibility(!showUserDropDown)}
         ref={containerRef}
