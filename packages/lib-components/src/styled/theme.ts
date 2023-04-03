@@ -8,7 +8,7 @@ const fontSize = {
   medium: '1.325rem',
   mediumLarge: '1.825rem',
   large: '2.425rem',
-  huge: '6rem',
+  huge: '4rem',
 };
 
 const borderRadius = {
@@ -57,8 +57,8 @@ export const darkTheme: ThemeType = {
     secondary: '#353535',
     tertiary: '#be81f6',
     quaternary: '#e5cc4d',
-    placeholder: '202020',
-    placeholderHighlight: '#555555',
+    placeholder: '#202020',
+    placeholderHighlight: '#303030',
     white: '#ffffff',
     gray: '#0e0e0e',
     shade: '#eaf8f0',
