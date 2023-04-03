@@ -1,20 +1,11 @@
-import { FC, ReactNode, CSSProperties, ReactElement } from 'react';
+import { FC, ReactElement } from 'react';
 import { Size, styled } from '../../../styled';
 
-const Container = styled.div<{ border: 'dashed' | 'none'; size: Size }>`
+const Container = styled.div<{ size: Size }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: min-content;
-  ${({ theme, border }) => {
-    switch (border) {
-      case 'dashed':
-        return `border: .4rem dashed ${theme.colors.background}`;
-      case 'none':
-        return '';
-    }
-  }};
+  width: 600px;
 
   ${({ size }) => {
     switch (size) {
@@ -47,62 +38,49 @@ const Container = styled.div<{ border: 'dashed' | 'none'; size: Size }>`
   }};
 `;
 
-const Header = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.secondary};
-`;
-
-const ButtonContainer = styled.div`
-  margin-top: 1rem;
-`;
-
-const ImageContainer = styled.div<{ customStyle?: CSSProperties }>`
-  margin-bottom: 1rem;
-  svg {
-    margin: auto;
-  }
+const ActionContainer = styled.div`
+  display: grid;
+  width: 100%;
+  gap: ${({ theme }) => theme.spacing[2]};
+  justify-content: center;
+  align-content: center;
+  grid-auto-rows: auto;
+  grid-auto-flow: column;
 `;
 
 const Description = styled.p`
-  margin-top: 0.5rem;
+  max-width: 300px;
+  margin: 0.5rem auto 1rem auto;
   color: gray;
-  white-space: nowrap;
+  text-align: center;
+`;
+
+export const EmptyPage = styled.div`
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  width: 100%;
 `;
 
 export interface EmptyProps {
   header: string;
-  description?: string;
-  primaryAction?: ReactElement;
-  secondaryAction?: ReactElement;
-  tertiaryAction?: ReactElement;
-  image?: ReactNode;
-  /* To style the image container and children */
-  imageStyle?: CSSProperties;
-  border?: 'dashed' | 'none';
+  description: string;
+  actions: ReactElement[];
   size?: Size;
 }
 
 export const Empty: FC<EmptyProps> = ({
   description = 'No Data',
   header,
-  image,
-  primaryAction,
-  secondaryAction,
-  tertiaryAction,
-  border = 'none',
+  actions,
   size = 'medium',
 }) => {
   return (
-    <Container border={border} size={size}>
-      {image && <ImageContainer>{image}</ImageContainer>}
-      <Header>{header}</Header>
+    <Container size={size}>
+      <h2>{header}</h2>
       <Description>{description}</Description>
-      <ButtonContainer>
-        {primaryAction && primaryAction}
-        {secondaryAction && secondaryAction}
-        {tertiaryAction && tertiaryAction}
-      </ButtonContainer>
+      <ActionContainer>{actions}</ActionContainer>
     </Container>
   );
 };
