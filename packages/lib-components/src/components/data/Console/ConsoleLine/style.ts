@@ -61,7 +61,6 @@ export const Header = styled.div<{ isCollapsed: boolean; type: MessageType }>`
   align-items: center;
   p {
     font-family: 'inconsolata';
-    user-select: auto;
   }
 `;
 
