@@ -1,62 +1,86 @@
-import { FC, ReactNode, CSSProperties } from 'react';
-import { styled } from '../../../styled';
+import { FC, ReactElement } from 'react';
+import { Size, styled } from '../../../styled';
 
-const Container = styled.div`
+const Container = styled.div<{ size: Size }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 600px;
+
+  ${({ size }) => {
+    switch (size) {
+      case 'tiny':
+        return `
+          padding: 0.225rem;
+          border-radius: 0.5rem;
+        `;
+      case 'small':
+        return `
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+        `;
+      case 'medium':
+        return `
+          padding: 2rem;
+          border-radius: .7rem
+        `;
+      case 'large':
+        return `
+          padding: 6rem;
+          border-radius: .8rem
+        `;
+      case 'huge':
+        return `
+          border-radius: 1rem;
+          padding: 10rem 12rem
+        `;
+    }
+  }};
+`;
+
+const ActionContainer = styled.div`
+  display: grid;
+  width: 100%;
+  gap: ${({ theme }) => theme.spacing[2]};
   justify-content: center;
-  padding: 0.7rem;
+  align-content: center;
+  grid-auto-rows: auto;
+  grid-auto-flow: column;
 `;
 
-const ImageContainer = styled.div<{ customStyle?: CSSProperties }>`
-  height: 40px;
-  margin-bottom: 1rem;
-  svg {
-    height: 100%;
-    margin: auto;
-  }
+const Description = styled.p`
+  max-width: 300px;
+  margin: 0.5rem auto 1rem auto;
+  color: gray;
+  text-align: center;
 `;
 
-const Description = styled.div`
-  color: ${({ theme }) => theme.colors.gray};
+export const EmptyPage = styled.div`
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  width: 100%;
 `;
 
 export interface EmptyProps {
-  description?: string | ReactNode;
-  image?: React.ReactNode;
-  /* To style the image container and children */
-  imageStyle?: CSSProperties;
+  header: string;
+  description: string;
+  actions: ReactElement[];
+  size?: Size;
 }
 
 export const Empty: FC<EmptyProps> = ({
   description = 'No Data',
-  imageStyle,
+  header,
+  actions,
+  size = 'medium',
 }) => {
   return (
-    <Container>
-      {/* TODO: fix custom image support */}
-      <ImageContainer customStyle={imageStyle}>
-        <svg
-          className="ant-empty-img-simple"
-          height="41"
-          viewBox="0 0 64 41"
-          width="64"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g fill="none" fillRule="evenodd" transform="translate(0 1)">
-            <ellipse cx="32" cy="33" fill="#f5f5f5" rx="32" ry="7"></ellipse>
-            <g fill="#d9d9d9" fillRule="nonzero">
-              <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
-              <path
-                d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z"
-                fill="#fafafa"
-              ></path>
-            </g>
-          </g>
-        </svg>
-      </ImageContainer>
+    <Container size={size}>
+      <h2>{header}</h2>
       <Description>{description}</Description>
+      <ActionContainer>{actions}</ActionContainer>
     </Container>
   );
 };
