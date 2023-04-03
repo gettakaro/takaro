@@ -23,6 +23,7 @@ export const Console: StoryFn = () => {
       const r = Math.floor(Math.random() * 5);
       const newMessage: Message = {
         data: `this is a ${MessageTypeMap[r]} logline`,
+        result: '',
         timestamp: new Date().toISOString(),
         type: MessageTypeMap[r],
       };
