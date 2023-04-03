@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
 
-export const MenuList: FC<PropsWithChildren> & { item: typeof MenuItem } = ({
+export const MenuList: FC<PropsWithChildren> & { Item: typeof MenuItem } = ({
   children,
 }) => {
   return <ul>{children}</ul>;
@@ -17,4 +17,4 @@ const MenuItem = styled.li`
   }
 `;
 
-MenuList.item = MenuItem;
+MenuList.Item = MenuItem;
