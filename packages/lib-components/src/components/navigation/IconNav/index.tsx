@@ -1,13 +1,12 @@
 import { FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
-import { lighten } from 'polished';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
   min-width: 6rem;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   height: 100vh;
   padding: 0.5rem;
   display: flex;
@@ -20,8 +19,9 @@ const Container = styled.nav`
     align-items: center;
     width: 100%;
     height: 5rem;
+    border-radius: ${({ theme }) => theme.borderRadius.small};
     &:hover {
-      background-color: ${({ theme }) => lighten(0.3, theme.colors.primary)};
+      background-color: ${({ theme }) => theme.colors.primary};
     }
   }
 `;
@@ -31,7 +31,6 @@ export interface IconNavProps {
 }
 
 export const IconNav: FC<IconNavProps> = ({ items }) => {
-  // TODO: add tooltip with floating ui (after merge)
   return (
     <Container>
       <FloatingDelayGroup delay={{ open: 2000, close: 200 }}>
