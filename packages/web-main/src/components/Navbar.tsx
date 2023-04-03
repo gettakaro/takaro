@@ -4,9 +4,9 @@ import { darken } from 'polished';
 import { motion } from 'framer-motion';
 
 import { Link } from 'react-router-dom';
-import { AiOutlineBook as DocumentationIcon } from 'react-icons/ai';
 import { Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
+import { AiOutlineLink as ExternalLinkIcon } from 'react-icons/ai';
 
 const Container = styled(motion.div)`
   width: 0;
@@ -58,7 +58,7 @@ const Nav = styled.nav`
     }
 
     p {
-      margin-left: 10px;
+      margin: ${({ theme }) => `0 ${theme.spacing['4']} 0 ${theme.spacing[1]}`};
     }
 
     svg {
@@ -69,8 +69,6 @@ const Nav = styled.nav`
       background-color: ${({ theme }) => theme.colors.primary};
       p {
         font-weight: 800;
-        display: flex;
-        align-items: center;
       }
 
       &:hover {
@@ -90,6 +88,7 @@ export interface NavbarLink {
   path: string;
   label: string;
   icon: ReactElement;
+  external?: boolean;
 }
 
 interface NavbarProps {
@@ -107,21 +106,20 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
       </Link>
 
       <Nav>
-        {links.map(({ path, label, icon }) => (
-          <NavLink to={path} key={path} end>
-            {cloneElement(icon, { size: 24 })}
-            <p>{label}</p>
-          </NavLink>
-        ))}
-
-        <a
-          href="https://docs.takaro.io"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <DocumentationIcon size={24} />
-          <p>Documentation</p>
-        </a>
+        {links.map(({ path, label, icon, external = false }) =>
+          external ? (
+            <a target="_blank" rel="noopener noreferrer" href={path}>
+              {cloneElement(icon, { size: 24 })}
+              <p>{label}</p>
+              <ExternalLinkIcon size={16} />
+            </a>
+          ) : (
+            <NavLink to={path} key={path} end>
+              {cloneElement(icon, { size: 24 })}
+              <p>{label}</p>
+            </NavLink>
+          )
+        )}
       </Nav>
     </Container>
   );

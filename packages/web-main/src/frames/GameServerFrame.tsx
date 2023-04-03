@@ -9,6 +9,7 @@ import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { GameServerContext, GameServerData } from 'context/gameServerContext';
@@ -86,6 +87,12 @@ export const ServerFrame: FC = () => {
       label: 'Server Settings',
       path: PATHS.gameServer.settings(serverId!),
       icon: <SettingsIcon />,
+    },
+    {
+      label: 'Documentation',
+      path: 'https://docs.takaro.io',
+      icon: <DocumentationIcon />,
+      external: true,
     },
   ];
 

@@ -9,7 +9,8 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
-  AiOutlineUser as UsersIcon,
+  AiOutlineBook as DocumentationIcon,
+  // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
@@ -46,11 +47,13 @@ export const GlobalFrame: FC = () => {
       path: PATHS.players(),
       icon: <PlayersIcon />,
     },
+    /*
     {
       label: 'Users',
       path: PATHS.users(),
       icon: <UsersIcon />,
     },
+    */
     {
       label: 'Modules',
       path: PATHS.moduleDefinitions(),
@@ -60,6 +63,12 @@ export const GlobalFrame: FC = () => {
       label: 'Settings',
       path: PATHS.settings(),
       icon: <SettingsIcon />,
+    },
+    {
+      label: 'Documentation',
+      path: 'https://docs.takaro.io',
+      icon: <DocumentationIcon />,
+      external: true,
     },
   ];
 
