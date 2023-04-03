@@ -1,16 +1,21 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
   Button,
-  Chip,
   Dialog,
-  DialogBody,
   DialogContent,
   DialogHeading,
   Dropdown,
   MenuList,
-  styled,
   Tooltip,
 } from '@takaro/lib-components';
+import {
+  Body,
+  Header,
+  Container,
+  EmptyContainer,
+  TitleContainer,
+  StyledDialogBody,
+} from './style';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import {
   GameServerOutputDTO,
@@ -25,67 +30,6 @@ import {
 import { PATHS } from 'paths';
 import { useMutation, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-
-const Container = styled.div`
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
-  }
-  &:active {
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const EmptyContainer = styled(Container)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.background};
-  border: 3px dashed ${({ theme }) => theme.colors.backgroundAlt};
-  cursor: pointer;
-  h3 {
-    margin-left: ${({ theme }) => theme.spacing[1]};
-  }
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  }
-`;
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing[1]};
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  h3 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-  p {
-    width: fit-content;
-    text-transform: lowercase;
-  }
-`;
-
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 160px;
-  padding: ${({ theme }) => theme.spacing[2]};
-`;
-
-const StyledDialogBody = styled(DialogBody)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
 
 interface GameServerCardProps extends GameServerOutputDTO {
   refetch: () => unknown;
@@ -145,12 +89,12 @@ export const GameServerCard: FC<GameServerCardProps> = ({
             renderReference={<MenuIcon size={18} cursor="pointer" />}
             renderFloating={
               <MenuList>
-                <MenuList.item onClick={handleOnEditClick}>
+                <MenuList.Item onClick={handleOnEditClick}>
                   Edit server
-                </MenuList.item>
-                <MenuList.item onClick={handleOnDeleteClick}>
+                </MenuList.Item>
+                <MenuList.Item onClick={handleOnDeleteClick}>
                   Delete server
-                </MenuList.item>
+                </MenuList.Item>
               </MenuList>
             }
           />
