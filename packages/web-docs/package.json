@@ -4,7 +4,7 @@
   "description": "Takaro documentation",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"no tests yet :(\"",
     "dev": "next dev",
     "build": "next build",
     "export": "next build && next export -o build/",
