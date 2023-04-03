@@ -1,35 +1,31 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Message } from './MessageModel';
 
-export function useConsoleLiveModeScrolling<T extends HTMLDivElement>(
-  messages: Message[]
-) {
+export function useConsoleLiveModeScrolling(messages: Message[]) {
   const [isLiveModeEnabled, setIsLiveModeEnabled] = useState<boolean>(true);
-  const consoleMessagesBoxRef = useRef<T | null>(null);
+  const [scrollOffset, setScrollOffset] = useState<number>(0);
 
+  // unfortunately the react-window libraries does not have up to date types
+  const consoleMessagesBoxRef = useRef<null | any>(null);
+
+  // scrolls to the latest message
   const scrollNewMessages = useCallback(() => {
-    consoleMessagesBoxRef.current?.lastElementChild?.scrollIntoView();
-  }, []);
+    consoleMessagesBoxRef.current?.scrollToItem(messages.length, 'end');
+  }, [messages]);
 
   const toggleLiveModeOnConsoleScroll = useCallback(() => {
     if (consoleMessagesBoxRef.current) {
-      const scrollHeight = consoleMessagesBoxRef.current.scrollHeight;
-      const scrollTop = consoleMessagesBoxRef.current.scrollTop;
-      const clientHeight = consoleMessagesBoxRef.current.clientHeight;
+      // in case we are scrolling down, don't do anything.
+      if (consoleMessagesBoxRef.current.state.scrollDirection === 'forward') {
+        return;
+      }
 
-      const currentScroll = Math.ceil(clientHeight + scrollTop);
-      const isConsoleScrolled = currentScroll !== scrollHeight;
-
-      setIsLiveModeEnabled(!isConsoleScrolled);
+      if (consoleMessagesBoxRef.current.state.scrollOffset < scrollOffset) {
+        setIsLiveModeEnabled(false);
+      }
+      setScrollOffset(consoleMessagesBoxRef.current.state.scrollOffset);
     }
-  }, []);
-
-  useEffect(() => {
-    const ref = consoleMessagesBoxRef.current;
-    ref?.addEventListener('scroll', toggleLiveModeOnConsoleScroll);
-    return () =>
-      ref?.removeEventListener('scroll', toggleLiveModeOnConsoleScroll);
-  }, [toggleLiveModeOnConsoleScroll]);
+  }, [scrollOffset]);
 
   useEffect(() => {
     if (isLiveModeEnabled) {
@@ -40,6 +36,7 @@ export function useConsoleLiveModeScrolling<T extends HTMLDivElement>(
   return {
     consoleMessagesBoxRef,
     isLiveModeEnabled,
-    scrollNewMessages,
+    setIsLiveModeEnabled,
+    toggleLiveModeOnConsoleScroll,
   };
 }

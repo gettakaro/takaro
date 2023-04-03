@@ -28,7 +28,7 @@ export const Console: StoryFn = () => {
       };
 
       setter((prev: Message[]) => [...prev, newMessage]);
-    }, 2000);
+    }, 200);
 
     return {
       on: () => {

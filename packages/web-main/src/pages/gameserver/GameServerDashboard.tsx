@@ -4,19 +4,22 @@ import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'hooks/useGameServer';
+import { useParams } from 'react-router-dom';
 
 const ConsoleContainer = styled.div`
   width: 600px;
+  height: 80vh;
 `;
 
 const GameServerDashboard: FC = () => {
   const apiClient = useApiClient();
   const { socket } = useSocket();
   const { gameServerData } = useGameServer();
+  const { serverId } = useParams();
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
     const handler = (gameserverId: string, type, data) => {
-      if (gameserverId !== gameServerData.id) return;
+      if (gameserverId !== serverId) return;
       setter((prev: Message[]) => [
         ...prev,
         {
@@ -53,7 +56,8 @@ const GameServerDashboard: FC = () => {
               );
             return {
               type: 'command',
-              data: result.data.data.rawResult,
+              data: command,
+              result: result.data.data.rawResult,
               timestamp: new Date().toISOString(),
             };
           }}
