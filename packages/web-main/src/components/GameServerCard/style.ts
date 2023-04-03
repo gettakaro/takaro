@@ -18,7 +18,7 @@ export const EmptyContainer = styled(Container)`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.background};
-  border: 2px dashed ${({ theme }) => theme.colors.backgroundAlt};
+  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
   cursor: pointer;
   h3 {
     margin-left: ${({ theme }) => theme.spacing[1]};
