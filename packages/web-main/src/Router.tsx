@@ -43,6 +43,8 @@ export const Router: FC = () => (
           >
             <Route element={<Dashboard />} path={PATHS.home()} />
             <Route element={<Settings />} path={PATHS.settings()} />
+            <Route element={<GameServers />} path="/server/" />
+
             <Route
               element={<GameServers />}
               path={PATHS.gameServers.overview()}

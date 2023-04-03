@@ -12,7 +12,7 @@ import {
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { GameServerContext, GameServerData } from 'context/gameServerContext';
-import { useParams } from 'react-router-dom';
+import { useParams, redirect } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import {
   GameServerOutputDTO,
@@ -50,6 +50,12 @@ export const ServerFrame: FC = () => {
   );
   const { serverId } = useParams();
   const apiClient = useApiClient();
+
+  console.log(serverId);
+  // in case /server/**NOTHING**
+  if (!serverId) {
+    redirect(PATHS.gameServers.overview());
+  }
 
   const { isLoading, isError } = useQuery<GameServerOutputDTO>({
     queryKey: QueryKeys.gameserver.id(serverId!),
