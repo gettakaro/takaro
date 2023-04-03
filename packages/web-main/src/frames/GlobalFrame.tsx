@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import { styled } from '@takaro/lib-components';
+import { ErrorFallback, styled } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar } from 'components/Navbar';
@@ -15,6 +15,7 @@ import {
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
 import { Page } from '../pages/Page';
+import { ErrorBoundary } from '@sentry/react';
 
 const Container = styled.div`
   display: flex;
@@ -70,9 +71,11 @@ export const GlobalFrame: FC = () => {
         transition={{ delay: 0.3, duration: 0.5 }}
       >
         <Header />
-        <Page>
-          <Outlet />
-        </Page>
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <Page>
+            <Outlet />
+          </Page>
+        </ErrorBoundary>
       </ContentContainer>
     </Container>
   );
