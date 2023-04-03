@@ -318,7 +318,7 @@ const CreateUpdateGameServer: FC = () => {
         </DrawerHeading>
         <DrawerBody>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="addupdategamserver">
+            <form onSubmit={handleSubmit(onSubmit)}>
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -332,7 +332,7 @@ const CreateUpdateGameServer: FC = () => {
                 <Select
                   control={control}
                   name="type"
-                  label="Game server"
+                  label="Game Server"
                   required={true}
                   loading={isLoading}
                   render={(selectedIndex) => (
@@ -370,12 +370,7 @@ const CreateUpdateGameServer: FC = () => {
               color="background"
             />
             <Tooltip label="You need to test the connection before we can save">
-              <Button
-                fullWidth
-                text="Save changes"
-                type="submit"
-                form="addupdategamserver"
-              />
+              <Button fullWidth text="Save changes" type="submit" />
             </Tooltip>
           </ButtonContainer>
         </DrawerFooter>
