@@ -308,7 +308,7 @@ const CreateUpdateGameServer: FC = () => {
       value: GameServerCreateDTOTypeEnum.Sevendaystodie,
       show: true,
     },
-  ];
+  ].filter(({ show }) => show);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -343,15 +343,13 @@ const CreateUpdateGameServer: FC = () => {
                   )}
                 >
                   <OptionGroup label="Games">
-                    {gameTypeSelectOptions
-                      .filter(({ show }) => show)
-                      .map(({ name, value }) => (
-                        <Option key={name} value={value}>
-                          <div>
-                            <span>{name}</span>
-                          </div>
-                        </Option>
-                      ))}
+                    {gameTypeSelectOptions.map(({ name, value }) => (
+                      <Option key={name} value={value}>
+                        <div>
+                          <span>{name}</span>
+                        </div>
+                      </Option>
+                    ))}
                   </OptionGroup>
                 </Select>
               </CollapseList.Item>

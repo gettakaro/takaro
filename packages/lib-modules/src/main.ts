@@ -1,5 +1,11 @@
 import { BuiltinModule } from './BuiltinModule.js';
-export { BuiltinModule } from './BuiltinModule.js';
+export {
+  BuiltinModule,
+  ICommand,
+  ICommandArgument,
+  ICronJob,
+  IHook,
+} from './BuiltinModule.js';
 
 import { Utils } from './modules/utils/index.js';
 
