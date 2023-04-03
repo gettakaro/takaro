@@ -1,6 +1,6 @@
 import { createClient, RedisClientOptions } from 'redis';
 import { config } from './config.js';
-import { logger } from '@takaro/util';
+import { logger, health } from '@takaro/util';
 
 type RedisClient = ReturnType<typeof createClient>;
 
@@ -25,6 +25,7 @@ class RedisClass {
     if (cachedClient) return cachedClient;
 
     this.log.debug(`Creating new Redis client for ${name}`);
+
     const client = createClient({
       name,
       username: config.get('redis.username'),
@@ -38,6 +39,11 @@ class RedisClass {
 
     await client.connect();
     this.clients.set(name, client);
+
+    health.registerHook(name, async () => {
+      await client.ping();
+    });
+
     return client;
   }
 

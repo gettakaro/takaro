@@ -1,7 +1,8 @@
-import { config } from '../../config.js';
+import { config, EXECUTION_MODE } from '../../config.js';
 import { logger } from '@takaro/util';
 import { AdminClient } from '@takaro/apiclient';
 import { getVMM } from '../../main.js';
+import { executeFunctionLocal } from './executeLocal.js';
 
 const log = logger('worker:function');
 
@@ -27,9 +28,14 @@ export async function executeFunction(
   data: Record<string, unknown>,
   domainId: string
 ) {
+  const token = await getJobToken(domainId);
+
   try {
+    if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
+      return executeFunctionLocal(fn, data, token);
+    }
+
     const vmm = await getVMM();
-    const token = await getJobToken(domainId);
     return await vmm.executeFunction(fn, data, token);
   } catch (err) {
     log.error('executeFunction', err);

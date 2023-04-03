@@ -1,6 +1,6 @@
 import knexPkg from 'knex';
 import { config } from './config.js';
-import { logger } from '@takaro/util';
+import { logger, health } from '@takaro/util';
 import { TakaroModel } from './TakaroModel.js';
 
 const log = logger('sql');
@@ -32,6 +32,17 @@ export async function getKnex(): Promise<KnexClient> {
   log.debug('Missed knex cache, creating new client');
   const knex = createKnex(getKnexOptions());
   cachedKnex = knex;
+
+  health.registerHook('db', async () => {
+    try {
+      await knex.raw('SELECT 1');
+      return true;
+    } catch (error) {
+      log.error(error);
+      return false;
+    }
+  });
+
   return cachedKnex;
 }
 
