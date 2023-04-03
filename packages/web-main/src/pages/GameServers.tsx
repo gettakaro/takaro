@@ -51,7 +51,7 @@ const GameServers: FC = () => {
     throw new Error('Failed while loading the servers');
   }
 
-  if (data == undefined || data.data.length === 0) {
+  if (data === undefined || data.data.length === 0) {
     return (
       <EmptyPage>
         <Empty
