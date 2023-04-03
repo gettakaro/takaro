@@ -14,6 +14,7 @@ import {
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
+import { Page } from '../pages/Page';
 
 const Container = styled.div`
   display: flex;
@@ -25,9 +26,6 @@ const ContentContainer = styled(motion.div)`
   width: 100%;
   opacity: 0;
   overflow-y: auto;
-`;
-const Page = styled.div`
-  padding: 3rem 6rem;
 `;
 
 export const GlobalFrame: FC = () => {
