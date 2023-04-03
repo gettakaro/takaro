@@ -8,6 +8,35 @@ import { AiOutlineBook as DocumentationIcon } from 'react-icons/ai';
 import { Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 
+const Container = styled(motion.div)`
+  width: 0;
+  position: relative;
+  height: 100vh;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-right: 1px solid ${({ theme }) => theme.colors.secondary};
+  padding: 20px 30px 40px 30px;
+
+  .company-icon {
+    margin: 0 auto;
+    padding: 3rem 0;
+    cursor: pointer;
+    margin-bottom: 11rem;
+  }
+
+  img {
+    display: block;
+    width: 80px;
+    height: auto;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+`;
+
 const Nav = styled.nav`
   display: flex;
   width: 100%;
@@ -54,34 +83,6 @@ const Nav = styled.nav`
         color: white;
       }
     }
-  }
-`;
-
-const Container = styled(motion.div)`
-  width: 0;
-  position: relative;
-  height: 100vh;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 20px 30px 40px 30px;
-
-  .company-icon {
-    margin: 0 auto;
-    padding: 3rem 0;
-    cursor: pointer;
-    margin-bottom: 11rem;
-  }
-
-  img {
-    display: block;
-    width: 80px;
-    height: auto;
-    margin: 0 auto;
-    margin-bottom: 20px;
-    cursor: pointer;
   }
 `;
 
