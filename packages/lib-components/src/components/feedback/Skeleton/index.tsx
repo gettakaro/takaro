@@ -22,7 +22,6 @@ const StyledDiv = styled.div<{
 }>`
   width: ${({ s_width }) => s_width};
   height: ${({ s_height }) => s_height};
-  margin: ${({ theme }) => theme.spacing[1]};
   overflow: hidden;
   position: relative;
 

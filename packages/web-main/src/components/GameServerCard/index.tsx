@@ -6,6 +6,7 @@ import {
   DialogHeading,
   Dropdown,
   MenuList,
+  Skeleton,
   Tooltip,
 } from '@takaro/lib-components';
 import {
@@ -78,11 +79,13 @@ export const GameServerCard: FC<GameServerCardProps> = ({
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
-          {!isLoading && data && (
-            <Tooltip label="Takaro server reachability" placement="bottom">
+          <Tooltip label="Takaro server reachability" placement="bottom">
+            {isLoading || !data ? (
+              <Skeleton variant="text" width="50px" height="15px" />
+            ) : (
               <div>{data.data.connectable ? 'online' : 'offline'}</div>
-            </Tooltip>
-          )}
+            )}
+          </Tooltip>
           <Dropdown
             open={openDropdown}
             setOpen={setOpenDropdown}
