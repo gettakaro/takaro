@@ -2,7 +2,7 @@ import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { styled } from '@takaro/lib-components';
+import { Skeleton, styled } from '@takaro/lib-components';
 import { GameServerOutputArrayDTOAPI } from '@takaro/apiclient';
 import {
   EmptyGameServerCard,
@@ -30,7 +30,16 @@ const GameServers: FC = () => {
   });
 
   if (isLoading) {
-    return <Fragment>Loading...</Fragment>;
+    return (
+      <Fragment>
+        <List>
+          <Skeleton variant="rectangular" height="100%" width="100%" />
+          <Skeleton variant="rectangular" height="100%" width="100%" />
+          <Skeleton variant="rectangular" height="100%" width="100%" />
+          <Skeleton variant="rectangular" height="100%" width="100%" />
+        </List>
+      </Fragment>
+    );
   }
 
   if (!data) {
