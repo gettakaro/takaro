@@ -23,7 +23,7 @@ import {
 export interface TextFieldProps extends InputProps {
   icon?: ReactElement;
   readOnly?: boolean;
-  placeholder: string;
+  placeholder?: string;
   prefix?: string;
   suffix?: string;
   type?: 'text' | 'password' | 'email';
@@ -44,7 +44,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
     name,
     size,
     readOnly,
-    placeholder,
+    placeholder = '',
     icon,
     type = 'text',
     prefix,

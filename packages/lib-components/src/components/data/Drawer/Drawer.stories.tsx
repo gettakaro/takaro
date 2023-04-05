@@ -90,7 +90,6 @@ export const Default: StoryFn = () => {
                     name="name"
                     required
                     control={control}
-                    placeholder=""
                     description={
                       'Give your product a short and clear name.\n50-60 characters is the recommended length for search engines.'
                     }
@@ -100,7 +99,6 @@ export const Default: StoryFn = () => {
                     name="description"
                     required
                     control={control}
-                    placeholder=""
                     description="Give your product a short and clear description. 120-160 characters is the recommended length for search engines"
                   />
                 </CollapseList.Item>

@@ -142,7 +142,7 @@ export const ColumnFilters: FC<ColumnFiltersProps> = ({ columns }) => {
           }}
           {...filterInteractions.getFloatingProps()}
         >
-          <TextField name="filter-input" placeholder="" control={control} />
+          <TextField name="filter-input" control={control} />
           <div>
             <Button text="Cancel" color="secondary" variant="default" />
             <Button text="Apply Filter" color="primary" />
