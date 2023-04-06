@@ -11,7 +11,10 @@
     "snapshot": true,
     "name": "Uninstall a module",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
     "standardEnvironment": true
   }
 }

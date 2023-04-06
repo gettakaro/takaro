@@ -31,7 +31,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
@@ -135,12 +135,12 @@ export class CommandController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
@@ -167,7 +167,7 @@ export class CommandController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/command/argument/:id')
   async removeArgument(
     @Req() req: AuthenticatedRequest,
@@ -175,6 +175,6 @@ export class CommandController {
   ) {
     const service = new CommandService(req.domainId);
     await service.deleteArgument(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 }

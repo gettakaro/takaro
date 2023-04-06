@@ -27,6 +27,7 @@ const tests = [
     snapshot: true,
     name: 'Install a built-in module',
     setup: defaultSetup,
+    filteredFields: ['gameserverId', 'moduleId'],
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -45,6 +46,7 @@ const tests = [
     snapshot: true,
     name: 'Uninstall a module',
     setup: defaultSetup,
+    filteredFields: ['gameserverId', 'moduleId'],
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,

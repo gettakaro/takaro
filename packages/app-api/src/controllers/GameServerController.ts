@@ -39,7 +39,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
@@ -176,12 +176,12 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))

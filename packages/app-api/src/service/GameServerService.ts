@@ -117,9 +117,10 @@ export class GameServerService extends TakaroService<
     return createdServer;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.gameServerManager.remove(id);
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+    return id;
   }
 
   async update(
