@@ -34,6 +34,10 @@ const GameServerModules = lazy(
 );
 const NotFound = lazy(() => import('./pages/NotFound'));
 
+// eventually we probably want to use react query in combination with the new data api
+// - source: https://www.youtube.com/watch?v=95B8mnhzoCM
+// - source: https://tkdodo.eu/blog/react-query-meets-react-router
+
 export const router = sentryCreateBrowserRouter(
   createRoutesFromElements(
     <>
