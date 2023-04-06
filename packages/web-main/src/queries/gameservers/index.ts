@@ -1,5 +1,6 @@
 export {
   gameServerKeys,
+  // gameserver
   useGameServers,
   useRemoveGameServer,
   useGameServerReachabilityById,
@@ -7,4 +8,10 @@ export {
   useGameServerUpdate,
   useGameServer,
   useGameServerSettings,
+  useGameServerSendMessage,
+  // modules
+  useGameServerModuleInstall,
+  useGameServerModuleUninstall,
+  useGameServerModuleInstallation,
+  useGameServerModuleInstallations,
 } from './queries';
