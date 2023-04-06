@@ -20,7 +20,7 @@ export const InputContainer = styled.div`
   flex-direction: row;
 
   &.placeholder {
-    height: 4.4rem;
+    height: 3.4rem;
   }
 
   .icon {
