@@ -18,6 +18,9 @@ const root = createRoot(container);
 Sentry.init({
   dsn: 'https://1f9c7d5b5d7d43da938d9a3ec6215633@o387782.ingest.sentry.io/4504889880018944',
   integrations: [
+    new Sentry.Integrations.Breadcrumbs({
+      console: false,
+    }),
     new BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV6Instrumentation(
         useEffect,

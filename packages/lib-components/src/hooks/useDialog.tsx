@@ -37,7 +37,7 @@ export function useDialog({
       enabled: controlledOpen == null,
     }),
     useDismiss(context, { outsidePressEvent: 'mousedown', bubbles: false }),
-    useRole(context),
+    useRole(context, { role: 'dialog' }),
   ]);
 
   return useMemo(
