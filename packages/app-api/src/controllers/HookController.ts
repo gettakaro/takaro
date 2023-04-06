@@ -51,6 +51,10 @@ class HookSearchInputAllowedFilters {
   id!: string;
 
   @IsOptional()
+  @IsUUID()
+  moduleId!: string;
+
+  @IsOptional()
   @IsString()
   name!: string;
 

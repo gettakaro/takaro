@@ -44,6 +44,10 @@ class CronJobSearchInputAllowedFilters {
   id!: string;
 
   @IsOptional()
+  @IsUUID()
+  moduleId!: string;
+
+  @IsOptional()
   @IsString()
   name!: string;
 }
