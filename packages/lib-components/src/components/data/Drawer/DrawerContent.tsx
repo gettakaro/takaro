@@ -33,19 +33,25 @@ export const DrawerContent = forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement>
 >((props, propRef) => {
-  const { context: floatingContext, ...context } = useDrawerContext();
+  const { context, labelId, descriptionId, getFloatingProps } =
+    useDrawerContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
+  const root = document.getElementById('drawer');
+  if (!root) {
+    throw new Error('Drawer need to render in a <div id="drawer"></div>');
+  }
+
   return (
-    <FloatingPortal>
+    <FloatingPortal root={root}>
       {context.open && (
         <StyledFloatingOverlay lockScroll>
-          <FloatingFocusManager context={floatingContext}>
+          <FloatingFocusManager context={context}>
             <Container
               ref={ref}
-              aria-labelledby={context.labelId}
-              aria-describedby={context.descriptionId}
-              {...context.getFloatingProps(props)}
+              aria-labelledby={labelId}
+              aria-describedby={descriptionId}
+              {...getFloatingProps(props)}
               initial={{ x: '100%' }}
               animate={{
                 x: 0,

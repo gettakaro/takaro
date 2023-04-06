@@ -4,7 +4,6 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
-  useRole,
 } from '@floating-ui/react';
 
 export interface DrawerOptions {
@@ -37,7 +36,6 @@ export function useDrawer({
       enabled: controlledOpen == null,
     }),
     useDismiss(context, { outsidePressEvent: 'mousedown' }),
-    useRole(context),
   ]);
 
   return useMemo(
