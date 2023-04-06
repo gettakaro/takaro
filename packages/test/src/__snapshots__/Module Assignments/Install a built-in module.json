@@ -11,7 +11,10 @@
     "snapshot": true,
     "name": "Install a built-in module",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
     "standardEnvironment": true
   }
 }

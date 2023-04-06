@@ -181,7 +181,7 @@ export interface CommandArgumentOutputDTO {
    * @type {string}
    * @memberof CommandArgumentOutputDTO
    */
-  defaultValue: string;
+  defaultValue?: string;
   /**
    *
    * @type {number}
@@ -274,6 +274,12 @@ export interface CommandCreateDTO {
    * @memberof CommandCreateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {Array<CommandArgumentCreateDTO>}
+   * @memberof CommandCreateDTO
+   */
+  arguments?: Array<CommandArgumentCreateDTO>;
 }
 /**
  *
@@ -454,6 +460,12 @@ export interface CommandSearchInputAllowedFilters {
    * @type {string}
    * @memberof CommandSearchInputAllowedFilters
    */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputAllowedFilters
+   */
   name?: string;
   /**
    *
@@ -544,6 +556,12 @@ export interface CommandUpdateDTO {
    * @memberof CommandUpdateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {Array<CommandArgumentCreateDTO>}
+   * @memberof CommandUpdateDTO
+   */
+  arguments?: Array<CommandArgumentCreateDTO>;
 }
 /**
  *
@@ -675,6 +693,12 @@ export interface CronJobSearchInputAllowedFilters {
    * @memberof CronJobSearchInputAllowedFilters
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputAllowedFilters
+   */
+  moduleId?: string;
   /**
    *
    * @type {string}
@@ -1796,6 +1820,12 @@ export interface HookSearchInputAllowedFilters {
    * @type {string}
    * @memberof HookSearchInputAllowedFilters
    */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputAllowedFilters
+   */
   name?: string;
   /**
    *
@@ -2012,6 +2042,38 @@ export const ITakaroQuerySortDirectionEnum = {
 export type ITakaroQuerySortDirectionEnum =
   typeof ITakaroQuerySortDirectionEnum[keyof typeof ITakaroQuerySortDirectionEnum];
 
+/**
+ *
+ * @export
+ * @interface IdUuidDTO
+ */
+export interface IdUuidDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof IdUuidDTO
+   */
+  id: string;
+}
+/**
+ *
+ * @export
+ * @interface IdUuidDTOAPI
+ */
+export interface IdUuidDTOAPI {
+  /**
+   *
+   * @type {IdUuidDTO}
+   * @memberof IdUuidDTOAPI
+   */
+  data: IdUuidDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof IdUuidDTOAPI
+   */
+  meta: MetadataOutput;
+}
 /**
  *
  * @export
@@ -4294,7 +4356,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.commandControllerRemove(id, options);
@@ -4489,7 +4551,7 @@ export const CommandApiFactory = function (
     commandControllerRemove(
       id: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .commandControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -5038,7 +5100,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.cronJobControllerRemove(id, options);
@@ -5162,7 +5224,7 @@ export const CronJobApiFactory = function (
     cronJobControllerRemove(
       id: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .cronJobControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -5716,7 +5778,7 @@ export const DomainApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.domainControllerRemove(id, options);
@@ -5852,7 +5914,10 @@ export const DomainApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    domainControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+    domainControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .domainControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -6333,7 +6398,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.functionControllerRemove(id, options);
@@ -6457,7 +6522,7 @@ export const FunctionApiFactory = function (
     functionControllerRemove(
       id: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .functionControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -7501,7 +7566,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerRemove(id, options);
@@ -7637,7 +7702,10 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       moduleId: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ModuleInstallationOutputDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerUninstallModule(
@@ -7814,7 +7882,7 @@ export const GameServerApiFactory = function (
     gameServerControllerRemove(
       id: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .gameServerControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -7896,7 +7964,7 @@ export const GameServerApiFactory = function (
       gameserverId: string,
       moduleId: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
       return localVarFp
         .gameServerControllerUninstallModule(gameserverId, moduleId, options)
         .then((request) => request(axios, basePath));
@@ -8505,7 +8573,7 @@ export const HookApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.hookControllerRemove(id, options);
@@ -8626,7 +8694,10 @@ export const HookApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    hookControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+    hookControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .hookControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -8919,6 +8990,45 @@ export const MetaApiAxiosParamCreator = function (
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetReadiness: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/readyz`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -9015,6 +9125,29 @@ export const MetaApiFp = function (configuration?: Configuration) {
         configuration
       );
     },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async metaGetReadiness(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<HealthOutputDTO>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.metaGetReadiness(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
   };
 };
 
@@ -9071,6 +9204,17 @@ export const MetaApiFactory = function (
     metaGetOpenApiHtml(options?: any): AxiosPromise<void> {
       return localVarFp
         .metaGetOpenApiHtml(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get readiness
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    metaGetReadiness(options?: any): AxiosPromise<HealthOutputDTO> {
+      return localVarFp
+        .metaGetReadiness(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9132,6 +9276,19 @@ export class MetaApi extends BaseAPI {
   public metaGetOpenApiHtml(options?: AxiosRequestConfig) {
     return MetaApiFp(this.configuration)
       .metaGetOpenApiHtml(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get readiness
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof MetaApi
+   */
+  public metaGetReadiness(options?: AxiosRequestConfig) {
+    return MetaApiFp(this.configuration)
+      .metaGetReadiness(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -9471,7 +9628,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.moduleControllerRemove(id, options);
@@ -9592,7 +9749,10 @@ export const ModuleApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    moduleControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+    moduleControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .moduleControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -10311,7 +10471,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.roleControllerRemove(id, options);
@@ -10432,7 +10592,10 @@ export const RoleApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    roleControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+    roleControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .roleControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -11634,7 +11797,7 @@ export const UserApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.userControllerRemove(id, options);
@@ -11837,7 +12000,10 @@ export const UserApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+    userControllerRemove(
+      id: string,
+      options?: any
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .userControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -12374,10 +12540,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string
-      ) => AxiosPromise<VariableOutputDTOAPI>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.variableControllerDelete(id, options);
@@ -12511,7 +12674,7 @@ export const VariableApiFactory = function (
     variableControllerDelete(
       id: string,
       options?: any
-    ): AxiosPromise<VariableOutputDTOAPI> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .variableControllerDelete(id, options)
         .then((request) => request(axios, basePath));

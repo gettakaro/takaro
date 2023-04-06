@@ -117,9 +117,10 @@ export class GameServerService extends TakaroService<
     return createdServer;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.gameServerManager.remove(id);
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+    return id;
   }
 
   async update(
@@ -162,11 +163,21 @@ export class GameServerService extends TakaroService<
     moduleId: string,
     installDto: ModuleInstallDTO
   ) {
-    return this.repo.installModule(gameserverId, moduleId, installDto);
+    await this.repo.installModule(gameserverId, moduleId, installDto);
+
+    return new ModuleInstallationOutputDTO().construct({
+      gameserverId,
+      moduleId,
+    });
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {
-    return this.repo.uninstallModule(gameserverId, moduleId);
+    await this.repo.uninstallModule(gameserverId, moduleId);
+
+    return new ModuleInstallationOutputDTO().construct({
+      gameserverId,
+      moduleId,
+    });
   }
 
   async getInstalledModules(gameserverId: string) {
