@@ -5,6 +5,5 @@ export { useDebounce } from './useDebounce';
 export { useOnScreen } from './useOnScreen';
 export { useLocalStorage } from './useLocalStorage';
 export { useTheme } from './useTheme';
-export { useValidationSchema } from './useValidationResolver';
 export { useTableActions } from './useTableActions';
 export { useQueryParams } from './useQueryParams';
