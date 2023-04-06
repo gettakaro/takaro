@@ -248,20 +248,22 @@ export class GameServerController {
     @Body() data: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
-    await service.installModule(params.gameserverId, params.moduleId, data);
-    return apiResponse();
+    return apiResponse(
+      await service.installModule(params.gameserverId, params.moduleId, data)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Delete('/gameserver/:gameserverId/modules/:moduleId')
   async uninstallModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId
   ) {
     const service = new GameServerService(req.domainId);
-    await service.uninstallModule(params.gameserverId, params.moduleId);
-    return apiResponse();
+    return apiResponse(
+      await service.uninstallModule(params.gameserverId, params.moduleId)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
