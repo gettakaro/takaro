@@ -2,7 +2,6 @@ import { FC, useState, useMemo, useEffect } from 'react';
 import {
   Button,
   Divider,
-  useValidationSchema,
   TextField,
   ErrorMessage,
   styled,
@@ -12,7 +11,6 @@ import {
 import { Helmet } from 'react-helmet';
 import { FaDiscord as Discord, FaGoogle as Google } from 'react-icons/fa';
 import { AiFillMail as Mail } from 'react-icons/ai';
-import * as yup from 'yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -21,6 +19,8 @@ import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
 import { Page } from './Page';
 import { LoginFlow } from '@ory/client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -108,12 +108,12 @@ const LogIn: FC = () => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object({
-        email: yup
+      z.object({
+        email: z
           .string()
           .email('This is not a valid email address.')
-          .required('Email is a required field.'),
-        password: yup.string().required('Password is a required field.'),
+          .nonempty('Email is a required field.'),
+        password: z.string().nonempty('Password is a required field'),
       }),
     []
   );
@@ -136,7 +136,7 @@ const LogIn: FC = () => {
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ email, password }) => {
@@ -221,7 +221,6 @@ const LogIn: FC = () => {
               label="Password"
               loading={loading}
               name="password"
-              placeholder=""
               required
               type="password"
             />

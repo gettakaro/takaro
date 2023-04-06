@@ -5,8 +5,8 @@ import { styled } from '../../../styled';
 import { TextField, TextFieldProps } from '.';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button } from '../../../';
-import * as yup from 'yup';
-import { useValidationSchema } from '../../../hooks';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const Wrapper = styled.div`
   display: flex;
@@ -37,8 +37,8 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object<Record<keyof FormFields, yup.AnySchema>>({
-        name: yup.string().min(6).required('Name is a required field.'),
+      z.object({
+        name: z.string().min(6).nonempty('Name is a required field.'),
       }),
     []
   );
@@ -48,7 +48,7 @@ export const Default: StoryFn<TextFieldProps> = (args) => {
       name: '',
     },
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = ({ name }) => {
