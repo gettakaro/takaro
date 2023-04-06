@@ -8,7 +8,8 @@ import {
   SnackbarProvider,
   darkTheme,
 } from '@takaro/lib-components';
-import { Router } from './Router';
+import { router } from './router';
+import { RouterProvider } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { UserContext, UserData } from 'context/userContext';
 import {
@@ -94,7 +95,7 @@ function App() {
                 <title>Takaro</title>
                 <link href="https://takaro.io/" rel="canonical" />
               </Helmet>
-              <Router />
+              <RouterProvider router={router} />
               {
                 // React query devtools are only included in bundles with NODE_ENV === 'development'.
                 // No need to manually exclude them.
