@@ -33,13 +33,13 @@ export const Underline = styled(motion.div)`
   width: 100%;
 `;
 
-interface NavLink {
+export interface HorizontalNavLink {
   to: string;
   text: string;
 }
 
 export interface HorizontalNavProps {
-  items: NavLink[];
+  items: HorizontalNavLink[];
 }
 
 export const HorizontalNav: FC<HorizontalNavProps> = ({ items }) => {

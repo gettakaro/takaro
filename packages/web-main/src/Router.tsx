@@ -13,12 +13,13 @@ import { ModuleDefinitions } from 'pages/ModuleDefinitions';
 import { withSentryReactRouterV6Routing } from '@sentry/react';
 import CreateUpdateGameServer from 'pages/CreateUpdateGameServer';
 
+import { SettingsFrame } from './frames/SettingsFrame';
+import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
+
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
-
 const LogIn = lazy(() => import('./pages/LogIn'));
-const Settings = lazy(() => import('./pages/Settings'));
 const Studio = lazy(() => import('./pages/studio'));
 const GameServerDashboard = lazy(
   () => import('./pages/gameserver/GameServerDashboard')
@@ -42,7 +43,12 @@ export const Router: FC = () => (
             path={PATHS.home()}
           >
             <Route element={<Dashboard />} path={PATHS.home()} />
-            <Route element={<Settings />} path={PATHS.settings()} />
+            <Route element={<SettingsFrame />}>
+              <Route
+                element={<GlobalGameServerSettings />}
+                path={PATHS.settings.GameServerSettings}
+              />
+            </Route>
             <Route element={<GameServers />} path="/server/" />
 
             <Route
