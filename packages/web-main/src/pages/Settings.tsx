@@ -1,14 +1,15 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField, useValidationSchema } from '@takaro/lib-components';
+import { Button, TextField } from '@takaro/lib-components';
 import * as yup from 'yup';
 import { AiFillSave } from 'react-icons/ai';
-import { Settings, SettingsOutputObjectDTOAPI } from '@takaro/apiclient';
+import { Settings } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { QueryKeys } from 'queryKeys';
+import { useGameServerSettings } from 'queries/gameservers';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface IFormInputs {
   commandPrefix: string;
@@ -34,31 +35,22 @@ const SettingsPage: FC = () => {
   const apiClient = useApiClient();
   const { serverId } = useParams();
 
-  const { data, isLoading } = useQuery<SettingsOutputObjectDTOAPI['data']>({
-    queryKey: QueryKeys.settings,
-    queryFn: async () => {
-      const data = (
-        await apiClient.settings.settingsControllerGet(undefined, serverId)
-      ).data.data;
-      await mapSettings(data, async (key, value) => {
-        if (key === 'id' || key === 'createdAt' || key === 'updatedAt') return;
-        setValue(key, value!!);
-      });
-      return data;
-    },
-  });
+  const { data, isLoading } = useGameServerSettings(serverId!);
 
   const validationSchema = useMemo(() => {
     const schema = {};
     if (data) {
-      mapSettings(data, async (key) => (schema[key] = yup.string().required()));
+      mapSettings(
+        data.data,
+        async (key) => (schema[key] = z.string().nonempty())
+      );
     }
-    return yup.object(schema);
+    return z.object(schema);
   }, [data]);
 
-  const { control, handleSubmit, setValue, getValues } = useForm<IFormInputs>({
+  const { control, handleSubmit, getValues } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
@@ -75,14 +67,14 @@ const SettingsPage: FC = () => {
   const settingsComponents: ReactElement[] = [];
 
   if (data) {
-    mapSettings(data, async (key) =>
+    mapSettings(data.data, async (key, value) =>
       settingsComponents.push(
         <TextField
           control={control}
           label={key}
           name={key}
-          placeholder=""
           key={key}
+          value={value}
         />
       )
     );

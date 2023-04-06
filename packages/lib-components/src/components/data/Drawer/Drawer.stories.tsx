@@ -20,8 +20,8 @@ import {
 } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { useValidationSchema } from '../../../hooks';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -51,19 +51,18 @@ export const Default: StoryFn = () => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object({
-        name: yup.string().required('Name is a required field.'),
-        description: yup
+      z.object({
+        name: z.string().nonempty('Name field cannot be empty'),
+        description: z
           .string()
-          .required('Password is a required field.')
           .min(20, 'description must be at least 20 characters'),
-        priceType: yup.mixed().oneOf(['fixed', 'variable']),
+        priceType: z.enum(['fixed', 'variable']),
       }),
     []
   );
 
   const { handleSubmit, control } = useForm<FormFields>({
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   // this should be typed ofcourse

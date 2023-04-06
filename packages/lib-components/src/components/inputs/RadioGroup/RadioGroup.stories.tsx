@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { RadioGroup, RadioGroupProps } from '.';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useValidationSchema } from '../../..';
-import * as yup from 'yup';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Radio } from './Radio';
 import { Button } from '../../../components';
 
@@ -27,15 +27,14 @@ export const OnChange: StoryFn<RadioGroupProps> = (args) => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object({
-        gender: yup.string().required('Pick a gender'),
+      z.object({
+        gender: z.enum(['m', 'f']),
       }),
     []
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
-    mode: 'onChange',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<FormFields> = async ({ gender }) => {
