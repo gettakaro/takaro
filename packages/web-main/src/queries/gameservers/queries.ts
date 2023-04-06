@@ -1,9 +1,11 @@
 import {
+  APIOutput,
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerTestReachabilityDTOAPI,
   GameServerUpdateDTO,
-  SettingsOutputDTOAPI,
+  ModuleInstallDTO,
+  ModuleOutputDTO,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
@@ -14,9 +16,18 @@ export const gameServerKeys = {
   all: ['gameservers'] as const,
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
+
   settings: (id: string) => [...gameServerKeys.all, 'settings', id] as const,
   reachability: (id: string) =>
     [...gameServerKeys.all, 'reachable', id] as const,
+};
+
+export const installedModuleKeys = {
+  all: ['installed modules'] as const,
+  list: (gameServerId: string) =>
+    [...installedModuleKeys.all, 'list', gameServerId] as const,
+  detail: (gameServerId: string, moduleId: string) =>
+    [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
 };
 
 export const useGameServers = () => {
@@ -63,6 +74,129 @@ export const useGameServerCreate = () => {
   });
 };
 
+export const useGameServerSendMessage = () => {
+  const apiClient = useApiClient();
+
+  return useMutation({
+    mutationFn: async ({ gameServerId }: { gameServerId: string }) =>
+      (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId))
+        .data,
+    onSuccess: () => {
+      // TODO: Does this make any of the gameserver data dirty?
+    },
+  });
+};
+
+// INSTALLED MODULES
+export const useGameServerModuleInstallations = (gameServerId: string) => {
+  const apiClient = useApiClient();
+  return useQuery<ModuleOutputDTO[]>({
+    queryKey: installedModuleKeys.list(gameServerId),
+    queryFn: async () =>
+      (
+        await apiClient.gameserver.gameServerControllerGetInstalledModules(
+          gameServerId
+        )
+      ).data.data,
+  });
+};
+
+export const useGameServerModuleInstallation = (
+  gameServerId: string,
+  moduleId: string
+) => {
+  const apiClient = useApiClient();
+
+  return useQuery<ModuleInstallDTO>({
+    queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+    queryFn: async () =>
+      (
+        await apiClient.gameserver.gameServerControllerGetModuleInstallation(
+          gameServerId,
+          moduleId
+        )
+      ).data.data,
+  });
+};
+
+interface GameServerModuleInstall {
+  gameServerId: string;
+  moduleId: string;
+  moduleInstall: ModuleInstallDTO;
+}
+
+export const useGameServerModuleInstall = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      gameServerId,
+      moduleId,
+      moduleInstall,
+    }: GameServerModuleInstall) =>
+      (
+        await apiClient.gameserver.gameServerControllerInstallModule(
+          gameServerId,
+          moduleId,
+          moduleInstall
+        )
+      ).data.data,
+    onSuccess: async (moduleInstallation: ModuleInstallDTO) => {
+      // TODO: replace game-server-id and module-id with values from moduleInstallation
+
+      // invalidate list of installed modules
+      queryClient.invalidateQueries(installedModuleKeys.list('game-server-id'));
+
+      // TODO: invalidate the getInstalledModule
+      queryClient.invalidateQueries(
+        installedModuleKeys.detail('game-server-id', 'module-id')
+      );
+    },
+  });
+};
+
+export const useGameServerModuleUninstall = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      gameServerId,
+      moduleId,
+    }: {
+      gameServerId: string;
+      moduleId: string;
+    }) =>
+      (
+        await apiClient.gameserver.gameServerControllerUninstallModule(
+          gameServerId,
+          moduleId
+        )
+      ).data,
+    onSuccess: async (_module: APIOutput) => {
+      // TODO: moduleInstallation should be an ModuleUninstallDTO
+      // TODO: replace game-server-id and module-id by values in moduleInstallation when present
+      // update the list of installed modules
+      queryClient.setQueryData<ModuleOutputDTO[]>(
+        installedModuleKeys.list('game-server-id'),
+        (old) =>
+          old
+            ? old.filter(
+                (installedModule) => installedModule.id !== 'module-id'
+              )
+            : old!
+      );
+
+      // TODO: replace game-server-id with the actual gameServerId, + module-id same thing
+      queryClient.invalidateQueries(
+        installedModuleKeys.detail('game-server-id', 'module-id')
+      );
+    },
+  });
+};
+
+// SERVER SETTINGS
 export const useGameServerSettings = (id: string) => {
   const apiClient = useApiClient();
 
