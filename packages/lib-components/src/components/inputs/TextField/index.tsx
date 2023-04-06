@@ -1,4 +1,4 @@
-import { FC, cloneElement, useState, ReactElement } from 'react';
+import { FC, cloneElement, useState, ReactElement, ChangeEvent } from 'react';
 import {
   Container,
   InputContainer,
@@ -19,6 +19,9 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
+import { getFieldType, getInputMode } from './util';
+
+export type FieldType = 'text' | 'password' | 'email' | 'number';
 
 export interface TextFieldProps extends InputProps {
   icon?: ReactElement;
@@ -26,7 +29,7 @@ export interface TextFieldProps extends InputProps {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
-  type?: 'text' | 'password' | 'email';
+  type?: FieldType;
 }
 
 const defaultsApplier =
@@ -60,6 +63,9 @@ export const TextField: FC<TextFieldProps> = (props) => {
     name,
     control,
     defaultValue: value ?? '',
+    rules: {
+      required: required,
+    },
   });
 
   const handleOnBlur = () => {
@@ -67,15 +73,17 @@ export const TextField: FC<TextFieldProps> = (props) => {
     setShowError(false);
   };
 
-  const handleOnFocus = () => {
-    setShowError(true);
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (type === 'number' && !isNaN(parseInt(event.target.value))) {
+      // try to parse first
+      field.onChange(parseInt(event.target.value));
+      return;
+    }
+    field.onChange(event.target.value);
   };
 
-  const setType = () => {
-    if (showPassword) {
-      return 'text';
-    }
-    return type;
+  const handleOnFocus = () => {
+    setShowError(true);
   };
 
   if (loading) {
@@ -122,14 +130,17 @@ export const TextField: FC<TextFieldProps> = (props) => {
           hasIcon={!!icon}
           hasPrefix={!!prefix}
           hasSuffix={!!suffix}
+          isPassword={type === 'password'}
           id={name}
           name={name}
+          onChange={handleOnChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
           placeholder={placeholder}
           readOnly={readOnly}
           role="presentation"
-          type={setType()}
+          inputMode={getInputMode(type)}
+          type={getFieldType(type, showPassword)}
         />
         {type === 'password' &&
           (showPassword ? (
@@ -138,7 +149,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
               onClick={() => {
                 setShowPassword(false);
               }}
-              size="24"
+              size="22"
             />
           ) : (
             <ShowPasswordIcon
@@ -146,7 +157,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
               onClick={() => {
                 setShowPassword(true);
               }}
-              size="24"
+              size="22"
             />
           ))}
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
