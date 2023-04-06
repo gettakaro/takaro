@@ -22,7 +22,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
@@ -42,6 +42,10 @@ class CronJobSearchInputAllowedFilters {
   @IsOptional()
   @IsUUID()
   id!: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 
   @IsOptional()
   @IsString()
@@ -112,11 +116,11 @@ export class CronJobController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/cronjob/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CronJobService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 }

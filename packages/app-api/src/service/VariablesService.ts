@@ -65,8 +65,8 @@ export class VariablesService extends TakaroService<
     return this.repo.update(id, item);
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.repo.delete(id);
-    return true;
+    return id;
   }
 }
