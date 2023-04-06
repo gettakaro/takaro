@@ -91,7 +91,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     return this.repo.update(id, item);
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     const existing = await this.findOne(id);
 
     if (!existing) {
@@ -112,7 +112,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await ory.deleteIdentitiesForDomain(id);
 
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+
+    return id;
   }
 
   async initDomain(

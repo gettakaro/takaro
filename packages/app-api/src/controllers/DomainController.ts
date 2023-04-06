@@ -32,6 +32,7 @@ import {
   TokenInputDTO,
   AuthService,
 } from '../service/AuthService.js';
+import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -115,11 +116,11 @@ export class DomainController {
   }
 
   @Delete('/domain/:id')
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   async remove(@Param('id') id: string) {
     const service = new DomainService();
     await service.delete(id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id }));
   }
 
   @Post('/token')
