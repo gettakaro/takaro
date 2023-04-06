@@ -108,7 +108,7 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
       <Nav>
         {links.map(({ path, label, icon, external = false }) =>
           external ? (
-            <a target="_blank" rel="noopener noreferrer" href={path}>
+            <a key={path} target="_blank" rel="noopener noreferrer" href={path}>
               {cloneElement(icon, { size: 24 })}
               <p>{label}</p>
               <ExternalLinkIcon size={16} />
