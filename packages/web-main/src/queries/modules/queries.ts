@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
-  APIOutput,
   CommandCreateDTO,
   CommandOutputDTO,
   CommandUpdateDTO,
@@ -10,6 +9,7 @@ import {
   HookCreateDTO,
   HookOutputDTO,
   HookUpdateDTO,
+  IdUuidDTO,
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleUpdateDTO,
@@ -28,13 +28,13 @@ export const hookKeys = {
 };
 
 export const commandKeys = {
-  all: ['hooks'] as const,
+  all: ['commands'] as const,
   list: () => [...commandKeys.all, 'list'] as const,
   detail: (id: string) => [...commandKeys.all, 'detail', id] as const,
 };
 
 export const cronJobKeys = {
-  all: ['hooks'] as const,
+  all: ['cronjobs'] as const,
   list: () => [...cronJobKeys.all, 'list'] as const,
   detail: (id: string) => [...cronJobKeys.all, 'detail', id] as const,
 };
@@ -82,17 +82,15 @@ export const useModuleRemove = () => {
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) =>
-      (await apiClient.module.moduleControllerRemove(id)).data,
-    onSuccess: (removedModule: APIOutput) => {
-      // TODO: 'id' should be replace with the id in the removedModule: APIOutput
+      (await apiClient.module.moduleControllerRemove(id)).data.data,
+    onSuccess: (removedModule: IdUuidDTO) => {
       // Remove item from module list
       queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
-        old ? old.filter((module) => module.id === 'id') : old!
+        old ? old.filter((module) => module.id === removedModule.id) : old!
       );
 
-      // TODO: replace 'id' with the actual id when available in removedModule
       // Invalidate query of specific module
-      queryClient.invalidateQueries(moduleKeys.detail('id'));
+      queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
     },
   });
 };
@@ -153,6 +151,27 @@ export const useHookCreate = () => {
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
         hooks ? [...hooks, newHook] : hooks!
       );
+    },
+  });
+};
+
+export const useHookRemove = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ hookId }: { hookId: string }) =>
+      (await apiClient.hook.hookControllerRemove(hookId)).data.data,
+    onSuccess: async (removedHook: IdUuidDTO) => {
+      // Remove item from list of hooks
+      queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
+        hooks ? hooks.filter((hook) => hook.id !== removedHook.id) : hooks!
+      );
+
+      // Invalidate removed hook's query
+      queryClient.invalidateQueries(hookKeys.detail(removedHook.id));
+
+      // TODO: somehow whenever a hook is removed the module in which it is used should be updated
     },
   });
 };
@@ -238,6 +257,31 @@ export const useCommandUpdate = () => {
   });
 };
 
+export const useCommandRemove = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ commandId }: { commandId: string }) =>
+      (await apiClient.command.commandControllerRemove(commandId)).data.data,
+    onSuccess: async (removedCommand: IdUuidDTO) => {
+      // Remove item from list of commands
+      queryClient.setQueryData<CommandOutputDTO[]>(
+        commandKeys.list(),
+        (commands) =>
+          commands
+            ? commands.filter((command) => command.id !== removedCommand.id)
+            : commands!
+      );
+
+      // Invalidate removed hook's query
+      queryClient.invalidateQueries(hookKeys.detail(removedCommand.id));
+
+      // TODO: somehow, whenever a command is removed the module in which it is used should be updated
+    },
+  });
+};
+
 // ==================================
 //              cronjobs
 // ==================================
@@ -291,6 +335,31 @@ export const useCronJobUpdate = () => {
               )
             : cronJobs!
       );
+    },
+  });
+};
+
+export const useCronJobRemove = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
+      (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
+    onSuccess: async (removedCronJob: IdUuidDTO) => {
+      // Remove item from list of cronjobs
+      queryClient.setQueryData<CronJobOutputDTO[]>(
+        commandKeys.list(),
+        (cronJobs) =>
+          cronJobs
+            ? cronJobs.filter((cronjob) => cronjob.id !== removedCronJob.id)
+            : cronJobs!
+      );
+
+      // Invalidate removed cronjob's query
+      queryClient.invalidateQueries(cronJobKeys.detail(removedCronJob.id));
+
+      // TODO: somehow, whenever a command is removed the module in which it is used should be updated
     },
   });
 };

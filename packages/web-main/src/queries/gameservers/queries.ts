@@ -1,9 +1,10 @@
 import {
-  APIOutput,
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerTestReachabilityDTOAPI,
   GameServerUpdateDTO,
+  IdUuidDTO,
+  ModuleInstallationOutputDTO,
   ModuleInstallDTO,
   ModuleOutputDTO,
   SettingsOutputObjectDTOAPI,
@@ -81,9 +82,6 @@ export const useGameServerSendMessage = () => {
     mutationFn: async ({ gameServerId }: { gameServerId: string }) =>
       (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId))
         .data,
-    onSuccess: () => {
-      // TODO: Does this make any of the gameserver data dirty?
-    },
   });
 };
 
@@ -142,15 +140,17 @@ export const useGameServerModuleInstall = () => {
           moduleInstall
         )
       ).data.data,
-    onSuccess: async (moduleInstallation: ModuleInstallDTO) => {
-      // TODO: replace game-server-id and module-id with values from moduleInstallation
-
+    onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
       // invalidate list of installed modules
-      queryClient.invalidateQueries(installedModuleKeys.list('game-server-id'));
-
-      // TODO: invalidate the getInstalledModule
       queryClient.invalidateQueries(
-        installedModuleKeys.detail('game-server-id', 'module-id')
+        installedModuleKeys.list(moduleInstallation.gameserverId)
+      );
+
+      queryClient.invalidateQueries(
+        installedModuleKeys.detail(
+          moduleInstallation.gameserverId,
+          moduleInstallation.moduleId
+        )
       );
     },
   });
@@ -173,24 +173,25 @@ export const useGameServerModuleUninstall = () => {
           gameServerId,
           moduleId
         )
-      ).data,
-    onSuccess: async (_module: APIOutput) => {
-      // TODO: moduleInstallation should be an ModuleUninstallDTO
-      // TODO: replace game-server-id and module-id by values in moduleInstallation when present
+      ).data.data,
+    onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
       queryClient.setQueryData<ModuleOutputDTO[]>(
-        installedModuleKeys.list('game-server-id'),
+        installedModuleKeys.list(deletedModule.gameserverId),
         (old) =>
           old
             ? old.filter(
-                (installedModule) => installedModule.id !== 'module-id'
+                (installedModule) =>
+                  installedModule.id !== deletedModule.gameserverId
               )
             : old!
       );
 
-      // TODO: replace game-server-id with the actual gameServerId, + module-id same thing
       queryClient.invalidateQueries(
-        installedModuleKeys.detail('game-server-id', 'module-id')
+        installedModuleKeys.detail(
+          deletedModule.gameserverId,
+          deletedModule.moduleId
+        )
       );
     },
   });
@@ -253,27 +254,29 @@ export const useGameServerUpdate = () => {
   });
 };
 
-// TODO: id should be passed to the mutation function.
-// But that would require that the result of the mutation returns the id
-// so it can be used in the onSuccess method. Currently that is not the case so for now it is passed to the hook itself.
-export const useRemoveGameServer = (id: string) => {
+export const useRemoveGameServer = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () =>
-      await apiClient.gameserver.gameServerControllerRemove(id),
-    onSuccess: () => {
+    mutationFn: async ({ id }: { id: string }) =>
+      (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
+    onSuccess: (gameServer: IdUuidDTO) => {
       // update list that contain this gameserver
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
-        (old) => (old ? old.filter((gameServer) => gameServer.id !== id) : old!)
+        (old) =>
+          old
+            ? old.filter((gameServer) => gameServer.id !== gameServer.id)
+            : old!
       );
 
       // remove all cached information about specific game server.
-      queryClient.invalidateQueries({ queryKey: gameServerKeys.detail(id) });
       queryClient.invalidateQueries({
-        queryKey: gameServerKeys.reachability(id),
+        queryKey: gameServerKeys.detail(gameServer.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: gameServerKeys.reachability(gameServer.id),
       });
     },
   });
