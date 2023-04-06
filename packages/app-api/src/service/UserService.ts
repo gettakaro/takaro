@@ -108,10 +108,10 @@ export class UserService extends TakaroService<
     return this.extendWithOry.bind(this)(await this.repo.findOne(id));
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.repo.delete(id);
     await ory.deleteIdentity(id);
-    return true;
+    return id;
   }
 
   async assignRole(userId: string, roleId: string): Promise<void> {

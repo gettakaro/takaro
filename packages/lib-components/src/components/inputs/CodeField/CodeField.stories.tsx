@@ -1,10 +1,11 @@
+import React from 'react';
 import { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { CodeField, CodeFieldProps } from './index';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import * as yup from 'yup';
 import { Button } from '../../actions';
-import { useValidationSchema } from '../../..';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default {
   title: 'Inputs/CodeField',
@@ -27,19 +28,19 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object({
-        code: yup
+      z.object({
+        code: z
           .string()
           .min(args.fields)
           .max(args.fields)
-          .required('Code is a required field.'),
+          .nonempty('Code is a required field.'),
       }),
     [args.fields]
   );
 
   const { control, handleSubmit, formState } = useForm<FormFields>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
   const onSubmit: SubmitHandler<FormFields> = async ({ code }) => {
     setResult(code);
@@ -50,7 +51,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <CodeField
           control={control}
-          error={formState.errors.code}
+          error={formState.errors.code!}
           fields={args.fields}
           name="code"
           loading={args.loading}

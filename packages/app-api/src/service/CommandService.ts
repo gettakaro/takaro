@@ -271,8 +271,9 @@ export class CommandService extends TakaroService<
     return updated;
   }
 
-  async delete(id: string): Promise<boolean> {
-    return this.repo.delete(id);
+  async delete(id: string) {
+    await this.repo.delete(id);
+    return id;
   }
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {

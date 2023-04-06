@@ -89,8 +89,9 @@ export class RoleService extends TakaroService<
     return this.repo.update(id, item);
   }
 
-  async delete(id: string): Promise<boolean> {
-    return this.repo.delete(id);
+  async delete(id: string) {
+    await this.repo.delete(id);
+    return id;
   }
 
   async createWithPermissions(

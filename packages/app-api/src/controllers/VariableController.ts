@@ -21,7 +21,7 @@ import {
   UseBefore,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
@@ -120,10 +120,10 @@ export class VariableController {
 
   @Delete('/variables/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
-  @ResponseSchema(VariableOutputDTOAPI)
+  @ResponseSchema(IdUuidDTOAPI)
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new VariablesService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 }

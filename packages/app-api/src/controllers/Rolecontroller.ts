@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
@@ -111,11 +111,11 @@ export class RoleController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/role/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new RoleService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 }

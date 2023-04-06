@@ -32,7 +32,7 @@ export abstract class NOT_DOMAIN_SCOPED_TakaroService<
   abstract findOne(id: string | number): Promise<OutputDTO | undefined>;
   abstract create(item: CreateInputDTO): Promise<OutputDTO>;
   abstract update(id: string, item: UpdateDTO): Promise<OutputDTO | undefined>;
-  abstract delete(id: string): Promise<boolean>;
+  abstract delete(id: string): Promise<string>;
 }
 
 export abstract class TakaroService<

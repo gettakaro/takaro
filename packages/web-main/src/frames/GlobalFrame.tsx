@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import { styled } from '@takaro/lib-components';
+import { ErrorFallback, styled } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar } from 'components/Navbar';
@@ -9,11 +9,14 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
-  AiOutlineUser as UsersIcon,
+  AiOutlineBook as DocumentationIcon,
+  // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
+import { Page } from '../pages/Page';
+import { ErrorBoundary } from '@sentry/react';
 
 const Container = styled.div`
   display: flex;
@@ -25,9 +28,6 @@ const ContentContainer = styled(motion.div)`
   width: 100%;
   opacity: 0;
   overflow-y: auto;
-`;
-const Page = styled.div`
-  padding: 3rem 6rem;
 `;
 
 export const GlobalFrame: FC = () => {
@@ -47,11 +47,13 @@ export const GlobalFrame: FC = () => {
       path: PATHS.players(),
       icon: <PlayersIcon />,
     },
+    /*
     {
       label: 'Users',
       path: PATHS.users(),
       icon: <UsersIcon />,
     },
+    */
     {
       label: 'Modules',
       path: PATHS.moduleDefinitions(),
@@ -59,8 +61,14 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Settings',
-      path: PATHS.settings(),
+      path: PATHS.settings.GameServerSettings,
       icon: <SettingsIcon />,
+    },
+    {
+      label: 'Documentation',
+      path: 'https://docs.takaro.io',
+      icon: <DocumentationIcon />,
+      external: true,
     },
   ];
 
@@ -72,9 +80,11 @@ export const GlobalFrame: FC = () => {
         transition={{ delay: 0.3, duration: 0.5 }}
       >
         <Header />
-        <Page>
-          <Outlet />
-        </Page>
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <Page>
+            <Outlet />
+          </Page>
+        </ErrorBoundary>
       </ContentContainer>
     </Container>
   );

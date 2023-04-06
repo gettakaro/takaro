@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Button } from '../..';
 import { Checkbox, CheckboxProps } from '.';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import * as yup from 'yup';
-import { useValidationSchema } from '../../../hooks';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 const ResultContainer = styled.div`
   margin-top: 3rem;
@@ -58,13 +58,7 @@ export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
     termsAndConditions: boolean;
   };
 
-  const validationSchema = useMemo(
-    () =>
-      yup.object<Record<keyof FormFields, yup.AnySchema>>({
-        termsAndConditions: yup.bool().oneOf([true], 'Field must be checked'),
-      }),
-    []
-  );
+  const validationSchema = useMemo(() => z.literal(true), []);
 
   const {
     control,
@@ -72,7 +66,7 @@ export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
     formState: { errors },
   } = useForm<FormFields>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const submit: SubmitHandler<FormFields> = ({ termsAndConditions }) => {

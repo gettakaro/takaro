@@ -31,8 +31,13 @@ export const DialogContent = forwardRef<
   const { context: floatingContext, ...context } = useDialogContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
+  const root = document.getElementById('dialog');
+  if (!root) {
+    throw new Error('Dialog need to render in a <div id="dialog"></div>');
+  }
+
   return (
-    <FloatingPortal>
+    <FloatingPortal root={root}>
       {context.open && (
         <StyledFloatingOverlay lockScroll>
           <FloatingFocusManager context={floatingContext}>

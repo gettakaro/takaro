@@ -40,7 +40,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
@@ -194,12 +194,12 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
@@ -266,20 +266,22 @@ export class GameServerController {
     @Body() data: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
-    await service.installModule(params.gameserverId, params.moduleId, data);
-    return apiResponse();
+    return apiResponse(
+      await service.installModule(params.gameserverId, params.moduleId, data)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Delete('/gameserver/:gameserverId/modules/:moduleId')
   async uninstallModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId
   ) {
     const service = new GameServerService(req.domainId);
-    await service.uninstallModule(params.gameserverId, params.moduleId);
-    return apiResponse();
+    return apiResponse(
+      await service.uninstallModule(params.gameserverId, params.moduleId)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))

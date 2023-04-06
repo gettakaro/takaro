@@ -142,9 +142,10 @@ export class CronJobService extends TakaroService<
     return updated;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.removeCronFromQueue(id);
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+    return id;
   }
 
   private getRepeatableOpts(item: CronJobOutputDTO) {

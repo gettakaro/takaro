@@ -1,13 +1,7 @@
-import { FC, useState, createRef } from 'react';
+import { FC, createRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  styled,
-  getInitials,
-  useOutsideAlerter,
-  BreadCrumbs,
-} from '@takaro/lib-components';
+import { styled, getInitials, BreadCrumbs } from '@takaro/lib-components';
 import { useUser } from 'hooks/useUser';
-import { UserDropDown } from './UserDropdown';
 
 const Container = styled.header`
   height: 80px;
@@ -21,7 +15,6 @@ const Container = styled.header`
 const User = styled.div`
   display: flex;
   align-items: center;
-  cursor: pointer;
 `;
 
 const InitialsBlock = styled.div`
@@ -68,20 +61,14 @@ export const Header: FC = () => {
   const { userData } = useUser();
   const location = useLocation();
   const containerRef = createRef<HTMLDivElement>();
-  const [showUserDropDown, setUserDropDownVisibility] = useState(false);
-  useOutsideAlerter(containerRef, (): void => {
-    setUserDropDownVisibility(false);
-  });
+
   return (
     <Container>
       <Left>
         <h2>{location.pathname.split('/')[1] || 'dashboard'}</h2>
         <BreadCrumbs />
       </Left>
-      <User
-        onClick={() => setUserDropDownVisibility(!showUserDropDown)}
-        ref={containerRef}
-      >
+      <User ref={containerRef}>
         <InitialsBlock>
           {getInitials(userData.name ? userData.name : 'u u')}
         </InitialsBlock>
@@ -89,7 +76,6 @@ export const Header: FC = () => {
           <h4>{userData.name ? userData.name : 'unknown user'}</h4>
           <p>{userData.email ? userData.email : 'unknown email'}</p>
         </Name>
-        {showUserDropDown && <UserDropDown />}
       </User>
     </Container>
   );

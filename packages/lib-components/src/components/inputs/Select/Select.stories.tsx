@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useMemo, useState } from 'react';
 import { Button } from '../../../components';
@@ -5,8 +6,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { styled } from '../../../styled';
 import { Select, SelectProps, Option, OptionGroup } from './index';
 import { films } from './data';
-import { useValidationSchema } from '../../../hooks';
-import * as yup from 'yup';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default {
   title: 'Inputs/Select',
@@ -30,19 +31,17 @@ export const Default: StoryFn<SelectProps> = (args) => {
 
   const validationSchema = useMemo(
     () =>
-      yup.object<Record<keyof FormFields, yup.AnySchema>>({
-        film: yup
-          .string()
-          .oneOf(
-            films.map((film) => film.name, 'Selecting an option is required.')
-          )
-          .required('The field is required.'),
+      z.object({
+        film: z.enum([
+          'not-sure-how-this-works',
+          ...films.map((film) => film.name),
+        ]),
       }),
     []
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const submit: SubmitHandler<FormFields> = ({ film }) => {

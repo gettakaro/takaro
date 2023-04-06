@@ -4,8 +4,11 @@ export const PATHS = {
   users: () => '/users',
   profile: () => '/profile',
   players: () => '/players',
-  settings: () => '/settings',
   moduleDefinitions: () => '/modules',
+
+  settings: {
+    GameServerSettings: '/settings/gameservers',
+  },
 
   gameServers: {
     overview: () => '/servers',
