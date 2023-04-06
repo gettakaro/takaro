@@ -31,7 +31,7 @@ function mapSettings<T extends Promise<unknown>>(
   return Promise.all(promises);
 }
 
-const SettingsPage: FC = () => {
+export const GlobalGameServerSettings: FC = () => {
   const apiClient = useApiClient();
   const { serverId } = useParams();
 
@@ -98,5 +98,3 @@ const SettingsPage: FC = () => {
     </Fragment>
   );
 };
-
-export default SettingsPage;
