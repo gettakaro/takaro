@@ -3,8 +3,8 @@ import { Dispatch, FC, Fragment, SetStateAction } from 'react';
 import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
-import { useGameServer } from 'hooks/useGameServer';
-import { useParams } from 'react-router-dom';
+import { useGameServer } from 'queries/gameservers';
+import { useGameServerOutletContext } from 'frames/GameServerFrame';
 
 const ConsoleContainer = styled.div`
   width: 600px;
@@ -14,12 +14,22 @@ const ConsoleContainer = styled.div`
 const GameServerDashboard: FC = () => {
   const apiClient = useApiClient();
   const { socket } = useSocket();
-  const { gameServerData } = useGameServer();
-  const { serverId } = useParams();
+  const { gameServerId } = useGameServerOutletContext();
+  const { data: gameServer, isLoading } = useGameServer(gameServerId);
+
+  // TODO: handle this
+  if (isLoading) {
+    return <>'console loading...'</>;
+  }
+
+  // TODO: handle this
+  if (gameServer === undefined) {
+    return <>'could not load data'</>;
+  }
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
-    const handler = (gameserverId: string, type, data) => {
-      if (gameserverId !== serverId) return;
+    const handler = (handleGameserverId: string, type, data) => {
+      if (handleGameserverId !== gameServerId) return;
       setter((prev: Message[]) => [
         ...prev,
         {
@@ -51,7 +61,7 @@ const GameServerDashboard: FC = () => {
           onExecuteCommand={async (command: string) => {
             const result =
               await apiClient.gameserver.gameServerControllerExecuteCommand(
-                gameServerData.id,
+                gameServer.id,
                 { command }
               );
             return {

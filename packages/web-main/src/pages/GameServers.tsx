@@ -1,7 +1,5 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { useQuery } from 'react-query';
-import { useApiClient } from 'hooks/useApiClient';
 import {
   Button,
   Empty,
@@ -9,14 +7,13 @@ import {
   Skeleton,
   styled,
 } from '@takaro/lib-components';
-import { GameServerOutputArrayDTOAPI } from '@takaro/apiclient';
 import {
   EmptyGameServerCard,
   GameServerCard,
 } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { QueryKeys } from 'queryKeys';
+import { useGameServers } from 'queries/gameservers';
 
 const List = styled.ul`
   display: grid;
@@ -26,15 +23,9 @@ const List = styled.ul`
 `;
 
 const GameServers: FC = () => {
-  const client = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading, isError, refetch } =
-    useQuery<GameServerOutputArrayDTOAPI>({
-      queryKey: QueryKeys.gameserver.list,
-      queryFn: async () =>
-        (await client.gameserver.gameServerControllerSearch()).data,
-    });
+  const { data, isLoading, isError } = useGameServers();
 
   if (isLoading) {
     return (
@@ -51,7 +42,7 @@ const GameServers: FC = () => {
     throw new Error('Failed while loading the servers');
   }
 
-  if (data === undefined || data.data.length === 0) {
+  if (data === undefined || data.length === 0) {
     return (
       <EmptyPage>
         <Empty
@@ -75,12 +66,8 @@ const GameServers: FC = () => {
         <title>Gameservers - Takaro</title>
       </Helmet>
       <List>
-        {data.data.map((gameServer) => (
-          <GameServerCard
-            key={gameServer.id}
-            {...gameServer}
-            refetch={refetch}
-          />
+        {data.map((gameServer) => (
+          <GameServerCard key={gameServer.id} {...gameServer} />
         ))}
         <EmptyGameServerCard
           onClick={() => navigate(PATHS.gameServers.create())}

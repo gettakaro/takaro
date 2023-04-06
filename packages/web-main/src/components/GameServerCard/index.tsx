@@ -18,10 +18,7 @@ import {
   StyledDialogBody,
 } from './style';
 import { FloatingDelayGroup } from '@floating-ui/react';
-import {
-  GameServerOutputDTO,
-  GameServerTestReachabilityDTOAPI,
-} from '@takaro/apiclient';
+import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -29,30 +26,18 @@ import {
   AiOutlinePlus as PlusIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
-import { useMutation, useQuery } from 'react-query';
-import { useApiClient } from 'hooks/useApiClient';
+import {
+  useRemoveGameServer,
+  useGameServerReachabilityById,
+} from 'queries/gameservers';
 
-interface GameServerCardProps extends GameServerOutputDTO {
-  refetch: () => unknown;
-}
-
-export const GameServerCard: FC<GameServerCardProps> = ({
-  id,
-  name,
-  type,
-  refetch,
-}) => {
+export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const apiClient = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery<GameServerTestReachabilityDTOAPI>(
-    'testReachability',
-    async () =>
-      (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
-        .data
-  );
+  const { isLoading, data } = useGameServerReachabilityById(id);
+  const { mutateAsync, isLoading: isDeleting } = useRemoveGameServer(id);
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -63,29 +48,23 @@ export const GameServerCard: FC<GameServerCardProps> = ({
     setOpenDialog(true);
   };
 
-  const { mutateAsync, isLoading: isDeleting } = useMutation({
-    mutationFn: async () =>
-      await apiClient.gameserver.gameServerControllerRemove(id),
-  });
-
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
     await mutateAsync();
     setOpenDialog(false);
-    refetch();
   };
 
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
-          <Tooltip label="Takaro server reachability" placement="bottom">
-            {isLoading || !data ? (
-              <Skeleton variant="text" width="50px" height="15px" />
-            ) : (
+          {isLoading || !data ? (
+            <Skeleton variant="text" width="50px" height="15px" />
+          ) : (
+            <Tooltip label="Takaro server reachability" placement="bottom">
               <div>{data.data.connectable ? 'online' : 'offline'}</div>
-            )}
-          </Tooltip>
+            </Tooltip>
+          )}
           <Dropdown
             open={openDropdown}
             setOpen={setOpenDropdown}

@@ -12,16 +12,9 @@ import {
   AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
-import { GameServerContext, GameServerData } from 'context/gameServerContext';
-import { useParams, redirect } from 'react-router-dom';
-import { useQuery } from 'react-query';
-import {
-  GameServerOutputDTO,
-  GameServerOutputDTOTypeEnum,
-} from '@takaro/apiclient';
-import { useApiClient } from 'hooks/useApiClient';
+import { useParams, redirect, useOutletContext } from 'react-router-dom';
 import { ErrorBoundary } from '@sentry/react';
-import { QueryKeys } from 'queryKeys';
+import { useGameServer } from 'queries/gameservers';
 
 const Container = styled.div`
   display: flex;
@@ -35,41 +28,19 @@ const ContentContainer = styled(motion.div)`
   overflow-y: auto;
 `;
 
-// the default value is required to make the type checker happy.
-const defaultGameServerData: GameServerData = {
-  id: '',
-  name: '',
-  type: GameServerOutputDTOTypeEnum.Mock,
-  createdAt: '',
-  updatedAt: '',
-  connectionInfo: {},
-};
+export function useGameServerOutletContext() {
+  return useOutletContext<{ gameServerId: string }>();
+}
 
 export const ServerFrame: FC = () => {
-  const [gameServerData, setGameServerData] = useState<GameServerData>(
-    defaultGameServerData
-  );
   const { serverId } = useParams();
-  const apiClient = useApiClient();
 
-  console.log(serverId);
   // in case /server/**NOTHING**
   if (!serverId) {
     redirect(PATHS.gameServers.overview());
   }
 
-  const { isLoading, isError } = useQuery<GameServerOutputDTO>({
-    queryKey: QueryKeys.gameserver.id(serverId!),
-    queryFn: async () =>
-      (await apiClient.gameserver.gameServerControllerGetOne(serverId!)).data
-        .data,
-    onSuccess: (data: GameServerOutputDTO) => setGameServerData({ ...data }),
-  });
-
-  const providerGameServerData = useMemo(
-    () => ({ gameServerData, setGameServerData }),
-    [gameServerData, setGameServerData]
-  );
+  const { isLoading, isError } = useGameServer(serverId!);
 
   const links: NavbarLink[] = [
     {
@@ -97,22 +68,24 @@ export const ServerFrame: FC = () => {
   ];
 
   return (
-    <GameServerContext.Provider value={providerGameServerData}>
-      <Container>
-        <Navbar links={links} />
-        <ContentContainer
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <Header />
-          <Page>
-            <ErrorBoundary fallback={<ErrorFallback />}>
-              {isLoading && <LoadingPage />}
-              {isError ? <div>Server not found</div> : <Outlet />}
-            </ErrorBoundary>
-          </Page>
-        </ContentContainer>
-      </Container>
-    </GameServerContext.Provider>
+    <Container>
+      <Navbar links={links} />
+      <ContentContainer
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
+        <Header />
+        <Page>
+          <ErrorBoundary fallback={<ErrorFallback />}>
+            {isLoading && <LoadingPage />}
+            {isError ? (
+              <div>Server not found</div>
+            ) : (
+              <Outlet context={{ gameServerId: serverId }} />
+            )}
+          </ErrorBoundary>
+        </Page>
+      </ContentContainer>
+    </Container>
   );
 };
