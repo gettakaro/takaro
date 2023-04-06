@@ -75,11 +75,14 @@ export const Input = styled.input<{
   hasError: boolean;
   hasPrefix: boolean;
   hasSuffix: boolean;
+  isPassword: boolean;
 }>`
   width: 100%;
   padding-left: ${({ hasIcon, theme }): string =>
     hasIcon ? theme.spacing[7] : theme.spacing['1_5']};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  padding-right: ${({ theme, isPassword }) =>
+    isPassword ? theme.spacing[6] : 0};
   font-size: 1.5rem;
   border: 2px solid
     ${({ theme, hasError }): string =>
