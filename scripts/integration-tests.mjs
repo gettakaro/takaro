@@ -83,7 +83,7 @@ async function main() {
       POSTGRES_PASSWORD: `${POSTGRES_PASSWORD}`,
       POSTGRES_DB: `${process.env.POSTGRES_DB}`,
       POSTGRES_HOST: '127.0.0.1 ',
-      POSTGRES_ENCRYPTION_KEY: randomUUID(),
+      POSTGRES_ENCRYPTION_KEY,
       TAKARO_OAUTH_ADMIN_HOST: 'http://127.0.0.1:4445',
       KRATOS_ADMIN_URL: 'http://127.0.0.1:4434',
       TAKARO_OAUTH_HOST: 'http://127.0.0.1:4444 ',

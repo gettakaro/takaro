@@ -1,6 +1,7 @@
 import {
   IsEnum,
   IsJSON,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -118,6 +119,23 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
   @ValidateNested()
   opts!: IMessageOptsDTO;
 }
+
+class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  playerGameId!: string;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  x: number;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  y: number;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  z: number;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -293,6 +311,23 @@ export class GameServerController {
       data.message,
       data.opts
     );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:id/teleportPlayer')
+  async teleportPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: TeleportPlayerInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.teleportPlayer(params.id, data.playerGameId, {
+      x: data.x,
+      y: data.y,
+      z: data.z,
+    });
     return apiResponse(result);
   }
 }

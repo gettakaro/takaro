@@ -4,8 +4,6 @@ services:
     image: postgres:14
     ports:
       - "5432:5432"   
-    volumes:
-      - postgresql:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -29,8 +27,6 @@ services:
       service: kratos-migrate      
   postgresql_kratos:
     image: postgres:14
-    volumes:
-      - postgresql_kratos:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -52,8 +48,6 @@ services:
       service: hydra-migrate   
   postgresql_hydra:
     image: postgres:14
-    volumes:
-      - postgresql_hydra:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -73,7 +67,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}  
       POSTGRES_HOST: "postgresql"   
-      POSTGRES_ENCRYPTION_KEY: "${POSTGRES_ENCRYPTION_KEY}"
+      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
@@ -82,8 +76,3 @@ services:
     # api
       - 13000:3000
       - 12001:12001
-
-volumes:
-  postgresql:
-  postgresql_hydra:
-  postgresql_kratos:

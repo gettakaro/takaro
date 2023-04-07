@@ -17,7 +17,8 @@ interface I7DaysToDieEvent extends JsonObject {
 }
 
 const EventRegexMap = {
-  [GameEvents.PLAYER_CONNECTED]: /(Player connected,)/,
+  [GameEvents.PLAYER_CONNECTED]:
+    /PlayerSpawnedInWorld \(reason: JoinMultiplayer, position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
   [GameEvents.CHAT_MESSAGE]:
     /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
@@ -91,10 +92,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
-    const nameMatches = /name=(.+), (pltfmid=|steamid=)/.exec(logLine.msg);
-    const gameIdMatches = /entityid=([\d]+),/.exec(logLine.msg);
-    const platformIdMatches = /pltfmid=(.+), crossid=/.exec(logLine.msg);
-    const crossIdMatches = /crossid=(.+), steamOwner/.exec(logLine.msg);
+    const nameMatches = /PlayerName='(.+)'/.exec(logLine.msg);
+    const gameIdMatches = /EntityID=([\d]+),/.exec(logLine.msg);
+    const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
+    const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
     const name = nameMatches ? nameMatches[1] : 'Unknown name';
     const gameId = gameIdMatches ? gameIdMatches[1] : null;
@@ -115,6 +116,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (!gameId) throw new Error('Could not find gameId');
 
     return new EventPlayerConnected().construct({
+      msg: logLine.msg,
       player: await new IGamePlayer().construct({
         name,
         gameId,
@@ -127,7 +129,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
     const nameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
     const entityIDMatch = /EntityID=(\d+)/.exec(logLine.msg);
-    const platformIdMatches = /PltfmId='(.+)', OwnerID=/.exec(logLine.msg);
+    const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
 
     const name = nameMatch ? nameMatch[1] : 'Unknown name';
     const gameId = entityIDMatch ? entityIDMatch[1] : null;
@@ -145,6 +147,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     if (!gameId) throw new Error('Could not find gameId');
 
     return new EventPlayerDisconnected().construct({
+      msg: logLine.msg,
       player: await new IGamePlayer().construct({
         name,
         gameId,

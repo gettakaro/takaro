@@ -1,7 +1,11 @@
 import { Axios, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { SdtdConnectionInfo } from './index.js';
-import { CommandResponse, StatsResponse } from './apiResponses.js';
+import {
+  CommandResponse,
+  PlayerLocation,
+  StatsResponse,
+} from './apiResponses.js';
 
 export class SdtdApiClient {
   private client: Axios;
@@ -34,5 +38,9 @@ export class SdtdApiClient {
     command: string
   ): Promise<AxiosResponse<CommandResponse>> {
     return this.client.get(`/api/executeconsolecommand?command=${command}`);
+  }
+
+  async getPlayersLocation(): Promise<AxiosResponse<Array<PlayerLocation>>> {
+    return this.client.get('/api/getplayerslocation');
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
 import { SdtdConnectionInfo } from '../index.js';
 import {
@@ -23,8 +24,9 @@ describe('7d2d event detection', () => {
   });
 
   it('[PlayerConnected]: Can detect simple player connected', async () => {
-    await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
-      msg: '2022-01-21T20:43:26 60120.462 INF Player connected, entityid=549, name=Catalysm, pltfmid=Steam_76561198028175941, crossid=EOS_0002b5d970954287afdcb5dc35af0424, steamOwner=Steam_76561198028175941, ip=127.0.0.1',
+    const emitter = new SevenDaysToDieEmitter(await mockSdtdConnectionInfo);
+    await emitter.parseMessage({
+      msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
     expect(emitStub).to.have.been.calledTwice;
 
@@ -35,7 +37,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
-      gameId: '549',
+      gameId: '171',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
@@ -48,7 +50,7 @@ describe('7d2d event detection', () => {
 
   it('[PlayerConnected]: Can detect Xbox player connected', async () => {
     await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
-      msg: '2022-01-21T20:43:26 60120.462 INF Player connected, entityid=549, name=Catalysm, pltfmid=XBL_123456abcdef, crossid=EOS_0002b5d970954287afdcb5dc35af0424, steamOwner=Steam_76561198028175941, ip=127.0.0.1',
+      msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='XBL_123456abcdef', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
     expect(emitStub).to.have.been.calledTwice;
 
@@ -59,7 +61,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
-      gameId: '549',
+      gameId: '171',
       steamId: undefined,
       xboxLiveId: '123456abcdef',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
@@ -72,7 +74,7 @@ describe('7d2d event detection', () => {
 
   it('[PlayerConnected]: Can detect player connected with space', async () => {
     await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
-      msg: '2022-01-21T20:43:26 60120.462 INF Player connected, entityid=549, name=Cata lysm, pltfmid=Steam_76561198028175941, crossid=EOS_0002b5d970954287afdcb5dc35af0424, steamOwner=Steam_76561198028175941, ip=127.0.0.1',
+      msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Cata lysm'`,
     });
     expect(emitStub).to.have.been.calledTwice;
 
@@ -83,7 +85,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Cata lysm',
-      gameId: '549',
+      gameId: '171',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
@@ -97,7 +99,7 @@ describe('7d2d event detection', () => {
   it('[PlayerDisconnected]: Can detect simple player disconnected', async () => {
     await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
       // eslint-disable-next-line quotes
-      msg: "Player disconnected: EntityID=549, PltfmId='Steam_76561198028175941', OwnerID='76561198028175941', PlayerName='Catalysm'",
+      msg: `Player disconnected: EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
     expect(emitStub).to.have.been.calledTwice;
 
@@ -108,7 +110,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
-      gameId: '549',
+      gameId: '171',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
       device: undefined,
