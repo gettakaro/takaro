@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "gameserverId": "6a5390b5-d268-42c8-a04d-8991fed092e3",
+      "moduleId": "c7def5fd-7c8f-490b-bad3-051552f96e80"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing a module with correct config",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

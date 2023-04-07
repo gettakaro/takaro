@@ -34,6 +34,12 @@ import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
 import { PlayerService } from './PlayerService.js';
 
+// Curse you ESM... :(
+import _Ajv from 'ajv';
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+
+const ajv = new Ajv({ useDefaults: true });
+
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
@@ -166,6 +172,29 @@ export class GameServerService extends TakaroService<
     moduleId: string,
     installDto: ModuleInstallDTO
   ) {
+    const moduleService = new ModuleService(this.domainId);
+    const mod = await moduleService.findOne(moduleId);
+
+    if (!mod) {
+      throw new errors.NotFoundError('Module not found');
+    }
+
+    const validateConfig = ajv.compile(JSON.parse(mod.configSchema));
+    const isValidConfig = validateConfig(JSON.parse(installDto.config));
+
+    if (!isValidConfig) {
+      const prettyErrors = validateConfig.errors
+        ?.map((e) => {
+          if (e.keyword === 'additionalProperties') {
+            return `${e.message}, invalid: ${e.params.additionalProperty}`;
+          }
+
+          return `${e.instancePath} ${e.message}`;
+        })
+        .join(', ');
+      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
+    }
+
     await this.repo.installModule(gameserverId, moduleId, installDto);
 
     return new ModuleInstallationOutputDTO().construct({

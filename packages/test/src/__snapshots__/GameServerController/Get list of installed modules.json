@@ -9,6 +9,7 @@
         "name": "utils",
         "description": "A collection of useful commands",
         "builtin": "utils",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
         "cronJobs": [],
         "hooks": [],
         "commands": [

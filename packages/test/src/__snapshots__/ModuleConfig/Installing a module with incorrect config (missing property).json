@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid config:  must have required property 'foo'"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing a module with incorrect config (missing property)",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}

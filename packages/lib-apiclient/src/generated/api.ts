@@ -2265,6 +2265,12 @@ export interface ModuleCreateDTO {
    * @type {string}
    * @memberof ModuleCreateDTO
    */
+  configSchema?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateDTO
+   */
   builtin?: string;
 }
 /**
@@ -2379,6 +2385,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  configSchema: string;
   /**
    *
    * @type {string}
@@ -2536,6 +2548,12 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleUpdateDTO
+   */
+  configSchema?: string;
 }
 /**
  *

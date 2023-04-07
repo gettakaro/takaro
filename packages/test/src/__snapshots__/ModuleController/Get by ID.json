@@ -9,6 +9,7 @@
       "id": "6ecd8302-af6f-4789-ad7d-0cd370f31ae7",
       "name": "Test module",
       "description": "No description provided.",
+      "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
       "builtin": null,
       "cronJobs": [],
       "hooks": [],
