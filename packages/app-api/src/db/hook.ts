@@ -148,6 +148,8 @@ export class HookRepo extends ITakaroRepo<
     );
 
     return hooksMatchingEvent.filter((hook) => {
+      if (!hook.regex) return true;
+
       const regex = new RegExp(hook.regex);
       return regex.test(msg);
     });

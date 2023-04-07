@@ -312,7 +312,7 @@ export class CommandService extends TakaroService<
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => ({
           db: c,
-          parsed: {
+          data: {
             ...parseCommand(chatMessage.msg, c),
             player: { ...chatMessage.player, location: playerLocation },
             module: await gameServerService.getModuleInstallation(
@@ -325,12 +325,12 @@ export class CommandService extends TakaroService<
 
       const queues = QueuesService.getInstance();
 
-      const promises = parsedCommands.map(async ({ parsed, db }) => {
+      const promises = parsedCommands.map(async ({ data, db }) => {
         return queues.queues.commands.queue.add(db.id, {
           domainId: this.domainId,
           function: db.function.code,
           itemId: db.id,
-          data: parsed,
+          data,
           gameServerId,
         });
       });
