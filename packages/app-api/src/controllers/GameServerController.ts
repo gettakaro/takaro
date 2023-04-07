@@ -93,7 +93,7 @@ class ParamIdAndModuleId {
 }
 
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
-  @Type(() => ModuleInstallDTO)
+  @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
   declare data: ModuleInstallationOutputDTO;
 }

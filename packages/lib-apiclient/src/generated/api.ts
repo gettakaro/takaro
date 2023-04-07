@@ -2325,10 +2325,10 @@ export interface ModuleInstallationOutputDTO {
 export interface ModuleInstallationOutputDTOAPI {
   /**
    *
-   * @type {ModuleInstallDTO}
+   * @type {ModuleInstallationOutputDTO}
    * @memberof ModuleInstallationOutputDTOAPI
    */
-  data: ModuleInstallDTO;
+  data: ModuleInstallationOutputDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -4487,7 +4487,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
       id: string,
       options?: AxiosRequestConfig
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.commandControllerRemoveArgument(
@@ -4675,7 +4675,7 @@ export const CommandApiFactory = function (
     commandControllerRemoveArgument(
       id: string,
       options?: any
-    ): AxiosPromise<APIOutput> {
+    ): AxiosPromise<IdUuidDTOAPI> {
       return localVarFp
         .commandControllerRemoveArgument(id, options)
         .then((request) => request(axios, basePath));
