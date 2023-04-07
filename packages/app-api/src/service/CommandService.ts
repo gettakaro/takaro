@@ -304,17 +304,24 @@ export class CommandService extends TakaroService<
       }
 
       const gameServerService = new GameServerService(this.domainId);
+
       const playerLocation = await (
         await gameServerService.getGame(gameServerId)
       ).getPlayerLocation(chatMessage.player);
 
-      const parsedCommands = triggeredCommands.map((c) => ({
-        db: c,
-        parsed: {
-          ...parseCommand(chatMessage.msg, c),
-          player: { ...chatMessage.player, location: playerLocation },
-        },
-      }));
+      const parsedCommands = await Promise.all(
+        triggeredCommands.map(async (c) => ({
+          db: c,
+          parsed: {
+            ...parseCommand(chatMessage.msg, c),
+            player: { ...chatMessage.player, location: playerLocation },
+            module: await gameServerService.getModuleInstallation(
+              gameServerId,
+              c.moduleId
+            ),
+          },
+        }))
+      );
 
       const queues = QueuesService.getInstance();
 

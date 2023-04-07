@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid config: must NOT have additional properties, invalid: bar"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing a module with incorrect config (additional property)",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}

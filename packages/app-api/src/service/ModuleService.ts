@@ -1,7 +1,13 @@
 import { TakaroService } from './Base.js';
 
 import { ModuleModel, ModuleRepo } from '../db/module.js';
-import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsJSON,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 
 import { Type } from 'class-transformer';
 import {
@@ -35,6 +41,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
   description!: string;
 
+  @IsJSON()
+  configSchema: string;
+
   @IsString()
   @IsOptional()
   builtin: string;
@@ -61,6 +70,10 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsOptional()
   description?: string;
 
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
+
   @IsString()
   @IsOptional()
   builtin: string;
@@ -74,6 +87,10 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
 }
 
 export class ModuleService extends TakaroService<

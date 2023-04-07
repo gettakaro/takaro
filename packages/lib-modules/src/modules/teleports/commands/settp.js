@@ -23,6 +23,19 @@ async function settp() {
     return;
   }
 
+  const allPlayerTeleports = await takaro.variable.variableControllerFind({
+    search: {
+      key: getVariableKey(data.gameServerId, player.gameId, ''),
+    },
+  });
+
+  if (allPlayerTeleports.data.data.length >= data.module.config.maxTeleports) {
+    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.config.maxTeleports}`,
+    });
+    return;
+  }
+
   await takaro.variable.variableControllerCreate({
     key: getVariableKey(data.gameServerId, player.gameId, data.arguments.tp),
     value: JSON.stringify({
