@@ -179,8 +179,9 @@ export class GameServerService extends TakaroService<
       throw new errors.NotFoundError('Module not found');
     }
 
+    const modConfig = JSON.parse(installDto.config);
     const validateConfig = ajv.compile(JSON.parse(mod.configSchema));
-    const isValidConfig = validateConfig(JSON.parse(installDto.config));
+    const isValidConfig = validateConfig(modConfig);
 
     if (!isValidConfig) {
       const prettyErrors = validateConfig.errors
@@ -194,6 +195,8 @@ export class GameServerService extends TakaroService<
         .join(', ');
       throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
     }
+
+    installDto.config = JSON.stringify(modConfig);
 
     await this.repo.installModule(gameserverId, moduleId, installDto);
 
