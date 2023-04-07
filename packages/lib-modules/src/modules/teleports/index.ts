@@ -2,7 +2,10 @@ import { BuiltinModule } from '../../BuiltinModule.js';
 
 export class Teleports extends BuiltinModule {
   constructor() {
-    super('teleports');
+    super(
+      'teleports',
+      'A set of commands to allow players to set their own teleport points and teleport to them'
+    );
 
     this.commands = [
       {

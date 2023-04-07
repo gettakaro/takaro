@@ -21,6 +21,7 @@ export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
   builtin: string;
+  description: string;
 
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];
