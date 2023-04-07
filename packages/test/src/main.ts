@@ -4,3 +4,5 @@ export { integrationConfig } from './test/integrationConfig.js';
 
 export * as snapshot from './snapshots.js';
 export { IntegrationTest, logInWithPermissions } from './integrationTest.js';
+
+export { getMockPlayer } from './mockdata.js';

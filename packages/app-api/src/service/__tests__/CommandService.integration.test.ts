@@ -1,4 +1,4 @@
-import { IntegrationTest, sandbox, expect } from '@takaro/test';
+import { IntegrationTest, sandbox, expect, getMockPlayer } from '@takaro/test';
 import {
   CommandOutputDTO,
   GameServerOutputDTO,
@@ -74,6 +74,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -93,6 +94,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: 'test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -102,6 +104,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -126,6 +129,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
 
         this.setupData.gameserver.id
@@ -142,6 +146,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
