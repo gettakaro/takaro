@@ -31,7 +31,7 @@ export interface ICronJob extends IModuleItem {
 }
 
 export abstract class BuiltinModule {
-  constructor(public name: string) {}
+  constructor(public name: string, public description: string) {}
 
   public commands: Array<ICommand> = [];
   public hooks: Array<IHook> = [];

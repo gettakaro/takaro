@@ -2,7 +2,7 @@ import { BuiltinModule } from '../../BuiltinModule.js';
 
 export class Utils extends BuiltinModule {
   constructor() {
-    super('utils');
+    super('utils', 'A collection of useful commands');
 
     this.commands = [
       {

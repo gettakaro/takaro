@@ -33,6 +33,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   name!: string;
 
   @IsString()
+  description!: string;
+
+  @IsString()
   @IsOptional()
   builtin: string;
 
@@ -56,6 +59,10 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 
   @IsString()
   @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
   builtin: string;
 }
 
@@ -63,6 +70,10 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @Length(3, 50)
   @IsString()
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
 
 export class ModuleService extends TakaroService<
@@ -117,8 +128,15 @@ export class ModuleService extends TakaroService<
     if (existing.results.length !== 1) {
       mod = await this.create(
         await new ModuleCreateDTO().construct({
-          name: builtin.name,
+          ...builtin,
           builtin: builtin.name,
+        })
+      );
+    } else {
+      mod = await this.update(
+        mod.id,
+        await new ModuleUpdateDTO().construct({
+          ...builtin,
         })
       );
     }
