@@ -37,12 +37,14 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
+          description: 'bla bla',
         })
       ).data.data;
     },
     test: async function () {
       return this.client.module.moduleControllerUpdate(this.setupData.id, {
         name: 'Updated module',
+        description: 'Updated description',
       });
     },
   }),

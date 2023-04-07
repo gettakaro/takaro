@@ -5,6 +5,7 @@
     },
     "data": {
       "name": "Updated module",
+      "description": "Updated description",
       "builtin": null,
       "commands": [],
       "cronJobs": [],

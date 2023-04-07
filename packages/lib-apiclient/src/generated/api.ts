@@ -2259,7 +2259,7 @@ export interface ModuleCreateDTO {
    * @type {string}
    * @memberof ModuleCreateDTO
    */
-  description: string;
+  description?: string;
   /**
    *
    * @type {string}
@@ -2535,7 +2535,7 @@ export interface ModuleUpdateDTO {
    * @type {string}
    * @memberof ModuleUpdateDTO
    */
-  description: string;
+  description?: string;
 }
 /**
  *

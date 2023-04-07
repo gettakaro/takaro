@@ -58,7 +58,8 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   name!: string;
 
   @IsString()
-  description!: string;
+  @IsOptional()
+  description?: string;
 
   @IsString()
   @IsOptional()
@@ -71,7 +72,8 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   name!: string;
 
   @IsString()
-  description!: string;
+  @IsOptional()
+  description?: string;
 }
 
 export class ModuleService extends TakaroService<
@@ -127,6 +129,7 @@ export class ModuleService extends TakaroService<
       mod = await this.create(
         await new ModuleCreateDTO().construct({
           ...builtin,
+          builtin: builtin.name,
         })
       );
     } else {
