@@ -8,14 +8,12 @@ async function sleep(ms) {
 
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
 const POSTGRES_PASSWORD = randomUUID();
-const POSTGRES_ENCRYPTION_KEY = randomUUID();
 
 process.env = {
   ...process.env,
   POSTGRES_USER: 'takaro-test',
   POSTGRES_DB: 'takaro-test-db',
-  POSTGRES_PASSWORD,
-  POSTGRES_ENCRYPTION_KEY,
+  POSTGRES_PASSWORD
 };
 
 const composeOpts = {
