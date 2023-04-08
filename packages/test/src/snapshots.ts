@@ -63,7 +63,7 @@ export async function matchSnapshot<SetupData>(
   } catch (error) {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
-    throw new Error('No snapshot exists, created a new one');
+    throw new Error(`No snapshot exists, created a new one: ${snapshotPath}`);
   }
 
   const filteredFields = [
