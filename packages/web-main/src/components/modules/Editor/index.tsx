@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import {
   FileTabs,
   SandpackStack,
@@ -11,8 +11,7 @@ import { defineTheme } from './theme';
 import { useModule } from 'hooks/useModule';
 import { useApiClient } from 'hooks/useApiClient';
 import { useDebounce, styled } from '@takaro/lib-components';
-import customTypes from './monacoCustomTypes.json';
-import { languages } from 'monaco-editor';
+import { handleCustomTypes } from './customTypes';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -52,7 +51,6 @@ export const Editor: FC = () => {
   const debouncedCode = useDebounce<string>(code, 2000);
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
-  const [shouldHandleCustomTypes, setShouldHandleCustomTypes] = useState(true);
 
   // TODO: this should be moved to react query
   useEffect(() => {
@@ -68,79 +66,7 @@ export const Editor: FC = () => {
     if (monaco) {
       defineTheme(monaco);
       monaco.editor.setTheme('takaro');
-
-      var testlibSource = [
-        '   declare module Kaka {',
-        '     constructor(config: IApiClientConfig);',
-        '     private addAuthHeaders;',
-        '     set username(username: string);',
-        '     set password(password: string);',
-        '     login(): Promise<void>;',
-        '     logout(): void;',
-        '     get user(): UserApi;',
-        '     get role(): RoleApi;',
-        '     get gameserver(): GameServerApi;',
-        '     get cronjob(): CronJobApi;',
-        '     get function(): FunctionApi;',
-        '     get module(): ModuleApi;',
-        '     get hook(): HookApi;',
-        '     get command(): CommandApi;',
-        '     get player(): PlayerApi;',
-        '     get settings(): SettingsApi;',
-        '     get variable(): VariableApi;',
-        ' }      ',
-      ].join('\n');
-      var testlibUri = 'ts:filename/facts.d.ts';
-
-      if (shouldHandleCustomTypes) {
-        setShouldHandleCustomTypes(false);
-        console.log('HANDLING CUSTOM TYPES');
-        monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-        const compilerOptions =
-          monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
-
-        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-          ...compilerOptions,
-          lib: ['es2020'],
-          allowNonTsExtensions: true,
-          experimentalDecorators: true,
-          target: languages.typescript.ScriptTarget.ES2020,
-          moduleResolution: languages.typescript.ModuleResolutionKind.NodeJs,
-          paths: {
-            '@takaro/helpers': ['node_modules/@takaro/helpers/dist'],
-          },
-        });
-
-        let extraLibs: { content: string; libUri: string }[] = [];
-        extraLibs.push({
-          content: testlibSource,
-          libUri: testlibUri,
-        });
-
-        // add takaro library to monaco
-        for (const libUri of Object.keys(customTypes)) {
-          const content = customTypes[libUri];
-          console.log(libUri);
-          console.log(content);
-
-          extraLibs.push({
-            content,
-            libUri: monaco.Uri.file(libUri).toString(true),
-          });
-        }
-
-        monaco.languages.typescript.typescriptDefaults.setExtraLibs(extraLibs);
-
-        extraLibs.forEach((lib) =>
-          monaco.editor.createModel(
-            lib.content,
-            'typescript',
-            monaco.Uri.parse(lib.libUri)
-          )
-        );
-      }
-
-      // monaco.editor.colorizeElement(document.getElementById('code')!, {});
+      handleCustomTypes(monaco);
     }
   }, [monaco]);
 
