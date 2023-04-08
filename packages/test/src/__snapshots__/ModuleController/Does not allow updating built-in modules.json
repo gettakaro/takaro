@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Cannot update builtin module"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Does not allow updating built-in modules",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -2266,10 +2266,35 @@ export interface ModuleCreateDTO {
    * @memberof ModuleCreateDTO
    */
   configSchema?: string;
+}
+/**
+ *
+ * @export
+ * @interface ModuleCreateInternalDTO
+ */
+export interface ModuleCreateInternalDTO {
   /**
    *
    * @type {string}
-   * @memberof ModuleCreateDTO
+   * @memberof ModuleCreateInternalDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
+   */
+  configSchema?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
    */
   builtin?: string;
 }
