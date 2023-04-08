@@ -25,6 +25,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { errors } from '@takaro/util';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -108,6 +109,10 @@ export class ModuleController {
     @Body() data: ModuleUpdateDTO
   ) {
     const service = new ModuleService(req.domainId);
+    const mod = await service.findOne(params.id);
+    if (!mod) throw new errors.NotFoundError('Module not found');
+    if (mod.builtin)
+      throw new errors.BadRequestError('Cannot update builtin module');
     return apiResponse(await service.update(params.id, data));
   }
 
@@ -116,6 +121,10 @@ export class ModuleController {
   @Delete('/module/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ModuleService(req.domainId);
+    const mod = await service.findOne(params.id);
+    if (!mod) throw new errors.NotFoundError('Module not found');
+    if (mod.builtin)
+      throw new errors.BadRequestError('Cannot delete builtin module');
     await service.delete(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
