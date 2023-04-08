@@ -76,7 +76,6 @@ async function main() {
     packages: ['@takaro/helpers'],
   });
 
-  console.log(dts);
   const webMainEditorPath = path.join(
     __dirname,
     '..',
@@ -91,6 +90,12 @@ async function main() {
   await fs.writeJSON(
     path.join(webMainEditorPath, 'monacoCustomTypes.json'),
     dts
+  );
+
+  console.log(
+    `Generated ${
+      Object.keys(dts).length
+    } typings. Saved to ${webMainEditorPath}`
   );
 }
 
