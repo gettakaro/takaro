@@ -1,12 +1,17 @@
-FROM node:18
+FROM node:18-bullseye
 
 ENV NODE_ENV=development
 
+RUN wget --continue --retry-connrefused --waitretry=1 --timeout=20 --tries=3 -q https://github.com/firecracker-microvm/firecracker/releases/download/v1.1.2/firecracker-v1.1.2-x86_64.tgz && \
+    tar -xf firecracker-v1.1.2-x86_64.tgz && \
+    mv release-v1.1.2-x86_64/firecracker-v1.1.2-x86_64 /usr/local/bin/firecracker && \
+    mv release-v1.1.2-x86_64/jailer-v1.1.2-x86_64 /usr/local/bin/jailer
+RUN apt-get update && apt-get install -y git net-tools iproute2 iptables
+
 WORKDIR /app
 
-RUN apt-get install git -y
-
 RUN npm install -g npm@8
+RUN npm config set cache /app/.npm-cache --global
 
 COPY package*.json ./
 COPY tsconfig*.json ./
@@ -17,10 +22,6 @@ COPY scripts ./scripts
 COPY nodemon.json ./
 COPY jest.config.js ./
 COPY .mocharc.js ./
-
-RUN chown -R node:node /app
-
-USER node
 
 WORKDIR /app
 
