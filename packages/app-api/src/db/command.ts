@@ -4,12 +4,16 @@ import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
+  CommandArgumentCreateDTO,
+  CommandArgumentOutputDTO,
+  CommandArgumentUpdateDTO,
   CommandCreateDTO,
   CommandOutputDTO,
   CommandUpdateDTO,
 } from '../service/CommandService.js';
 
 export const COMMANDS_TABLE_NAME = 'commands';
+export const COMMAND_ARGUMENTS_TABLE_NAME = 'commandArguments';
 
 export class CommandModel extends TakaroModel {
   static tableName = COMMANDS_TABLE_NAME;
@@ -29,6 +33,36 @@ export class CommandModel extends TakaroModel {
           to: `${FUNCTION_TABLE_NAME}.id`,
         },
       },
+      arguments: {
+        relation: Model.HasManyRelation,
+        modelClass: CommandArgumentModel,
+        join: {
+          from: `${COMMANDS_TABLE_NAME}.id`,
+          to: `${COMMAND_ARGUMENTS_TABLE_NAME}.commandId`,
+        },
+      },
+    };
+  }
+}
+
+export class CommandArgumentModel extends TakaroModel {
+  static tableName = COMMAND_ARGUMENTS_TABLE_NAME;
+  name!: string;
+  type: string;
+  helpText: string;
+  defaultValue: string;
+  commandId: string;
+
+  static get relationMappings() {
+    return {
+      command: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: CommandModel,
+        join: {
+          from: `${COMMAND_ARGUMENTS_TABLE_NAME}.commandId`,
+          to: `${COMMANDS_TABLE_NAME}.id`,
+        },
+      },
     };
   }
 }
@@ -46,9 +80,14 @@ export class CommandRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = CommandModel.bindKnex(knex);
+    const argumentModel = CommandArgumentModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
+      argumentModel,
+      argumentQuery: argumentModel
+        .query()
+        .modify('domainScoped', this.domainId),
     };
   }
 
@@ -56,7 +95,7 @@ export class CommandRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const result = await new QueryBuilder<CommandModel, CommandOutputDTO>({
       ...filters,
-      extend: ['function'],
+      extend: ['function', 'arguments'],
     }).build(query);
     return {
       total: result.total,
@@ -68,7 +107,10 @@ export class CommandRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('function');
+    const data = await query
+      .findById(id)
+      .withGraphJoined('function')
+      .withGraphJoined('arguments');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -139,5 +181,36 @@ export class CommandRepo extends ITakaroRepo<
       .map((x) => x.commandId);
 
     return Promise.all(commandIds.map((commandId) => this.findOne(commandId)));
+  }
+
+  async getArgument(argumentId: string) {
+    const { argumentQuery } = await this.getModel();
+    const item = await argumentQuery.findById(argumentId);
+    return new CommandArgumentOutputDTO().construct(item);
+  }
+
+  async createArgument(commandId: string, data: CommandArgumentCreateDTO) {
+    const { argumentQuery } = await this.getModel();
+    const item = await argumentQuery.insert({
+      ...data.toJSON(),
+      commandId,
+      domain: this.domainId,
+    });
+    return this.getArgument(item.id);
+  }
+
+  async updateArgument(argumentId: string, data: CommandArgumentUpdateDTO) {
+    const { argumentQuery } = await this.getModel();
+    const item = await argumentQuery.updateAndFetchById(
+      argumentId,
+      data.toJSON()
+    );
+    return this.getArgument(item.id);
+  }
+
+  async deleteArgument(argumentId: string) {
+    const { argumentQuery } = await this.getModel();
+    const item = await argumentQuery.deleteById(argumentId);
+    return !!item;
   }
 }

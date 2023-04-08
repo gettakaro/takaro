@@ -5,7 +5,12 @@
     },
     "data": {
       "name": "Updated module",
+      "description": "Updated description",
       "builtin": null,
+      "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
+      "commands": [],
+      "cronJobs": [],
+      "hooks": [],
       "updatedAt": "2022-09-24T17:31:05.781Z",
       "createdAt": "2022-09-24T17:31:05.752Z",
       "id": "ae888439-4e7e-41b2-882a-f1b55709d9ee"

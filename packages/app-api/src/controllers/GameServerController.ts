@@ -1,6 +1,7 @@
 import {
   IsEnum,
   IsJSON,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -39,7 +40,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
@@ -92,7 +93,7 @@ class ParamIdAndModuleId {
 }
 
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
-  @Type(() => ModuleInstallDTO)
+  @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
   declare data: ModuleInstallationOutputDTO;
 }
@@ -118,6 +119,23 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
   @ValidateNested()
   opts!: IMessageOptsDTO;
 }
+
+class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  playerGameId!: string;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  x: number;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  y: number;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  z: number;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -176,12 +194,12 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
@@ -248,20 +266,22 @@ export class GameServerController {
     @Body() data: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
-    await service.installModule(params.gameserverId, params.moduleId, data);
-    return apiResponse();
+    return apiResponse(
+      await service.installModule(params.gameserverId, params.moduleId, data)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Delete('/gameserver/:gameserverId/modules/:moduleId')
   async uninstallModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId
   ) {
     const service = new GameServerService(req.domainId);
-    await service.uninstallModule(params.gameserverId, params.moduleId);
-    return apiResponse();
+    return apiResponse(
+      await service.uninstallModule(params.gameserverId, params.moduleId)
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -291,6 +311,23 @@ export class GameServerController {
       data.message,
       data.opts
     );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:id/teleportPlayer')
+  async teleportPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: TeleportPlayerInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.teleportPlayer(params.id, data.playerGameId, {
+      x: data.x,
+      y: data.y,
+      z: data.z,
+    });
     return apiResponse(result);
   }
 }

@@ -1,4 +1,4 @@
-import { IsDate, IsString, validate } from 'class-validator';
+import { IsISO8601, IsString, validate } from 'class-validator';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import { logger } from '../logger.js';
 import * as errors from '../errors.js';
@@ -39,11 +39,11 @@ export class NOT_DOMAIN_SCOPED_TakaroModelDTO<T> extends TakaroDTO<T> {
   @IsString()
   id: string;
 
-  @IsDate()
-  createdAt: Date;
+  @IsISO8601()
+  createdAt: string;
 
-  @IsDate()
-  updatedAt: Date;
+  @IsISO8601()
+  updatedAt: string;
 }
 
 export class TakaroModelDTO<T> extends NOT_DOMAIN_SCOPED_TakaroModelDTO<T> {

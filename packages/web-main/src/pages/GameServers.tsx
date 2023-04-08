@@ -1,16 +1,19 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { useQuery } from 'react-query';
-import { useApiClient } from 'hooks/useApiClient';
-import { styled } from '@takaro/lib-components';
-import { GameServerOutputArrayDTOAPI } from '@takaro/apiclient';
+import {
+  Button,
+  Empty,
+  EmptyPage,
+  Skeleton,
+  styled,
+} from '@takaro/lib-components';
 import {
   EmptyGameServerCard,
   GameServerCard,
 } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
-import { QueryKeys } from 'queryKeys';
+import { useGameServers } from 'queries/gameservers';
 
 const List = styled.ul`
   display: grid;
@@ -20,21 +23,41 @@ const List = styled.ul`
 `;
 
 const GameServers: FC = () => {
-  const client = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading, refetch } = useQuery<GameServerOutputArrayDTOAPI>({
-    queryKey: QueryKeys.gameserver.list,
-    queryFn: async () =>
-      (await client.gameserver.gameServerControllerSearch()).data,
-  });
+  const { data, isLoading, isError } = useGameServers();
 
   if (isLoading) {
-    return <Fragment>Loading...</Fragment>;
+    return (
+      <List>
+        <Skeleton variant="rectangular" height="100%" width="100%" />
+        <Skeleton variant="rectangular" height="100%" width="100%" />
+        <Skeleton variant="rectangular" height="100%" width="100%" />
+        <Skeleton variant="rectangular" height="100%" width="100%" />
+      </List>
+    );
   }
 
-  if (!data) {
-    return <Fragment>Something went wrong</Fragment>;
+  if (isError) {
+    throw new Error('Failed while loading the servers');
+  }
+
+  if (data === undefined || data.length === 0) {
+    return (
+      <EmptyPage>
+        <Empty
+          header="Bro, what are you waiting on?"
+          description="Create a game server to really get started with Takaro."
+          actions={[
+            <Button
+              text="Create a game server"
+              onClick={() => navigate(PATHS.gameServers.create())}
+            />,
+          ]}
+        />
+        <Outlet />
+      </EmptyPage>
+    );
   }
 
   return (
@@ -43,12 +66,8 @@ const GameServers: FC = () => {
         <title>Gameservers - Takaro</title>
       </Helmet>
       <List>
-        {data.data.map((gameServer) => (
-          <GameServerCard
-            key={gameServer.id}
-            {...gameServer}
-            refetch={refetch}
-          />
+        {data.map((gameServer) => (
+          <GameServerCard key={gameServer.id} {...gameServer} />
         ))}
         <EmptyGameServerCard
           onClick={() => navigate(PATHS.gameServers.create())}

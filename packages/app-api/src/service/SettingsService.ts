@@ -54,7 +54,7 @@ export class SettingsService extends TakaroService<
     throw new errors.NotImplementedError();
   }
 
-  async delete(): Promise<boolean> {
+  async delete(): Promise<string> {
     // This will cascade when a domain or gameserver is deleted
     throw new errors.NotImplementedError();
   }

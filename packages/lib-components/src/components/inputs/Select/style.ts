@@ -1,5 +1,4 @@
 import { styled } from '../../../styled';
-import { AiOutlineDown } from 'react-icons/ai';
 
 // This wraps everything
 export const Container = styled.div`
@@ -26,6 +25,7 @@ export const SelectButton = styled.div<{ isOpen: boolean }>`
   text-align: left;
   width: 100%;
   font-size: inherit;
+  cursor: pointer;
   font-family: inherit;
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
   outline: 0;
@@ -54,9 +54,4 @@ export const GroupLabel = styled.li`
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[0]}`};
   opacity: 0.5;
   padding: ${({ theme }) => `${theme.spacing[0]} ${theme.spacing['1_5']}`};
-`;
-
-export const ArrowIcon = styled(AiOutlineDown)<{ isOpen: boolean }>`
-  fill: ${({ theme, isOpen }) =>
-    isOpen ? theme.colors.primary : theme.colors.text};
 `;

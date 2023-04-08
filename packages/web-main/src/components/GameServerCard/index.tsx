@@ -1,21 +1,24 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
   Button,
-  Chip,
   Dialog,
-  DialogBody,
   DialogContent,
   DialogHeading,
   Dropdown,
   MenuList,
-  styled,
+  Skeleton,
   Tooltip,
 } from '@takaro/lib-components';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import {
-  GameServerOutputDTO,
-  GameServerTestReachabilityDTOAPI,
-} from '@takaro/apiclient';
+  Body,
+  Header,
+  Container,
+  EmptyContainer,
+  TitleContainer,
+  StyledDialogBody,
+} from './style';
+import { FloatingDelayGroup } from '@floating-ui/react';
+import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -23,91 +26,18 @@ import {
   AiOutlinePlus as PlusIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
-import { useMutation, useQuery } from 'react-query';
-import { useApiClient } from 'hooks/useApiClient';
+import {
+  useRemoveGameServer,
+  useGameServerReachabilityById,
+} from 'queries/gameservers';
 
-const Container = styled.div`
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
-  }
-  &:active {
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-const EmptyContainer = styled(Container)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.background};
-  border: 3px dashed ${({ theme }) => theme.colors.backgroundAlt};
-  cursor: pointer;
-  h3 {
-    margin-left: ${({ theme }) => theme.spacing[1]};
-  }
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  }
-`;
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing[1]};
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  h3 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-  p {
-    width: fit-content;
-    text-transform: lowercase;
-  }
-`;
-
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 160px;
-  padding: ${({ theme }) => theme.spacing[2]};
-`;
-
-const StyledDialogBody = styled(DialogBody)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
-
-interface GameServerCardProps extends GameServerOutputDTO {
-  refetch: () => unknown;
-}
-
-export const GameServerCard: FC<GameServerCardProps> = ({
-  id,
-  name,
-  type,
-  refetch,
-}) => {
+export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const apiClient = useApiClient();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery<GameServerTestReachabilityDTOAPI>(
-    'testReachability',
-    async () =>
-      (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
-        .data
-  );
+  const { isLoading, data } = useGameServerReachabilityById(id);
+  const { mutateAsync, isLoading: isDeleting } = useRemoveGameServer(id);
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -118,23 +48,19 @@ export const GameServerCard: FC<GameServerCardProps> = ({
     setOpenDialog(true);
   };
 
-  const { mutateAsync, isLoading: isDeleting } = useMutation({
-    mutationFn: async () =>
-      await apiClient.gameserver.gameServerControllerRemove(id),
-  });
-
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
     await mutateAsync();
     setOpenDialog(false);
-    refetch();
   };
 
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
-          {!isLoading && data && (
+          {isLoading || !data ? (
+            <Skeleton variant="text" width="50px" height="15px" />
+          ) : (
             <Tooltip label="Takaro server reachability" placement="bottom">
               <div>{data.data.connectable ? 'online' : 'offline'}</div>
             </Tooltip>
@@ -145,12 +71,12 @@ export const GameServerCard: FC<GameServerCardProps> = ({
             renderReference={<MenuIcon size={18} cursor="pointer" />}
             renderFloating={
               <MenuList>
-                <MenuList.item onClick={handleOnEditClick}>
+                <MenuList.Item onClick={handleOnEditClick}>
                   Edit server
-                </MenuList.item>
-                <MenuList.item onClick={handleOnDeleteClick}>
+                </MenuList.Item>
+                <MenuList.Item onClick={handleOnDeleteClick}>
                   Delete server
-                </MenuList.item>
+                </MenuList.Item>
               </MenuList>
             }
           />

@@ -10,10 +10,10 @@ import {
 } from './style';
 import { Button, Switch } from '../../..';
 import { Control, SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { useValidationSchema } from '../../../../hooks';
 import { AiOutlineDown as Arrow } from 'react-icons/ai';
 import { FaCookieBite as CookieBite } from 'react-icons/fa';
-import * as yup from 'yup';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 type FormInputs = {
   functional: boolean;
@@ -29,9 +29,9 @@ export const CookieConsentSnack = forwardRef<
 
   const validationSchema = useMemo(
     () =>
-      yup.object({
-        functional: yup.boolean().required(),
-        analytical: yup.boolean().required(),
+      z.object({
+        functional: z.boolean(),
+        analytical: z.boolean(),
       }),
     []
   );
@@ -44,7 +44,7 @@ export const CookieConsentSnack = forwardRef<
 
   const { control, handleSubmit } = useForm<FormInputs>({
     mode: 'onSubmit',
-    resolver: useValidationSchema(validationSchema),
+    resolver: zodResolver(validationSchema),
   });
 
   const functionalValue = useWatch({ control, name: 'functional' });

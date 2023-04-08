@@ -8,21 +8,34 @@ interface IModuleItem {
   function: string;
 }
 
-interface ICommand extends IModuleItem {
-  trigger: string;
-  helpText: string;
+export interface ICommandArgument {
+  name: string;
+  type: string;
+  helpText?: string;
+  defaultValue?: string;
+  position?: number;
 }
 
-interface IHook extends IModuleItem {
+export interface ICommand extends IModuleItem {
+  trigger: string;
+  helpText?: string;
+  arguments?: ICommandArgument[];
+}
+
+export interface IHook extends IModuleItem {
   eventType: GameEvents;
 }
 
-interface ICronJob extends IModuleItem {
+export interface ICronJob extends IModuleItem {
   temporalValue: string;
 }
 
 export abstract class BuiltinModule {
-  constructor(public name: string) {}
+  constructor(
+    public name: string,
+    public description: string,
+    public configSchema: string
+  ) {}
 
   public commands: Array<ICommand> = [];
   public hooks: Array<IHook> = [];

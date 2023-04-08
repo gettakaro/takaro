@@ -4,6 +4,7 @@ import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
+  IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
@@ -31,6 +32,11 @@ export class SevenDaysToDie implements IGameServer {
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
 
+  getEventEmitter() {
+    const emitter = new SevenDaysToDieEmitter(this.connectionInfo);
+    return emitter;
+  }
+
   async getPlayer(id: string): Promise<IGamePlayer | null> {
     this.logger.debug('getPlayer', id);
     return null;
@@ -40,9 +46,21 @@ export class SevenDaysToDie implements IGameServer {
     return [];
   }
 
-  getEventEmitter() {
-    const emitter = new SevenDaysToDieEmitter(this.connectionInfo);
-    return emitter;
+  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+    const locations = await this.apiClient.getPlayersLocation();
+    const playerLocation = locations.data.find(
+      (location) => location.steamid === `Steam_${player.steamId}`
+    );
+
+    if (!playerLocation) {
+      return null;
+    }
+
+    return {
+      x: playerLocation.position.x,
+      y: playerLocation.position.y,
+      z: playerLocation.position.z,
+    };
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
@@ -92,6 +110,11 @@ export class SevenDaysToDie implements IGameServer {
 
   async sendMessage(message: string) {
     const command = `say "${message}"`;
+    await this.apiClient.executeConsoleCommand(command);
+  }
+
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+    const command = `teleportplayer ${player.gameId} ${x} ${y} ${z}`;
     await this.apiClient.executeConsoleCommand(command);
   }
 }

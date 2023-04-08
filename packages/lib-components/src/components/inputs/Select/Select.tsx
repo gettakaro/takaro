@@ -9,14 +9,9 @@ import {
   useLayoutEffect,
   PropsWithChildren,
 } from 'react';
+import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 import { SelectContext } from './context';
-import {
-  GroupLabel,
-  SelectButton,
-  SelectContainer,
-  ArrowIcon,
-  Container,
-} from './style';
+import { GroupLabel, SelectButton, SelectContainer, Container } from './style';
 import { Label } from '../../../components';
 
 import {
@@ -213,7 +208,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
           isOpen={open}
         >
           {render(selectedIndex - 1)}
-          <ArrowIcon size={18} isOpen={open} />
+          <ArrowIcon size={18} />
 
           {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>

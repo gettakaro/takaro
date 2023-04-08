@@ -1,20 +1,35 @@
-import { Console, Message } from '@takaro/lib-components';
+import { Console, Message, styled } from '@takaro/lib-components';
 import { Dispatch, FC, Fragment, SetStateAction } from 'react';
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
-import { useGameServer } from 'hooks/useGameServer';
+import { useGameServer } from 'queries/gameservers';
+import { useGameServerOutletContext } from 'frames/GameServerFrame';
+
+const ConsoleContainer = styled.div`
+  width: 600px;
+  height: 80vh;
+`;
 
 const GameServerDashboard: FC = () => {
-  const { serverId } = useParams();
   const apiClient = useApiClient();
   const { socket } = useSocket();
-  const { gameServerData } = useGameServer();
+  const { gameServerId } = useGameServerOutletContext();
+  const { data: gameServer, isLoading } = useGameServer(gameServerId);
+
+  // TODO: handle this
+  if (isLoading) {
+    return <>'console loading...'</>;
+  }
+
+  // TODO: handle this
+  if (gameServer === undefined) {
+    return <>'could not load data'</>;
+  }
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
-    const handler = (gameserverId: string, type, data) => {
-      if (gameserverId !== serverId) return;
+    const handler = (handleGameserverId: string, type, data) => {
+      if (handleGameserverId !== gameServerId) return;
       setter((prev: Message[]) => [
         ...prev,
         {
@@ -40,24 +55,24 @@ const GameServerDashboard: FC = () => {
       <Helmet>
         <title>Gameserver dashboard</title>
       </Helmet>
-      <h1>Dashboard - {gameServerData.name}</h1>
-
-      <Console
-        listenerFactory={handleMessageFactory}
-        onExecuteCommand={async (command: string) => {
-          const result =
-            await apiClient.gameserver.gameServerControllerExecuteCommand(
-              gameServerData.id,
-              { command }
-            );
-
-          return {
-            type: 'command',
-            data: result.data.data.rawResult,
-            timestamp: new Date().toISOString(),
-          };
-        }}
-      />
+      <ConsoleContainer>
+        <Console
+          listenerFactory={handleMessageFactory}
+          onExecuteCommand={async (command: string) => {
+            const result =
+              await apiClient.gameserver.gameServerControllerExecuteCommand(
+                gameServer.id,
+                { command }
+              );
+            return {
+              type: 'command',
+              data: command,
+              result: result.data.data.rawResult,
+              timestamp: new Date().toISOString(),
+            };
+          }}
+        />
+      </ConsoleContainer>
     </Fragment>
   );
 };

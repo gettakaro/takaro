@@ -7,7 +7,7 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { Message } from '../ConsoleInterface';
+import { Message } from '../MessageModel';
 import { Container, StyledEnterIcon } from './style';
 import { useSnackbar } from 'notistack';
 

@@ -8,6 +8,9 @@ import {
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
+  CommandArgumentCreateDTO,
+  CommandArgumentOutputDTO,
+  CommandArgumentUpdateDTO,
   CommandCreateDTO,
   CommandOutputDTO,
   CommandService,
@@ -28,7 +31,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 
@@ -36,6 +39,12 @@ export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested()
   declare data: CommandOutputDTO;
+}
+
+export class CommandArgumentDTOAPI extends APIOutput<CommandArgumentOutputDTO> {
+  @Type(() => CommandArgumentOutputDTO)
+  @ValidateNested()
+  declare data: CommandArgumentOutputDTO;
 }
 
 export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
@@ -48,6 +57,10 @@ class CommandSearchInputAllowedFilters {
   @IsOptional()
   @IsUUID()
   id!: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 
   @IsOptional()
   @IsString()
@@ -122,11 +135,46 @@ export class CommandController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTOAPI)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
+  @ResponseSchema(CommandArgumentDTOAPI)
+  @Post('/command/argument')
+  async createArgument(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: CommandArgumentCreateDTO
+  ) {
+    const service = new CommandService(req.domainId);
+    return apiResponse(await service.createArgument(data.commandId, data));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
+  @ResponseSchema(CommandArgumentDTOAPI)
+  @Put('/command/argument/:id')
+  async updateArgument(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: CommandArgumentUpdateDTO
+  ) {
+    const service = new CommandService(req.domainId);
+    return apiResponse(await service.updateArgument(params.id, data));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
+  @ResponseSchema(IdUuidDTOAPI)
+  @Delete('/command/argument/:id')
+  async removeArgument(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new CommandService(req.domainId);
+    await service.deleteArgument(params.id);
+    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 }

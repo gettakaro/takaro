@@ -1,4 +1,12 @@
-import { FC, ReactElement, useState } from 'react';
+import {
+  CSSProperties,
+  FC,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   AiFillWarning as WarningIcon,
   AiFillCloseCircle as ErrorIcon,
@@ -17,33 +25,59 @@ import {
   CollapsedContainer,
   StyledExpandIcon,
 } from './style';
-import { Message, MessageType } from '../ConsoleInterface';
+import { Message, MessageType } from '../MessageModel';
+import { GUTTER_SIZE, LIST_PADDING_SIZE } from '../Console';
 
 const COLLAPSED_LENGTH = 125;
 
-function shouldCollapse(message: Message) {
-  if (!message.data) return false;
-  if (message.type === 'command') return true;
-  if (message.trace) return true;
-  return message.data.length > COLLAPSED_LENGTH;
+interface ConsoleLineProps {
+  message: Message;
+  index: number;
+  collapsed: boolean;
+  style: CSSProperties;
+  setRowState: (i: number, height: number, collapsed: boolean) => void;
 }
 
-export const ConsoleLine: FC<Message> = (message) => {
-  const { data, type, trace, timestamp } = message;
-  const canCollapse = shouldCollapse(message);
-  const [isCollapsed, setCollapsed] = useState<boolean>(canCollapse);
+export const ConsoleLine: FC<ConsoleLineProps> = ({
+  message,
+  collapsed,
+  style,
+  index,
+  setRowState,
+}) => {
+  const { data, type, timestamp } = message;
+
+  const canCollapse = useMemo(() => {
+    if (!message.data) return false;
+    if (message.type === 'command') return true;
+
+    // TODO: should calculate the max chars per line based on the font constant, font size and textcontent container
+    return message.data.length > COLLAPSED_LENGTH;
+  }, [index]);
+
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(collapsed);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setRowState(index, containerRef.current.clientHeight, isCollapsed);
+    }
+  }, [rowRef, isCollapsed]);
 
   function defineCollapsableMessageLayout(): ReactElement {
     let header = '';
     let body = '';
 
     if (type === 'command') {
+      if (message.result == undefined) {
+        throw new Error('Command messages should have a return type');
+      }
       header = data;
-      body = data;
-    } else if (trace) {
-      header = data;
-      body = trace;
+      body = message.result;
     } else {
+      // TODO: maybe the header should contain the max on line with ...
+      // and the body the entire message?
       header = data.split('\n')[0];
       body = data.split('\n').slice(1).join('\n');
     }
@@ -52,22 +86,18 @@ export const ConsoleLine: FC<Message> = (message) => {
       <CollapsedContainer>
         <Header isCollapsed={isCollapsed} type={type}>
           <p>{header}</p>
-          {body && <StyledExpandIcon size={15} />}
+          {body && (
+            <StyledExpandIcon
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              size={14}
+            />
+          )}
         </Header>
         <Body isCollapsed={isCollapsed} type={type}>
           {body}
         </Body>
       </CollapsedContainer>
     );
-  }
-
-  function onClick() {
-    if (canCollapse) {
-      const selection = window.getSelection();
-      if (selection?.type !== 'Range') {
-        setCollapsed(!isCollapsed);
-      }
-    }
   }
 
   const setIcon = (messageType: MessageType): ReactElement => {
@@ -86,8 +116,16 @@ export const ConsoleLine: FC<Message> = (message) => {
   };
 
   return (
-    <Wrapper canCollapse={canCollapse} messageType={type}>
-      <Container isCollapsed={isCollapsed} onClick={onClick}>
+    <Wrapper
+      messageType={type}
+      style={{
+        ...style,
+        top: `${(style.top as number) + GUTTER_SIZE + LIST_PADDING_SIZE}px`,
+        height: `${(style.height as number) - GUTTER_SIZE}px`,
+      }}
+      ref={rowRef}
+    >
+      <Container isCollapsed={isCollapsed} ref={containerRef}>
         <IconContainer messageType={type}>{setIcon(type)}</IconContainer>
         <TimestampContainer>[{timestamp}]</TimestampContainer>
         {canCollapse ? (

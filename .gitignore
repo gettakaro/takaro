@@ -24,6 +24,7 @@ Thumbs.db
 **/build
 **/dist
 **/storybook-static
+**/.next
 
 
 # Logging files

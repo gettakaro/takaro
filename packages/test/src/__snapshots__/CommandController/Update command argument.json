@@ -1,0 +1,31 @@
+{
+  "body": {
+    "meta": {
+      "serverTime": "2023-03-25T21:30:15.994Z"
+    },
+    "data": {
+      "id": "f9c25c1f-3292-47b9-8e6d-0b8733b3ef97",
+      "createdAt": "2023-03-25T21:30:15.973Z",
+      "updatedAt": "2023-03-25T21:30:15.991Z",
+      "name": "Updated argument",
+      "type": "string",
+      "position": 0,
+      "helpText": null,
+      "defaultValue": null,
+      "commandId": "d59f49f0-ea07-462c-9d7c-8405ce3364c2"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Update command argument",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "commandId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

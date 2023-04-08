@@ -22,6 +22,8 @@ import {
   RustConnectionInfo,
   MockConnectionInfo,
   IGameServer,
+  IPosition,
+  IGamePlayer,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
@@ -30,6 +32,13 @@ import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
+import { PlayerService } from './PlayerService.js';
+
+// Curse you ESM... :(
+import _Ajv from 'ajv';
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+
+const ajv = new Ajv({ useDefaults: true });
 
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
@@ -117,9 +126,10 @@ export class GameServerService extends TakaroService<
     return createdServer;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string) {
     await this.gameServerManager.remove(id);
-    return this.repo.delete(id);
+    await this.repo.delete(id);
+    return id;
   }
 
   async update(
@@ -162,11 +172,47 @@ export class GameServerService extends TakaroService<
     moduleId: string,
     installDto: ModuleInstallDTO
   ) {
-    return this.repo.installModule(gameserverId, moduleId, installDto);
+    const moduleService = new ModuleService(this.domainId);
+    const mod = await moduleService.findOne(moduleId);
+
+    if (!mod) {
+      throw new errors.NotFoundError('Module not found');
+    }
+
+    const modConfig = JSON.parse(installDto.config);
+    const validateConfig = ajv.compile(JSON.parse(mod.configSchema));
+    const isValidConfig = validateConfig(modConfig);
+
+    if (!isValidConfig) {
+      const prettyErrors = validateConfig.errors
+        ?.map((e) => {
+          if (e.keyword === 'additionalProperties') {
+            return `${e.message}, invalid: ${e.params.additionalProperty}`;
+          }
+
+          return `${e.instancePath} ${e.message}`;
+        })
+        .join(', ');
+      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
+    }
+
+    installDto.config = JSON.stringify(modConfig);
+
+    await this.repo.installModule(gameserverId, moduleId, installDto);
+
+    return new ModuleInstallationOutputDTO().construct({
+      gameserverId,
+      moduleId,
+    });
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {
-    return this.repo.uninstallModule(gameserverId, moduleId);
+    await this.repo.uninstallModule(gameserverId, moduleId);
+
+    return new ModuleInstallationOutputDTO().construct({
+      gameserverId,
+      moduleId,
+    });
   }
 
   async getInstalledModules(gameserverId: string) {
@@ -201,12 +247,20 @@ export class GameServerService extends TakaroService<
     }
   }
 
+  async getGame(id: string): Promise<IGameServer> {
+    const gameserver = await this.repo.findOne(id);
+    return GameServerService.getGame(
+      gameserver.type,
+      gameserver.connectionInfo
+    );
+  }
+
   get manager() {
     return this.gameServerManager;
   }
 
-  async executeCommand(id: string, rawCommand: string) {
-    const gameserver = await this.repo.findOne(id);
+  async executeCommand(gameServerId: string, rawCommand: string) {
+    const gameserver = await this.repo.findOne(gameServerId);
     const instance = await GameServerService.getGame(
       gameserver.type,
       gameserver.connectionInfo
@@ -214,12 +268,34 @@ export class GameServerService extends TakaroService<
     return instance.executeConsoleCommand(rawCommand);
   }
 
-  async sendMessage(id: string, message: string, opts: IMessageOptsDTO) {
-    const gameserver = await this.repo.findOne(id);
+  async sendMessage(
+    gameServerId: string,
+    message: string,
+    opts: IMessageOptsDTO
+  ) {
+    const gameserver = await this.repo.findOne(gameServerId);
     const instance = await GameServerService.getGame(
       gameserver.type,
       gameserver.connectionInfo
     );
     return instance.sendMessage(message, opts);
+  }
+
+  async teleportPlayer(
+    gameServerId: string,
+    playerGameId: string,
+    position: IPosition
+  ) {
+    const game = await this.getGame(gameServerId);
+    const playerService = new PlayerService(this.domainId);
+    const foundPlayers = await playerService.findAssociations(playerGameId);
+
+    if (foundPlayers.length === 0) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    const player = await new IGamePlayer().construct(foundPlayers[0]);
+
+    return game.teleportPlayer(player, position.x, position.y, position.z);
   }
 }

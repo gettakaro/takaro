@@ -14,3 +14,6 @@ export type { IconNavProps } from './IconNav';
 
 export { BreadCrumbs } from './BreadCrumbs';
 export { MenuList } from './MenuList';
+
+export { HorizontalNav } from './HorizontalNav';
+export type { HorizontalNavProps } from './HorizontalNav';
