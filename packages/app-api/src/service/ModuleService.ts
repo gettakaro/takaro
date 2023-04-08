@@ -73,6 +73,20 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsJSON()
   @IsOptional()
   configSchema: string;
+}
+
+export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
+  @IsString()
+  @Length(3, 50)
+  name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
 
   @IsString()
   @IsOptional()
@@ -144,7 +158,7 @@ export class ModuleService extends TakaroService<
 
     if (existing.results.length !== 1) {
       mod = await this.create(
-        await new ModuleCreateDTO().construct({
+        await new ModuleCreateInternalDTO().construct({
           ...builtin,
           builtin: builtin.name,
         })
