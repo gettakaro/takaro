@@ -3,15 +3,18 @@ import customTypes from './monacoCustomTypes.json';
 import { languages } from 'monaco-editor';
 
 export function handleCustomTypes(monaco: Monaco) {
-  var testlibSource = [
+  // Need to do this 'manually' to get this working
+  // There's a lot of _weirdness_ in play here
+  // We are importing "files" in Monaco, but Monaco cannot access a real file system
+  // This "packages" up the exports we get from the ts build and makes it easier to access for Monaco
+  var libSource = [
     "declare module '@takaro/helpers' {",
     '    declare function getData(): Promise<any>',
     '    declare function getTakaro(data: Record<string, string>): Promise<Client>;',
     '}',
   ].join('\n');
-  var testlibUri = 'file:///node_modules/@takaro/helpers';
+  var libUri = 'file:///node_modules/@takaro/helpers';
 
-  console.log('HANDLING CUSTOM TYPES');
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
   const compilerOptions =
     monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
@@ -30,8 +33,8 @@ export function handleCustomTypes(monaco: Monaco) {
 
   let extraLibs: { content: string; libUri: string }[] = [];
   extraLibs.push({
-    content: testlibSource,
-    libUri: testlibUri,
+    content: libSource,
+    libUri: libUri,
   });
 
   // add takaro library to monaco
