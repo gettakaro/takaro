@@ -3,10 +3,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ES2022"],
-    "moduleResolution": "nodenext",
+    "lib": ["ESNext"],
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
