@@ -12,12 +12,16 @@ jobs:
         package:
           [
             {
-              name: 'app-api',
-              dockerfile: './containers/generic-app.Dockerfile',
+              name: "app-api",
+              dockerfile: "./containers/generic-app.Dockerfile",
             },
             {
-              name: 'web-main',
-              dockerfile: './containers/generic-web/generic-web.Dockerfile',
+              name: "app-connector",
+              dockerfile: "./containers/generic-app.Dockerfile",
+            },
+            {
+              name: "web-main",
+              dockerfile: "./containers/generic-web/generic-web.Dockerfile",
             },
           ]
 
@@ -105,7 +109,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
 
