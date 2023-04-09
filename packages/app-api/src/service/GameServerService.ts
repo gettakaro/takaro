@@ -1,4 +1,5 @@
 import { TakaroService } from './Base.js';
+import Ajv from 'ajv';
 
 import {
   GameServerModel,
@@ -33,10 +34,6 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
 import { PlayerService } from './PlayerService.js';
-
-// Curse you ESM... :(
-import _Ajv from 'ajv';
-const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
 
