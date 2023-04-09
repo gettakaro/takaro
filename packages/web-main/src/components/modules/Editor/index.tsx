@@ -11,27 +11,27 @@ import { defineTheme } from './theme';
 import { useModule } from 'hooks/useModule';
 import { useApiClient } from 'hooks/useApiClient';
 import { useDebounce, styled } from '@takaro/lib-components';
+import { handleCustomTypes } from './customTypes';
 
 const Wrapper = styled.div`
   flex: 1;
   padding-top: 8px;
   background-color: ${({ theme }): string => theme.colors.primary};
-  
-    a,
-    p,
-    div,
-    li,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    header,
-    footer {
-      font-family: 'Fira Code';
-      color: none;
-    }
+
+  a,
+  p,
+  div,
+  li,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  header,
+  footer {
+    font-family: 'Fira Code';
+    color: none;
   }
 `;
 
@@ -66,10 +66,7 @@ export const Editor: FC = () => {
     if (monaco) {
       defineTheme(monaco);
       monaco.editor.setTheme('takaro');
-
-      // add takaro library to monaco
-      // monaco.languages.typescript.typescriptDefaults.addExtraLib("", "takaro.d.ts")
-      // monaco.editor.colorizeElement(document.getElementById('code')!, {});
+      handleCustomTypes(monaco);
     }
   }, [monaco]);
 
