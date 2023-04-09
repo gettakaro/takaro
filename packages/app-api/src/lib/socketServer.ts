@@ -1,6 +1,5 @@
 import { Server, Socket } from 'socket.io';
 import { IncomingMessage, Server as HttpServer, ServerResponse } from 'http';
-import { config } from '../config.js';
 import { ctx, errors, logger } from '@takaro/util';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
@@ -43,19 +42,7 @@ class SocketServer {
       ServerToClientEvents,
       InterServerEvents,
       SocketData
-    >(app, {
-      cors: {
-        credentials: true,
-        origin: (origin: string | undefined, callback: CallableFunction) => {
-          const allowedOrigins = config.get('http.allowedOrigins') ?? [];
-          if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-          } else {
-            callback(new errors.BadRequestError('Not allowed by CORS'));
-          }
-        },
-      },
-    });
+    >(app);
 
     instrument(this.io, {
       auth: false,
