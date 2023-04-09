@@ -7,9 +7,9 @@ import {
   EventChatMessage,
 } from '../../interfaces/events.js';
 import type { Faker } from '@faker-js/faker';
-import { MockConnectionInfo } from './index.js';
-import { TakaroEmitter } from '../../TakaroEmitter.js';
-import { IGamePlayer } from '../../interfaces/GamePlayer.js';
+import { MockConnectionInfo } from './index';
+import { TakaroEmitter } from '../../TakaroEmitter';
+import { IGamePlayer } from '../../interfaces/GamePlayer';
 
 export class MockEmitter extends TakaroEmitter {
   private logger = logger('Mock');

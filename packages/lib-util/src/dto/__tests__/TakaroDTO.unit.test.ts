@@ -1,4 +1,4 @@
-import { TakaroDTO } from '../TakaroDTO.js';
+import { TakaroDTO } from '../TakaroDTO';
 import { expect } from '@takaro/test';
 import { IsNumber, IsString, Max, Min } from 'class-validator';
 import { Exclude } from 'class-transformer';

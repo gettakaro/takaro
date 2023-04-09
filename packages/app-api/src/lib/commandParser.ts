@@ -1,5 +1,5 @@
 import { errors, logger } from '@takaro/util';
-import { CommandOutputDTO } from '../service/CommandService.js';
+import { CommandOutputDTO } from '../service/CommandService';
 
 interface IParsedCommand {
   command: string;

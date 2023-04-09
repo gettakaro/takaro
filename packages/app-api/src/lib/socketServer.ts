@@ -3,7 +3,7 @@ import { IncomingMessage, Server as HttpServer, ServerResponse } from 'http';
 import { ctx, errors, logger } from '@takaro/util';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import { NextFunction, Response } from 'express';
 
 interface ServerToClientEvents {

@@ -1,4 +1,4 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule } from '../../BuiltinModule';
 
 export class Teleports extends BuiltinModule {
   constructor() {

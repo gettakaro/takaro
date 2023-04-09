@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration.js';
+import { Configuration } from './configuration';
 import globalAxios, {
   AxiosPromise,
   AxiosInstance,

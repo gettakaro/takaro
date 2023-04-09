@@ -2,8 +2,8 @@ import { Response, NextFunction, Request } from 'express';
 import { Redis } from '@takaro/db';
 import { expect } from '@takaro/test';
 import { Controller, UseBefore, Get } from 'routing-controllers';
-import { HTTP } from '../../main.js';
-import { createRateLimitMiddleware } from '../rateLimit.js';
+import { HTTP } from '../../main';
+import { createRateLimitMiddleware } from '../rateLimit';
 import { ctx } from '@takaro/util';
 import supertest from 'supertest';
 

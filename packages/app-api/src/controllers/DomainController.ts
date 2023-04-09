@@ -32,7 +32,7 @@ import {
   TokenInputDTO,
   AuthService,
 } from '../service/AuthService.js';
-import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)

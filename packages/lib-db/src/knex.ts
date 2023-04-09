@@ -1,7 +1,7 @@
 import knexPkg from 'knex';
-import { config } from './config.js';
+import { config } from './config';
 import { logger, health } from '@takaro/util';
-import { TakaroModel } from './TakaroModel.js';
+import { TakaroModel } from './TakaroModel';
 
 const log = logger('sql');
 

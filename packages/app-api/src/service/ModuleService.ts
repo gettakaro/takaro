@@ -1,6 +1,6 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 
-import { ModuleModel, ModuleRepo } from '../db/module.js';
+import { ModuleModel, ModuleRepo } from '../db/module';
 import {
   IsJSON,
   IsOptional,
@@ -25,7 +25,7 @@ import {
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
+import { PaginatedOutput } from '../db/base';
 import {
   CommandCreateDTO,
   CommandOutputDTO,

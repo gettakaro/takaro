@@ -5,7 +5,7 @@ import {
   ModuleOutputDTO,
   ModuleInstallDTO,
 } from '@takaro/apiclient';
-import { CommandService } from '../CommandService.js';
+import { CommandService } from '../CommandService';
 import { QueuesService } from '@takaro/queues';
 import { EventChatMessage, IGamePlayer } from '@takaro/gameserver';
 

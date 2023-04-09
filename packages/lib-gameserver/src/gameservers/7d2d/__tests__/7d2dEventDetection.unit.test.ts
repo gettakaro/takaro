@@ -1,12 +1,12 @@
 /* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
-import { SdtdConnectionInfo } from '../index.js';
+import { SdtdConnectionInfo } from '../index';
 import {
   EventChatMessage,
   EventPlayerConnected,
   GameEvents,
 } from '../../../main.js';
-import { SevenDaysToDieEmitter } from '../emitter.js';
+import { SevenDaysToDieEmitter } from '../emitter';
 
 const mockSdtdConnectionInfo = new SdtdConnectionInfo().construct({
   adminToken: 'aaa',

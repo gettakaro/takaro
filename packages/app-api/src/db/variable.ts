@@ -1,12 +1,12 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
+import { ITakaroRepo } from './base';
 import {
   VariableCreateDTO,
   VariableOutputDTO,
   VariableUpdateDTO,
 } from '../service/VariablesService.js';
-import { config } from '../config.js';
+import { config } from '../config';
 
 export const VARIABLES_TABLE_NAME = 'variables';
 

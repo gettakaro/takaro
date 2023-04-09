@@ -32,7 +32,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 

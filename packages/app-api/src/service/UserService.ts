@@ -1,7 +1,7 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 import { ITakaroQuery } from '@takaro/db';
 
-import { UserModel, UserRepo } from '../db/user.js';
+import { UserModel, UserRepo } from '../db/user';
 import {
   IsEmail,
   IsOptional,
@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
-import { RoleOutputDTO } from './RoleService.js';
+import { RoleOutputDTO } from './RoleService';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 

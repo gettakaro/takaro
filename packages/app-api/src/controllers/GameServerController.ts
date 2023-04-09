@@ -25,7 +25,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
   Body,
   Get,
@@ -40,10 +40,10 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators';
 import { PERMISSIONS } from '@takaro/auth';
-import { GAME_SERVER_TYPE } from '../db/gameserver.js';
-import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
+import { GAME_SERVER_TYPE } from '../db/gameserver';
+import { ModuleOutputArrayDTOAPI } from './ModuleController';
 import { Response } from 'express';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {

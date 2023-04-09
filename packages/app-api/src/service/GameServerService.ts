@@ -1,4 +1,4 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 import Ajv from 'ajv';
 
 import {
@@ -27,13 +27,13 @@ import {
   IGamePlayer,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
-import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
-import { SettingsService } from './SettingsService.js';
+import { IGameServerInMemoryManager } from '../lib/GameServerManager';
+import { SettingsService } from './SettingsService';
 import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
-import { ModuleService } from './ModuleService.js';
-import { PlayerService } from './PlayerService.js';
+import { PaginatedOutput } from '../db/base';
+import { ModuleService } from './ModuleService';
+import { PlayerService } from './PlayerService';
 
 const ajv = new Ajv({ useDefaults: true });
 

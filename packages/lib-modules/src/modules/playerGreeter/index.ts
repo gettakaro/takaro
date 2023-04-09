@@ -1,5 +1,5 @@
 import { GameEvents } from '@takaro/gameserver';
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule } from '../../BuiltinModule';
 
 export class PlayerGreeter extends BuiltinModule {
   constructor() {

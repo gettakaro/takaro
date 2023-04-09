@@ -1,8 +1,8 @@
-import { config, EXECUTION_MODE } from '../../config.js';
+import { config, EXECUTION_MODE } from '../../config';
 import { logger } from '@takaro/util';
 import { AdminClient } from '@takaro/apiclient';
-import { getVMM } from '../../main.js';
-import { executeFunctionLocal } from './executeLocal.js';
+import { getVMM } from '../../main';
+import { executeFunctionLocal } from './executeLocal';
 
 const log = logger('worker:function');
 

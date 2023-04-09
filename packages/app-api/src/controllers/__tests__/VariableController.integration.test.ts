@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { VariableOutputDTO } from '@takaro/apiclient';
-import { config } from '../../config.js';
+import { config } from '../../config';
 
 const group = 'VariableController';
 

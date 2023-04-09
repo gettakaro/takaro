@@ -1,8 +1,8 @@
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { PlayerOutputDTO, PlayerService } from '../service/PlayerService';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
   Body,
   Get,
@@ -15,7 +15,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
+import { ParamId } from '../lib/validators';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 

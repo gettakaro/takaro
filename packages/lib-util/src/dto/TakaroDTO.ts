@@ -1,7 +1,7 @@
 import { IsISO8601, IsString, validate } from 'class-validator';
 import { Exclude, instanceToPlain } from 'class-transformer';
-import { logger } from '../logger.js';
-import * as errors from '../errors.js';
+import { logger } from '../logger';
+import * as errors from '../errors';
 
 const log = logger('TakaroDTO');
 

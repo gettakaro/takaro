@@ -1,5 +1,5 @@
 import { createClient, RedisClientOptions } from 'redis';
-import { config } from './config.js';
+import { config } from './config';
 import { logger, health } from '@takaro/util';
 
 type RedisClient = ReturnType<typeof createClient>;

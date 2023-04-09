@@ -2,7 +2,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { IGamePlayer } from '@takaro/gameserver';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
-import { PlayerService } from '../../service/PlayerService.js';
+import { PlayerService } from '../../service/PlayerService';
 
 const group = 'Event worker';
 

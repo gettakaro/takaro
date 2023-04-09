@@ -1,19 +1,19 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
-import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
-import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
+import { ITakaroRepo } from './base';
+import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob';
+import { HookModel, HOOKS_TABLE_NAME } from './hook';
 import {
   ModuleCreateDTO,
   ModuleOutputDTO,
   ModuleUpdateDTO,
 } from '../service/ModuleService.js';
-import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
-import { CronJobOutputDTO } from '../service/CronJobService.js';
-import { HookOutputDTO } from '../service/HookService.js';
-import { CommandOutputDTO } from '../service/CommandService.js';
-import { FunctionOutputDTO } from '../service/FunctionService.js';
+import { CommandModel, COMMANDS_TABLE_NAME } from './command';
+import { CronJobOutputDTO } from '../service/CronJobService';
+import { HookOutputDTO } from '../service/HookService';
+import { CommandOutputDTO } from '../service/CommandService';
+import { FunctionOutputDTO } from '../service/FunctionService';
 
 export const MODULE_TABLE_NAME = 'modules';
 

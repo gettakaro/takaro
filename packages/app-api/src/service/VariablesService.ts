@@ -1,9 +1,9 @@
 import { IsString } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
-import { TakaroService } from './Base.js';
-import { VariableRepo, VariablesModel } from '../db/variable.js';
+import { TakaroService } from './Base';
+import { VariableRepo, VariablesModel } from '../db/variable';
 import { ITakaroQuery } from '@takaro/db';
-import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
+import { ITakaroRepo, PaginatedOutput } from '../db/base';
 
 export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
   @IsString()

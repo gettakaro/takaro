@@ -1,8 +1,8 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
+import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
+import { ITakaroRepo } from './base';
 import {
   UserOutputDTO,
   UserCreateInputDTO,

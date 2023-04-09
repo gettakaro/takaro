@@ -1,6 +1,6 @@
 import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
-import { config } from '../config.js';
+import { config } from '../config';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
   GameEvents,
@@ -8,10 +8,10 @@ import {
   BaseEvent,
   EventChatMessage,
 } from '@takaro/gameserver';
-import { getSocketServer } from '../lib/socketServer.js';
-import { HookService } from '../service/HookService.js';
-import { PlayerService } from '../service/PlayerService.js';
-import { CommandService } from '../service/CommandService.js';
+import { getSocketServer } from '../lib/socketServer';
+import { HookService } from '../service/HookService';
+import { PlayerService } from '../service/PlayerService';
+import { CommandService } from '../service/CommandService';
 
 const log = logger('worker:events');
 

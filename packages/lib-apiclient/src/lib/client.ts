@@ -12,7 +12,7 @@ import {
   CommandApi,
   VariableApi,
 } from '../generated/api.js';
-import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
+import { BaseApiClient, IBaseApiClientConfig } from './baseClient';
 
 export interface IApiClientConfig extends IBaseApiClientConfig {
   auth: {

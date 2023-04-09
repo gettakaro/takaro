@@ -1,8 +1,8 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
-import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
+import { ITakaroRepo } from './base';
+import { FUNCTION_TABLE_NAME, FunctionModel } from './function';
 import { GameEvents } from '@takaro/gameserver';
 import {
   HookCreateDTO,

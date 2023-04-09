@@ -1,7 +1,7 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 import { QueuesService } from '@takaro/queues';
 
-import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
+import { CronJobModel, CronJobRepo } from '../db/cronjob';
 import {
   IsOptional,
   IsString,
@@ -17,7 +17,7 @@ import {
 } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
-import { PaginatedOutput } from '../db/base.js';
+import { PaginatedOutput } from '../db/base';
 import { ITakaroQuery } from '@takaro/db';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {

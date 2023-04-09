@@ -1,14 +1,14 @@
 import { logger, TakaroDTO } from '@takaro/util';
 import { IsString, IsBoolean } from 'class-validator';
-import { IGamePlayer } from '../../interfaces/GamePlayer.js';
+import { IGamePlayer } from '../../interfaces/GamePlayer';
 import {
   CommandOutput,
   IGameServer,
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
-import { SevenDaysToDieEmitter } from './emitter.js';
-import { SdtdApiClient } from './sdtdAPIClient.js';
+import { SevenDaysToDieEmitter } from './emitter';
+import { SdtdApiClient } from './sdtdAPIClient';
 
 import axios from 'axios';
 

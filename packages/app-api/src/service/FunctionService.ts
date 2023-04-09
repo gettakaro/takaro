@@ -1,10 +1,10 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 
 import { IsString } from 'class-validator';
-import { FunctionModel, FunctionRepo } from '../db/function.js';
+import { FunctionModel, FunctionRepo } from '../db/function';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
+import { PaginatedOutput } from '../db/base';
 
 export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
   @IsString()

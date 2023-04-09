@@ -7,7 +7,7 @@ import {
 } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
+import { ITakaroRepo } from './base';
 import {
   PLAYER_ON_GAMESERVER_TABLE_NAME,
   PlayerOnGameServerModel,
@@ -19,7 +19,7 @@ import {
   ModuleInstallDTO,
   ModuleInstallationOutputDTO,
 } from '../service/GameServerService.js';
-import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
+import { ModuleModel, MODULE_TABLE_NAME } from './module';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';

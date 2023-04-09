@@ -1,4 +1,4 @@
-import { AdminClient } from '../main.js';
+import { AdminClient } from '../main';
 import { expect, integrationConfig } from '@takaro/test';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';

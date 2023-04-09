@@ -1,10 +1,10 @@
-import { HTTP } from '../../app.js';
+import { HTTP } from '../../app';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
 import { ory } from '@takaro/auth';
 import { AdminClient } from '@takaro/apiclient';
-import { adminAuthMiddleware } from '../adminAuth.js';
-import { ErrorHandler } from '../errorHandler.js';
+import { adminAuthMiddleware } from '../adminAuth';
+import { ErrorHandler } from '../errorHandler';
 import { Request, Response } from 'express';
 
 describe('adminAuth', () => {

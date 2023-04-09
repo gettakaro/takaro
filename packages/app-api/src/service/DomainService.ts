@@ -14,17 +14,17 @@ import {
   RoleOutputDTO,
   RoleService,
 } from './RoleService.js';
-import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
+import { NOT_DOMAIN_SCOPED_TakaroService } from './Base';
 import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
-import { DomainModel, DomainRepo } from '../db/domain.js';
+import { DomainModel, DomainRepo } from '../db/domain';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
-import { GameServerService } from './GameServerService.js';
-import { SettingsService } from './SettingsService.js';
+import { GameServerService } from './GameServerService';
+import { SettingsService } from './SettingsService';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
-import { CronJobService } from './CronJobService.js';
-import { ModuleService } from './ModuleService.js';
+import { PaginatedOutput } from '../db/base';
+import { CronJobService } from './CronJobService';
+import { ModuleService } from './ModuleService';
 import { ory, PERMISSIONS } from '@takaro/auth';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {

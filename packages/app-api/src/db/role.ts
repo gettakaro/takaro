@@ -8,7 +8,7 @@ import {
   RoleUpdateInputDTO,
   PermissionOutputDTO,
 } from '../service/RoleService.js';
-import { ITakaroRepo } from './base.js';
+import { ITakaroRepo } from './base';
 import { PERMISSIONS } from '@takaro/auth';
 
 export const ROLE_TABLE_NAME = 'roles';

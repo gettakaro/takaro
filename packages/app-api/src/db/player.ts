@@ -1,8 +1,8 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
-import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
-import { ITakaroRepo } from './base.js';
+import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver';
+import { ITakaroRepo } from './base';
 import {
   PlayerCreateDTO,
   PlayerOutputDTO,

@@ -7,7 +7,7 @@ import {
   RoleUpdateInputDTO,
   RoleOutputDTO,
 } from '../service/RoleService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
   Body,
   Get,
@@ -23,7 +23,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {

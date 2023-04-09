@@ -1,4 +1,4 @@
-import { getKnex } from '../knex.js';
+import { getKnex } from '../knex';
 import { readdir } from 'fs/promises';
 import { Knex } from 'knex';
 import path from 'node:path';

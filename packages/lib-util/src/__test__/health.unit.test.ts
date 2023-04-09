@@ -1,5 +1,5 @@
 import { expect, sandbox } from '@takaro/test';
-import { health } from '../health.js';
+import { health } from '../health';
 
 describe('health', () => {
   it('should be able to register a hook', async () => {

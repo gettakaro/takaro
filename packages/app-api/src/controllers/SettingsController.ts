@@ -12,7 +12,7 @@ import {
   SettingsService,
   SETTINGS_KEYS,
 } from '../service/SettingsService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
   Body,
   Get,

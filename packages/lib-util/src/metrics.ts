@@ -4,8 +4,8 @@ import {
   Counter,
   CounterConfiguration,
 } from 'prom-client';
-import { logger } from './logger.js';
-import { ctx } from './main.js';
+import { logger } from './logger';
+import { ctx } from './main';
 
 const counters = new Map<string, Counter<string>>();
 

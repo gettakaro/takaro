@@ -7,7 +7,7 @@ import {
   FunctionService,
   FunctionUpdateDTO,
 } from '../service/FunctionService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService } from '../service/AuthService';
 import {
   Body,
   Get,
@@ -22,7 +22,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 

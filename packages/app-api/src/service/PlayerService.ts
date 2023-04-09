@@ -1,11 +1,11 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 
-import { PlayerModel, PlayerRepo } from '../db/player.js';
+import { PlayerModel, PlayerRepo } from '../db/player';
 import { IsOptional, IsString } from 'class-validator';
 import { IGamePlayer } from '@takaro/gameserver';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
+import { PaginatedOutput } from '../db/base';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()

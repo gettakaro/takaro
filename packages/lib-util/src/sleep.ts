@@ -1,4 +1,4 @@
-import { logger } from './logger.js';
+import { logger } from './logger';
 
 export async function sleep(ms: number) {
   const log = logger('sleep');

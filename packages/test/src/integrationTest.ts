@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
 
-import { matchSnapshot } from './snapshots.js';
-import { integrationConfig } from './main.js';
-import { expect } from './test/expect.js';
+import { matchSnapshot } from './snapshots';
+import { integrationConfig } from './main';
+import { expect } from './test/expect';
 import {
   AdminClient,
   Client,

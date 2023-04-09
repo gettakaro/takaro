@@ -3,14 +3,14 @@ import {
   ITakaroQuery,
   QueryBuilder,
 } from '@takaro/db';
-import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base.js';
+import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base';
 import { errors } from '@takaro/util';
 import {
   DomainOutputDTO,
   DomainCreateInputDTO,
   DomainUpdateInputDTO,
 } from '../service/DomainService.js';
-import { UserRepo } from './user.js';
+import { UserRepo } from './user';
 
 const TABLE_NAME = 'domains';
 

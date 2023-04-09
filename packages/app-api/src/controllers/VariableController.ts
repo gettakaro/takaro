@@ -21,8 +21,8 @@ import {
   UseBefore,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
-import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators';
+import { AuthService, AuthenticatedRequest } from '../service/AuthService';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 

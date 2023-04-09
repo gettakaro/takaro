@@ -1,6 +1,6 @@
 import { getTakaro } from '@takaro/helpers';
 import vm, { Module } from 'node:vm';
-import { config } from '../../config.js';
+import { config } from '../../config';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!

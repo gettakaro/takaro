@@ -1,4 +1,4 @@
-import { ory } from '../ory.js';
+import { ory } from '../ory';
 import { faker } from '@faker-js/faker';
 import { expect } from '@takaro/test';
 

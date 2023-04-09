@@ -1,4 +1,4 @@
-import { MetaApi } from '../generated/api.js';
+import { MetaApi } from '../generated/api';
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import axios from 'axios';
 

@@ -1,15 +1,15 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
-import { ITakaroRepo } from './base.js';
+import { ITakaroRepo } from './base';
 import { Model } from 'objection';
-import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob.js';
+import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob';
 import {
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionUpdateDTO,
 } from '../service/FunctionService.js';
-import { HOOKS_TABLE_NAME, HookModel } from './hook.js';
-import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
+import { HOOKS_TABLE_NAME, HookModel } from './hook';
+import { CommandModel, COMMANDS_TABLE_NAME } from './command';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 

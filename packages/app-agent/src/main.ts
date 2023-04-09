@@ -1,12 +1,12 @@
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
-import { config } from './config.js';
-import { BullBoardRouter } from './controllers/bullboard.js';
+import { config } from './config';
+import { BullBoardRouter } from './controllers/bullboard';
 import { QueuesService } from '@takaro/queues';
-import { CronJobWorker } from './service/workers/cronjobWorker.js';
-import { CommandWorker } from './service/workers/commandWorker.js';
-import { HookWorker } from './service/workers/hookWorker.js';
-import { VMM } from './service/vmm/index.js';
+import { CronJobWorker } from './service/workers/cronjobWorker';
+import { CommandWorker } from './service/workers/commandWorker';
+import { HookWorker } from './service/workers/hookWorker';
+import { VMM } from './service/vmm/index';
 
 const log = logger('agent');
 

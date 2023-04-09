@@ -1,6 +1,6 @@
-import { TakaroEmitter } from './TakaroEmitter.js';
+import { TakaroEmitter } from './TakaroEmitter';
 import { expect, sandbox } from '@takaro/test';
-import { EventLogLine, GameEvents } from './main.js';
+import { EventLogLine, GameEvents } from './main';
 
 class ExtendedTakaroEmitter extends TakaroEmitter {
   // eslint-disable-next-line @typescript-eslint/no-empty-function

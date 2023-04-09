@@ -4,7 +4,7 @@ import {
   CommandArgumentOutputDTO,
   CommandOutputDTO,
 } from '../../service/CommandService.js';
-import { parseCommand } from '../commandParser.js';
+import { parseCommand } from '../commandParser';
 
 const MockArgument_name = await new CommandArgumentOutputDTO().construct({
   name: 'name',

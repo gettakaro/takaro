@@ -1,7 +1,7 @@
 import { Processor, Worker, Queue, QueueEvents } from 'bullmq';
-import { config } from './config.js';
+import { config } from './config';
 import { logger, ctx, addCounter } from '@takaro/util';
-import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
+import { getRedisConnectionOptions } from './util/redisConnectionOptions';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 const log = logger('queue');

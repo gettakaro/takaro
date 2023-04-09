@@ -1,6 +1,6 @@
 import { TakaroModel } from '@takaro/db';
 import { errors } from '@takaro/util';
-import { ITakaroRepo, PaginatedOutput } from './base.js';
+import { ITakaroRepo, PaginatedOutput } from './base';
 import {
   DEFAULT_SETTINGS,
   Settings,

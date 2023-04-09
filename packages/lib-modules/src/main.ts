@@ -1,6 +1,6 @@
-import { BuiltinModule } from './BuiltinModule.js';
-import { PlayerGreeter } from './modules/playerGreeter/index.js';
-import { Teleports } from './modules/teleports/index.js';
+import { BuiltinModule } from './BuiltinModule';
+import { PlayerGreeter } from './modules/playerGreeter/index';
+import { Teleports } from './modules/teleports/index';
 export {
   BuiltinModule,
   ICommand,
@@ -9,7 +9,7 @@ export {
   IHook,
 } from './BuiltinModule.js';
 
-import { Utils } from './modules/utils/index.js';
+import { Utils } from './modules/utils/index';
 
 let cached: Array<BuiltinModule> | null = null;
 

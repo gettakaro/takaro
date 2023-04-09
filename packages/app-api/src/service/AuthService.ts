@@ -1,13 +1,13 @@
-import { DomainScoped } from '../lib/DomainScoped.js';
+import { DomainScoped } from '../lib/DomainScoped';
 import { ctx, errors, logger } from '@takaro/util';
-import { UserOutputWithRolesDTO, UserService } from '../service/UserService.js';
+import { UserOutputWithRolesDTO, UserService } from '../service/UserService';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
-import { config } from '../config.js';
+import { config } from '../config';
 
 interface IJWTPayload {
   sub: string;

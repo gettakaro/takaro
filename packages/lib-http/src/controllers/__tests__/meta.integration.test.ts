@@ -1,4 +1,4 @@
-import { HTTP } from '../../app.js';
+import { HTTP } from '../../app';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
 

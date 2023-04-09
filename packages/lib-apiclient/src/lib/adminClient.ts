@@ -1,5 +1,5 @@
-import { DomainApi } from '../generated/index.js';
-import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
+import { DomainApi } from '../generated/index';
+import { BaseApiClient, IBaseApiClientConfig } from './baseClient';
 import type { Client as OpenIdClient, Issuer, TokenSet } from 'openid-client';
 import { AxiosInstance } from 'axios';
 

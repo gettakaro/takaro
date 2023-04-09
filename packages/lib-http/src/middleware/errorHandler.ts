@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpError } from 'routing-controllers';
 import { logger, errors } from '@takaro/util';
-import { apiResponse } from '../util/apiResponse.js';
+import { apiResponse } from '../util/apiResponse';
 import { ValidationError } from 'class-validator';
 
 const log = logger('errorHandler');

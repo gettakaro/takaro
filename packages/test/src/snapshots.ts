@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { JsonObject } from 'type-fest';
-import { expect } from './test/expect.js';
+import { expect } from './test/expect';
 import { omit } from 'lodash-es';
 import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
-import { IIntegrationTest } from './integrationTest.js';
+import { IIntegrationTest } from './integrationTest';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 

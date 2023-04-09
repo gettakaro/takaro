@@ -2,7 +2,7 @@ import net from 'node:net';
 import http from 'node:http';
 import fetch from 'node-fetch';
 import { logger, sleep } from '@takaro/util';
-import { config } from '../config.js';
+import { config } from '../config';
 
 interface ExecOutput {
   exit_code: number;

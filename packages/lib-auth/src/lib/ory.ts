@@ -4,11 +4,11 @@ import {
   IdentityApi,
   OAuth2Api,
 } from '@ory/client';
-import { config } from '../config.js';
+import { config } from '../config';
 import { errors, logger, TakaroDTO } from '@takaro/util';
 import { AdminClient as TakaroClient } from '@takaro/apiclient';
-import { createAxiosClient } from './oryAxiosClient.js';
-import { paginateIdentities } from './paginationHelpers.js';
+import { createAxiosClient } from './oryAxiosClient';
+import { paginateIdentities } from './paginationHelpers';
 import { Request } from 'express';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 

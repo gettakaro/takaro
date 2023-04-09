@@ -1,8 +1,8 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 import { QueuesService } from '@takaro/queues';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
-import { HookModel, HookRepo } from '../db/hook.js';
+import { HookModel, HookRepo } from '../db/hook';
 import {
   IsEnum,
   IsOptional,
@@ -24,8 +24,8 @@ import { Type } from 'class-transformer';
 import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
-import { GameServerService } from './GameServerService.js';
+import { PaginatedOutput } from '../db/base';
+import { GameServerService } from './GameServerService';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {

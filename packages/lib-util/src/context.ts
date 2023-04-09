@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { errors } from './main.js';
+import { errors } from './main';
 import { Span, trace, Tracer } from '@opentelemetry/api';
 
 interface TransactionStore {

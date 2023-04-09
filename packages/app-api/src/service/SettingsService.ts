@@ -1,9 +1,9 @@
 import { TakaroModelDTO } from '@takaro/util';
 import { IsString } from 'class-validator';
 import { errors } from '@takaro/util';
-import { PaginatedOutput } from '../db/base.js';
-import { SettingsModel, SettingsRepo } from '../db/settings.js';
-import { TakaroService } from './Base.js';
+import { PaginatedOutput } from '../db/base';
+import { SettingsModel, SettingsRepo } from '../db/settings';
+import { TakaroService } from './Base';
 
 export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',

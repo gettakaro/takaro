@@ -11,14 +11,14 @@ import {
   RoutingControllersOptions,
   useExpressServer,
 } from 'routing-controllers';
-import { Meta } from './controllers/meta.js';
-import { LoggingMiddleware } from './middleware/logger.js';
-import { ErrorHandler } from './middleware/errorHandler.js';
+import { Meta } from './controllers/meta';
+import { LoggingMiddleware } from './middleware/logger';
+import { ErrorHandler } from './middleware/errorHandler';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { metricsMiddleware } from './main.js';
-import { paginationMiddleware } from './middleware/paginationMiddleware.js';
+import { metricsMiddleware } from './main';
+import { paginationMiddleware } from './middleware/paginationMiddleware';
 
 interface IHTTPOptions {
   port?: number;

@@ -1,6 +1,6 @@
 import { createBullBoard } from '@bull-board/api';
 import { ExpressAdapter } from '@bull-board/express';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { QueuesService } from '@takaro/queues';
 
 const serverAdapter = new ExpressAdapter();

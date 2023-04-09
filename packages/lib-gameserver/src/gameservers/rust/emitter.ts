@@ -9,8 +9,8 @@ import {
 } from '../../main.js';
 import { IsString } from 'class-validator';
 import { JsonObject } from 'type-fest';
-import { RustConnectionInfo } from './index.js';
-import { TakaroEmitter } from '../../TakaroEmitter.js';
+import { RustConnectionInfo } from './index';
+import { TakaroEmitter } from '../../TakaroEmitter';
 
 export class RustConfig {
   @IsString()

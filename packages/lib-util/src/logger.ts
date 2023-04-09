@@ -1,8 +1,8 @@
-import { config } from './config.js';
+import { config } from './config';
 import winston from 'winston';
 import { JsonObject } from 'type-fest';
 import { omit } from 'lodash-es';
-import { ctx } from './context.js';
+import { ctx } from './context';
 
 const { colorize, timestamp, printf, combine, json, errors } = winston.format;
 

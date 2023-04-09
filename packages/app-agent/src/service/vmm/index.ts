@@ -1,5 +1,5 @@
-import FirecrackerClient from '../../lib/firecracker/index.js';
-import { VmClient } from '../../lib/vmClient.js';
+import FirecrackerClient from '../../lib/firecracker/index';
+import { VmClient } from '../../lib/vmClient';
 import { logger } from '@takaro/util';
 
 /*

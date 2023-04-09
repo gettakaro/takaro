@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
 import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
-import { IGamePlayer } from './GamePlayer.js';
+import { IGamePlayer } from './GamePlayer';
 
 export enum GameEvents {
   LOG_LINE = 'log',

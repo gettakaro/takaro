@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { formatAlterTableEnumSql } from '../util/alterEnum.js';
+import { formatAlterTableEnumSql } from '../util/alterEnum';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('settings', (table) => {

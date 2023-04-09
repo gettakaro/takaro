@@ -1,6 +1,6 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from './Base';
 
-import { CommandModel, CommandRepo } from '../db/command.js';
+import { CommandModel, CommandRepo } from '../db/command';
 import {
   IsNumber,
   IsOptional,
@@ -21,10 +21,10 @@ import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ICommand, ICommandArgument } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
-import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
-import { parseCommand } from '../lib/commandParser.js';
-import { GameServerService } from './GameServerService.js';
+import { PaginatedOutput } from '../db/base';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService';
+import { parseCommand } from '../lib/commandParser';
+import { GameServerService } from './GameServerService';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
