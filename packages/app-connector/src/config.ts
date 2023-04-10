@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 import { errors } from '@takaro/util';
 
@@ -44,7 +45,6 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IConnectorConfig & IQueuesConfig>([
-  configSchema,
-  queuesConfigSchema,
-]);
+export const config = new Config<
+  IConnectorConfig & IQueuesConfig & IAuthConfig
+>([configSchema, queuesConfigSchema, authConfigSchema]);

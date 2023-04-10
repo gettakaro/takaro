@@ -10,7 +10,6 @@ import { UserController } from './controllers/UserController.js';
 import { RoleController } from './controllers/Rolecontroller.js';
 import { GameServerController } from './controllers/GameServerController.js';
 import { DomainService } from './service/DomainService.js';
-import { GameServerService } from './service/GameServerService.js';
 import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
 import { ModuleController } from './controllers/ModuleController.js';
@@ -73,20 +72,6 @@ async function main() {
     log.info('🌱 Seeding database with builtin modules');
     const moduleService = new ModuleService(domain.id);
     await moduleService.seedBuiltinModules();
-
-    log.info('🔌 Starting all game servers');
-    const gameServerService = new GameServerService(domain.id);
-    const gameServers = await gameServerService.find({});
-
-    // GameService.find() does not decrypt the connectioninfo
-    const gameServersDecrypted = await Promise.all(
-      gameServers.results.map(async (gameserver) => {
-        const gs = await gameServerService.findOne(gameserver.id);
-        return gs;
-      })
-    );
-
-    await gameServerService.manager.init(domain.id, gameServersDecrypted);
   }
 }
 

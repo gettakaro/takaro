@@ -18,6 +18,10 @@
   "license": "ISC",
   "dependencies": {
     "@takaro/http": "0.0.1",
+    "@takaro/apiclient": "0.0.1",
+    "@takaro/gameserver": "0.0.1",
+    "@takaro/queues": "0.0.1",
+    "@takaro/auth": "0.0.1",
     "@takaro/util": "0.0.1"
   },
   "devDependencies": {}
