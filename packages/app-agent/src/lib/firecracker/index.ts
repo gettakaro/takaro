@@ -1,4 +1,4 @@
-import child_process, { ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import process from 'process';
 import fs from 'node:fs/promises';
 import { logger } from '@takaro/util';
@@ -6,8 +6,6 @@ import got, { Got } from 'got';
 import { config } from '../../config.js';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
-
-type FcStatus = 'initializing' | 'ready' | 'running' | 'stopped';
 
 interface FcOptions {
   binary: string;
@@ -20,11 +18,11 @@ interface FcOptions {
 }
 
 export default class FirecrackerClient {
-  id: number;
-  status: FcStatus;
+  private childProcess: ChildProcess;
+  private log;
+
   options: FcOptions;
-  childProcess: ChildProcess;
-  log;
+  id: number;
 
   private readonly httpSock: Got;
 
@@ -48,7 +46,9 @@ export default class FirecrackerClient {
       hooks: {
         beforeRequest: [
           (request) => {
-            this.log.debug(`➡️  ${request.method} ${request.url}`);
+            this.log.debug(`➡️  ${request.method} ${request.url}`, {
+              requestBody: request.body,
+            });
           },
         ],
         afterResponse: [
@@ -70,7 +70,6 @@ export default class FirecrackerClient {
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
-      this.kill();
       process.exit(0);
     });
   }
@@ -78,9 +77,20 @@ export default class FirecrackerClient {
   private async cleanUp() {
     this.log.debug('cleaning up sockets and files');
 
-    await fs.unlink(this.options.fcSocket);
-    await fs.unlink(this.options.agentSocket);
-    await fs.unlink(this.options.logPath);
+    try {
+      await fs.rm(config.get('firecracker.sockets'), {
+        recursive: true,
+        force: true,
+      });
+    } catch (err) {
+      this.log.warn('could not remove sockets dir', err);
+    }
+
+    try {
+      await fs.rm(this.options.logPath, { force: true });
+    } catch (err) {
+      this.log.warn('could not remove log file', err);
+    }
   }
 
   private async ensureResources() {
@@ -102,11 +112,10 @@ export default class FirecrackerClient {
   }
 
   async spawn() {
-    this.status = 'initializing';
-
     await this.ensureResources();
 
-    this.childProcess = child_process.spawn(this.options.binary, [
+    const cmd = 'firecracker';
+    const args = [
       '--api-sock',
       this.options.fcSocket,
       '--log-path',
@@ -115,16 +124,17 @@ export default class FirecrackerClient {
       this.options.logLevel,
       '--show-level',
       '--show-log-origin',
-    ]);
+    ];
+
+    this.log.debug(`spawning child process with cmd: ${cmd} ${args.join(' ')}`);
+
+    this.childProcess = spawn(cmd, args);
 
     return new Promise((resolve, reject) => {
-      if (this.childProcess === undefined) {
-        const errMessage = 'Could not create child process';
-
-        this.log.error(errMessage);
-
-        return reject(errMessage);
-      }
+      this.childProcess.on('error', (error) => {
+        this.log.error('child process error: ', { error });
+        return reject(error);
+      });
 
       this.childProcess.on('exit', (code) => {
         this.log.debug(`child process exited with code ${code}`);
@@ -140,38 +150,33 @@ export default class FirecrackerClient {
   async shutdown() {
     this.log.debug('shutting down vm...');
 
-    return await this.httpSock
+    await this.httpSock
       .put('actions', {
         json: {
           action_type: 'SendCtrlAltDel',
         },
       })
       .json();
-  }
 
-  async kill() {
-    this.log.debug('killing vm');
+    this.childProcess.kill();
 
-    await this.shutdown();
-
-    await this.cleanUp();
-
+    // wait for childProcess to exit
     await new Promise((resolve, _) => {
       this.childProcess.on('exit', () => {
         resolve('success');
       });
     });
+
+    await this.cleanUp();
   }
 
   async setupVM() {
     try {
-      this.log.debug('adding boot source');
-
       await this.httpSock.put('boot-source', {
         json: {
           kernel_image_path: this.options.kernelImage,
           boot_args:
-            'ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules quiet random.trust_cpu=on',
+            'console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ip=172.16.0.2::172.16.0.1:255.255.255.0::eth0:off',
         },
       });
 
@@ -184,16 +189,12 @@ export default class FirecrackerClient {
         },
       });
 
-      this.log.debug('setting up vsock');
-
       await this.httpSock.put('vsock', {
         json: {
           guest_cid: 3,
           uds_path: this.options.agentSocket,
         },
       });
-
-      this.log.debug('setting up network');
 
       await this.httpSock.put('network-interfaces/eth0', {
         json: {
@@ -208,7 +209,6 @@ export default class FirecrackerClient {
       });
     } catch (err) {
       this.log.error('setting up vm failed', err);
-      this.kill();
     }
   }
 
@@ -216,8 +216,6 @@ export default class FirecrackerClient {
     try {
       await this.spawn();
       await this.setupVM();
-
-      this.log.debug('setup done');
 
       this.log.info('starting vm instance...');
 
@@ -228,7 +226,6 @@ export default class FirecrackerClient {
       });
     } catch (err) {
       this.log.error('staring vm failed', err);
-      this.kill();
     }
   }
 }
