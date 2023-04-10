@@ -6,6 +6,7 @@ RUN wget --continue --retry-connrefused --waitretry=1 --timeout=20 --tries=3 -q 
     tar -xf firecracker-v1.1.2-x86_64.tgz && \
     mv release-v1.1.2-x86_64/firecracker-v1.1.2-x86_64 /usr/local/bin/firecracker && \
     mv release-v1.1.2-x86_64/jailer-v1.1.2-x86_64 /usr/local/bin/jailer
+
 RUN apt-get update && apt-get install -y git net-tools iproute2 iptables socat net-tools iputils-ping traceroute
 
 WORKDIR /app

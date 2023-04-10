@@ -46,8 +46,9 @@ services:
       context: .
       dockerfile: containers/dev.Dockerfile
     volumes:
-      - ./firecracker:/app/firecracker
-      - ./firecracker/srv/:/srv/jailer
+      - ./firecracker/rootfs.ext4:/app/firecracker/rootfs.ext4
+      - ./firecracker/vmlinux.bin:/app/firecracker/vmlinux.bin
+      - ./firecracker/firecracker:/usr/local/bin/firecracker
       - ./packages:/app/packages
       - ./reports:/app/reports
       - ./scripts:/app/scripts
