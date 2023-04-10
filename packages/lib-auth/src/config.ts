@@ -62,7 +62,7 @@ export const configSchema = {
       doc: 'The URL of the Takaro server',
       format: String,
       default: 'http://localhost:3000',
-      env: 'TAKARO_HOST',
+      env: 'TAKARO_API_HOST',
     },
   },
 };

@@ -66,7 +66,7 @@ services:
       FIRECRACKER_SOCKET: ${FC_SOCKET}
       FIRECRACKER_AGENT_SOCKET: ${VM_AGENT_SOCKET}
 
-      TAKARO_HOST: http://takaro:3000
+      TAKARO_API_HOST: http://takaro:3000
       TEST_HTTP_TARGET: http://takaro:3000
       TAKARO_OAUTH_HOST: http://hydra:4444
 
@@ -99,6 +99,9 @@ services:
       - 12002:12002
       # Docs
       - 13005:13005
+      # Connector
+      - 13006:3002
+
 
   kratos-migrate:
     image: oryd/kratos:v0.11.1

@@ -71,7 +71,7 @@ services:
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
-      TAKARO_HOST: http://takaro:3000
+      TAKARO_API_HOST: http://takaro:3000
     ports:
     # api
       - 13000:3000

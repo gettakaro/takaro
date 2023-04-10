@@ -6,7 +6,7 @@ import { config } from 'dotenv';
 config();
 
 const adminClient = new AdminClient({
-  url: process.env.TAKARO_HOST,
+  url: process.env.TAKARO_API_HOST,
   auth: {
     clientId: process.env.ADMIN_CLIENT_ID,
     clientSecret: process.env.ADMIN_CLIENT_SECRET,
