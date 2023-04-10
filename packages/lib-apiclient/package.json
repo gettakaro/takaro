@@ -11,8 +11,8 @@
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "echo 'No tests (yet :))'",
     "test:integration": "rm -rf ./dist && tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.integration.test.js --exit",
-    "generate": "npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
-    "postgenerate": "./fix-esm.sh && npm run build"
+    "generate": "npx ts-node --esm generate.ts",
+    "postgenerate": "npm run build"
   },
   "keywords": [],
   "author": "",

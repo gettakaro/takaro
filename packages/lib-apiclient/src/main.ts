@@ -7,4 +7,4 @@ export { Client } from './lib/client.js';
 
 export type ITakaroAPIAxiosResponse<T> = AxiosResponse<T>;
 
-export * from './generated/api.js';
+export * from './generated/api/api.js';

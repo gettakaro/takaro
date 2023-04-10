@@ -11,7 +11,7 @@ import {
   SettingsApi,
   CommandApi,
   VariableApi,
-} from '../generated/api.js';
+} from '../generated/api/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
 export interface IApiClientConfig extends IBaseApiClientConfig {
