@@ -37,7 +37,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const navigate = useNavigate();
 
   const { isLoading, data } = useGameServerReachabilityById(id);
-  const { mutateAsync, isLoading: isDeleting } = useRemoveGameServer(id);
+  const { mutateAsync, isLoading: isDeleting } = useRemoveGameServer();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -50,7 +50,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
-    await mutateAsync();
+    await mutateAsync({ id });
     setOpenDialog(false);
   };
 
