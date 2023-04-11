@@ -102,7 +102,13 @@ export function Table<DataType extends object>({
 
   // TODO: add a border outline with an empty table message
   if (data.length === 0) {
-    return <Empty description="Looks like there is no data yet. " />;
+    return (
+      <Empty
+        header="No data"
+        description="Looks like there is no data"
+        actions={[]}
+      />
+    );
   }
 
   return (

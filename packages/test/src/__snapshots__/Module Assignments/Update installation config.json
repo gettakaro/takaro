@@ -8,7 +8,7 @@
       "updatedAt": "2022-12-05T19:49:14.085Z",
       "id": "2eca6a06-5e28-4f84-be6d-966227a655cf",
       "config": {
-        "foo": "bar"
+        "maxTeleports": 42
       },
       "moduleId": "e45ac2a5-7ddb-4db7-af48-a2fa09985b3e",
       "gameserverId": "df605edb-f9d2-4c1b-b7b6-cc3ddb5f46d9"

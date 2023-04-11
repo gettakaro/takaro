@@ -7,7 +7,20 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { QueuesService } from '@takaro/queues';
-import { EventChatMessage } from '@takaro/gameserver';
+import { EventChatMessage, IGamePlayer } from '@takaro/gameserver';
+
+export async function getMockPlayer(
+  extra: Partial<IGamePlayer> = {}
+): Promise<IGamePlayer> {
+  const data: Partial<IGamePlayer> = {
+    gameId: 'mock-gameId',
+    name: 'mock-player',
+    ...extra,
+  };
+
+  return new IGamePlayer().construct(data);
+}
+
 const group = 'CommandService';
 
 interface IStandardSetupData {
@@ -74,6 +87,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -93,6 +107,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: 'test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -102,6 +117,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );
@@ -126,6 +142,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
 
         this.setupData.gameserver.id
@@ -142,6 +159,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
       );

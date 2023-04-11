@@ -4,6 +4,7 @@ import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
+  IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
 import { RustEmitter } from './emitter.js';
@@ -25,6 +26,11 @@ export class Rust implements IGameServer {
     this.connectionInfo = config;
   }
 
+  getEventEmitter() {
+    const emitter = new RustEmitter(this.connectionInfo);
+    return emitter;
+  }
+
   async getPlayer(id: string): Promise<IGamePlayer | null> {
     this.logger.debug('getPlayer', id);
     return null;
@@ -34,9 +40,13 @@ export class Rust implements IGameServer {
     return [];
   }
 
-  getEventEmitter() {
-    const emitter = new RustEmitter(this.connectionInfo);
-    return emitter;
+  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
+    throw new errors.NotImplementedError();
+    return {
+      x: 1,
+      y: 2,
+      z: 3,
+    };
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
@@ -56,5 +66,10 @@ export class Rust implements IGameServer {
   async sendMessage(message: string) {
     throw new errors.NotImplementedError();
     console.log(`say "${message}"`);
+  }
+
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+    throw new errors.NotImplementedError();
+    console.log(`say "${player}" was teleported to ${x}, ${y}, ${z}`);
   }
 }

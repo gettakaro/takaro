@@ -24,6 +24,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
+import { GameServerService } from './GameServerService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -297,19 +298,39 @@ export class CommandService extends TakaroService<
         `Found ${triggeredCommands.length} commands that match the event`
       );
 
-      const parsedCommands = triggeredCommands.map((c) => ({
-        db: c,
-        parsed: parseCommand(chatMessage.msg, c),
-      }));
+      if (!chatMessage.player) {
+        this.log.error('Chat message does not have a player attached to it');
+        throw new errors.InternalServerError();
+      }
+
+      const gameServerService = new GameServerService(this.domainId);
+
+      const playerLocation = await (
+        await gameServerService.getGame(gameServerId)
+      ).getPlayerLocation(chatMessage.player);
+
+      const parsedCommands = await Promise.all(
+        triggeredCommands.map(async (c) => ({
+          db: c,
+          data: {
+            ...parseCommand(chatMessage.msg, c),
+            player: { ...chatMessage.player, location: playerLocation },
+            module: await gameServerService.getModuleInstallation(
+              gameServerId,
+              c.moduleId
+            ),
+          },
+        }))
+      );
 
       const queues = QueuesService.getInstance();
 
-      const promises = parsedCommands.map(async ({ parsed, db }) => {
+      const promises = parsedCommands.map(async ({ data, db }) => {
         return queues.queues.commands.queue.add(db.id, {
           domainId: this.domainId,
           function: db.function.code,
           itemId: db.id,
-          data: parsed,
+          data,
           gameServerId,
         });
       });

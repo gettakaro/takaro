@@ -2,7 +2,15 @@ import { BuiltinModule } from '../../BuiltinModule.js';
 
 export class Utils extends BuiltinModule {
   constructor() {
-    super('utils');
+    super(
+      'utils',
+      'A collection of useful commands',
+      JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        additionalProperties: false,
+      })
+    );
 
     this.commands = [
       {

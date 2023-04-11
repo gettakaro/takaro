@@ -34,15 +34,28 @@ export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
   recipient?: IGamePlayer;
 }
 
+export interface IPosition {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
+  getEventEmitter(): TakaroEmitter;
 
   getPlayer(id: string): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
-  getEventEmitter(): TakaroEmitter;
+  getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
+  teleportPlayer(
+    player: IGamePlayer,
+    x: number,
+    y: number,
+    z: number
+  ): Promise<void>;
 
   /**
    * Try and connect to the gameserver

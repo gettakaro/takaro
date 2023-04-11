@@ -1,7 +1,13 @@
 import { TakaroService } from './Base.js';
 
 import { ModuleModel, ModuleRepo } from '../db/module.js';
-import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsJSON,
+  IsOptional,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 
 import { Type } from 'class-transformer';
 import {
@@ -33,6 +39,12 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   name!: string;
 
   @IsString()
+  description!: string;
+
+  @IsJSON()
+  configSchema: string;
+
+  @IsString()
   @IsOptional()
   builtin: string;
 
@@ -56,6 +68,28 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 
   @IsString()
   @IsOptional()
+  description?: string;
+
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
+}
+
+export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
+  @IsString()
+  @Length(3, 50)
+  name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
+
+  @IsString()
+  @IsOptional()
   builtin: string;
 }
 
@@ -63,6 +97,14 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @Length(3, 50)
   @IsString()
   name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsJSON()
+  @IsOptional()
+  configSchema: string;
 }
 
 export class ModuleService extends TakaroService<
@@ -116,9 +158,16 @@ export class ModuleService extends TakaroService<
 
     if (existing.results.length !== 1) {
       mod = await this.create(
-        await new ModuleCreateDTO().construct({
-          name: builtin.name,
+        await new ModuleCreateInternalDTO().construct({
+          ...builtin,
           builtin: builtin.name,
+        })
+      );
+    } else {
+      mod = await this.update(
+        mod.id,
+        await new ModuleUpdateDTO().construct({
+          ...builtin,
         })
       );
     }

@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid config: /foo must NOT have fewer than 3 characters"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing a module with incorrect config (value too short)",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}
