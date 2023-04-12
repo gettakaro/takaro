@@ -56,6 +56,7 @@ npm run-script -w packages/lib-gameserver build
 npm run-script -w packages/lib-queues build
 npm run-script -w packages/lib-function-helpers build
 npm run-script -w packages/lib-modules build
+npm run-script -w packages/lib-socket build
 
 npm run-script -w packages/test build
 
