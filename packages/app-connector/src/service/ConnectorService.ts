@@ -4,6 +4,7 @@ import {
   GameServerOutputDTO,
   GameServerCreateDTOTypeEnum,
 } from '@takaro/apiclient';
+import { getClient, TakaroSocket } from '@takaro/socket';
 import { QueuesService } from '@takaro/queues';
 import { logger, errors } from '@takaro/util';
 import { config } from '../config.js';
@@ -24,11 +25,16 @@ type EmitterMapData = {
   domainId: string;
 };
 
-export class ConnectorService {
+type gameServerId = string;
+type domainId = string;
+
+class ConnectorService {
   private takaro: AdminClient;
   private log = logger('ConnectorService');
-  private emitterMap = new Map<string, EmitterMapData>();
+  private emitterMap = new Map<gameServerId, EmitterMapData>();
+  private socketMap = new Map<domainId, TakaroSocket>();
   private eventsQueue = QueuesService.getInstance().queues.events.queue;
+  private socket: TakaroSocket | null = null;
 
   constructor() {
     this.takaro = new AdminClient({
@@ -99,6 +105,8 @@ export class ConnectorService {
   }
 
   public async init() {
+    await this.takaro.waitUntilHealthy();
+
     const domains = await this.takaro.domain.domainControllerSearch();
     for (const domain of domains.data.data) {
       this.log.info(`Handling domain ${domain.id}`);
@@ -106,6 +114,11 @@ export class ConnectorService {
       const domainTokenRes = await this.takaro.domain.domainControllerGetToken({
         domainId: domain.id,
       });
+
+      const socket = await getClient(config.get('takaro.url'), {
+        authToken: domainTokenRes.data.data.token,
+      });
+      this.socketMap.set(domain.id, socket);
 
       const client = this.getDomainScopedClient(domainTokenRes.data.data.token);
 
@@ -179,3 +192,5 @@ export class ConnectorService {
     });
   }
 }
+
+export default new ConnectorService();

@@ -33,7 +33,7 @@ const configSchema = {
           throw new errors.ConfigError('ports must be within range 0 - 65535');
         }
       },
-      default: 3000,
+      default: 3002,
       env: 'PORT',
     },
     allowedOrigins: {

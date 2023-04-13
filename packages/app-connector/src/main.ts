@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
 import { config } from './config.js';
-import { ConnectorService } from './service/ConnectorService.js';
+import ConnectorService from './service/ConnectorService.js';
 
 export const server = new HTTP(
   {
@@ -23,9 +23,11 @@ async function main() {
   config.validate();
   log.info('✅ Config validated');
 
-  const connectorService = new ConnectorService();
+  await ConnectorService.init();
+  log.info('✅ Connector service initialized');
 
-  await connectorService.init();
+  await server.start();
+  log.info('🚀 Server started');
 }
 
 main();
