@@ -69,19 +69,19 @@ const configSchema = {
     binary: {
       doc: 'Path to Firecracker binary',
       format: String,
-      default: '/usr/bin/firecracker',
+      default: '/usr/local/bin/firecracker',
       env: 'FIRECRACKER_BINARY',
     },
     kernelImage: {
       doc: 'Path to the kernel image used by the microVM',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/vmlinux.bin',
+      default: '/app/firecracker/vmlinux.bin',
       env: 'FIRECRACKER_KERNEL_IMAGE',
     },
     rootfs: {
       doc: 'Path to the rootfs used by the microVM',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/rootfs.ext4',
+      default: '/app/firecracker/rootfs.ext4',
       env: 'FIRECRACKER_ROOTFS',
     },
     sockets: {
@@ -93,7 +93,7 @@ const configSchema = {
     logPath: {
       doc: 'Path to the log file used by Firecracker',
       format: String,
-      default: '/home/branco/dev/takaro/firecracker/',
+      default: '/app/firecracker/',
       env: 'FIRECRACKER_LOG_PATH',
     },
   },
