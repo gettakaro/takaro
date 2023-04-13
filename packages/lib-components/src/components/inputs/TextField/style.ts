@@ -83,7 +83,6 @@ export const Input = styled.input<{
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding-right: ${({ theme, isPassword }) =>
     isPassword ? theme.spacing[6] : 0};
-  font-size: 1.5rem;
   border: 2px solid
     ${({ theme, hasError }): string =>
       hasError ? theme.colors.error : theme.colors.background};

@@ -96,7 +96,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(5),
-      flip({ fallbackPlacements: ['top', 'bottom'], padding: 10 }),
+      flip({ fallbackPlacements: ['top', 'bottom'] }),
       size({
         apply({ rects, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
@@ -104,7 +104,6 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
             maxHeight: `${availableHeight}px`,
           });
         },
-        padding: 10,
       }),
     ],
   });
@@ -205,7 +204,6 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
           {...getReferenceProps({
             ref: reference,
           })}
-          isOpen={open}
         >
           {render(selectedIndex - 1)}
           <ArrowIcon size={18} />
