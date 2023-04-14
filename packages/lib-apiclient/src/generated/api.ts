@@ -2021,10 +2021,23 @@ export interface IGamePlayer {
 export interface IMessageOptsDTO {
   /**
    *
-   * @type {IGamePlayer}
+   * @type {IPlayerReferenceDTO}
    * @memberof IMessageOptsDTO
    */
-  recipient: IGamePlayer;
+  recipient: IPlayerReferenceDTO;
+}
+/**
+ *
+ * @export
+ * @interface IPlayerReferenceDTO
+ */
+export interface IPlayerReferenceDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof IPlayerReferenceDTO
+   */
+  gameId: string;
 }
 /**
  *
@@ -2184,7 +2197,7 @@ export interface MessageSendInputDTO {
    * @type {IMessageOptsDTO}
    * @memberof MessageSendInputDTO
    */
-  opts: IMessageOptsDTO;
+  opts?: IMessageOptsDTO;
 }
 /**
  *
