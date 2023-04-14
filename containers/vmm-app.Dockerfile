@@ -43,4 +43,8 @@ RUN npm ci --only=production
 
 COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
 
-CMD sh -c "./scripts/dev-setup-network-tap.sh && npm -w packages/${PACKAGE} run start"
+COPY scripts/dev-setup-network-tap.sh ./scripts/dev-setup-network-tap.sh
+
+RUN ./scripts/dev-setup-network-tap.sh
+
+CMD [ "npm", "-w", "packages/${PACKAGE}", "run" , "start"]
