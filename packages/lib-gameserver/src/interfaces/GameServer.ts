@@ -30,6 +30,7 @@ export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
 /**
  * This is used whenever we want to target a specific player
  * We only allow a subset of IGamePlayer here because to work across gameservers we need to be generic
+ * Eg, if we allow users to reference players by Steam ID, that wont work for all gameservers. Not all gameservers have Steam integration
  */
 export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
   @IsString()
