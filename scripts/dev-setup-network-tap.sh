@@ -31,6 +31,12 @@ while getopts ":h:t:" opt; do
 	esac
 done
 
+if [ ! -e /dev/net/tun ]; then
+	mkdir -p /dev/net
+	mknod /dev/net/tun c 10 200
+	chmod 0666 /dev/net/tun
+fi
+
 ip link del "$TAP_DEV" 2>/dev/null || true
 
 ip tuntap add dev "$TAP_DEV" mode tap
