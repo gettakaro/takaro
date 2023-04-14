@@ -23,7 +23,7 @@ RUN find packages -type d -name 'lib-*' -exec sh -c 'npm run -w {} build && mkdi
 
 FROM node:18-alpine as runner
 
-RUN apk update && apk add iproute2 iptables
+RUN apk update && apk add iproute2 iptables bash
 
 RUN npm install -g npm@8
 
