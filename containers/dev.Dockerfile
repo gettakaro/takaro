@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y git net-tools iproute2 iptables socat n
 WORKDIR /app
 
 RUN npm install -g npm@8
+
+# Fix to avoid requiring root permissions 
 RUN npm config set cache /app/.npm-cache --global
 
 COPY package*.json ./
