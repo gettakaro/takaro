@@ -74,7 +74,10 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
   @IsJSON()
-  config: string;
+  userConfig: string;
+
+  @IsJSON()
+  systemConfig: string;
 }
 
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
@@ -85,7 +88,10 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   moduleId: string;
 
   @IsJSON()
-  config: string;
+  userConfig: string;
+
+  @IsJSON()
+  systemConfig: string;
 }
 
 const manager = new IGameServerInMemoryManager();
@@ -179,12 +185,24 @@ export class GameServerService extends TakaroService<
       throw new errors.NotFoundError('Module not found');
     }
 
-    const modConfig = JSON.parse(installDto.config);
-    const validateConfig = ajv.compile(JSON.parse(mod.configSchema));
-    const isValidConfig = validateConfig(modConfig);
+    const modUserConfig = JSON.parse(installDto.userConfig);
+    const validateUserConfig = ajv.compile(JSON.parse(mod.configSchema));
+    const isValidUserConfig = validateUserConfig(modUserConfig);
 
-    if (!isValidConfig) {
-      const prettyErrors = validateConfig.errors
+    const modSystemConfig = JSON.parse(installDto.systemConfig);
+    // TODO: Actually add stuff here
+    const systemConfigSchema = {
+      type: 'object',
+      properties: {},
+      required: [],
+    };
+
+    const validateSystemConfig = ajv.compile(systemConfigSchema);
+    const isValidSystemConfig = validateSystemConfig(modSystemConfig);
+
+    if (!isValidUserConfig || !isValidSystemConfig) {
+      const prettyErrors = validateUserConfig.errors
+        ?.concat(validateSystemConfig.errors ?? [])
         ?.map((e) => {
           if (e.keyword === 'additionalProperties') {
             return `${e.message}, invalid: ${e.params.additionalProperty}`;
@@ -196,7 +214,7 @@ export class GameServerService extends TakaroService<
       throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
     }
 
-    installDto.config = JSON.stringify(modConfig);
+    installDto.userConfig = JSON.stringify(modUserConfig);
 
     await this.repo.installModule(gameserverId, moduleId, installDto);
 

@@ -57,7 +57,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { config: JSON.stringify({ foo: 'bar' }) }
+        { userConfig: JSON.stringify({ foo: 'bar' }), systemConfig: '{}' }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -71,7 +71,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { config: JSON.stringify({ foo: 'a' }) }
+        { userConfig: JSON.stringify({ foo: 'a' }), systemConfig: '{}' }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -86,7 +86,10 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { config: JSON.stringify({ foo: 'a'.repeat(11) }) }
+        {
+          userConfig: JSON.stringify({ foo: 'a'.repeat(11) }),
+          systemConfig: '{}',
+        }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -101,7 +104,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { config: JSON.stringify({}) }
+        { userConfig: JSON.stringify({}), systemConfig: '{}' }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -116,7 +119,10 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { config: JSON.stringify({ foo: 'bar', bar: 'foo' }) }
+        {
+          userConfig: JSON.stringify({ foo: 'bar', bar: 'foo' }),
+          systemConfig: '{}',
+        }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],

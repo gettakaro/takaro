@@ -2322,7 +2322,13 @@ export interface ModuleInstallDTO {
    * @type {string}
    * @memberof ModuleInstallDTO
    */
-  config: string;
+  userConfig: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallDTO
+   */
+  systemConfig: string;
 }
 /**
  *
@@ -2347,7 +2353,13 @@ export interface ModuleInstallationOutputDTO {
    * @type {string}
    * @memberof ModuleInstallationOutputDTO
    */
-  config: string;
+  userConfig: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  systemConfig: string;
   /**
    *
    * @type {string}

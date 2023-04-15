@@ -49,7 +49,10 @@ async function setup(
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
       mod.id,
-      { config: '{}' }
+      {
+        userConfig: '{}',
+        systemConfig: '{}',
+      }
     )
   ).data.data;
 

@@ -56,7 +56,8 @@ class ModuleAssignmentModel extends TakaroModel {
   static tableName = MODULE_ASSIGNMENTS_TABLE_NAME;
   gameserverId: string;
   moduleId: string;
-  config: string;
+  userConfig: string;
+  systemConfig: string;
 
   static get relationMappings() {
     return {
@@ -201,7 +202,8 @@ export class GameServerRepo extends ITakaroRepo<
     const data: Partial<ModuleAssignmentModel> = {
       gameserverId,
       moduleId,
-      config: installDto.config,
+      userConfig: installDto.userConfig,
+      systemConfig: installDto.systemConfig,
       domain: this.domainId,
     };
 

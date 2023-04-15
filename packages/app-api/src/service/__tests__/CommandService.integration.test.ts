@@ -59,7 +59,10 @@ async function setup(
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
       mod.id,
-      { config: '{}' }
+      {
+        userConfig: '{}',
+        systemConfig: '{}',
+      }
     )
   ).data.data;
 
@@ -153,7 +156,10 @@ const tests = [
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.mod.id,
-        { config: '{}' }
+        {
+          userConfig: '{}',
+          systemConfig: '{}',
+        }
       );
 
       await this.setupData.service.handleChatMessage(
