@@ -15,7 +15,7 @@ const adminClient = new AdminClient({
 });
 
 async function main() {
-  const userEmail = `${process.env.TAKARO_DEV_USER_NAME}@${process.env.TAKARO_DEV_DOMAIN_NAME}.local`;
+  const userEmail = `${process.env.TAKARO_DEV_USER_NAME}@${process.env.TAKARO_DEV_DOMAIN_NAME}`;
 
   const domainRes = await adminClient.domain.domainControllerCreate({
     name: process.env.TAKARO_DEV_DOMAIN_NAME,
