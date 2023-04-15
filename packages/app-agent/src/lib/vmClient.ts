@@ -104,8 +104,6 @@ export class VmClient {
   }
 
   public async exec(fn: string, data: Record<string, unknown>, token: string) {
-    this.log.info('POST /exec request', { fn });
-
     const env = {
       data: {
         ...data,
@@ -113,6 +111,12 @@ export class VmClient {
         url: this.takaroURL,
       },
     };
+
+    this.log.info('POST /exec request', {
+      fn,
+      url: this.takaroURL,
+      data: JSON.stringify(data),
+    });
 
     const cmd = ['node', '--input-type=module', '-e', fn];
 
