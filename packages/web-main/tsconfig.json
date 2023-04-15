@@ -7,7 +7,7 @@
     "noImplicitAny": false,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/**/*.json"],
   "references": [
     {
       "path": "./tsconfig.vite.json"

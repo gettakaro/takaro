@@ -1,7 +1,5 @@
 import { AdminClient } from '../main.js';
 import { expect, integrationConfig } from '@takaro/test';
-import { AxiosResponse } from 'axios';
-import { DomainCreateOutputDTOAPI } from '../generated/index.js';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';
 
@@ -39,24 +37,6 @@ describe('API client', () => {
       await adminClient.domain.domainControllerRemove(
         domain.data.data.createdDomain.id
       );
-    });
-  });
-
-  describe('User controller', () => {
-    let domain: AxiosResponse<DomainCreateOutputDTOAPI, unknown> | null = null;
-
-    beforeEach(async () => {
-      domain = await adminClient.domain.domainControllerCreate({
-        name: TEST_DOMAIN_NAME,
-      });
-    });
-
-    afterEach(async () => {
-      if (domain) {
-        await adminClient.domain.domainControllerRemove(
-          domain.data.data.createdDomain.id
-        );
-      }
     });
   });
 });

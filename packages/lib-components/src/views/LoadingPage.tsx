@@ -16,7 +16,7 @@ const Container = styled(motion.div)`
 const animations = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
-  exit: { opacity: 0 }
+  exit: { opacity: 0 },
 };
 
 export const LoadingPage: FC = () => {
@@ -27,7 +27,6 @@ export const LoadingPage: FC = () => {
       key="loading-page"
       transition={{
         ...getTransition(),
-        duration: 0.5
       }}
       variants={animations}
     >

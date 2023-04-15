@@ -117,7 +117,7 @@ export const StudioFrame: FC = () => {
     {
       icon: <SettingsIcon />,
       title: 'Settings',
-      to: PATHS.studio.settings(module.id),
+      to: PATHS.studio.settings(moduleId ?? ''),
     },
   ];
 

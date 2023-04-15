@@ -4,4 +4,4 @@ Takaro is a web-based, multi-gameserver manager. It features a web interface to 
 
 ## Development setup
 
-[Getting started](https://docs.takaro.io/docs/development/getting-started)
+[Getting started](https://docs.takaro.io/development/getting-started)
