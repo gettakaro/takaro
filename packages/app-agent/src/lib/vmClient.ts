@@ -108,9 +108,9 @@ export class VmClient {
 
     const env = {
       data: {
+        ...data,
         token: token,
         url: this.takaroURL,
-        ...data,
       },
     };
 
