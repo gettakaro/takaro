@@ -8,11 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig*.json ./
 
-COPY scripts/dev-init.sh ./scripts/dev-init.sh
+COPY scripts ./scripts
 
 COPY packages ./packages
-
-RUN ./scripts/dev-init.sh
 
 RUN npm run -w packages/${PACKAGE} build
 
