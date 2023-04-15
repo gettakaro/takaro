@@ -1,12 +1,11 @@
 import { FC, useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, Control } from 'react-hook-form';
 import {
   Button,
   Select,
   OptionGroup,
   Option,
   TextField,
-  styled,
   DrawerContent,
   DrawerHeading,
   Drawer,
@@ -16,20 +15,18 @@ import {
   Tooltip,
   ErrorMessage,
 } from '@takaro/lib-components';
+import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   GameServerCreateDTOTypeEnum,
-  GameServerOutputDTO,
   MockConnectionInfo,
   RustConnectionInfo,
   SdtdConnectionInfo,
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { useParams } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
-import { useGameServer, useGameServerCreate } from 'queries/gameservers';
-import { useGameServerUpdate } from 'queries/gameservers/queries';
+import { useGameServerCreate } from 'queries/gameservers';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 
@@ -39,81 +36,11 @@ export interface IFormInputs {
   connectionInfo: MockConnectionInfo | RustConnectionInfo | SdtdConnectionInfo;
 }
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
-export const CreateUpdateGameServer = () => {
-  const { serverId } = useParams();
-  const { data, isLoading } = useGameServer(serverId!);
-
-  const createGameServer = useGameServerCreate();
-  const updateGameServer = useGameServerUpdate();
-
-  const handleCreate = async ({ name, type, connectionInfo }: IFormInputs) => {
-    createGameServer.mutateAsync({
-      name,
-      type,
-      connectionInfo: JSON.stringify(connectionInfo),
-    });
-  };
-
-  const handleUpdate = async ({ name, type, connectionInfo }: IFormInputs) => {
-    updateGameServer.mutateAsync({
-      gameServerId: serverId!,
-      gameServerDetails: {
-        name,
-        type,
-        connectionInfo: JSON.stringify(connectionInfo),
-      },
-    });
-  };
-
-  if (!serverId) {
-    return (
-      <CreateUpdateGameServerForm
-        isLoading={false}
-        data={undefined}
-        isCreateMode={true}
-        submitHandler={handleCreate}
-      />
-    );
-  }
-
-  // unfortunately we cannot use the field loading itself
-  // because then the default values are already set.
-  if (isLoading) {
-    return <>loading...</>;
-  }
-
-  return (
-    <CreateUpdateGameServerForm
-      isLoading={isLoading || updateGameServer.isLoading}
-      data={data}
-      isCreateMode={false}
-      submitHandler={handleUpdate}
-    />
-  );
-};
-
-interface Props {
-  isLoading: boolean;
-  data?: GameServerOutputDTO;
-  isCreateMode: boolean;
-  submitHandler: (input: IFormInputs) => Promise<void>;
-}
-
-const CreateUpdateGameServerForm: FC<Props> = ({
-  data,
-  isLoading,
-  submitHandler,
-  isCreateMode,
-}) => {
+const CreateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
+  const { mutateAsync, isLoading } = useGameServerCreate();
 
   useEffect(() => {
     if (!open) {
@@ -122,19 +49,24 @@ const CreateUpdateGameServerForm: FC<Props> = ({
   }, [open, navigate]);
 
   const { control, handleSubmit, watch } = useForm<IFormInputs>({
-    mode: 'all',
+    mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    defaultValues: {
-      type: data?.type ?? GameServerCreateDTOTypeEnum.Rust,
-      name: data?.name ?? '',
-      connectionInfo: data?.connectionInfo,
-    },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async (input) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({
+    type,
+    connectionInfo,
+    name,
+  }) => {
     try {
       setError('');
-      await submitHandler(input);
+
+      mutateAsync({
+        type,
+        name,
+        connectionInfo: JSON.stringify(connectionInfo),
+      });
+
       navigate(PATHS.gameServers.overview());
     } catch (error) {
       Sentry.captureException(error);
@@ -162,14 +94,12 @@ const CreateUpdateGameServerForm: FC<Props> = ({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <DrawerHeading>
-          {isCreateMode ? 'Create game server' : 'Update game server'}
-        </DrawerHeading>
+        <DrawerHeading>Create Game Server</DrawerHeading>
         <DrawerBody>
           <CollapseList>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              id="create-update-game-server-form"
+              id="create-game-server-form"
             >
               <CollapseList.Item title="General">
                 <TextField
@@ -226,7 +156,7 @@ const CreateUpdateGameServerForm: FC<Props> = ({
                 fullWidth
                 text="Save changes"
                 type="submit"
-                form="create-update-game-server-form"
+                form="create-game-server-form"
               />
             </Tooltip>
           </ButtonContainer>
@@ -236,4 +166,4 @@ const CreateUpdateGameServerForm: FC<Props> = ({
   );
 };
 
-export default CreateUpdateGameServer;
+export default CreateGameServer;
