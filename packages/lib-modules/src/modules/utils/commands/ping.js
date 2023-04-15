@@ -7,7 +7,9 @@ async function ping() {
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
     message: 'Pong!',
     opts: {
-      recipient: data.player,
+      recipient: {
+        gameId: data.player.gameId,
+      },
     },
   });
 }

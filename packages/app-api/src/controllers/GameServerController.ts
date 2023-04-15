@@ -117,6 +117,7 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 
   @Type(() => IMessageOptsDTO)
   @ValidateNested()
+  @IsOptional()
   opts!: IMessageOptsDTO;
 }
 
