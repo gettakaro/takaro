@@ -16,7 +16,7 @@ export class VMM {
   }
 
   async createVM() {
-    const id = this.vms.length + 1;
+    const id = 1;
 
     this.log.debug(`creating a new vm with id: ${id}`);
 
@@ -36,7 +36,7 @@ export class VMM {
 
     this.log.debug(`killing vm with id ${id}`);
 
-    await fcClient?.kill();
+    await fcClient?.shutdown();
 
     this.vms.splice(id - 1, 1);
   }
@@ -46,17 +46,22 @@ export class VMM {
     data: Record<string, unknown>,
     token: string
   ) {
-    const fcClient = await this.createVM();
-    const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+    let vmId;
 
-    await vmClient.waitUntilHealthy();
+    try {
+      const fcClient = await this.createVM();
+      vmId = fcClient.id;
 
-    this.log.debug('vm created');
+      const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+      await vmClient.waitUntilHealthy();
 
-    fcClient.status = 'running';
-
-    await vmClient.exec(fn, data, token);
-
-    await this.removeVM(fcClient.id);
+      await vmClient.exec(fn, data, token);
+    } catch (err) {
+      this.log.error(err);
+    } finally {
+      if (vmId) {
+        await this.removeVM(vmId);
+      }
+    }
   }
 }

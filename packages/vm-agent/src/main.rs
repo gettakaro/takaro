@@ -69,7 +69,7 @@ async fn setup_network() -> anyhow::Result<()> {
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
-    setup_network().await?;
+    // setup_network().await?;
 
     if let Err(e) = env::set_current_dir("/app") {
         tracing::error!("failed to change directory: {}", e);
