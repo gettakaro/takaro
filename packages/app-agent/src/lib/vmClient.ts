@@ -128,8 +128,7 @@ export class VmClient {
 
     this.log.info('POST /exec request', {
       fn,
-      url: this.takaroURL,
-      data: JSON.stringify(data),
+      env: JSON.stringify(env),
     });
 
     const cmd = ['node', '--input-type=module', '-e', fn];
