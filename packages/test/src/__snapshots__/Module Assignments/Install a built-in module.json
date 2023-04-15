@@ -3,7 +3,10 @@
     "meta": {
       "serverTime": "2022-12-05T19:23:19.885Z"
     },
-    "data": {}
+    "data": {
+      "systemConfig": "{}",
+      "userConfig": "{}"
+    }
   },
   "status": 200,
   "test": {

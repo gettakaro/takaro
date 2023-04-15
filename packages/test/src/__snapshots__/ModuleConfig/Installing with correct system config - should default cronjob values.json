@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "gameserverId": "253d43d1-838b-4f7b-8a44-d3112f78b17e",
+      "moduleId": "95b2cf5a-6d64-4439-9760-a8469aa6f4ad",
+      "userConfig": "{}",
+      "systemConfig": "{\"cronJobs\":{\"Test cron job\":\"1 * * * *\"}}"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing with correct system config - should default cronjob values",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

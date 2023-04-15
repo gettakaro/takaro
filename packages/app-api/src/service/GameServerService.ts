@@ -190,19 +190,17 @@ export class GameServerService extends TakaroService<
     const isValidUserConfig = validateUserConfig(modUserConfig);
 
     const modSystemConfig = JSON.parse(installDto.systemConfig);
-    // TODO: Actually add stuff here
-    const systemConfigSchema = {
-      type: 'object',
-      properties: {},
-      required: [],
-    };
-
-    const validateSystemConfig = ajv.compile(systemConfigSchema);
+    const validateSystemConfig = ajv.compile(
+      JSON.parse(mod.systemConfigSchema)
+    );
     const isValidSystemConfig = validateSystemConfig(modSystemConfig);
 
     if (!isValidUserConfig || !isValidSystemConfig) {
-      const prettyErrors = validateUserConfig.errors
-        ?.concat(validateSystemConfig.errors ?? [])
+      const allErrors = [
+        ...(validateSystemConfig.errors ?? []),
+        ...(validateUserConfig.errors ?? []),
+      ];
+      const prettyErrors = allErrors
         ?.map((e) => {
           if (e.keyword === 'additionalProperties') {
             return `${e.message}, invalid: ${e.params.additionalProperty}`;
@@ -214,13 +212,17 @@ export class GameServerService extends TakaroService<
       throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
     }
 
+    // ajv mutates the object, so we need to stringify it again
     installDto.userConfig = JSON.stringify(modUserConfig);
+    installDto.systemConfig = JSON.stringify(modSystemConfig);
 
     await this.repo.installModule(gameserverId, moduleId, installDto);
 
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,
       moduleId,
+      userConfig: installDto.userConfig,
+      systemConfig: installDto.systemConfig,
     });
   }
 

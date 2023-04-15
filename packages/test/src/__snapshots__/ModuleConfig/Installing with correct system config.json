@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "gameserverId": "9852f27b-790c-45f5-94a4-6014dd5128c1",
+      "moduleId": "ccee9a2f-e965-40d4-804b-38d62bbe71e6",
+      "userConfig": "{}",
+      "systemConfig": "{\"cronJobs\":{\"Test cron job\":\"5 * * * *\"}}"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing with correct system config",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

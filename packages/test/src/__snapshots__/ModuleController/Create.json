@@ -11,6 +11,7 @@
       "id": "ab85972a-1aef-473d-ad92-7515acac70a4",
       "builtin": null,
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
+      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}",
       "cronJobs": [],
       "commands": [],
       "hooks": []

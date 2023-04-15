@@ -44,6 +44,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsJSON()
   configSchema: string;
 
+  @IsJSON()
+  systemConfigSchema: string;
+
   @IsString()
   @IsOptional()
   builtin: string;
