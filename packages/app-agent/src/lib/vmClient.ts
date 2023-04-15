@@ -3,6 +3,7 @@ import http from 'node:http';
 import fetch from 'node-fetch';
 import { logger, sleep } from '@takaro/util';
 import { networkInterfaces } from 'os';
+import { config } from '../config.js';
 
 interface ExecOutput {
   exit_code: number;
@@ -64,14 +65,27 @@ export class VmClient {
       socketPath,
       port,
     });
-    const defaultInterface = networkInterfaces()['eth0']?.[0];
+    this.customAgent = new HttpAgent(socketPath, port);
+
+    this.takaroURL =
+      config.get('mode') === 'development'
+        ? `http://${this.getHostAddress()}:3000`
+        : config.get('takaro.url');
+  }
+
+  private getHostAddress() {
+    const interfaceName = 'eth0';
+    const defaultInterface = networkInterfaces()[interfaceName]?.[0];
 
     if (!defaultInterface) {
-      throw Error('no eth0 interface found on host container');
+      throw Error(`no ${interfaceName} interface found on host container`);
     }
 
-    this.takaroURL = `http://${defaultInterface.address}:3000`;
-    this.customAgent = new HttpAgent(socketPath, port);
+    if (!defaultInterface.address) {
+      throw Error(`no address found on ${interfaceName}`);
+    }
+
+    return defaultInterface.address;
   }
 
   async waitUntilHealthy(maxRetry = 5000) {
