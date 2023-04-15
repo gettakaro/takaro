@@ -12,6 +12,8 @@ COPY scripts ./scripts
 
 COPY packages ./packages
 
+RUN ./scripts/dev-init.sh
+
 RUN npm run -w packages/${PACKAGE} build
 
 # NPM workspaces work by symlinking internal packages in node_nodules
