@@ -1,5 +1,6 @@
 import { ChildProcess, spawn } from 'child_process';
 import process from 'process';
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
@@ -131,6 +132,17 @@ export default class FirecrackerClient {
     this.childProcess = spawn(cmd, args);
 
     return new Promise((resolve, reject) => {
+      const stderrFileStream = fsSync.createWriteStream(
+        `/app/firecracker/${this.id}-stderr.log`
+      );
+      const stdoutFileStream = fsSync.createWriteStream(
+        `/app/firecracker/${this.id}-stdout.log`
+      );
+
+      // Redirect stderr output to the file
+      this.childProcess.stderr?.pipe(stderrFileStream);
+      this.childProcess.stdout?.pipe(stdoutFileStream);
+
       this.childProcess.on('error', (error) => {
         this.log.error('child process error: ', { error });
         return reject(error);
