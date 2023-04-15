@@ -54,6 +54,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     render,
     children,
     control,
+    readOnly,
     disabled,
     hint,
     loading,
@@ -197,20 +198,23 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
             size={componentSize}
             disabled={disabled}
             hint={hint}
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+            }}
           />
         )}
         <SelectButton
           {...getReferenceProps({
             ref: reference,
           })}
+          readOnly={readOnly}
         >
           {render(selectedIndex - 1)}
-          <ArrowIcon size={18} />
+          {!readOnly && <ArrowIcon size={18} />}
 
           {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>
-        {open && (
+        {open && !readOnly && (
           <FloatingOverlay lockScroll>
             <FloatingFocusManager
               context={context}
