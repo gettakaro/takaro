@@ -13,10 +13,12 @@ import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
 import { wrapCreateBrowserRouter } from '@sentry/react';
-import CreateUpdateGameServer from 'pages/CreateUpdateGameServer';
+import GameServerCreate from 'pages/CreateUpdateGameServer/GameServerCreate';
+import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
 
 import { SettingsFrame } from './frames/SettingsFrame';
 import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
+import { ConnectionSettings } from './pages/settings/ConnectionSettings';
 
 const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
@@ -29,6 +31,7 @@ const GameServerDashboard = lazy(
 const GameServerSettings = lazy(
   () => import('./pages/gameserver/GameServerSettings')
 );
+
 const GameServerModules = lazy(
   () => import('./pages/gameserver/GameServerModules')
 );
@@ -52,16 +55,20 @@ export const router = sentryCreateBrowserRouter(
             element={<GlobalGameServerSettings />}
             path={PATHS.settings.GameServerSettings}
           />
+          <Route
+            element={<ConnectionSettings />}
+            path={PATHS.settings.connections}
+          />
         </Route>
         <Route element={<GameServers />} path="/server/" />
 
         <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
           <Route
-            element={<CreateUpdateGameServer />}
+            element={<GameServerCreate />}
             path={PATHS.gameServers.create()}
           />
           <Route
-            element={<CreateUpdateGameServer />}
+            element={<GameServerUpdate />}
             path={PATHS.gameServers.update(':serverId')}
           />
         </Route>
