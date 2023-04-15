@@ -16,6 +16,10 @@ jobs:
               dockerfile: './containers/generic-app.Dockerfile',
             },
             {
+              name: 'app-agent',
+              dockerfile: './containers/vmm-app.Dockerfile',
+            },
+            {
               name: 'web-main',
               dockerfile: './containers/generic-web/generic-web.Dockerfile',
             },

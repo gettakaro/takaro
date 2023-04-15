@@ -2,6 +2,7 @@ import net from 'node:net';
 import http from 'node:http';
 import fetch from 'node-fetch';
 import { logger, sleep } from '@takaro/util';
+import { networkInterfaces } from 'os';
 import { config } from '../config.js';
 
 interface ExecOutput {
@@ -12,7 +13,7 @@ interface ExecOutput {
 }
 
 class HttpAgent extends http.Agent {
-  log = logger('VmClient:HttpAgent');
+  private log = logger('VmClient:HttpAgent');
 
   constructor(private socketPath: string, private port: number) {
     super();
@@ -47,7 +48,7 @@ class HttpAgent extends http.Agent {
         reject(new Error());
       });
       socket.on('error', (err) => {
-        this.log.error(err);
+        this.log.silly(err);
         reject(err);
       });
     });
@@ -55,8 +56,9 @@ class HttpAgent extends http.Agent {
 }
 
 export class VmClient {
-  customAgent: http.Agent;
-  log: ReturnType<typeof logger>;
+  private customAgent: http.Agent;
+  private takaroURL: string;
+  private log;
 
   constructor(socketPath: string, port: number) {
     this.log = logger('VmClient', {
@@ -64,15 +66,44 @@ export class VmClient {
       port,
     });
     this.customAgent = new HttpAgent(socketPath, port);
+
+    this.takaroURL =
+      config.get('mode') === 'development'
+        ? `http://${this.getHostAddress()}:3000`
+        : config.get('takaro.url');
   }
 
-  async waitUntilHealthy() {
+  private getHostAddress() {
+    const interfaceName = 'eth0';
+    const defaultInterface = networkInterfaces()[interfaceName]?.[0];
+
+    if (!defaultInterface) {
+      throw Error(`no ${interfaceName} interface found on host container`);
+    }
+
+    if (!defaultInterface.address) {
+      throw Error(`no address found on ${interfaceName}`);
+    }
+
+    return defaultInterface.address;
+  }
+
+  async waitUntilHealthy(maxRetry = 5000) {
     let response;
-    while (!response) {
+    let tries = 0;
+
+    while (!response && tries !== maxRetry) {
       try {
-        response = await this.getHealth();
         await sleep(1);
-      } catch {}
+        response = await this.getHealth();
+      } catch {
+      } finally {
+        tries += 1;
+      }
+    }
+
+    if (tries === maxRetry) {
+      this.log.warn(`reached max retries (${tries})`);
     }
   }
 
@@ -83,25 +114,26 @@ export class VmClient {
       agent: this.customAgent,
     });
 
-    if (res.status !== 200) {
-      const errorMessage = 'Received invalid status code';
-
-      this.log.error(errorMessage, res);
-
-      throw Error(errorMessage);
-    }
-
     return await res.text();
   }
 
   public async exec(fn: string, data: Record<string, unknown>, token: string) {
-    this.log.info('POST /exec request', { fn });
-
     const env = {
-      data,
-      api_token: token,
-      api_url: config.get('takaro.url'),
+      data: {
+        ...data,
+        token: token,
+        url: this.takaroURL,
+      },
     };
+
+    this.log.info('POST /exec request', {
+      fn,
+      env: JSON.stringify({
+        ...env,
+        // don't log the actual token
+        token: token ? 'valid' : 'invalid',
+      }),
+    });
 
     const cmd = ['node', '--input-type=module', '-e', fn];
 
@@ -118,7 +150,11 @@ export class VmClient {
     const output = (await response.json()) as unknown as ExecOutput;
 
     if (output.exit_code === 1) {
-      this.log.error('Function returned an error', output);
+      this.log.error('Function returned an error', {
+        ...(this.log.isDebugEnabled()
+          ? { stderr: output.stderr, stdout: output.stdout }
+          : {}),
+      });
     }
   }
 }

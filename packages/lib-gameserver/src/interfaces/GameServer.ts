@@ -27,11 +27,21 @@ export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
   reason?: string;
 }
 
+/**
+ * This is used whenever we want to target a specific player
+ * We only allow a subset of IGamePlayer here because to work across gameservers we need to be generic
+ * Eg, if we allow users to reference players by Steam ID, that wont work for all gameservers. Not all gameservers have Steam integration
+ */
+export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
+  @IsString()
+  gameId: string;
+}
+
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
-  @Type(() => IGamePlayer)
+  @Type(() => IPlayerReferenceDTO)
   @ValidateNested()
   /** When specified, will send a DM to this player instead of a global message */
-  recipient?: IGamePlayer;
+  recipient?: IPlayerReferenceDTO;
 }
 
 export interface IPosition {
@@ -51,7 +61,7 @@ export interface IGameServer {
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
   teleportPlayer(
-    player: IGamePlayer,
+    player: IPlayerReferenceDTO,
     x: number,
     y: number,
     z: number
