@@ -51,7 +51,7 @@ export const InputContainer = styled.div`
 `;
 
 export const PrefixContainer = styled.div`
-  background-color: ${({ theme }): string => theme.colors.background};
+  background-color: ${({ theme }): string => theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,7 +61,7 @@ export const PrefixContainer = styled.div`
 `;
 
 export const SuffixContainer = styled.div`
-  background-color: ${({ theme }): string => theme.colors.background};
+  background-color: ${({ theme }): string => theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,9 +83,9 @@ export const Input = styled.input<{
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding-right: ${({ theme, isPassword }) =>
     isPassword ? theme.spacing[6] : 0};
-  border: 2px solid
+  border: 1px solid
     ${({ theme, hasError }): string =>
-      hasError ? theme.colors.error : theme.colors.background};
+      hasError ? theme.colors.error : theme.colors.backgroundAlt};
   color: ${({ theme }) => theme.colors.text};
 
   ::selection {
@@ -94,14 +94,19 @@ export const Input = styled.input<{
   }
 
   ${({ hasPrefix }) =>
-    hasPrefix && 'border-top-left-radius: 0; border-bottom-left-radius: 0;'}
+    hasPrefix &&
+    'border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none;'}
   ${({ hasSuffix }) =>
-    hasSuffix && 'border-top-right-radius: 0; border-bottom-right-radius: 0;'}
+    hasSuffix &&
+    'border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;'}
 
   &:focus {
-    border: 2px solid
+    border: 1px solid
       ${({ theme, hasError }): string =>
         hasError ? theme.colors.error : theme.colors.primary};
+
+    ${({ hasPrefix }) => hasPrefix && 'border-left: none;'}
+    ${({ hasSuffix }) => hasSuffix && 'border-right: none;'}
   }
   ::placeholder {
     text-transform: capitalize;

@@ -3,7 +3,7 @@ import { styled, DialogBody } from '@takaro/lib-components';
 export const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.large};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
@@ -18,7 +18,7 @@ export const EmptyContainer = styled(Container)`
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.background};
-  border: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   cursor: pointer;
   h3 {
     margin-left: ${({ theme }) => theme.spacing[1]};

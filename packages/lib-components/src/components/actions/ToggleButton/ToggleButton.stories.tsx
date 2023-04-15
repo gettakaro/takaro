@@ -30,16 +30,16 @@ export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
   return (
     <ToggleButtonGroup onChange={handleOnChange} exclusive>
       <ToggleButton value="left">
-        <MdOutlineFormatAlignLeft size={20} />
+        <MdOutlineFormatAlignLeft size={17} />
       </ToggleButton>
       <ToggleButton value="center">
-        <MdOutlineFormatAlignCenter size={20} />
+        <MdOutlineFormatAlignCenter size={17} />
       </ToggleButton>
       <ToggleButton value="right">
-        <MdOutlineFormatAlignRight size={20} />
+        <MdOutlineFormatAlignRight size={17} />
       </ToggleButton>
       <ToggleButton disabled value="justify">
-        <MdOutlineFormatAlignJustify size={20} />
+        <MdOutlineFormatAlignJustify size={17} />
       </ToggleButton>
     </ToggleButtonGroup>
   );

@@ -3,6 +3,6 @@ import { styled } from '../../../styled';
 export const Container = styled.div`
   position: relative;
   input {
-    border: 1px solid ${({ theme }) => theme.colors.gray};
+    border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   }
 `;

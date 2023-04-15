@@ -30,7 +30,11 @@ export const HeaderNav: FC = () => {
         <AnimateSharedLayout>
           <motion.div>
             {items.map((item, index) => (
-              <ContentContainer color={item} index={index} isHovered={hovered === index} />
+              <ContentContainer
+                color={item}
+                index={index}
+                isHovered={hovered === index}
+              />
             ))}
           </motion.div>
         </AnimateSharedLayout>
@@ -41,7 +45,7 @@ export const HeaderNav: FC = () => {
 
 const CustomContent = styled(motion.div)`
   width: 300px;
-  border: 2px solid black;
+  border: 0.1rem solid black;
 `;
 
 interface ContentProps {
@@ -53,7 +57,7 @@ interface ContentProps {
 const spring = {
   type: 'spring',
   stiffness: 500,
-  damping: 30
+  damping: 30,
 };
 
 const ContentContainer: FC<ContentProps> = ({ color, isHovered, index }) => {

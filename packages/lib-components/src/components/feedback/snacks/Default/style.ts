@@ -5,8 +5,9 @@ export const Wrapper = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) =>
-    `${theme.spacing['2_5']} ${theme.spacing[6]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
+    `${theme.spacing['1']} ${theme.spacing[2]} ${theme.spacing['1_5']} ${theme.spacing['1_5']}`};
   box-shadow: ${({ theme }) => theme.elevation[4]};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
@@ -20,14 +21,10 @@ export const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 250px;
+  width: 200px;
   h3 {
     font-weight: 700;
-    font-size: 1.725rem;
     margin-bottom: ${({ theme }) => theme.spacing[1]};
-  }
-  h5 {
-    font-size: 1.325rem;
   }
 `;
 
@@ -62,7 +59,7 @@ export const ButtonContainer = styled.div`
 
 export const CloseContainer = styled.div`
   position: absolute;
-  top: ${({ theme }) => theme.spacing['3']};
+  top: ${({ theme }) => theme.spacing['2']};
   cursor: pointer;
   right: ${({ theme }) => theme.spacing['2']};
 `;
