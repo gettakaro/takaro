@@ -128,7 +128,11 @@ export class VmClient {
 
     this.log.info('POST /exec request', {
       fn,
-      env: JSON.stringify(env),
+      env: JSON.stringify({
+        ...env,
+        // don't log the actual token
+        token: token ? 'valid' : 'invalid',
+      }),
     });
 
     const cmd = ['node', '--input-type=module', '-e', fn];
