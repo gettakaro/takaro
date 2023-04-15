@@ -7,7 +7,7 @@ Running integration tests is easiest via the dev container.
 Run everything:
 
 ```
-docker-compose exec takaro npm -w packages/app-api run test:integration"
+docker-compose exec takaro npm test"
 ```
 
 Mocha allows you to filter for the test names you want to run. For example, to run all tests for the SettingsController:
@@ -40,6 +40,14 @@ If you wish to see logs when testing you can add the `LOGGING_LEVEL` env to your
 
 ```sh
 docker-compose exec -e LOGGING_LEVEL=debug takaro npm t
+```
+
+### Snapshots
+
+API tests can use snapshots for their assertions. Snapshots are stored in the `packages/test/src/__snapshots__` folder. If you want to update the snapshots, you can run the tests with the `OVERWRITE_SNAPSHOTS` env set to `true`.
+
+```sh
+docker-compose exec -e OVERWRITE_SNAPSHOTS=true takaro npm -w packages/app-api run test:integration"
 ```
 
 ## Database migrations
