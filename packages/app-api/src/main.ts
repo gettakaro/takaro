@@ -22,6 +22,7 @@ import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
 import { ModuleService } from './service/ModuleService.js';
 import { VariableController } from './controllers/VariableController.js';
+import { CronJobService } from './service/CronJobService.js';
 
 export const server = new HTTP(
   {
@@ -77,6 +78,7 @@ async function main() {
 
     log.info('🔌 Starting all game servers');
     const gameServerService = new GameServerService(domain.id);
+    const cronjobService = new CronJobService(domain.id);
     const gameServers = await gameServerService.find({});
 
     // GameService.find() does not decrypt the connectioninfo
@@ -88,6 +90,19 @@ async function main() {
     );
 
     await gameServerService.manager.init(domain.id, gameServersDecrypted);
+
+    await Promise.all(
+      gameServers.results.map(async (gameserver) => {
+        const installedModules = await gameServerService.getInstalledModules({
+          gameserverId: gameserver.id,
+        });
+        await Promise.all(
+          installedModules.map(async (mod) => {
+            await cronjobService.syncModuleCronjobs(mod);
+          })
+        );
+      })
+    );
   }
 }
 
