@@ -10,7 +10,7 @@ jobs:
         node-version: [18.x]
         pkg:
           [
-            app-agent,
+            app-vmm,
             app-api,
             lib-apiclient,
             lib-components,
