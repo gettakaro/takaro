@@ -3,7 +3,8 @@ import { JobsOptions, Queue } from 'bullmq';
 import { createHash } from 'crypto';
 
 export class TakaroQueue<T extends Record<string, unknown>> {
-  private bullQueue: Queue<T>;
+  public bullQueue: Queue<T>;
+
   constructor(public name: string) {
     this.bullQueue = new Queue(name, {
       connection: getRedisConnectionOptions(),
