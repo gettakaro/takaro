@@ -1,5 +1,5 @@
 import { TakaroService } from './Base.js';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 import { GameEvents, EventMapping } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
@@ -100,8 +100,6 @@ export class HookService extends TakaroService<
   HookCreateDTO,
   HookUpdateDTO
 > {
-  queues = QueuesService.getInstance();
-
   get repo() {
     return new HookRepo(this.domainId);
   }
@@ -189,7 +187,7 @@ export class HookService extends TakaroService<
 
       await Promise.all(
         triggeredHooks.map(async (hook) => {
-          return this.queues.queues.hooks.queue.add(hook.id, {
+          return queueService.queues.hooks.queue.add({
             itemId: hook.id,
             data: {
               ...eventData,

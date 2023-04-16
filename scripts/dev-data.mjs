@@ -59,7 +59,7 @@ async function main() {
     await client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
       mod.id,
-      { config: '{}' }
+      { userConfig: '{}', systemConfig: '{}' }
     );
   }
 
