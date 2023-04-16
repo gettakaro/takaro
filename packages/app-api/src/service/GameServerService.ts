@@ -33,9 +33,12 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
 import { PlayerService } from './PlayerService.js';
+import { JSONSchema } from 'class-validator-jsonschema';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
+import { CronJobService } from './CronJobService.js';
+import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -87,11 +90,12 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   @IsUUID()
   moduleId: string;
 
-  @IsJSON()
-  userConfig: string;
+  @IsObject()
+  userConfig: Record<string, never>;
 
-  @IsJSON()
-  systemConfig: string;
+  @JSONSchema(getEmptySystemConfigSchema())
+  @IsObject()
+  systemConfig: Record<string, never>;
 }
 
 const manager = new IGameServerInMemoryManager();
@@ -133,6 +137,13 @@ export class GameServerService extends TakaroService<
   }
 
   async delete(id: string) {
+    const installedModules = await this.getInstalledModules({
+      gameserverId: id,
+    });
+    await Promise.all(
+      installedModules.map((mod) => this.uninstallModule(id, mod.moduleId))
+    );
+
     await this.gameServerManager.remove(id);
     await this.repo.delete(id);
     return id;
@@ -179,6 +190,7 @@ export class GameServerService extends TakaroService<
     installDto: ModuleInstallDTO
   ) {
     const moduleService = new ModuleService(this.domainId);
+    const cronjobService = new CronJobService(this.domainId);
     const mod = await moduleService.findOne(moduleId);
 
     if (!mod) {
@@ -216,17 +228,30 @@ export class GameServerService extends TakaroService<
     installDto.userConfig = JSON.stringify(modUserConfig);
     installDto.systemConfig = JSON.stringify(modSystemConfig);
 
-    await this.repo.installModule(gameserverId, moduleId, installDto);
+    const installation = await this.repo.installModule(
+      gameserverId,
+      moduleId,
+      installDto
+    );
+    await cronjobService.installCronJobs(installation);
 
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,
       moduleId,
-      userConfig: installDto.userConfig,
-      systemConfig: installDto.systemConfig,
+      userConfig: installation.userConfig,
+      systemConfig: installation.systemConfig,
     });
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {
+    const installation = await this.repo.getModuleInstallation(
+      gameserverId,
+      moduleId
+    );
+
+    const cronjobService = new CronJobService(this.domainId);
+    await cronjobService.uninstallCronJobs(installation);
+
     await this.repo.uninstallModule(gameserverId, moduleId);
 
     return new ModuleInstallationOutputDTO().construct({
@@ -235,14 +260,18 @@ export class GameServerService extends TakaroService<
     });
   }
 
-  async getInstalledModules(gameserverId: string) {
-    const installations = await this.repo.getInstalledModules(gameserverId);
-    const moduleService = new ModuleService(this.domainId);
-    return await Promise.all(
-      installations.map((i) => {
-        return moduleService.findOne(i.moduleId);
-      })
-    );
+  async getInstalledModules({
+    gameserverId,
+    moduleId,
+  }: {
+    gameserverId?: string;
+    moduleId?: string;
+  }) {
+    const installations = await this.repo.getInstalledModules({
+      gameserverId,
+      moduleId,
+    });
+    return installations;
   }
 
   static async getGame(

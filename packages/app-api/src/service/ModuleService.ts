@@ -33,6 +33,7 @@ import {
   CommandUpdateDTO,
 } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
+import { GameServerService } from './GameServerService.js';
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -140,6 +141,15 @@ export class ModuleService extends TakaroService<
   }
 
   async delete(id: string) {
+    const gameServerService = new GameServerService(this.domainId);
+    const installations = await gameServerService.getInstalledModules({
+      moduleId: id,
+    });
+    await Promise.all(
+      installations.map((i) =>
+        gameServerService.uninstallModule(i.gameserverId, i.moduleId)
+      )
+    );
     await this.repo.delete(id);
     return id;
   }

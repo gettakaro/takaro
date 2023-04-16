@@ -180,16 +180,37 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await query
       .modify('domainScoped', this.domainId)
       .where({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(res[0]);
+    return new ModuleInstallationOutputDTO().construct(
+      res[0] as unknown as ModuleInstallationOutputDTO
+    );
   }
 
-  async getInstalledModules(gameserverId: string) {
+  async getInstalledModules({
+    gameserverId,
+    moduleId,
+  }: {
+    gameserverId?: string;
+    moduleId?: string;
+  }) {
     const { query } = await this.getAssignmentsModel();
-    const res = await query
-      .modify('domainScoped', this.domainId)
-      .where({ gameserverId });
+    const qry = query.modify('domainScoped', this.domainId);
+
+    if (gameserverId) {
+      qry.where({ gameserverId });
+    }
+
+    if (moduleId) {
+      qry.where({ moduleId });
+    }
+
+    const res = await qry;
+
     return Promise.all(
-      res.map((item) => new ModuleInstallationOutputDTO().construct(item))
+      res.map((item) =>
+        new ModuleInstallationOutputDTO().construct(
+          item as unknown as ModuleInstallationOutputDTO
+        )
+      )
     );
   }
 
@@ -216,7 +237,9 @@ export class GameServerRepo extends ITakaroRepo<
     }
 
     const res = await query.findOne({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(res);
+    return new ModuleInstallationOutputDTO().construct(
+      res as unknown as ModuleInstallationOutputDTO
+    );
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {

@@ -2,10 +2,14 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "253d43d1-838b-4f7b-8a44-d3112f78b17e",
-      "moduleId": "95b2cf5a-6d64-4439-9760-a8469aa6f4ad",
-      "userConfig": "{}",
-      "systemConfig": "{\"cronJobs\":{\"Test cron job\":\"1 * * * *\"}}"
+      "gameserverId": "6aefe2a2-3e95-4418-89c2-cf277ae349b3",
+      "moduleId": "7717c753-437d-4bd8-b6b0-d85b97b3fb9f",
+      "userConfig": {},
+      "systemConfig": {
+        "cronJobs": {
+          "Test cron job": "1 * * * *"
+        }
+      }
     }
   },
   "status": 200,

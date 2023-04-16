@@ -1,12 +1,12 @@
 import { HookService } from '../HookService.js';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 import { EventPlayerConnected, EventChatMessage } from '@takaro/gameserver';
 import { IntegrationTest, sandbox, expect } from '@takaro/test';
 import {
   HookOutputDTO,
   GameServerOutputDTO,
   ModuleOutputDTO,
-  ModuleInstallDTO,
+  ModuleInstallationOutputDTO,
 } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
 const group = 'HookService';
@@ -16,7 +16,7 @@ interface IStandardSetupData {
   service: HookService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallDTO;
+  assignment: ModuleInstallationOutputDTO;
   queueAddStub: SinonStub;
 }
 
@@ -56,8 +56,7 @@ async function setup(
     )
   ).data.data;
 
-  const queues = QueuesService.getInstance();
-  const queueAddStub = sandbox.stub(queues.queues.hooks.queue, 'add');
+  const queueAddStub = sandbox.stub(queueService.queues.hooks.queue, 'add');
 
   if (!this.standardDomainId) throw new Error('No standard domain id set');
 

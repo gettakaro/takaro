@@ -11,6 +11,9 @@ export class ServerMessages extends BuiltinModule {
         properties: {
           messages: {
             type: 'array',
+            default: [
+              "This is an automated message, don't forget to read the server rules!",
+            ],
             items: {
               type: 'string',
               minLength: 5,

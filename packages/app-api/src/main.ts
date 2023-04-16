@@ -15,7 +15,6 @@ import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
 import { ModuleController } from './controllers/ModuleController.js';
 import { EventsWorker } from './workers/eventWorker.js';
-import { QueuesService } from '@takaro/queues';
 import { getSocketServer } from './lib/socketServer.js';
 import { HookController } from './controllers/HookController.js';
 import { PlayerController } from './controllers/PlayerController.js';
@@ -51,7 +50,6 @@ const log = logger('main');
 
 async function main() {
   log.info('Starting...');
-  await QueuesService.getInstance().registerWorker(new EventsWorker());
 
   config.validate();
   log.info('✅ Config validated');
@@ -60,6 +58,9 @@ async function main() {
   await migrate();
 
   log.info('🦾 Database up to date');
+
+  new EventsWorker();
+  log.info('👷 Event worker started');
 
   getSocketServer(server.server as HttpServer);
   await server.start();

@@ -14,7 +14,7 @@ import { CronJobOutputDTO } from '../service/CronJobService.js';
 import { HookOutputDTO } from '../service/HookService.js';
 import { CommandOutputDTO } from '../service/CommandService.js';
 import { FunctionOutputDTO } from '../service/FunctionService.js';
-import Ajv from 'ajv';
+import { getSystemConfigSchema } from '../lib/systemConfig.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 
@@ -79,33 +79,6 @@ export class ModuleRepo extends ITakaroRepo<
     };
   }
 
-  private getSystemConfigSchema(mod: ModuleOutputDTO): string {
-    const systemConfigSchema: Ajv.AnySchema = {
-      type: 'object',
-      properties: {},
-      required: [],
-    };
-
-    if (mod.cronJobs.length) {
-      systemConfigSchema.properties.cronJobs = {
-        type: 'object',
-        default: {},
-        properties: {},
-        required: [],
-      };
-      systemConfigSchema.required.push('cronJobs');
-
-      for (const cronJob of mod.cronJobs) {
-        systemConfigSchema.properties.cronJobs.properties[cronJob.name] = {
-          type: 'string',
-          default: cronJob.temporalValue,
-        };
-      }
-    }
-
-    return JSON.stringify(systemConfigSchema);
-  }
-
   async find(filters: ITakaroQuery<ModuleOutputDTO>) {
     const { query } = await this.getModel();
     const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>({
@@ -165,7 +138,7 @@ export class ModuleRepo extends ITakaroRepo<
     return {
       total: result.total,
       results: toSend.map((item) => {
-        item.systemConfigSchema = this.getSystemConfigSchema(item);
+        item.systemConfigSchema = getSystemConfigSchema(item);
         return item;
       }),
     };
@@ -186,7 +159,7 @@ export class ModuleRepo extends ITakaroRepo<
     }
 
     const toSend = await new ModuleOutputDTO().construct(data);
-    toSend.systemConfigSchema = this.getSystemConfigSchema(toSend);
+    toSend.systemConfigSchema = getSystemConfigSchema(toSend);
     return toSend;
   }
 

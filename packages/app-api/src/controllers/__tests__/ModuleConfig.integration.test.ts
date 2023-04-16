@@ -275,7 +275,7 @@ const tests = [
           }
         );
 
-      expect(JSON.parse(installRes.data.data.systemConfig)).to.deep.equal({
+      expect(installRes.data.data.systemConfig).to.deep.equal({
         cronJobs: {
           [this.setupData.cronJobsModule.cronJobs[0].name]:
             this.setupData.cronJobsModule.cronJobs[0].temporalValue,

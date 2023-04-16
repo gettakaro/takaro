@@ -2,10 +2,12 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "c233c654-f1e0-4e09-be76-a2d5a24cdc8f",
-      "moduleId": "81e36fc9-34fb-47c8-802d-e69da92c34e8",
-      "userConfig": "{\"foo\":\"bar\"}",
-      "systemConfig": "{}"
+      "gameserverId": "0d7c8436-9dbd-4441-a5d7-3ed7e2a337d8",
+      "moduleId": "40f13560-ee55-4cc5-ac11-0e8293814064",
+      "userConfig": {
+        "foo": "bar"
+      },
+      "systemConfig": {}
     }
   },
   "status": 200,

@@ -2333,6 +2333,25 @@ export interface ModuleInstallDTO {
 /**
  *
  * @export
+ * @interface ModuleInstallationOutputArrayDTOAPI
+ */
+export interface ModuleInstallationOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ModuleInstallationOutputDTO>}
+   * @memberof ModuleInstallationOutputArrayDTOAPI
+   */
+  data: Array<ModuleInstallationOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleInstallationOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface ModuleInstallationOutputDTO
  */
 export interface ModuleInstallationOutputDTO {
@@ -2350,16 +2369,16 @@ export interface ModuleInstallationOutputDTO {
   moduleId: string;
   /**
    *
-   * @type {string}
+   * @type {object}
    * @memberof ModuleInstallationOutputDTO
    */
-  userConfig: string;
+  userConfig: object;
   /**
    *
-   * @type {string}
+   * @type {ModuleInstallationOutputDTOSystemConfig}
    * @memberof ModuleInstallationOutputDTO
    */
-  systemConfig: string;
+  systemConfig: ModuleInstallationOutputDTOSystemConfig;
   /**
    *
    * @type {string}
@@ -2397,6 +2416,19 @@ export interface ModuleInstallationOutputDTOAPI {
    * @memberof ModuleInstallationOutputDTOAPI
    */
   meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ModuleInstallationOutputDTOSystemConfig
+ */
+export interface ModuleInstallationOutputDTOSystemConfig {
+  /**
+   *
+   * @type {object}
+   * @memberof ModuleInstallationOutputDTOSystemConfig
+   */
+  cronJobs?: object;
 }
 /**
  *
@@ -2441,6 +2473,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   configSchema: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  systemConfigSchema: string;
   /**
    *
    * @type {string}
@@ -7703,7 +7741,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string
-      ) => AxiosPromise<ModuleOutputArrayDTOAPI>
+      ) => AxiosPromise<ModuleInstallationOutputArrayDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerGetInstalledModules(
@@ -8087,7 +8125,7 @@ export const GameServerApiFactory = function (
     gameServerControllerGetInstalledModules(
       id: string,
       options?: any
-    ): AxiosPromise<ModuleOutputArrayDTOAPI> {
+    ): AxiosPromise<ModuleInstallationOutputArrayDTOAPI> {
       return localVarFp
         .gameServerControllerGetInstalledModules(id, options)
         .then((request) => request(axios, basePath));
