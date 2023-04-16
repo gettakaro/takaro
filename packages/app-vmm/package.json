@@ -1,7 +1,7 @@
 {
-  "name": "@takaro/agent",
+  "name": "@takaro/vmm",
   "version": "0.0.1",
-  "description": "Takaro agent handles running of functions inside isolated environments",
+  "description": "Takaro virtual machine manager handles running of functions inside micro vms",
   "main": "dist/main.js",
   "types": "main.ts",
   "type": "module",

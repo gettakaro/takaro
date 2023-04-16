@@ -45,4 +45,4 @@ tsconfig.*.tsbuildinfo
 _data/
 
 # Firecracker
-firecracker/
+/firecracker

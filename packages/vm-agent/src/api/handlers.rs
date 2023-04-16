@@ -14,15 +14,11 @@ pub struct ExecResponse {
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 pub struct NodeEnv {
-    api_url: String,
-    api_token: String,
     data: serde_json::value::Value,
 }
 
 impl NodeEnv {
     pub fn load(&self) {
-        env::set_var("API_URL", &self.api_url);
-        env::set_var("API_TOKEN", &self.api_token);
         env::set_var(
             "DATA",
             serde_json::to_string(&self.data).unwrap_or("".to_owned()),
@@ -93,9 +89,9 @@ mod tests {
     #[tokio::test]
     async fn test_exec_cmd_loads_env() {
         let mock_env = NodeEnv {
-            api_url: "http://localhost/".to_owned(),
-            api_token: "very_secure_token".to_owned(),
-            data: serde_json::json!("{\"player\": {}}"),
+            data: serde_json::json!(
+                "{\"player\": {}, url: \"http://localhost/\", token: \"very_secure_token\"}"
+            ),
         };
 
         let request = ExecRequest {
@@ -109,14 +105,6 @@ mod tests {
 
         exec_cmd(Json(request)).await;
 
-        assert_eq!(
-            env::var("API_URL").unwrap_or("".to_owned()),
-            mock_env.api_url
-        );
-        assert_eq!(
-            env::var("API_TOKEN").unwrap_or("".to_owned()),
-            mock_env.api_token
-        );
         assert_eq!(
             env::var("DATA").unwrap_or("".to_owned()),
             serde_json::to_string(&mock_env.data).unwrap_or("".to_owned())
