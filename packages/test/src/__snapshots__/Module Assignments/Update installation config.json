@@ -1,18 +1,18 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-12-05T19:49:14.094Z"
-    },
+    "meta": {},
     "data": {
-      "createdAt": "2022-12-05T19:49:14.084Z",
-      "updatedAt": "2022-12-05T19:49:14.085Z",
-      "id": "2eca6a06-5e28-4f84-be6d-966227a655cf",
+      "id": "0c984de7-83a3-4f50-9805-32fc86048a58",
+      "createdAt": "2023-04-16T20:15:55.507Z",
+      "updatedAt": "2023-04-16T20:15:55.548Z",
+      "gameserverId": "4cc07453-41ee-4669-a509-67687e088d47",
+      "moduleId": "a3b078a7-0bed-4a78-85b0-9098c4d11e50",
       "userConfig": {
         "maxTeleports": 42
       },
-      "systemConfig": {},
-      "moduleId": "e45ac2a5-7ddb-4db7-af48-a2fa09985b3e",
-      "gameserverId": "df605edb-f9d2-4c1b-b7b6-cc3ddb5f46d9"
+      "systemConfig": {
+        "cronJobs": {}
+      }
     }
   },
   "status": 200,
@@ -20,11 +20,11 @@
     "group": "Module Assignments",
     "snapshot": true,
     "name": "Update installation config",
-    "expectedStatus": 200,
     "filteredFields": [
       "gameserverId",
       "moduleId"
     ],
+    "expectedStatus": 200,
     "standardEnvironment": true
   }
 }

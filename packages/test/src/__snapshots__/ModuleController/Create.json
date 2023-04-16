@@ -1,20 +1,18 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-24T17:31:05.355Z"
-    },
+    "meta": {},
     "data": {
+      "id": "df03f7e0-88ba-42ce-83a7-1e7653e42e23",
+      "createdAt": "2023-04-16T20:16:01.126Z",
+      "updatedAt": "2023-04-16T20:16:01.127Z",
       "name": "Test module",
       "description": "No description provided.",
-      "createdAt": "2022-09-24T17:31:05.324Z",
-      "updatedAt": "2022-09-24T17:31:05.351Z",
-      "id": "ab85972a-1aef-473d-ad92-7515acac70a4",
-      "builtin": null,
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
-      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}",
+      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{\"cronJobs\":{\"type\":\"object\",\"properties\":{},\"required\":[],\"default\":{}}},\"required\":[]}",
+      "builtin": null,
       "cronJobs": [],
-      "commands": [],
-      "hooks": []
+      "hooks": [],
+      "commands": []
     }
   },
   "status": 200,
