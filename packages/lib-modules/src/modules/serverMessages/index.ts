@@ -12,7 +12,8 @@ export class ServerMessages extends BuiltinModule {
           messages: {
             type: 'array',
             default: [
-              "This is an automated message, don't forget to read the server rules!",
+              // prettier-ignore
+              'This is an automated message, don\'t forget to read the server rules!',
             ],
             items: {
               type: 'string',
