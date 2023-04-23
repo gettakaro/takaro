@@ -18,7 +18,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bull-board/express": "^4.2.2",
     "@takaro/db": "0.0.1",
     "@takaro/http": "0.0.1"
   }
