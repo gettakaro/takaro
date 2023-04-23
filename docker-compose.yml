@@ -93,7 +93,6 @@ services:
       # api
       - 13000:3000
       - 12001:12001
-      - 12003:12003
       # web-main
       - 13001:13001
       # lib-components storybook
@@ -101,6 +100,9 @@ services:
       # agent
       - 13004:3001
       - 12002:12002
+      # mock server
+      - 13006:3001
+      - 12003:12003
       # Docs
       - 13005:13005
 
