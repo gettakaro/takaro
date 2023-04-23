@@ -95,7 +95,8 @@ export class Mock implements IGameServer {
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
-    const fullMessage = `Server: ${opts.recipient ? '[DM]' : ''} ${message}`;
+    const options = { ...opts };
+    const fullMessage = `Server: ${options.recipient ? '[DM]' : ''} ${message}`;
 
     this.sendLog(
       await new EventLogLine().construct({

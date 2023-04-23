@@ -98,14 +98,14 @@ const tests = [
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.id,
         utilsModule.id,
-        { config: '{}' }
+        { userConfig: '{}', systemConfig: '{}' }
       );
 
       return this.client.gameserver.gameServerControllerGetInstalledModules(
         this.setupData.id
       );
     },
-    filteredFields: ['functionId', 'moduleId', 'code', 'commandId'],
+    filteredFields: ['gameserverId', 'moduleId'],
   }),
 ];
 

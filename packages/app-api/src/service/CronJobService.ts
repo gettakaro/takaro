@@ -1,5 +1,5 @@
 import { TakaroService } from './Base.js';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 
 import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import {
@@ -19,6 +19,8 @@ import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
+import { ModuleService } from './ModuleService.js';
+import { ModuleInstallationOutputDTO } from './GameServerService.js';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
@@ -72,8 +74,6 @@ export class CronJobService extends TakaroService<
   CronJobCreateDTO,
   CronJobUpdateDTO
 > {
-  queues = QueuesService.getInstance();
-
   get repo() {
     return new CronJobRepo(this.domainId);
   }
@@ -111,7 +111,6 @@ export class CronJobService extends TakaroService<
     const created = await this.repo.create(
       await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd })
     );
-    await this.addCronToQueue(created);
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
@@ -136,51 +135,99 @@ export class CronJobService extends TakaroService<
       );
     }
 
-    await this.removeCronFromQueue(id);
     const updated = await this.repo.update(id, item);
-    await this.addCronToQueue(updated);
     return updated;
   }
 
   async delete(id: string) {
-    await this.removeCronFromQueue(id);
     await this.repo.delete(id);
     return id;
   }
 
-  private getRepeatableOpts(item: CronJobOutputDTO) {
-    return {
-      pattern: item.temporalValue,
-      jobId: item.id,
-    };
+  public getJobId(
+    modInstallation: ModuleInstallationOutputDTO,
+    cronJob: CronJobOutputDTO
+  ) {
+    return `${modInstallation.gameserverId}-${cronJob.id}`;
   }
 
-  private async addCronToQueue(item: CronJobOutputDTO) {
-    await this.queues.queues.cronjobs.queue.add(
-      item.id,
-      {
-        function: item.function.code,
-        domainId: this.domainId,
-        itemId: item.id,
-        gameServerId: 'any',
-      },
-      {
-        repeat: this.getRepeatableOpts(item),
-      }
+  async syncModuleCronjobs(modInstallation: ModuleInstallationOutputDTO) {
+    const mod = await new ModuleService(this.domainId).findOne(
+      modInstallation.moduleId
+    );
+    if (!mod) throw new errors.NotFoundError('Module not found');
+
+    await Promise.all(
+      mod.cronJobs.map(async (cronJob) => {
+        await this.removeCronjobFromQueue(cronJob, modInstallation);
+        await this.addCronjobToQueue(cronJob, modInstallation);
+      })
     );
   }
 
-  private async removeCronFromQueue(id: string) {
-    const repeatables =
-      await this.queues.queues.cronjobs.queue.getRepeatableJobs();
+  async installCronJobs(modInstallation: ModuleInstallationOutputDTO) {
+    const mod = await new ModuleService(this.domainId).findOne(
+      modInstallation.moduleId
+    );
+    if (!mod) throw new errors.NotFoundError('Module not found');
 
-    const repeatable = repeatables.find((r) => r.id === id);
+    await Promise.all(
+      mod.cronJobs.map(async (cronJob) => {
+        await this.addCronjobToQueue(cronJob, modInstallation);
+      })
+    );
+  }
+
+  async uninstallCronJobs(modInstallation: ModuleInstallationOutputDTO) {
+    const mod = await new ModuleService(this.domainId).findOne(
+      modInstallation.moduleId
+    );
+    if (!mod) throw new errors.NotFoundError('Module not found');
+
+    await Promise.all(
+      mod.cronJobs.map(async (cronJob) => {
+        await this.removeCronjobFromQueue(cronJob, modInstallation);
+      })
+    );
+  }
+
+  private async addCronjobToQueue(
+    cronJob: CronJobOutputDTO,
+    modInstallation: ModuleInstallationOutputDTO
+  ) {
+    const jobId = this.getJobId(modInstallation, cronJob);
+    await queueService.queues.cronjobs.queue.add(
+      {
+        function: cronJob.function.code,
+        domainId: this.domainId,
+        itemId: cronJob.id,
+        gameServerId: modInstallation.gameserverId,
+      },
+      {
+        jobId,
+        repeat: {
+          pattern: modInstallation.systemConfig.cronJobs[cronJob.name],
+          jobId,
+        },
+      }
+    );
+    this.log.debug(`Added repeatable job ${jobId}`);
+  }
+
+  private async removeCronjobFromQueue(
+    cronJob: CronJobOutputDTO,
+    modInstallation: ModuleInstallationOutputDTO
+  ) {
+    const repeatables =
+      await queueService.queues.cronjobs.queue.getRepeatableJobs();
+    const jobId = this.getJobId(modInstallation, cronJob);
+
+    const repeatable = repeatables.find((r) => r.id === jobId);
     if (repeatable) {
-      await this.queues.queues.cronjobs.queue.removeRepeatableByKey(
+      await queueService.queues.cronjobs.queue.removeRepeatableByKey(
         repeatable.key
       );
-    } else {
-      this.log.warn(`CronJob ${id} not found in queue when deleting`);
+      this.log.debug(`Removed repeatable job ${jobId}`);
     }
   }
 }

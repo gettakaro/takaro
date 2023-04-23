@@ -61,7 +61,7 @@ services:
       POSTGRES_HOST: postgresql
       POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
 
-      FUNCTIONS_EXECUTION_MODE: firecracker
+      FUNCTIONS_EXECUTION_MODE: ${FUNCTIONS_EXECUTION_MODE}
 
       FIRECRACKER_BINARY: /usr/local/bin/firecracker
       FIRECRACKER_KERNEL_IMAGE: /app/firecracker/vmlinux.bin

@@ -23,7 +23,6 @@ import { GameServerService } from './GameServerService.js';
 import { SettingsService } from './SettingsService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { CronJobService } from './CronJobService.js';
 import { ModuleService } from './ModuleService.js';
 import { ory, PERMISSIONS } from '@takaro/auth';
 
@@ -102,12 +101,6 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     const allGameServers = await gameServerService.find({});
     for (const gameServer of allGameServers.results) {
       await gameServerService.delete(gameServer.id);
-    }
-
-    const cronJobService = new CronJobService(id);
-    const allCronJobs = await cronJobService.find({});
-    for (const cronJob of allCronJobs.results) {
-      await cronJobService.delete(cronJob.id);
     }
 
     await ory.deleteIdentitiesForDomain(id);

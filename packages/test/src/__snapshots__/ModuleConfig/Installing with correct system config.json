@@ -2,19 +2,21 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "24c0600d-73bf-46db-93cc-7e46aa8f764f",
-      "moduleId": "41159427-cc74-49f5-a6f3-c912ec1a23d0",
+      "gameserverId": "84ea6e76-9f92-4095-82b2-bdc83e588276",
+      "moduleId": "24dd4438-eed7-4d00-ab71-70f7ca847e24",
       "userConfig": {},
       "systemConfig": {
-        "cronJobs": {}
+        "cronJobs": {
+          "Test cron job": "5 * * * *"
+        }
       }
     }
   },
   "status": 200,
   "test": {
-    "group": "Module Assignments",
+    "group": "ModuleConfig",
     "snapshot": true,
-    "name": "Install a built-in module",
+    "name": "Installing with correct system config",
     "filteredFields": [
       "gameserverId",
       "moduleId"

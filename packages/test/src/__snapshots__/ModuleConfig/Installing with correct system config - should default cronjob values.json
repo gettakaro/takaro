@@ -2,13 +2,13 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "55de2428-c6ff-4790-9656-64bd9aac3c32",
-      "moduleId": "11827288-62df-44d8-90a0-e4e48efb0bf8",
-      "userConfig": {
-        "foo": "bar"
-      },
+      "gameserverId": "6aefe2a2-3e95-4418-89c2-cf277ae349b3",
+      "moduleId": "7717c753-437d-4bd8-b6b0-d85b97b3fb9f",
+      "userConfig": {},
       "systemConfig": {
-        "cronJobs": {}
+        "cronJobs": {
+          "Test cron job": "1 * * * *"
+        }
       }
     }
   },
@@ -16,7 +16,7 @@
   "test": {
     "group": "ModuleConfig",
     "snapshot": true,
-    "name": "Installing a module with correct config",
+    "name": "Installing with correct system config - should default cronjob values",
     "filteredFields": [
       "gameserverId",
       "moduleId"

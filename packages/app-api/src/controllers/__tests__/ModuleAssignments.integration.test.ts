@@ -49,7 +49,8 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id,
         {
-          config: '{}',
+          userConfig: '{}',
+          systemConfig: '{}',
         }
       );
     },
@@ -65,7 +66,8 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id,
         {
-          config: '{}',
+          userConfig: '{}',
+          systemConfig: '{}',
         }
       );
 
@@ -86,7 +88,8 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
         {
-          config: '{}',
+          userConfig: '{}',
+          systemConfig: '{}',
         }
       );
 
@@ -94,7 +97,8 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
         {
-          config: JSON.stringify({ maxTeleports: 42 }),
+          userConfig: JSON.stringify({ maxTeleports: 42 }),
+          systemConfig: '{}',
         }
       );
 
@@ -104,7 +108,7 @@ const tests = [
           this.setupData.teleportsModule.id
         );
 
-      expect(res.data.data.config).to.deep.equal({ maxTeleports: 42 });
+      expect(res.data.data.userConfig).to.deep.equal({ maxTeleports: 42 });
 
       return res;
     },
