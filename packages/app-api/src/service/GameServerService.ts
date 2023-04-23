@@ -43,6 +43,8 @@ const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
 
+const gameClassCache = new Map<string, IGameServer>();
+
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
@@ -144,6 +146,7 @@ export class GameServerService extends TakaroService<
       installedModules.map((mod) => this.uninstallModule(id, mod.moduleId))
     );
 
+    gameClassCache.delete(id);
     await this.gameServerManager.remove(id);
     await this.repo.delete(id);
     return id;
@@ -154,6 +157,7 @@ export class GameServerService extends TakaroService<
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
+    gameClassCache.delete(id);
     await this.gameServerManager.remove(id);
     await this.gameServerManager.add(this.domainId, updatedServer);
     return updatedServer;
@@ -165,15 +169,10 @@ export class GameServerService extends TakaroService<
     type?: GAME_SERVER_TYPE
   ) {
     if (id) {
-      const gameserver = await this.repo.findOne(id);
-      const instance = await GameServerService.getGame(
-        gameserver.type,
-        gameserver.connectionInfo
-      );
-
+      const instance = await this.getGame(id);
       return instance.testReachability();
     } else if (connectionInfo && type) {
-      const instance = await GameServerService.getGame(type, connectionInfo);
+      const instance = await GameServerService._getGame(type, connectionInfo);
       return instance.testReachability();
     } else {
       throw new errors.BadRequestError('Missing required parameters');
@@ -274,7 +273,9 @@ export class GameServerService extends TakaroService<
     return installations;
   }
 
-  static async getGame(
+  // This is prefxied with an underscore because it's preferred to use the getGame method
+  // which will cache the game instance
+  static async _getGame(
     type: GAME_SERVER_TYPE,
     connectionInfo: Record<string, unknown>
   ): Promise<IGameServer> {
@@ -298,10 +299,20 @@ export class GameServerService extends TakaroService<
 
   async getGame(id: string): Promise<IGameServer> {
     const gameserver = await this.repo.findOne(id);
-    return GameServerService.getGame(
+    let gameInstance = gameClassCache.get(id);
+
+    if (gameInstance) {
+      return gameInstance;
+    }
+
+    gameInstance = await GameServerService._getGame(
       gameserver.type,
       gameserver.connectionInfo
     );
+
+    gameClassCache.set(id, gameInstance);
+
+    return gameInstance;
   }
 
   get manager() {
@@ -309,12 +320,8 @@ export class GameServerService extends TakaroService<
   }
 
   async executeCommand(gameServerId: string, rawCommand: string) {
-    const gameserver = await this.repo.findOne(gameServerId);
-    const instance = await GameServerService.getGame(
-      gameserver.type,
-      gameserver.connectionInfo
-    );
-    return instance.executeConsoleCommand(rawCommand);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.executeConsoleCommand(rawCommand);
   }
 
   async sendMessage(
@@ -322,12 +329,8 @@ export class GameServerService extends TakaroService<
     message: string,
     opts: IMessageOptsDTO
   ) {
-    const gameserver = await this.repo.findOne(gameServerId);
-    const instance = await GameServerService.getGame(
-      gameserver.type,
-      gameserver.connectionInfo
-    );
-    return instance.sendMessage(message, opts);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.sendMessage(message, opts);
   }
 
   async teleportPlayer(
@@ -335,7 +338,7 @@ export class GameServerService extends TakaroService<
     playerGameId: string,
     position: IPosition
   ) {
-    const game = await this.getGame(gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
     const playerService = new PlayerService(this.domainId);
     const foundPlayers = await playerService.findAssociations(playerGameId);
 
@@ -345,6 +348,11 @@ export class GameServerService extends TakaroService<
 
     const player = await new IGamePlayer().construct(foundPlayers[0]);
 
-    return game.teleportPlayer(player, position.x, position.y, position.z);
+    return gameInstance.teleportPlayer(
+      player,
+      position.x,
+      position.y,
+      position.z
+    );
   }
 }
