@@ -197,7 +197,7 @@ export class HookService extends TakaroService<
               ),
             },
             domainId: this.domainId,
-            function: hook.function.code,
+            functionId: hook.function.id,
             gameServerId,
           });
         })

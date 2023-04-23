@@ -198,7 +198,7 @@ export class CronJobService extends TakaroService<
     const jobId = this.getJobId(modInstallation, cronJob);
     await queueService.queues.cronjobs.queue.add(
       {
-        function: cronJob.function.code,
+        functionId: cronJob.function.id,
         domainId: this.domainId,
         itemId: cronJob.id,
         gameServerId: modInstallation.gameserverId,
