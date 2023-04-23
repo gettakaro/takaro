@@ -18,7 +18,7 @@ async function processCommand(job: Job<IJobData>) {
   });
 
   await executeFunction(
-    job.data.function,
+    job.data.functionId,
     {
       ...job.data.data,
       gameServerId: job.data.gameServerId,

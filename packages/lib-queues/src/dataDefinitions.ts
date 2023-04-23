@@ -6,7 +6,7 @@ export interface IBaseJobData {
 }
 
 export interface IJobData extends IBaseJobData {
-  function: string;
+  functionId: string;
 
   /**
    * The id of the item that triggered this job (cronjobId, commandId or hookId)

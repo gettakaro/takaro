@@ -326,7 +326,7 @@ export class CommandService extends TakaroService<
       const promises = parsedCommands.map(async ({ data, db }) => {
         return queueService.queues.commands.queue.add({
           domainId: this.domainId,
-          function: db.function.code,
+          functionId: db.function.id,
           itemId: db.id,
           data,
           gameServerId,
