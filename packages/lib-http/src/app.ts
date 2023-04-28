@@ -6,6 +6,7 @@ import {
   enableDefaultNodejsMetrics,
   Sentry,
 } from '@takaro/util';
+import { getBullBoard } from '@takaro/queues';
 import { Server, createServer } from 'http';
 import {
   RoutingControllersOptions,
@@ -76,6 +77,8 @@ export class HTTP {
         validation: { whitelist: true, forbidNonWhitelisted: true },
       });
     }
+
+    this.app.use('/queues', getBullBoard());
 
     this.app.use(Sentry.Handlers.errorHandler());
 

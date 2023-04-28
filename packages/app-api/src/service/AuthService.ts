@@ -58,7 +58,7 @@ export class AuthService extends DomainScoped {
   }
 
   /**
-   * This is a token to be used by app-agent to execute functions
+   * This is a token to be used by app-vmm to execute functions
    * For now, just the root token but in the future, we can have
    * narrower scoped tokens (eg configurable permissions?)
    * // TODO: ^ ^

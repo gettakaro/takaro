@@ -6,6 +6,7 @@ import { omit } from 'lodash-es';
 import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
 import { IIntegrationTest } from './integrationTest.js';
 import * as url from 'url';
+import { integrationConfig } from './main.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 function normalizePath(path: string) {
@@ -72,5 +73,14 @@ export async function matchSnapshot<SetupData>(
   ];
   const snapshotData = filterFields(JSON.parse(file), filteredFields);
 
-  expect(filterFields(fullData, filteredFields)).to.deep.equal(snapshotData);
+  try {
+    expect(filterFields(fullData, filteredFields)).to.deep.equal(snapshotData);
+  } catch (error) {
+    if (integrationConfig.get('overwriteSnapshots')) {
+      await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
+      throw new Error(`Snapshot updated: ${snapshotPath}`);
+    }
+
+    throw error;
+  }
 }

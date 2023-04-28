@@ -15,7 +15,6 @@ import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
 import { ModuleController } from './controllers/ModuleController.js';
 import { EventsWorker } from './workers/eventWorker.js';
-import { QueuesService } from '@takaro/queues';
 import { getSocketServer } from './lib/socketServer.js';
 import { HookController } from './controllers/HookController.js';
 import { PlayerController } from './controllers/PlayerController.js';
@@ -23,6 +22,7 @@ import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
 import { ModuleService } from './service/ModuleService.js';
 import { VariableController } from './controllers/VariableController.js';
+import { CronJobService } from './service/CronJobService.js';
 
 export const server = new HTTP(
   {
@@ -51,7 +51,6 @@ const log = logger('main');
 
 async function main() {
   log.info('Starting...');
-  await QueuesService.getInstance().registerWorker(new EventsWorker());
 
   config.validate();
   log.info('✅ Config validated');
@@ -60,6 +59,9 @@ async function main() {
   await migrate();
 
   log.info('🦾 Database up to date');
+
+  new EventsWorker();
+  log.info('👷 Event worker started');
 
   getSocketServer(server.server as HttpServer);
   await server.start();
@@ -76,6 +78,7 @@ async function main() {
 
     log.info('🔌 Starting all game servers');
     const gameServerService = new GameServerService(domain.id);
+    const cronjobService = new CronJobService(domain.id);
     const gameServers = await gameServerService.find({});
 
     // GameService.find() does not decrypt the connectioninfo
@@ -87,6 +90,19 @@ async function main() {
     );
 
     await gameServerService.manager.init(domain.id, gameServersDecrypted);
+
+    await Promise.all(
+      gameServers.results.map(async (gameserver) => {
+        const installedModules = await gameServerService.getInstalledModules({
+          gameserverId: gameserver.id,
+        });
+        await Promise.all(
+          installedModules.map(async (mod) => {
+            await cronjobService.syncModuleCronjobs(mod);
+          })
+        );
+      })
+    );
   }
 }
 
