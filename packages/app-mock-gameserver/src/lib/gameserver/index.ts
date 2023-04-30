@@ -53,20 +53,29 @@ class MockGameserver implements IMockGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string) {
-    const output = new CommandOutput().construct({
+    const output = await new CommandOutput().construct({
       rawResult:
         'Unknown command (Commands not implemented yet in mock game server 👼)',
       success: false,
     });
 
-    await this.sendLog(`Executing command: ${rawCommand}`);
+    if (rawCommand === 'version') {
+      output.rawResult = 'Mock game server v0.0.1';
+      output.success = true;
+    }
+
+    await this.sendLog(
+      `${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`
+    );
 
     return output;
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
     const options = { ...opts };
-    const fullMessage = `Server: ${options.recipient ? '[DM]' : ''} ${message}`;
+    const fullMessage = `[🗨️ Chat] Server: ${
+      options.recipient ? '[DM]' : ''
+    } ${message}`;
 
     await this.sendLog(fullMessage);
   }
