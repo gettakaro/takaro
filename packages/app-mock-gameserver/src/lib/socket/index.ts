@@ -1,16 +1,23 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { config } from '../../config.js';
-import { ctx, errors, logger } from '@takaro/util';
-import {
-  MockServerSocket,
-  MockServerSocketServer,
-  ServerToClientEvents,
-} from './socketTypes.js';
+import { errors, logger } from '@takaro/util';
+import { MockServerSocketServer } from './socketTypes.js';
+import { getMockServer, IMockGameServer } from '../gameserver/index.js';
 
 class SocketServer {
   public io: MockServerSocketServer;
   private log = logger('io');
+
+  private supportedMethods: Array<keyof IMockGameServer> = [
+    'getPlayer',
+    'getPlayers',
+    'getPlayerLocation',
+    'executeConsoleCommand',
+    'sendMessage',
+    'teleportPlayer',
+  ];
+
   constructor(app: HttpServer) {
     this.io = new Server(app, {
       cors: {
@@ -26,44 +33,34 @@ class SocketServer {
       },
     });
 
-    this.io.use(
-      (socket: MockServerSocket, next: (err?: Error | undefined) => void) =>
-        this.routerMiddleware(socket, next)
-    );
-
     this.io.on('connection', (socket) => {
-      socket.on('ping', () => {
-        socket.emit('pong');
+      socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
+        this.log.info(`Event: ${event}`);
+
+        if (event === 'ping') {
+          args[args.length - 1]('pong');
+          return;
+        }
+
+        const instance = await getMockServer();
+
+        // Checking if the event is supported helps prevent attacks
+        // Because the socket would accept any event name here, it could lead to prototype pollution
+        if (this.supportedMethods.includes(event)) {
+          // @ts-expect-error This method allows us to bypass a lot of boiler plate code
+          // But TS does not like this (for good reason)
+          // Making the exception here because this is a mock server...
+          const result = await instance[event](...args);
+          this.log.info('Result', { result });
+          args[args.length - 1](result);
+        } else {
+          this.log.warn(`Event ${event} not found`);
+          args[args.length - 1](new Error(`Event ${event} not found`));
+        }
       });
     });
 
     this.log.info('Socket server started');
-  }
-
-  public emit(
-    domainId: string,
-    event: keyof ServerToClientEvents,
-    data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = []
-  ) {
-    this.io.to(domainId).emit(event, ...data);
-  }
-
-  private async routerMiddleware(
-    socket: MockServerSocket,
-    next: (err?: Error | undefined) => void
-  ) {
-    try {
-      const ctxData = ctx.data;
-      if (!ctxData.domain) {
-        this.log.error('No domain found in context');
-        return next(new errors.UnauthorizedError());
-      }
-      socket.join(ctxData.domain);
-      next();
-    } catch (error) {
-      this.log.error('Unknown error when routing socket', error);
-      next(new errors.UnauthorizedError());
-    }
   }
 }
 
