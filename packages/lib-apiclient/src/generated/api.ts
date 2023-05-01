@@ -535,6 +535,25 @@ export type CommandSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface CommandTriggerDTO
+ */
+export interface CommandTriggerDTO {
+  /**
+   *
+   * @type {IPlayerReferenceDTO}
+   * @memberof CommandTriggerDTO
+   */
+  player: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandTriggerDTO
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
  * @interface CommandUpdateDTO
  */
 export interface CommandUpdateDTO {
@@ -2248,6 +2267,12 @@ export type MetadataOutputServerTime = string;
  * @interface MockConnectionInfo
  */
 export interface MockConnectionInfo {
+  /**
+   *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  host: string;
   /**
    *
    * @type {number}
@@ -4375,6 +4400,63 @@ export const CommandApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger: async (
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerTrigger', 'id', id);
+      const localVarPath = `/command/{id}/trigger`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4655,6 +4737,34 @@ export const CommandApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerTrigger(
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerTrigger(
+          id,
+          commandTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4821,6 +4931,23 @@ export const CommandApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger(
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .commandControllerTrigger(id, commandTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4956,6 +5083,25 @@ export class CommandApi extends BaseAPI {
   ) {
     return CommandApiFp(this.configuration)
       .commandControllerSearch(commandSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {string} id
+   * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerTrigger(
+    id: string,
+    commandTriggerDTO?: CommandTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerTrigger(id, commandTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -9,6 +9,7 @@ import {
   IMessageOptsDTO,
   IPosition,
   IPlayerReferenceDTO,
+  EventChatMessage,
 } from '@takaro/gameserver';
 import { faker } from '@faker-js/faker';
 
@@ -31,8 +32,9 @@ class MockGameserver implements IMockGameServer {
     xboxLiveId: faker.random.alphaNumeric(16),
   }));
 
-  async getPlayer(id: string): Promise<IGamePlayer | null> {
-    const rawData = this.mockPlayers.find((p) => p.gameId === id) ?? null;
+  async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    const rawData =
+      this.mockPlayers.find((p) => p.gameId === playerRef.gameId) ?? null;
     if (rawData === null) {
       return null;
     }
@@ -55,7 +57,7 @@ class MockGameserver implements IMockGameServer {
   async executeConsoleCommand(rawCommand: string) {
     const output = await new CommandOutput().construct({
       rawResult:
-        'Unknown command (Commands not implemented yet in mock game server 👼)',
+        'Unknown command (Command not implemented yet in mock game server 👼)',
       success: false,
     });
 
@@ -77,6 +79,12 @@ class MockGameserver implements IMockGameServer {
       options.recipient ? '[DM]' : ''
     } ${message}`;
 
+    this.socketServer.io.emit(
+      GameEvents.CHAT_MESSAGE,
+      await new EventChatMessage().construct({
+        msg: message,
+      })
+    );
     await this.sendLog(fullMessage);
   }
 
@@ -86,7 +94,7 @@ class MockGameserver implements IMockGameServer {
     y: number,
     z: number
   ) {
-    const player = await this.getPlayer(playerRef.gameId);
+    const player = await this.getPlayer(playerRef);
     if (!player) {
       throw new errors.NotFoundError('Player not found');
     }

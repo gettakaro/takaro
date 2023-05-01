@@ -15,7 +15,7 @@ import {
   FunctionService,
   FunctionUpdateDTO,
 } from './FunctionService.js';
-import { EventChatMessage } from '@takaro/gameserver';
+import { EventChatMessage, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
@@ -165,6 +165,15 @@ export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO
   @IsString()
   @IsOptional()
   defaultValue?: string;
+}
+
+export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
+  @ValidateNested()
+  @Type(() => IPlayerReferenceDTO)
+  player: IPlayerReferenceDTO;
+
+  @IsString()
+  msg: string;
 }
 
 export class CommandService extends TakaroService<
@@ -335,6 +344,24 @@ export class CommandService extends TakaroService<
 
       await Promise.all(promises);
     }
+  }
+
+  async trigger(gameServerId: string, triggered: CommandTriggerDTO) {
+    const gameServerService = new GameServerService(this.domainId);
+    const player = await gameServerService.getPlayer(
+      gameServerId,
+      triggered.player
+    );
+
+    if (!player) throw new errors.NotFoundError('Player not found');
+
+    const eventDto = await new EventChatMessage().construct({
+      player,
+      timestamp: new Date(),
+      msg: triggered.msg,
+    });
+
+    await this.handleChatMessage(eventDto, gameServerId);
   }
 
   async createArgument(commandId: string, arg: CommandArgumentCreateDTO) {

@@ -24,6 +24,7 @@ import {
   IGameServer,
   IPosition,
   IGamePlayer,
+  IPlayerReferenceDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
@@ -317,6 +318,11 @@ export class GameServerService extends TakaroService<
 
   get manager() {
     return this.gameServerManager;
+  }
+
+  async getPlayer(gameServerId: string, playerRef: IPlayerReferenceDTO) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getPlayer(playerRef);
   }
 
   async executeCommand(gameServerId: string, rawCommand: string) {

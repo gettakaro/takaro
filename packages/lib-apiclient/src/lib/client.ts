@@ -50,9 +50,13 @@ export class Client extends BaseApiClient<IApiClientConfig> {
       username: this.config.auth.username,
     });
 
+    this.config.auth.token = loginRes.data.data.token;
+
     this.axios.defaults.headers.common[
       'Authorization'
     ] = `Bearer ${loginRes.data.data.token}`;
+
+    return loginRes.data.data.token;
   }
 
   public logout() {

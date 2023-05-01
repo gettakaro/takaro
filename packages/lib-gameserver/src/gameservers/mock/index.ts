@@ -6,6 +6,7 @@ import {
   CommandOutput,
   IGameServer,
   IMessageOptsDTO,
+  IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
@@ -70,9 +71,9 @@ export class Mock implements IGameServer {
     ]);
   }
 
-  async getPlayer(id: string): Promise<IGamePlayer | null> {
+  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
     const client = await this.getClient();
-    const data = await client.emitWithAck('getPlayer', id);
+    const data = await client.emitWithAck('getPlayer', player);
     return data;
   }
 
