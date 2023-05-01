@@ -91,6 +91,7 @@ async function main() {
       ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
       ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
       REDIS_HOST: '127.0.0.1',
+      MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
     };
 
     for (const [key, value] of Object.entries(testVars)) {

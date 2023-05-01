@@ -72,6 +72,7 @@ services:
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
       TAKARO_HOST: http://takaro:3000
+      MOCK_GAMESERVER_HOST: http://takaro_mock_gameserver:3002
     ports:
     # api
       - 13000:3000
