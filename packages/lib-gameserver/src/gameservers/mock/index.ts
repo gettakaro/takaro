@@ -90,8 +90,8 @@ export class Mock implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
-    const client = await this.getClient();
     try {
+      const client = await this.getClient();
       const data = await client.emitWithAck('ping');
       assert(data === 'pong');
     } catch (error) {
