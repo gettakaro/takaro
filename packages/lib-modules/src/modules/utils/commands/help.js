@@ -43,8 +43,7 @@ async function help() {
       await takaro.gameserver.gameServerControllerSendMessage(
         data.gameServerId,
         {
-          message:
-            'Unknown command, use this command without arguments to see all available commands.',
+          message: `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`,
         }
       );
     } else {
