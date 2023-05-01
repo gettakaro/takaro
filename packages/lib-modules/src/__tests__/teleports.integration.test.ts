@@ -203,6 +203,147 @@ const tests = [
       expect(events[0].data.msg).to.be.eq('Teleport test does not exist.');
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Can list teleports with /tplist',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
+
+      await Promise.all(
+        Array.from({ length: 3 }).map(async (_, i) => {
+          return this.client.command.commandControllerTrigger(
+            this.setupData.gameserver.id,
+            {
+              msg: `/settp test${i}`,
+              player: {
+                gameId: '1',
+              },
+            }
+          );
+        })
+      );
+
+      const setEvents = await this.setupData.waitForEvent(
+        GameEvents.CHAT_MESSAGE,
+        3
+      );
+
+      expect(setEvents.length).to.be.eq(3);
+
+      for (const event of setEvents) {
+        expect(event.data.msg).to.match(/Teleport test\d set\./);
+      }
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/tplist',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      const events = await this.setupData.waitForEvent(
+        GameEvents.CHAT_MESSAGE,
+        4
+      );
+
+      expect(events.length).to.be.eq(4);
+      expect(events[0].data.msg).to.be.eq('You have 3 teleports set');
+      //  - test0: 61, -262, -52
+      expect(events[1].data.msg).to.match(/ - test0: [-\d]+, [-\d]+, [-\d]+/);
+      expect(events[2].data.msg).to.match(/ - test1: [-\d]+, [-\d]+, [-\d]+/);
+      expect(events[3].data.msg).to.match(/ - test2: [-\d]+, [-\d]+, [-\d]+/);
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Can remove teleports with /deletetp',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
+
+      await Promise.all(
+        Array.from({ length: 3 }).map(async (_, i) => {
+          return this.client.command.commandControllerTrigger(
+            this.setupData.gameserver.id,
+            {
+              msg: `/settp test${i}`,
+              player: {
+                gameId: '1',
+              },
+            }
+          );
+        })
+      );
+
+      const setEvents = await this.setupData.waitForEvent(
+        GameEvents.CHAT_MESSAGE,
+        3
+      );
+
+      expect(setEvents.length).to.be.eq(3);
+
+      for (const event of setEvents) {
+        expect(event.data.msg).to.match(/Teleport test\d set\./);
+      }
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/deletetp test1',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      const events = await this.setupData.waitForEvent(
+        GameEvents.CHAT_MESSAGE,
+        1
+      );
+
+      expect(events.length).to.be.eq(1);
+      expect(events[0].data.msg).to.be.eq('Teleport test1 deleted.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Shows an error when removing a non-existing teleport',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/deletetp test',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      const events = await this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE);
+
+      expect(events.length).to.be.eq(1);
+      expect(events[0].data.msg).to.be.eq('Teleport test does not exist.');
+    },
+  }),
 ];
 
 describe(group, function () {
