@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
 
 const log = logger('modules:test');
 
-interface IDetectedEvent {
+export interface IDetectedEvent {
   event: GameEvents;
   data: any;
 }

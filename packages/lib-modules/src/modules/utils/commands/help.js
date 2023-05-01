@@ -8,9 +8,13 @@ async function help() {
     await takaro.gameserver.gameServerControllerGetInstalledModules(
       data.gameServerId
     );
-  const moduleCommands = enabledModules.data.data.map((mod) => {
-    return mod.commands;
-  });
+
+  const moduleCommands = await Promise.all(
+    enabledModules.data.data.map(async (mod) => {
+      return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data
+        .data.commands;
+    })
+  );
 
   if (data.arguments.command === 'all') {
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
