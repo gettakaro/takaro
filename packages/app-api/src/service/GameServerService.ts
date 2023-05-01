@@ -129,6 +129,18 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
+    const isReachable = await this.testReachability(
+      undefined,
+      JSON.parse(item.connectionInfo),
+      item.type
+    );
+
+    if (!isReachable.connectable) {
+      throw new errors.BadRequestError(
+        `Game server is not reachable: ${isReachable.reason}`
+      );
+    }
+
     const createdServer = await this.repo.create(item);
 
     const settingsService = new SettingsService(
