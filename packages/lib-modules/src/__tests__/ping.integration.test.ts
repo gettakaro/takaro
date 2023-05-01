@@ -16,11 +16,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       await this.client.command.commandControllerTrigger(

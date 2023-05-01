@@ -271,9 +271,10 @@ export class GameServerController {
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
-    @Body() data: ModuleInstallDTO
+    @Body() data?: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
+
     return apiResponse(
       await service.installModule(params.gameserverId, params.moduleId, data)
     );

@@ -97,8 +97,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.id,
-        utilsModule.id,
-        { userConfig: '{}', systemConfig: '{}' }
+        utilsModule.id
       );
 
       return this.client.gameserver.gameServerControllerGetInstalledModules(

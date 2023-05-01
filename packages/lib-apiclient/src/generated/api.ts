@@ -2347,13 +2347,13 @@ export interface ModuleInstallDTO {
    * @type {string}
    * @memberof ModuleInstallDTO
    */
-  userConfig: string;
+  userConfig?: string;
   /**
    *
    * @type {string}
    * @memberof ModuleInstallDTO
    */
-  systemConfig: string;
+  systemConfig?: string;
 }
 /**
  *

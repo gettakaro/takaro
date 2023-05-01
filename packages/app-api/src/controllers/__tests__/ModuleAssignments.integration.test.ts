@@ -47,11 +47,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
     },
   }),
@@ -64,11 +60,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       return this.client.gameserver.gameServerControllerUninstallModule(
@@ -86,11 +78,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.teleportsModule.id
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -98,7 +86,6 @@ const tests = [
         this.setupData.teleportsModule.id,
         {
           userConfig: JSON.stringify({ maxTeleports: 42 }),
-          systemConfig: '{}',
         }
       );
 

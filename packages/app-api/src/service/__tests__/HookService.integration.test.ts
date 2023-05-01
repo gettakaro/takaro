@@ -48,11 +48,7 @@ async function setup(
   const assignment = (
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
-      mod.id,
-      {
-        userConfig: '{}',
-        systemConfig: '{}',
-      }
+      mod.id
     )
   ).data.data;
 

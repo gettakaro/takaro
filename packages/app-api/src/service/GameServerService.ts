@@ -9,6 +9,7 @@ import {
   IsEnum,
   IsJSON,
   IsObject,
+  IsOptional,
   IsString,
   IsUUID,
   Length,
@@ -80,10 +81,12 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
   @IsJSON()
-  userConfig: string;
+  @IsOptional()
+  userConfig?: string;
 
   @IsJSON()
-  systemConfig: string;
+  @IsOptional()
+  systemConfig?: string;
 }
 
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
@@ -187,7 +190,7 @@ export class GameServerService extends TakaroService<
   async installModule(
     gameserverId: string,
     moduleId: string,
-    installDto: ModuleInstallDTO
+    installDto?: ModuleInstallDTO
   ) {
     const moduleService = new ModuleService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
@@ -197,11 +200,18 @@ export class GameServerService extends TakaroService<
       throw new errors.NotFoundError('Module not found');
     }
 
-    const modUserConfig = JSON.parse(installDto.userConfig);
+    if (!installDto) {
+      installDto = await new ModuleInstallDTO().construct({
+        userConfig: JSON.stringify({}),
+        systemConfig: JSON.stringify({}),
+      });
+    }
+
+    const modUserConfig = JSON.parse(installDto.userConfig ?? '{}');
     const validateUserConfig = ajv.compile(JSON.parse(mod.configSchema));
     const isValidUserConfig = validateUserConfig(modUserConfig);
 
-    const modSystemConfig = JSON.parse(installDto.systemConfig);
+    const modSystemConfig = JSON.parse(installDto.systemConfig ?? '{}');
     const validateSystemConfig = ajv.compile(
       JSON.parse(mod.systemConfigSchema)
     );

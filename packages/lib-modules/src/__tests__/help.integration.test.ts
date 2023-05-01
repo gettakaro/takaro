@@ -27,11 +27,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       await this.client.command.commandControllerTrigger(
@@ -68,19 +64,11 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.teleportsModule.id
       );
 
       await this.client.command.commandControllerTrigger(
@@ -128,11 +116,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       await this.client.command.commandControllerTrigger(
@@ -166,11 +150,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          systemConfig: '{}',
-          userConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       await this.client.command.commandControllerTrigger(
