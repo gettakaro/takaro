@@ -91,7 +91,18 @@ export class IntegrationTest<SetupData> {
         }
 
         if (this.test.setup) {
-          this.setupData = await this.test.setup.bind(this)();
+          try {
+            this.setupData = await this.test.setup.bind(this)();
+          } catch (error) {
+            if (!isAxiosError(error)) {
+              throw error;
+            }
+
+            console.error(error.response?.data);
+            throw new Error(
+              `Setup failed: ${JSON.stringify(error.response?.data)}}`
+            );
+          }
         }
       });
 
