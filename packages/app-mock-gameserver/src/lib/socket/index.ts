@@ -34,6 +34,7 @@ class SocketServer {
     });
 
     this.io.on('connection', (socket) => {
+      this.log.info(`New connection: ${socket.id}`);
       socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
         this.log.info(`Event: ${event}`);
 
