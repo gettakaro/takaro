@@ -104,7 +104,7 @@ async function main() {
     failed = true;
   }
 
-  await logs(['takaro_api'], composeOpts);
+  await logs(['takaro_api', 'takaro_mock_gameserver'], composeOpts);
   await cleanUp();
 
   if (failed) {
