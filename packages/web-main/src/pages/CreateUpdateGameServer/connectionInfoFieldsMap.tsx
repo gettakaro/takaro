@@ -1,11 +1,12 @@
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { TextField, Switch } from '@takaro/lib-components';
-import { IFormInputs } from '.';
+import { IFormInputs as ICreateFormInputs } from './GameServerCreate';
+import { IFormInputs as IUpdateFormInputs } from './GameServerUpdate';
 import { Control } from 'react-hook-form';
 
 export const connectionInfoFieldsMap = (
   isLoading: boolean,
-  control: Control<IFormInputs>
+  control: Control<any>
 ) => {
   return {
     [GameServerCreateDTOTypeEnum.Sevendaystodie]: [
@@ -16,6 +17,7 @@ export const connectionInfoFieldsMap = (
         placeholder="12.34.56.78:1234"
         key="seven-days-to-die-host"
         loading={isLoading}
+        required
       />,
       <TextField
         control={control}
@@ -23,6 +25,7 @@ export const connectionInfoFieldsMap = (
         name="connectionInfo.adminUser"
         key="seven-days-to-die-admin-user"
         loading={isLoading}
+        required
       />,
       <TextField
         control={control}
@@ -31,6 +34,7 @@ export const connectionInfoFieldsMap = (
         type="password"
         key="seven-days-to-die-admin-token"
         loading={isLoading}
+        required
       />,
       <>
         <Switch
@@ -39,6 +43,7 @@ export const connectionInfoFieldsMap = (
           key="seven-days-to-die-use-tls"
           control={control}
           loading={isLoading}
+          required
         />
       </>,
     ],
@@ -49,8 +54,10 @@ export const connectionInfoFieldsMap = (
         name="connectionInfo.eventInterval"
         description="How often the server should send events to the backend (in ms)"
         placeholder="500"
+        type="number"
         key="mock-event-interval"
         loading={isLoading}
+        required
       />,
       <TextField
         control={control}
@@ -58,8 +65,10 @@ export const connectionInfoFieldsMap = (
         name="connectionInfo.playerPoolSize"
         description="How large is the pool of fake players"
         placeholder="200"
+        type="number"
         key="mock-player-pool-size"
         loading={isLoading}
+        required
       />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
@@ -70,6 +79,7 @@ export const connectionInfoFieldsMap = (
         placeholder="12.34.56.78"
         key="rust-server-ip"
         loading={isLoading}
+        required
       />,
       <TextField
         control={control}
@@ -78,6 +88,7 @@ export const connectionInfoFieldsMap = (
         key="rust-rcon-port"
         type="number"
         loading={isLoading}
+        required
       />,
       <TextField
         control={control}
@@ -86,6 +97,7 @@ export const connectionInfoFieldsMap = (
         type="password"
         key="rust-rcon-password"
         loading={isLoading}
+        required
       />,
       <>
         <Switch
@@ -94,6 +106,7 @@ export const connectionInfoFieldsMap = (
           key="use-tls"
           control={control}
           loading={isLoading}
+          required
         />
       </>,
     ],

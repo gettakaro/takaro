@@ -105,7 +105,7 @@ export const Default = styled.button<{
 
 export const Outline = styled(Default)<{ color: ButtonColor }>`
   background: transparent;
-  border: 0.2rem solid ${({ theme, color }): string => theme.colors[color]};
+  border: 0.1rem solid ${({ theme, color }): string => theme.colors[color]};
   span {
     color: ${({ theme, color }): string => theme.colors[color]};
   }

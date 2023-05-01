@@ -23,14 +23,14 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
 
   button {
     flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
-    border: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+    border: 0.1rem solid ${({ theme }): string => theme.colors.backgroundAlt};
     border-bottom: ${({ orientation, theme }) =>
       orientation === 'horizontal'
-        ? `2px solid ${theme.colors.backgroundAlt}`
+        ? `0.1rem solid ${theme.colors.backgroundAlt}`
         : 'none'};
     border-right: ${({ orientation, theme }) =>
       orientation === 'vertical'
-        ? `2px solid ${theme.colors.backgroundAlt}`
+        ? `0.1rem solid ${theme.colors.backgroundAlt}`
         : 'none'};
 
     &:first-child {
@@ -55,13 +55,13 @@ const Container = styled.div<{ orientation: orientation; fullWidth: boolean }>`
           return `
             border-top-right-radius: ${theme.borderRadius.medium};
             border-bottom-right-radius: ${theme.borderRadius.medium};
-            border-right: 2px solid ${theme.colors.backgroundAlt};
+            border-right: 0.1rem solid ${theme.colors.backgroundAlt};
           `;
         } else {
           return `
             border-bottom-right-radius: ${theme.borderRadius.medium};
             border-bottom-left-radius: ${theme.borderRadius.medium};
-            border-bottom: 2px solid ${theme.colors.backgroundAlt};
+            border-bottom: 0.1rem solid ${theme.colors.backgroundAlt};
       `;
         }
       }}

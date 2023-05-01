@@ -9,7 +9,8 @@ import {
 const Wrapper = styled.div`
   box-shadow: ${({ theme }) => theme.elevation[4]};
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  width: 300px;
+  width: 250px;
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 const Container = styled.div<{ expanded: boolean }>`
@@ -17,7 +18,7 @@ const Container = styled.div<{ expanded: boolean }>`
   align-items: center;
   justify-content: space-between;
   min-height: 0;
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) => theme.spacing[1]};
   border-radius: ${({ theme }) => theme.borderRadius.large};
 
@@ -29,12 +30,7 @@ const Container = styled.div<{ expanded: boolean }>`
       `;
     }
   }}
-  h4 {
-    font-weight: 700;
-  }
   svg {
-    fill: white;
-    stroke: white;
     cursor: pointer;
     padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   }
@@ -48,7 +44,10 @@ const Content = styled.div<{ expanded: boolean }>`
   will-change: height;
   transition: height 0.2s ease-in-out;
   overflow: hidden;
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border-radius: ${({ theme }) =>
+    `0 0 ${theme.borderRadius.large} ${theme.borderRadius.large}`};
+  border-radius-top-left: 0;
+  border-radius-top-right: 0;
 `;
 
 export const DrawerSnack = forwardRef<
@@ -67,8 +66,8 @@ export const DrawerSnack = forwardRef<
       <Container expanded={expanded}>
         <h4>{message}</h4>
         <div>
-          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={20} />
-          <CloseIcon onClick={handleClose} size={20} />
+          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={16} />
+          <CloseIcon onClick={handleClose} size={16} />
         </div>
       </Container>
       <Content expanded={expanded}>{children}</Content>

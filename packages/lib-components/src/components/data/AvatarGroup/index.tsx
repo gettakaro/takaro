@@ -8,7 +8,7 @@ const Container = styled.div`
   justify-content: center;
 
   div {
-    border: 2px solid ${({ theme }) => theme.colors.background};
+    border: 0.1rem solid ${({ theme }) => theme.colors.background};
     /* mind the negative sign here */
     margin-left: -${({ theme }) => theme.spacing['4']};
 

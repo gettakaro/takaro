@@ -2,7 +2,6 @@ import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 import { darken } from 'polished';
 import { motion } from 'framer-motion';
-
 import { Link } from 'react-router-dom';
 import { Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
@@ -18,7 +17,7 @@ const Container = styled(motion.div)`
   flex-direction: column;
   justify-content: flex-start;
   border-right: 1px solid ${({ theme }) => theme.colors.secondary};
-  padding: 20px 30px 40px 30px;
+  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]}`};
 
   .company-icon {
     margin: 0 auto;
@@ -45,12 +44,17 @@ const Nav = styled.nav`
   a {
     width: 100%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: 15px;
+    padding: ${({ theme }) => theme.spacing['1_5']};
     display: flex;
     align-items: center;
+    justify-content: space-between;
     margin: 8px 0;
-    color: ${({ theme }) => theme.colors.secondary};
     transition: 0.2s transform ease-in-out;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
 
     &:hover {
       transform: translateY(-3px);
@@ -67,9 +71,6 @@ const Nav = styled.nav`
 
     &.active {
       background-color: ${({ theme }) => theme.colors.primary};
-      p {
-        font-weight: 800;
-      }
 
       &:hover {
         background-color: ${({ theme }) => darken(0.05, theme.colors.primary)};
@@ -109,14 +110,18 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
         {links.map(({ path, label, icon, external = false }) =>
           external ? (
             <a key={path} target="_blank" rel="noopener noreferrer" href={path}>
-              {cloneElement(icon, { size: 24 })}
-              <p>{label}</p>
+              <span>
+                {cloneElement(icon, { size: 20 })}
+                <p>{label}</p>
+              </span>
               <ExternalLinkIcon size={16} />
             </a>
           ) : (
             <NavLink to={path} key={path} end>
-              {cloneElement(icon, { size: 24 })}
-              <p>{label}</p>
+              <span>
+                {cloneElement(icon, { size: 20 })}
+                <p>{label}</p>
+              </span>
             </NavLink>
           )
         )}

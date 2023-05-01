@@ -6,25 +6,16 @@ export const Container = styled.ul<{ elevation: Elevation }>`
   width: fit-content;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  border: 2px solid ${({ theme }) => theme.colors.background};
+  border: 0.1rem solid ${({ theme }) => theme.colors.background};
   background-color: ${({ theme }) => theme.colors.background};
-
-  h3 {
-    width: 100%;
-    text-align: center;
-    margin-top: ${({ theme }) => theme.spacing['0_25']};
-    margin-bottom: ${({ theme }) => theme.spacing[1]};
-  }
 `;
 
 export const Item = styled.li`
   display: grid;
-  grid-template-columns: ${({ theme }) => theme.spacing[4]} 1fr;
-  padding: ${({ theme }) => theme.spacing['1_5']};
-  min-width: 20rem;
-  max-width: 30rem;
+  grid-template-columns: ${({ theme }) => theme.spacing[3]} 1fr;
+  align-content: center;
+  padding: ${({ theme }) => theme.spacing['0_75']};
   cursor: pointer;
-  min-height: 4.5rem;
 
   &:first-child {
     border-top-left-radius: 0.5rem;
@@ -42,7 +33,7 @@ export const Item = styled.li`
   &:hover {
     background-color: ${({ theme }) => theme.colors.primary};
     * {
-      color: white !important;
+      color: white;
     }
 
     svg {

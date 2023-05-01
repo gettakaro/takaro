@@ -53,7 +53,7 @@ export const Outline = styled(Default)<{ color: Color }>`
     }
   }
   background: none;
-  border: 0.2rem solid ${({ theme, color }) => theme.colors[color]};
+  border: 0.1rem solid ${({ theme, color }) => theme.colors[color]};
   &:hover {
     background: transparent;
   }

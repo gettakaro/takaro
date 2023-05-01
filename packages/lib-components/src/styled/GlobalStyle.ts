@@ -76,11 +76,11 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     width: 100%;
   }
 
-  input {
+  input, textarea {
     margin: 0;
     outline: 0;
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
-    border-width: 2px;
+    border-width: 0.1rem;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
@@ -94,6 +94,12 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     &:focus {
       outline: 0;
     }
+  }
+
+  textarea {
+    resize: vertical;
+    width: calc(100% - ${({ theme }) => theme.spacing[1]} * 2);
+    min-height: 200px;
   }
 
   input[type='search']::-webkit-search-decoration,
