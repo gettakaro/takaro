@@ -74,7 +74,6 @@ async function main() {
     await client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
       mod.id,
-      { userConfig: '{}', systemConfig: '{}' }
     );
     console.log(`Installed module ${mod.name}`);
   }
