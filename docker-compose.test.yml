@@ -80,5 +80,8 @@ services:
   takaro_mock_gameserver:
     image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
     container_name: takaro_mock_gameserver
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"    
     ports:
       - 3002:3002
