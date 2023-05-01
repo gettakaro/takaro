@@ -3,6 +3,7 @@ import { logger } from '@takaro/util';
 import { integrationConfig, IntegrationTest } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import { io, Socket } from 'socket.io-client';
+import assert from 'assert';
 
 const log = logger('modules:test');
 
@@ -21,7 +22,6 @@ export interface IModuleTestsSetupData {
     event: GameEvents,
     amount?: number
   ) => Promise<IDetectedEvent[]>;
-  collectEvents: (timeout?: number) => Promise<IDetectedEvent[]>;
 }
 
 export const modulesTestSetup = async function (
@@ -73,7 +73,7 @@ export const modulesTestSetup = async function (
     amount = 1
   ): Promise<IDetectedEvent[]> {
     const events: IDetectedEvent[] = [];
-
+    let hasFinished = false;
     return await Promise.race([
       new Promise<IDetectedEvent[]>((resolve) => {
         connectedSocket.on('gameEvent', (gameserverId, event, data) => {
@@ -95,38 +95,31 @@ export const modulesTestSetup = async function (
           }
 
           if (events.length === amount) {
+            hasFinished = true;
             resolve(events);
           }
         });
       }),
-      new Promise<IDetectedEvent[]>((resolve) => {
+      new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
-          resolve(events);
+          if (hasFinished) return;
+          console.warn(`Event ${expectedEvent} timed out`);
+          console.warn(JSON.stringify(events, null, 2));
+          reject(new Error(`Event ${expectedEvent} timed out`));
         }, 3000);
       }),
     ]);
   }
 
-  async function collectEvents(timeout = 3000) {
-    const events: IDetectedEvent[] = [];
+  await this.client.gameserver.gameServerControllerExecuteCommand(
+    gameserver.data.data.id,
+    {
+      command: 'connectAll',
+    }
+  );
 
-    connectedSocket.on('gameEvent', (gameserverId, event, data) => {
-      if (gameserverId !== gameserver.data.data.id) {
-        log.warn(
-          `Received event for gameserver ${gameserverId} but expected ${gameserver.data.data.id}`
-        );
-        return;
-      }
-
-      events.push({ event, data });
-    });
-
-    return new Promise<IDetectedEvent[]>((resolve) => {
-      setTimeout(() => {
-        resolve(events);
-      }, timeout);
-    });
-  }
+  const connectedEvents = await waitForEvent(GameEvents.PLAYER_CONNECTED, 5);
+  assert(connectedEvents.length === 5, 'Not all players connected');
 
   return {
     modules: modules,
@@ -135,6 +128,5 @@ export const modulesTestSetup = async function (
     gameserver: gameserver.data.data,
     socket: await connectedSocket,
     waitForEvent,
-    collectEvents,
   };
 };

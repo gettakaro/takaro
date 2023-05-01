@@ -29,9 +29,11 @@ async function settp() {
     },
   });
 
-  if (allPlayerTeleports.data.data.length >= data.module.config.maxTeleports) {
+  if (
+    allPlayerTeleports.data.data.length >= data.module.userConfig.maxTeleports
+  ) {
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.config.maxTeleports}`,
+      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.userConfig.maxTeleports}`,
     });
     return;
   }

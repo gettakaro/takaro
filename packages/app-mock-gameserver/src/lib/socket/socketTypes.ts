@@ -4,6 +4,7 @@ import {
   IPlayerReferenceDTO,
   EventLogLine,
   EventChatMessage,
+  EventPlayerConnected,
 } from '@takaro/gameserver';
 import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
@@ -12,6 +13,7 @@ export interface ServerToClientEvents {
   gameEvent: (type: GameEvents, data: EventMapping[GameEvents]) => void;
   [GameEvents.LOG_LINE]: (line: EventLogLine) => void;
   [GameEvents.CHAT_MESSAGE]: (message: EventChatMessage) => void;
+  [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => void;
   pong: () => void;
 }
 

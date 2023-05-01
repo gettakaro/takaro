@@ -11,6 +11,7 @@ import {
   IPosition,
   IPlayerReferenceDTO,
   EventChatMessage,
+  EventPlayerConnected,
 } from '@takaro/gameserver';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -107,6 +108,22 @@ class MockGameserver implements IMockGameServer {
 
     if (rawCommand === 'version') {
       output.rawResult = 'Mock game server v0.0.1';
+      output.success = true;
+    }
+
+    if (rawCommand === 'connectAll') {
+      const players = await this.getPlayers();
+      await Promise.all(
+        players.map(async (p) => {
+          const event = await new EventPlayerConnected().construct({
+            player: p,
+            msg: `${p.name} connected`,
+            timestamp: new Date(),
+          });
+          this.socketServer.io.emit(GameEvents.PLAYER_CONNECTED, event);
+        })
+      );
+      output.rawResult = 'Connected all players';
       output.success = true;
     }
 

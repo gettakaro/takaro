@@ -322,6 +322,7 @@ export class CommandService extends TakaroService<
         triggeredCommands.map(async (c) => ({
           db: c,
           data: {
+            timestamp: chatMessage.timestamp,
             ...parseCommand(chatMessage.msg, c),
             player: { ...chatMessage.player, location: playerLocation },
             module: await gameServerService.getModuleInstallation(

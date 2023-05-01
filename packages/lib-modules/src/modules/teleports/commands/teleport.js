@@ -34,7 +34,7 @@ async function teleport() {
   );
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: `Teleported to ${teleport.name}`,
+    message: `Teleported to ${teleport.name}.`,
   });
 }
 
