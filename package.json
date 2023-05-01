@@ -114,6 +114,7 @@
     "routing-controllers": "^0.10.1",
     "routing-controllers-openapi": "^4.0.0",
     "safe-regex": "^2.1.1",
+    "socket.io-client": "^4.5.2",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
     "type-fest": "^2.18.0",
     "yup": "^0.32.11",
