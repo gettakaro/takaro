@@ -13,6 +13,9 @@ interface IMockServerConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
+  mockserver: {
+    name: string;
+  };
 }
 
 const configSchema = {
@@ -45,6 +48,14 @@ const configSchema = {
       format: Array,
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
+    },
+  },
+  mockserver: {
+    name: {
+      doc: 'The name of the mock server',
+      format: String,
+      default: 'default-mock',
+      env: 'MOCK_SERVER_NAME',
     },
   },
 };

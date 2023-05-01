@@ -1,4 +1,5 @@
 import { errors, logger } from '@takaro/util';
+import { Redis } from '@takaro/db';
 import { getSocketServer } from '../socket/index.js';
 import {
   CommandOutput,
@@ -12,6 +13,7 @@ import {
   EventChatMessage,
 } from '@takaro/gameserver';
 import { faker } from '@faker-js/faker';
+import { config } from '../../config.js';
 
 // Welcome to omit-hell 😇
 export type IMockGameServer = Omit<
@@ -19,38 +21,80 @@ export type IMockGameServer = Omit<
   'testReachability'
 >;
 
+const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
+
+function getRedisKey(key: string) {
+  return `${REDIS_PREFIX}${key}`;
+}
 class MockGameserver implements IMockGameServer {
   private logger = logger('Mock');
   private socketServer = getSocketServer();
-  public readonly mockPlayers: Partial<IGamePlayer>[] = Array.from(
-    Array(5).keys()
-  ).map((p) => ({
-    gameId: p.toString(),
-    name: faker.internet.userName(),
-    epicOnlineServicesId: faker.random.alphaNumeric(16),
-    steamId: faker.random.alphaNumeric(16),
-    xboxLiveId: faker.random.alphaNumeric(16),
-  }));
+  private redis = Redis.getClient('mockgameserver');
+
+  async ensurePlayersPersisted() {
+    const existingPlayers = await (await this.redis).keys(getRedisKey('*'));
+
+    if (existingPlayers.length > 0) {
+      return;
+    }
+
+    const players = Array.from(Array(5).keys()).map((p) => ({
+      gameId: p.toString(),
+      name: faker.internet.userName(),
+      epicOnlineServicesId: faker.random.alphaNumeric(16),
+      steamId: faker.random.alphaNumeric(16),
+      xboxLiveId: faker.random.alphaNumeric(16),
+      positionX: 500 - parseInt(faker.random.numeric(3), 10),
+      positionY: 500 - parseInt(faker.random.numeric(3), 10),
+      positionZ: 500 - parseInt(faker.random.numeric(3), 10),
+    }));
+
+    await Promise.all(
+      players.map(async (p) => {
+        return (await this.redis).hSet(getRedisKey(`player:${p.gameId}`), p);
+      })
+    );
+  }
 
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
-    const rawData =
-      this.mockPlayers.find((p) => p.gameId === playerRef.gameId) ?? null;
-    if (rawData === null) {
+    const player = await (
+      await this.redis
+    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+
+    if (!player) {
       return null;
     }
 
-    return new IGamePlayer().construct(rawData);
+    return new IGamePlayer().construct(player);
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    return [];
+    const players = await (await this.redis).keys(getRedisKey('player:*'));
+    const playerData = await Promise.all(
+      players.map(async (p) => {
+        return (await this.redis).hGetAll(p);
+      })
+    );
+
+    return await Promise.all(
+      playerData.map((p) => new IGamePlayer().construct(p))
+    );
   }
 
-  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
+  async getPlayerLocation(
+    playerRef: IPlayerReferenceDTO
+  ): Promise<IPosition | null> {
+    const player = await (
+      await this.redis
+    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+    if (!player) {
+      return null;
+    }
+
     return {
-      x: parseInt(faker.random.numeric(), 10),
-      y: parseInt(faker.random.numeric(), 10),
-      z: parseInt(faker.random.numeric(), 10),
+      x: parseInt(player.positionX, 10),
+      y: parseInt(player.positionY, 10),
+      z: parseInt(player.positionZ, 10),
     };
   }
 
@@ -94,18 +138,23 @@ class MockGameserver implements IMockGameServer {
     y: number,
     z: number
   ) {
-    const player = await this.getPlayer(playerRef);
+    const player = await (
+      await this.redis
+    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+
     if (!player) {
       throw new errors.NotFoundError('Player not found');
     }
-    await this.sendLog(`Teleporting ${player.name} to ${x}, ${y}, ${z}`);
-  }
 
-  private mockPlayer() {
-    const randomEntry =
-      this.mockPlayers[Math.floor(Math.random() * this.mockPlayers.length)];
+    player.positionX = x.toString();
+    player.positionY = y.toString();
+    player.positionZ = z.toString();
 
-    return new IGamePlayer().construct(randomEntry);
+    await (
+      await this.redis
+    ).hSet(getRedisKey(`player:${playerRef.gameId}`), player);
+
+    await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
   }
 
   private async sendLog(msg: string) {

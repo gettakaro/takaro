@@ -3,6 +3,7 @@ import { logger } from '@takaro/util';
 import { config } from './config.js';
 import { getSocketServer } from './lib/socket/index.js';
 import { Server as HttpServer } from 'http';
+import { getMockServer } from './lib/gameserver/index.js';
 
 const log = logger('agent');
 
@@ -23,6 +24,8 @@ async function main() {
   getSocketServer(server.server as HttpServer);
   await server.start();
   log.info('🚀 Server started');
+
+  await (await getMockServer()).ensurePlayersPersisted();
 
   process.on('uncaughtException', (err) => {
     log.error('uncaughtException', err);
