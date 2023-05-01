@@ -1,4 +1,9 @@
-import { IntegrationTest, sandbox, expect } from '@takaro/test';
+import {
+  IntegrationTest,
+  sandbox,
+  expect,
+  integrationConfig,
+} from '@takaro/test';
 import {
   CommandOutputDTO,
   GameServerOutputDTO,
@@ -51,7 +56,9 @@ async function setup(
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
       type: 'MOCK',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
     })
   ).data.data;
 
