@@ -76,3 +76,8 @@ services:
     # api
       - 13000:3000
       - 12001:12001
+  takaro_mock_gameserver:
+    image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
+    container_name: takaro_mock_gameserver
+    ports:
+      - 3002:3002
