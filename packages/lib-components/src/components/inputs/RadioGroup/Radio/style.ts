@@ -1,10 +1,20 @@
 import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
-export const Container = styled.div`
+export const Container = styled.div<{ isSelected: boolean }>`
   margin: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[0]}`};
   display: flex;
   align-items: center;
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  background-color: ${({ isSelected, theme }) =>
+    isSelected ? theme.colors.backgroundAlt : theme.colors.background};
+  padding: ${({ theme }) => theme.spacing[2]};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  }
+  cursor: pointer;
 `;
 
 export const RadioContainer = styled.div<{
@@ -13,12 +23,12 @@ export const RadioContainer = styled.div<{
 }>`
   display: grid;
   place-items: center;
-  min-width: 2.1rem;
-  min-height: 2.1rem;
-  width: 2.1rem;
-  height: 2.1rem;
-  max-width: 2.1rem;
-  max-height: 2.1rem;
+  min-width: ${({ theme }) => theme.spacing['2_5']};
+  min-height: ${({ theme }) => theme.spacing['2_5']};
+  width: ${({ theme }) => theme.spacing['2_5']};
+  height: ${({ theme }) => theme.spacing['2_5']};
+  max-width: ${({ theme }) => theme.spacing['2_5']};
+  max-height: ${({ theme }) => theme.spacing['2_5']};
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
@@ -30,7 +40,7 @@ export const RadioContainer = styled.div<{
 
   background-color: ${({ theme, readOnly }) =>
     readOnly ? theme.colors.gray : theme.colors.backgroundAlt};
-  border-radius: 50%;
+  border-radius: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   z-index: 1;
   overflow: visible;
@@ -51,7 +61,7 @@ export const Inner = styled(motion.div)<{
   width: ${({ theme }) => theme.spacing['1_5']};
   height: ${({ theme }) => theme.spacing['1_5']};
   z-index: 2;
-  border-radius: 50%;
+  border-radius: 100%;
   background-color: ${({ theme, readOnly }) =>
     readOnly ? theme.colors.gray : theme.colors.primary};
   opacity: ${({ isSelected }): number => (isSelected ? 1 : 0)};

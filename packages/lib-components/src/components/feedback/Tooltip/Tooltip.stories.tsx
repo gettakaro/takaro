@@ -1,3 +1,4 @@
+import React from 'react';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Tooltip, TooltipProps } from '.';
