@@ -1,0 +1,28 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "gameserverId": "b136cc93-84fb-40b4-99f9-626c3821bf9c",
+      "moduleId": "5ac92c9d-9b3f-47ce-99e7-2feaaf5cddaf",
+      "userConfig": {},
+      "systemConfig": {
+        "cronJobs": {
+          "Test cron job": "5 * * * *",
+          "Test cron job 2": "13 * * * *"
+        }
+      }
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing with correct system config - multiple cron jobs",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

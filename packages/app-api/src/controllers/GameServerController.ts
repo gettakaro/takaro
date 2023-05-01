@@ -43,7 +43,6 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
-import { ModuleOutputArrayDTOAPI } from './ModuleController.js';
 import { Response } from 'express';
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
@@ -92,10 +91,18 @@ class ParamIdAndModuleId {
   moduleId!: string;
 }
 
-class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallDTO> {
+class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
   @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
   declare data: ModuleInstallationOutputDTO;
+}
+
+class ModuleInstallationOutputArrayDTOAPI extends APIOutput<
+  ModuleInstallationOutputDTO[]
+> {
+  @Type(() => ModuleInstallationOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: ModuleInstallationOutputDTO[];
 }
 
 class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
@@ -117,6 +124,7 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 
   @Type(() => IMessageOptsDTO)
   @ValidateNested()
+  @IsOptional()
   opts!: IMessageOptsDTO;
 }
 
@@ -246,14 +254,14 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
-  @ResponseSchema(ModuleOutputArrayDTOAPI)
+  @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
   @Get('/gameserver/:id/modules')
   async getInstalledModules(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId
   ) {
     const service = new GameServerService(req.domainId);
-    const res = await service.getInstalledModules(params.id);
+    const res = await service.getInstalledModules({ gameserverId: params.id });
     return apiResponse(res);
   }
 

@@ -2,8 +2,14 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "6a5390b5-d268-42c8-a04d-8991fed092e3",
-      "moduleId": "c7def5fd-7c8f-490b-bad3-051552f96e80"
+      "gameserverId": "55de2428-c6ff-4790-9656-64bd9aac3c32",
+      "moduleId": "11827288-62df-44d8-90a0-e4e48efb0bf8",
+      "userConfig": {
+        "foo": "bar"
+      },
+      "systemConfig": {
+        "cronJobs": {}
+      }
     }
   },
   "status": 200,

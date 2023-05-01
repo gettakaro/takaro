@@ -9,6 +9,7 @@ interface IIntegrationTestConfig extends IBaseConfig {
     password: string;
     OAuth2URL: string;
   };
+  overwriteSnapshots: boolean;
 }
 
 const configSchema = {
@@ -49,6 +50,12 @@ const configSchema = {
       default: 'http://hydra:4444',
       env: 'TAKARO_OAUTH_HOST',
     },
+  },
+  overwriteSnapshots: {
+    doc: 'Setting this to true will overwrite the snapshots with the current test results instead of reporting errors',
+    format: Boolean,
+    default: false,
+    env: 'OVERWRITE_SNAPSHOTS',
   },
 };
 

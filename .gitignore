@@ -26,7 +26,6 @@ Thumbs.db
 **/storybook-static
 **/.next
 
-
 # Logging files
 *.log
 *.pyc
@@ -41,8 +40,9 @@ reports/
 
 # typescript
 tsconfig.*.tsbuildinfo
+*.tsbuildinfo
 
 _data/
 
 # Firecracker
-firecracker/
+/firecracker

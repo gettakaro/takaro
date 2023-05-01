@@ -16,7 +16,7 @@ import {
   FunctionUpdateDTO,
 } from './FunctionService.js';
 import { EventChatMessage } from '@takaro/gameserver';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ICommand, ICommandArgument } from '@takaro/modules';
@@ -323,12 +323,10 @@ export class CommandService extends TakaroService<
         }))
       );
 
-      const queues = QueuesService.getInstance();
-
       const promises = parsedCommands.map(async ({ data, db }) => {
-        return queues.queues.commands.queue.add(db.id, {
+        return queueService.queues.commands.queue.add({
           domainId: this.domainId,
-          function: db.function.code,
+          functionId: db.function.id,
           itemId: db.id,
           data,
           gameServerId,

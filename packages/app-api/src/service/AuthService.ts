@@ -58,7 +58,7 @@ export class AuthService extends DomainScoped {
   }
 
   /**
-   * This is a token to be used by app-agent to execute functions
+   * This is a token to be used by app-vmm to execute functions
    * For now, just the root token but in the future, we can have
    * narrower scoped tokens (eg configurable permissions?)
    * // TODO: ^ ^
@@ -138,18 +138,12 @@ export class AuthService extends DomainScoped {
     req: AuthenticatedRequest
   ): Promise<UserOutputWithRolesDTO | null> {
     let user: UserOutputWithRolesDTO | null = null;
-    try {
-      const identity = await ory.getIdentityFromReq(req);
-      if (identity) {
-        const service = new UserService(identity.domainId);
-        const users = await service.find({ filters: { idpId: identity.id } });
-        if (!users.results.length) return null;
 
-        user = users.results[0];
-      }
-    } catch (error) {
-      // Not an ory session, so check for a JWT
-      const token = req.headers.authorization?.replace('Bearer ', '');
+    // Either the user is authenticated via the IDP or via a JWT (api client)
+    // The token check is 'cheaper' than a request to the IDP so we do it first
+    // TODO: At some point we should refactor our custom JWT and use Ory (Hydra) fully or something...
+    if (req.headers['x-takaro-token']) {
+      const token = req.headers['x-takaro-token'] as string;
       const payload = await this.verifyJwt(token);
       req.user = { id: payload.sub };
       req.domainId = payload.domainId;
@@ -158,6 +152,24 @@ export class AuthService extends DomainScoped {
       const users = await service.find({ filters: { id: payload.sub } });
       if (!users.results.length) return null;
       user = users.results[0];
+    }
+
+    // If we don't have a user yet, try to get it from the IDP
+    if (!user) {
+      try {
+        const identity = await ory.getIdentityFromReq(req);
+        if (identity) {
+          const service = new UserService(identity.domainId);
+          const users = await service.find({ filters: { idpId: identity.id } });
+          if (!users.results.length) return null;
+
+          user = users.results[0];
+        }
+      } catch (error) {
+        // Not an ory session, throw a sanitized error
+        log.warn(error);
+        throw new errors.UnauthorizedError();
+      }
     }
 
     return user;

@@ -15,7 +15,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@bull-board/express": "^5.0.1"
+  },
   "devDependencies": {
     "@takaro/test": "0.0.1"
   }

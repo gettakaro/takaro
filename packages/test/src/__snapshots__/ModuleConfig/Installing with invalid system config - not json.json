@@ -1,0 +1,36 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "target": {
+              "userConfig": "{\"foo\":\"bar\"}",
+              "systemConfig": "invalid"
+            },
+            "value": "invalid",
+            "property": "systemConfig",
+            "children": [],
+            "constraints": {
+              "isJson": "systemConfig must be a json string"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Installing with invalid system config - not json",
+    "filteredFields": [
+      "gameserverId",
+      "moduleId"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}
