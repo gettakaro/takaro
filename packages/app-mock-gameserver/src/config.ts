@@ -1,7 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
-import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
-import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
 export enum EXECUTION_MODE {
   FIRECRACKER = 'firecracker',
@@ -60,6 +58,4 @@ const configSchema = {
   },
 };
 
-export const config = new Config<
-  IMockServerConfig & IQueuesConfig & IAuthConfig
->([configSchema, queuesConfigSchema, authConfigSchema]);
+export const config = new Config<IMockServerConfig>([configSchema]);
