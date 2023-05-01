@@ -6,6 +6,23 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function waitUntilHealthyHttp(url, maxRetries = 5) {
+  try {
+    const { stdout } = await $`curl -s -o /dev/null -w "%{http_code}" ${url}`;
+    if (stdout === '200') {
+      return;
+    }
+  } catch (err) { }
+
+  if (maxRetries > 0) {
+    await sleep(1000);
+    await waitUntilHealthyHttp(url, maxRetries - 1);
+  } else {
+    throw new Error(`Failed to connect to ${url} after ${maxRetries} retries`);
+  }
+}
+
+
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
 const POSTGRES_PASSWORD = randomUUID();
 const POSTGRES_ENCRYPTION_KEY = randomUUID();
@@ -76,6 +93,11 @@ async function main() {
   let failed = false;
 
   try {
+    await Promise.all([
+      waitUntilHealthyHttp('http://127.0.0.1:13000/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
+    ]);
+
     // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
     // So we're hacking it like this instead :)
     const testVars = {
