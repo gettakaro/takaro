@@ -1,6 +1,6 @@
 import { TakaroEmitter, GameEvents } from '@takaro/gameserver';
 import { logger } from '@takaro/util';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 import {
   GameServerOutputDTO,
   GameServerService,
@@ -19,7 +19,7 @@ export class IGameServerInMemoryManager {
     string,
     { domainId: string; emitter: TakaroEmitter }
   >();
-  private eventsQueue = QueuesService.getInstance().queues.events.queue;
+  private eventsQueue = queueService.queues.events.queue;
 
   async init(domainId: string, gameServers: GameServerOutputDTO[]) {
     this.log.info(`Initializing ${gameServers.length} game servers`);
@@ -80,7 +80,7 @@ export class IGameServerInMemoryManager {
 
     emitter.on(GameEvents.LOG_LINE, async (logLine) => {
       this.log.debug('Received a logline event', logLine);
-      await this.eventsQueue.add(GameEvents.LOG_LINE, {
+      await this.eventsQueue.add({
         type: GameEvents.LOG_LINE,
         event: logLine,
         domainId,
@@ -90,7 +90,7 @@ export class IGameServerInMemoryManager {
 
     emitter.on(GameEvents.PLAYER_CONNECTED, async (playerConnectedEvent) => {
       this.log.debug('Received a player connected event', playerConnectedEvent);
-      await this.eventsQueue.add(GameEvents.PLAYER_CONNECTED, {
+      await this.eventsQueue.add({
         type: GameEvents.PLAYER_CONNECTED,
         event: playerConnectedEvent,
         domainId,
@@ -105,7 +105,7 @@ export class IGameServerInMemoryManager {
           'Received a player disconnected event',
           playerDisconnectedEvent
         );
-        await this.eventsQueue.add(GameEvents.PLAYER_DISCONNECTED, {
+        await this.eventsQueue.add({
           type: GameEvents.PLAYER_DISCONNECTED,
           event: playerDisconnectedEvent,
           domainId,
@@ -116,7 +116,7 @@ export class IGameServerInMemoryManager {
 
     emitter.on(GameEvents.CHAT_MESSAGE, async (chatMessage) => {
       this.log.debug('Received a chatMessage event', chatMessage);
-      await this.eventsQueue.add(GameEvents.CHAT_MESSAGE, {
+      await this.eventsQueue.add({
         type: GameEvents.CHAT_MESSAGE,
         event: chatMessage,
         domainId,

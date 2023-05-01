@@ -37,7 +37,7 @@ const Container = styled.div<{ size: Size }>`
   }};
 `;
 
-interface DialogBodyProps {
+export interface DialogBodyProps {
   size?: Size;
 }
 

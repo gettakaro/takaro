@@ -37,13 +37,13 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
     const getIcon = () => {
       switch (type) {
         case 'info':
-          return <InfoIcon fill={theme.colors.info} size={18} />;
+          return <InfoIcon fill={theme.colors.info} size={15} />;
         case 'success':
-          return <CheckMarkIcon fill={theme.colors.success} size={18} />;
+          return <CheckMarkIcon fill={theme.colors.success} size={15} />;
         case 'warning':
-          return <WarningIcon fill={theme.colors.warning} size={18} />;
+          return <WarningIcon fill={theme.colors.warning} size={15} />;
         case 'error':
-          return <ErrorIcon fill={theme.colors.warning} size={18} />;
+          return <ErrorIcon fill={theme.colors.warning} size={15} />;
       }
     };
 
@@ -56,7 +56,7 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
         <ContentContainer>
           <IconContainer variant={type}>
             {icon
-              ? cloneElement(icon, { size: 18, fill: theme.colors[type] })
+              ? cloneElement(icon, { size: 15, fill: theme.colors[type] })
               : getIcon()}
           </IconContainer>
           <TextContainer>
@@ -80,7 +80,7 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
           </TextContainer>
         </ContentContainer>
         <CloseContainer onClick={handleDismiss}>
-          <CloseIcon size={18} />
+          <CloseIcon size={15} />
         </CloseContainer>
       </Wrapper>
     );

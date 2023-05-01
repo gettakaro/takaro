@@ -78,7 +78,7 @@ export const StepCounter = styled.div<{
   height: 50px;
   padding: 0.8rem;
   border-radius: 50%;
-  border: 2px solid
+  border: 0.1rem solid
     ${({ theme, stepState }) =>
       stepState !== StepStates.OTHER
         ? theme.colors.primary

@@ -1,20 +1,25 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-12-05T19:23:19.885Z"
-    },
-    "data": {}
+    "meta": {},
+    "data": {
+      "gameserverId": "24c0600d-73bf-46db-93cc-7e46aa8f764f",
+      "moduleId": "41159427-cc74-49f5-a6f3-c912ec1a23d0",
+      "userConfig": {},
+      "systemConfig": {
+        "cronJobs": {}
+      }
+    }
   },
   "status": 200,
   "test": {
     "group": "Module Assignments",
     "snapshot": true,
     "name": "Install a built-in module",
-    "expectedStatus": 200,
     "filteredFields": [
       "gameserverId",
       "moduleId"
     ],
+    "expectedStatus": 200,
     "standardEnvironment": true
   }
 }

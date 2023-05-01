@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios';
 import {
   CronJobApi,
   FunctionApi,
@@ -25,17 +24,12 @@ export interface IApiClientConfig extends IBaseApiClientConfig {
 export class Client extends BaseApiClient<IApiClientConfig> {
   constructor(config: IApiClientConfig) {
     super(config);
-    this.axios = this.addAuthHeaders(this.axios);
-  }
 
-  private addAuthHeaders(axios: AxiosInstance): AxiosInstance {
     if (this.config.auth.token) {
-      axios.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${this.config.auth.token}`;
+      this.axios.defaults.headers.common[
+        'x-takaro-token'
+      ] = `${this.config.auth.token}`;
     }
-
-    return axios;
   }
 
   set username(username: string) {

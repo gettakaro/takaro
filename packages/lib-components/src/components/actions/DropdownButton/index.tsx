@@ -20,10 +20,11 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   justify-content: center;
   cursor: pointer;
   width: 3.2rem;
-  border: .2rem solid ${({ theme, isVisible }) =>
+  border: .1rem solid ${({ theme, isVisible }) =>
     isVisible ? theme.colors.primary : theme.colors.backgroundAlt}};
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
+  
 
   &:hover {
     border-color:${({ theme }) => theme.colors.primary};
@@ -42,11 +43,12 @@ const CurrentAction = styled.div`
   cursor: pointer;
   min-width: 10rem;
   color: ${({ theme }) => theme.colors.text};
-  border-top: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
-  border-left: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
-  border-bottom: 0.2rem solid ${({ theme }) => theme.colors.backgroundAlt};
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
+  border-top: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-left: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-bottom: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-top-left-radius: ${({ theme }) => theme.borderRadius.small};
+  border-bottom-left-radius: ${({ theme }) => theme.borderRadius.small};
+
   text-align: center;
   &:hover {
     color: ${({ theme }) => theme.colors.primary};
@@ -60,6 +62,7 @@ const CurrentAction = styled.div`
 const Container = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   border-radius: ${({ theme }) => theme.borderRadius.large};
   width: max-content;
 
@@ -102,7 +105,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
           onClick={() => setVisible(!visible)}
           isVisible={visible}
         >
-          <Arrow size={17} />
+          <Arrow size={15} />
         </DropdownActionContainer>
         {visible && (
           <ActionMenu

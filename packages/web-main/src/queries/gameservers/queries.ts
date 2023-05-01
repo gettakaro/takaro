@@ -88,7 +88,7 @@ export const useGameServerSendMessage = () => {
 // INSTALLED MODULES
 export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
-  return useQuery<ModuleOutputDTO[]>({
+  return useQuery<ModuleInstallationOutputDTO[]>({
     queryKey: installedModuleKeys.list(gameServerId),
     queryFn: async () =>
       (
@@ -105,7 +105,7 @@ export const useGameServerModuleInstallation = (
 ) => {
   const apiClient = useApiClient();
 
-  return useQuery<ModuleInstallDTO>({
+  return useQuery<ModuleInstallationOutputDTO>({
     queryKey: installedModuleKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
       (

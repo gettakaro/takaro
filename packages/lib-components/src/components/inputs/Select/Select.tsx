@@ -54,6 +54,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     render,
     children,
     control,
+    readOnly,
     disabled,
     hint,
     loading,
@@ -96,7 +97,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(5),
-      flip({ fallbackPlacements: ['top', 'bottom'], padding: 10 }),
+      flip({ fallbackPlacements: ['top', 'bottom'] }),
       size({
         apply({ rects, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
@@ -104,7 +105,6 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
             maxHeight: `${availableHeight}px`,
           });
         },
-        padding: 10,
       }),
     ],
   });
@@ -198,21 +198,23 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
             size={componentSize}
             disabled={disabled}
             hint={hint}
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+            }}
           />
         )}
         <SelectButton
           {...getReferenceProps({
             ref: reference,
           })}
-          isOpen={open}
+          readOnly={readOnly}
         >
           {render(selectedIndex - 1)}
-          <ArrowIcon size={18} />
+          {!readOnly && <ArrowIcon size={18} />}
 
           {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>
-        {open && (
+        {open && !readOnly && (
           <FloatingOverlay lockScroll>
             <FloatingFocusManager
               context={context}

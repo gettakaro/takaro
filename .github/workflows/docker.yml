@@ -15,6 +15,7 @@ jobs:
               name: 'app-api',
               dockerfile: './containers/generic-app.Dockerfile',
             },
+            { name: 'app-vmm', dockerfile: './containers/app-vmm.Dockerfile' },
             {
               name: 'web-main',
               dockerfile: './containers/generic-web/generic-web.Dockerfile',

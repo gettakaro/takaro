@@ -65,7 +65,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {dot && <Dot color={color} outline={variant !== 'default'} />}
         {avatar}
         <span>{label}</span>
-        {onDelete && <Icon onClick={onDelete} size={14} />}
+        {onDelete && <Icon onClick={onDelete} size={10} />}
       </Container>
     );
   }

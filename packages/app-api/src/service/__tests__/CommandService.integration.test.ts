@@ -3,10 +3,10 @@ import {
   CommandOutputDTO,
   GameServerOutputDTO,
   ModuleOutputDTO,
-  ModuleInstallDTO,
+  ModuleInstallationOutputDTO,
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
-import { QueuesService } from '@takaro/queues';
+import { queueService } from '@takaro/queues';
 import { EventChatMessage, IGamePlayer } from '@takaro/gameserver';
 
 export async function getMockPlayer(
@@ -28,7 +28,7 @@ interface IStandardSetupData {
   service: CommandService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallDTO;
+  assignment: ModuleInstallationOutputDTO;
 }
 
 async function setup(
@@ -59,7 +59,10 @@ async function setup(
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
       mod.id,
-      { config: '{}' }
+      {
+        userConfig: '{}',
+        systemConfig: '{}',
+      }
     )
   ).data.data;
 
@@ -81,8 +84,7 @@ const tests = [
     name: 'Basic command trigger',
     setup,
     test: async function () {
-      const queues = QueuesService.getInstance();
-      const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -101,8 +103,7 @@ const tests = [
     name: 'Doesnt trigger when message doesnt start with prefix',
     setup,
     test: async function () {
-      const queues = QueuesService.getInstance();
-      const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -131,8 +132,7 @@ const tests = [
     name: 'Doesnt trigger when module is disabled',
     setup,
     test: async function () {
-      const queues = QueuesService.getInstance();
-      const addStub = sandbox.stub(queues.queues.commands.queue, 'add');
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
 
       await this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
@@ -153,7 +153,10 @@ const tests = [
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.mod.id,
-        { config: '{}' }
+        {
+          userConfig: '{}',
+          systemConfig: '{}',
+        }
       );
 
       await this.setupData.service.handleChatMessage(
