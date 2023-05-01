@@ -1,7 +1,12 @@
 import { HookService } from '../HookService.js';
 import { queueService } from '@takaro/queues';
 import { EventPlayerConnected, EventChatMessage } from '@takaro/gameserver';
-import { IntegrationTest, sandbox, expect } from '@takaro/test';
+import {
+  IntegrationTest,
+  sandbox,
+  expect,
+  integrationConfig,
+} from '@takaro/test';
 import {
   HookOutputDTO,
   GameServerOutputDTO,
@@ -41,7 +46,9 @@ async function setup(
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
       type: 'MOCK',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
     })
   ).data.data;
 

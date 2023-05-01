@@ -58,7 +58,7 @@ const configSchema = {
     host: {
       doc: 'The host of the mock gameserver',
       format: String,
-      default: 'http://127.0.0.1:3002',
+      default: 'http://takaro:3002',
       env: 'MOCK_GAMESERVER_HOST',
     },
   },

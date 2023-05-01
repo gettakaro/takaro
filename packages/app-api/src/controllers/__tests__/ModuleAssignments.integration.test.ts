@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
 
 const group = 'Module Assignments';
@@ -16,7 +16,9 @@ const defaultSetup = async function (
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
-    connectionInfo: '{}',
+    connectionInfo: JSON.stringify({
+      host: integrationConfig.get('mockGameserver.host'),
+    }),
     type: 'MOCK',
     name: 'Test gameserver',
   });

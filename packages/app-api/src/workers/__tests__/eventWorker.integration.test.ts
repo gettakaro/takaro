@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { IGamePlayer } from '@takaro/gameserver';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
@@ -16,8 +16,9 @@ const tests = [
         await this.client.gameserver.gameServerControllerCreate({
           name: 'my-server',
           type: 'MOCK',
-          connectionInfo:
-            '{"host": "169.169.169.80", "rconPort": "28016", "rconPassword": "123456"}',
+          connectionInfo: JSON.stringify({
+            host: integrationConfig.get('mockGameserver.host'),
+          }),
         })
       ).data.data;
     },

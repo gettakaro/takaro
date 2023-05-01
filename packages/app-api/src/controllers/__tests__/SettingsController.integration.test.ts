@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import {
   GameServerOutputDTO,
   GameServerCreateDTOTypeEnum,
@@ -8,8 +8,7 @@ const group = 'SettingsController';
 const mockGameServer = {
   name: 'Test gameserver',
   connectionInfo: JSON.stringify({
-    host: 'localhost',
-    port: 1234,
+    host: integrationConfig.get('mockGameserver.host'),
   }),
   type: GameServerCreateDTOTypeEnum.Mock,
 };

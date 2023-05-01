@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTO,
@@ -20,7 +20,9 @@ const setup = async function (
   const gameserverRes = await this.client.gameserver.gameServerControllerCreate(
     {
       name: 'Test gameserver',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
       type: GameServerCreateDTOTypeEnum.Mock,
     }
   );

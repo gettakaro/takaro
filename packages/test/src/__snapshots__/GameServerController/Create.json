@@ -6,8 +6,7 @@
     "data": {
       "name": "Test gameserver",
       "connectionInfo": {
-        "host": "localhost",
-        "port": 1234
+        "host": "http://takaro:3002"
       },
       "type": "MOCK",
       "createdAt": "2022-09-13T19:27:39.649Z",
