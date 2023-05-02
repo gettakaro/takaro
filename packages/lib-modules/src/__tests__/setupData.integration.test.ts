@@ -85,8 +85,8 @@ export const modulesTestSetup = async function (
           }
 
           if (event !== expectedEvent) {
-            // log.warn(`Received event ${event} but expected ${expectedEvent}`);
-            // log.warn(JSON.stringify({ event, data }, null, 2));
+            log.warn(`Received event ${event} but expected ${expectedEvent}`);
+            log.warn(JSON.stringify({ event, data }, null, 2));
             return;
           }
 
