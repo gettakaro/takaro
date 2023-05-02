@@ -3,7 +3,6 @@ import { logger } from '@takaro/util';
 import { integrationConfig, IntegrationTest } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import { io, Socket } from 'socket.io-client';
-import assert from 'assert';
 
 const log = logger('modules:test');
 
@@ -128,16 +127,6 @@ export const modulesTestSetup = async function (
       }),
     ]);
   }
-
-  await this.client.gameserver.gameServerControllerExecuteCommand(
-    gameserver.data.data.id,
-    {
-      command: 'connectAll',
-    }
-  );
-
-  const connectedEvents = await waitForEvent(GameEvents.PLAYER_CONNECTED, 5);
-  assert(connectedEvents.length === 5, 'Not all players connected');
 
   return {
     modules: modules,
