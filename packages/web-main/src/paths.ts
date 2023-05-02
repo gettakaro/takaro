@@ -8,6 +8,7 @@ export const PATHS = {
 
   settings: {
     GameServerSettings: '/settings/gameservers',
+    connections: '/settings/connections',
   },
 
   gameServers: {

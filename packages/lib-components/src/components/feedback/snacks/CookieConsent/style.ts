@@ -2,7 +2,7 @@ import { styled } from '../../../../styled';
 import { lighten } from 'polished';
 
 export const Wrapper = styled.div`
-  border: 0.2rem solid ${({ theme }) => theme.colors.primary};
+  border: 0.1rem solid ${({ theme }) => theme.colors.primary};
   padding: ${({ theme }) => theme.spacing['1_5']};
   max-width: 450px;
   border-radius: ${({ theme }) => theme.borderRadius.large};

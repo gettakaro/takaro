@@ -12,25 +12,25 @@ export const InputContainer = styled.div<{ fields: number }>`
   display: grid;
   position relative;
   margin: ${({ theme }) => `${theme.spacing['2']} auto`};
-  grid-gap: 2rem;
-  grid-template-columns: repeat(${({ fields }) => fields}, 60px);
-  height: 60px;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(${({ fields }) => fields}, 30px);
+  height: 30px;
 `;
 
 export const LoadingField = styled.div`
   width: 100%;
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  height: 60px;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  height: 30px;
 `;
 
 export const Input = styled.input<{ hasError: boolean; isDisabled: boolean }>`
   width: 100%;
-  font-size: ${({ theme }) => theme.fontSize.large};
+  font-size: ${({ theme }) => theme.fontSize.medium};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   padding: 0;
   text-align: center;
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
-  border: 0.2rem solid
+  border: 0.1rem solid
     ${({ theme, hasError }) =>
       hasError ? theme.colors.error : theme.colors.background};
 
@@ -47,7 +47,7 @@ export const Input = styled.input<{ hasError: boolean; isDisabled: boolean }>`
   }
 
   &:focus {
-    border: 0.2rem solid
+    border: 0.1rem solid
       ${({ theme, hasError }) =>
         hasError ? theme.colors.error : theme.colors.primary};
   }

@@ -65,7 +65,7 @@ export const Radio: FC<RadioProps> = (props) => {
   /* todo: handle loading state */
   if (loading) {
     return (
-      <Container>
+      <Container isSelected={selected}>
         <RadioContainer
           isSelected={selected}
           className="placeholder"
@@ -76,7 +76,7 @@ export const Radio: FC<RadioProps> = (props) => {
   }
 
   return (
-    <Container>
+    <Container isSelected={selected} onClick={handleOnClick}>
       {label && labelPosition === 'left' && (
         <Label
           htmlFor={name}

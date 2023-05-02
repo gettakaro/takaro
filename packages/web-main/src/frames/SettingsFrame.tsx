@@ -18,6 +18,10 @@ export const SettingsFrame: FC = () => {
       // If serverId is not valid it will be directed by the failed requests.
       to: PATHS.settings.GameServerSettings,
     },
+    {
+      text: 'Connections',
+      to: PATHS.settings.connections,
+    },
   ];
 
   return (

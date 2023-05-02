@@ -40,7 +40,7 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
           <Item onClick={() => setSelected(idx)}>
             {selected === idx ? (
               <div>
-                <CheckMarkIcon size={20} />
+                <CheckMarkIcon size={15} />
               </div>
             ) : (
               <div className="checkmark-placeholder"></div>

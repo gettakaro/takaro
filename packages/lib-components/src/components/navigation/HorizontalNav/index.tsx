@@ -14,7 +14,7 @@ const NavBar = styled.nav`
 
   a {
     position: relative;
-    padding: ${({ theme }) => theme.spacing['1']};
+    padding: ${({ theme }) => theme.spacing['0_75']};
     border-radius: ${({ theme }) => theme.borderRadius.small};
     &:hover {
       background-color: ${({ theme }) => theme.colors.backgroundAlt};
