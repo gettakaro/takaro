@@ -29,6 +29,7 @@ const tests = [
 
       expect(events.length).to.be.eq(1);
       expect(events[0].data.msg).to.be.eq(
+        // @ eslint-ignore-next-line
         "This is an automated message, don't forget to read the server rules!"
       );
     },
