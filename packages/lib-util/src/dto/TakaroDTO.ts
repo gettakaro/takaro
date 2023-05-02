@@ -30,7 +30,11 @@ export class TakaroDTO<T> {
 
   async construct(data: Partial<T> = {}) {
     Object.assign(this, data);
+
+    // TODO: enable this for much tighter validation of all DTOs
+    // Atm this breaks too much stuff 😮‍💨
     //await this.validate();
+
     return this;
   }
 }
