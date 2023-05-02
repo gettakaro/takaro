@@ -12,7 +12,7 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { EventChatMessage, IGamePlayer } from '@takaro/gameserver';
+import { EventChatMessage, IGamePlayer, Mock } from '@takaro/gameserver';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
@@ -88,6 +88,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -107,6 +112,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -136,6 +146,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
