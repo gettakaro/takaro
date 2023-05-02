@@ -33,7 +33,9 @@ class MockGameserver implements IMockGameServer {
   private redis = Redis.getClient('mockgameserver');
 
   async ensurePlayersPersisted() {
-    const existingPlayers = await (await this.redis).keys(getRedisKey('*'));
+    const existingPlayers = await (
+      await this.redis
+    ).keys(getRedisKey('player:*'));
 
     if (existingPlayers.length > 0) {
       return;
