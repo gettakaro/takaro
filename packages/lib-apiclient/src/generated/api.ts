@@ -1980,6 +1980,48 @@ export type HookSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface HookTriggerDTO
+ */
+export interface HookTriggerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  eventType: HookTriggerDTOEventTypeEnum;
+  /**
+   *
+   * @type {IPlayerReferenceDTO}
+   * @memberof HookTriggerDTO
+   */
+  player?: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  msg?: string;
+}
+
+export const HookTriggerDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+} as const;
+
+export type HookTriggerDTOEventTypeEnum =
+  typeof HookTriggerDTOEventTypeEnum[keyof typeof HookTriggerDTOEventTypeEnum];
+
+/**
+ *
+ * @export
  * @interface HookUpdateDTO
  */
 export interface HookUpdateDTO {
@@ -9076,6 +9118,56 @@ export const HookApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger: async (
+      hookTriggerDTO?: HookTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        hookTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -9246,6 +9338,31 @@ export const HookApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerTrigger(
+      hookTriggerDTO?: HookTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerTrigger(
+          hookTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -9351,6 +9468,21 @@ export const HookApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger(
+      hookTriggerDTO?: HookTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .hookControllerTrigger(hookTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -9435,6 +9567,23 @@ export class HookApi extends BaseAPI {
   ) {
     return HookApiFp(this.configuration)
       .hookControllerSearch(hookSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerTrigger(
+    hookTriggerDTO?: HookTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerTrigger(hookTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

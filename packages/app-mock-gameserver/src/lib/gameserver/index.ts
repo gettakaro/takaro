@@ -68,7 +68,12 @@ class MockGameserver implements IMockGameServer {
       return null;
     }
 
-    return new IGamePlayer().construct(player);
+    return new IGamePlayer().construct({
+      gameId: player.gameId,
+      name: player.name,
+      ip: player.ip,
+      steamId: player.steamId,
+    });
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
@@ -80,7 +85,14 @@ class MockGameserver implements IMockGameServer {
     );
 
     return await Promise.all(
-      playerData.map((p) => new IGamePlayer().construct(p))
+      playerData.map((player) =>
+        new IGamePlayer().construct({
+          gameId: player.gameId,
+          name: player.name,
+          ip: player.ip,
+          steamId: player.steamId,
+        })
+      )
     );
   }
 

@@ -1,6 +1,14 @@
 import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
-import { GameEvents, EventMapping } from '@takaro/gameserver';
+import {
+  GameEvents,
+  EventMapping,
+  EventChatMessage,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
+  EventLogLine,
+  IPlayerReferenceDTO,
+} from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
@@ -92,6 +100,23 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   @IsString()
   function?: string;
+}
+
+export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
+  @IsUUID()
+  gameServerId: string;
+
+  @IsEnum(GameEvents)
+  eventType: GameEvents;
+
+  @Type(() => IPlayerReferenceDTO)
+  @ValidateNested()
+  @IsOptional()
+  player: IPlayerReferenceDTO;
+
+  @IsString()
+  @IsOptional()
+  msg: string;
 }
 
 export class HookService extends TakaroService<
@@ -203,5 +228,47 @@ export class HookService extends TakaroService<
         })
       );
     }
+  }
+
+  async trigger(data: HookTriggerDTO) {
+    let eventData: EventMapping[GameEvents] | null = null;
+    const gameServerService = new GameServerService(this.domainId);
+
+    const player = await gameServerService.getPlayer(
+      data.gameServerId,
+      data.player
+    );
+
+    if (!player) throw new errors.NotFoundError('Player not found');
+
+    switch (data.eventType) {
+      case GameEvents.CHAT_MESSAGE:
+        eventData = await new EventChatMessage().construct({
+          player,
+          msg: data.msg,
+        });
+        break;
+      case GameEvents.PLAYER_CONNECTED:
+        eventData = await new EventPlayerConnected().construct({
+          player,
+          msg: 'Player connected',
+        });
+        break;
+      case GameEvents.PLAYER_DISCONNECTED:
+        eventData = await new EventPlayerDisconnected().construct({
+          player,
+          msg: 'Player disconnected',
+        });
+        break;
+      case GameEvents.LOG_LINE:
+        eventData = await new EventLogLine().construct({
+          msg: data.msg,
+        });
+        break;
+      default:
+        throw new errors.NotFoundError('Unknown event');
+    }
+
+    return this.handleEvent(eventData, data.gameServerId);
   }
 }
