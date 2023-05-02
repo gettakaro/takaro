@@ -19,7 +19,9 @@
     "group": "GameServerController",
     "name": "Create",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "connectionInfo"
+    ],
     "standardEnvironment": true
   }
 }

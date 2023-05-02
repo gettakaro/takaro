@@ -29,6 +29,7 @@ const tests = [
         this.setupData.id
       );
     },
+    filteredFields: ['connectionInfo'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
@@ -37,6 +38,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerCreate(mockGameServer);
     },
+    filteredFields: ['connectionInfo'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
