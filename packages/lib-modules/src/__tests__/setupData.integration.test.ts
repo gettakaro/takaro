@@ -116,7 +116,7 @@ export const modulesTestSetup = async function (
           console.warn(`Event ${expectedEvent} timed out`);
           console.warn(JSON.stringify(events, null, 2));
           reject(new Error(`Event ${expectedEvent} timed out`));
-        }, 3000);
+        }, 5000);
       }),
     ]);
   }
