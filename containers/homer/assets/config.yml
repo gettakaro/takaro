@@ -106,6 +106,11 @@ services:
         subtitle: "Storybook component development"
         url: "http://127.0.0.1:13002"
         target: "_blank"
+      - name: "Docs"
+        icon: "fas fa-book"
+        subtitle: "Auto-reloading dev version of docs"
+        url: "http://127.0.0.1:13005"
+        target: "_blank"
   - name: "Dev tools"
     icon: "fas fa-cloud"
     items:
