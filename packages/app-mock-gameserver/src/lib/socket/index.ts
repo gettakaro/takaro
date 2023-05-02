@@ -33,7 +33,10 @@ class SocketServer {
       },
     });
 
-    this.io.on('connection', (socket) => {
+    this.io.on('connection', async (socket) => {
+      const instance = await getMockServer();
+      await instance.ensurePlayersPersisted();
+
       this.log.info(`New connection: ${socket.id}`);
       socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
         this.log.info(`Event: ${event}`);
@@ -42,8 +45,6 @@ class SocketServer {
           args[args.length - 1]('pong');
           return;
         }
-
-        const instance = await getMockServer();
 
         // Checking if the event is supported helps prevent attacks
         // Because the socket would accept any event name here, it could lead to prototype pollution
