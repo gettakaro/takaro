@@ -1,5 +1,5 @@
 import { BuiltinModule } from './BuiltinModule.js';
-import { PlayerGreeter } from './modules/playerGreeter/index.js';
+import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
 export {
@@ -19,7 +19,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
     cached = [
       new Utils(),
       new Teleports(),
-      new PlayerGreeter(),
+      new PlayerOnboarding(),
       new ServerMessages(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));

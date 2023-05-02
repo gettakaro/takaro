@@ -1,11 +1,11 @@
 import { GameEvents } from '@takaro/gameserver';
 import { BuiltinModule } from '../../BuiltinModule.js';
 
-export class PlayerGreeter extends BuiltinModule {
+export class PlayerOnboarding extends BuiltinModule {
   constructor() {
     super(
-      'playerGreeter',
-      'Sends a message to players who join the server',
+      'playerOnboarding',
+      'Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
