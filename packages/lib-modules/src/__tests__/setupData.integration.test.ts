@@ -17,6 +17,7 @@ export interface IModuleTestsSetupData {
   gameserver: GameServerOutputDTO;
   utilsModule: ModuleOutputDTO;
   teleportsModule: ModuleOutputDTO;
+  serverMessagesModule: ModuleOutputDTO;
   socket: Socket;
   waitForEvent: (
     event: GameEvents,
@@ -78,6 +79,9 @@ export const modulesTestSetup = async function (
   const utilsModule = modules.find((m) => m.name === 'utils');
   if (!utilsModule) throw new Error('utils module not found');
 
+  const serverMessagesModule = modules.find((m) => m.name === 'serverMessages');
+  if (!serverMessagesModule) throw new Error('serverMessages module not found');
+
   async function waitForEvent(
     expectedEvent: GameEvents,
     amount = 1
@@ -135,6 +139,7 @@ export const modulesTestSetup = async function (
     modules: modules,
     utilsModule,
     teleportsModule,
+    serverMessagesModule,
     gameserver: gameserver.data.data,
     socket: await connectedSocket,
     waitForEvent,

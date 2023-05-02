@@ -5,6 +5,7 @@ import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobService,
+  CronJobTriggerDTO,
   CronJobUpdateDTO,
 } from '../service/CronJobService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -122,5 +123,16 @@ export class CronJobController {
     const service = new CronJobService(req.domainId);
     await service.delete(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
+  @Post('/cronjob/trigger')
+  async trigger(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: CronJobTriggerDTO
+  ) {
+    const service = new CronJobService(req.domainId);
+    await service.trigger(data);
+    return apiResponse();
   }
 }

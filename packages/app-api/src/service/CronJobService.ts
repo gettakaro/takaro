@@ -20,7 +20,11 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from './ModuleService.js';
-import { ModuleInstallationOutputDTO } from './GameServerService.js';
+import {
+  GameServerService,
+  ModuleInstallationOutputDTO,
+} from './GameServerService.js';
+import { randomUUID } from 'crypto';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
@@ -66,6 +70,17 @@ export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @IsOptional()
   @IsString()
   function: string;
+}
+
+export class CronJobTriggerDTO extends TakaroDTO<CronJobTriggerDTO> {
+  @IsUUID()
+  gameServerId: string;
+
+  @IsUUID()
+  cronjobId: string;
+
+  @IsUUID()
+  moduleId: string;
 }
 
 export class CronJobService extends TakaroService<
@@ -202,6 +217,7 @@ export class CronJobService extends TakaroService<
         domainId: this.domainId,
         itemId: cronJob.id,
         gameServerId: modInstallation.gameserverId,
+        module: modInstallation,
       },
       {
         jobId,
@@ -229,5 +245,28 @@ export class CronJobService extends TakaroService<
       );
       this.log.debug(`Removed repeatable job ${jobId}`);
     }
+  }
+
+  async trigger(data: CronJobTriggerDTO) {
+    const cronJob = await this.findOne(data.cronjobId);
+    if (!cronJob) throw new errors.NotFoundError('Cronjob not found');
+
+    const gameServerService = new GameServerService(this.domainId);
+    const modInstallation = await gameServerService.getModuleInstallation(
+      data.gameServerId,
+      data.moduleId
+    );
+
+    await queueService.queues.cronjobs.queue.add({
+      functionId: cronJob.function.id,
+      domainId: this.domainId,
+      itemId: cronJob.id,
+      gameServerId: data.gameServerId,
+      module: modInstallation,
+      // We have some job deduplication logic
+      // When manually triggering a cronjob, it will be the exact same each time
+      // Putting this random UUID in the data circumvents that
+      triggerId: randomUUID(),
+    });
   }
 }

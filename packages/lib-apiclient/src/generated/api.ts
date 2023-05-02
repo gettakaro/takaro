@@ -792,6 +792,31 @@ export type CronJobSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface CronJobTriggerDTO
+ */
+export interface CronJobTriggerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  cronjobId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  moduleId: string;
+}
+/**
+ *
+ * @export
  * @interface CronJobUpdateDTO
  */
 export interface CronJobUpdateDTO {
@@ -5350,6 +5375,56 @@ export const CronJobApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger: async (
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        cronJobTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5520,6 +5595,31 @@ export const CronJobApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerTrigger(
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerTrigger(
+          cronJobTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5625,6 +5725,21 @@ export const CronJobApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger(
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .cronJobControllerTrigger(cronJobTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5709,6 +5824,23 @@ export class CronJobApi extends BaseAPI {
   ) {
     return CronJobApiFp(this.configuration)
       .cronJobControllerSearch(cronJobSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerTrigger(
+    cronJobTriggerDTO?: CronJobTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerTrigger(cronJobTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
