@@ -54,7 +54,7 @@ export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
 
-  getPlayer(id: string): Promise<IGamePlayer | null>;
+  getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
 

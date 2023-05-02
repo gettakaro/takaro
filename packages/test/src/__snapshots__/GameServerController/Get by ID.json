@@ -10,8 +10,7 @@
       "name": "Test gameserver",
       "type": "MOCK",
       "connectionInfo": {
-        "host": "localhost",
-        "port": 1234
+        "host": "http://takaro:3002"
       }
     }
   },
@@ -20,7 +19,9 @@
     "group": "GameServerController",
     "name": "Get by ID",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "connectionInfo"
+    ],
     "standardEnvironment": true
   }
 }

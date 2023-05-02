@@ -37,11 +37,9 @@ export class IGameServerInMemoryManager {
   }
 
   async add(domainId: string, gameServer: GameServerOutputDTO) {
+    const gameServerService = new GameServerService(domainId);
     const emitter = (
-      await GameServerService.getGame(
-        gameServer.type,
-        gameServer.connectionInfo
-      )
+      await gameServerService.getGame(gameServer.id)
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 

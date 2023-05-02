@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTO,
@@ -20,7 +20,9 @@ const setup = async function (
   const gameserverRes = await this.client.gameserver.gameServerControllerCreate(
     {
       name: 'Test gameserver',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
       type: GameServerCreateDTOTypeEnum.Mock,
     }
   );
@@ -84,7 +86,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'bar' }), systemConfig: '{}' }
+        { userConfig: JSON.stringify({ foo: 'bar' }) }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -98,7 +100,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'a' }), systemConfig: '{}' }
+        { userConfig: JSON.stringify({ foo: 'a' }) }
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -115,7 +117,6 @@ const tests = [
         this.setupData.module.id,
         {
           userConfig: JSON.stringify({ foo: 'a'.repeat(11) }),
-          systemConfig: '{}',
         }
       );
     },
@@ -130,8 +131,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.module.id,
-        { userConfig: JSON.stringify({}), systemConfig: '{}' }
+        this.setupData.module.id
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -148,7 +148,6 @@ const tests = [
         this.setupData.module.id,
         {
           userConfig: JSON.stringify({ foo: 'bar', bar: 'foo' }),
-          systemConfig: '{}',
         }
       );
     },
@@ -215,7 +214,6 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.cronJobsModule.id,
         {
-          userConfig: JSON.stringify({}),
           systemConfig: JSON.stringify({
             cronJobs: {
               [this.setupData.cronJobsModule.cronJobs[0].name]: '5 * * * *',
@@ -247,7 +245,6 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.cronJobsModule.id,
         {
-          userConfig: JSON.stringify({}),
           systemConfig: JSON.stringify({
             cronJobs: {
               [updatedModuleRes.data.data.cronJobs[0].name]: '5 * * * *',
@@ -268,11 +265,7 @@ const tests = [
       const installRes =
         await this.client.gameserver.gameServerControllerInstallModule(
           this.setupData.gameserver.id,
-          this.setupData.cronJobsModule.id,
-          {
-            userConfig: JSON.stringify({}),
-            systemConfig: JSON.stringify({}),
-          }
+          this.setupData.cronJobsModule.id
         );
 
       expect(installRes.data.data.systemConfig).to.deep.equal({

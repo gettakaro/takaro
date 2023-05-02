@@ -535,6 +535,25 @@ export type CommandSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface CommandTriggerDTO
+ */
+export interface CommandTriggerDTO {
+  /**
+   *
+   * @type {IPlayerReferenceDTO}
+   * @memberof CommandTriggerDTO
+   */
+  player: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandTriggerDTO
+   */
+  msg: string;
+}
+/**
+ *
+ * @export
  * @interface CommandUpdateDTO
  */
 export interface CommandUpdateDTO {
@@ -770,6 +789,31 @@ export const CronJobSearchInputDTOSortDirectionEnum = {
 export type CronJobSearchInputDTOSortDirectionEnum =
   typeof CronJobSearchInputDTOSortDirectionEnum[keyof typeof CronJobSearchInputDTOSortDirectionEnum];
 
+/**
+ *
+ * @export
+ * @interface CronJobTriggerDTO
+ */
+export interface CronJobTriggerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  cronjobId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobTriggerDTO
+   */
+  moduleId: string;
+}
 /**
  *
  * @export
@@ -1936,6 +1980,48 @@ export type HookSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface HookTriggerDTO
+ */
+export interface HookTriggerDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  eventType: HookTriggerDTOEventTypeEnum;
+  /**
+   *
+   * @type {IPlayerReferenceDTO}
+   * @memberof HookTriggerDTO
+   */
+  player?: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  msg?: string;
+}
+
+export const HookTriggerDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+} as const;
+
+export type HookTriggerDTOEventTypeEnum =
+  typeof HookTriggerDTOEventTypeEnum[keyof typeof HookTriggerDTOEventTypeEnum];
+
+/**
+ *
+ * @export
  * @interface HookUpdateDTO
  */
 export interface HookUpdateDTO {
@@ -2250,6 +2336,12 @@ export type MetadataOutputServerTime = string;
 export interface MockConnectionInfo {
   /**
    *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  host: string;
+  /**
+   *
    * @type {number}
    * @memberof MockConnectionInfo
    */
@@ -2322,13 +2414,13 @@ export interface ModuleInstallDTO {
    * @type {string}
    * @memberof ModuleInstallDTO
    */
-  userConfig: string;
+  userConfig?: string;
   /**
    *
    * @type {string}
    * @memberof ModuleInstallDTO
    */
-  systemConfig: string;
+  systemConfig?: string;
 }
 /**
  *
@@ -3548,10 +3640,10 @@ export interface TakaroTokenDTO {
 export interface TeleportPlayerInputDTO {
   /**
    *
-   * @type {string}
+   * @type {IPlayerReferenceDTO}
    * @memberof TeleportPlayerInputDTO
    */
-  playerGameId: string;
+  player: IPlayerReferenceDTO;
   /**
    *
    * @type {number}
@@ -4375,6 +4467,63 @@ export const CommandApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger: async (
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerTrigger', 'id', id);
+      const localVarPath = `/command/{id}/trigger`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4655,6 +4804,34 @@ export const CommandApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerTrigger(
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.commandControllerTrigger(
+          id,
+          commandTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4821,6 +4998,23 @@ export const CommandApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger(
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .commandControllerTrigger(id, commandTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -4956,6 +5150,25 @@ export class CommandApi extends BaseAPI {
   ) {
     return CommandApiFp(this.configuration)
       .commandControllerSearch(commandSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {string} id
+   * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerTrigger(
+    id: string,
+    commandTriggerDTO?: CommandTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerTrigger(id, commandTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5204,6 +5417,56 @@ export const CronJobApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger: async (
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        cronJobTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5374,6 +5637,31 @@ export const CronJobApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerTrigger(
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.cronJobControllerTrigger(
+          cronJobTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5479,6 +5767,21 @@ export const CronJobApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger(
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .cronJobControllerTrigger(cronJobTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -5563,6 +5866,23 @@ export class CronJobApi extends BaseAPI {
   ) {
     return CronJobApiFp(this.configuration)
       .cronJobControllerSearch(cronJobSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerTrigger(
+    cronJobTriggerDTO?: CronJobTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerTrigger(cronJobTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8798,6 +9118,56 @@ export const HookApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger: async (
+      hookTriggerDTO?: HookTriggerDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        hookTriggerDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -8968,6 +9338,31 @@ export const HookApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerTrigger(
+      hookTriggerDTO?: HookTriggerDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.hookControllerTrigger(
+          hookTriggerDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -9073,6 +9468,21 @@ export const HookApiFactory = function (
     },
     /**
      *
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger(
+      hookTriggerDTO?: HookTriggerDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .hookControllerTrigger(hookTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -9157,6 +9567,23 @@ export class HookApi extends BaseAPI {
   ) {
     return HookApiFp(this.configuration)
       .hookControllerSearch(hookSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Trigger
+   * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerTrigger(
+    hookTriggerDTO?: HookTriggerDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return HookApiFp(this.configuration)
+      .hookControllerTrigger(hookTriggerDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -26,7 +26,7 @@ async function teleport() {
   await takaro.gameserver.gameServerControllerTeleportPlayer(
     data.gameServerId,
     {
-      playerGameId: player.gameId,
+      player: { gameId: player.gameId },
       x: teleport.x,
       y: teleport.y,
       z: teleport.z,
@@ -34,7 +34,7 @@ async function teleport() {
   );
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: `Teleported to ${teleport.name}`,
+    message: `Teleported to ${teleport.name}.`,
   });
 }
 

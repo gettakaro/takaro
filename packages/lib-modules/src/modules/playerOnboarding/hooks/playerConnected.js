@@ -6,7 +6,7 @@ async function main() {
 
   const player = data.player;
 
-  const rawMessage = data.module.config.message;
+  const rawMessage = data.module.userConfig.message;
   const message = rawMessage.replace('{player}', player.name);
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {

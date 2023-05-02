@@ -12,6 +12,7 @@ import {
   HookCreateDTO,
   HookOutputDTO,
   HookService,
+  HookTriggerDTO,
   HookUpdateDTO,
 } from '../service/HookService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -130,5 +131,16 @@ export class HookController {
     const service = new HookService(req.domainId);
     await service.delete(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
+  @Post('/hook/trigger')
+  async trigger(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: HookTriggerDTO
+  ) {
+    const service = new HookService(req.domainId);
+    await service.trigger(data);
+    return apiResponse();
   }
 }

@@ -1,18 +1,23 @@
 import { faker } from '@faker-js/faker';
 import { logger, TakaroDTO } from '@takaro/util';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
   IMessageOptsDTO,
+  IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
-import { EventLogLine, GameEvents } from '../../interfaces/events.js';
+import { Socket, io } from 'socket.io-client';
+import assert from 'assert';
 
 export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
+  @IsString()
+  public readonly host!: string;
+
   @IsNumber()
   public readonly eventInterval = 10000;
   public readonly playerPoolSize = 100;
@@ -27,91 +32,109 @@ export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
     xboxLiveId: faker.random.alphaNumeric(16),
   }));
 }
+
 export class Mock implements IGameServer {
   private logger = logger('Mock');
   connectionInfo: MockConnectionInfo;
   emitter: MockEmitter;
+  io: Socket;
 
   constructor(config: MockConnectionInfo) {
     this.connectionInfo = config;
-    this.emitter = new MockEmitter(this.connectionInfo);
+    this.io = io(this.connectionInfo.host);
+    this.emitter = new MockEmitter(this.connectionInfo, this.io);
   }
 
   getEventEmitter() {
     return this.emitter;
   }
 
-  async getPlayer(id: string): Promise<IGamePlayer | null> {
-    this.logger.debug('getPlayer', id);
-    return null;
+  private async getClient(timeout = 5000): Promise<Socket> {
+    if (this.io.connected) {
+      return this.io;
+    }
+
+    return Promise.race([
+      new Promise<Socket>((resolve, reject) => {
+        this.io.on('connect', () => {
+          resolve(this.io);
+        });
+        this.io.on('connect_error', (err) => {
+          reject(err);
+        });
+      }),
+      new Promise<Socket>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Connection timed out after ${timeout}ms`));
+        }, timeout);
+      }),
+    ]);
+  }
+
+  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('getPlayer', player);
+    return data;
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    return [];
+    const client = await this.getClient();
+    const data = await client.emitWithAck('getPlayers');
+    return data;
   }
 
-  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
-    return {
-      x: parseInt(faker.random.numeric(), 10),
-      y: parseInt(faker.random.numeric(), 10),
-      z: parseInt(faker.random.numeric(), 10),
-    };
+  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('getPlayerLocation', player);
+    return data;
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
-    const fiftyFiftyChance = Math.random() >= 0.5;
+    try {
+      const client = await this.getClient();
+      const data = await client.emitWithAck('ping');
+      assert(data === 'pong');
+    } catch (error) {
+      if (!error || !(error instanceof Error)) {
+        return new TestReachabilityOutput().construct({
+          connectable: false,
+          reason: 'Unknown error',
+        });
+      }
 
-    if (fiftyFiftyChance) {
-      return new TestReachabilityOutput().construct({
-        connectable: true,
-      });
-    } else {
+      if (error.name === 'AssertionError') {
+        return new TestReachabilityOutput().construct({
+          connectable: false,
+          reason: 'Server responded with invalid data',
+        });
+      }
+
       return new TestReachabilityOutput().construct({
         connectable: false,
-        reason:
-          'Mock server has a 50% chance of being unreachable. Try again please :)',
+        reason: 'Unable to connect to server',
       });
     }
-  }
 
-  private sendLog(line: EventLogLine) {
-    this.emitter.emit(GameEvents.LOG_LINE, line);
-  }
-
-  async executeConsoleCommand(rawCommand: string) {
-    const output = new CommandOutput().construct({
-      rawResult: `Command "${rawCommand}" executed successfully`,
-      success: true,
+    return new TestReachabilityOutput().construct({
+      connectable: true,
     });
+  }
 
-    this.sendLog(
-      await new EventLogLine().construct({
-        msg: rawCommand,
-        timestamp: new Date(),
-      })
-    );
-
-    return output;
+  async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('executeConsoleCommand', rawCommand);
+    return data;
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
-    const options = { ...opts };
-    const fullMessage = `Server: ${options.recipient ? '[DM]' : ''} ${message}`;
-
-    this.sendLog(
-      await new EventLogLine().construct({
-        msg: fullMessage,
-        timestamp: new Date(),
-      })
-    );
+    const client = await this.getClient();
+    const data = await client.emitWithAck('sendMessage', message, opts);
+    return data;
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    this.sendLog(
-      await new EventLogLine().construct({
-        msg: `Teleporting ${player.name} to ${x}, ${y}, ${z}`,
-        timestamp: new Date(),
-      })
-    );
+    const client = await this.getClient();
+    const data = await client.emitWithAck('teleportPlayer', player, x, y, z);
+    return data;
   }
 }

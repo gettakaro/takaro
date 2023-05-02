@@ -1,0 +1,24 @@
+{
+  "name": "@takaro/mock-gameserver",
+  "version": "0.0.1",
+  "description": "A mock gameserver for testing purposes, acts just like a real gameserver",
+  "main": "dist/main.js",
+  "types": "main.ts",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
+    "start:dev": "nodemon --exec 'npm run build && node --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12003 dist/main.js'  --config ../../nodemon.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
+    "test:unit": "echo 'No tests (yet :))'",
+    "test:integration": "tsc -p ./tsconfig.json && mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js dist/**/*.integration.test.js --exit",
+    "test:watch": "npm run test -- --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@takaro/util": "0.0.1",
+    "@takaro/http": "0.0.1"
+  }
+}

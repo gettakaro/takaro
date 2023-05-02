@@ -2,13 +2,5 @@
   "**/*.{js,ts,tsx}": [
     "eslint --fix",
     "prettier --write"
-  ],
-  "packages/lib-function-helpers/**/*": [
-    "npx ts-node scripts/getMonacoCustomTypes.ts",
-    "git add packages/web-main/src/components/modules/Editor/monacoCustomTypes.json"
-  ],
-  "packages/lib-apiclient/**/*": [
-    "npx ts-node scripts/getMonacoCustomTypes.ts",
-    "git add packages/web-main/src/components/modules/Editor/monacoCustomTypes.json"
   ]
 }

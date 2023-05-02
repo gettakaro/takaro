@@ -48,6 +48,7 @@ export const validationSchema = z
     z.object({
       type: z.literal(GameServerCreateDTOTypeEnum.Mock.valueOf()),
       connectionInfo: z.object({
+        host: z.string().nonempty('Host cannot be empty'),
         eventInterval: z.number().min(500),
         playerPoolSize: z
           .number()

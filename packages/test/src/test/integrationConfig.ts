@@ -9,6 +9,9 @@ interface IIntegrationTestConfig extends IBaseConfig {
     password: string;
     OAuth2URL: string;
   };
+  mockGameserver: {
+    host: string;
+  };
   overwriteSnapshots: boolean;
 }
 
@@ -49,6 +52,14 @@ const configSchema = {
       format: String,
       default: 'http://hydra:4444',
       env: 'TAKARO_OAUTH_HOST',
+    },
+  },
+  mockGameserver: {
+    host: {
+      doc: 'The host of the mock gameserver',
+      format: String,
+      default: 'http://takaro:3002',
+      env: 'MOCK_GAMESERVER_HOST',
     },
   },
   overwriteSnapshots: {

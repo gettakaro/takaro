@@ -15,6 +15,7 @@ import {
   TestReachabilityOutput,
   CommandOutput,
   IMessageOptsDTO,
+  IPlayerReferenceDTO,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -129,10 +130,9 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 }
 
 class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
-  @IsString()
-  @MinLength(1)
-  @MaxLength(150)
-  playerGameId!: string;
+  @ValidateNested()
+  @Type(() => IPlayerReferenceDTO)
+  player: IPlayerReferenceDTO;
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   x: number;
@@ -271,9 +271,10 @@ export class GameServerController {
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
-    @Body() data: ModuleInstallDTO
+    @Body() data?: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
+
     return apiResponse(
       await service.installModule(params.gameserverId, params.moduleId, data)
     );
@@ -331,7 +332,7 @@ export class GameServerController {
     @Body() data: TeleportPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(params.id, data.playerGameId, {
+    const result = await service.teleportPlayer(params.id, data.player, {
       x: data.x,
       y: data.y,
       z: data.z,

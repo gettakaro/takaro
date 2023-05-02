@@ -14,6 +14,7 @@ import {
   CommandCreateDTO,
   CommandOutputDTO,
   CommandService,
+  CommandTriggerDTO,
   CommandUpdateDTO,
 } from '../service/CommandService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -176,5 +177,17 @@ export class CommandController {
     const service = new CommandService(req.domainId);
     await service.deleteArgument(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
+  @Post('/command/:id/trigger')
+  async trigger(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: CommandTriggerDTO
+  ) {
+    const service = new CommandService(req.domainId);
+    await service.trigger(params.id, data);
+    return apiResponse();
   }
 }

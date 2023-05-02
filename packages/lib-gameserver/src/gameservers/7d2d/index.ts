@@ -4,6 +4,7 @@ import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
+  IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
@@ -37,8 +38,8 @@ export class SevenDaysToDie implements IGameServer {
     return emitter;
   }
 
-  async getPlayer(id: string): Promise<IGamePlayer | null> {
-    this.logger.debug('getPlayer', id);
+  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    this.logger.debug('getPlayer', player);
     return null;
   }
 

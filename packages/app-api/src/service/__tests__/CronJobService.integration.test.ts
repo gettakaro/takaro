@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import {
   GameServerOutputDTO,
   ModuleOutputDTO,
@@ -46,18 +46,16 @@ async function setup(
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
       type: 'MOCK',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
     })
   ).data.data;
 
   const assignment = (
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
-      mod.id,
-      {
-        userConfig: '{}',
-        systemConfig: '{}',
-      }
+      mod.id
     )
   ).data.data;
 
@@ -83,11 +81,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         gameserver.id,
-        mod.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        mod.id
       );
 
       const queue = queueService.queues.cronjobs.queue;
