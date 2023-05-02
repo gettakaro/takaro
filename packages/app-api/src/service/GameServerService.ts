@@ -24,7 +24,6 @@ import {
   MockConnectionInfo,
   IGameServer,
   IPosition,
-  IGamePlayer,
   IPlayerReferenceDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
@@ -34,7 +33,6 @@ import { TakaroDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { PlayerService } from './PlayerService.js';
 import { JSONSchema } from 'class-validator-jsonschema';
 
 // Curse you ESM... :(
@@ -363,21 +361,12 @@ export class GameServerService extends TakaroService<
 
   async teleportPlayer(
     gameServerId: string,
-    playerGameId: string,
+    playerRef: IPlayerReferenceDTO,
     position: IPosition
   ) {
     const gameInstance = await this.getGame(gameServerId);
-    const playerService = new PlayerService(this.domainId);
-    const foundPlayers = await playerService.findAssociations(playerGameId);
-
-    if (foundPlayers.length === 0) {
-      throw new errors.NotFoundError('Player not found');
-    }
-
-    const player = await new IGamePlayer().construct(foundPlayers[0]);
-
     return gameInstance.teleportPlayer(
-      player,
+      playerRef,
       position.x,
       position.y,
       position.z

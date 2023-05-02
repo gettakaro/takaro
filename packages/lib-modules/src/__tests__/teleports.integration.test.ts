@@ -149,6 +149,7 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
+      const setEvents = this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -159,13 +160,10 @@ const tests = [
         }
       );
 
-      const setEvents = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        1
-      );
-      expect(setEvents.length).to.be.eq(1);
-      expect(setEvents[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents).length).to.be.eq(1);
+      expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
 
+      const events = this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -175,12 +173,9 @@ const tests = [
           },
         }
       );
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        1
-      );
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq('Teleported to test.');
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq('Teleported to test.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

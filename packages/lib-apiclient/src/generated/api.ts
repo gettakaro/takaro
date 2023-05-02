@@ -3640,10 +3640,10 @@ export interface TakaroTokenDTO {
 export interface TeleportPlayerInputDTO {
   /**
    *
-   * @type {string}
+   * @type {IPlayerReferenceDTO}
    * @memberof TeleportPlayerInputDTO
    */
-  playerGameId: string;
+  player: IPlayerReferenceDTO;
   /**
    *
    * @type {number}
