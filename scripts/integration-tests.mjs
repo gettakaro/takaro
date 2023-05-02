@@ -113,7 +113,7 @@ async function main() {
       ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
       ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
       REDIS_HOST: '127.0.0.1',
-      MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
+      MOCK_GAMESERVER_HOST: 'http://127.0.0.1:3002'
     };
 
     for (const [key, value] of Object.entries(testVars)) {
@@ -126,7 +126,7 @@ async function main() {
     failed = true;
   }
 
-  await logs(['takaro_api', 'takaro_mock_gameserver', 'kratos', 'hydra'], composeOpts);
+  await logs(['takaro_api', 'takaro_mock_gameserver'], composeOpts);
   await cleanUp();
 
   if (failed) {
