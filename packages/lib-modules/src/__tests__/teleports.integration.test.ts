@@ -3,6 +3,7 @@ import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
   modulesTestSetup,
+  sorter,
 } from './setupData.integration.test.js';
 
 const group = 'Teleports suite';
@@ -172,8 +173,11 @@ const tests = [
         2
       );
 
-      expect(events.length).to.be.eq(2);
-      expect(events[1].data.msg).to.be.eq('Teleported to test.');
+      const sortedEvents = events.sort(sorter);
+
+      expect(sortedEvents.length).to.be.eq(2);
+      expect(sortedEvents[0].data.msg).to.be.eq('Teleport test set.');
+      expect(sortedEvents[1].data.msg).to.be.eq('Teleported to test.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

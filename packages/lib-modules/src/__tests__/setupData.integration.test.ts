@@ -24,6 +24,16 @@ export interface IModuleTestsSetupData {
   ) => Promise<IDetectedEvent[]>;
 }
 
+export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
+  if (a.data.msg < b.data.msg) {
+    return -1;
+  }
+  if (a.data.msg > b.data.msg) {
+    return 1;
+  }
+  return 0;
+};
+
 export const modulesTestSetup = async function (
   this: IntegrationTest<IModuleTestsSetupData>
 ): Promise<IModuleTestsSetupData> {
@@ -85,8 +95,8 @@ export const modulesTestSetup = async function (
           }
 
           if (event !== expectedEvent) {
-            log.warn(`Received event ${event} but expected ${expectedEvent}`);
-            log.warn(JSON.stringify({ event, data }, null, 2));
+            // log.warn(`Received event ${event} but expected ${expectedEvent}`);
+            // log.warn(JSON.stringify({ event, data }, null, 2));
             return;
           }
 

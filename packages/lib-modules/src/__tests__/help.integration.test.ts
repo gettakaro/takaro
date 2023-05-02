@@ -3,20 +3,10 @@ import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
   modulesTestSetup,
-  IDetectedEvent,
+  sorter,
 } from './setupData.integration.test.js';
 
 const group = 'Help command';
-
-const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
-  if (a.data.msg < b.data.msg) {
-    return -1;
-  }
-  if (a.data.msg > b.data.msg) {
-    return 1;
-  }
-  return 0;
-};
 
 const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
