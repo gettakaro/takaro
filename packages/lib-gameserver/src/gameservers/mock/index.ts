@@ -1,6 +1,4 @@
-import { faker } from '@faker-js/faker';
-import { logger, TakaroDTO } from '@takaro/util';
-import { IsNumber, IsString } from 'class-validator';
+import { logger } from '@takaro/util';
 import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
@@ -13,25 +11,7 @@ import {
 import { MockEmitter } from './emitter.js';
 import { Socket, io } from 'socket.io-client';
 import assert from 'assert';
-
-export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
-  @IsString()
-  public readonly host!: string;
-
-  @IsNumber()
-  public readonly eventInterval = 10000;
-  public readonly playerPoolSize = 100;
-
-  public readonly mockPlayers: Partial<IGamePlayer>[] = Array.from(
-    Array(this.playerPoolSize).keys()
-  ).map((p) => ({
-    gameId: p.toString(),
-    name: faker.internet.userName(),
-    epicOnlineServicesId: faker.random.alphaNumeric(16),
-    steamId: faker.random.alphaNumeric(16),
-    xboxLiveId: faker.random.alphaNumeric(16),
-  }));
-}
+import { MockConnectionInfo } from './connectionInfo.js';
 
 export class Mock implements IGameServer {
   private logger = logger('Mock');

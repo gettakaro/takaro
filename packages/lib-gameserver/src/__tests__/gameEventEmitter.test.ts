@@ -1,6 +1,7 @@
 import { expect, sandbox } from '@takaro/test';
+import { MockConnectionInfo } from '../gameservers/mock/connectionInfo.js';
+import { Mock } from '../gameservers/mock/index.js';
 import { GameEvents } from '../interfaces/events.js';
-import { Mock, MockConnectionInfo } from '../main.js';
 
 describe('GameEventEmitter', () => {
   /**

@@ -1,5 +1,5 @@
 import { logger } from '@takaro/util';
-import { MockConnectionInfo } from './index.js';
+import { MockConnectionInfo } from './connectionInfo.js';
 import { IEventMap, TakaroEmitter } from '../../TakaroEmitter.js';
 import { Socket } from 'socket.io-client';
 
