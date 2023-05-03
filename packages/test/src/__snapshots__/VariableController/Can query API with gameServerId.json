@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "id": "ae923f36-ba3d-4aa1-96e2-7930b2251682",
+        "createdAt": "2023-05-03T15:12:46.798Z",
+        "updatedAt": "2023-05-03T15:12:46.798Z",
+        "key": "Variable",
+        "value": "Test value",
+        "gameServerId": "77c6c21e-ded0-4e77-be64-733a9f795f6e",
+        "playerId": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Can query API with gameServerId",
+    "filteredFields": [
+      "gameServerId",
+      "playerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

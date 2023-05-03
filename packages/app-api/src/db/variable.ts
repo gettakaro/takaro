@@ -14,6 +14,9 @@ export class VariablesModel extends TakaroModel {
   static tableName = VARIABLES_TABLE_NAME;
   key!: string;
   value!: string;
+
+  gameServerId?: string;
+  playerId?: string;
 }
 
 export class VariableRepo extends ITakaroRepo<

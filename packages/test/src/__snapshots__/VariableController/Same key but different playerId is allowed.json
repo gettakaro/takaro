@@ -1,0 +1,25 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "10e8c048-175a-40fc-b0b0-f5756f84031d",
+      "createdAt": "2023-05-03T15:07:24.175Z",
+      "updatedAt": "2023-05-03T15:07:24.175Z",
+      "key": "Variable",
+      "value": "Test value",
+      "gameServerId": null,
+      "playerId": "755ce6e3-cd27-4adc-867d-908f8fa17597"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Same key but different playerId is allowed",
+    "filteredFields": [
+      "playerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
