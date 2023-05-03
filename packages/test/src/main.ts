@@ -1,5 +1,6 @@
 export { expect } from './test/expect.js';
 export { sandbox } from './test/sandbox.js';
+export { IDetectedEvent, waitForEvents } from './test/waitForEvents.js';
 export { integrationConfig } from './test/integrationConfig.js';
 
 export * as snapshot from './snapshots.js';
