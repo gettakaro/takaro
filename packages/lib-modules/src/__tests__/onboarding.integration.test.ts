@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -18,7 +18,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.onboardingModule.id
       );
-
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
         eventType: GameEvents.PLAYER_CONNECTED,
@@ -26,10 +26,9 @@ const tests = [
           gameId: '1',
         },
       });
-      const events = await this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE);
 
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.match(/Welcome .+ to the server!/);
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.match(/Welcome .+ to the server!/);
     },
   }),
 ];

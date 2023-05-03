@@ -12,7 +12,7 @@ services:
     environment:
       - INIT_ASSETS=0
   postgresql:
-    image: postgres:14
+    image: postgres:15
     volumes:
       - ./_data/db:/var/lib/postgresql/data
     ports:
@@ -126,7 +126,7 @@ services:
     volumes:
       - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
-    image: postgres:14
+    image: postgres:15
     ports:
       - 127.0.0.1:13101:5432
     volumes:
@@ -156,7 +156,7 @@ services:
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
   postgresql_hydra:
-    image: postgres:14
+    image: postgres:15
     ports:
       - 127.0.0.1:13102:5432
     volumes:

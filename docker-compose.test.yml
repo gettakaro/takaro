@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   postgresql:
-    image: postgres:14
+    image: postgres:15
     ports:
       - "5432:5432"   
     environment:
@@ -26,7 +26,7 @@ services:
       file: docker-compose.yml
       service: kratos-migrate      
   postgresql_kratos:
-    image: postgres:14
+    image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -46,7 +46,7 @@ services:
       file: docker-compose.yml
       service: hydra-migrate   
   postgresql_hydra:
-    image: postgres:14
+    image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

@@ -1,10 +1,6 @@
 import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
-import { logger } from '@takaro/util';
 import { integrationConfig, IntegrationTest } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
-import { io, Socket } from 'socket.io-client';
-
-const log = logger('modules:test');
 
 export interface IDetectedEvent {
   event: GameEvents;
@@ -18,11 +14,6 @@ export interface IModuleTestsSetupData {
   teleportsModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
-  socket: Socket;
-  waitForEvent: (
-    event: GameEvents,
-    amount?: number
-  ) => Promise<IDetectedEvent[]>;
 }
 
 export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -38,31 +29,6 @@ export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
 export const modulesTestSetup = async function (
   this: IntegrationTest<IModuleTestsSetupData>
 ): Promise<IModuleTestsSetupData> {
-  const token = await this.client.login();
-
-  const socket = io(integrationConfig.get('host'), {
-    extraHeaders: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const timeout = 5000;
-  const connectedSocket = await Promise.race([
-    new Promise<Socket>((resolve, reject) => {
-      socket.on('connect', () => {
-        resolve(socket);
-      });
-      socket.on('connect_error', (err) => {
-        reject(err);
-      });
-    }),
-    new Promise<Socket>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Connection timed out after ${timeout}ms`));
-      }, timeout);
-    }),
-  ]);
-
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
@@ -85,49 +51,6 @@ export const modulesTestSetup = async function (
   const onboardingModule = modules.find((m) => m.name === 'playerOnboarding');
   if (!onboardingModule) throw new Error('playerOnboarding module not found');
 
-  async function waitForEvent(
-    expectedEvent: GameEvents,
-    amount = 1
-  ): Promise<IDetectedEvent[]> {
-    const events: IDetectedEvent[] = [];
-    let hasFinished = false;
-    return await Promise.race([
-      new Promise<IDetectedEvent[]>((resolve) => {
-        connectedSocket.on('gameEvent', (gameserverId, event, data) => {
-          if (gameserverId !== gameserver.data.data.id) {
-            log.warn(
-              `Received event for gameserver ${gameserverId} but expected ${gameserver.data.data.id}`
-            );
-            return;
-          }
-
-          if (event !== expectedEvent) {
-            // log.warn(`Received event ${event} but expected ${expectedEvent}`);
-            // log.warn(JSON.stringify({ event, data }, null, 2));
-            return;
-          }
-
-          if (event === expectedEvent) {
-            events.push({ event, data });
-          }
-
-          if (events.length === amount) {
-            hasFinished = true;
-            resolve(events);
-          }
-        });
-      }),
-      new Promise<IDetectedEvent[]>((_, reject) => {
-        setTimeout(() => {
-          if (hasFinished) return;
-          console.warn(`Event ${expectedEvent} timed out`);
-          console.warn(JSON.stringify(events, null, 2));
-          reject(new Error(`Event ${expectedEvent} timed out`));
-        }, 5000);
-      }),
-    ]);
-  }
-
   return {
     modules: modules,
     utilsModule,
@@ -135,7 +58,5 @@ export const modulesTestSetup = async function (
     serverMessagesModule,
     onboardingModule,
     gameserver: gameserver.data.data,
-    socket: await connectedSocket,
-    waitForEvent,
   };
 };

@@ -1,5 +1,4 @@
-import { logger, TakaroDTO, errors } from '@takaro/util';
-import { IsString, IsNumber } from 'class-validator';
+import { logger, errors } from '@takaro/util';
 import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
@@ -8,16 +7,8 @@ import {
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
+import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
-
-export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
-  @IsString()
-  public readonly host!: string;
-  @IsNumber()
-  public readonly rconPort!: string;
-  @IsString()
-  public readonly rconPassword!: string;
-}
 
 export class Rust implements IGameServer {
   private logger = logger('rust');

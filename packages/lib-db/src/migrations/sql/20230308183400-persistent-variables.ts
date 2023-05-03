@@ -34,7 +34,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
 
-    table.string('key').primary().notNullable();
+    table.string('key').notNullable();
     table.string('value').notNullable();
 
     table

@@ -26,6 +26,14 @@ Commands are triggered by a user. They are triggered when a player sends a chat 
 
 Commands support parameters, allowing you to pass data to the Function. For example, you can create a command that allows players to teleport to a specific location. The command could look like `/teleport homeBase`
 
+# Variables
+
+What if you want to keep track of some data in different executions? For example, you want to keep track of how many times a player has joined the server. You can use Variables for this.
+
+Variables are key-value pairs that are stored in the database. Each variable can be linked to a specific GameServer and/or Player. This allows you to store data for a specific player or for a specific server.
+
+Variable keys must be unique per GameServer and Player. This means that you can have a variable with the key `playerJoinedCount` for each player, but you cannot have two variables with the key `playerJoinedCount` for the same player.
+
 # Configuration
 
 Every Module can have a certain configuration, allowing you to customize it's behavior without having to edit any code. Every Hook, Cronjob and Command will be able to read this config.

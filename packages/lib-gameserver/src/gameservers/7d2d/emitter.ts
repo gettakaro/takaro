@@ -8,9 +8,9 @@ import {
   EventPlayerDisconnected,
   GameEvents,
 } from '../../interfaces/events.js';
-import { SdtdConnectionInfo } from './index.js';
+import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
-import { IGamePlayer } from '../../main.js';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;

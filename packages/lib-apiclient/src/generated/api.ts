@@ -3990,6 +3990,18 @@ export interface VariableCreateDTO {
    * @memberof VariableCreateDTO
    */
   value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  playerId?: string;
 }
 /**
  *
@@ -4028,6 +4040,18 @@ export interface VariableOutputDTO {
    * @memberof VariableOutputDTO
    */
   value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  playerId?: string;
   /**
    *
    * @type {string}
@@ -4084,6 +4108,18 @@ export interface VariableSearchInputAllowedFilters {
    * @memberof VariableSearchInputAllowedFilters
    */
   key?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  playerId?: string;
 }
 /**
  *
@@ -4161,6 +4197,18 @@ export interface VariableUpdateDTO {
    * @memberof VariableUpdateDTO
    */
   value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  playerId?: string;
 }
 
 /**

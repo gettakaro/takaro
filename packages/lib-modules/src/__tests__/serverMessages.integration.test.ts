@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,16 +19,16 @@ const tests = [
         this.setupData.serverMessagesModule.id
       );
 
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      const events = await this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE);
-
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq(
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq(
         // eslint-disable-next-line
         "This is an automated message, don't forget to read the server rules!"
       );
@@ -50,16 +50,16 @@ const tests = [
         }
       );
 
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      const events = await this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE);
-
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq('This is a custom message');
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq('This is a custom message');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -78,6 +78,9 @@ const tests = [
         }
       );
 
+      // We should see each of our test messages at least once
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 50);
+
       // Trigger it 50 times
       await Promise.all(
         Array.from({ length: 50 }).map(() => {
@@ -89,12 +92,7 @@ const tests = [
         })
       );
 
-      // We should see each of our test messages at least once
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        50
-      );
-      const messages = events.map((e) => e.data.msg);
+      const messages = (await events).map((e) => e.data.msg);
       expect(messages).to.include('Test message 1');
       expect(messages).to.include('Test message 2');
       expect(messages).to.include('Test message 3');

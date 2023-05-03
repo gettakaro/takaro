@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { TakaroService } from './Base.js';
 import { VariableRepo, VariablesModel } from '../db/variable.js';
@@ -11,6 +11,14 @@ export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
 
   @IsString()
   value: string;
+
+  @IsUUID()
+  @IsOptional()
+  gameServerId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  playerId?: string;
 }
 
 export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
@@ -19,6 +27,14 @@ export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
 
   @IsString()
   value: string;
+
+  @IsUUID()
+  @IsOptional()
+  gameServerId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  playerId?: string;
 }
 
 export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
@@ -27,6 +43,14 @@ export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
 
   @IsString()
   value: string;
+
+  @IsUUID()
+  @IsOptional()
+  gameServerId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  playerId?: string;
 }
 
 export class VariablesService extends TakaroService<
