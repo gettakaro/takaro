@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,6 +19,8 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -28,10 +30,9 @@ const tests = [
           },
         }
       );
-      const events = await this.setupData.waitForEvent(GameEvents.CHAT_MESSAGE);
 
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq('Pong!');
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq('Pong!');
     },
   }),
 ];

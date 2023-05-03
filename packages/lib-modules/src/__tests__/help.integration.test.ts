@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,7 +19,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id
       );
-
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -29,13 +29,9 @@ const tests = [
           },
         }
       );
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        3
-      );
 
-      expect(events.length).to.be.eq(3);
-      const sortedEvents = events.sort(sorter);
+      expect((await events).length).to.be.eq(3);
+      const sortedEvents = (await events).sort(sorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
       expect(sortedEvents[1].data.msg).to.be.eq(
@@ -60,7 +56,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 7);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -71,13 +67,8 @@ const tests = [
         }
       );
 
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        7
-      );
-
-      expect(events.length).to.be.eq(7);
-      const sortedEvents = events.sort(sorter);
+      expect((await events).length).to.be.eq(7);
+      const sortedEvents = (await events).sort(sorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
       expect(sortedEvents[1].data.msg).to.be.eq('deletetp: Deletes a location');
@@ -109,6 +100,8 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -119,13 +112,8 @@ const tests = [
         }
       );
 
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        1
-      );
-
-      expect(events.length).to.be.eq(1);
-      const sortedEvents = events.sort(sorter);
+      expect((await events).length).to.be.eq(1);
+      const sortedEvents = (await events).sort(sorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq(
         'ping: Replies with pong, useful for testing if the connection works'
@@ -143,6 +131,8 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -153,13 +143,8 @@ const tests = [
         }
       );
 
-      const events = await this.setupData.waitForEvent(
-        GameEvents.CHAT_MESSAGE,
-        1
-      );
-
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq(
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq(
         'Unknown command "foobar", use this command without arguments to see all available commands.'
       );
     },

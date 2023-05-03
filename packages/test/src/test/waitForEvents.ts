@@ -17,11 +17,9 @@ export async function waitForEvents(
   let hasFinished = false;
   return Promise.race([
     new Promise<IDetectedEvent[]>(async (resolve) => {
-      const token = await client.login();
-
       const socket = io(integrationConfig.get('host'), {
         extraHeaders: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${client.token}`,
         },
       });
 
