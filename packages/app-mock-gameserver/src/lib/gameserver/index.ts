@@ -1,5 +1,6 @@
 import { errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
+
 import { getSocketServer } from '../socket/index.js';
 import {
   CommandOutput,
@@ -15,6 +16,7 @@ import {
 } from '@takaro/gameserver';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
+import { playScenario } from './scenario.js';
 
 // Welcome to omit-hell 😇
 export type IMockGameServer = Omit<
@@ -28,9 +30,13 @@ function getRedisKey(key: string) {
   return `${REDIS_PREFIX}${key}`;
 }
 class MockGameserver implements IMockGameServer {
-  private logger = logger('Mock');
+  private log = logger('Mock');
   private socketServer = getSocketServer();
   private redis = Redis.getClient('mockgameserver');
+
+  private scenarioInterval = setInterval(() => {
+    playScenario(this.socketServer.io);
+  }, config.get('mockserver.scenarioInterval'));
 
   async ensurePlayersPersisted() {
     const existingPlayers = await (
@@ -69,7 +75,7 @@ class MockGameserver implements IMockGameServer {
     }
 
     return new IGamePlayer().construct({
-      gameId: player.gameId,
+      gameId: player.gameId.toString(),
       name: player.name,
       ip: player.ip,
       steamId: player.steamId,
@@ -87,7 +93,7 @@ class MockGameserver implements IMockGameServer {
     return await Promise.all(
       playerData.map((player) =>
         new IGamePlayer().construct({
-          gameId: player.gameId,
+          gameId: player.gameId.toString(),
           name: player.name,
           ip: player.ip,
           steamId: player.steamId,
@@ -138,6 +144,15 @@ class MockGameserver implements IMockGameServer {
         })
       );
       output.rawResult = 'Connected all players';
+      output.success = true;
+    }
+
+    if (rawCommand === 'scenario') {
+      playScenario(this.socketServer.io).catch((err) => {
+        this.log.error(err);
+      });
+
+      output.rawResult = 'Started scenario';
       output.success = true;
     }
 
