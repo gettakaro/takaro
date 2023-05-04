@@ -5,6 +5,7 @@ import {
   EventLogLine,
   EventChatMessage,
   EventPlayerConnected,
+  EventPlayerDisconnected,
 } from '@takaro/gameserver';
 import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
@@ -14,6 +15,7 @@ export interface ServerToClientEvents {
   [GameEvents.LOG_LINE]: (line: EventLogLine) => void;
   [GameEvents.CHAT_MESSAGE]: (message: EventChatMessage) => void;
   [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => void;
+  [GameEvents.PLAYER_DISCONNECTED]: (player: EventPlayerDisconnected) => void;
   pong: () => void;
 }
 
