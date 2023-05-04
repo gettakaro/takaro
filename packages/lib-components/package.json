@@ -53,6 +53,9 @@
     "web-vitals": "^2.1.2"
   },
   "dependencies": {
+    "@jsonforms/core": "^3.0.0",
+    "@jsonforms/react": "^3.0.0",
+    "@jsonforms/vanilla-renderers": "^3.0.0",
     "@mdx-js/react": "^2.1.5",
     "@tanstack/react-query": "^4.26.1",
     "framer-motion": "^6.5.1",

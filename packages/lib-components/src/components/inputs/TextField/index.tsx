@@ -7,6 +7,8 @@ import {
   SuffixContainer,
 } from './style';
 
+import { Size } from '../../../styled';
+
 import { ErrorMessage } from '../ErrorMessage';
 import { Label } from '../Label';
 import { useController } from 'react-hook-form';
@@ -54,8 +56,6 @@ export const TextField: FC<TextFieldProps> = (props) => {
     suffix,
   } = defaultsApplier(props);
 
-  const [showError, setShowError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const {
     field,
     fieldState: { error },
@@ -68,18 +68,80 @@ export const TextField: FC<TextFieldProps> = (props) => {
     },
   });
 
+  return (
+    <GenericTextField
+      errorMessage={error?.message}
+      {...field}
+      onChange={field.onChange}
+      disabled={disabled}
+      required={required}
+      loading={loading}
+      type={type}
+      icon={icon}
+      size={size}
+      name={name}
+      label={label}
+      hint={hint}
+      prefix={prefix}
+      suffix={suffix}
+      readOnly={readOnly}
+      placeholder={placeholder}
+    />
+  );
+};
+
+interface GenericTextFieldProps {
+  onChange: any;
+  errorMessage: string | undefined;
+  type?: FieldType;
+  loading: boolean;
+  disabled?: boolean;
+  label?: string;
+  required?: boolean;
+  size?: Size;
+  name: string;
+  prefix?: string;
+  suffix?: string;
+  icon?: any;
+  placeholder?: string;
+  hint?: string;
+  readOnly?: boolean;
+  description?: string;
+}
+
+export const GenericTextField: FC<GenericTextFieldProps> = ({
+  onChange,
+  errorMessage,
+  type = 'text',
+  loading,
+  label,
+  required = false,
+  size = 'medium',
+  disabled = false,
+  name,
+  prefix,
+  description,
+  suffix,
+  readOnly = false,
+  hint,
+  placeholder = '',
+  icon,
+}) => {
+  const [showError, setShowError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleOnBlur = () => {
-    field.onBlur();
+    // field.onBlur();
     setShowError(false);
   };
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (type === 'number' && !isNaN(parseInt(event.target.value))) {
       // try to parse first
-      field.onChange(parseInt(event.target.value));
+      onChange(parseInt(event.target.value));
       return;
     }
-    field.onChange(event.target.value);
+    onChange(event.target.value);
   };
 
   const handleOnFocus = () => {
@@ -93,7 +155,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
           <Label
             required={required}
             htmlFor={name}
-            error={!!error}
+            error={!!errorMessage}
             size={size}
             disabled={disabled}
             text={label}
@@ -112,7 +174,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
           required={required}
           hint={hint}
           htmlFor={name}
-          error={!!error}
+          error={!!errorMessage}
           size={size}
           text={label}
           disabled={disabled}
@@ -123,10 +185,9 @@ export const TextField: FC<TextFieldProps> = (props) => {
         {prefix && <PrefixContainer>{prefix}</PrefixContainer>}
         {icon && cloneElement(icon, { size: 22, className: 'icon' })}
         <Input
-          {...field}
           autoCapitalize="off"
           autoComplete={type === 'password' ? 'new-password' : 'off'}
-          hasError={!!error}
+          hasError={!!errorMessage}
           hasIcon={!!icon}
           hasPrefix={!!prefix}
           hasSuffix={!!suffix}
@@ -162,8 +223,8 @@ export const TextField: FC<TextFieldProps> = (props) => {
           ))}
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
-      {error && showError && <ErrorMessage message={error.message!} />}
-      {props.description && <p>{props.description}</p>}
+      {errorMessage && showError && <ErrorMessage message={errorMessage} />}
+      {description && <p>{description}</p>}
     </Container>
   );
 };
