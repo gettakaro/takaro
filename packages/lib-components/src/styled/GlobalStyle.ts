@@ -71,9 +71,13 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
 
+
   form {
     display: block;
     width: 100%;
+    fieldset {
+      border: none;
+    }
   }
 
   input, textarea {

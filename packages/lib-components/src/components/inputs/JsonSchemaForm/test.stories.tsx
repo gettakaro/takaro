@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StoryFn } from '@storybook/react';
-import { JsonForms } from '@jsonforms/react';
-import { vanillaCells, vanillaRenderers } from '@jsonforms/vanilla-renderers';
-import { TakaroRenderer } from './renderer';
+import Form from '@rjsf/core';
+import { RJSFSchema } from '@rjsf/utils';
+import validator from '@rjsf/validator-ajv8';
+import { customFields } from './fields';
 import { styled } from '../../../styled';
+import { Button } from '../../../components';
 
 const Container = styled.div`
   width: 100%;
@@ -14,7 +16,7 @@ export default {
   args: {},
 };
 
-const schema = {
+const schema: RJSFSchema = {
   type: 'object',
   properties: {
     name: {
@@ -35,96 +37,24 @@ const schema = {
   },
   required: ['name', 'due_date'],
 };
-const uischema = {
-  type: 'VerticalLayout',
-  elements: [
-    {
-      type: 'Control',
-      label: false,
-      scope: '#/properties/done',
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/name',
-    },
-    {
-      type: 'HorizontalLayout',
-      elements: [
-        {
-          type: 'Control',
-          scope: '#/properties/due_date',
-        },
-        {
-          type: 'Control',
-          scope: '#/properties/recurrence',
-        },
-      ],
-    },
-  ],
-};
+
 const initialData = {};
 
 export const Default: StoryFn = () => {
-  const [data, setData] = useState(initialData);
   return (
     <Container>
-      <JsonForms
+      <Form
         schema={schema}
-        uischema={uischema}
-        data={data}
-        renderers={vanillaRenderers}
-        cells={vanillaCells}
-        onChange={({ data }) => setData(data)}
-      />
-    </Container>
-  );
-};
-
-const customRenderSchema = {
-  properties: {
-    monkey: {
-      type: 'string',
-      minLength: 1,
-    },
-    potato: {
-      type: 'string',
-      minLength: 1,
-    },
-  },
-};
-
-const customRenderUiSchema = {
-  type: 'VerticalLayout',
-  elements: [
-    {
-      type: 'Control',
-      scope: '#/properties/monkey',
-      label: true,
-    },
-    {
-      type: 'Control',
-      scope: '#/properties/potato',
-      label: true,
-    },
-  ],
-};
-
-export const CustomRenderer = () => {
-  const [data, setData] = useState({ monkey: 'aap', potato: 'aardappel' });
-  console.log(data);
-
-  return (
-    <Container>
-      <JsonForms
-        schema={customRenderSchema}
-        data={data}
-        renderers={TakaroRenderer}
-        uischema={customRenderUiSchema}
-        onChange={({ data, errors }) => {
-          console.log('errors', errors);
-          setData(data);
-        }}
-      />
+        fields={customFields}
+        formData={initialData}
+        validator={validator}
+      >
+        <Button
+          type="submit"
+          text="Submit"
+          onClick={() => console.log('form submitted')}
+        />
+      </Form>
     </Container>
   );
 };

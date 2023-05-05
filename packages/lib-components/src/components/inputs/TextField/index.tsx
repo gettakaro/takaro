@@ -1,4 +1,4 @@
-import { FC, cloneElement, useState, ReactElement, ChangeEvent } from 'react';
+import { FC, cloneElement, useState, ChangeEvent, ReactElement } from 'react';
 import {
   Container,
   InputContainer,
@@ -8,40 +8,47 @@ import {
 } from './style';
 
 import { Size } from '../../../styled';
-
-import { ErrorMessage } from '../ErrorMessage';
-import { Label } from '../Label';
-import { useController } from 'react-hook-form';
+import { ErrorMessage, Label } from '../../../components';
 import {
   AiOutlineEye as ShowPasswordIcon,
   AiOutlineEyeInvisible as HidePasswordIcon,
 } from 'react-icons/ai';
+import { getFieldType, getInputMode } from './util';
 import {
-  InputProps,
   defaultInputProps,
   defaultInputPropsFactory,
+  InputProps,
 } from '../InputProps';
-import { getFieldType, getInputMode } from './util';
 
-export type FieldType = 'text' | 'password' | 'email' | 'number';
+export type TextFieldType = 'text' | 'password' | 'email' | 'number';
 
 export interface TextFieldProps extends InputProps {
-  icon?: ReactElement;
-  readOnly?: boolean;
+  type?: TextFieldType;
   placeholder?: string;
+  size?: Size;
   prefix?: string;
   suffix?: string;
-  type?: FieldType;
+  icon?: ReactElement;
+  description?: string;
+}
+
+interface GenericTextFieldProps extends TextFieldProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
 }
 
 const defaultsApplier =
-  defaultInputPropsFactory<TextFieldProps>(defaultInputProps);
+  defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
 
-export const TextField: FC<TextFieldProps> = (props) => {
+// TODO: setup forwardRef so the control ref can be passed to the component
+export const GenericTextField: FC<GenericTextFieldProps> = (props) => {
   const {
-    control,
+    onChange,
+    description,
+    onBlur,
+    error,
     loading,
-    value,
     label,
     hint,
     disabled,
@@ -49,89 +56,18 @@ export const TextField: FC<TextFieldProps> = (props) => {
     name,
     size,
     readOnly,
-    placeholder = '',
+    placeholder,
     icon,
-    type = 'text',
+    type,
     prefix,
     suffix,
   } = defaultsApplier(props);
 
-  const {
-    field,
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-    defaultValue: value ?? '',
-    rules: {
-      required: required,
-    },
-  });
-
-  return (
-    <GenericTextField
-      errorMessage={error?.message}
-      {...field}
-      onChange={field.onChange}
-      disabled={disabled}
-      required={required}
-      loading={loading}
-      type={type}
-      icon={icon}
-      size={size}
-      name={name}
-      label={label}
-      hint={hint}
-      prefix={prefix}
-      suffix={suffix}
-      readOnly={readOnly}
-      placeholder={placeholder}
-    />
-  );
-};
-
-interface GenericTextFieldProps {
-  onChange: any;
-  errorMessage: string | undefined;
-  type?: FieldType;
-  loading: boolean;
-  disabled?: boolean;
-  label?: string;
-  required?: boolean;
-  size?: Size;
-  name: string;
-  prefix?: string;
-  suffix?: string;
-  icon?: any;
-  placeholder?: string;
-  hint?: string;
-  readOnly?: boolean;
-  description?: string;
-}
-
-export const GenericTextField: FC<GenericTextFieldProps> = ({
-  onChange,
-  errorMessage,
-  type = 'text',
-  loading,
-  label,
-  required = false,
-  size = 'medium',
-  disabled = false,
-  name,
-  prefix,
-  description,
-  suffix,
-  readOnly = false,
-  hint,
-  placeholder = '',
-  icon,
-}) => {
   const [showError, setShowError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleOnBlur = () => {
-    // field.onBlur();
+    onBlur();
     setShowError(false);
   };
 
@@ -155,7 +91,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = ({
           <Label
             required={required}
             htmlFor={name}
-            error={!!errorMessage}
+            error={!!error}
             size={size}
             disabled={disabled}
             text={label}
@@ -174,7 +110,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = ({
           required={required}
           hint={hint}
           htmlFor={name}
-          error={!!errorMessage}
+          error={!!error}
           size={size}
           text={label}
           disabled={disabled}
@@ -187,7 +123,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = ({
         <Input
           autoCapitalize="off"
           autoComplete={type === 'password' ? 'new-password' : 'off'}
-          hasError={!!errorMessage}
+          hasError={!!error}
           hasIcon={!!icon}
           hasPrefix={!!prefix}
           hasSuffix={!!suffix}
@@ -223,7 +159,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = ({
           ))}
         {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
       </InputContainer>
-      {errorMessage && showError && <ErrorMessage message={errorMessage} />}
+      {error && showError && <ErrorMessage message={error} />}
       {description && <p>{description}</p>}
     </Container>
   );

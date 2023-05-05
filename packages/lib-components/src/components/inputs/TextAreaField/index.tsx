@@ -3,7 +3,6 @@ import { Container, TextAreaContainer, TextArea } from './style';
 
 import { ErrorMessage } from '../ErrorMessage';
 import { Label } from '../Label';
-import { useController } from 'react-hook-form';
 
 import {
   InputProps,
@@ -12,49 +11,43 @@ import {
 } from '../InputProps';
 
 export interface TextAreaFieldProps extends InputProps {
-  readOnly?: boolean;
   placeholder?: string;
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<TextAreaFieldProps>(defaultInputProps);
+interface GenericTextFieldProps extends TextAreaFieldProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
 
-export const TextAreaField: FC<TextAreaFieldProps> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
+
+export const GenericTextAreaField: FC<GenericTextFieldProps> = (props) => {
   const {
-    control,
     loading,
-    value,
     label,
     hint,
     disabled,
     required,
+    onBlur,
+    placeholder,
+    onChange,
+    error,
     name,
     size,
     readOnly,
-    placeholder = '',
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState(false);
 
-  const {
-    field,
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-    defaultValue: value ?? '',
-    rules: {
-      required: required,
-    },
-  });
-
   const handleOnBlur = () => {
-    field.onBlur();
+    onBlur();
     setShowError(false);
   };
 
   const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    field.onChange(event.target.value);
+    onChange(event.target.value);
   };
 
   const handleOnFocus = () => {
@@ -96,7 +89,6 @@ export const TextAreaField: FC<TextAreaFieldProps> = (props) => {
       )}
       <TextAreaContainer>
         <TextArea
-          {...field}
           hasError={!!error}
           id={name}
           name={name}
@@ -108,7 +100,7 @@ export const TextAreaField: FC<TextAreaFieldProps> = (props) => {
           role="presentation"
         />
       </TextAreaContainer>
-      {error && showError && <ErrorMessage message={error.message!} />}
+      {error && showError && <ErrorMessage message={error} />}
       {props.description && <p>{props.description}</p>}
     </Container>
   );

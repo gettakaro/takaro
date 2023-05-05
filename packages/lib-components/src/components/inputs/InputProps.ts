@@ -10,13 +10,15 @@ interface DefaultInputProps {
 }
 
 export interface InputProps extends DefaultInputProps {
-  control: Control<FieldValues> | Control<any>;
   name: string;
-  /// These can just have undefined as default value.
   label?: string;
   hint?: string;
   description?: string;
   value?: unknown;
+}
+
+export interface ControlledInputProps extends InputProps {
+  control: Control<FieldValues> | Control<any>;
 }
 
 type Required<T> = {

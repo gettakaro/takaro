@@ -2,16 +2,22 @@ import { FC, useEffect, useState } from 'react';
 import { getTransition } from '../../../helpers';
 import { Skeleton, Label } from '../../../components';
 import { Wrapper, Container, Dot, Line, ContentContainer } from './style';
-import { useController } from 'react-hook-form';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
   InputProps,
 } from '../InputProps';
 
-const defaultsApplier = defaultInputPropsFactory<InputProps>(defaultInputProps);
+interface GenericSwitchProps extends InputProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
 
-export const Switch: FC<InputProps> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
+
+export const GenericSwitch: FC<GenericSwitchProps> = (props) => {
   const {
     readOnly,
     size,
@@ -20,23 +26,20 @@ export const Switch: FC<InputProps> = (props) => {
     disabled,
     hint,
     label,
+    error,
     loading,
-    control,
+    onChange,
     value = false,
   } = defaultsApplier(props);
 
-  const {
-    field,
-    fieldState: { error },
-  } = useController({ name, control, defaultValue: value });
-  const [isChecked, setChecked] = useState(field.value);
+  const [isChecked, setChecked] = useState<boolean>(value as boolean);
 
   function handleOnClick(): void {
     setChecked(!isChecked);
   }
 
   useEffect(() => {
-    field.onChange(isChecked);
+    onChange(isChecked);
   }, [isChecked]);
 
   if (loading) {

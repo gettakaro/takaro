@@ -4,9 +4,11 @@ export type { CheckboxProps } from './Checkbox';
 export { Select, OptionGroup, Option } from './Select';
 export type { SelectProps, OptionProps, OptionGroupProps } from './Select';
 
-export { Switch } from './Switch';
+export { ControlledSwitch as Switch } from './Switch/Controlled';
 
-export { TextField } from './TextField';
+export { ControlledTextField as TextField } from './TextField/Controlled';
+
+export { ControlledTextAreaField as TextAreaField } from './TextAreaField/Controlled';
 
 export { SliderComponent as Slider } from './Slider';
 export type { SliderProps } from './Slider';
