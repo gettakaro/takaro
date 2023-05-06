@@ -25,6 +25,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
+import { PlayerService } from './PlayerService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -313,6 +314,12 @@ export class CommandService extends TakaroService<
       }
 
       const gameServerService = new GameServerService(this.domainId);
+      const playerService = new PlayerService(this.domainId);
+
+      const resolvedPlayer = await playerService.resolveRef(
+        chatMessage.player,
+        gameServerId
+      );
 
       const playerLocation = await (
         await gameServerService.getGame(gameServerId)
@@ -324,7 +331,11 @@ export class CommandService extends TakaroService<
           data: {
             timestamp: chatMessage.timestamp,
             ...parseCommand(chatMessage.msg, c),
-            player: { ...chatMessage.player, location: playerLocation },
+            player: {
+              ...resolvedPlayer,
+              ...chatMessage.player,
+              location: playerLocation,
+            },
             module: await gameServerService.getModuleInstallation(
               gameServerId,
               c.moduleId

@@ -7,8 +7,12 @@ async function tplist() {
   const player = data.player;
 
   const teleportsRes = await takaro.variable.variableControllerFind({
+    filters: {
+      gameServerId: data.gameServerId,
+      playerId: player.id,
+    },
     search: {
-      key: `t_tp_${data.gameServerId}_${player.gameId}`,
+      key: 't_tp',
     },
     sortBy: 'key',
     sortDirection: 'asc',
