@@ -162,4 +162,20 @@ export class PlayerRepo extends ITakaroRepo<
     const player = await this.findOne(foundProfiles[0].playerId);
     return player;
   }
+
+  async getRef(playerId: string, gameServerId: string) {
+    const knex = await this.getKnex();
+    const model = PlayerOnGameServerModel.bindKnex(knex);
+
+    const foundProfiles = await model
+      .query()
+      .modify('domainScoped', this.domainId)
+      .where({ playerId, gameServerId });
+
+    if (foundProfiles.length === 0) {
+      throw new errors.NotFoundError();
+    }
+
+    return new IPlayerReferenceDTO().construct(foundProfiles[0]);
+  }
 }

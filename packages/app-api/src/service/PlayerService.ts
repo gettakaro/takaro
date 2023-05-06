@@ -125,4 +125,8 @@ export class PlayerService extends TakaroService<
   ): Promise<PlayerOutputDTO> {
     return this.repo.resolveRef(ref, gameserverId);
   }
+
+  async getRef(playerId: string, gameserverId: string) {
+    return this.repo.getRef(playerId, gameserverId);
+  }
 }

@@ -15,7 +15,6 @@ import {
   TestReachabilityOutput,
   CommandOutput,
   IMessageOptsDTO,
-  IPlayerReferenceDTO,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -92,6 +91,14 @@ class ParamIdAndModuleId {
   moduleId!: string;
 }
 
+class ParamIdAndPlayerId {
+  @IsUUID('4')
+  gameserverId!: string;
+
+  @IsUUID('4')
+  playerId!: string;
+}
+
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
   @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
@@ -130,10 +137,6 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 }
 
 class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
-  @ValidateNested()
-  @Type(() => IPlayerReferenceDTO)
-  player: IPlayerReferenceDTO;
-
   @IsNumber({ allowNaN: false, allowInfinity: false })
   x: number;
 
@@ -325,18 +328,22 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:id/teleportPlayer')
+  @Post('/gameserver/:gameserverId/player/:playerId/teleport')
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
+    @Params() params: ParamIdAndPlayerId,
     @Body() data: TeleportPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(params.id, data.player, {
-      x: data.x,
-      y: data.y,
-      z: data.z,
-    });
+    const result = await service.teleportPlayer(
+      params.gameserverId,
+      params.playerId,
+      {
+        x: data.x,
+        y: data.y,
+        z: data.z,
+      }
+    );
     return apiResponse(result);
   }
 }

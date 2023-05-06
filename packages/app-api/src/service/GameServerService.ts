@@ -39,6 +39,7 @@ import { JSONSchema } from 'class-validator-jsonschema';
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
+import { PlayerService } from './PlayerService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -361,12 +362,13 @@ export class GameServerService extends TakaroService<
 
   async teleportPlayer(
     gameServerId: string,
-    playerRef: IPlayerReferenceDTO,
+    playerId: string,
     position: IPosition
   ) {
+    const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.teleportPlayer(
-      playerRef,
+      await playerService.getRef(playerId, gameServerId),
       position.x,
       position.y,
       position.z
