@@ -1,6 +1,5 @@
 import { getTransition } from '../../../../helpers';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
-import { useController } from 'react-hook-form';
 import { Container, RadioContainer, Inner } from './style';
 import { Label } from '../../../../components';
 import {
@@ -18,22 +17,30 @@ export interface RadioProps extends InputProps {
   labelPosition: 'left' | 'right';
 }
 
+interface GenericRadioProps extends RadioProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
+
 const variants = {
   selected: { scale: 1 },
   deselected: { scale: 0 },
 };
 
-const defaultsApplier = defaultInputPropsFactory<RadioProps>(defaultInputProps);
+const defaultsApplier =
+  defaultInputPropsFactory<GenericRadioProps>(defaultInputProps);
 
-export const Radio: FC<RadioProps> = (props) => {
+export const GenericRadio: FC<GenericRadioProps> = (props) => {
   const {
     readOnly,
-    control,
     loading,
     name,
     size,
     required,
     value,
+    onChange,
+    error,
     selected,
     setSelected,
     labelPosition = 'left',
@@ -49,18 +56,9 @@ export const Radio: FC<RadioProps> = (props) => {
 
   useEffect(() => {
     if (selected && !readOnly) {
-      field.onChange(value);
+      onChange(value);
     }
   }, [selected]);
-
-  const {
-    field,
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-    defaultValue: selected ?? value,
-  });
 
   /* todo: handle loading state */
   if (loading) {

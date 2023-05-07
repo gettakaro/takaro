@@ -1,6 +1,7 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Checkbox, CheckboxProps } from '.';
+import { CheckBox, CheckBoxProps } from '../../../components';
 import { useForm } from 'react-hook-form';
 
 const Wrapper = styled.div`
@@ -14,7 +15,7 @@ const Wrapper = styled.div`
 
 export default {
   title: 'Inputs/Checkbox/Default',
-  component: Checkbox,
+  component: CheckBox,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
     name: 'checkbox',
@@ -27,9 +28,9 @@ export default {
     required: true,
     size: 'medium',
   },
-} as Meta<CheckboxProps>;
+} as Meta<CheckBoxProps>;
 
-export const Default: StoryFn<CheckboxProps> = (args) => {
+export const Default: StoryFn<CheckBoxProps> = (args) => {
   const { control } = useForm();
-  return <Checkbox {...args} control={control} />;
+  return <CheckBox {...args} control={control} />;
 };

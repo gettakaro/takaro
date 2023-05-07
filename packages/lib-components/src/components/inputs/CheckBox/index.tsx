@@ -9,7 +9,6 @@ import {
 
 import { Label } from '../../../components';
 import { AiOutlineCheck as Icon } from 'react-icons/ai';
-import { useController } from 'react-hook-form';
 import { getTransition } from '../../../helpers';
 
 import {
@@ -19,9 +18,13 @@ import {
 } from '../InputProps';
 import { ErrorMessage } from '../ErrorMessage';
 
-export interface CheckboxProps extends InputProps {
+export interface CheckBoxProps extends InputProps {
   labelPosition?: 'left' | 'right';
-  onChange?: (value: boolean) => void;
+}
+
+interface GenericCheckBoxProps extends CheckBoxProps {
+  onChange: (value: boolean) => void;
+  error?: string;
 }
 
 const variants = {
@@ -30,33 +33,25 @@ const variants = {
 };
 
 const defaultsApplier =
-  defaultInputPropsFactory<CheckboxProps>(defaultInputProps);
+  defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
 
-export const Checkbox: FC<CheckboxProps> = (props) => {
+export const GenericCheckbox: FC<GenericCheckBoxProps> = (props) => {
   const {
     name,
     size,
     label,
-    control,
     loading,
     required,
     readOnly,
     disabled,
     value,
     labelPosition,
+    onChange,
+    error,
     hint,
   } = defaultsApplier(props);
 
-  const {
-    field: checkbox,
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-    defaultValue: value,
-  });
-
-  const [isChecked, setChecked] = useState<boolean>(checkbox.value);
+  const [isChecked, setChecked] = useState<boolean>(value as boolean);
 
   function handleOnClick(): void {
     if (readOnly || disabled) {
@@ -66,7 +61,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
   }
 
   useEffect(() => {
-    checkbox.onChange(isChecked);
+    onChange(isChecked);
     if (props.onChange) props.onChange(isChecked);
   }, [isChecked]);
 
@@ -156,7 +151,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
           size={size}
         />
       )}
-      {error && <ErrorMessage message={error.message!} />}
+      {error && <ErrorMessage message={error} />}
     </Container>
   );
 };

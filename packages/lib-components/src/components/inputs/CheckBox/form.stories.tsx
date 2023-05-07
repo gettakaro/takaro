@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Button } from '../..';
-import { Checkbox, CheckboxProps } from '.';
+import { CheckBox, CheckBoxProps } from '../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ const ResultContainer = styled.div`
 
 export default {
   title: 'Inputs/Checkbox/Form',
-  component: Checkbox,
+  component: CheckBox,
   args: {
     disabled: false,
     hint: '',
@@ -24,9 +24,9 @@ export default {
     required: false,
     size: 'medium',
   },
-} as Meta<CheckboxProps>;
+} as Meta<CheckBoxProps>;
 
-export const OnChange: StoryFn<CheckboxProps> = (args) => {
+export const OnChange: StoryFn<CheckBoxProps> = (args) => {
   type FormFields = {
     hasCar: boolean;
   };
@@ -35,7 +35,7 @@ export const OnChange: StoryFn<CheckboxProps> = (args) => {
 
   return (
     <>
-      <Checkbox
+      <CheckBox
         control={control}
         label={args.label}
         labelPosition={args.labelPosition}
@@ -51,7 +51,7 @@ export const OnChange: StoryFn<CheckboxProps> = (args) => {
   );
 };
 
-export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
+export const OnSubmit: StoryFn<CheckBoxProps> = (args) => {
   const [result, setResult] = useState<boolean>(false);
 
   type FormFields = {
@@ -60,11 +60,7 @@ export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
 
   const validationSchema = useMemo(() => z.literal(true), []);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormFields>({
+  const { control, handleSubmit } = useForm<FormFields>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
@@ -76,7 +72,7 @@ export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
   return (
     <>
       <form onSubmit={handleSubmit(submit)}>
-        <Checkbox
+        <CheckBox
           control={control}
           label="Do you accept the terms and conditions?"
           labelPosition="left"
@@ -86,7 +82,6 @@ export const OnSubmit: StoryFn<CheckboxProps> = (args) => {
           size={args.size}
           disabled={args.disabled}
           required={args.required}
-          error={errors.termsAndConditions}
         />
         <Button text="Submit Form" type="submit" />
       </form>

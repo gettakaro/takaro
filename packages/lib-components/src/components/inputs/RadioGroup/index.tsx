@@ -4,7 +4,7 @@ import {
   defaultInputPropsFactory,
   InputProps,
 } from '../InputProps';
-import { Radio } from './Radio';
+import { GenericRadio } from './Radio';
 import { FieldSet } from './style';
 
 interface Option {
@@ -17,13 +17,19 @@ export interface RadioGroupProps extends InputProps {
   options: Option[];
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
+interface GenericRadioGroupProps extends RadioGroupProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
 
-export const RadioGroup: FC<RadioGroupProps> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<GenericRadioGroupProps>(defaultInputProps);
+
+export const GenericRadioGroup: FC<GenericRadioGroupProps> = (props) => {
+  // TODO: implement hint and description
   const {
     loading,
-    control,
     readOnly,
     value,
     name,
@@ -31,6 +37,9 @@ export const RadioGroup: FC<RadioGroupProps> = (props) => {
     label,
     options,
     required,
+    onChange,
+    onBlur,
+    error,
     disabled,
   } = defaultsApplier(props);
 
@@ -47,8 +56,10 @@ export const RadioGroup: FC<RadioGroupProps> = (props) => {
       <div>
         {options.map(({ label, labelPosition, value }) => {
           return (
-            <Radio
-              control={control}
+            <GenericRadio
+              onChange={onChange}
+              onBlur={onBlur}
+              error={error}
               label={label}
               labelPosition={labelPosition}
               loading={loading}

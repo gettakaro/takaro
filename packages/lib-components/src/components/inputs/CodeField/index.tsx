@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import { Container, InputContainer, Input, LoadingField } from './style';
-import { useController } from 'react-hook-form';
 import {
   InputProps,
   defaultInputProps,
@@ -23,13 +22,18 @@ export interface CodeFieldProps extends InputProps {
   autoSubmit?: () => unknown;
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
+interface GenericCodeFieldProps extends CodeFieldProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
 
-export const CodeField: FC<CodeFieldProps> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<GenericCodeFieldProps>(defaultInputProps);
+
+export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
   const {
     loading,
-    control,
     name,
     fields,
     autoSubmit,
@@ -37,17 +41,14 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     hint,
     size,
     disabled,
+    onChange,
+    error,
     required,
     label,
-    value,
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState<boolean>(false);
 
-  const {
-    field: { ...inputProps },
-    fieldState: { error },
-  } = useController({ name, control, defaultValue: value });
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   const sendResult = () => {
     const res = fieldRefs.current.map((field) => field.value).join('');
-    inputProps.onChange(res);
+    onChange(res);
 
     if (res.length === fields) {
       if (autoSubmit) autoSubmit();
@@ -177,7 +178,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             type="text"
           />
         ))}
-        {error && showError && <ErrorMessage message={error.message!} />}
+        {error && showError && <ErrorMessage message={error} />}
       </InputContainer>
     </Container>
   );

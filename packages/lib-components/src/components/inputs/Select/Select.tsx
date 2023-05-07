@@ -30,7 +30,6 @@ import {
   size,
 } from '@floating-ui/react';
 
-import { useController } from 'react-hook-form';
 import {
   InputProps,
   defaultInputPropsFactory,
@@ -41,22 +40,33 @@ export interface SelectProps extends InputProps {
   render: (selectedIndex: number) => React.ReactNode;
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<PropsWithChildren<SelectProps>>(defaultInputProps);
+export interface GenericSelectProps extends SelectProps {
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
+  error?: string;
+}
 
-// TODO: implement required (but this should only be done after the label reimplementation.
-export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<PropsWithChildren<GenericSelectProps>>(
+    defaultInputProps
+  );
+
+// TODO: implement **required** (but this should only be done after the label reimplementation.
+export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
+  props
+) => {
   const {
     required,
-    name,
     size: componentSize,
     label,
     render,
     children,
-    control,
     readOnly,
     disabled,
     hint,
+    error,
+    value,
+    onChange,
     loading,
   } = defaultsApplier(props);
 
@@ -71,18 +81,10 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     ) ?? []),
   ]);
 
-  const {
-    field,
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-  });
-
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, listContentRef.current.indexOf(field.value))
+    Math.max(0, listContentRef.current.indexOf(value))
   );
 
   const [pointer, setPointer] = useState(false);
@@ -163,7 +165,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
             {Children.map(child.props.children, (child) =>
               cloneElement(child, {
                 index: 1 + optionIndex++,
-                onChange: field.onChange,
+                onChange: onChange,
               })
             )}
           </ul>

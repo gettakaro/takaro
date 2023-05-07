@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Switch, SwitchProps } from '.';
+import { Switch, SwitchProps } from '../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import { Button } from '../..';

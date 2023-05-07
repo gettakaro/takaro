@@ -4,7 +4,9 @@ import { useController } from 'react-hook-form';
 import { FC } from 'react';
 import { GenericSwitch } from '.';
 
-export const ControlledSwitch: FC<ControlledInputProps> = ({
+export type ControlledSwitchProps = ControlledInputProps;
+
+export const ControlledSwitch: FC<ControlledSwitchProps> = ({
   readOnly,
   loading,
   disabled,

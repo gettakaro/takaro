@@ -1,6 +1,6 @@
-import { FieldType } from '.';
+import { TextFieldType } from '.';
 
-export const getFieldType = (type: FieldType, passwordVisible: boolean) => {
+export const getFieldType = (type: TextFieldType, passwordVisible: boolean) => {
   // we only use the type number to transform the output to number
   // so that zod is happy
   if (passwordVisible || type === 'number') {
@@ -20,7 +20,7 @@ type InputModes =
   | 'numeric'
   | 'decimal';
 
-export const getInputMode = (type: FieldType): InputModes => {
+export const getInputMode = (type: TextFieldType): InputModes => {
   if (type === 'password') return 'text';
   if (type === 'number') return 'numeric';
   return type;

@@ -1,22 +1,25 @@
-export { Checkbox } from './Checkbox';
-export type { CheckboxProps } from './Checkbox';
+export { ControlledCheckBox as CheckBox } from './CheckBox/Controlled';
+export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox/Controlled';
 
-export { Select, OptionGroup, Option } from './Select';
-export type { SelectProps, OptionProps, OptionGroupProps } from './Select';
+export { ControlledSelect as Select } from './Select/Controlled';
+export { OptionGroup, Option } from './Select';
+
+export type { OptionProps, OptionGroupProps } from './Select';
 
 export { ControlledSwitch as Switch } from './Switch/Controlled';
+export type { ControlledSwitchProps as SwitchProps } from './Switch/Controlled';
 
 export { ControlledTextField as TextField } from './TextField/Controlled';
 
 export { ControlledTextAreaField as TextAreaField } from './TextAreaField/Controlled';
 
-export { SliderComponent as Slider } from './Slider';
-export type { SliderProps } from './Slider';
+export { ControlledSlider as Slider } from './Slider/Controlled';
+export type { ControlledSlider } from './Slider/Controlled';
 
-export { CodeField } from './CodeField';
-export type { CodeFieldProps } from './CodeField';
+export { ControlledCodeField as CodeField } from './CodeField/Controlled';
+export type { ControlledCodeFieldProps as CodeFieldProps } from './CodeField/Controlled';
 
-export { RadioGroup } from './RadioGroup';
+export { ControlledRadioGroup as RadioGroup } from './RadioGroup/Controlled';
 export type { RadioGroupProps } from './RadioGroup';
 
 export { EditableField } from './EditableField';

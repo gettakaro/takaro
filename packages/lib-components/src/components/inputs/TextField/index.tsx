@@ -1,4 +1,10 @@
-import { FC, cloneElement, useState, ChangeEvent, ReactElement } from 'react';
+import {
+  cloneElement,
+  useState,
+  ChangeEvent,
+  ReactElement,
+  forwardRef,
+} from 'react';
 import {
   Container,
   InputContainer,
@@ -22,6 +28,7 @@ import {
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number';
 
+// these are props that should be available both on the generic and controlled version
 export interface TextFieldProps extends InputProps {
   type?: TextFieldType;
   placeholder?: string;
@@ -32,9 +39,10 @@ export interface TextFieldProps extends InputProps {
   description?: string;
 }
 
+// these are props that should only be available on the generic version.
 interface GenericTextFieldProps extends TextFieldProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
+  onChange: (...event: any[]) => unknown;
+  onBlur: (...event: any[]) => unknown;
   error?: string;
 }
 
@@ -42,7 +50,10 @@ const defaultsApplier =
   defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
 
 // TODO: setup forwardRef so the control ref can be passed to the component
-export const GenericTextField: FC<GenericTextFieldProps> = (props) => {
+export const GenericTextField = forwardRef<
+  HTMLInputElement,
+  GenericTextFieldProps
+>((props, ref) => {
   const {
     onChange,
     description,
@@ -58,7 +69,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = (props) => {
     readOnly,
     placeholder,
     icon,
-    type,
+    type = 'text',
     prefix,
     suffix,
   } = defaultsApplier(props);
@@ -138,6 +149,7 @@ export const GenericTextField: FC<GenericTextFieldProps> = (props) => {
           role="presentation"
           inputMode={getInputMode(type)}
           type={getFieldType(type, showPassword)}
+          ref={ref}
         />
         {type === 'password' &&
           (showPassword ? (
@@ -163,4 +175,4 @@ export const GenericTextField: FC<GenericTextFieldProps> = (props) => {
       {description && <p>{description}</p>}
     </Container>
   );
-};
+});

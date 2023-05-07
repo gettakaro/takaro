@@ -1,4 +1,4 @@
-import { FC, useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, forwardRef } from 'react';
 import { Container, TextAreaContainer, TextArea } from './style';
 
 import { ErrorMessage } from '../ErrorMessage';
@@ -14,16 +14,19 @@ export interface TextAreaFieldProps extends InputProps {
   placeholder?: string;
 }
 
-interface GenericTextFieldProps extends TextAreaFieldProps {
+interface GenericTextAreaProps extends TextAreaFieldProps {
   onChange: (...event: unknown[]) => unknown;
   onBlur: (...event: unknown[]) => unknown;
   error?: string;
 }
 
 const defaultsApplier =
-  defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
+  defaultInputPropsFactory<GenericTextAreaProps>(defaultInputProps);
 
-export const GenericTextAreaField: FC<GenericTextFieldProps> = (props) => {
+export const GenericTextAreaField = forwardRef<
+  HTMLTextAreaElement,
+  GenericTextAreaProps
+>((props, ref) => {
   const {
     loading,
     label,
@@ -98,10 +101,11 @@ export const GenericTextAreaField: FC<GenericTextFieldProps> = (props) => {
           placeholder={placeholder}
           readOnly={readOnly}
           role="presentation"
+          ref={ref}
         />
       </TextAreaContainer>
       {error && showError && <ErrorMessage message={error} />}
       {props.description && <p>{props.description}</p>}
     </Container>
   );
-};
+});

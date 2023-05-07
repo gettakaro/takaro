@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Dropdown, Button, Checkbox } from '../../../../components';
+import { Dropdown, Button, CheckBox } from '../../../../components';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { Identifier } from 'dnd-core';
 import { ColumnOrderState, Column, OnChangeFn } from '@tanstack/react-table';
@@ -158,14 +158,14 @@ export function Item<DataType extends object>({
 
   return (
     <li ref={dropRef}>
-      <Checkbox
+      <CheckBox
         key={`column-visibility-checkbox-${column.id}`}
         name={`column-visiblity-${column.id}`}
         value={column.getIsVisible()}
         control={control}
         labelPosition="right"
         label={labelText()}
-        onChange={(visible) => {
+        onChange={(visible: boolean) => {
           column.toggleVisibility(visible);
         }}
       />

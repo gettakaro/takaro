@@ -1,4 +1,4 @@
-export { Select } from './Select';
+export { ControlledSelect as Select } from './Controlled';
 export type { SelectProps } from './Select';
 
 export { OptionGroup } from './OptionGroup';
