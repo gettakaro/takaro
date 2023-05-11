@@ -3,6 +3,7 @@ import {
   sandbox,
   expect,
   integrationConfig,
+  waitForEvents,
 } from '@takaro/test';
 import {
   CommandOutputDTO,
@@ -12,13 +13,18 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { EventChatMessage, IGamePlayer, Mock } from '@takaro/gameserver';
+import {
+  EventChatMessage,
+  GameEvents,
+  IGamePlayer,
+  Mock,
+} from '@takaro/gameserver';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
 ): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
-    gameId: 'mock-gameId',
+    gameId: '1',
     name: 'mock-player',
     ...extra,
   };
@@ -61,6 +67,21 @@ async function setup(
       }),
     })
   ).data.data;
+
+  const connectedEvents = waitForEvents(
+    this.client,
+    GameEvents.PLAYER_CONNECTED,
+    5
+  );
+
+  await this.client.gameserver.gameServerControllerExecuteCommand(
+    gameserver.id,
+    {
+      command: 'connectAll',
+    }
+  );
+
+  await connectedEvents;
 
   const assignment = (
     await this.client.gameserver.gameServerControllerInstallModule(
