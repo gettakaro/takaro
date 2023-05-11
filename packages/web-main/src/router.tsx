@@ -19,6 +19,7 @@ import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
 import { SettingsFrame } from './frames/SettingsFrame';
 import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
 import { ConnectionSettings } from './pages/settings/ConnectionSettings';
+import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 
 const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
@@ -77,6 +78,7 @@ export const router = sentryCreateBrowserRouter(
           element={<ModuleDefinitions />}
           path={PATHS.moduleDefinitions()}
         />
+        <Route element={<CreateModule />} path={PATHS.modules.create()} />
       </Route>
 
       {/* TODO: fix path, frame should be aware of /servers/serverId */}
