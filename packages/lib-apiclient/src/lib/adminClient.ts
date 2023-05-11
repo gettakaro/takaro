@@ -22,8 +22,12 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
   }
 
   private async getIssuer() {
-    const { Issuer } = await import('openid-client');
+    const { Issuer, custom } = await import('openid-client');
+
     if (!this.cachedIssuer) {
+      custom.setHttpOptionsDefaults({
+        timeout: 10000,
+      });
       this.cachedIssuer = await Issuer.discover(this.config.OAuth2URL);
       this.log.debug(`Discovered issuer at ${this.config.OAuth2URL}`);
     }

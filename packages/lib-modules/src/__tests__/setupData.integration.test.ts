@@ -1,5 +1,9 @@
 import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
-import { integrationConfig, IntegrationTest } from '@takaro/test';
+import {
+  integrationConfig,
+  IntegrationTest,
+  waitForEvents,
+} from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 
 export interface IDetectedEvent {
@@ -50,6 +54,21 @@ export const modulesTestSetup = async function (
 
   const onboardingModule = modules.find((m) => m.name === 'playerOnboarding');
   if (!onboardingModule) throw new Error('playerOnboarding module not found');
+
+  const connectedEvents = waitForEvents(
+    this.client,
+    GameEvents.PLAYER_CONNECTED,
+    5
+  );
+
+  await this.client.gameserver.gameServerControllerExecuteCommand(
+    gameserver.data.data.id,
+    {
+      command: 'connectAll',
+    }
+  );
+
+  await connectedEvents;
 
   return {
     modules: modules,

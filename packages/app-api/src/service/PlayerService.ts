@@ -2,7 +2,7 @@ import { TakaroService } from './Base.js';
 
 import { PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsOptional, IsString } from 'class-validator';
-import { IGamePlayer } from '@takaro/gameserver';
+import { IGamePlayer, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -117,5 +117,16 @@ export class PlayerService extends TakaroService<
 
       await this.insertAssociation(playerData.gameId, player.id, gameServerId);
     }
+  }
+
+  async resolveRef(
+    ref: IPlayerReferenceDTO,
+    gameserverId: string
+  ): Promise<PlayerOutputDTO> {
+    return this.repo.resolveRef(ref, gameserverId);
+  }
+
+  async getRef(playerId: string, gameserverId: string) {
+    return this.repo.getRef(playerId, gameserverId);
   }
 }

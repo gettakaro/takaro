@@ -1,7 +1,7 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function getVariableKey(gameServerId, playerId, tpName) {
-  return `t_tp_${gameServerId}_${playerId}_${tpName}`;
+function getVariableKey(tpName) {
+  return `t_tp_${tpName}`;
 }
 
 async function deletetp() {
@@ -12,7 +12,9 @@ async function deletetp() {
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: getVariableKey(data.gameServerId, player.gameId, data.arguments.tp),
+      key: getVariableKey(data.arguments.tp),
+      gameServerId: data.gameServerId,
+      playerId: player.id,
     },
   });
 

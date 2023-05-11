@@ -46,7 +46,7 @@ export async function waitForEvents(
         console.warn(`Event ${expectedEvent} timed out`);
         console.warn(JSON.stringify(events, null, 2));
         reject(new Error(`Event ${expectedEvent} timed out`));
-      }, 5000);
+      }, 15000);
     }),
   ]);
 }
