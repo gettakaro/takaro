@@ -1626,6 +1626,54 @@ export type GameServerTestReachabilityInputDTOTypeEnum =
 /**
  *
  * @export
+ * @interface GameServerTypesOutputDTO
+ */
+export interface GameServerTypesOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerTypesOutputDTO
+   */
+  type: GameServerTypesOutputDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerTypesOutputDTO
+   */
+  connectionInfoSchema: string;
+}
+
+export const GameServerTypesOutputDTOTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerTypesOutputDTOTypeEnum =
+  typeof GameServerTypesOutputDTOTypeEnum[keyof typeof GameServerTypesOutputDTOTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface GameServerTypesOutputDTOAPI
+ */
+export interface GameServerTypesOutputDTOAPI {
+  /**
+   *
+   * @type {Array<GameServerOutputDTO>}
+   * @memberof GameServerTypesOutputDTOAPI
+   */
+  data: Array<GameServerOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GameServerTypesOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface GameServerUpdateDTO
  */
 export interface GameServerUpdateDTO {
@@ -2340,12 +2388,6 @@ export interface MockConnectionInfo {
    * @memberof MockConnectionInfo
    */
   host: string;
-  /**
-   *
-   * @type {number}
-   * @memberof MockConnectionInfo
-   */
-  eventInterval: number;
 }
 /**
  *
@@ -7527,6 +7569,47 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetTypes: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/types`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -8181,6 +8264,29 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetTypes(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GameServerTypesOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetTypes(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -8536,6 +8642,19 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetTypes(
+      options?: any
+    ): AxiosPromise<GameServerTypesOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetTypes(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -8786,6 +8905,19 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get types
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetTypes(options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetTypes(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

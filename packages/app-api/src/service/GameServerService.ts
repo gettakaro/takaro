@@ -25,6 +25,9 @@ import {
   IGameServer,
   IPosition,
   IPlayerReferenceDTO,
+  sdtdJsonSchema,
+  rustJsonSchema,
+  mockJsonSchema,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
@@ -45,6 +48,14 @@ const ajv = new Ajv({ useDefaults: true });
 
 const gameClassCache = new Map<string, IGameServer>();
 
+class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
+  @IsEnum(GAME_SERVER_TYPE)
+  type!: GAME_SERVER_TYPE;
+
+  @IsString()
+  @IsJSON()
+  connectionInfoSchema!: string;
+}
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
@@ -334,6 +345,33 @@ export class GameServerService extends TakaroService<
     gameClassCache.set(id, gameInstance);
 
     return gameInstance;
+  }
+
+  async getTypes(): Promise<GameServerTypesOutputDTO[]> {
+    return Promise.all(
+      Object.values(GAME_SERVER_TYPE).map((t) => {
+        let schema;
+
+        switch (t) {
+          case GAME_SERVER_TYPE.SEVENDAYSTODIE:
+            schema = sdtdJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.RUST:
+            schema = rustJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.MOCK:
+            schema = mockJsonSchema;
+            break;
+          default:
+            throw new errors.NotImplementedError();
+        }
+
+        return new GameServerTypesOutputDTO().construct({
+          type: t,
+          connectionInfoSchema: JSON.stringify(schema),
+        });
+      })
+    );
   }
 
   get manager() {
