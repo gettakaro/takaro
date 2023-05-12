@@ -1,9 +1,7 @@
 import React from 'react';
 import { StoryFn } from '@storybook/react';
-import Form from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv8';
-import { customFields } from './fields';
+import { JsonSchemaForm } from '.';
 import { styled } from '../../../styled';
 import { Button } from '../../../components';
 
@@ -12,7 +10,7 @@ const Container = styled.div`
 `;
 
 export default {
-  title: 'Inputs/JsonSchemaForm',
+  title: 'Schema/Example',
   args: {},
 };
 
@@ -43,18 +41,13 @@ const initialData = {};
 export const Default: StoryFn = () => {
   return (
     <Container>
-      <Form
-        schema={schema}
-        fields={customFields}
-        formData={initialData}
-        validator={validator}
-      >
+      <JsonSchemaForm schema={schema} initialData={initialData}>
         <Button
           type="submit"
           text="Submit"
           onClick={() => console.log('form submitted')}
         />
-      </Form>
+      </JsonSchemaForm>
     </Container>
   );
 };
