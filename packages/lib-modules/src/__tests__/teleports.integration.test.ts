@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
+import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -18,7 +18,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
@@ -45,8 +47,9 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
-      const firstEvents = waitForEvents(
-        this.client,
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const firstEvents = eventAwaiter.waitForEvents(
         GameEvents.CHAT_MESSAGE,
         1
       );
@@ -64,8 +67,7 @@ const tests = [
       expect((await firstEvents).length).to.be.eq(1);
       expect((await firstEvents)[0].data.msg).to.be.eq('Teleport test set.');
 
-      const secondEvents = waitForEvents(
-        this.client,
+      const secondEvents = eventAwaiter.waitForEvents(
         GameEvents.CHAT_MESSAGE,
         1
       );
@@ -99,7 +101,9 @@ const tests = [
           userConfig: JSON.stringify({ maxTeleports: 3 }),
         }
       );
-      const setEvents = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 3);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -120,7 +124,7 @@ const tests = [
       for (const event of await setEvents) {
         expect(event.data.msg).to.match(/Teleport test\d set\./);
       }
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
@@ -149,7 +153,9 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
-      const setEvents = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -163,7 +169,7 @@ const tests = [
       expect((await setEvents).length).to.be.eq(1);
       expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -188,7 +194,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
@@ -217,7 +225,9 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
-      const setEvents = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 3);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -239,7 +249,7 @@ const tests = [
         expect(event.data.msg).to.match(/Teleport test\d set\./);
       }
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 4);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
@@ -275,7 +285,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const setEvents = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 3);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -296,7 +308,7 @@ const tests = [
       for (const event of await setEvents) {
         expect(event.data.msg).to.match(/Teleport test\d set\./);
       }
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -321,7 +333,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
