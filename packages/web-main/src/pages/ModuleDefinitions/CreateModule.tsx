@@ -98,14 +98,12 @@ const CreateModule: FC = () => {
               onClick={() => setOpen(false)}
               color="background"
             />
-            <Tooltip label="You need to test the connection before we can save">
-              <Button
-                fullWidth
-                text="Save changes"
-                type="submit"
-                form="create-module-form"
-              />
-            </Tooltip>
+            <Button
+              fullWidth
+              text="Save changes"
+              type="submit"
+              form="create-module-form"
+            />
           </ButtonContainer>
         </DrawerFooter>
       </DrawerContent>
