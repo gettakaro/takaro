@@ -8,7 +8,9 @@ async function teleport() {
 
   const teleportsRes = await takaro.variable.variableControllerFind({
     filters: {
-      key: `t_tp_${data.gameServerId}_${player.gameId}_${data.arguments.tp}`,
+      key: `t_tp_${data.arguments.tp}`,
+      gameServerId: data.gameServerId,
+      playerId: player.id,
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -25,8 +27,8 @@ async function teleport() {
 
   await takaro.gameserver.gameServerControllerTeleportPlayer(
     data.gameServerId,
+    player.id,
     {
-      player: { gameId: player.gameId },
       x: teleport.x,
       y: teleport.y,
       z: teleport.z,

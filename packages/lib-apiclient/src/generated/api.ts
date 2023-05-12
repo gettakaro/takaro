@@ -2843,6 +2843,25 @@ export interface ParamIdAndModuleId {
 /**
  *
  * @export
+ * @interface ParamIdAndPlayerId
+ */
+export interface ParamIdAndPlayerId {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndPlayerId
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamIdAndPlayerId
+   */
+  playerId: string;
+}
+/**
+ *
+ * @export
  * @interface ParamIdAndRoleId
  */
 export interface ParamIdAndRoleId {
@@ -7837,22 +7856,37 @@ export const GameServerApiAxiosParamCreator = function (
     /**
      *
      * @summary Teleport player
-     * @param {string} id
+     * @param {string} gameserverId
+     * @param {string} playerId
      * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerTeleportPlayer: async (
-      id: string,
+      gameserverId: string,
+      playerId: string,
       teleportPlayerInputDTO?: TeleportPlayerInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('gameServerControllerTeleportPlayer', 'id', id);
-      const localVarPath = `/gameserver/{id}/teleportPlayer`.replace(
-        `{${'id'}}`,
-        encodeURIComponent(String(id))
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerTeleportPlayer',
+        'gameserverId',
+        gameserverId
       );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerTeleportPlayer',
+        'playerId',
+        playerId
+      );
+      const localVarPath =
+        `/gameserver/{gameserverId}/player/{playerId}/teleport`
+          .replace(
+            `{${'gameserverId'}}`,
+            encodeURIComponent(String(gameserverId))
+          )
+          .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -8400,13 +8434,15 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Teleport player
-     * @param {string} id
+     * @param {string} gameserverId
+     * @param {string} playerId
      * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async gameServerControllerTeleportPlayer(
-      id: string,
+      gameserverId: string,
+      playerId: string,
       teleportPlayerInputDTO?: TeleportPlayerInputDTO,
       options?: AxiosRequestConfig
     ): Promise<
@@ -8414,7 +8450,8 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.gameServerControllerTeleportPlayer(
-          id,
+          gameserverId,
+          playerId,
           teleportPlayerInputDTO,
           options
         );
@@ -8727,18 +8764,25 @@ export const GameServerApiFactory = function (
     /**
      *
      * @summary Teleport player
-     * @param {string} id
+     * @param {string} gameserverId
+     * @param {string} playerId
      * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerTeleportPlayer(
-      id: string,
+      gameserverId: string,
+      playerId: string,
       teleportPlayerInputDTO?: TeleportPlayerInputDTO,
       options?: any
     ): AxiosPromise<APIOutput> {
       return localVarFp
-        .gameServerControllerTeleportPlayer(id, teleportPlayerInputDTO, options)
+        .gameServerControllerTeleportPlayer(
+          gameserverId,
+          playerId,
+          teleportPlayerInputDTO,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -9000,19 +9044,26 @@ export class GameServerApi extends BaseAPI {
   /**
    *
    * @summary Teleport player
-   * @param {string} id
+   * @param {string} gameserverId
+   * @param {string} playerId
    * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
   public gameServerControllerTeleportPlayer(
-    id: string,
+    gameserverId: string,
+    playerId: string,
     teleportPlayerInputDTO?: TeleportPlayerInputDTO,
     options?: AxiosRequestConfig
   ) {
     return GameServerApiFp(this.configuration)
-      .gameServerControllerTeleportPlayer(id, teleportPlayerInputDTO, options)
+      .gameServerControllerTeleportPlayer(
+        gameserverId,
+        playerId,
+        teleportPlayerInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
