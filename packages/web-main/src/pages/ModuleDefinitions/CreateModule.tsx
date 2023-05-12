@@ -23,6 +23,7 @@ import { useModuleCreate } from 'queries/modules';
 
 interface IFormInputs {
   name: string;
+  description?: string;
 }
 
 const ButtonContainer = styled.div`
@@ -48,12 +49,16 @@ const CreateModule: FC = () => {
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ name }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({
+    name,
+    description,
+  }) => {
     try {
       setError('');
 
       mutateAsync({
         name,
+        description,
       });
 
       navigate(PATHS.moduleDefinitions());
