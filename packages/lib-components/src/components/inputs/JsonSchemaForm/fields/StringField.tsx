@@ -3,6 +3,7 @@ import { GenericTextField } from '../../TextField';
 
 export const StringField = ({
   onChange,
+  onBlur,
   disabled,
   placeholder,
   rawErrors,
@@ -14,10 +15,11 @@ export const StringField = ({
     <GenericTextField
       name={name}
       onChange={onChange}
+      onBlur={onBlur}
       disabled={disabled}
       placeholder={placeholder}
       loading={false}
-      errorMessage={rawErrors ? rawErrors[0] : undefined}
+      error={rawErrors ? rawErrors[0] : undefined}
       required={required}
       readOnly={readonly}
       type="text"
