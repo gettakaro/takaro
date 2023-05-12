@@ -32,7 +32,6 @@ const ButtonContainer = styled.div`
 `;
 
 const CreateModule: FC = () => {
-  console.log('CreateModule.tsx: CreateModule()');
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
