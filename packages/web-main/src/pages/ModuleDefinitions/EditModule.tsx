@@ -14,11 +14,12 @@ import {
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
-import { useModuleCreate } from 'queries/modules';
+import { useModule, useModuleCreate, useModuleUpdate } from 'queries/modules';
+import { ModuleOutputDTO } from '@takaro/apiclient';
 
 interface IFormInputs {
   name: string;
@@ -31,11 +32,27 @@ const ButtonContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-const CreateModule: FC = () => {
+interface Props {
+  mod: ModuleOutputDTO;
+}
+
+const EditModule: FC = () => {
+  const { moduleId } = useParams();
+
+  const { data, isLoading } = useModule(moduleId!);
+
+  if (isLoading || !data) {
+    return <div>Loading...</div>;
+  }
+
+  return <EditModuleForm mod={data} />;
+};
+
+const EditModuleForm: FC<Props> = ({ mod }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useModuleCreate();
+  const { mutateAsync, isLoading } = useModuleUpdate();
 
   useEffect(() => {
     if (!open) {
@@ -46,6 +63,10 @@ const CreateModule: FC = () => {
   const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(moduleValidationSchema),
+    defaultValues: {
+      name: mod.name,
+      description: mod.description,
+    },
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({
@@ -56,8 +77,11 @@ const CreateModule: FC = () => {
       setError('');
 
       mutateAsync({
-        name,
-        description,
+        id: mod.id,
+        moduleUpdate: {
+          name,
+          description,
+        },
       });
 
       navigate(PATHS.moduleDefinitions());
@@ -69,10 +93,10 @@ const CreateModule: FC = () => {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <DrawerHeading>Create Module</DrawerHeading>
+        <DrawerHeading>Edit Module</DrawerHeading>
         <DrawerBody>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
+            <form onSubmit={handleSubmit(onSubmit)} id="edit-module-form">
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -105,7 +129,7 @@ const CreateModule: FC = () => {
               fullWidth
               text="Save changes"
               type="submit"
-              form="create-module-form"
+              form="edit-module-form"
             />
           </ButtonContainer>
         </DrawerFooter>
@@ -114,4 +138,4 @@ const CreateModule: FC = () => {
   );
 };
 
-export default CreateModule;
+export default EditModule;

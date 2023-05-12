@@ -45,7 +45,8 @@ export const useModules = () => {
 
   return useQuery({
     queryKey: moduleKeys.list(),
-    queryFn: async () => await apiClient.module.moduleControllerSearch(),
+    queryFn: async () =>
+      (await apiClient.module.moduleControllerSearch()).data.data,
   });
 };
 
@@ -86,7 +87,7 @@ export const useModuleRemove = () => {
     onSuccess: (removedModule: IdUuidDTO) => {
       // Remove item from module list
       queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
-        old ? old.filter((module) => module.id === removedModule.id) : old!
+        old ? old.filter((mod) => mod.id !== removedModule.id) : old!
       );
 
       // Invalidate query of specific module
@@ -111,8 +112,8 @@ export const useModuleUpdate = () => {
       // update item in module list
       queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
         old
-          ? old.map((module) =>
-              module.id === updatedModule.id ? updatedModule : module
+          ? old.map((mod) =>
+              mod.id === updatedModule.id ? updatedModule : mod
             )
           : old!
       );

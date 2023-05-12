@@ -27,6 +27,7 @@ export const PATHS = {
   modules: {
     module: (moduleId: string) => `/modules/${moduleId}`,
     create: () => `/modules/create`,
+    update: (moduleId: string) => `/modules/update/${moduleId}`,
   },
 
   studio: {
