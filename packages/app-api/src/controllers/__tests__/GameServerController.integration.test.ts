@@ -107,6 +107,14 @@ const tests = [
     },
     filteredFields: ['gameserverId', 'moduleId'],
   }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Can get list of gameserver types',
+    test: async function () {
+      return this.client.gameserver.gameServerControllerGetTypes();
+    },
+  }),
 ];
 
 describe(group, function () {

@@ -25,6 +25,9 @@ import {
   IGameServer,
   IPosition,
   IPlayerReferenceDTO,
+  sdtdJsonSchema,
+  rustJsonSchema,
+  mockJsonSchema,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
@@ -39,12 +42,21 @@ import { JSONSchema } from 'class-validator-jsonschema';
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
+import { PlayerService } from './PlayerService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
 
 const gameClassCache = new Map<string, IGameServer>();
 
+class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
+  @IsEnum(GAME_SERVER_TYPE)
+  type!: GAME_SERVER_TYPE;
+
+  @IsString()
+  @IsJSON()
+  connectionInfoSchema!: string;
+}
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
@@ -336,6 +348,33 @@ export class GameServerService extends TakaroService<
     return gameInstance;
   }
 
+  async getTypes(): Promise<GameServerTypesOutputDTO[]> {
+    return Promise.all(
+      Object.values(GAME_SERVER_TYPE).map((t) => {
+        let schema;
+
+        switch (t) {
+          case GAME_SERVER_TYPE.SEVENDAYSTODIE:
+            schema = sdtdJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.RUST:
+            schema = rustJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.MOCK:
+            schema = mockJsonSchema;
+            break;
+          default:
+            throw new errors.NotImplementedError();
+        }
+
+        return new GameServerTypesOutputDTO().construct({
+          type: t,
+          connectionInfoSchema: JSON.stringify(schema),
+        });
+      })
+    );
+  }
+
   get manager() {
     return this.gameServerManager;
   }
@@ -361,12 +400,13 @@ export class GameServerService extends TakaroService<
 
   async teleportPlayer(
     gameServerId: string,
-    playerRef: IPlayerReferenceDTO,
+    playerId: string,
     position: IPosition
   ) {
+    const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.teleportPlayer(
-      playerRef,
+      await playerService.getRef(playerId, gameServerId),
       position.x,
       position.y,
       position.z

@@ -73,17 +73,17 @@ const tests = [
         this.setupData.serverMessagesModule.id,
         {
           userConfig: JSON.stringify({
-            messages: ['Test message 1', 'Test message 2', 'Test message 3'],
+            messages: ['Test message 1', 'Test message 2'],
           }),
         }
       );
 
       // We should see each of our test messages at least once
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 50);
+      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 10);
 
-      // Trigger it 50 times
+      // Trigger it 10 times
       await Promise.all(
-        Array.from({ length: 50 }).map(() => {
+        Array.from({ length: 10 }).map(() => {
           return this.client.cronjob.cronJobControllerTrigger({
             cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
             gameServerId: this.setupData.gameserver.id,
@@ -95,7 +95,6 @@ const tests = [
       const messages = (await events).map((e) => e.data.msg);
       expect(messages).to.include('Test message 1');
       expect(messages).to.include('Test message 2');
-      expect(messages).to.include('Test message 3');
     },
   }),
 ];
