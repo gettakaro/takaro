@@ -45,6 +45,12 @@ import { PERMISSIONS } from '@takaro/auth';
 import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { Response } from 'express';
 
+class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
+  @Type(() => GameServerOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: GameServerOutputDTO[];
+}
+
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
   @ValidateNested()
@@ -171,6 +177,14 @@ export class GameServerController {
       req,
       res,
     });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @ResponseSchema(GameServerTypesOutputDTOAPI)
+  @Get('/gameserver/types')
+  async getTypes(@Req() req: AuthenticatedRequest) {
+    const service = new GameServerService(req.domainId);
+    return apiResponse(await service.getTypes());
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
