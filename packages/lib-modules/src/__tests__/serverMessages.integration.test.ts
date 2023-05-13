@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
+import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,7 +19,9 @@ const tests = [
         this.setupData.serverMessagesModule.id
       );
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
@@ -50,7 +52,9 @@ const tests = [
         }
       );
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
@@ -79,7 +83,9 @@ const tests = [
       );
 
       // We should see each of our test messages at least once
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 10);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 10);
 
       // Trigger it 10 times
       await Promise.all(

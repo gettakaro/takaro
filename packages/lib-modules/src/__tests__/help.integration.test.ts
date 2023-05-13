@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
+import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,7 +19,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id
       );
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 3);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -56,7 +58,9 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 7);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 7);
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
@@ -100,7 +104,9 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
@@ -131,7 +137,9 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE, 1);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,

@@ -2,7 +2,7 @@ import {
   IntegrationTest,
   expect,
   integrationConfig,
-  waitForEvents,
+  EventsAwaiter,
 } from '@takaro/test';
 import {
   GameServerOutputDTO,
@@ -50,8 +50,9 @@ const setupWithGameServersAndPlayers = async function (
     }),
   });
 
-  const connectedEvents = waitForEvents(
-    this.client,
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(this.client);
+  const connectedEvents = eventsAwaiter.waitForEvents(
     GameEvents.PLAYER_CONNECTED,
     10
   );
