@@ -3,7 +3,7 @@ import {
   sandbox,
   expect,
   integrationConfig,
-  waitForEvents,
+  EventsAwaiter,
 } from '@takaro/test';
 import {
   CommandOutputDTO,
@@ -68,8 +68,9 @@ async function setup(
     })
   ).data.data;
 
-  const connectedEvents = waitForEvents(
-    this.client,
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(this.client);
+  const connectedEvents = eventsAwaiter.waitForEvents(
     GameEvents.PLAYER_CONNECTED,
     5
   );

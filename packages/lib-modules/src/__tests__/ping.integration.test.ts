@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, waitForEvents } from '@takaro/test';
+import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
@@ -19,7 +19,9 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
-      const events = waitForEvents(this.client, GameEvents.CHAT_MESSAGE);
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
