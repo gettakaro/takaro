@@ -18,58 +18,9 @@ enum InitError {
     Error(#[from] Error),
 }
 
-async fn setup_network() -> anyhow::Result<()> {
-    let (connection, handle, _) = rtnetlink::new_connection().unwrap();
-
-    tokio::spawn(connection);
-
-    let guest_ip = Ipv4Addr::new(172, 16, 0, 2);
-    let gateway = Ipv4Addr::new(172, 16, 0, 1);
-    let any_addr = Ipv4Addr::UNSPECIFIED;
-
-    tracing::debug!("netlink: getting eth0 link");
-
-    let eth0 = handle
-        .link()
-        .get()
-        .match_name("eth0".into())
-        .execute()
-        .try_next()
-        .await?
-        .expect("no eth0 link found");
-
-    tracing::debug!("netlink: add guest ip to eth0");
-
-    handle
-        .address()
-        .add(eth0.header.index, guest_ip.into(), 24)
-        .execute()
-        .await?;
-
-    tracing::debug!("netlink: setting eth0 link up");
-
-    handle.link().set(eth0.header.index).up().execute().await?;
-
-    tracing::debug!("netlink: adds a default route for any address to the host ip");
-
-    handle
-        .route()
-        .add()
-        .input_interface(eth0.header.index)
-        .v4()
-        .destination_prefix(any_addr, 0)
-        .gateway(gateway)
-        .execute()
-        .await?;
-
-    Ok(())
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
-
-    // setup_network().await?;
 
     if let Err(e) = env::set_current_dir("/app") {
         tracing::error!("failed to change directory: {}", e);
