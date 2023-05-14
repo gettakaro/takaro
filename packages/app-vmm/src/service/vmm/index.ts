@@ -15,9 +15,14 @@ export class VMM {
     this.log = logger('VMM');
   }
 
-  async createVM() {
-    const id = 1;
+  async initPool(amount = 10) {
+    this.log.info('creating a pool of VMs');
+    for (let i = 0; i < amount; i++) {
+      await this.createVM(i + 1);
+    }
+  }
 
+  async createVM(id: number) {
     this.log.debug(`creating a new vm with id: ${id}`);
 
     const fcClient = new FirecrackerClient({
@@ -41,6 +46,16 @@ export class VMM {
     this.vms.splice(id - 1, 1);
   }
 
+  async getVM() {
+    const hotVM = this.vms.pop();
+
+    if (!hotVM) {
+      throw new Error('no available VMs');
+    }
+
+    return hotVM;
+  }
+
   async executeFunction(
     fn: string,
     data: Record<string, unknown>,
@@ -49,7 +64,8 @@ export class VMM {
     let vmId;
 
     try {
-      const fcClient = await this.createVM();
+      const fcClient = await this.getVM();
+
       vmId = fcClient.id;
 
       const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
@@ -60,7 +76,7 @@ export class VMM {
       this.log.error(err);
     } finally {
       if (vmId) {
-        await this.removeVM(vmId);
+        this.createVM(vmId);
       }
     }
   }

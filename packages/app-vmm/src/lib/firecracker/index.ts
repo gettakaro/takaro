@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
+import { Netmask } from 'netmask';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
@@ -18,18 +19,29 @@ interface FcOptions {
   logLevel: FcLogLevel;
 }
 
+const IP_PREFIX = '10.231.';
+const TAP_DEVICE_CIDR = 30;
+
 export default class FirecrackerClient {
   private childProcess: ChildProcess;
   private log;
 
   options: FcOptions;
   id: number;
+  tapDeviceName: string;
+  tapDeviceCidr: string;
+  tapDeviceIp: string;
+  vmIp: string;
 
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
     this.id = args.id;
     this.log = logger(`firecracker(${this.id})`);
+
+    this.tapDeviceName = `fc-tap-${this.id}`;
+
+    this.setIps(this.id);
 
     this.options = {
       binary: config.get('firecracker.binary'),
@@ -79,12 +91,14 @@ export default class FirecrackerClient {
     this.log.debug('cleaning up sockets and files');
 
     try {
-      await fs.rm(config.get('firecracker.sockets'), {
-        recursive: true,
-        force: true,
-      });
+      // await fs.rm(config.get('firecracker.sockets'), {
+      //   recursive: true,
+      //   force: true,
+      // });
+      await fs.rm(this.options.fcSocket, { force: true });
+      await fs.rm(this.options.agentSocket, { force: true });
     } catch (err) {
-      this.log.warn('could not remove sockets dir', err);
+      this.log.warn('could not remove sockets', err);
     }
 
     try {
@@ -112,8 +126,52 @@ export default class FirecrackerClient {
     }
   }
 
+  private setIps(vmId: number) {
+    const netIpId = 4 * vmId;
+    const tapDeviceIpId = netIpId + 1;
+    const vmIpId = netIpId + 2;
+
+    const tapFirstIpPart = (tapDeviceIpId & ((2 ** 8 - 1) << 8)) >> 8;
+    const tapSecondIpPart = tapDeviceIpId & (2 ** 8 - 1);
+    const vmFirstIpPart = (vmIpId & ((2 ** 8 - 1) << 8)) >> 8;
+    const vmSecondIpPart = vmIpId & (2 ** 8 - 1);
+
+    this.tapDeviceIp = `${IP_PREFIX}${tapFirstIpPart}.${tapSecondIpPart}`;
+    this.vmIp = `${IP_PREFIX}${vmFirstIpPart}.${vmSecondIpPart}`;
+  }
+
+  private async setupNetwork() {
+    try {
+      spawn('ip', ['link', 'del', this.tapDeviceName]);
+    } catch {
+      this.log.debug(`could not delete ${this.tapDeviceName}`);
+    }
+
+    try {
+      spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
+    } catch (err) {
+      this.log.error('could not create tap', err);
+    }
+    spawn('sysctl', ['-w', `net.ipv4.conf.${this.tapDeviceName}.proxy_arp=1`]);
+    spawn('sysctl', [
+      '-w',
+      `net.ipv6.conf.${this.tapDeviceName}.disable_ipv6=1`,
+    ]);
+
+    spawn('ip', [
+      'addr',
+      'add',
+      `${this.tapDeviceIp}/${TAP_DEVICE_CIDR}`,
+      'dev',
+      this.tapDeviceName,
+    ]);
+    spawn('ip', ['link', 'set', 'dev', this.tapDeviceName, 'up']);
+  }
+
   async spawn() {
     await this.ensureResources();
+
+    this.setupNetwork();
 
     const cmd = 'firecracker';
     const args = [
@@ -184,11 +242,13 @@ export default class FirecrackerClient {
 
   async setupVM() {
     try {
+      const mask = new Netmask(`255.255.255.255/${TAP_DEVICE_CIDR}`).mask;
+      const ipArgs = `ip=${this.vmIp}::${this.tapDeviceIp}:${mask}::eth0:off`;
+
       await this.httpSock.put('boot-source', {
         json: {
           kernel_image_path: this.options.kernelImage,
-          boot_args:
-            'console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ip=172.16.0.2::172.16.0.1:255.255.255.0::eth0:off',
+          boot_args: `console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ${ipArgs}`,
         },
       });
 
@@ -211,12 +271,7 @@ export default class FirecrackerClient {
       await this.httpSock.put('network-interfaces/eth0', {
         json: {
           iface_id: 'eth0',
-          guest_mac: `02:FC:00:00:${Math.floor(this.id / 256)
-            .toString()
-            .padStart(2, '0')}:${Math.floor(this.id % 256)
-            .toString()
-            .padStart(2, '0')}`,
-          host_dev_name: `fc-${this.id}-tap0`,
+          host_dev_name: this.tapDeviceName,
         },
       });
     } catch (err) {

@@ -12,7 +12,7 @@ const adminClient = new AdminClient({
     clientSecret: process.env.ADMIN_CLIENT_SECRET,
   },
   OAuth2URL: process.env.TAKARO_OAUTH_HOST,
-  log: false
+  log: false,
 });
 
 async function main() {
@@ -35,7 +35,7 @@ async function main() {
       username: domainRes.data.data.rootUser.email,
       password: domainRes.data.data.password,
     },
-    log: false
+    log: false,
   });
 
   await client.login();
@@ -61,7 +61,7 @@ async function main() {
       type: 'MOCK',
       connectionInfo: JSON.stringify({
         eventInterval: 10000,
-        host: 'http://127.0.0.1:3002'
+        host: 'http://127.0.0.1:3002',
       }),
     })
   ).data.data;
@@ -73,7 +73,7 @@ async function main() {
   for (const mod of modules) {
     await client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
-      mod.id,
+      mod.id
     );
     console.log(`Installed module ${mod.name}`);
   }

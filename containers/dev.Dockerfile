@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y git net-tools iproute2 iptables socat n
 
 WORKDIR /app
 
-RUN npm install -g npm@8
+RUN npm install -g npm@9
 
 # Fix to avoid requiring root permissions 
 RUN npm config set cache /app/.npm-cache --global
@@ -28,4 +28,4 @@ COPY .mocharc.js ./
 
 RUN npm ci
 
-CMD sh -c './scripts/dev-setup-network-tap.sh && npm run start:dev'
+CMD sh -c './scripts/setup-network-tap.sh && npm run start:dev'

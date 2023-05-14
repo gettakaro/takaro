@@ -16,7 +16,8 @@ export const server = new HTTP(
   }
 );
 
-let vmm: VMM | null = null;
+// singleton
+let vmm: VMM | undefined;
 
 export async function getVMM() {
   if (!vmm) {
@@ -28,7 +29,9 @@ export async function getVMM() {
 
 async function main() {
   log.info('Starting...');
-  await getVMM();
+
+  const vmm = await getVMM();
+  await vmm.initPool();
 
   config.validate();
   log.info('✅ Config validated');
@@ -36,8 +39,10 @@ async function main() {
   await server.start();
   log.info('🚀 Server started');
 
+  const commandWorker = new CommandWorker();
+  commandWorker.bullWorker.concurrency = 2;
+
   new CronJobWorker();
-  new CommandWorker();
   new HookWorker();
 }
 

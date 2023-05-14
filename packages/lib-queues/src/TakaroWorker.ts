@@ -4,7 +4,7 @@ import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 
 export abstract class TakaroWorker<T> {
   log = logger('worker');
-  private bullWorker: Worker<T, unknown>;
+  public bullWorker: Worker<T, unknown>;
 
   constructor(name: string, fn: Processor<T, unknown>) {
     const label = `worker:${name}`;
