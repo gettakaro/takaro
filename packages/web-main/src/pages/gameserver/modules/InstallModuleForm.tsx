@@ -8,7 +8,6 @@ import {
   DrawerFooter,
   DrawerBody,
   CollapseList,
-  ErrorMessage,
   styled,
 } from '@takaro/lib-components';
 
@@ -27,7 +26,6 @@ interface IFormInputs {}
 
 const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
@@ -49,8 +47,6 @@ const InstallModule: FC = () => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
     try {
-      setError('');
-
       mutateAsync({
         gameServerId: serverId,
         moduleId: moduleId,
@@ -74,7 +70,6 @@ const InstallModule: FC = () => {
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="install-module-form">
               TODO: generic config via json schema
-              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
         </DrawerBody>
