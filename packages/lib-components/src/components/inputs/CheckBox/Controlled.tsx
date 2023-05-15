@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
-import { CheckBoxProps, GenericCheckbox } from '.';
+import { CheckBoxProps, GenericCheckBox } from '.';
 import { ControlledInputProps } from '../InputProps';
 
 export interface ControlledCheckBoxProps
@@ -31,7 +31,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
   });
 
   return (
-    <GenericCheckbox
+    <GenericCheckBox
       labelPosition={labelPosition}
       readOnly={readOnly}
       label={label}

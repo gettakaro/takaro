@@ -20,7 +20,7 @@ export { ControlledCodeField as CodeField } from './CodeField/Controlled';
 export type { ControlledCodeFieldProps as CodeFieldProps } from './CodeField/Controlled';
 
 export { ControlledRadioGroup as RadioGroup } from './RadioGroup/Controlled';
-export type { RadioGroupProps } from './RadioGroup';
+export type { ControlledRadioGroupProps as RadioGroupProps } from './RadioGroup/Controlled';
 
 export { EditableField } from './EditableField';
 export type { EditableFieldProps } from './EditableField';

@@ -7,6 +7,7 @@ import { Button } from '../../../components';
 
 const Container = styled.div`
   width: 100%;
+  padding: 2rem;
 `;
 
 export default {
@@ -41,7 +42,7 @@ const initialData = {};
 export const Default: StoryFn = () => {
   return (
     <Container>
-      <JsonSchemaForm schema={schema} initialData={initialData}>
+      <JsonSchemaForm schema={schema} initialData={initialData} uiSchema={{}}>
         <Button
           type="submit"
           text="Submit"

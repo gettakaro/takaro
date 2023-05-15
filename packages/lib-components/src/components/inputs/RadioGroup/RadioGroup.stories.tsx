@@ -1,12 +1,11 @@
 import React from 'react';
 import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { RadioGroup, RadioGroupProps } from '.';
+import { Button, RadioGroup, RadioGroupProps } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Radio } from './Radio';
-import { Button } from '../../../components';
+import { ControlledRadio as Radio } from './Radio/Controlled';
 
 export default {
   title: 'Inputs/RadioGroup',

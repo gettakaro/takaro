@@ -12,6 +12,7 @@ import {
 
 export interface TextAreaFieldProps extends InputProps {
   placeholder?: string;
+  rows?: number;
 }
 
 interface GenericTextAreaProps extends TextAreaFieldProps {
@@ -38,6 +39,7 @@ export const GenericTextAreaField = forwardRef<
     onChange,
     error,
     name,
+    rows = 5,
     size,
     readOnly,
   } = defaultsApplier(props);
@@ -102,6 +104,7 @@ export const GenericTextAreaField = forwardRef<
           readOnly={readOnly}
           role="presentation"
           ref={ref}
+          rows={rows}
         />
       </TextAreaContainer>
       {error && showError && <ErrorMessage message={error} />}

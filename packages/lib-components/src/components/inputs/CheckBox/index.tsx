@@ -35,7 +35,7 @@ const variants = {
 const defaultsApplier =
   defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
 
-export const GenericCheckbox: FC<GenericCheckBoxProps> = (props) => {
+export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
   const {
     name,
     size,

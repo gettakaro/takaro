@@ -7,7 +7,7 @@ import {
 import { GenericRadio } from './Radio';
 import { FieldSet } from './style';
 
-interface Option {
+export interface Option {
   labelPosition: 'left' | 'right';
   label: string;
   value: string;
