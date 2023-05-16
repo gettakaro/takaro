@@ -21,6 +21,7 @@ import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSetti
 import { ConnectionSettings } from './pages/settings/ConnectionSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
+import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 
 const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
@@ -101,7 +102,15 @@ export const router = sentryCreateBrowserRouter(
         <Route
           element={<GameServerModules />}
           path={PATHS.gameServer.modules(':serverId')}
-        />
+        >
+          <Route
+            element={<InstallModule />}
+            path={PATHS.gameServer.moduleInstallations.install(
+              ':serverId',
+              ':moduleId'
+            )}
+          />
+        </Route>
       </Route>
 
       {/* ======================== Studio ======================== */}
