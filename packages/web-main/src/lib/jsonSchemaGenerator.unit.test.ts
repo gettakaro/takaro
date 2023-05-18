@@ -1,6 +1,7 @@
-import { expect } from '@takaro/test';
-import { generateJSONSchema, InputType } from '../jsonSchemaGenerator.js';
-import Ajv, { AnySchema } from 'ajv';
+/* eslint-disable no-loop-func */
+import { describe, it, expect } from 'vitest';
+import { generateJSONSchema, InputType } from './jsonSchemaGenerator.js';
+import Ajv, { AnySchema, ValidateFunction } from 'ajv';
 
 interface IDataTest {
   name: string;
@@ -62,33 +63,28 @@ describe('JsonSchemaGenerator#data', () => {
 
   for (const positiveTest of positives) {
     let schema: AnySchema;
-    let validator: Ajv.ValidateFunction;
+    let validator: ValidateFunction;
     describe(`${positiveTest.name}`, () => {
       it('Can generate the schema', async () => {
         schema = await generateJSONSchema(positiveTest.schemaData);
-        validator = new Ajv.default({ useDefaults: true }).compile(schema);
+        validator = new Ajv({ useDefaults: true }).compile(schema);
       });
 
-      for (const validInput of positiveTest.validInputs) {
-        it(`Validates valid input: ${JSON.stringify(validInput)}`, async () => {
+      it.each(positiveTest.validInputs)(
+        'Validates valid input: %s',
+        async (validInput) => {
           const result = validator(validInput);
-          expect(result).to.eq(
-            true,
-            `Input ${JSON.stringify(validInput)} failed validation`
-          );
-        });
-      }
+          expect(result).toEqual(true);
+        }
+      );
 
-      for (const invalidInput of positiveTest.invalidInputs) {
-        it(`Detects invalid input: ${JSON.stringify(
-          invalidInput
-        )} `, async () => {
-          expect(validator(invalidInput)).to.eq(
-            false,
-            `Input ${JSON.stringify(invalidInput)} passed validation`
-          );
-        });
-      }
+      it.each(positiveTest.invalidInputs)(
+        'Detects invalid input: %s',
+        async (validInput) => {
+          const result = validator(validInput);
+          expect(result).toEqual(false);
+        }
+      );
     });
   }
 });
