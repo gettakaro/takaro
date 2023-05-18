@@ -11,6 +11,8 @@ export enum InputType {
 export interface BaseObject {
   type: InputType;
   required?: boolean;
+  title?: string;
+  description?: string;
 }
 
 export interface EnumInput extends BaseObject {
@@ -60,6 +62,14 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
 
   if (input.default !== undefined) {
     res.default = input.default;
+  }
+
+  if (input.title) {
+    res.title = input.title;
+  }
+
+  if (input.description) {
+    res.description = input.description;
   }
 
   switch (input.type) {
