@@ -10,32 +10,38 @@ export enum InputType {
 
 export interface BaseObject {
   type: InputType;
+  required?: boolean;
 }
 
 export interface EnumInput extends BaseObject {
   type: InputType.enum;
   enum: string[];
+  default?: string;
 }
 
 export interface NumberInput extends BaseObject {
   type: InputType.number;
   minimum?: number;
   maximum?: number;
+  default?: number;
 }
 
 export interface StringInput extends BaseObject {
   type: InputType.string;
   minLength?: number;
   maxLength?: number;
+  default?: string;
 }
 
 export interface BooleanInput extends BaseObject {
   type: InputType.boolean;
+  default?: boolean;
 }
 
 export interface ArrayInput extends BaseObject {
   type: InputType.array;
   items: AnyInputExceptArray;
+  default?: unknown[];
 }
 
 export type AnyInputExceptArray =
@@ -51,6 +57,10 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
     type: input.type,
   };
+
+  if (input.default !== undefined) {
+    res.default = input.default;
+  }
 
   switch (input.type) {
     case InputType.enum:
@@ -93,12 +103,17 @@ export async function generateJSONSchema(inputs: Array<Input>) {
   const schema: AnySchema = {
     type: 'object',
     properties: {},
+    required: [],
   };
 
   for (const input of inputs) {
     schema.properties[input.name] = {
       type: input.type,
     };
+
+    if (input.required !== false) {
+      schema.required.push(input.name);
+    }
 
     if (input.type === InputType.array) {
       schema.properties[input.name].items = getJsonSchemaElement(input.items);

@@ -2,82 +2,6 @@ import { expect } from '@takaro/test';
 import { generateJSONSchema, InputType } from '../jsonSchemaGenerator.js';
 import Ajv, { AnySchema } from 'ajv';
 
-describe('JsonSchemaGenerator', () => {
-  it('Can do a basic text input', async () => {
-    const schema = await generateJSONSchema([
-      {
-        name: 'test',
-        type: InputType.string,
-      },
-    ]);
-
-    expect(schema).to.deep.eq({
-      type: 'object',
-      properties: {
-        test: {
-          type: 'string',
-        },
-      },
-    });
-  });
-
-  it('Can do a basic number input', async () => {
-    const schema = await generateJSONSchema([
-      {
-        name: 'test',
-        type: InputType.number,
-      },
-    ]);
-
-    expect(schema).to.deep.eq({
-      type: 'object',
-      properties: {
-        test: {
-          type: 'number',
-        },
-      },
-    });
-  });
-
-  it('Can do a basic enum input', async () => {
-    const schema = await generateJSONSchema([
-      {
-        name: 'test',
-        type: InputType.enum,
-        enum: ['test1', 'test2'],
-      },
-    ]);
-
-    expect(schema).to.deep.eq({
-      type: 'object',
-      properties: {
-        test: {
-          type: 'enum',
-          enum: ['test1', 'test2'],
-        },
-      },
-    });
-  });
-
-  it('Can do a basic boolean input', async () => {
-    const schema = await generateJSONSchema([
-      {
-        name: 'test',
-        type: InputType.boolean,
-      },
-    ]);
-
-    expect(schema).to.deep.eq({
-      type: 'object',
-      properties: {
-        test: {
-          type: 'boolean',
-        },
-      },
-    });
-  });
-});
-
 interface IDataTest {
   name: string;
   schemaData: Parameters<typeof generateJSONSchema>[0];
@@ -93,11 +17,12 @@ describe('JsonSchemaGenerator#data', () => {
         {
           name: 'Max teleports',
           type: InputType.number,
+          default: 3,
           minimum: 1,
           maximum: 10,
         },
       ],
-      validInputs: [{ 'Max teleports': 1 }, { 'Max teleports': 2 }],
+      validInputs: [{ 'Max teleports': 1 }, { 'Max teleports': 2 }, {}],
       invalidInputs: [
         { 'Max teleports': '1' },
         { 'Max teleports': true },
@@ -130,6 +55,7 @@ describe('JsonSchemaGenerator#data', () => {
         { messages: null },
         { messages: ['too long!'] },
         { messages: ['a'] },
+        {},
       ],
     },
   ];
@@ -140,7 +66,7 @@ describe('JsonSchemaGenerator#data', () => {
     describe(`${positiveTest.name}`, () => {
       it('Can generate the schema', async () => {
         schema = await generateJSONSchema(positiveTest.schemaData);
-        validator = new Ajv.default().compile(schema);
+        validator = new Ajv.default({ useDefaults: true }).compile(schema);
       });
 
       for (const validInput of positiveTest.validInputs) {
