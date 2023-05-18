@@ -1,6 +1,6 @@
 import { expect } from '@takaro/test';
 import { generateJSONSchema, InputType } from '../jsonSchemaGenerator.js';
-import Ajv from 'ajv';
+import Ajv, { AnySchema } from 'ajv';
 
 describe('JsonSchemaGenerator', () => {
   it('Can do a basic text input', async () => {
@@ -135,18 +135,16 @@ describe('JsonSchemaGenerator#data', () => {
   ];
 
   for (const positiveTest of positives) {
+    let schema: AnySchema;
+    let validator: Ajv.ValidateFunction;
     describe(`${positiveTest.name}`, () => {
       it('Can generate the schema', async () => {
-        const schema = await generateJSONSchema(positiveTest.schemaData);
-        new Ajv.default().compile(schema);
+        schema = await generateJSONSchema(positiveTest.schemaData);
+        validator = new Ajv.default().compile(schema);
       });
 
       for (const validInput of positiveTest.validInputs) {
         it(`Validates valid input: ${JSON.stringify(validInput)}`, async () => {
-          const schema = await generateJSONSchema(positiveTest.schemaData);
-          const validator = new Ajv.default({ useDefaults: true }).compile(
-            schema
-          );
           const result = validator(validInput);
           expect(result).to.eq(
             true,
@@ -159,8 +157,6 @@ describe('JsonSchemaGenerator#data', () => {
         it(`Detects invalid input: ${JSON.stringify(
           invalidInput
         )} `, async () => {
-          const schema = await generateJSONSchema(positiveTest.schemaData);
-          const validator = new Ajv.default().compile(schema);
           expect(validator(invalidInput)).to.eq(
             false,
             `Input ${JSON.stringify(invalidInput)} passed validation`
