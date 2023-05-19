@@ -176,15 +176,15 @@ export const useGameServerModuleUninstall = () => {
       ).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
-      queryClient.setQueryData<ModuleOutputDTO[]>(
+      queryClient.setQueryData<ModuleInstallationOutputDTO[]>(
         installedModuleKeys.list(deletedModule.gameserverId),
-        (old) =>
-          old
-            ? old.filter(
-                (installedModule) =>
-                  installedModule.id !== deletedModule.gameserverId
-              )
-            : old!
+        (old) => {
+          return old
+            ? old.filter((installedModule) => {
+                return installedModule.moduleId !== deletedModule.moduleId;
+              })
+            : old!;
+        }
       );
 
       queryClient.invalidateQueries(
