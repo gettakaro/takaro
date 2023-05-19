@@ -1,12 +1,12 @@
 import { forwardRef, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { InputProps } from '../InputProps';
 import { ZodType } from 'zod';
-import { Container, Tag } from './style';
-import { Label } from '../Label';
+import { Container, TagsContainer, Tag } from './style';
+import { ErrorMessage, Label } from '../../../components';
 
 const defaultSeparators = ['Enter'];
 
-export interface GenericTagFieldProps extends InputProps {
+export interface TagFieldProps extends InputProps {
   onRemoved?: (tag: string) => void;
   tagValidationSchema?: ZodType<{ tags: string[] }, any, any>;
   seperators?: string[];
@@ -17,6 +17,14 @@ export interface GenericTagFieldProps extends InputProps {
   onChange?: (tags: string[]) => void;
   onKeyUp?: (e: KeyboardEvent<HTMLInputElement>) => void;
   value?: string[];
+  description?: string;
+}
+
+// these are props that should only be available on the generic version.
+export interface GenericTagFieldProps extends TagFieldProps {
+  onChange: (...event: any[]) => unknown;
+  onBlur: (...event: any[]) => unknown;
+  error?: string;
 }
 
 export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
@@ -37,10 +45,15 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       isEditOnRemove,
       disabled = false,
       required = false,
+      description,
+      error,
+      onBlur,
+      hint,
     },
     ref
   ) => {
     const [tags, setTags] = useState<string[]>(value);
+    const [showError, setShowError] = useState(false);
 
     useDidUpdateEffect(() => {
       onChange && onChange(tags);
@@ -91,8 +104,13 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       onRemoved && onRemoved(text);
     };
 
+    const handleOnBlur = () => {
+      onBlur();
+      setShowError(false);
+    };
+
     return (
-      <>
+      <Container>
         {label && (
           <Label
             text={label}
@@ -100,11 +118,12 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
             error={false}
             disabled={disabled}
             required={required}
-            position="left"
+            position="top"
             size="medium"
+            hint={hint}
           />
         )}
-        <Container aria-labelledby={name} ref={ref}>
+        <TagsContainer aria-labelledby={name} ref={ref}>
           {tags.map((tag) => (
             <Tag
               key={tag}
@@ -113,7 +132,6 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
               disabled={disabled}
             />
           ))}
-
           <input
             type="text"
             name={name}
@@ -122,14 +140,17 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
             onKeyDown={handleKeyDown}
             onKeyUp={onKeyUp}
             readOnly={readOnly}
+            onBlur={handleOnBlur}
           />
-        </Container>
-      </>
+        </TagsContainer>
+        {description && <p>{description}</p>}
+        {error && showError && <ErrorMessage message={error} />}
+      </Container>
     );
   }
 );
 
-export function useDidUpdateEffect(fn, inputs) {
+export function useDidUpdateEffect(fn: () => unknown, inputs: unknown[]) {
   const didMountRef = useRef(false);
 
   useEffect(() => {

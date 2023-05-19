@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { GenericTagField as TagField, GenericTagFieldProps } from '.';
+import {
+  GenericTagField as TagField,
+  GenericTagFieldProps as TagFieldProps,
+} from '.';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 
@@ -8,15 +11,22 @@ export default {
   title: 'Inputs/TagField',
   component: TagField,
   args: {
-    label: 'Url',
-    placeholder: 'placeholder',
+    label: 'Fruits',
+    placeholder: 'Press ENTER to save a value',
     required: true,
     disabled: false,
     isEditOnRemove: false,
+    readOnly: false,
+    seperators: [','],
+    description:
+      'Very basic description. But atleast it is here and can be improved in the future.',
+    name: 'fruits',
+    hint: '',
+    onBlur: () => {},
   },
-} as Meta<GenericTagFieldProps>;
+} as Meta<TagFieldProps>;
 
-export const Default: StoryFn<GenericTagFieldProps> = (args) => {
+export const Default: StoryFn<TagFieldProps> = (args) => {
   const [selected, setSelected] = useState(['papaya']);
   const { control } = useForm();
 
@@ -31,13 +41,19 @@ export const Default: StoryFn<GenericTagFieldProps> = (args) => {
       <TagField
         value={selected}
         onChange={setSelected}
-        name="fruits"
+        name={args.name}
+        label={args.label}
         control={control}
-        placeholder="press ENTER to save a value"
+        hint={args.hint}
+        placeholder={args.placeholder}
         disabled={args.disabled}
         isEditOnRemove={args.isEditOnRemove}
         tagValidationSchema={beforeAddValidationSchema}
         required={args.required}
+        onBlur={() => {}}
+        readOnly={args.readOnly}
+        seperators={args.seperators}
+        description={args.description}
       />
     </div>
   );
