@@ -16,7 +16,7 @@ export const ControlledTagField: FC<TagFieldProps> = ({
   onRemoved,
   readOnly,
   onExisting,
-  seperators,
+  separators,
   isEditOnRemove,
 }) => {
   const {
@@ -48,7 +48,7 @@ export const ControlledTagField: FC<TagFieldProps> = ({
       onRemoved={onRemoved}
       readOnly={readOnly}
       onExisting={onExisting}
-      seperators={seperators}
+      separators={separators}
       isEditOnRemove={isEditOnRemove}
     />
   );

@@ -15,9 +15,9 @@ export default {
     placeholder: 'Press ENTER to save a value',
     required: true,
     disabled: false,
-    isEditOnRemove: false,
+    isEditOnRemove: true,
     readOnly: false,
-    seperators: [','],
+    separators: [','],
     description:
       'Very basic description. But atleast it is here and can be improved in the future.',
     name: 'fruits',
@@ -37,6 +37,7 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
   return (
     <div style={{ marginBottom: '32px' }}>
       <h1>Add Fruits</h1>
+      <pre>paste tester: apple,banana,jeroen</pre>
       <pre>{JSON.stringify(selected)}</pre>
       <TagField
         value={selected}
@@ -52,7 +53,7 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
         required={args.required}
         onBlur={() => {}}
         readOnly={args.readOnly}
-        seperators={args.seperators}
+        separators={args.separators}
         description={args.description}
       />
     </div>

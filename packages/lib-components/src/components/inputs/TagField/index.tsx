@@ -1,16 +1,19 @@
-import { forwardRef, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { forwardRef, KeyboardEvent, ClipboardEvent, useState } from 'react';
 import { InputProps } from '../InputProps';
 import { ZodType } from 'zod';
 import { Container, TagsContainer, Tag } from './style';
 import { ErrorMessage, Label } from '../../../components';
+import { splitPaste, useDidUpdateEffect } from './util';
 
 const defaultSeparators = ['Enter'];
 
 export interface TagFieldProps extends InputProps {
   onRemoved?: (tag: string) => void;
   tagValidationSchema?: ZodType<{ tags: string[] }, any, any>;
-  seperators?: string[];
+  separators?: string[];
   disableBackspaceRemove?: boolean;
+
+  // When using backspace, the item itself is removed and the value is shown in the inputfield
   isEditOnRemove?: boolean;
   onExisting?: (tag: string) => void;
   placeholder?: string;
@@ -31,7 +34,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
   (
     {
       onRemoved,
-      seperators,
+      separators = [],
       name,
       readOnly,
       placeholder,
@@ -52,6 +55,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     },
     ref
   ) => {
+    const combinedSeparators = [...defaultSeparators, ...separators];
     const [tags, setTags] = useState<string[]>(value);
     const [showError, setShowError] = useState(false);
 
@@ -81,7 +85,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       }
 
       // handle new tag confirmation
-      if (text && (seperators || defaultSeparators).includes(e.key)) {
+      if (text && combinedSeparators.includes(e.key)) {
         e.preventDefault();
 
         // TODO: check tag validation logic
@@ -107,6 +111,19 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     const handleOnBlur = () => {
       onBlur();
       setShowError(false);
+    };
+
+    const handleOnPaste = (event: ClipboardEvent<HTMLInputElement>) => {
+      const pasteText = event.clipboardData.getData('text');
+      if (pasteText.length < 1) return;
+
+      const pasteTags = splitPaste({
+        text: pasteText,
+        tags,
+        separators: combinedSeparators,
+      });
+      setTags([...tags, ...pasteTags]);
+      event.preventDefault();
     };
 
     return (
@@ -141,6 +158,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
             onKeyUp={onKeyUp}
             readOnly={readOnly}
             onBlur={handleOnBlur}
+            onPaste={handleOnPaste}
           />
         </TagsContainer>
         {description && <p>{description}</p>}
@@ -149,12 +167,3 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     );
   }
 );
-
-export function useDidUpdateEffect(fn: () => unknown, inputs: unknown[]) {
-  const didMountRef = useRef(false);
-
-  useEffect(() => {
-    if (didMountRef.current) fn();
-    else didMountRef.current = true;
-  }, inputs);
-}
