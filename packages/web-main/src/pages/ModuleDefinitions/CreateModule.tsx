@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { FC, useEffect, useState } from 'react';
+import { SubmitHandler, useForm, useFieldArray } from 'react-hook-form';
 import {
   Button,
   TextField,
@@ -11,6 +11,7 @@ import {
   CollapseList,
   ErrorMessage,
   styled,
+  Divider,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -19,10 +20,13 @@ import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { useModuleCreate } from 'queries/modules';
+import { generateJSONSchema, Input, InputType } from 'lib/jsonSchemaGenerator';
+import { FormField } from 'lib/getFormField';
 
 interface IFormInputs {
   name: string;
   description?: string;
+  configFields: Input[];
 }
 
 const ButtonContainer = styled.div`
@@ -48,6 +52,11 @@ const CreateModule: FC = () => {
     resolver: zodResolver(moduleValidationSchema),
   });
 
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'configFields',
+  });
+
   const onSubmit: SubmitHandler<IFormInputs> = async ({
     name,
     description,
@@ -55,9 +64,12 @@ const CreateModule: FC = () => {
     try {
       setError('');
 
+      const configSchema = await generateJSONSchema(fields);
+
       mutateAsync({
         name,
         description,
+        configSchema: JSON.stringify(configSchema),
       });
 
       navigate(PATHS.moduleDefinitions());
@@ -88,6 +100,30 @@ const CreateModule: FC = () => {
                   loading={isLoading}
                   name="description"
                   placeholder="This module does cool stuff"
+                />
+              </CollapseList.Item>
+              <CollapseList.Item title="Config">
+                {fields.map((field) => {
+                  return (
+                    <>
+                      <FormField input={field} control={control} />
+                      <Divider />
+                    </>
+                  );
+                })}
+
+                <Button
+                  text="Add Config Field"
+                  type="button"
+                  onClick={() => {
+                    append({
+                      name: 'test',
+                      type: InputType.string,
+                      description: 'test',
+                      required: true,
+                      default: 'test',
+                    });
+                  }}
                 />
               </CollapseList.Item>
               {error && <ErrorMessage message={error} />}

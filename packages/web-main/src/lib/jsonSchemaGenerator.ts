@@ -53,7 +53,7 @@ export type AnyInputExceptArray =
   | BooleanInput;
 export type AnyInput = AnyInputExceptArray | ArrayInput;
 
-type Input = AnyInput & { name: string };
+export type Input = AnyInput & { name: string };
 
 function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
