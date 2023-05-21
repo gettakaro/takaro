@@ -33,6 +33,7 @@ pub struct ExecRequest {
 }
 
 #[debug_handler]
+#[tracing::instrument]
 pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
     payload.env.load();
 
@@ -65,6 +66,7 @@ pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse
 }
 
 #[cfg(test)]
+#[allow(unused_must_use)]
 mod tests {
     use super::*;
     use std::env;

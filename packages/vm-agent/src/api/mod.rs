@@ -14,6 +14,9 @@ use tower_http::trace::TraceLayer;
 
 mod handlers;
 
+const HOST: u32 = libc::VMADDR_CID_ANY;
+const PORT: u32 = 8000;
+
 pub struct ServerAccept {
     vsl: VsockListener,
 }
@@ -38,6 +41,10 @@ pub fn app() -> Router {
         .layer(TraceLayer::new_for_http())
 }
 
-pub fn server(listener: VsockListener) -> axum::Server<ServerAccept, IntoMakeService<Router>> {
+pub fn server() -> axum::Server<ServerAccept, IntoMakeService<Router>> {
+    let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
+
+    tracing::info!("listening on {HOST}:{PORT}");
+
     axum::Server::builder(ServerAccept { vsl: listener }).serve(app().into_make_service())
 }

@@ -1,26 +1,39 @@
-use anyhow::Error;
-use futures::TryStreamExt;
-use std::{env, io, net::Ipv4Addr};
-use tokio_vsock::VsockListener;
+use opentelemetry::sdk::{trace, Resource};
+use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_semantic_conventions as semconv;
+use std::env;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-const HOST: u32 = libc::VMADDR_CID_ANY;
-const PORT: u32 = 8000;
+mod api;
 
-#[derive(Debug, thiserror::Error)]
-enum InitError {
-    #[error("an unhandled IO error occurred: {}", 0)]
-    IoError(#[from] io::Error),
+fn setup_tracing() -> anyhow::Result<()> {
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint(
+            env::var("TRACING_ENDPOINT").unwrap_or("http://172.21.0.3:4317".to_string()),
+        ))
+        .with_trace_config(trace::config().with_resource(Resource::new(vec![
+            semconv::resource::SERVICE_NAME.string("vm-agent"),
+        ])))
+        .install_simple()?;
 
-    #[error("an unhandled netlink error occurred: {}", 0)]
-    NetlinkError(#[from] rtnetlink::Error),
+    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracer);
 
-    #[error("an unhandled error occurred: {}", 0)]
-    Error(#[from] Error),
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "vm-agent=trace,tower_http=trace,axum::rejection=trace".into()),
+        )
+        .with(opentelemetry)
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
+    Ok(())
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt().init();
+    setup_tracing()?;
 
     if let Err(e) = env::set_current_dir("/app") {
         tracing::error!("failed to change directory: {}", e);
@@ -32,11 +45,7 @@ async fn main() -> anyhow::Result<()> {
         tracing::error!("cailed to get current working directory");
     }
 
-    let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
-
-    tracing::info!("listening on {HOST}:{PORT}");
-
-    vm_agent::api::server(listener).await?;
+    api::server().await?;
 
     Ok(())
 }
