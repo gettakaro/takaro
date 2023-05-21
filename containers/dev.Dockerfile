@@ -28,4 +28,4 @@ COPY .mocharc.js ./
 
 RUN npm ci
 
-CMD sh -c './scripts/setup-network-tap.sh && npm run start:dev'
+CMD sh -c './scripts/setup-network.sh && npm run start:dev'
