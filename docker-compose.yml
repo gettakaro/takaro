@@ -15,6 +15,8 @@ services:
     image: postgres:15
     volumes:
       - ./_data/db:/var/lib/postgresql/data
+    networks:
+      - takaro
     ports:
       - 127.0.0.1:13100:5432
     environment:
@@ -27,6 +29,8 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
+    networks:
+      - takaro
     volumes:
       - pgadmin:/var/lib/pgadmin
     ports:
@@ -36,10 +40,14 @@ services:
 
   redis:
     image: redis
+    networks:
+      - takaro
     ports:
       - 6379:6379
   takaro:
     privileged: true
+    networks:
+      - takaro
     devices:
       - /dev/kvm:/dev/kvm
     build:
@@ -113,12 +121,16 @@ services:
     volumes:
       - ./containers/ory/kratos:/etc/config/kratos
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    networks:
+      - takaro
     restart: on-failure
   kratos:
     image: oryd/kratos:v0.11.1
     ports:
       - '4433:4433' # public
       - '4434:4434' # admin
+    networks:
+      - takaro
     restart: on-failure
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
@@ -129,6 +141,8 @@ services:
     image: postgres:15
     ports:
       - 127.0.0.1:13101:5432
+    networks:
+      - takaro
     volumes:
       - ./_data/kratos-db:/var/lib/postgresql/data
     environment:
@@ -138,6 +152,8 @@ services:
 
   hydra:
     image: oryd/hydra:v2.0.3
+    networks:
+      - takaro
     ports:
       - '4444:4444' # Public port
       - '4445:4445' # Admin port
@@ -152,6 +168,8 @@ services:
     image: oryd/hydra:v2.0.3
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+    networks:
+      - takaro
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
@@ -161,6 +179,8 @@ services:
       - 127.0.0.1:13102:5432
     volumes:
       - ./_data/hydra-db:/var/lib/postgresql/data
+    networks:
+      - takaro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -168,9 +188,18 @@ services:
 
   mailslurper:
     image: oryd/mailslurper:latest-smtps
+    networks:
+      - takaro
     ports:
       - '4436:4436'
       - '4437:4437'
 
 volumes:
   pgadmin:
+
+networks:
+  takaro:
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.16.238.0/24'

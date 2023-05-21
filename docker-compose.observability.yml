@@ -11,7 +11,7 @@ services:
   redis:
     extends:
       file: docker-compose.yml
-      service: redis      
+      service: redis
   takaro:
     extends:
       file: docker-compose.yml
@@ -47,6 +47,8 @@ services:
     volumes:
       - ./containers/prometheus/:/etc/prometheus/
       - ./_data/prometheus:/prometheus
+    networks:
+      - takaro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -54,7 +56,7 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - 9090:9090
-   
+
   grafana:
     image: grafana/grafana:9.3.6
     environment:
@@ -62,21 +64,33 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    networks:
+      - takaro
     volumes:
       - ./containers/grafana/grafana-provisioning:/etc/grafana/provisioning/
       - ./_data/grafana:/var/lib/grafana
     ports:
-      - "13007:3000"
+      - '13007:3000'
 
   tempo:
     image: grafana/tempo:latest
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./containers/tempo/tempo.yaml:/etc/tempo.yaml
       - ./_data/tempo:/tmp/tempo
+    networks:
+      takaro:
+        ipv4_address: 172.16.238.254
     ports:
-#      - "14268:14268"  # jaeger ingest
-      - "3200:3200"   # tempo
-#      - "4317:4317"  # otlp grpc
+      #      - "14268:14268"  # jaeger ingest
+      - '3200:3200' # tempo
+      - '4317:4317' # otlp grpc
 #      - "4318:4318"  # otlp http
-#      - "9411:9411"   # zipkin      
+#      - "9411:9411"   # zipkin
+
+networks:
+  takaro:
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.16.238.0/24'
