@@ -29,7 +29,6 @@ export default class FirecrackerClient {
   options: FcOptions;
   id: number;
   tapDeviceName: string;
-  tapDeviceCidr: string;
   tapDeviceIp: string;
   vmIp: string;
 
@@ -91,10 +90,6 @@ export default class FirecrackerClient {
     this.log.debug('cleaning up sockets and files');
 
     try {
-      // await fs.rm(config.get('firecracker.sockets'), {
-      //   recursive: true,
-      //   force: true,
-      // });
       await fs.rm(this.options.fcSocket, { force: true });
       await fs.rm(this.options.agentSocket, { force: true });
     } catch (err) {
@@ -206,7 +201,7 @@ export default class FirecrackerClient {
         return reject(error);
       });
 
-      this.childProcess.on('exit', (code) => {
+      this.childProcess.on('exit', async (code) => {
         this.log.debug(`child process exited with code ${code}`);
       });
 
@@ -236,8 +231,6 @@ export default class FirecrackerClient {
         resolve('success');
       });
     });
-
-    await this.cleanUp();
   }
 
   async setupVM() {

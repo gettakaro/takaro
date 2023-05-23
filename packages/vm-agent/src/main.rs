@@ -1,31 +1,38 @@
-use opentelemetry::sdk::{trace, Resource};
+use opentelemetry::{
+    global, runtime,
+    sdk::{propagation::TraceContextPropagator, trace as sdktrace, Resource},
+    trace::TraceError,
+    KeyValue,
+};
 use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_semantic_conventions as semconv;
 use std::env;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
 
 mod api;
 
-fn setup_tracing() -> anyhow::Result<()> {
+fn setup_tracing() -> Result<(), TraceError> {
+    global::set_text_map_propagator(TraceContextPropagator::new());
+
     let tracer = opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint(
-            env::var("TRACING_ENDPOINT").unwrap_or("http://172.21.0.3:4317".to_string()),
+            env::var("TRACING_ENDPOINT").unwrap_or("http://172.16.238.254:4317".to_string()),
         ))
-        .with_trace_config(trace::config().with_resource(Resource::new(vec![
-            semconv::resource::SERVICE_NAME.string("vm-agent"),
-        ])))
-        .install_simple()?;
-
-    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracer);
-
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "vm-agent=trace,tower_http=trace,axum::rejection=trace".into()),
+        .with_trace_config(
+            sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
+                opentelemetry_semantic_conventions::resource::SERVICE_NAME,
+                "vm-agent",
+            )])),
         )
-        .with(opentelemetry)
+        .install_batch(runtime::Tokio)?;
+
+    Registry::default()
+        .with(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "vm_agent=trace,tower_http=trace,axum::rejection=trace".into()),
+        )
         .with(tracing_subscriber::fmt::layer())
+        .with(tracing_opentelemetry::layer().with_tracer(tracer))
         .init();
 
     Ok(())

@@ -15,8 +15,20 @@ export class VMM {
     this.log = logger('VMM');
   }
 
-  async initPool(amount = 10) {
+  async initPool(amount = 1) {
     this.log.info('creating a pool of VMs');
+    const promises = [];
+
+    for (let i = 0; i < amount; i++) {
+      promises.push(this.createVM(i + 1));
+    }
+
+    await Promise.all(promises);
+  }
+
+  async initPoolSync(amount = 1) {
+    this.log.info('creating a pool of VMs');
+
     for (let i = 0; i < amount; i++) {
       await this.createVM(i + 1);
     }
@@ -47,7 +59,9 @@ export class VMM {
   }
 
   async getVM() {
-    const hotVM = this.vms.pop();
+    // const hotVM = this.vms.pop();
+
+    const hotVM = this.vms.at(0);
 
     if (!hotVM) {
       throw new Error('no available VMs');
@@ -76,7 +90,7 @@ export class VMM {
       this.log.error(err);
     } finally {
       if (vmId) {
-        this.createVM(vmId);
+        // this.createVM(vmId);
       }
     }
   }

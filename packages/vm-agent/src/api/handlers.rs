@@ -3,6 +3,7 @@ use serde_derive::{Deserialize, Serialize};
 use std::env;
 use std::os::unix::process::ExitStatusExt;
 use tokio::process::Command;
+use tracing::instrument;
 
 #[derive(Debug, Serialize)]
 pub struct ExecResponse {
@@ -33,7 +34,15 @@ pub struct ExecRequest {
 }
 
 #[debug_handler]
-#[tracing::instrument]
+#[instrument]
+pub async fn health() -> &'static str {
+    tracing::info!("inside health request");
+
+    "OK"
+}
+
+#[debug_handler]
+#[instrument]
 pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
     payload.env.load();
 

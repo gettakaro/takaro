@@ -4,7 +4,7 @@ use std::{
 };
 
 use axum::{
-    routing::{get, post, IntoMakeService},
+    routing::{get, post},
     Router,
 };
 use hyper::server::accept::Accept;
@@ -14,8 +14,8 @@ use tower_http::trace::TraceLayer;
 
 mod handlers;
 
-const HOST: u32 = libc::VMADDR_CID_ANY;
-const PORT: u32 = 8000;
+const VSOCK_HOST: u32 = libc::VMADDR_CID_ANY;
+const VSOCK_PORT: u32 = 8000;
 
 pub struct ServerAccept {
     vsl: VsockListener,
@@ -36,15 +36,31 @@ impl Accept for ServerAccept {
 
 pub fn app() -> Router {
     Router::new()
-        .route("/health", get(|| async { "OK" }))
+        .route("/health", get(handlers::health))
         .route("/exec", post(handlers::exec_cmd))
         .layer(TraceLayer::new_for_http())
 }
 
-pub fn server() -> axum::Server<ServerAccept, IntoMakeService<Router>> {
-    let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
+pub async fn server() -> Result<(), anyhow::Error> {
+    let mode = std::env::var("MODE").unwrap_or_default();
 
-    tracing::info!("listening on {HOST}:{PORT}");
+    if mode == "http" {
+        let addr = "127.0.0.1:8000".parse().unwrap();
 
-    axum::Server::builder(ServerAccept { vsl: listener }).serve(app().into_make_service())
+        tracing::info!("starting http server on 127.0.0.1:8000");
+
+        axum::Server::bind(&addr)
+            .serve(app().into_make_service())
+            .await?;
+    } else {
+        let listener = VsockListener::bind(VSOCK_HOST, VSOCK_PORT).expect("bind failed");
+
+        tracing::info!("starting vsock server on {VSOCK_HOST}:{VSOCK_PORT}");
+
+        axum::Server::builder(ServerAccept { vsl: listener })
+            .serve(app().into_make_service())
+            .await?;
+    }
+
+    Ok(())
 }

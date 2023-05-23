@@ -31,7 +31,7 @@ async function main() {
   log.info('Starting...');
 
   const vmm = await getVMM();
-  await vmm.initPool();
+  await vmm.initPoolSync();
 
   config.validate();
   log.info('✅ Config validated');
@@ -39,9 +39,7 @@ async function main() {
   await server.start();
   log.info('🚀 Server started');
 
-  const commandWorker = new CommandWorker();
-  commandWorker.bullWorker.concurrency = 2;
-
+  new CommandWorker();
   new CronJobWorker();
   new HookWorker();
 }
