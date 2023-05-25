@@ -42,6 +42,18 @@ class GameServerManager {
   >();
   private eventsQueue = queueService.queues.events.queue;
 
+  async init() {
+    const domains = await takaro.domain.domainControllerSearch();
+    for (const domain of domains.data.data) {
+      const client = await getDomainClient(domain.id);
+      const gameServersRes =
+        await client.gameserver.gameServerControllerSearch();
+      for (const gameServer of gameServersRes.data.data) {
+        await this.add(domain.id, gameServer.id);
+      }
+    }
+  }
+
   async add(domainId: string, gameServerId: string) {
     const gameServer = await getGameServer(domainId, gameServerId);
 

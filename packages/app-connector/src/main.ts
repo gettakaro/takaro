@@ -4,6 +4,7 @@ import { HTTP } from '@takaro/http';
 import { logger } from '@takaro/util';
 import { config } from './config.js';
 import { ConnectorWorker } from './lib/worker.js';
+import { gameServerManager } from './lib/GameServerManager.js';
 
 export const server = new HTTP(
   {
@@ -25,6 +26,7 @@ async function main() {
 
   await server.start();
   new ConnectorWorker();
+  await gameServerManager.init();
 
   log.info('🚀 Server started');
 }
