@@ -12,8 +12,6 @@ export class ConnectorWorker extends TakaroWorker<IConnectorQueueData> {
 }
 
 async function processJob(job: Job<IConnectorQueueData>) {
-  console.log(job.data);
-
   switch (job.data.operation) {
     case 'create':
       await gameServerManager.add(job.data.domainId, job.data.gameServerId);
