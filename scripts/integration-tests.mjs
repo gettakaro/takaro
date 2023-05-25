@@ -96,6 +96,7 @@ async function main() {
     await Promise.all([
       waitUntilHealthyHttp('http://127.0.0.1:13000/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
     ]);
 
@@ -106,7 +107,7 @@ async function main() {
     failed = true;
   }
 
-  await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_vmm'], composeOpts);
+  await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], composeOpts);
   await cleanUp();
 
   if (failed) {
