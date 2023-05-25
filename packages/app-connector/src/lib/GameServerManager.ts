@@ -1,19 +1,40 @@
-import { TakaroEmitter, GameEvents } from '@takaro/gameserver';
+import { TakaroEmitter, GameEvents, getGame } from '@takaro/gameserver';
 import { logger } from '@takaro/util';
+import { AdminClient, Client } from '@takaro/apiclient';
+import { config } from '../config.js';
 import { queueService } from '@takaro/queues';
-import {
-  GameServerOutputDTO,
-  GameServerService,
-} from '../service/GameServerService.js';
 
-/**
- * Handles setting up persistent connections to all game servers in the system
- * This is currently a very naive implementation, it's completely in memory and wont scale to multiple instances
- *
- * TODO: Implement a persistent connection manager that can be shared across instances
- * Deploy something in k8s probably? Helm Operator/Controller?
- */
-export class IGameServerInMemoryManager {
+const takaro = new AdminClient({
+  url: config.get('takaro.url'),
+  auth: {
+    clientId: config.get('hydra.adminClientId'),
+    clientSecret: config.get('hydra.adminClientSecret'),
+  },
+  OAuth2URL: config.get('hydra.publicUrl'),
+});
+
+async function getDomainClient(domainId: string) {
+  const tokenRes = await takaro.domain.domainControllerGetToken({
+    domainId,
+  });
+
+  return new Client({
+    auth: {
+      token: tokenRes.data.data.token,
+    },
+    url: config.get('takaro.url'),
+  });
+}
+
+async function getGameServer(domainId: string, gameServerId: string) {
+  const client = await getDomainClient(domainId);
+  const gameServerRes = await client.gameserver.gameServerControllerGetOne(
+    gameServerId
+  );
+  return gameServerRes.data.data;
+}
+
+class GameServerManager {
   private log = logger('GameServerManager');
   private emitterMap = new Map<
     string,
@@ -21,25 +42,14 @@ export class IGameServerInMemoryManager {
   >();
   private eventsQueue = queueService.queues.events.queue;
 
-  async init(domainId: string, gameServers: GameServerOutputDTO[]) {
-    this.log.info(`Initializing ${gameServers.length} game servers`);
-    for (const gameServer of gameServers) {
-      await this.add(domainId, gameServer);
-    }
-  }
+  async add(domainId: string, gameServerId: string) {
+    const gameServer = await getGameServer(domainId, gameServerId);
 
-  async destroy() {
-    for (const [id, { emitter }] of this.emitterMap) {
-      await emitter.stop();
-      this.emitterMap.delete(id);
-      this.log.info(`Removed game server ${id}`);
-    }
-  }
-
-  async add(domainId: string, gameServer: GameServerOutputDTO) {
-    const gameServerService = new GameServerService(domainId);
     const emitter = (
-      await gameServerService.getGame(gameServer.id)
+      await getGame(
+        gameServer.type,
+        gameServer.connectionInfo as Record<string, unknown>
+      )
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
@@ -65,6 +75,11 @@ export class IGameServerInMemoryManager {
         'Tried to remove a GameServer from manager which does not exist'
       );
     }
+  }
+
+  async update(domainId: string, gameServerId: string) {
+    await this.remove(gameServerId);
+    await this.add(domainId, gameServerId);
   }
 
   private attachListeners(
@@ -123,3 +138,5 @@ export class IGameServerInMemoryManager {
     });
   }
 }
+
+export const gameServerManager = new GameServerManager();
