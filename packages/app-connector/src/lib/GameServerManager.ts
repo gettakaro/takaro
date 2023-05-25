@@ -51,8 +51,18 @@ class GameServerManager {
       const client = await getDomainClient(domain.id);
       const gameServersRes =
         await client.gameserver.gameServerControllerSearch();
-      for (const gameServer of gameServersRes.data.data) {
-        await this.add(domain.id, gameServer.id);
+
+      try {
+        await Promise.allSettled(
+          gameServersRes.data.data.map((gameServer) => {
+            return this.add(domain.id, gameServer.id);
+          })
+        );
+      } catch (error) {
+        this.log.warn(`Error starting a server for domain ${domain.id} `, {
+          error,
+          domain: domain.id,
+        });
       }
     }
   }
@@ -69,12 +79,7 @@ class GameServerManager {
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
     this.attachListeners(domainId, gameServer.id, emitter);
-    try {
-      await emitter.start();
-    } catch (error) {
-      this.log.warn('Error while starting gameserver', { error });
-    }
-
+    await emitter.start();
     this.log.info(`Added game server ${gameServer.id}`);
   }
 
