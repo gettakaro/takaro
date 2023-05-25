@@ -111,6 +111,10 @@ services:
     environment:
       LOGGING_LEVEL: debug
       REDIS_HOST: "redis"    
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}      
+      TAKARO_OAUTH_HOST: http://hydra:4444
+      TAKARO_HOST: http://takaro_api:3000    
     ports:
       - 3003:3003      
   takaro_vmm:
