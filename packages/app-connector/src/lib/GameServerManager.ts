@@ -11,6 +11,7 @@ const takaro = new AdminClient({
     clientSecret: config.get('hydra.adminClientSecret'),
   },
   OAuth2URL: config.get('hydra.publicUrl'),
+  log: logger('adminClient'),
 });
 
 async function getDomainClient(domainId: string) {
@@ -23,6 +24,7 @@ async function getDomainClient(domainId: string) {
       token: tokenRes.data.data.token,
     },
     url: config.get('takaro.url'),
+    log: logger('domainClient'),
   });
 }
 
