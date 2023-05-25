@@ -105,6 +105,14 @@ services:
       REDIS_HOST: "redis"    
     ports:
       - 3002:3002
+  takaro_connector:
+    image: ghcr.io/gettakaro/takaro-app-connector:${DOCKER_TAG}
+    container_name: takaro_connector
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"    
+    ports:
+      - 3003:3003      
   takaro_vmm:
     image: ghcr.io/gettakaro/takaro-app-vmm:${DOCKER_TAG}
     privileged: true
