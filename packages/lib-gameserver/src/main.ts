@@ -22,3 +22,5 @@ export {
   RustConnectionInfo,
   rustJsonSchema,
 } from './gameservers/rust/connectionInfo.js';
+
+export { getGame, GAME_SERVER_TYPE } from './getGame.js';

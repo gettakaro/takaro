@@ -1,5 +1,9 @@
 import { config } from './config.js';
-import { IEventQueueData, IJobData } from './dataDefinitions.js';
+import {
+  IConnectorQueueData,
+  IEventQueueData,
+  IJobData,
+} from './dataDefinitions.js';
 import { TakaroQueue } from './TakaroQueue.js';
 
 class QueuesService {
@@ -24,6 +28,11 @@ class QueuesService {
     },
     events: {
       queue: new TakaroQueue<IEventQueueData>(config.get('queues.events.name')),
+    },
+    connector: {
+      queue: new TakaroQueue<IConnectorQueueData>(
+        config.get('queues.connector.name')
+      ),
     },
   };
 

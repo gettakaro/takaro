@@ -81,16 +81,6 @@ async function main() {
     const cronjobService = new CronJobService(domain.id);
     const gameServers = await gameServerService.find({});
 
-    // GameService.find() does not decrypt the connectioninfo
-    const gameServersDecrypted = await Promise.all(
-      gameServers.results.map(async (gameserver) => {
-        const gs = await gameServerService.findOne(gameserver.id);
-        return gs;
-      })
-    );
-
-    await gameServerService.manager.init(domain.id, gameServersDecrypted);
-
     await Promise.all(
       gameServers.results.map(async (gameserver) => {
         const installedModules = await gameServerService.getInstalledModules({

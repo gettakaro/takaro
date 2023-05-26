@@ -18,6 +18,9 @@ export interface IQueuesConfig extends IBaseConfig {
       name: string;
       concurrency: number;
     };
+    connector: {
+      name: string;
+    };
   };
   redis: {
     host: string;
@@ -109,6 +112,14 @@ export const queuesConfigSchema = {
         format: Number,
         default: 1,
         env: 'EVENTS_QUEUE_CONCURRENCY',
+      },
+    },
+    connector: {
+      name: {
+        doc: 'The name of the queue to use for connector',
+        format: String,
+        default: 'connector',
+        env: 'CONNECTOR_QUEUE_NAME',
       },
     },
   },
