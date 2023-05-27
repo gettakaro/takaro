@@ -8,5 +8,5 @@ export const customWidgets: RegistryWidgetsType = {
   selectWidget: SelectWidget,
   radioWidget: RadioWidget,
   TextareaWidget: TextareaWidget,
-  checkboxWidget: CheckBoxWidget,
+  checkbox: CheckBoxWidget,
 };

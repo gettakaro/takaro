@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 
 export default {
-  title: 'Schema/Widgets/Select',
+  title: 'Schema/Widgets/Checkbox',
 };
 
 export const Default = () => {
@@ -18,16 +18,18 @@ export const Default = () => {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {
-      type: {
-        type: 'string',
-        enum: ['7 Days to Die', 'Rust', 'Mock'],
+      isValid: {
+        type: 'boolean',
+        default: false,
+        description: 'Is the underlying thing valid?',
+        title: 'Is valid?',
       },
     },
   };
 
   const uiSchema: UiSchema = {
-    type: {
-      'ui:widget': 'selectWidget',
+    isValid: {
+      'ui:widget': 'checkbox',
     },
   };
 

@@ -5,6 +5,7 @@ import {
   StrictRJSFSchema,
   FieldProps,
 } from '@rjsf/utils';
+import { CheckBoxWidget } from '../widgets/CheckboxWidget';
 
 export function BooleanField<
   T = boolean,
@@ -17,7 +18,28 @@ export function BooleanField<
   readonly,
   required,
   onChange,
+  uiSchema,
+  schema,
+  registry,
 }: FieldProps<T, S, F>) {
+  if (uiSchema && uiSchema!['ui:widget'] === 'checkbox') {
+    return (
+      <CheckBoxWidget
+        name={name}
+        id={name}
+        schema={schema}
+        value={schema.default ?? false}
+        options={{}}
+        onChange={onChange}
+        onBlur={() => {}}
+        disabled={disabled}
+        onFocus={() => {}}
+        label={schema.title || name}
+        registry={registry}
+      />
+    );
+  }
+
   return (
     <GenericSwitch
       name={name}

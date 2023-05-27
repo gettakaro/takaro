@@ -10,24 +10,23 @@ const Container = styled.div`
 `;
 
 export default {
-  title: 'Schema/Widgets/Select',
+  title: 'Schema/Widgets/Radio',
 };
 
 export const Default = () => {
   const schema: RJSFSchema = {
-    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {
-      type: {
+      recurrence: {
         type: 'string',
-        enum: ['7 Days to Die', 'Rust', 'Mock'],
+        enum: ['Never', 'Daily', 'Weekly', 'Monthly'],
       },
     },
   };
 
   const uiSchema: UiSchema = {
-    type: {
-      'ui:widget': 'selectWidget',
+    recurrence: {
+      'ui:widget': 'radioWidget',
     },
   };
 
