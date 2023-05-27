@@ -27,7 +27,7 @@ export function BooleanField<
       loading={false}
       error={rawErrors ? rawErrors[0] : undefined}
       required={required}
-      label="TODO: not sure where the label should come from"
+      label={name}
       readOnly={readonly}
     />
   );
