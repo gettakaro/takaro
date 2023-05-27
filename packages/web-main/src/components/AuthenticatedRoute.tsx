@@ -31,13 +31,11 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   const handleAuth = useCallback(async () => {
     try {
-      console.log('hierrr');
       const user = await getSession();
       setUser({ id: user.id! });
       setIsAuth(true);
       setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
-      console.log('catch?');
       navigate(PATHS.login());
     } finally {
       isLoading(false);
