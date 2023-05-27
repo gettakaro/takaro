@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { useForm } from 'react-hook-form';
-import { SliderComponent, SliderProps } from '.';
+import { ControlledSlider, ControlledSliderProps } from './Controlled';
 import 'rc-slider/assets/index.css';
 
 const Wrapper = styled.div`
@@ -18,13 +18,13 @@ const Wrapper = styled.div`
 
 export default {
   title: 'Inputs/Slider',
-  component: SliderComponent,
+  component: ControlledSlider,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
-} as Meta<SliderProps>;
+} as Meta<ControlledSliderProps>;
 
-const Template: StoryFn<SliderProps> = (args) => {
+const Template: StoryFn<ControlledSliderProps> = (args) => {
   const { control } = useForm();
-  return <SliderComponent {...args} control={control} />;
+  return <ControlledSlider {...args} control={control} />;
 };
 
 // Default Checkbox
