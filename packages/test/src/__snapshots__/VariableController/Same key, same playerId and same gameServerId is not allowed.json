@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ConflictError",
+        "message": "Unique constraint violation"
+      }
+    },
+    "data": {}
+  },
+  "status": 409,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Same key, same playerId and same gameServerId is not allowed",
+    "expectedStatus": 409,
+    "filteredFields": [
+      "gameServerId",
+      "playerId"
+    ],
+    "standardEnvironment": true
+  }
+}

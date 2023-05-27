@@ -5,9 +5,22 @@ export { TakaroEmitter } from './TakaroEmitter.js';
 
 export * from './interfaces/events.js';
 
-export { Mock, MockConnectionInfo } from './gameservers/mock/index.js';
+export { Mock } from './gameservers/mock/index.js';
 export {
-  SevenDaysToDie,
+  MockConnectionInfo,
+  mockJsonSchema,
+} from './gameservers/mock/connectionInfo.js';
+
+export { SevenDaysToDie } from './gameservers/7d2d/index.js';
+export {
   SdtdConnectionInfo,
-} from './gameservers/7d2d/index.js';
-export { Rust, RustConnectionInfo } from './gameservers/rust/index.js';
+  sdtdJsonSchema,
+} from './gameservers/7d2d/connectionInfo.js';
+
+export { Rust } from './gameservers/rust/index.js';
+export {
+  RustConnectionInfo,
+  rustJsonSchema,
+} from './gameservers/rust/connectionInfo.js';
+
+export { getGame, GAME_SERVER_TYPE } from './getGame.js';

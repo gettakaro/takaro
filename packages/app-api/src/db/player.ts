@@ -8,6 +8,7 @@ import {
   PlayerOutputDTO,
   PlayerUpdateDTO,
 } from '../service/PlayerService.js';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 
@@ -140,5 +141,41 @@ export class PlayerRepo extends ITakaroRepo<
       domain: this.domainId,
     });
     return foundProfiles;
+  }
+
+  async resolveRef(
+    ref: IPlayerReferenceDTO,
+    gameServerId: string
+  ): Promise<PlayerOutputDTO> {
+    const knex = await this.getKnex();
+    const model = PlayerOnGameServerModel.bindKnex(knex);
+
+    const foundProfiles = await model
+      .query()
+      .modify('domainScoped', this.domainId)
+      .where({ gameId: ref.gameId, gameServerId });
+
+    if (foundProfiles.length === 0) {
+      throw new errors.NotFoundError();
+    }
+
+    const player = await this.findOne(foundProfiles[0].playerId);
+    return player;
+  }
+
+  async getRef(playerId: string, gameServerId: string) {
+    const knex = await this.getKnex();
+    const model = PlayerOnGameServerModel.bindKnex(knex);
+
+    const foundProfiles = await model
+      .query()
+      .modify('domainScoped', this.domainId)
+      .where({ playerId, gameServerId });
+
+    if (foundProfiles.length === 0) {
+      throw new errors.NotFoundError();
+    }
+
+    return new IPlayerReferenceDTO().construct(foundProfiles[0]);
   }
 }

@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "a29ce323-151a-4ca2-a314-0556e50691c4",
+      "createdAt": "2023-05-03T15:07:24.707Z",
+      "updatedAt": "2023-05-03T15:07:24.708Z",
+      "key": "Variable",
+      "value": "Test value",
+      "gameServerId": "2f89a096-3e4b-4e0c-9e6e-74f7d8a29dcf",
+      "playerId": "322f7e8d-1820-468e-851c-ece28601cf2e"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Same key, same playerId and different gameServerId is allowed",
+    "filteredFields": [
+      "gameServerId",
+      "playerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

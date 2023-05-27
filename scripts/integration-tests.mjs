@@ -1,10 +1,27 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down } from 'docker-compose';
+import { upMany, logs, exec, upAll, down, run } from 'docker-compose';
 import { $ } from 'zx';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+async function waitUntilHealthyHttp(url, maxRetries = 5) {
+  try {
+    const { stdout } = await $`curl -s -o /dev/null -w "%{http_code}" ${url}`;
+    if (stdout === '200') {
+      return;
+    }
+  } catch (err) { }
+
+  if (maxRetries > 0) {
+    await sleep(1000);
+    await waitUntilHealthyHttp(url, maxRetries - 1);
+  } else {
+    throw new Error(`Failed to connect to ${url} after ${maxRetries} retries`);
+  }
+}
+
 
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
 const POSTGRES_PASSWORD = randomUUID();
@@ -71,39 +88,26 @@ async function main() {
     composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
 
-  await upAll(composeOpts);
+  await upAll({ ...composeOpts, commandOptions: ['--build'] });
 
   let failed = false;
 
   try {
-    // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
-    // So we're hacking it like this instead :)
-    const testVars = {
-      POSTGRES_USER: `${process.env.POSTGRES_USER}`,
-      POSTGRES_PASSWORD: `${POSTGRES_PASSWORD}`,
-      POSTGRES_DB: `${process.env.POSTGRES_DB}`,
-      POSTGRES_HOST: '127.0.0.1 ',
-      POSTGRES_ENCRYPTION_KEY,
-      TAKARO_OAUTH_ADMIN_HOST: 'http://127.0.0.1:4445',
-      KRATOS_ADMIN_URL: 'http://127.0.0.1:4434',
-      TAKARO_OAUTH_HOST: 'http://127.0.0.1:4444 ',
-      TEST_HTTP_TARGET: 'http://127.0.0.1:13000',
-      ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
-      ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
-      REDIS_HOST: '127.0.0.1',
-    };
+    await Promise.all([
+      waitUntilHealthyHttp('http://127.0.0.1:13000/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
+    ]);
 
-    for (const [key, value] of Object.entries(testVars)) {
-      $.prefix += `${key}=${value} `;
-    }
-    console.log('Running tests with config', testVars);
-    await $`npm test`;
+    console.log('Running tests with config', composeOpts);
+    await run('takaro', 'npm run test', composeOpts);
   } catch (error) {
     console.error('Tests failed');
     failed = true;
   }
 
-  await logs(['takaro_api'], composeOpts);
+  await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], composeOpts);
   await cleanUp();
 
   if (failed) {

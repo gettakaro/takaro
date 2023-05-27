@@ -1,48 +1,54 @@
 import { TakaroService } from './Base.js';
 
-import {
-  GameServerModel,
-  GameServerRepo,
-  GAME_SERVER_TYPE,
-} from '../db/gameserver.js';
+import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
 import {
   IsEnum,
   IsJSON,
   IsObject,
+  IsOptional,
   IsString,
   IsUUID,
   Length,
 } from 'class-validator';
 import {
-  Mock,
-  SevenDaysToDie,
-  Rust,
   IMessageOptsDTO,
-  SdtdConnectionInfo,
-  RustConnectionInfo,
-  MockConnectionInfo,
   IGameServer,
   IPosition,
-  IGamePlayer,
+  IPlayerReferenceDTO,
+  sdtdJsonSchema,
+  rustJsonSchema,
+  mockJsonSchema,
+  GAME_SERVER_TYPE,
+  getGame,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
-import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
+import { queueService } from '@takaro/queues';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { PlayerService } from './PlayerService.js';
 import { JSONSchema } from 'class-validator-jsonschema';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
+import { PlayerService } from './PlayerService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
 
+const gameClassCache = new Map<string, IGameServer>();
+
+class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
+  @IsEnum(GAME_SERVER_TYPE)
+  type!: GAME_SERVER_TYPE;
+
+  @IsString()
+  @IsJSON()
+  connectionInfoSchema!: string;
+}
 export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   name: string;
@@ -77,10 +83,12 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
   @IsJSON()
-  userConfig: string;
+  @IsOptional()
+  userConfig?: string;
 
   @IsJSON()
-  systemConfig: string;
+  @IsOptional()
+  systemConfig?: string;
 }
 
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
@@ -98,16 +106,12 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   systemConfig: Record<string, never>;
 }
 
-const manager = new IGameServerInMemoryManager();
-
 export class GameServerService extends TakaroService<
   GameServerModel,
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO
 > {
-  private readonly gameServerManager = manager;
-
   get repo() {
     return new GameServerRepo(this.domainId);
   }
@@ -123,6 +127,18 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
+    const isReachable = await this.testReachability(
+      undefined,
+      JSON.parse(item.connectionInfo),
+      item.type
+    );
+
+    if (!isReachable.connectable) {
+      throw new errors.BadRequestError(
+        `Game server is not reachable: ${isReachable.reason}`
+      );
+    }
+
     const createdServer = await this.repo.create(item);
 
     const settingsService = new SettingsService(
@@ -132,7 +148,11 @@ export class GameServerService extends TakaroService<
 
     await settingsService.init();
 
-    await this.gameServerManager.add(this.domainId, createdServer);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: createdServer.id,
+      operation: 'create',
+    });
     return createdServer;
   }
 
@@ -144,7 +164,12 @@ export class GameServerService extends TakaroService<
       installedModules.map((mod) => this.uninstallModule(id, mod.moduleId))
     );
 
-    await this.gameServerManager.remove(id);
+    gameClassCache.delete(id);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: id,
+      operation: 'delete',
+    });
     await this.repo.delete(id);
     return id;
   }
@@ -154,8 +179,12 @@ export class GameServerService extends TakaroService<
     item: GameServerUpdateDTO
   ): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
-    await this.gameServerManager.remove(id);
-    await this.gameServerManager.add(this.domainId, updatedServer);
+    gameClassCache.delete(id);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: id,
+      operation: 'update',
+    });
     return updatedServer;
   }
 
@@ -165,15 +194,10 @@ export class GameServerService extends TakaroService<
     type?: GAME_SERVER_TYPE
   ) {
     if (id) {
-      const gameserver = await this.repo.findOne(id);
-      const instance = await GameServerService.getGame(
-        gameserver.type,
-        gameserver.connectionInfo
-      );
-
+      const instance = await this.getGame(id);
       return instance.testReachability();
     } else if (connectionInfo && type) {
-      const instance = await GameServerService.getGame(type, connectionInfo);
+      const instance = await getGame(type, connectionInfo);
       return instance.testReachability();
     } else {
       throw new errors.BadRequestError('Missing required parameters');
@@ -187,7 +211,7 @@ export class GameServerService extends TakaroService<
   async installModule(
     gameserverId: string,
     moduleId: string,
-    installDto: ModuleInstallDTO
+    installDto?: ModuleInstallDTO
   ) {
     const moduleService = new ModuleService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
@@ -197,11 +221,18 @@ export class GameServerService extends TakaroService<
       throw new errors.NotFoundError('Module not found');
     }
 
-    const modUserConfig = JSON.parse(installDto.userConfig);
+    if (!installDto) {
+      installDto = await new ModuleInstallDTO().construct({
+        userConfig: JSON.stringify({}),
+        systemConfig: JSON.stringify({}),
+      });
+    }
+
+    const modUserConfig = JSON.parse(installDto.userConfig ?? '{}');
     const validateUserConfig = ajv.compile(JSON.parse(mod.configSchema));
     const isValidUserConfig = validateUserConfig(modUserConfig);
 
-    const modSystemConfig = JSON.parse(installDto.systemConfig);
+    const modSystemConfig = JSON.parse(installDto.systemConfig ?? '{}');
     const validateSystemConfig = ajv.compile(
       JSON.parse(mod.systemConfigSchema)
     );
@@ -274,47 +305,56 @@ export class GameServerService extends TakaroService<
     return installations;
   }
 
-  static async getGame(
-    type: GAME_SERVER_TYPE,
-    connectionInfo: Record<string, unknown>
-  ): Promise<IGameServer> {
-    switch (type) {
-      case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-        return new SevenDaysToDie(
-          await new SdtdConnectionInfo().construct(connectionInfo)
-        );
-      case GAME_SERVER_TYPE.RUST:
-        return new Rust(
-          await new RustConnectionInfo().construct(connectionInfo)
-        );
-      case GAME_SERVER_TYPE.MOCK:
-        return new Mock(
-          await new MockConnectionInfo().construct(connectionInfo)
-        );
-      default:
-        throw new errors.NotImplementedError();
-    }
-  }
-
   async getGame(id: string): Promise<IGameServer> {
     const gameserver = await this.repo.findOne(id);
-    return GameServerService.getGame(
-      gameserver.type,
-      gameserver.connectionInfo
+    let gameInstance = gameClassCache.get(id);
+
+    if (gameInstance) {
+      return gameInstance;
+    }
+
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo);
+
+    gameClassCache.set(id, gameInstance);
+
+    return gameInstance;
+  }
+
+  async getTypes(): Promise<GameServerTypesOutputDTO[]> {
+    return Promise.all(
+      Object.values(GAME_SERVER_TYPE).map((t) => {
+        let schema;
+
+        switch (t) {
+          case GAME_SERVER_TYPE.SEVENDAYSTODIE:
+            schema = sdtdJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.RUST:
+            schema = rustJsonSchema;
+            break;
+          case GAME_SERVER_TYPE.MOCK:
+            schema = mockJsonSchema;
+            break;
+          default:
+            throw new errors.NotImplementedError();
+        }
+
+        return new GameServerTypesOutputDTO().construct({
+          type: t,
+          connectionInfoSchema: JSON.stringify(schema),
+        });
+      })
     );
   }
 
-  get manager() {
-    return this.gameServerManager;
+  async getPlayer(gameServerId: string, playerRef: IPlayerReferenceDTO) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getPlayer(playerRef);
   }
 
   async executeCommand(gameServerId: string, rawCommand: string) {
-    const gameserver = await this.repo.findOne(gameServerId);
-    const instance = await GameServerService.getGame(
-      gameserver.type,
-      gameserver.connectionInfo
-    );
-    return instance.executeConsoleCommand(rawCommand);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.executeConsoleCommand(rawCommand);
   }
 
   async sendMessage(
@@ -322,29 +362,22 @@ export class GameServerService extends TakaroService<
     message: string,
     opts: IMessageOptsDTO
   ) {
-    const gameserver = await this.repo.findOne(gameServerId);
-    const instance = await GameServerService.getGame(
-      gameserver.type,
-      gameserver.connectionInfo
-    );
-    return instance.sendMessage(message, opts);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.sendMessage(message, opts);
   }
 
   async teleportPlayer(
     gameServerId: string,
-    playerGameId: string,
+    playerId: string,
     position: IPosition
   ) {
-    const game = await this.getGame(gameServerId);
     const playerService = new PlayerService(this.domainId);
-    const foundPlayers = await playerService.findAssociations(playerGameId);
-
-    if (foundPlayers.length === 0) {
-      throw new errors.NotFoundError('Player not found');
-    }
-
-    const player = await new IGamePlayer().construct(foundPlayers[0]);
-
-    return game.teleportPlayer(player, position.x, position.y, position.z);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.teleportPlayer(
+      await playerService.getRef(playerId, gameServerId),
+      position.x,
+      position.y,
+      position.z
+    );
   }
 }

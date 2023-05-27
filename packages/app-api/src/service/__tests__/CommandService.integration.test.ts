@@ -1,4 +1,10 @@
-import { IntegrationTest, sandbox, expect } from '@takaro/test';
+import {
+  IntegrationTest,
+  sandbox,
+  expect,
+  integrationConfig,
+  EventsAwaiter,
+} from '@takaro/test';
 import {
   CommandOutputDTO,
   GameServerOutputDTO,
@@ -7,13 +13,18 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { EventChatMessage, IGamePlayer } from '@takaro/gameserver';
+import {
+  EventChatMessage,
+  GameEvents,
+  IGamePlayer,
+  Mock,
+} from '@takaro/gameserver';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
 ): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
-    gameId: 'mock-gameId',
+    gameId: '1',
     name: 'mock-player',
     ...extra,
   };
@@ -51,18 +62,32 @@ async function setup(
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
       type: 'MOCK',
-      connectionInfo: '{}',
+      connectionInfo: JSON.stringify({
+        host: integrationConfig.get('mockGameserver.host'),
+      }),
     })
   ).data.data;
+
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(this.client);
+  const connectedEvents = eventsAwaiter.waitForEvents(
+    GameEvents.PLAYER_CONNECTED,
+    5
+  );
+
+  await this.client.gameserver.gameServerControllerExecuteCommand(
+    gameserver.id,
+    {
+      command: 'connectAll',
+    }
+  );
+
+  await connectedEvents;
 
   const assignment = (
     await this.client.gameserver.gameServerControllerInstallModule(
       gameserver.id,
-      mod.id,
-      {
-        userConfig: '{}',
-        systemConfig: '{}',
-      }
+      mod.id
     )
   ).data.data;
 
@@ -85,6 +110,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -104,6 +134,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
@@ -133,6 +168,11 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
 
       await this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
@@ -152,11 +192,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.mod.id
       );
 
       await this.setupData.service.handleChatMessage(

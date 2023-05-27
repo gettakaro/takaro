@@ -15,6 +15,7 @@ import {
   TestReachabilityOutput,
   CommandOutput,
   IMessageOptsDTO,
+  GAME_SERVER_TYPE,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -42,8 +43,13 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
-import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { Response } from 'express';
+
+class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
+  @Type(() => GameServerOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: GameServerOutputDTO[];
+}
 
 class GameServerOutputDTOAPI extends APIOutput<GameServerOutputDTO> {
   @Type(() => GameServerOutputDTO)
@@ -91,6 +97,14 @@ class ParamIdAndModuleId {
   moduleId!: string;
 }
 
+class ParamIdAndPlayerId {
+  @IsUUID('4')
+  gameserverId!: string;
+
+  @IsUUID('4')
+  playerId!: string;
+}
+
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
   @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
@@ -129,11 +143,6 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
 }
 
 class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
-  @IsString()
-  @MinLength(1)
-  @MaxLength(150)
-  playerGameId!: string;
-
   @IsNumber({ allowNaN: false, allowInfinity: false })
   x: number;
 
@@ -168,6 +177,14 @@ export class GameServerController {
       req,
       res,
     });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @ResponseSchema(GameServerTypesOutputDTOAPI)
+  @Get('/gameserver/types')
+  async getTypes(@Req() req: AuthenticatedRequest) {
+    const service = new GameServerService(req.domainId);
+    return apiResponse(await service.getTypes());
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
@@ -271,9 +288,10 @@ export class GameServerController {
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
-    @Body() data: ModuleInstallDTO
+    @Body() data?: ModuleInstallDTO
   ) {
     const service = new GameServerService(req.domainId);
+
     return apiResponse(
       await service.installModule(params.gameserverId, params.moduleId, data)
     );
@@ -324,18 +342,22 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:id/teleportPlayer')
+  @Post('/gameserver/:gameserverId/player/:playerId/teleport')
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
+    @Params() params: ParamIdAndPlayerId,
     @Body() data: TeleportPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(params.id, data.playerGameId, {
-      x: data.x,
-      y: data.y,
-      z: data.z,
-    });
+    const result = await service.teleportPlayer(
+      params.gameserverId,
+      params.playerId,
+      {
+        x: data.x,
+        y: data.y,
+        z: data.z,
+      }
+    );
     return apiResponse(result);
   }
 }

@@ -8,9 +8,9 @@ import {
   EventPlayerDisconnected,
   GameEvents,
 } from '../../interfaces/events.js';
-import { SdtdConnectionInfo } from './index.js';
+import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
-import { IGamePlayer } from '../../main.js';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -42,16 +42,30 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async start(): Promise<void> {
-    this.eventSource = new EventSource(this.url);
+    await Promise.race([
+      new Promise<void>((resolve, reject) => {
+        this.logger.debug(`Connecting to ${this.config.host}`);
+        this.eventSource = new EventSource(this.url);
 
-    this.eventSource.addEventListener('logLine', (data) => this.listener(data));
+        this.eventSource.addEventListener('logLine', (data) =>
+          this.listener(data)
+        );
 
-    this.eventSource.onerror = (e) => {
-      this.logger.error('Event source error', e);
-    };
-    this.eventSource.onopen = () => {
-      this.logger.debug('Opened a SSE channel for server');
-    };
+        this.eventSource.onerror = (e) => {
+          this.logger.error('Event source error', e);
+          return reject(e);
+        };
+        this.eventSource.onopen = () => {
+          this.logger.debug('Opened a SSE channel for server');
+          return resolve();
+        };
+      }),
+      new Promise((_resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('Timed out'));
+        }, 10000);
+      }),
+    ]);
   }
 
   async stop(): Promise<void> {

@@ -1,6 +1,6 @@
 import { Axios, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { SdtdConnectionInfo } from './index.js';
+import { SdtdConnectionInfo } from './connectionInfo.js';
 import {
   CommandResponse,
   PlayerLocation,

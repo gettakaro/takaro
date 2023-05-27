@@ -91,7 +91,18 @@ export class IntegrationTest<SetupData> {
         }
 
         if (this.test.setup) {
-          this.setupData = await this.test.setup.bind(this)();
+          try {
+            this.setupData = await this.test.setup.bind(this)();
+          } catch (error) {
+            if (!isAxiosError(error)) {
+              throw error;
+            }
+
+            console.error(error.response?.data);
+            throw new Error(
+              `Setup failed: ${JSON.stringify(error.response?.data)}}`
+            );
+          }
         }
       });
 
@@ -122,10 +133,19 @@ export class IntegrationTest<SetupData> {
         try {
           response = await this.test.test.bind(this)();
         } catch (error) {
-          if (isAxiosError(error) && this.test.snapshot) {
+          if (!isAxiosError(error)) {
+            throw error;
+          }
+
+          if (this.test.snapshot) {
             response = error.response;
           } else {
-            throw error;
+            if (error.response?.data) {
+              console.error(error.response?.data);
+              throw new Error(
+                `Test failed: ${JSON.stringify(error.response?.data)}}`
+              );
+            }
           }
         }
 

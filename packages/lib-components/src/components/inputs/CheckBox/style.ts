@@ -37,7 +37,7 @@ export const CheckboxContainer = styled.div<{
   border: 0.1rem solid
     ${({ theme, isChecked, error, disabled }): string => {
       if (disabled) {
-        return theme.colors.gray;
+        return theme.colors.disabled;
       }
       if (isChecked) {
         return theme.colors.primary;
@@ -45,7 +45,7 @@ export const CheckboxContainer = styled.div<{
       if (error) {
         return theme.colors.error;
       }
-      return theme.colors.gray;
+      return theme.colors.primary;
     }};
 
   border-radius: ${({ theme }) => theme.borderRadius.small};

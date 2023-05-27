@@ -22,6 +22,7 @@ export interface IApiClientConfig extends IBaseApiClientConfig {
 }
 
 export class Client extends BaseApiClient<IApiClientConfig> {
+  public token: string | null;
   constructor(config: IApiClientConfig) {
     super(config);
 
@@ -50,9 +51,14 @@ export class Client extends BaseApiClient<IApiClientConfig> {
       username: this.config.auth.username,
     });
 
+    this.config.auth.token = loginRes.data.data.token;
+    this.token = loginRes.data.data.token;
+
     this.axios.defaults.headers.common[
       'Authorization'
     ] = `Bearer ${loginRes.data.data.token}`;
+
+    return loginRes.data.data.token;
   }
 
   public logout() {

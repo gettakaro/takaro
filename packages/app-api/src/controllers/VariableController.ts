@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsOptional, IsString } from 'class-validator';
+import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -46,6 +46,14 @@ class VariableSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   key!: string;
+
+  @IsOptional()
+  @IsUUID()
+  gameServerId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  playerId!: string;
 }
 
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {

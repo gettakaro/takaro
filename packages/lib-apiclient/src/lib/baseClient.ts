@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export interface IBaseApiClientConfig {
   url: string;
-  log?: Logger;
+  log?: Logger | false;
 }
 
 interface Logger {
@@ -42,6 +42,10 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
   }
 
   private addLoggers(axios: AxiosInstance): AxiosInstance {
+    if (this.config.log === false) {
+      return axios;
+    }
+
     axios.interceptors.request.use((request) => {
       this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
         method: request.method,

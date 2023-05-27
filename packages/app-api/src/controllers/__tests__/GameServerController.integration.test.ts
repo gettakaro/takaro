@@ -1,4 +1,4 @@
-import { IntegrationTest } from '@takaro/test';
+import { integrationConfig, IntegrationTest } from '@takaro/test';
 import {
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTO,
@@ -9,8 +9,7 @@ const group = 'GameServerController';
 const mockGameServer = {
   name: 'Test gameserver',
   connectionInfo: JSON.stringify({
-    host: 'localhost',
-    port: 1234,
+    host: integrationConfig.get('mockGameserver.host'),
   }),
   type: GameServerCreateDTOTypeEnum.Mock,
 };
@@ -30,6 +29,7 @@ const tests = [
         this.setupData.id
       );
     },
+    filteredFields: ['connectionInfo'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
@@ -38,6 +38,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerCreate(mockGameServer);
     },
+    filteredFields: ['connectionInfo'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
@@ -97,8 +98,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.id,
-        utilsModule.id,
-        { userConfig: '{}', systemConfig: '{}' }
+        utilsModule.id
       );
 
       return this.client.gameserver.gameServerControllerGetInstalledModules(
@@ -106,6 +106,14 @@ const tests = [
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
+  }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Can get list of gameserver types',
+    test: async function () {
+      return this.client.gameserver.gameServerControllerGetTypes();
+    },
   }),
 ];
 

@@ -176,15 +176,15 @@ export const useGameServerModuleUninstall = () => {
       ).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
-      queryClient.setQueryData<ModuleOutputDTO[]>(
+      queryClient.setQueryData<ModuleInstallationOutputDTO[]>(
         installedModuleKeys.list(deletedModule.gameserverId),
-        (old) =>
-          old
-            ? old.filter(
-                (installedModule) =>
-                  installedModule.id !== deletedModule.gameserverId
-              )
-            : old!
+        (old) => {
+          return old
+            ? old.filter((installedModule) => {
+                return installedModule.moduleId !== deletedModule.moduleId;
+              })
+            : old!;
+        }
       );
 
       queryClient.invalidateQueries(
@@ -227,16 +227,18 @@ export const useGameServerUpdate = () => {
           gameServerId,
           gameServerDetails
         )
-      ).data;
+      ).data.data;
     },
     onSuccess: async (newGameServer) => {
+      console.log(newGameServer);
+
       // Update item in server list
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
         (oldGameServerList) => {
           if (oldGameServerList) {
-            oldGameServerList.map((gameServer) => {
-              if (gameServer.id === newGameServer.data.id) {
+            return oldGameServerList.map((gameServer) => {
+              if (gameServer.id === newGameServer.id) {
                 return newGameServer;
               }
               return gameServer;
@@ -247,9 +249,7 @@ export const useGameServerUpdate = () => {
       );
 
       // invalidate the specific gameserver query
-      queryClient.invalidateQueries(
-        gameServerKeys.detail(newGameServer.data.id)
-      );
+      queryClient.invalidateQueries(gameServerKeys.detail(newGameServer.id));
     },
   });
 };
@@ -261,22 +261,22 @@ export const useRemoveGameServer = () => {
   return useMutation({
     mutationFn: async ({ id }: { id: string }) =>
       (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
-    onSuccess: (gameServer: IdUuidDTO) => {
+    onSuccess: (removedGameServer: IdUuidDTO) => {
       // update list that contain this gameserver
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
         (old) =>
           old
-            ? old.filter((gameServer) => gameServer.id !== gameServer.id)
+            ? old.filter((gameServer) => gameServer.id !== removedGameServer.id)
             : old!
       );
 
       // remove all cached information about specific game server.
       queryClient.invalidateQueries({
-        queryKey: gameServerKeys.detail(gameServer.id),
+        queryKey: gameServerKeys.detail(removedGameServer.id),
       });
       queryClient.invalidateQueries({
-        queryKey: gameServerKeys.reachability(gameServer.id),
+        queryKey: gameServerKeys.reachability(removedGameServer.id),
       });
     },
   });

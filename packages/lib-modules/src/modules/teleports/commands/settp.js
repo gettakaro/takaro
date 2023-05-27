@@ -1,7 +1,7 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function getVariableKey(gameServerId, playerId, tpName) {
-  return `t_tp_${gameServerId}_${playerId}_${tpName}`;
+function getVariableKey(tpName) {
+  return `t_tp_${tpName}`;
 }
 
 async function settp() {
@@ -12,7 +12,9 @@ async function settp() {
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: getVariableKey(data.gameServerId, player.gameId, data.arguments.tp),
+      key: getVariableKey(data.arguments.tp),
+      gameServerId: data.gameServerId,
+      playerId: player.id,
     },
   });
 
@@ -25,25 +27,33 @@ async function settp() {
 
   const allPlayerTeleports = await takaro.variable.variableControllerFind({
     search: {
-      key: getVariableKey(data.gameServerId, player.gameId, ''),
+      key: getVariableKey(''),
+    },
+    filters: {
+      gameServerId: data.gameServerId,
+      playerId: player.id,
     },
   });
 
-  if (allPlayerTeleports.data.data.length >= data.module.config.maxTeleports) {
+  if (
+    allPlayerTeleports.data.data.length >= data.module.userConfig.maxTeleports
+  ) {
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.config.maxTeleports}`,
+      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.userConfig.maxTeleports}`,
     });
     return;
   }
 
   await takaro.variable.variableControllerCreate({
-    key: getVariableKey(data.gameServerId, player.gameId, data.arguments.tp),
+    key: getVariableKey(data.arguments.tp),
     value: JSON.stringify({
       name: data.arguments.tp,
       x: data.player.location.x,
       y: data.player.location.y,
       z: data.player.location.z,
     }),
+    gameServerId: data.gameServerId,
+    playerId: player.id,
   });
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {

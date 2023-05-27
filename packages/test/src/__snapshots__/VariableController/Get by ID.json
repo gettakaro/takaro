@@ -1,14 +1,14 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2023-03-08T19:16:29.924Z"
-    },
+    "meta": {},
     "data": {
-      "id": "16ac0226-db2e-4e99-b6d0-bd404ff0ef8c",
-      "createdAt": "2023-03-08T19:16:29.916Z",
-      "updatedAt": "2023-03-08T19:16:29.916Z",
+      "id": "33de449d-830d-45af-89ab-a2f7820d8261",
+      "createdAt": "2023-05-03T13:40:50.273Z",
+      "updatedAt": "2023-05-03T13:40:50.274Z",
       "key": "Test variable",
-      "value": "Test value"
+      "value": "Test value",
+      "gameServerId": null,
+      "playerId": null
     }
   },
   "status": 200,

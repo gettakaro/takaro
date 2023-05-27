@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   postgresql:
-    image: postgres:14
+    image: postgres:15
     ports:
       - "5432:5432"   
     environment:
@@ -26,7 +26,7 @@ services:
       file: docker-compose.yml
       service: kratos-migrate      
   postgresql_kratos:
-    image: postgres:14
+    image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -34,7 +34,6 @@ services:
   hydra:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB} 
-      - URLS_SELF_ISSUER=http://127.0.0.1:4444/ 
     extends:
       file: docker-compose.yml
       service: hydra
@@ -47,11 +46,32 @@ services:
       file: docker-compose.yml
       service: hydra-migrate   
   postgresql_hydra:
-    image: postgres:14
+    image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}        
+  takaro:
+    container_name: takaro
+    build:
+      context: .
+      dockerfile: containers/dev.Dockerfile      
+    command: ["sh"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}  
+      POSTGRES_HOST: "postgresql"      
+      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
+      REDIS_HOST: "redis"
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
+      TAKARO_OAUTH_HOST: http://hydra:4444
+      TAKARO_HOST: http://takaro_api:3000   
+      KRATOS_ADMIN_URL: http://kratos:4434
+      TEST_HTTP_TARGET: http://takaro_api:3000
+      MOCK_GAMESERVER_HOST: "http://takaro_mock_gameserver:3002"
+
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     container_name: takaro_api
@@ -71,8 +91,45 @@ services:
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
-      TAKARO_HOST: http://takaro:3000
+      TAKARO_HOST: http://takaro_api:3000
+      MOCK_GAMESERVER_HOST: http://takaro_mock_gameserver:3002
     ports:
     # api
       - 13000:3000
       - 12001:12001
+  takaro_mock_gameserver:
+    image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
+    container_name: takaro_mock_gameserver
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"    
+    ports:
+      - 3002:3002
+  takaro_connector:
+    image: ghcr.io/gettakaro/takaro-app-connector:${DOCKER_TAG}
+    container_name: takaro_connector
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"    
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}      
+      TAKARO_OAUTH_HOST: http://hydra:4444
+      TAKARO_HOST: http://takaro_api:3000    
+    ports:
+      - 3003:3003      
+  takaro_vmm:
+    image: ghcr.io/gettakaro/takaro-app-vmm:${DOCKER_TAG}
+    privileged: true
+    container_name: takaro_vmm
+    devices:
+      - /dev/kvm:/dev/kvm    
+    environment:
+      LOGGING_LEVEL: debug
+      REDIS_HOST: "redis"    
+      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}      
+      TAKARO_OAUTH_HOST: http://hydra:4444
+      TAKARO_HOST: http://takaro_api:3000      
+      FUNCTIONS_EXECUTION_MODE: "local"
+    ports:
+      - 13004:3001      

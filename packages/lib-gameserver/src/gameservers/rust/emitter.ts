@@ -1,16 +1,16 @@
 import WebSocket from 'ws';
 import { logger, errors } from '@takaro/util';
+import { IsString } from 'class-validator';
+import { JsonObject } from 'type-fest';
+import { RustConnectionInfo } from './connectionInfo.js';
+import { TakaroEmitter } from '../../TakaroEmitter.js';
 import {
   EventLogLine,
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-  IGamePlayer,
-} from '../../main.js';
-import { IsString } from 'class-validator';
-import { JsonObject } from 'type-fest';
-import { RustConnectionInfo } from './index.js';
-import { TakaroEmitter } from '../../TakaroEmitter.js';
+} from '../../interfaces/events.js';
+import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 
 export class RustConfig {
   @IsString()

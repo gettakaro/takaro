@@ -1,11 +1,11 @@
 /* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
-import { SdtdConnectionInfo } from '../index.js';
 import {
   EventChatMessage,
   EventPlayerConnected,
   GameEvents,
-} from '../../../main.js';
+} from '../../../interfaces/events.js';
+import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
 
 const mockSdtdConnectionInfo = new SdtdConnectionInfo().construct({

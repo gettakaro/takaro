@@ -1,9 +1,9 @@
-import { logger, TakaroDTO } from '@takaro/util';
-import { IsString, IsBoolean } from 'class-validator';
+import { logger } from '@takaro/util';
 import { IGamePlayer } from '../../interfaces/GamePlayer.js';
 import {
   CommandOutput,
   IGameServer,
+  IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
 } from '../../interfaces/GameServer.js';
@@ -11,17 +11,8 @@ import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
 
 import axios from 'axios';
+import { SdtdConnectionInfo } from './connectionInfo.js';
 
-export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
-  @IsString()
-  public readonly host!: string;
-  @IsString()
-  public readonly adminUser!: string;
-  @IsString()
-  public readonly adminToken!: string;
-  @IsBoolean()
-  public readonly useTls!: boolean;
-}
 export class SevenDaysToDie implements IGameServer {
   private logger = logger('7D2D');
   private apiClient: SdtdApiClient;
@@ -37,8 +28,8 @@ export class SevenDaysToDie implements IGameServer {
     return emitter;
   }
 
-  async getPlayer(id: string): Promise<IGamePlayer | null> {
-    this.logger.debug('getPlayer', id);
+  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    this.logger.debug('getPlayer', player);
     return null;
   }
 

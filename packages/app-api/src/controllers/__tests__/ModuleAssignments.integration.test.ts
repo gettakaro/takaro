@@ -1,4 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
 
 const group = 'Module Assignments';
@@ -16,7 +16,9 @@ const defaultSetup = async function (
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
-    connectionInfo: '{}',
+    connectionInfo: JSON.stringify({
+      host: integrationConfig.get('mockGameserver.host'),
+    }),
     type: 'MOCK',
     name: 'Test gameserver',
   });
@@ -47,11 +49,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
     },
   }),
@@ -64,11 +62,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.utilsModule.id
       );
 
       return this.client.gameserver.gameServerControllerUninstallModule(
@@ -86,11 +80,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: '{}',
-          systemConfig: '{}',
-        }
+        this.setupData.teleportsModule.id
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -98,7 +88,6 @@ const tests = [
         this.setupData.teleportsModule.id,
         {
           userConfig: JSON.stringify({ maxTeleports: 42 }),
-          systemConfig: '{}',
         }
       );
 

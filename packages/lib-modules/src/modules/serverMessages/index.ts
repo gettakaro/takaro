@@ -30,7 +30,7 @@ export class ServerMessages extends BuiltinModule {
     this.cronJobs = [
       {
         name: 'Automated message',
-        temporalValue: '*/30 * * * * *',
+        temporalValue: '*/30 * * * *',
         function: '',
       },
     ];

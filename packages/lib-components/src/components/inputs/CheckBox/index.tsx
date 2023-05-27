@@ -45,9 +45,9 @@ export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
     readOnly,
     disabled,
     value,
-    labelPosition,
     onChange,
     error,
+    labelPosition = 'left',
     hint,
   } = defaultsApplier(props);
 

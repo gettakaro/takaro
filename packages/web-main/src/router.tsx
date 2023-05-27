@@ -19,6 +19,9 @@ import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
 import { SettingsFrame } from './frames/SettingsFrame';
 import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
 import { ConnectionSettings } from './pages/settings/ConnectionSettings';
+import CreateModule from 'pages/ModuleDefinitions/CreateModule';
+import EditModule from 'pages/ModuleDefinitions/EditModule';
+import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 
 const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
@@ -73,10 +76,13 @@ export const router = sentryCreateBrowserRouter(
           />
         </Route>
         <Route element={<Players />} path={PATHS.players()} />
-        <Route
-          element={<ModuleDefinitions />}
-          path={PATHS.moduleDefinitions()}
-        />
+        <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
+          <Route
+            element={<EditModule />}
+            path={PATHS.modules.update(':moduleId')}
+          />
+          <Route element={<CreateModule />} path={PATHS.modules.create()} />
+        </Route>
       </Route>
 
       {/* TODO: fix path, frame should be aware of /servers/serverId */}
@@ -96,7 +102,15 @@ export const router = sentryCreateBrowserRouter(
         <Route
           element={<GameServerModules />}
           path={PATHS.gameServer.modules(':serverId')}
-        />
+        >
+          <Route
+            element={<InstallModule />}
+            path={PATHS.gameServer.moduleInstallations.install(
+              ':serverId',
+              ':moduleId'
+            )}
+          />
+        </Route>
       </Route>
 
       {/* ======================== Studio ======================== */}
