@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { CodeField, CodeFieldProps } from './index';
+import { GenericCodeField, CodeFieldProps } from './index';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button } from '../../actions';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 export default {
   title: 'Inputs/CodeField',
-  component: CodeField,
+  component: GenericCodeField,
   args: {
     required: true,
     disabled: false,
@@ -38,7 +38,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
     [args.fields]
   );
 
-  const { control, handleSubmit, formState } = useForm<FormFields>({
+  const { handleSubmit, formState } = useForm<FormFields>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
@@ -49,9 +49,10 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CodeField
-          control={control}
-          error={formState.errors.code!}
+        <GenericCodeField
+          error={formState.errors.code?.message}
+          onChange={() => {}}
+          onBlur={() => {}}
           fields={args.fields}
           name="code"
           loading={args.loading}
@@ -70,7 +71,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
 
 export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   const [result, setResult] = useState<string>();
-  const { control, formState, handleSubmit } = useForm<FormFields>();
+  const { formState, handleSubmit } = useForm<FormFields>();
   const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<FormFields> = async ({ code }) => {
@@ -84,10 +85,11 @@ export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CodeField
+        <GenericCodeField
           autoSubmit={handleSubmit(onSubmit)}
-          control={control}
-          error={formState.errors.code}
+          error={formState.errors.code?.message}
+          onChange={() => {}}
+          onBlur={() => {}}
           fields={6}
           loading={loading}
           name="code"
