@@ -1,24 +1,19 @@
+import { Control } from 'react-hook-form';
 import {
-  SubmitHandler,
-  useForm,
-  useFieldArray,
-  Control,
-} from 'react-hook-form';
-import {
-  Checkbox,
+  CheckBox,
   Option,
   OptionGroup,
   Select,
   TextField,
 } from '@takaro/lib-components';
-import { Input, InputType } from './jsonSchemaGenerator';
+import { Input, InputType } from './index';
 import { FC, useState } from 'react';
 
 export const FormField: FC<{ input: Input; control: Control<any> }> = ({
   control,
   input,
 }) => {
-  const [type, setType] = useState<InputType>(input.type);
+  const [type, _setType] = useState<InputType>(input.type);
 
   const typeSpecificFields: JSX.Element[] = [];
 
@@ -53,7 +48,7 @@ export const FormField: FC<{ input: Input; control: Control<any> }> = ({
         control={control}
         name={`configFields.${input.name}.type`}
         label="Type"
-        render={(selectedIndex) => <div>{type ?? 'Select...'}</div>}
+        render={(_selectedIndex) => <div>{type ?? 'Select...'}</div>}
       >
         <OptionGroup label="type">
           {Object.values(InputType).map((type) => (
@@ -73,7 +68,7 @@ export const FormField: FC<{ input: Input; control: Control<any> }> = ({
         label="Description"
         name={`configFields.${input.name}.description`}
       />
-      <Checkbox
+      <CheckBox
         control={control}
         label="Required"
         labelPosition="left"

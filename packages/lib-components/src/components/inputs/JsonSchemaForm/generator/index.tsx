@@ -1,4 +1,9 @@
 import { AnySchema, SchemaObject } from 'ajv';
+import { Button } from '../../../actions/Button';
+import { Divider } from '../../../visual';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { FormField } from './getFormField';
+import { FC, useEffect } from 'react';
 
 export enum InputType {
   string = 'string',
@@ -134,3 +139,60 @@ export async function generateJSONSchema(inputs: Array<Input>) {
 
   return schema;
 }
+
+interface IFormInputs {
+  name: string;
+  description?: string;
+  configFields: Input[];
+}
+
+interface ISchemaGeneratorProps {
+  onSaveSchema: (schema: AnySchema) => void;
+}
+
+export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
+  onSaveSchema,
+}) => {
+  const { control } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    // resolver: zodResolver(moduleValidationSchema),
+  });
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'configFields',
+  });
+
+  useEffect(() => {
+    generateJSONSchema(fields).then((schema) => {
+      onSaveSchema(schema);
+    });
+  }, [fields]);
+
+  return (
+    <div>
+      {fields.map((field) => {
+        return (
+          <>
+            <FormField input={field} control={control} />
+            <Divider />
+          </>
+        );
+      })}
+
+      <Button
+        text="Add Config Field"
+        type="button"
+        onClick={() => {
+          append({
+            name: 'test',
+            type: InputType.string,
+            description: 'test',
+            required: true,
+            default: 'test',
+          });
+        }}
+      />
+    </div>
+  );
+};

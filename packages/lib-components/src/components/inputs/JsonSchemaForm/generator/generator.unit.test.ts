@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 import { describe, it, expect } from 'vitest';
-import { generateJSONSchema, InputType } from './jsonSchemaGenerator.js';
+import { generateJSONSchema, InputType } from './index';
 import Ajv, { AnySchema, ValidateFunction } from 'ajv';
 
 interface IDataTest {
