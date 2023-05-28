@@ -95,3 +95,14 @@ export class VMM {
     }
   }
 }
+
+// singleton
+let vmm: VMM | undefined;
+
+export async function getVMM() {
+  if (!vmm) {
+    vmm = new VMM();
+  }
+
+  return vmm;
+}
