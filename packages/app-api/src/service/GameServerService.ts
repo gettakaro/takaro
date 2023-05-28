@@ -1,10 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import {
-  GameServerModel,
-  GameServerRepo,
-  GAME_SERVER_TYPE,
-} from '../db/gameserver.js';
+import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
 import {
   IsEnum,
   IsJSON,
@@ -15,24 +11,20 @@ import {
   Length,
 } from 'class-validator';
 import {
-  Mock,
-  SevenDaysToDie,
-  Rust,
   IMessageOptsDTO,
-  SdtdConnectionInfo,
-  RustConnectionInfo,
-  MockConnectionInfo,
   IGameServer,
   IPosition,
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
   mockJsonSchema,
+  GAME_SERVER_TYPE,
+  getGame,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
-import { IGameServerInMemoryManager } from '../lib/GameServerManager.js';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
+import { queueService } from '@takaro/queues';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -114,16 +106,12 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   systemConfig: Record<string, never>;
 }
 
-const manager = new IGameServerInMemoryManager();
-
 export class GameServerService extends TakaroService<
   GameServerModel,
   GameServerOutputDTO,
   GameServerCreateDTO,
   GameServerUpdateDTO
 > {
-  private readonly gameServerManager = manager;
-
   get repo() {
     return new GameServerRepo(this.domainId);
   }
@@ -160,7 +148,11 @@ export class GameServerService extends TakaroService<
 
     await settingsService.init();
 
-    await this.gameServerManager.add(this.domainId, createdServer);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: createdServer.id,
+      operation: 'create',
+    });
     return createdServer;
   }
 
@@ -173,7 +165,11 @@ export class GameServerService extends TakaroService<
     );
 
     gameClassCache.delete(id);
-    await this.gameServerManager.remove(id);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: id,
+      operation: 'delete',
+    });
     await this.repo.delete(id);
     return id;
   }
@@ -184,8 +180,11 @@ export class GameServerService extends TakaroService<
   ): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
     gameClassCache.delete(id);
-    await this.gameServerManager.remove(id);
-    await this.gameServerManager.add(this.domainId, updatedServer);
+    await queueService.queues.connector.queue.add({
+      domainId: this.domainId,
+      gameServerId: id,
+      operation: 'update',
+    });
     return updatedServer;
   }
 
@@ -198,7 +197,7 @@ export class GameServerService extends TakaroService<
       const instance = await this.getGame(id);
       return instance.testReachability();
     } else if (connectionInfo && type) {
-      const instance = await GameServerService._getGame(type, connectionInfo);
+      const instance = await getGame(type, connectionInfo);
       return instance.testReachability();
     } else {
       throw new errors.BadRequestError('Missing required parameters');
@@ -306,30 +305,6 @@ export class GameServerService extends TakaroService<
     return installations;
   }
 
-  // This is prefxied with an underscore because it's preferred to use the getGame method
-  // which will cache the game instance
-  static async _getGame(
-    type: GAME_SERVER_TYPE,
-    connectionInfo: Record<string, unknown>
-  ): Promise<IGameServer> {
-    switch (type) {
-      case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-        return new SevenDaysToDie(
-          await new SdtdConnectionInfo().construct(connectionInfo)
-        );
-      case GAME_SERVER_TYPE.RUST:
-        return new Rust(
-          await new RustConnectionInfo().construct(connectionInfo)
-        );
-      case GAME_SERVER_TYPE.MOCK:
-        return new Mock(
-          await new MockConnectionInfo().construct(connectionInfo)
-        );
-      default:
-        throw new errors.NotImplementedError();
-    }
-  }
-
   async getGame(id: string): Promise<IGameServer> {
     const gameserver = await this.repo.findOne(id);
     let gameInstance = gameClassCache.get(id);
@@ -338,10 +313,7 @@ export class GameServerService extends TakaroService<
       return gameInstance;
     }
 
-    gameInstance = await GameServerService._getGame(
-      gameserver.type,
-      gameserver.connectionInfo
-    );
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo);
 
     gameClassCache.set(id, gameInstance);
 
@@ -373,10 +345,6 @@ export class GameServerService extends TakaroService<
         });
       })
     );
-  }
-
-  get manager() {
-    return this.gameServerManager;
   }
 
   async getPlayer(gameServerId: string, playerRef: IPlayerReferenceDTO) {

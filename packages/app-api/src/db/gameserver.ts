@@ -7,6 +7,7 @@ import {
 } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
+import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
 import {
   PLAYER_ON_GAMESERVER_TABLE_NAME,
@@ -23,12 +24,6 @@ import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
-
-export enum GAME_SERVER_TYPE {
-  'MOCK' = 'MOCK',
-  'SEVENDAYSTODIE' = 'SEVENDAYSTODIE',
-  'RUST' = 'RUST',
-}
 
 export class GameServerModel extends TakaroModel {
   static tableName = GAMESERVER_TABLE_NAME;
