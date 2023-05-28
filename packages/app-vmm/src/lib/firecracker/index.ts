@@ -122,9 +122,8 @@ export default class FirecrackerClient {
   }
 
   private setIps(vmId: number) {
-    const netIpId = 4 * vmId;
-    const tapDeviceIpId = netIpId + 1;
-    const vmIpId = netIpId + 2;
+    const tapDeviceIpId = vmId;
+    const vmIpId = vmId + 2;
 
     const tapFirstIpPart = (tapDeviceIpId & ((2 ** 8 - 1) << 8)) >> 8;
     const tapSecondIpPart = tapDeviceIpId & (2 ** 8 - 1);
