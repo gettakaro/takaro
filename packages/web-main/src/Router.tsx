@@ -1,9 +1,5 @@
-import { lazy } from 'react';
-import {
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from 'react-router-dom';
+import { FC, lazy } from 'react';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
 import Dashboard from 'pages/Dashboard';
 import { PATHS } from 'paths';
@@ -12,7 +8,7 @@ import { AuthenticatedRoute } from 'components/AuthenticatedRoute';
 import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
-import { wrapCreateBrowserRouter } from '@sentry/react';
+import { withSentryReactRouterV6Routing } from '@sentry/react';
 import GameServerCreate from 'pages/CreateUpdateGameServer/GameServerCreate';
 import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
 
@@ -23,7 +19,7 @@ import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 
-const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
+const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -44,9 +40,9 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // - source: https://www.youtube.com/watch?v=95B8mnhzoCM
 // - source: https://tkdodo.eu/blog/react-query-meets-react-router
 
-export const router = sentryCreateBrowserRouter(
-  createRoutesFromElements(
-    <>
+export const Router: FC = () => (
+  <BrowserRouter>
+    <SentryRoutes>
       {/* ======================== Global ======================== */}
       <Route
         element={<AuthenticatedRoute frame="global" />}
@@ -121,6 +117,6 @@ export const router = sentryCreateBrowserRouter(
 
       {/* Page not found matches with everything => should stay at bottom */}
       <Route element={<NotFound />} path="*" />
-    </>
-  )
+    </SentryRoutes>
+  </BrowserRouter>
 );

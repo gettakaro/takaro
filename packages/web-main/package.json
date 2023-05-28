@@ -16,7 +16,7 @@
     "start:dev": "vite dev --port 13001 --host 0.0.0.0",
     "build": "tsc --noemit && NODE_OPTIONS=--max-old-space-size=8195 vite build",
     "preview": "vite preview",
-    "test": "echo 'no tests :('",
+    "test:unit": "CI=true vitest",
     "test:watch": "echo 'no tests :('",
     "eject": "craco eject"
   },

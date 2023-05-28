@@ -217,7 +217,7 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
           {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>
         {open && !readOnly && (
-          <FloatingOverlay lockScroll>
+          <FloatingOverlay lockScroll style={{ zIndex: 1000 }}>
             <FloatingFocusManager
               context={context}
               initialFocus={selectedIndex}

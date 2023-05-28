@@ -71,7 +71,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onClick: !disabled || !isLoading ? onClick : undefined,
         size: size,
         fullWidth: fullWidth,
-        [type]: type,
+        type: type,
         ref: ref,
       };
 
@@ -106,6 +106,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           );
       }
     }
+
+    console.log(type);
 
     return getVariant();
   }
