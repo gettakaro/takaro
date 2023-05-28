@@ -13,6 +13,9 @@ mod api;
 fn setup_tracing() -> Result<(), TraceError> {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
+    let file_appender = tracing_appender::rolling::minutely("/var/log", "vm-agent.log");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
     let tracer = opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint(
@@ -32,6 +35,7 @@ fn setup_tracing() -> Result<(), TraceError> {
                 .unwrap_or_else(|_| "vm_agent=trace,tower_http=trace,axum::rejection=trace".into()),
         )
         .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
         .with(tracing_opentelemetry::layer().with_tracer(tracer))
         .init();
 

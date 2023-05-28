@@ -20,7 +20,6 @@ tower-http = { version = "0.4.0", features = ["full"] }
 tokio-vsock = { version ="0.4.0" }
 vsock = "0.3.0"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
-rtnetlink = "0.12.0"
 thiserror = "1.0.38"
 anyhow = "1.0.69"
 opentelemetry = { version = "0.18.0", features = ["rt-tokio"] }
