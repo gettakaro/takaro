@@ -17,7 +17,11 @@ const log = logger('worker:events');
 
 export class EventsWorker extends TakaroWorker<IEventQueueData> {
   constructor() {
-    super(config.get('queues.events.name'), processJob);
+    super(
+      config.get('queues.events.name'),
+      config.get('queues.events.concurrency'),
+      processJob
+    );
   }
 }
 
