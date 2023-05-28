@@ -29,3 +29,8 @@ export interface IEventQueueData extends IBaseJobData {
   gameServerId: string;
   event: EventMapping[GameEvents];
 }
+
+export interface IConnectorQueueData extends IBaseJobData {
+  gameServerId: string;
+  operation: 'create' | 'update' | 'delete';
+}

@@ -8,7 +8,7 @@ import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { ServerFrame } from 'frames/GameServerFrame';
 import { setUser } from '@sentry/react';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100vw;
@@ -25,6 +25,7 @@ interface AuthenticatedRouteProps {
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
   const { getSession } = useAuth();
   const { setUserData } = useUser();
+  const navigate = useNavigate();
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [loading, isLoading] = useState<boolean>(true);
 
@@ -35,7 +36,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
       setIsAuth(true);
       setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
-      redirect(PATHS.login());
+      navigate(PATHS.login());
     } finally {
       isLoading(false);
     }

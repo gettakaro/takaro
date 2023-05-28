@@ -24,6 +24,10 @@ jobs:
               name: "app-mock-gameserver",
               dockerfile: "./containers/generic-app.Dockerfile",
             },
+            {
+              name: "app-connector",
+              dockerfile: "./containers/generic-app.Dockerfile",
+            },
           ]
 
     steps:

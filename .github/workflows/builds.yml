@@ -13,6 +13,7 @@ jobs:
             app-vmm,
             app-api,
             app-mock-gameserver,
+            app-connector,
             lib-apiclient,
             lib-components,
             lib-config,
