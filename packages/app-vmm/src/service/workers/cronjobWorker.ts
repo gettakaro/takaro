@@ -5,8 +5,8 @@ import { ctx } from '@takaro/util';
 import { executeFunction } from './executeFunction.js';
 
 export class CronJobWorker extends TakaroWorker<IJobData> {
-  constructor() {
-    super(config.get('queues.cronjobs.name'), processCronJob);
+  constructor(concurrency: number) {
+    super(config.get('queues.cronjobs.name'), concurrency, processCronJob);
   }
 }
 

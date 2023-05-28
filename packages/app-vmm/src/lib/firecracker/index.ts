@@ -97,6 +97,12 @@ export default class FirecrackerClient {
     }
 
     try {
+      spawn('ip', ['link', 'del', this.tapDeviceName]);
+    } catch {
+      this.log.debug(`could not delete ${this.tapDeviceName}`);
+    }
+
+    try {
       await fs.rm(this.options.logPath, { force: true });
     } catch (err) {
       this.log.warn('could not remove log file', err);
@@ -122,8 +128,9 @@ export default class FirecrackerClient {
   }
 
   private setIps(vmId: number) {
-    const tapDeviceIpId = vmId;
-    const vmIpId = vmId + 2;
+    const netIpId = vmId * 4;
+    const tapDeviceIpId = netIpId + 1;
+    const vmIpId = netIpId + 2;
 
     const tapFirstIpPart = (tapDeviceIpId & ((2 ** 8 - 1) << 8)) >> 8;
     const tapSecondIpPart = tapDeviceIpId & (2 ** 8 - 1);
@@ -140,7 +147,6 @@ export default class FirecrackerClient {
     } catch {
       this.log.debug(`could not delete ${this.tapDeviceName}`);
     }
-
     try {
       spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
     } catch (err) {
@@ -233,42 +239,38 @@ export default class FirecrackerClient {
   }
 
   async setupVM() {
-    try {
-      const mask = new Netmask(`255.255.255.255/${TAP_DEVICE_CIDR}`).mask;
-      const ipArgs = `ip=${this.vmIp}::${this.tapDeviceIp}:${mask}::eth0:off`;
+    const mask = new Netmask(`255.255.255.255/${TAP_DEVICE_CIDR}`).mask;
+    const ipArgs = `ip=${this.vmIp}::${this.tapDeviceIp}:${mask}::eth0:off`;
 
-      await this.httpSock.put('boot-source', {
-        json: {
-          kernel_image_path: this.options.kernelImage,
-          boot_args: `console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ${ipArgs}`,
-        },
-      });
+    await this.httpSock.put('boot-source', {
+      json: {
+        kernel_image_path: this.options.kernelImage,
+        boot_args: `console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ${ipArgs}`,
+      },
+    });
 
-      await this.httpSock.put('drives/rootfs', {
-        json: {
-          drive_id: 'rootfs',
-          path_on_host: this.options.rootfs,
-          is_root_device: true,
-          is_read_only: false,
-        },
-      });
+    await this.httpSock.put('drives/rootfs', {
+      json: {
+        drive_id: 'rootfs',
+        path_on_host: this.options.rootfs,
+        is_root_device: true,
+        is_read_only: false,
+      },
+    });
 
-      await this.httpSock.put('vsock', {
-        json: {
-          guest_cid: 3,
-          uds_path: this.options.agentSocket,
-        },
-      });
+    await this.httpSock.put('vsock', {
+      json: {
+        guest_cid: 3,
+        uds_path: this.options.agentSocket,
+      },
+    });
 
-      await this.httpSock.put('network-interfaces/eth0', {
-        json: {
-          iface_id: 'eth0',
-          host_dev_name: this.tapDeviceName,
-        },
-      });
-    } catch (err) {
-      this.log.error('setting up vm failed', err);
-    }
+    await this.httpSock.put('network-interfaces/eth0', {
+      json: {
+        iface_id: 'eth0',
+        host_dev_name: this.tapDeviceName,
+      },
+    });
   }
 
   async startVM() {

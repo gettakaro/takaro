@@ -7,61 +7,54 @@ import { logger } from '@takaro/util';
  * Responsible for managing firecracker microVMs
  */
 export class VMM {
-  vms: Array<FirecrackerClient>;
-  log;
+  hotVMs: Array<FirecrackerClient> = [];
+  vmCount = 0;
+  log = logger('VMM');
 
-  constructor() {
-    this.vms = [];
-    this.log = logger('VMM');
-  }
+  async initPool(amount = 15, sync = false) {
+    this.log.info(`creating a pool of ${amount} VMs`);
 
-  async initPool(amount = 1) {
-    this.log.info('creating a pool of VMs');
+    if (sync) {
+      for (let i = 0; i < amount; i++) {
+        await this.createVM();
+      }
+      return;
+    }
+
     const promises = [];
 
     for (let i = 0; i < amount; i++) {
-      promises.push(this.createVM(i + 1));
+      promises.push(this.createVM());
     }
 
     await Promise.all(promises);
   }
 
-  async initPoolSync(amount = 1) {
-    this.log.info('creating a pool of VMs');
+  async createVM() {
+    this.vmCount++;
 
-    for (let i = 0; i < amount; i++) {
-      await this.createVM(i + 1);
+    this.log.debug(`creating a new vm with id: ${this.vmCount}`);
+
+    let vm;
+
+    try {
+      vm = new FirecrackerClient({
+        id: this.vmCount,
+        logLevel: 'debug',
+      });
+      await vm.startVM();
+    } catch (err) {
+      this.vmCount--;
+      throw err;
     }
-  }
 
-  async createVM(id: number) {
-    this.log.debug(`creating a new vm with id: ${id}`);
+    this.hotVMs.push(vm);
 
-    const fcClient = new FirecrackerClient({
-      id,
-      logLevel: 'debug',
-    });
-    await fcClient.startVM();
-
-    this.vms.push(fcClient);
-
-    return fcClient;
-  }
-
-  async removeVM(id: number) {
-    const fcClient = this.vms.at(id - 1);
-
-    this.log.debug(`killing vm with id ${id}`);
-
-    await fcClient?.shutdown();
-
-    this.vms.splice(id - 1, 1);
+    return vm;
   }
 
   async getVM() {
-    // const hotVM = this.vms.pop();
-
-    const hotVM = this.vms.at(0);
+    const hotVM = this.hotVMs.pop();
 
     if (!hotVM) {
       throw new Error('no available VMs');
@@ -75,22 +68,30 @@ export class VMM {
     data: Record<string, unknown>,
     token: string
   ) {
-    let vmId;
+    let vm;
 
     try {
-      const fcClient = await this.getVM();
+      this.log.debug(`current count ${this.vmCount}}`);
 
-      vmId = fcClient.id;
+      // Pop a free VM from the pool
+      vm = await this.getVM();
 
-      const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+      // Wait until the VM is healthy
+      const vmClient = new VmClient(vm.options.agentSocket, 8000);
       await vmClient.waitUntilHealthy();
 
+      // Execute the function
       await vmClient.exec(fn, data, token);
     } catch (err) {
       this.log.error(err);
     } finally {
-      if (vmId) {
-        // this.createVM(vmId);
+      if (vm) {
+        // Destroy the VM & decrease the global VM count
+        await vm.shutdown();
+        this.vmCount--;
+
+        // Create a new VM to replace the one we just destroyed
+        await this.createVM();
       }
     }
   }

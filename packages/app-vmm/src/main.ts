@@ -20,7 +20,11 @@ async function main() {
   log.info('Starting...');
 
   const vmm = await getVMM();
-  await vmm.initPoolSync();
+  const poolSize =
+    config.get('queues.commands.concurrency') +
+    config.get('queues.cronjobs.concurrency') +
+    config.get('queues.hooks.concurrency');
+  vmm.initPool(poolSize);
 
   config.validate();
   log.info('✅ Config validated');
@@ -28,9 +32,9 @@ async function main() {
   await server.start();
   log.info('🚀 Server started');
 
-  new CommandWorker();
-  new CronJobWorker();
-  new HookWorker();
+  new CommandWorker(config.get('queues.commands.concurrency'));
+  new CronJobWorker(config.get('queues.cronjobs.concurrency'));
+  new HookWorker(config.get('queues.hooks.concurrency'));
 }
 
 process.on('uncaughtException', (err) => {
