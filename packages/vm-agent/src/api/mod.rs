@@ -47,7 +47,7 @@ pub async fn server() -> Result<(), anyhow::Error> {
     if mode == "http" {
         let addr = "127.0.0.1:8000".parse().unwrap();
 
-        tracing::info!("starting http server on 127.0.0.1:8000");
+        tracing::info!("starting http server on {}", addr);
 
         axum::Server::bind(&addr)
             .serve(app().into_make_service())

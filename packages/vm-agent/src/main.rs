@@ -5,21 +5,23 @@ use opentelemetry::{
     KeyValue,
 };
 use opentelemetry_otlp::WithExportConfig;
-use std::env;
+use std::{env, io};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
 
 mod api;
 
+const DEFAULT_TRACING_ENDPOINT: &str = "http://172.16.238.254:4317";
+
 fn setup_tracing() -> Result<(), TraceError> {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
-    let file_appender = tracing_appender::rolling::minutely("/var/log", "vm-agent.log");
-    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+    // TODO: Make this non-blocking
+    let file_appender = tracing_appender::rolling::never("/var/log", "vm-agent.log");
 
     let tracer = opentelemetry_otlp::new_pipeline()
         .tracing()
         .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint(
-            env::var("TRACING_ENDPOINT").unwrap_or("http://172.16.238.254:4317".to_string()),
+            env::var("TRACING_ENDPOINT").unwrap_or(DEFAULT_TRACING_ENDPOINT.to_string()),
         ))
         .with_trace_config(
             sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
@@ -34,8 +36,8 @@ fn setup_tracing() -> Result<(), TraceError> {
             EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "vm_agent=trace,tower_http=trace,axum::rejection=trace".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
-        .with(tracing_subscriber::fmt::layer().with_writer(non_blocking))
+        .with(tracing_subscriber::fmt::layer().with_writer(file_appender))
+        .with(tracing_subscriber::fmt::layer().with_writer(io::stdout))
         .with(tracing_opentelemetry::layer().with_tracer(tracer))
         .init();
 
@@ -53,7 +55,7 @@ async fn main() -> anyhow::Result<()> {
     if let Ok(current_dir) = env::current_dir() {
         tracing::info!("current working directory: {}", current_dir.display());
     } else {
-        tracing::error!("cailed to get current working directory");
+        tracing::error!("failed to get current working directory");
     }
 
     api::server().await?;
