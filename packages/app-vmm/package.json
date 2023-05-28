@@ -21,5 +21,8 @@
     "@takaro/db": "0.0.1",
     "@takaro/http": "0.0.1",
     "netmask": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/netmask": "^2.0.0"
   }
 }
