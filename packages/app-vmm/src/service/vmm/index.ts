@@ -100,7 +100,7 @@ export class VMM {
       throw err;
     } finally {
       if (vm) {
-        // Destroy the VM & decrease the global VM count
+        // Destroy the VM
         await vm.shutdown();
 
         // Create a new VM to replace the one we just destroyed
