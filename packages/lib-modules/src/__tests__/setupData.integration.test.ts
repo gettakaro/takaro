@@ -38,6 +38,7 @@ export const modulesTestSetup = async function (
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
+      name: this.test.name,
     }),
     type: 'MOCK',
     name: 'Test gameserver',

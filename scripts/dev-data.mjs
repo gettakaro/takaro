@@ -61,7 +61,8 @@ async function main() {
       type: 'MOCK',
       connectionInfo: JSON.stringify({
         eventInterval: 10000,
-        host: 'http://127.0.0.1:3002'
+        host: 'http://127.0.0.1:3002',
+        name: 'takaro-development'
       }),
     })
   ).data.data;

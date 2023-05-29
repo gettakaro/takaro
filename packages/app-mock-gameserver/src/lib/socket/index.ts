@@ -3,7 +3,7 @@ import { Server as HttpServer } from 'http';
 import { config } from '../../config.js';
 import { errors, logger } from '@takaro/util';
 import { MockServerSocketServer } from './socketTypes.js';
-import { getMockServer, IMockGameServer } from '../gameserver/index.js';
+import { IMockGameServer, MockGameserver } from '../gameserver/index.js';
 
 class SocketServer {
   public io: MockServerSocketServer;
@@ -34,10 +34,13 @@ class SocketServer {
     });
 
     this.io.on('connection', async (socket) => {
-      const instance = await getMockServer();
+      const serverName = socket.handshake.query.name ?? 'default';
+      const instance = new MockGameserver(serverName);
       await instance.ensurePlayersPersisted();
 
-      this.log.info(`New connection: ${socket.id}`);
+      socket.join(serverName);
+
+      this.log.info(`New connection: ${socket.id} - ${serverName}`);
       socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
         this.log.info(`Event: ${event}`);
 

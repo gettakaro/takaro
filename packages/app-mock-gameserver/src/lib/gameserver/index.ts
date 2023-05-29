@@ -15,8 +15,7 @@ import {
   EventPlayerConnected,
 } from '@takaro/gameserver';
 import { faker } from '@faker-js/faker';
-import { config } from '../../config.js';
-import { playScenario } from './scenario.js';
+import { ServerToClientEvents } from '../socket/socketTypes.js';
 
 // Welcome to omit-hell 😇
 export type IMockGameServer = Omit<
@@ -24,24 +23,28 @@ export type IMockGameServer = Omit<
   'testReachability'
 >;
 
-const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
+const REDIS_PREFIX = 'mock-game';
 
-function getRedisKey(key: string) {
-  return `${REDIS_PREFIX}${key}`;
-}
-class MockGameserver implements IMockGameServer {
+export class MockGameserver implements IMockGameServer {
   private log = logger('Mock');
   private socketServer = getSocketServer();
   private redis = Redis.getClient('mockgameserver');
 
-  private scenarioInterval = setInterval(() => {
-    playScenario(this.socketServer.io);
-  }, config.get('mockserver.scenarioInterval'));
+  constructor(public name: string | string[]) {}
+
+  private getRedisKey(key: string) {
+    return [REDIS_PREFIX, this.name, key].join(':');
+  }
+
+  private async emit(...args: Parameters<ServerToClientEvents['gameEvent']>) {
+    const [event, data] = args;
+    this.socketServer.io.to(this.name).emit(event, data);
+  }
 
   async ensurePlayersPersisted() {
     const existingPlayers = await (
       await this.redis
-    ).keys(getRedisKey('player:*'));
+    ).keys(this.getRedisKey('player:*'));
 
     if (existingPlayers.length > 0) {
       return;
@@ -60,7 +63,10 @@ class MockGameserver implements IMockGameServer {
 
     await Promise.all(
       players.map(async (p) => {
-        return (await this.redis).hSet(getRedisKey(`player:${p.gameId}`), p);
+        return (await this.redis).hSet(
+          this.getRedisKey(`player:${p.gameId}`),
+          p
+        );
       })
     );
   }
@@ -68,7 +74,7 @@ class MockGameserver implements IMockGameServer {
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
     const player = await (
       await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+    ).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
       return null;
@@ -83,7 +89,7 @@ class MockGameserver implements IMockGameServer {
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    const players = await (await this.redis).keys(getRedisKey('player:*'));
+    const players = await (await this.redis).keys(this.getRedisKey('player:*'));
     const playerData = await Promise.all(
       players.map(async (p) => {
         return (await this.redis).hGetAll(p);
@@ -107,7 +113,7 @@ class MockGameserver implements IMockGameServer {
   ): Promise<IPosition | null> {
     const player = await (
       await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+    ).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
     if (!player) {
       return null;
     }
@@ -140,19 +146,10 @@ class MockGameserver implements IMockGameServer {
             msg: `${p.name} connected`,
             timestamp: new Date(),
           });
-          this.socketServer.io.emit(GameEvents.PLAYER_CONNECTED, event);
+          this.emit(GameEvents.PLAYER_CONNECTED, event);
         })
       );
       output.rawResult = 'Connected all players';
-      output.success = true;
-    }
-
-    if (rawCommand === 'scenario') {
-      playScenario(this.socketServer.io).catch((err) => {
-        this.log.error(err);
-      });
-
-      output.rawResult = 'Started scenario';
       output.success = true;
     }
 
@@ -169,7 +166,7 @@ class MockGameserver implements IMockGameServer {
       options.recipient ? '[DM]' : ''
     } ${message}`;
 
-    this.socketServer.io.emit(
+    this.emit(
       GameEvents.CHAT_MESSAGE,
       await new EventChatMessage().construct({
         msg: message,
@@ -186,7 +183,7 @@ class MockGameserver implements IMockGameServer {
   ) {
     const player = await (
       await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+    ).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
       throw new errors.NotFoundError('Player not found');
@@ -198,7 +195,7 @@ class MockGameserver implements IMockGameServer {
 
     await (
       await this.redis
-    ).hSet(getRedisKey(`player:${playerRef.gameId}`), player);
+    ).hSet(this.getRedisKey(`player:${playerRef.gameId}`), player);
 
     await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
   }
@@ -208,16 +205,6 @@ class MockGameserver implements IMockGameServer {
       msg,
       timestamp: new Date(),
     });
-    this.socketServer.io.emit(GameEvents.LOG_LINE, logLine);
+    this.emit(GameEvents.LOG_LINE, logLine);
   }
-}
-
-let cachedMockServer: MockGameserver | null = null;
-
-export async function getMockServer() {
-  if (cachedMockServer === null) {
-    cachedMockServer = new MockGameserver();
-  }
-
-  return cachedMockServer;
 }
