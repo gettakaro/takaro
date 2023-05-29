@@ -7,10 +7,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use axum_tracing_opentelemetry::{opentelemetry_tracing_layer, response_with_trace_layer};
 use hyper::server::accept::Accept;
 use tokio_vsock::{VsockListener, VsockStream};
 use tower::BoxError;
-use tower_http::trace::TraceLayer;
 
 mod handlers;
 
@@ -38,7 +38,11 @@ pub fn app() -> Router {
     Router::new()
         .route("/health", get(handlers::health))
         .route("/exec", post(handlers::exec_cmd))
-        .layer(TraceLayer::new_for_http())
+        // include trace context as header into the response
+        .layer(response_with_trace_layer())
+        // opentelemetry_tracing_layer setup `TraceLayer`,
+        // that is provided by tower-http so you have to add that as a dependency.
+        .layer(opentelemetry_tracing_layer())
 }
 
 pub async fn server() -> Result<(), anyhow::Error> {
@@ -51,6 +55,7 @@ pub async fn server() -> Result<(), anyhow::Error> {
 
         axum::Server::bind(&addr)
             .serve(app().into_make_service())
+            .with_graceful_shutdown(shutdown_signal())
             .await?;
     } else {
         let listener = VsockListener::bind(VSOCK_HOST, VSOCK_PORT).expect("bind failed");
@@ -59,8 +64,36 @@ pub async fn server() -> Result<(), anyhow::Error> {
 
         axum::Server::builder(ServerAccept { vsl: listener })
             .serve(app().into_make_service())
+            .with_graceful_shutdown(shutdown_signal())
             .await?;
     }
 
     Ok(())
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    tracing::warn!("signal received, starting graceful shutdown");
+    opentelemetry::global::shutdown_tracer_provider();
 }

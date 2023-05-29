@@ -1,9 +1,11 @@
-use axum::{debug_handler, Json};
+use axum::{debug_handler, http::HeaderMap, Json};
+use opentelemetry::global;
+use opentelemetry::trace::{Span, Tracer};
+use opentelemetry_http::HeaderExtractor;
 use serde_derive::{Deserialize, Serialize};
 use std::env;
 use std::os::unix::process::ExitStatusExt;
 use tokio::process::Command;
-use tracing::instrument;
 
 #[derive(Debug, Serialize)]
 pub struct ExecResponse {
@@ -34,7 +36,6 @@ pub struct ExecRequest {
 }
 
 #[debug_handler]
-#[instrument]
 pub async fn health() -> &'static str {
     tracing::info!("inside health request");
 
@@ -42,8 +43,16 @@ pub async fn health() -> &'static str {
 }
 
 #[debug_handler]
-#[instrument]
-pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
+pub async fn exec_cmd(
+    headers: HeaderMap,
+    Json(mut payload): Json<ExecRequest>,
+) -> Json<ExecResponse> {
+    let parent_cx = global::get_text_map_propagator(|propagator| {
+        propagator.extract(&HeaderExtractor(&headers))
+    });
+
+    let mut span = global::tracer("vm-agent").start_with_context("exec_cmd", &parent_cx);
+
     payload.env.load();
 
     let full_cmd = payload.cmd.join(" ");
@@ -53,6 +62,8 @@ pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse
     for arg in payload.cmd.into_iter() {
         command.arg(arg);
     }
+
+    span.add_event("executing command".to_string(), vec![]);
 
     let output = command.output().await.unwrap();
     let status = output.status;
@@ -91,7 +102,7 @@ mod tests {
             env: NodeEnv::default(),
         };
 
-        let response = exec_cmd(Json(request)).await;
+        let response = exec_cmd(HeaderMap::new(), Json(request)).await;
 
         assert_eq!(response.exit_code, Some(0));
         assert_eq!(response.stdout, "Hello, world!\n".to_owned());
@@ -114,7 +125,7 @@ mod tests {
             env: mock_env.clone(),
         };
 
-        exec_cmd(Json(request)).await;
+        exec_cmd(HeaderMap::new(), Json(request)).await;
 
         assert_eq!(
             env::var("DATA").unwrap_or("".to_owned()),

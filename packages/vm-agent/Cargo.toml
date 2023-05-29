@@ -22,13 +22,14 @@ vsock = "0.3.0"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 thiserror = "1.0.38"
 anyhow = "1.0.69"
-opentelemetry = { version = "0.18.0", features = ["rt-tokio"] }
+opentelemetry = { version = "0.18.0", features = ["rt-tokio", "trace"] }
 opentelemetry-otlp = "0.11.0"
 tracing-opentelemetry = "0.18.0"
 hyper = "0.14.26"
 opentelemetry-semantic-conventions = "0.10.0"
 tracing-appender = "0.2.2"
-
+opentelemetry-http = "0.7.0"
+axum-tracing-opentelemetry = { version = "0.10.0", features = ["otlp"] }
 
 # Optimizing for binary size, more info at https://github.com/johnthagen/min-sized-rust
 [profile.release]
