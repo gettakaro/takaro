@@ -6,6 +6,7 @@ import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
 import { Netmask } from 'netmask';
+import promClient from 'prom-client';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
@@ -25,6 +26,7 @@ const TAP_DEVICE_CIDR = 30;
 export default class FirecrackerClient {
   private childProcess: ChildProcess;
   private log;
+  private totalVMsGauge: promClient.Gauge;
 
   options: FcOptions;
   id: number;
@@ -35,6 +37,10 @@ export default class FirecrackerClient {
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
+    this.totalVMsGauge = promClient.register.getSingleMetric(
+      'vm_total'
+    ) as promClient.Gauge;
+
     this.id = args.id;
     this.log = logger(`firecracker(${this.id})`);
 
@@ -65,7 +71,9 @@ export default class FirecrackerClient {
         ],
         afterResponse: [
           (response) => {
-            this.log.debug(`⬅️  ${response.statusCode} ${response.url}`);
+            this.log.debug(`⬅️  ${response.statusCode} ${response.url}`, {
+              responseBody: response.body,
+            });
             return response;
           },
         ],
@@ -82,6 +90,7 @@ export default class FirecrackerClient {
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
+      this.childProcess.kill();
       process.exit(0);
     });
   }
@@ -128,10 +137,14 @@ export default class FirecrackerClient {
   }
 
   private setIps(vmId: number) {
-    const netIpId = vmId * 4;
+    const ipsPerVM = 4;
+    const netIpId = vmId * ipsPerVM;
+
     const tapDeviceIpId = netIpId + 1;
     const vmIpId = netIpId + 2;
 
+    // Using bitwise operations to calculate the first and second part of the ip
+    // Instead of using modulo because it's faster
     const tapFirstIpPart = (tapDeviceIpId & ((2 ** 8 - 1) << 8)) >> 8;
     const tapSecondIpPart = tapDeviceIpId & (2 ** 8 - 1);
     const vmFirstIpPart = (vmIpId & ((2 ** 8 - 1) << 8)) >> 8;
@@ -142,16 +155,7 @@ export default class FirecrackerClient {
   }
 
   private setupNetwork() {
-    try {
-      spawn('ip', ['link', 'del', this.tapDeviceName]);
-    } catch {
-      this.log.debug(`could not delete ${this.tapDeviceName}`);
-    }
-    try {
-      spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
-    } catch (err) {
-      this.log.error('could not create tap', err);
-    }
+    spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
     spawn('sysctl', ['-w', `net.ipv4.conf.${this.tapDeviceName}.proxy_arp=1`]);
     spawn('sysctl', [
       '-w',
@@ -201,13 +205,16 @@ export default class FirecrackerClient {
       this.childProcess.stderr?.pipe(stderrFileStream);
       this.childProcess.stdout?.pipe(stdoutFileStream);
 
-      this.childProcess.on('error', (error) => {
+      this.childProcess.on('error', async (error) => {
         this.log.error('child process error: ', { error });
+        await this.cleanUp();
         return reject(error);
       });
 
       this.childProcess.on('exit', async (code) => {
         this.log.debug(`child process exited with code ${code}`);
+        this.totalVMsGauge.dec(1);
+        await this.cleanUp();
       });
 
       this.childProcess.on('spawn', async () => {
@@ -220,13 +227,17 @@ export default class FirecrackerClient {
   async shutdown() {
     this.log.debug('shutting down vm...');
 
-    await this.httpSock
-      .put('actions', {
-        json: {
-          action_type: 'SendCtrlAltDel',
-        },
-      })
-      .json();
+    try {
+      await this.httpSock
+        .put('actions', {
+          json: {
+            action_type: 'SendCtrlAltDel',
+          },
+        })
+        .json();
+    } catch (error) {
+      this.log.error('could not send ctrl alt del', error);
+    }
 
     this.childProcess.kill();
 
@@ -285,6 +296,8 @@ export default class FirecrackerClient {
           action_type: 'InstanceStart',
         },
       });
+
+      this.totalVMsGauge.inc(1);
     } catch (err) {
       this.log.error('staring vm failed', err);
     }
