@@ -108,7 +108,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
 
   const { configFields } = useWatch({ control });
 
-  const { fields, append } = useFieldArray({
+  const { append } = useFieldArray({
     control,
     name: 'configFields',
   });
@@ -120,7 +120,6 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   const onSubmit = () => {
     const formValues = getValues();
     console.log('formValues', formValues);
-    console.log('fields', fields);
     generateJSONSchema(formValues.configFields).then((schema) => {
       onSchemaChange(schema);
     });

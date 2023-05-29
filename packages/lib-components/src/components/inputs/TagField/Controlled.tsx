@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
 import { GenericTagField, TagFieldProps } from '.';
+import { ControlledInputProps } from '../InputProps';
 
-export const ControlledTagField: FC<TagFieldProps> = ({
+export const ControlledTagField: FC<ControlledInputProps & TagFieldProps> = ({
   name,
   control,
   value,
@@ -35,7 +36,6 @@ export const ControlledTagField: FC<TagFieldProps> = ({
       size={size}
       hint={hint}
       value={value}
-      control={control}
       name={name}
       onChange={field.onChange}
       onBlur={field.onBlur}

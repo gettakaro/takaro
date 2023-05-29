@@ -8,6 +8,7 @@ import {
 } from '@takaro/lib-components';
 import { Input, InputType } from './InputTypes';
 import { FC } from 'react';
+import { ControlledTagField } from '../../TagField/Controlled';
 
 export const FormField: FC<{
   input: Input;
@@ -15,9 +16,17 @@ export const FormField: FC<{
   index: number;
 }> = ({ control, input, index }) => {
   const typeSpecificFields: JSX.Element[] = [];
-
   switch (input.type) {
     case InputType.string:
+      typeSpecificFields.push(
+        <TextField
+          control={control}
+          type="text"
+          label="Default value"
+          name={`configFields.${index}.default`}
+        />
+      );
+
       typeSpecificFields.push(
         <TextField
           control={control}
@@ -40,6 +49,14 @@ export const FormField: FC<{
         <TextField
           control={control}
           type="number"
+          label="Default value"
+          name={`configFields.${index}.default`}
+        />
+      );
+      typeSpecificFields.push(
+        <TextField
+          control={control}
+          type="number"
           label="Minimum"
           name={`configFields.${index}.minimum`}
         />
@@ -54,15 +71,31 @@ export const FormField: FC<{
       );
       break;
     case InputType.boolean:
+      typeSpecificFields.push(
+        <CheckBox
+          control={control}
+          label="Default value"
+          labelPosition="left"
+          name={`configFields.${index}.default`}
+          description="If no value is given, what should the default be?"
+        />
+      );
       break;
     case InputType.enum:
+      typeSpecificFields.push(
+        <ControlledTagField
+          control={control}
+          name={`configFields.${index}.enum`}
+          label="Possible values"
+          separators={[',']}
+        />
+      );
       break;
     case InputType.array:
       break;
     default:
       throw new Error(`Unknown input type: ${input}`);
   }
-
   return (
     <>
       <Select

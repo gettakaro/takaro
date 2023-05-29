@@ -32,6 +32,10 @@ export const validationSchema = z.object({
           minLength: z.number().min(1).max(100).default(4),
           maxLength: z.number().min(2).max(100).default(100),
         }),
+        z.object({
+          type: z.literal(InputType.enum.valueOf()),
+          enum: z.array(z.string()),
+        }),
       ])
       .and(baseShape)
   ),
