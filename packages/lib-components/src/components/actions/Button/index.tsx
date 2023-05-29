@@ -107,8 +107,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }
 
-    console.log(type);
-
     return getVariant();
   }
 );

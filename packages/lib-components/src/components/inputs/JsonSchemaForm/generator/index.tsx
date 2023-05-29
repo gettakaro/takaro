@@ -1,64 +1,12 @@
 import { AnySchema, SchemaObject } from 'ajv';
 import { Button } from '../../../actions/Button';
 import { Divider } from '../../../visual';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { FormField } from './getFormField';
 import { FC, useEffect } from 'react';
-
-export enum InputType {
-  string = 'string',
-  number = 'number',
-  boolean = 'boolean',
-  enum = 'enum',
-  array = 'array',
-}
-
-export interface BaseObject {
-  type: InputType;
-  required?: boolean;
-  title?: string;
-  description?: string;
-}
-
-export interface EnumInput extends BaseObject {
-  type: InputType.enum;
-  enum: string[];
-  default?: string;
-}
-
-export interface NumberInput extends BaseObject {
-  type: InputType.number;
-  minimum?: number;
-  maximum?: number;
-  default?: number;
-}
-
-export interface StringInput extends BaseObject {
-  type: InputType.string;
-  minLength?: number;
-  maxLength?: number;
-  default?: string;
-}
-
-export interface BooleanInput extends BaseObject {
-  type: InputType.boolean;
-  default?: boolean;
-}
-
-export interface ArrayInput extends BaseObject {
-  type: InputType.array;
-  items: AnyInputExceptArray;
-  default?: unknown[];
-}
-
-export type AnyInputExceptArray =
-  | EnumInput
-  | NumberInput
-  | StringInput
-  | BooleanInput;
-export type AnyInput = AnyInputExceptArray | ArrayInput;
-
-export type Input = AnyInput & { name: string };
+import { zodResolver } from '@hookform/resolvers/zod';
+import { validationSchema } from './validationSchema';
+import { AnyInputExceptArray, InputType, Input } from './InputTypes';
 
 function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
@@ -147,16 +95,18 @@ interface IFormInputs {
 }
 
 interface ISchemaGeneratorProps {
-  onSaveSchema: (schema: AnySchema) => void;
+  onSchemaChange: (schema: AnySchema) => void;
 }
 
 export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
-  onSaveSchema,
+  onSchemaChange,
 }) => {
-  const { control } = useForm<IFormInputs>({
+  const { control, handleSubmit, getValues } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    // resolver: zodResolver(moduleValidationSchema),
+    resolver: zodResolver(validationSchema),
   });
+
+  const { configFields } = useWatch({ control });
 
   const { fields, append } = useFieldArray({
     control,
@@ -164,35 +114,47 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   });
 
   useEffect(() => {
-    generateJSONSchema(fields).then((schema) => {
-      onSaveSchema(schema);
+    onSubmit();
+  }, [configFields]);
+
+  const onSubmit = () => {
+    const formValues = getValues();
+    console.log('formValues', formValues);
+    console.log('fields', fields);
+    generateJSONSchema(formValues.configFields).then((schema) => {
+      onSchemaChange(schema);
     });
-  }, [fields]);
+  };
+
+  const formValues = getValues();
 
   return (
-    <div>
-      {fields.map((field) => {
-        return (
-          <>
-            <FormField input={field} control={control} />
-            <Divider />
-          </>
-        );
-      })}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {formValues.configFields
+        ? formValues.configFields.map((field, index) => {
+            return (
+              <>
+                <FormField input={field} control={control} index={index} />
+                <Divider />
+              </>
+            );
+          })
+        : []}
 
       <Button
         text="Add Config Field"
         type="button"
         onClick={() => {
           append({
-            name: 'test',
+            name: 'Default name',
             type: InputType.string,
-            description: 'test',
+            description: 'A helpful description',
             required: true,
-            default: 'test',
+            default: 'The default value',
           });
         }}
       />
-    </div>
+      <Button text="Save schema" type="submit" />
+    </form>
   );
 };

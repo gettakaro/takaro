@@ -44,6 +44,7 @@ interface GenericTextFieldProps extends TextFieldProps {
   onChange: (...event: any[]) => unknown;
   onBlur: (...event: any[]) => unknown;
   error?: string;
+  value: string;
 }
 
 const defaultsApplier =
@@ -72,6 +73,7 @@ export const GenericTextField = forwardRef<
     type = 'text',
     prefix,
     suffix,
+    value,
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState(false);
@@ -150,6 +152,7 @@ export const GenericTextField = forwardRef<
           inputMode={getInputMode(type)}
           type={getFieldType(type, showPassword)}
           ref={ref}
+          value={value as string}
         />
         {type === 'password' &&
           (showPassword ? (

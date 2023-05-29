@@ -1,7 +1,7 @@
 import React from 'react';
 import { StoryFn } from '@storybook/react';
 import { RJSFSchema } from '@rjsf/utils';
-import { JsonSchemaForm } from '.';
+import { JsonSchemaForm } from './index';
 import { styled } from '../../../styled';
 import { Button } from '../../../components';
 

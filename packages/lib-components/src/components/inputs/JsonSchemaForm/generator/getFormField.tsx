@@ -6,25 +6,24 @@ import {
   Select,
   TextField,
 } from '@takaro/lib-components';
-import { Input, InputType } from './index';
-import { FC, useState } from 'react';
+import { Input, InputType } from './InputTypes';
+import { FC } from 'react';
 
-export const FormField: FC<{ input: Input; control: Control<any> }> = ({
-  control,
-  input,
-}) => {
-  const [type, _setType] = useState<InputType>(input.type);
-
+export const FormField: FC<{
+  input: Input;
+  control: Control<any>;
+  index: number;
+}> = ({ control, input, index }) => {
   const typeSpecificFields: JSX.Element[] = [];
 
-  switch (type) {
+  switch (input.type) {
     case InputType.string:
       typeSpecificFields.push(
         <TextField
           control={control}
           type="number"
           label="Minimum length"
-          name={`configFields.${input.name}.minLength`}
+          name={`configFields.${index}.minLength`}
         />
       );
       typeSpecificFields.push(
@@ -32,23 +31,51 @@ export const FormField: FC<{ input: Input; control: Control<any> }> = ({
           control={control}
           type="number"
           label="Maximum length"
-          name={`configFields.${input.name}.maxLength`}
+          name={`configFields.${index}.maxLength`}
         />
       );
       break;
-
-    default:
-      throw new Error(`Unknown input type: ${input.type}`);
+    case InputType.number:
+      typeSpecificFields.push(
+        <TextField
+          control={control}
+          type="number"
+          label="Minimum"
+          name={`configFields.${index}.minimum`}
+        />
+      );
+      typeSpecificFields.push(
+        <TextField
+          control={control}
+          type="number"
+          label="Maximum"
+          name={`configFields.${index}.maximum`}
+        />
+      );
       break;
+    case InputType.boolean:
+      break;
+    case InputType.enum:
+      break;
+    case InputType.array:
+      break;
+    default:
+      throw new Error(`Unknown input type: ${input}`);
   }
 
   return (
     <>
       <Select
         control={control}
-        name={`configFields.${input.name}.type`}
+        name={`configFields.${index}.type`}
         label="Type"
-        render={(_selectedIndex) => <div>{type ?? 'Select...'}</div>}
+        render={(selectedIndex) => (
+          <div>
+            {selectedIndex !== -1
+              ? Object.values(InputType)[selectedIndex]
+              : Object.values(InputType)[0]}
+          </div>
+        )}
       >
         <OptionGroup label="type">
           {Object.values(InputType).map((type) => (
@@ -61,18 +88,18 @@ export const FormField: FC<{ input: Input; control: Control<any> }> = ({
       <TextField
         control={control}
         label="Name"
-        name={`configFields.${input.name}.name`}
+        name={`configFields.${index}.name`}
       />
       <TextField
         control={control}
         label="Description"
-        name={`configFields.${input.name}.description`}
+        name={`configFields.${index}.description`}
       />
       <CheckBox
         control={control}
         label="Required"
         labelPosition="left"
-        name={`configFields.${input.name}.required`}
+        name={`configFields.${index}.required`}
         description="If this field is required to be filled out"
       />
       {typeSpecificFields}

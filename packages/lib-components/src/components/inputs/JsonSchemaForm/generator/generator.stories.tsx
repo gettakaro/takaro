@@ -38,8 +38,7 @@ export const Default: StoryFn = () => {
     <LayoutWrapper>
       <FirstColumn>
         <h1>Generator</h1>
-
-        <SchemaGenerator onSaveSchema={setSchema} />
+        <SchemaGenerator onSchemaChange={setSchema} />
       </FirstColumn>
       <SecondColumn>
         <Container>

@@ -10,7 +10,6 @@ export const ControlledTextField: FC<ControlledInputProps & TextFieldProps> = ({
   loading,
   disabled,
   type,
-  value,
   icon,
   size,
   description,
@@ -27,7 +26,6 @@ export const ControlledTextField: FC<ControlledInputProps & TextFieldProps> = ({
   } = useController({
     name,
     control,
-    defaultValue: value ?? '',
     rules: {
       required: required,
     },
@@ -52,6 +50,7 @@ export const ControlledTextField: FC<ControlledInputProps & TextFieldProps> = ({
       readOnly={readOnly}
       placeholder={placeholder}
       description={description}
+      value={field.value}
     />
   );
 };

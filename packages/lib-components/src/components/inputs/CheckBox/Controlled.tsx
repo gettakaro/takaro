@@ -15,7 +15,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
   disabled,
   loading,
   size,
-  value,
   control,
   name,
   required,
@@ -27,7 +26,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
   const { field, fieldState } = useController({
     name,
     control,
-    defaultValue: value,
   });
 
   return (
@@ -37,7 +35,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
       label={label}
       required={required}
       name={name}
-      value={value}
       size={size}
       loading={loading}
       disabled={disabled}
@@ -48,6 +45,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
         onChange(val);
         field.onChange(val);
       }}
+      value={field.value}
     />
   );
 };

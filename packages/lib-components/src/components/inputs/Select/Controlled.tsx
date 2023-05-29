@@ -20,6 +20,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   required,
   description,
   render,
+  children,
 }) => {
   const { field, fieldState } = useController({
     name,
@@ -42,6 +43,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
       onChange={field.onChange}
       error={fieldState.error?.message}
       render={render}
+      children={children}
     />
   );
 };

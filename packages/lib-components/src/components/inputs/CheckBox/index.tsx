@@ -25,6 +25,7 @@ export interface CheckBoxProps extends InputProps {
 interface GenericCheckBoxProps extends CheckBoxProps {
   onChange: (value: boolean) => void;
   error?: string;
+  value: boolean;
 }
 
 const variants = {
