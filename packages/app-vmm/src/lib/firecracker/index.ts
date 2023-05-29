@@ -141,7 +141,7 @@ export default class FirecrackerClient {
     this.vmIp = `${IP_PREFIX}${vmFirstIpPart}.${vmSecondIpPart}`;
   }
 
-  private async setupNetwork() {
+  private setupNetwork() {
     try {
       spawn('ip', ['link', 'del', this.tapDeviceName]);
     } catch {
