@@ -23,8 +23,8 @@ RUN find packages -type d -name 'lib-*' -exec sh -c 'npm run -w {} build && mkdi
 
 FROM node:18-alpine as runner
 
-# Version 8+ is required to run npm scripts as root
-RUN npm install -g npm@8
+# Version 9+ is required to run npm scripts as root
+RUN npm install -g npm@9
 
 ARG PACKAGE
 ENV PACKAGE=${PACKAGE}

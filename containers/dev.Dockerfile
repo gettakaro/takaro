@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y git net-tools iproute2 iptables socat n
 
 WORKDIR /app
 
+# Version 9+ is required to run npm scripts as root
 RUN npm install -g npm@9
 
 # Fix to avoid requiring root permissions 
