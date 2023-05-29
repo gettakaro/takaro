@@ -47,8 +47,6 @@ services:
     volumes:
       - ./containers/prometheus/:/etc/prometheus/
       - ./_data/prometheus:/prometheus
-    networks:
-      - takaro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -64,8 +62,6 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
-    networks:
-      - takaro
     volumes:
       - ./containers/grafana/grafana-provisioning:/etc/grafana/provisioning/
       - ./_data/grafana:/var/lib/grafana
@@ -79,7 +75,7 @@ services:
       - ./containers/tempo/tempo.yaml:/etc/tempo.yaml
       - ./_data/tempo:/tmp/tempo
     networks:
-      takaro:
+      default:
         ipv4_address: 172.16.238.254
     ports:
       #      - "14268:14268"  # jaeger ingest
@@ -89,8 +85,6 @@ services:
 #      - "9411:9411"   # zipkin
 
 networks:
-  takaro:
-    ipam:
-      driver: default
-      config:
-        - subnet: '172.16.238.0/24'
+  default:
+    name: takaro
+    external: true
