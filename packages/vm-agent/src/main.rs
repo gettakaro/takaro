@@ -1,5 +1,5 @@
 use opentelemetry::{
-    global, runtime,
+    global,
     sdk::{propagation::TraceContextPropagator, trace as sdktrace, Resource},
     trace::TraceError,
     KeyValue,
@@ -16,7 +16,7 @@ fn setup_tracing() -> Result<(), TraceError> {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
     // TODO: Make this non-blocking
-    let file_appender = tracing_appender::rolling::never("/var/log", "vm-agent.log");
+    let file_appender = tracing_appender::rolling::never("./", "vm-agent.log");
 
     let tracer = opentelemetry_otlp::new_pipeline()
         .tracing()
@@ -29,7 +29,7 @@ fn setup_tracing() -> Result<(), TraceError> {
                 "vm-agent",
             )])),
         )
-        .install_batch(runtime::Tokio)?;
+        .install_simple()?; // exports traces synchronously
 
     Registry::default()
         .with(

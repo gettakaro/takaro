@@ -86,10 +86,19 @@ async fn shutdown_signal() {
             .await;
     };
 
+    #[cfg(unix)]
+    let quit = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::quit())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
     #[cfg(not(unix))]
     let terminate = std::future::pending::<()>();
 
     tokio::select! {
+        _ = quit => {},
         _ = ctrl_c => {},
         _ = terminate => {},
     }

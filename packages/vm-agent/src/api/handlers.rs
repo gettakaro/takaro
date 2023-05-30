@@ -1,11 +1,15 @@
-use axum::{debug_handler, http::HeaderMap, Json};
-use opentelemetry::global;
-use opentelemetry::trace::{Span, Tracer};
+use axum::Json;
+use hyper::HeaderMap;
+use opentelemetry::{
+    global,
+    trace::{Span, Tracer},
+    KeyValue,
+};
 use opentelemetry_http::HeaderExtractor;
 use serde_derive::{Deserialize, Serialize};
-use std::env;
-use std::os::unix::process::ExitStatusExt;
+use std::{env, os::unix::process::ExitStatusExt};
 use tokio::process::Command;
+use tracing::instrument;
 
 #[derive(Debug, Serialize)]
 pub struct ExecResponse {
@@ -35,14 +39,13 @@ pub struct ExecRequest {
     env: NodeEnv,
 }
 
-#[debug_handler]
 pub async fn health() -> &'static str {
     tracing::info!("inside health request");
 
     "OK"
 }
 
-#[debug_handler]
+#[instrument]
 pub async fn exec_cmd(
     headers: HeaderMap,
     Json(mut payload): Json<ExecRequest>,
@@ -51,8 +54,11 @@ pub async fn exec_cmd(
         propagator.extract(&HeaderExtractor(&headers))
     });
 
-    let mut span = global::tracer("vm-agent").start_with_context("exec_cmd", &parent_cx);
+    let tracer = global::tracer("vm-agent");
 
+    let mut span = tracer.start_with_context("exec_cmd", &parent_cx);
+
+    span.add_event("loading environment variables", vec![]);
     payload.env.load();
 
     let full_cmd = payload.cmd.join(" ");
@@ -63,19 +69,21 @@ pub async fn exec_cmd(
         command.arg(arg);
     }
 
-    span.add_event("executing command".to_string(), vec![]);
+    span.add_event("executing command", vec![KeyValue::new("cmd", full_cmd)]);
 
-    let output = command.output().await.unwrap();
+    let output = command.output().await.expect("failed to execute command");
     let status = output.status;
 
-    tracing::debug!(
-        "command '{}' exited with code: {}",
-        full_cmd,
-        status
-            .code()
-            .map(|i| i.to_string())
-            .unwrap_or_else(|| "unknown".to_string())
+    span.add_event(
+        "done executing",
+        vec![KeyValue::new(
+            "exit_code",
+            status.code().unwrap_or_else(|| 1) as i64,
+        )],
     );
+
+    // manually end span before returning so we can export the trace
+    span.end();
 
     Json(ExecResponse {
         exit_code: status.code(),
