@@ -135,14 +135,7 @@ export class VmClient {
       }),
     });
 
-    const cmd = [
-      'node',
-      '--loader',
-      './node_modules/@takaro/util/dist/tracing.js',
-      '--input-type=module',
-      '-e',
-      fn,
-    ];
+    const cmd = ['node', '--input-type=module', '-e', fn];
 
     const response = await fetch('http://localhost/exec', {
       agent: this.customAgent,

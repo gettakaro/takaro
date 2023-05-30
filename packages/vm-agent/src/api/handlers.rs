@@ -11,8 +11,6 @@ use std::{env, os::unix::process::ExitStatusExt};
 use tokio::process::Command;
 use tracing::instrument;
 
-use crate::DEFAULT_TRACING_ENDPOINT;
-
 #[derive(Debug, Serialize)]
 pub struct ExecResponse {
     exit_code: Option<i32>,
@@ -32,7 +30,6 @@ impl NodeEnv {
             "DATA",
             serde_json::to_string(&self.data).unwrap_or("".to_owned()),
         );
-        env::set_var("TRACING_ENDPOINT", DEFAULT_TRACING_ENDPOINT.to_string());
     }
 }
 

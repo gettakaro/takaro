@@ -39,7 +39,6 @@ build_vm_node_helper() {
     "@takaro/apiclient": "*",
     "@takaro/config": "*",
     "@takaro/helpers": "*",
-    "@takaro/util": "*",
     "axios": "^1.3.4"
   }
 }
@@ -62,7 +61,7 @@ ensure_kernel() {
 
 create_rootfs() {
 	# create an empty rootfs
-	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=200
+	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=100
 	mkfs.ext4 "$FC_ROOTFS"
 	mkdir -p /tmp/takaro/my-rootfs
 
