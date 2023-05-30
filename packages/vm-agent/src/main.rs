@@ -10,7 +10,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilte
 
 mod api;
 
-const DEFAULT_TRACING_ENDPOINT: &str = "http://172.16.238.254:4317";
+pub const DEFAULT_TRACING_ENDPOINT: &str = "http://172.16.238.254:4317";
 
 fn setup_tracing() -> Result<(), TraceError> {
     global::set_text_map_propagator(TraceContextPropagator::new());

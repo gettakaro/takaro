@@ -30,7 +30,7 @@ build_vm_node_helper() {
 
 	mkdir -p "$VM_NODE_HELPER/node_modules/@takaro/"
 
-	cp -r -L ./node_modules/@takaro/{config,helpers,apiclient} "$VM_NODE_HELPER/node_modules/@takaro"
+	cp -r -L ./node_modules/@takaro/{config,helpers,apiclient,util} "$VM_NODE_HELPER/node_modules/@takaro"
 
 	cat >"$VM_NODE_HELPER/package.json" <<EOF
 {
@@ -39,6 +39,7 @@ build_vm_node_helper() {
     "@takaro/apiclient": "*",
     "@takaro/config": "*",
     "@takaro/helpers": "*",
+    "@takaro/util": "*",
     "axios": "^1.3.4"
   }
 }
@@ -61,7 +62,7 @@ ensure_kernel() {
 
 create_rootfs() {
 	# create an empty rootfs
-	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=100
+	dd if=/dev/zero of="$FC_ROOTFS" bs=1M count=200
 	mkfs.ext4 "$FC_ROOTFS"
 	mkdir -p /tmp/takaro/my-rootfs
 
