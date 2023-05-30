@@ -77,12 +77,16 @@ pub async fn exec_cmd(
     let output = command.output().await.expect("failed to execute command");
     let status = output.status;
 
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
     span.add_event(
         "done executing",
-        vec![KeyValue::new(
-            "exit_code",
-            status.code().unwrap_or_else(|| 1) as i64,
-        )],
+        vec![
+            KeyValue::new("exit_code", status.code().unwrap_or_else(|| 1) as i64),
+            KeyValue::new("stdout", stdout.clone()),
+            KeyValue::new("stderr", stderr.clone()),
+        ],
     );
 
     // manually end span before returning so we can export the trace
@@ -91,8 +95,8 @@ pub async fn exec_cmd(
     Json(ExecResponse {
         exit_code: status.code(),
         exit_signal: status.signal(),
-        stderr: String::from_utf8(output.stderr).unwrap(),
-        stdout: String::from_utf8(output.stdout).unwrap(),
+        stderr,
+        stdout,
     })
 }
 
