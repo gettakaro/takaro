@@ -35,7 +35,7 @@ rc-update add agent boot
 
 # Then, copy the newly configured system to the rootfs image:
 for d in bin etc lib root sbin usr app; do
-	tar c "/$d" | tar x -C /my-rootfs
+	tar c "$d" | tar x -C /my-rootfs
 done
 
 # The above command may trigger the following message:
