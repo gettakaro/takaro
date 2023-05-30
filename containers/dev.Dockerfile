@@ -27,6 +27,8 @@ COPY nodemon.json ./
 COPY jest.config.js ./
 COPY .mocharc.js ./
 
+COPY ./containers/takaro/ssh_config /root/.ssh/config
+
 RUN npm ci
 
 CMD sh -c './scripts/setup-network.sh && npm run start:dev'
