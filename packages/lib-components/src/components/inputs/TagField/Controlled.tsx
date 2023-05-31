@@ -3,10 +3,11 @@ import { useController } from 'react-hook-form';
 import { GenericTagField, TagFieldProps } from '.';
 import { ControlledInputProps } from '../InputProps';
 
-export const ControlledTagField: FC<ControlledInputProps & TagFieldProps> = ({
+export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
+
+export const ControlledTagField: FC<ControlledTagFieldProps> = ({
   name,
   control,
-  value,
   placeholder,
   hint,
   size,
@@ -26,7 +27,6 @@ export const ControlledTagField: FC<ControlledInputProps & TagFieldProps> = ({
   } = useController({
     name,
     control,
-    defaultValue: value ?? '',
   });
 
   return (
@@ -35,8 +35,8 @@ export const ControlledTagField: FC<ControlledInputProps & TagFieldProps> = ({
       label={label}
       size={size}
       hint={hint}
-      value={value}
       name={name}
+      value={field.value}
       onChange={field.onChange}
       onBlur={field.onBlur}
       loading={false}

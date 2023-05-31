@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import {
-  GenericTagField as TagField,
-  GenericTagFieldProps as TagFieldProps,
-} from '.';
+import { TagField, TagFieldProps } from '../../../components';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 
@@ -40,8 +37,7 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
       <pre>paste tester: apple,banana,jeroen</pre>
       <pre>{JSON.stringify(selected)}</pre>
       <TagField
-        value={selected}
-        onChange={setSelected}
+        onChange={(tags) => setSelected(tags)}
         name={args.name}
         label={args.label}
         control={control}
@@ -51,7 +47,6 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
         isEditOnRemove={args.isEditOnRemove}
         tagValidationSchema={beforeAddValidationSchema}
         required={args.required}
-        onBlur={() => {}}
         readOnly={args.readOnly}
         separators={args.separators}
         description={args.description}

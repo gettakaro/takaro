@@ -17,16 +17,15 @@ export interface TagFieldProps extends InputProps {
   isEditOnRemove?: boolean;
   onExisting?: (tag: string) => void;
   placeholder?: string;
-  onChange?: (tags: string[]) => void;
   onKeyUp?: (e: KeyboardEvent<HTMLInputElement>) => void;
-  value?: string[];
   description?: string;
 }
 
 // these are props that should only be available on the generic version.
 export interface GenericTagFieldProps extends TagFieldProps {
-  onChange: (...event: any[]) => unknown;
+  onChange: (tags: string[]) => unknown;
   onBlur: (...event: any[]) => unknown;
+  value?: string[];
   error?: string;
 }
 
@@ -60,14 +59,8 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     const [showError, setShowError] = useState(false);
 
     useDidUpdateEffect(() => {
-      onChange && onChange(tags);
+      onChange(tags);
     }, [tags]);
-
-    useDidUpdateEffect(() => {
-      if (JSON.stringify(value) !== JSON.stringify(tags)) {
-        setTags(value);
-      }
-    }, [value]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       e.stopPropagation();
