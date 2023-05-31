@@ -22,6 +22,9 @@ export type { ControlledCodeFieldProps as CodeFieldProps } from './CodeField/Con
 export { ControlledRadioGroup as RadioGroup } from './RadioGroup/Controlled';
 export type { ControlledRadioGroupProps as RadioGroupProps } from './RadioGroup/Controlled';
 
+export { ControlledTagField as TagField } from './TagField/Controlled';
+export type { ControlledTagFieldProps as TagFieldProps } from './TagField/Controlled';
+
 export { EditableField } from './EditableField';
 export type { EditableFieldProps } from './EditableField';
 
