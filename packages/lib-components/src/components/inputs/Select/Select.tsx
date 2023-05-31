@@ -66,6 +66,7 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
     hint,
     error,
     value,
+    onBlur,
     onChange,
     loading,
   } = defaultsApplier(props);
@@ -82,6 +83,7 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
   ]);
 
   const [open, setOpen] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(
     Math.max(0, listContentRef.current.indexOf(value))
@@ -92,6 +94,11 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
   if (!open && pointer) {
     setPointer(false);
   }
+
+  const handleOnBlur = () => {
+    onBlur();
+    setShowError(false);
+  };
 
   const { x, y, reference, floating, strategy, context } = useFloating({
     open,
@@ -210,11 +217,13 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
             ref: reference,
           })}
           readOnly={readOnly}
+          onBlur={handleOnBlur}
         >
           {render(selectedIndex - 1)}
           {!readOnly && <ArrowIcon size={18} />}
         </SelectButton>
-        {error && <ErrorMessage message={error} />}
+
+        {error && showError && <ErrorMessage message={error} />}
         {open && !readOnly && (
           <FloatingOverlay lockScroll style={{ zIndex: 1000 }}>
             <FloatingFocusManager

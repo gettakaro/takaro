@@ -1,22 +1,42 @@
 import { FC } from 'react';
 import { styled } from '../../../styled';
+import { motion } from 'framer-motion';
 
-const Container = styled.div`
-  margin: ${({ theme }) => `${theme.spacing['0_75']} 0`};
-  text-align: center;
-  p {
-    color: ${({ theme }) => theme.colors.error};
-  }
+const Container = styled(motion.div)`
+  position: absolute;
+  min-height: ${({ theme }) => theme.spacing[3]};
+  display: flex;
+  align-items: center;
+  bottom: ${({ theme }) => `-${theme.spacing['5']}`};
+  left: 0;
+  height: auto;
+  background-color: ${({ theme }): string => theme.colors.error};
+  overflow: hidden;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  z-index: 5;
 `;
 
-export interface ErrorMessageProps {
+const Content = styled.span`
+  display: flex;
+  align-items: center;
+  min-width: 100%;
+  width: 100%;
+  padding: ${({ theme }) =>
+    `${theme.spacing['0_25']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
+  height: ${({ theme }) => theme.spacing[4]};
+  color: white;
+  font-weight: 500;
+  white-space: nowrap;
+`;
+
+export interface ErrorProps {
   message: string;
 }
 
-export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
+export const ErrorMessage: FC<ErrorProps> = ({ message }) => {
   return (
-    <Container>
-      <p>{message}</p>
+    <Container initial={{ width: 0 }} animate={{ width: '100%' }}>
+      <Content>{message}</Content>
     </Container>
   );
 };

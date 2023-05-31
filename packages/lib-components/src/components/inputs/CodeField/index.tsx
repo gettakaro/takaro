@@ -12,8 +12,7 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
-import { Label } from '../Label';
-import { ErrorMessage } from '../ErrorMessage';
+import { Label, ErrorMessage } from '../../../components';
 
 export interface CodeFieldProps extends InputProps {
   name: string;

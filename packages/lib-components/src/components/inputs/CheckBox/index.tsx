@@ -7,7 +7,7 @@ import {
   Container,
 } from './style';
 
-import { Label } from '../../../components';
+import { Label, ErrorMessage } from '../../../components';
 import { AiOutlineCheck as Icon } from 'react-icons/ai';
 import { getTransition } from '../../../helpers';
 
@@ -16,7 +16,6 @@ import {
   defaultInputPropsFactory,
   defaultInputProps,
 } from '../InputProps';
-import { ErrorMessage } from '../ErrorMessage';
 
 export interface CheckBoxProps extends InputProps {
   labelPosition?: 'left' | 'right';

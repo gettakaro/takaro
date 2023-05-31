@@ -1,8 +1,6 @@
 import { useState, ChangeEvent, forwardRef } from 'react';
 import { Container, TextAreaContainer, TextArea } from './style';
-
-import { ErrorMessage } from '../ErrorMessage';
-import { Label } from '../Label';
+import { Label, ErrorMessage } from '../../../components';
 
 import {
   InputProps,
