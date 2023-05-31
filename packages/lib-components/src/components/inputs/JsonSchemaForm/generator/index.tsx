@@ -1,12 +1,13 @@
 import { AnySchema, SchemaObject } from 'ajv';
-import { Button } from '../../../actions/Button';
-import { Divider } from '../../../visual';
+import { Button, Divider } from '../../../../components';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { FormField } from './getFormField';
 import { FC, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
+import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AnyInputExceptArray, InputType, Input } from './InputTypes';
+import { Form, ButtonContainer } from './style';
 
 function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
@@ -114,6 +115,16 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   });
 
   useEffect(() => {
+    append({
+      name: 'Default name',
+      type: InputType.string,
+      description: 'A helpful description',
+      required: true,
+      default: 'The default value',
+    });
+  }, []);
+
+  useEffect(() => {
     onSubmit();
   }, [configFields]);
 
@@ -128,7 +139,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   const formValues = getValues();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       {formValues.configFields
         ? formValues.configFields.map((field, index) => {
             return (
@@ -139,21 +150,23 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
             );
           })
         : []}
-
-      <Button
-        text="Add Config Field"
-        type="button"
-        onClick={() => {
-          append({
-            name: 'Default name',
-            type: InputType.string,
-            description: 'A helpful description',
-            required: true,
-            default: 'The default value',
-          });
-        }}
-      />
-      <Button text="Save schema" type="submit" />
-    </form>
+      <ButtonContainer>
+        <Button
+          text="Config Field"
+          type="button"
+          icon={<PlusIcon />}
+          onClick={() => {
+            append({
+              name: 'Default name',
+              type: InputType.string,
+              description: 'A helpful description',
+              required: true,
+              default: 'The default value',
+            });
+          }}
+        />
+        <Button text="Save schema" type="submit" />
+      </ButtonContainer>
+    </Form>
   );
 };

@@ -39,7 +39,6 @@ export const validationSchema = z.object({
         }),
         z.object({
           type: z.literal(InputType.number.valueOf()),
-          // TODO these validation rules should be more strict.
           default: z.number().min(1),
           minimum: z.number().min(1),
           // TODO: minimum value should always be smaller than maximum value
@@ -47,7 +46,7 @@ export const validationSchema = z.object({
         }),
         z.object({
           type: z.literal(InputType.enum.valueOf()),
-          enum: z.array(z.string()),
+          enum: z.array(z.string()).nonempty(),
         }),
         z.object({
           type: z.literal(InputType.boolean.valueOf()),
@@ -55,6 +54,7 @@ export const validationSchema = z.object({
         }),
         z.object({
           type: z.literal(InputType.array.valueOf()),
+          array: z.array(z.string()).nonempty(),
         }),
       ])
       .and(baseShape)

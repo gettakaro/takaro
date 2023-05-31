@@ -88,11 +88,20 @@ export const FormField: FC<{
           name={`configFields.${index}.enum`}
           label="Possible values"
           isEditOnRemove
-          placeholder="Press enter to add a value"
+          placeholder="Press enter to add a value."
         />
       );
       break;
     case InputType.array:
+      typeSpecificFields.push(
+        <TagField
+          control={control}
+          name={`configFields.${index}.array`}
+          label="List of values"
+          isEditOnRemove
+          placeholder="Press enter to add a value."
+        />
+      );
       break;
     default:
       throw new Error(`Unknown input type: ${input}`);
@@ -134,7 +143,7 @@ export const FormField: FC<{
 
       <CheckBox
         control={control}
-        label="Required"
+        label="Is Field required?"
         labelPosition="left"
         name={`configFields.${index}.required`}
         description="If this field is required to be filled out"
