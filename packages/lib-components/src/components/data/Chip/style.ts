@@ -35,7 +35,8 @@ export const Container = styled.div<{
 
   span {
     display: block;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
     margin-left: ${({ hasAvatar, theme }) =>
       hasAvatar ? theme.spacing['0_5'] : 0};
     font-weight: 600;

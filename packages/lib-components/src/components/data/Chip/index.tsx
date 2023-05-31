@@ -47,7 +47,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           onClick={onClick ? onClick : undefined}
           className="placeholder"
         >
-          <>{label}</>
+          <>loading</>
         </Container>
       );
     }
