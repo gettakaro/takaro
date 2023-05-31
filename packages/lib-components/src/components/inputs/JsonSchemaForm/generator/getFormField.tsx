@@ -5,10 +5,10 @@ import {
   OptionGroup,
   Select,
   TextField,
-} from '@takaro/lib-components';
+  TagField,
+} from '../../../../components';
 import { Input, InputType } from './InputTypes';
 import { FC } from 'react';
-import { ControlledTagField } from '../../TagField/Controlled';
 
 export const FormField: FC<{
   input: Input;
@@ -83,11 +83,12 @@ export const FormField: FC<{
       break;
     case InputType.enum:
       typeSpecificFields.push(
-        <ControlledTagField
+        <TagField
           control={control}
           name={`configFields.${index}.enum`}
           label="Possible values"
-          separators={[',']}
+          isEditOnRemove
+          placeholder="Press enter to add a value"
         />
       );
       break;
@@ -96,6 +97,7 @@ export const FormField: FC<{
     default:
       throw new Error(`Unknown input type: ${input}`);
   }
+
   return (
     <>
       <Select
@@ -128,6 +130,8 @@ export const FormField: FC<{
         label="Description"
         name={`configFields.${index}.description`}
       />
+      {typeSpecificFields}
+
       <CheckBox
         control={control}
         label="Required"
@@ -135,7 +139,6 @@ export const FormField: FC<{
         name={`configFields.${index}.required`}
         description="If this field is required to be filled out"
       />
-      {typeSpecificFields}
     </>
   );
 };
