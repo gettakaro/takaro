@@ -12,7 +12,7 @@ import {
 import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 import { SelectContext } from './context';
 import { GroupLabel, SelectButton, SelectContainer, Container } from './style';
-import { Label } from '../../../components';
+import { Label, ErrorMessage } from '../../../components';
 
 import {
   useFloating,
@@ -213,9 +213,8 @@ export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
         >
           {render(selectedIndex - 1)}
           {!readOnly && <ArrowIcon size={18} />}
-
-          {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>
+        {error && <ErrorMessage message={error} />}
         {open && !readOnly && (
           <FloatingOverlay lockScroll style={{ zIndex: 1000 }}>
             <FloatingFocusManager
