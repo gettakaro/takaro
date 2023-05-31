@@ -6,6 +6,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-top: ${({ theme }) => theme.spacing['1_5']};
 `;
 
 export const Input = styled.input`
