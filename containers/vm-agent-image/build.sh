@@ -8,6 +8,7 @@ set -e
 apk add --no-cache openrc     # init system
 apk add --no-cache util-linux # required for agetty
 apk add --no-cache nodejs
+apk add --no-cache openssh
 
 # Set up a login terminal on the serial console (ttyS0):
 ln -s agetty /etc/init.d/agetty.ttyS0
@@ -24,6 +25,10 @@ echo "nameserver 8.8.8.8" >>/etc/resolv.conf
 rc-update add devfs boot
 rc-update add procfs boot
 rc-update add sysfs boot
+
+# openssh server
+echo "PermitRootLogin yes" >>/etc/ssh/sshd_config
+rc-update add sshd
 
 # # Start our agent service on boot
 rc-update add agent boot

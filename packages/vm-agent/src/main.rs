@@ -1,75 +1,52 @@
-use anyhow::Error;
-use futures::TryStreamExt;
-use std::{env, io, net::Ipv4Addr};
-use tokio_vsock::VsockListener;
+use opentelemetry::{
+    global,
+    sdk::{propagation::TraceContextPropagator, trace as sdktrace, Resource},
+    trace::TraceError,
+    KeyValue,
+};
+use opentelemetry_otlp::WithExportConfig;
+use std::{env, io};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
 
-const HOST: u32 = libc::VMADDR_CID_ANY;
-const PORT: u32 = 8000;
+mod api;
 
-#[derive(Debug, thiserror::Error)]
-enum InitError {
-    #[error("an unhandled IO error occurred: {}", 0)]
-    IoError(#[from] io::Error),
+pub const DEFAULT_TRACING_ENDPOINT: &str = "http://172.16.238.254:4317";
 
-    #[error("an unhandled netlink error occurred: {}", 0)]
-    NetlinkError(#[from] rtnetlink::Error),
+fn setup_tracing() -> Result<(), TraceError> {
+    global::set_text_map_propagator(TraceContextPropagator::new());
 
-    #[error("an unhandled error occurred: {}", 0)]
-    Error(#[from] Error),
-}
+    // TODO: Make this non-blocking
+    let file_appender = tracing_appender::rolling::never("./", "vm-agent.log");
 
-async fn setup_network() -> anyhow::Result<()> {
-    let (connection, handle, _) = rtnetlink::new_connection().unwrap();
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint(
+            env::var("TRACING_ENDPOINT").unwrap_or(DEFAULT_TRACING_ENDPOINT.to_string()),
+        ))
+        .with_trace_config(
+            sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
+                opentelemetry_semantic_conventions::resource::SERVICE_NAME,
+                "vm-agent",
+            )])),
+        )
+        .install_simple()?; // exports traces synchronously
 
-    tokio::spawn(connection);
-
-    let guest_ip = Ipv4Addr::new(172, 16, 0, 2);
-    let gateway = Ipv4Addr::new(172, 16, 0, 1);
-    let any_addr = Ipv4Addr::UNSPECIFIED;
-
-    tracing::debug!("netlink: getting eth0 link");
-
-    let eth0 = handle
-        .link()
-        .get()
-        .match_name("eth0".into())
-        .execute()
-        .try_next()
-        .await?
-        .expect("no eth0 link found");
-
-    tracing::debug!("netlink: add guest ip to eth0");
-
-    handle
-        .address()
-        .add(eth0.header.index, guest_ip.into(), 24)
-        .execute()
-        .await?;
-
-    tracing::debug!("netlink: setting eth0 link up");
-
-    handle.link().set(eth0.header.index).up().execute().await?;
-
-    tracing::debug!("netlink: adds a default route for any address to the host ip");
-
-    handle
-        .route()
-        .add()
-        .input_interface(eth0.header.index)
-        .v4()
-        .destination_prefix(any_addr, 0)
-        .gateway(gateway)
-        .execute()
-        .await?;
+    Registry::default()
+        .with(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "vm_agent=trace,tower_http=trace,axum::rejection=trace".into()),
+        )
+        .with(tracing_subscriber::fmt::layer().with_writer(file_appender))
+        .with(tracing_subscriber::fmt::layer().with_writer(io::stdout))
+        .with(tracing_opentelemetry::layer().with_tracer(tracer))
+        .init();
 
     Ok(())
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt().init();
-
-    // setup_network().await?;
+    setup_tracing()?;
 
     if let Err(e) = env::set_current_dir("/app") {
         tracing::error!("failed to change directory: {}", e);
@@ -78,14 +55,10 @@ async fn main() -> anyhow::Result<()> {
     if let Ok(current_dir) = env::current_dir() {
         tracing::info!("current working directory: {}", current_dir.display());
     } else {
-        tracing::error!("cailed to get current working directory");
+        tracing::error!("failed to get current working directory");
     }
 
-    let listener = VsockListener::bind(HOST, PORT).expect("bind failed");
-
-    tracing::info!("listening on {HOST}:{PORT}");
-
-    vm_agent::api::server(listener).await?;
+    api::server().await?;
 
     Ok(())
 }

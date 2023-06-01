@@ -5,8 +5,8 @@ import { ctx } from '@takaro/util';
 import { executeFunction } from './executeFunction.js';
 
 export class CommandWorker extends TakaroWorker<IJobData> {
-  constructor() {
-    super(config.get('queues.commands.name'), processCommand);
+  constructor(concurrency: number) {
+    super(config.get('queues.commands.name'), concurrency, processCommand);
   }
 }
 
