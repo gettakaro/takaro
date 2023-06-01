@@ -1,4 +1,4 @@
-import { Control } from 'react-hook-form';
+import { Control, UseFieldArrayRemove, useWatch } from 'react-hook-form';
 import {
   CheckBox,
   Option,
@@ -6,23 +6,51 @@ import {
   Select,
   TextField,
   TagField,
+  Chip,
 } from '../../../../components';
+import { IFormInputs } from '.';
 import { Input, InputType } from './InputTypes';
 import { FC } from 'react';
+import { styled } from '../../../../styled';
+import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
+
+const Header = styled.div`
+  margin: ${({ theme }) => `${theme.spacing[2]} 0 ${theme.spacing[1]} 0`};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    h3 {
+      text-transform: capitalize;
+      margin-left: 5px;
+    }
+  }
+`;
 
 interface FormFieldProps {
   input: Input;
-  control: Control<any>;
+  control: Control<IFormInputs>;
   id: string;
   index: number;
+  remove: UseFieldArrayRemove;
 }
 
 export const FormField: FC<FormFieldProps> = ({
   control,
   input,
   index,
+  remove,
   id,
 }) => {
+  const output = useWatch<IFormInputs>({
+    control,
+    name: `configFields.${index}.name`,
+  });
+
   const typeSpecificFields: JSX.Element[] = [];
   switch (input.type) {
     case InputType.string:
@@ -125,6 +153,23 @@ export const FormField: FC<FormFieldProps> = ({
 
   return (
     <>
+      <Header>
+        <div>
+          <Chip color="primary" label={`Field ${index + 1}`} />
+          <h3>{output as string}</h3>
+        </div>
+        <RemoveIcon cursor="pointer" size={18} onClick={() => remove(index)} />
+      </Header>
+      <TextField
+        control={control}
+        label="Name"
+        name={`configFields.${index}.name`}
+      />
+      <TextField
+        control={control}
+        label="Description"
+        name={`configFields.${index}.description`}
+      />
       <Select
         control={control}
         name={`configFields.${index}.type`}
@@ -145,16 +190,7 @@ export const FormField: FC<FormFieldProps> = ({
           ))}
         </OptionGroup>
       </Select>
-      <TextField
-        control={control}
-        label="Name"
-        name={`configFields.${index}.name`}
-      />
-      <TextField
-        control={control}
-        label="Description"
-        name={`configFields.${index}.description`}
-      />
+
       {typeSpecificFields}
       <CheckBox
         control={control}

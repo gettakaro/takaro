@@ -27,36 +27,45 @@ const baseShape = z.object({
  a different subschema will be used
 */
 export const validationSchema = z.object({
-  configFields: z.array(
-    z
+  configFields: z
+    .array(
+      z
 
-      .discriminatedUnion('type', [
-        z.object({
-          type: z.literal(InputType.string.valueOf()),
-          default: z.string(),
-          minLength: z.number().min(1).max(100),
-          maxLength: z.number().min(2).max(100),
-        }),
-        z.object({
-          type: z.literal(InputType.number.valueOf()),
-          default: z.number().min(1),
-          minimum: z.number().min(1),
-          // TODO: minimum value should always be smaller than maximum value
-          maximum: z.number().min(1),
-        }),
-        z.object({
-          type: z.literal(InputType.enum.valueOf()),
-          enum: z.array(z.string()).nonempty(),
-        }),
-        z.object({
-          type: z.literal(InputType.boolean.valueOf()),
-          default: z.boolean(),
-        }),
-        z.object({
-          type: z.literal(InputType.array.valueOf()),
-          array: z.array(z.string()).nonempty(),
-        }),
-      ])
-      .and(baseShape)
-  ),
+        .discriminatedUnion('type', [
+          z.object({
+            type: z.literal(InputType.string.valueOf()),
+            default: z.string(),
+            minLength: z.number().min(1).max(100).optional(),
+            maxLength: z.number().min(2).max(100).optional(),
+          }),
+          z.object({
+            type: z.literal(InputType.number.valueOf()),
+            default: z.number().min(1),
+            minimum: z.number().min(1).optional(),
+            maximum: z.number().min(1).optional(),
+          }),
+          z.object({
+            type: z.literal(InputType.enum.valueOf()),
+            enum: z.array(z.string()).nonempty(),
+          }),
+          z.object({
+            type: z.literal(InputType.boolean.valueOf()),
+            default: z.boolean(),
+          }),
+          z.object({
+            type: z.literal(InputType.array.valueOf()),
+            array: z.array(z.string()).nonempty(),
+          }),
+        ])
+        .and(baseShape)
+    )
+    .superRefine((data, ctx) => {
+      // TODO: compare min max string (type=string + type number)
+      if (data[0].type === InputType.string.valueOf()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Mins hould be less than Max',
+        });
+      }
+    }),
 });

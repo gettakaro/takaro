@@ -2,12 +2,12 @@ import { AnySchema, SchemaObject } from 'ajv';
 import { Button, Divider } from '../../../../components';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { FormField } from './getFormField';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AnyInputExceptArray, InputType, Input } from './InputTypes';
-import { Form, ButtonContainer } from './style';
+import { Form } from './style';
 
 function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
@@ -89,7 +89,7 @@ export async function generateJSONSchema(inputs: Array<Input>) {
   return schema;
 }
 
-interface IFormInputs {
+export interface IFormInputs {
   name: string;
   description?: string;
   configFields: Input[];
@@ -107,9 +107,9 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
     resolver: zodResolver(validationSchema),
   });
 
-  const { configFields } = useWatch({ control });
+  const { configFields } = useWatch<IFormInputs>({ control });
 
-  const { append } = useFieldArray({
+  const { append, fields, remove } = useFieldArray({
     control,
     name: 'configFields',
   });
@@ -141,32 +141,40 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       {formValues.configFields
-        ? formValues.configFields.map((field, index) => {
+        ? fields.map((field, index) => {
             return (
-              <>
-                <FormField input={field} control={control} index={index} />
-                <Divider />
-              </>
+              <Fragment key={`config-field-wrapper-${field.id}`}>
+                <FormField
+                  key={`config-field-${field.id}`}
+                  id={field.id}
+                  input={field}
+                  control={control}
+                  index={index}
+                  remove={remove}
+                />
+                {index != fields.length - 1 && (
+                  <Divider key={`config-field-divider-${field.id}`} />
+                )}
+              </Fragment>
             );
           })
         : []}
-      <ButtonContainer>
-        <Button
-          text="Config Field"
-          type="button"
-          icon={<PlusIcon />}
-          onClick={() => {
-            append({
-              name: 'Default name',
-              type: InputType.string,
-              description: 'A helpful description',
-              required: true,
-              default: 'The default value',
-            });
-          }}
-        />
-        <Button text="Save schema" type="submit" />
-      </ButtonContainer>
+      <Button
+        text="Config Field"
+        type="button"
+        fullWidth
+        icon={<PlusIcon />}
+        onClick={() => {
+          append({
+            name: 'Default name',
+            type: InputType.string,
+            description: 'A helpful description',
+            required: true,
+            default: 'The default value',
+          });
+        }}
+      />
+      <Button text="Save schema" type="submit" />
     </Form>
   );
 };
