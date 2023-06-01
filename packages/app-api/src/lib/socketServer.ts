@@ -6,6 +6,8 @@ import { GameEvents, EventMapping } from '@takaro/gameserver';
 import { instrument } from '@socket.io/admin-ui';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { NextFunction, Response } from 'express';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { Redis } from '@takaro/db';
 
 interface ServerToClientEvents {
   gameEvent: (
@@ -112,6 +114,13 @@ class SocketServer {
     this.log.info('Socket server started');
   }
 
+  public async init() {
+    const pubRedis = await Redis.getClient('socketio:pub');
+    const subRedis = await Redis.getClient('socketio:sub');
+
+    this.io.adapter(createAdapter(pubRedis, subRedis));
+  }
+
   public emit(
     domainId: string,
     event: keyof ServerToClientEvents,
@@ -164,7 +173,7 @@ class SocketServer {
 
 let cachedSocketServer: SocketServer | null = null;
 
-export const getSocketServer = (app?: HttpServer) => {
+export const getSocketServer = async (app?: HttpServer) => {
   if (!cachedSocketServer) {
     if (!app) {
       logger('getSocketServer').error(
@@ -173,6 +182,7 @@ export const getSocketServer = (app?: HttpServer) => {
       throw new errors.InternalServerError();
     }
     cachedSocketServer = new SocketServer(app);
+    await cachedSocketServer.init();
   }
 
   return cachedSocketServer;
