@@ -20,6 +20,8 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  font-weight: 500;
+  text-transform: capitalize;
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
@@ -30,7 +32,6 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
     align-items: center;
     gap: ${({ theme }) => theme.spacing[1]};
   }
-  font-weight: 500;
 
   span {
     display: flex;
@@ -46,6 +47,7 @@ export const SelectContainer = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
+  text-transform: capitalize;
 `;
 
 export const GroupLabel = styled.li`

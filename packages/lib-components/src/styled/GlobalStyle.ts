@@ -86,6 +86,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 0.1rem;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
+    font-size: ${({ theme }) => theme.fontSize.small};
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
