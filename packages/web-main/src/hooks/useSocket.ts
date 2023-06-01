@@ -37,6 +37,7 @@ export const useSocket = () => {
 
   socket = io(apiUrl, {
     withCredentials: true,
+    transports: ['websocket'],
   });
 
   return { socket, isConnected };
