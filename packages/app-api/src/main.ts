@@ -63,7 +63,7 @@ async function main() {
   new EventsWorker();
   log.info('👷 Event worker started');
 
-  getSocketServer(server.server as HttpServer);
+  await getSocketServer(server.server as HttpServer);
   await server.start();
 
   log.info('🚀 Server started');
