@@ -10,25 +10,34 @@ import {
 import { Input, InputType } from './InputTypes';
 import { FC } from 'react';
 
-export const FormField: FC<{
+interface FormFieldProps {
   input: Input;
   control: Control<any>;
+  id: string;
   index: number;
-}> = ({ control, input, index }) => {
+}
+
+export const FormField: FC<FormFieldProps> = ({
+  control,
+  input,
+  index,
+  id,
+}) => {
   const typeSpecificFields: JSX.Element[] = [];
   switch (input.type) {
     case InputType.string:
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-default-${id}`}
           control={control}
           type="text"
           label="Default value"
           name={`configFields.${index}.default`}
         />
       );
-
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-minLength-${id}`}
           control={control}
           type="number"
           label="Minimum length"
@@ -37,6 +46,7 @@ export const FormField: FC<{
       );
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-maxLength-${id}`}
           control={control}
           type="number"
           label="Maximum length"
@@ -47,6 +57,7 @@ export const FormField: FC<{
     case InputType.number:
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-default-${id}`}
           control={control}
           type="number"
           label="Default value"
@@ -55,6 +66,7 @@ export const FormField: FC<{
       );
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-minimum-${id}`}
           control={control}
           type="number"
           label="Minimum"
@@ -63,6 +75,7 @@ export const FormField: FC<{
       );
       typeSpecificFields.push(
         <TextField
+          key={`${input.type}-maximum-${id}`}
           control={control}
           type="number"
           label="Maximum"
@@ -73,6 +86,7 @@ export const FormField: FC<{
     case InputType.boolean:
       typeSpecificFields.push(
         <CheckBox
+          key={`${input.type}-default-${id}`}
           control={control}
           label="Default value"
           labelPosition="left"
@@ -84,6 +98,7 @@ export const FormField: FC<{
     case InputType.enum:
       typeSpecificFields.push(
         <TagField
+          key={`${input.type}-enum-${id}`}
           control={control}
           name={`configFields.${index}.enum`}
           label="Possible values"
@@ -95,6 +110,7 @@ export const FormField: FC<{
     case InputType.array:
       typeSpecificFields.push(
         <TagField
+          key={`${input.type}-array-${id}`}
           control={control}
           name={`configFields.${index}.array`}
           label="List of values"
@@ -123,7 +139,7 @@ export const FormField: FC<{
       >
         <OptionGroup label="type">
           {Object.values(InputType).map((type) => (
-            <Option key={type} value={type}>
+            <Option key={`${type}-${id}`} value={type}>
               <span>{type}</span>
             </Option>
           ))}
@@ -140,7 +156,6 @@ export const FormField: FC<{
         name={`configFields.${index}.description`}
       />
       {typeSpecificFields}
-
       <CheckBox
         control={control}
         label="Is Field required?"
