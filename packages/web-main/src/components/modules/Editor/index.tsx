@@ -7,11 +7,11 @@ import {
   useSandpack,
 } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
-import { defineTheme } from './theme';
 import { useModule } from 'hooks/useModule';
 import { useApiClient } from 'hooks/useApiClient';
 import { useDebounce, styled } from '@takaro/lib-components';
 import { handleCustomTypes } from './customTypes';
+import { defineTheme } from './theme';
 
 const Wrapper = styled.div`
   flex: 1;
@@ -52,6 +52,18 @@ export const Editor: FC = () => {
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
 
+  useMemo(() => {
+    if (monaco) {
+      defineTheme(monaco);
+      monaco.editor.setTheme('takaro');
+
+      // only load monaco types if there is no model
+      if (monaco.editor.getModels().length === 0) {
+        handleCustomTypes(monaco);
+      }
+    }
+  }, [monaco]);
+
   // TODO: this should be moved to react query
   useEffect(() => {
     if (debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
@@ -61,14 +73,6 @@ export const Editor: FC = () => {
       );
     }
   }, [debouncedCode, sandpack.activeFile, apiClient, moduleData.fileMap]);
-
-  useMemo(() => {
-    if (monaco) {
-      defineTheme(monaco);
-      monaco.editor.setTheme('takaro');
-      handleCustomTypes(monaco);
-    }
-  }, [monaco]);
 
   return (
     <SandpackThemeProvider theme="auto">
