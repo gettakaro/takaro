@@ -17,7 +17,11 @@ const log = logger('worker:events');
 
 export class EventsWorker extends TakaroWorker<IEventQueueData> {
   constructor() {
-    super(config.get('queues.events.name'), processJob);
+    super(
+      config.get('queues.events.name'),
+      config.get('queues.events.concurrency'),
+      processJob
+    );
   }
 }
 
@@ -51,6 +55,6 @@ async function processJob(job: Job<IEventQueueData>) {
   const hooksService = new HookService(domainId);
   await hooksService.handleEvent(event, gameServerId);
 
-  const socketServer = getSocketServer();
+  const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);
 }

@@ -88,7 +88,7 @@ export class VmClient {
     return defaultInterface.address;
   }
 
-  async waitUntilHealthy(maxRetry = 5000) {
+  async waitUntilHealthy(maxRetry = 2500) {
     let response;
     let tries = 0;
 

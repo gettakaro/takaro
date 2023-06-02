@@ -5,6 +5,8 @@ import fs from 'node:fs/promises';
 import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
+import { Netmask } from 'netmask';
+import promClient from 'prom-client';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
@@ -18,18 +20,33 @@ interface FcOptions {
   logLevel: FcLogLevel;
 }
 
+const IP_PREFIX = '10.231.';
+const TAP_DEVICE_CIDR = 30;
+
 export default class FirecrackerClient {
   private childProcess: ChildProcess;
   private log;
+  private totalVMsGauge: promClient.Gauge;
 
   options: FcOptions;
   id: number;
+  tapDeviceName: string;
+  tapDeviceIp: string;
+  vmIp: string;
 
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
+    this.totalVMsGauge = promClient.register.getSingleMetric(
+      'vm_total'
+    ) as promClient.Gauge;
+
     this.id = args.id;
     this.log = logger(`firecracker(${this.id})`);
+
+    this.tapDeviceName = `fc-tap-${this.id}`;
+
+    this.setIps(this.id);
 
     this.options = {
       binary: config.get('firecracker.binary'),
@@ -54,7 +71,9 @@ export default class FirecrackerClient {
         ],
         afterResponse: [
           (response) => {
-            this.log.debug(`⬅️  ${response.statusCode} ${response.url}`);
+            this.log.debug(`⬅️  ${response.statusCode} ${response.url}`, {
+              responseBody: response.body,
+            });
             return response;
           },
         ],
@@ -71,6 +90,7 @@ export default class FirecrackerClient {
 
     // make sure to clean up on exit
     process.on('SIGINT', () => {
+      this.childProcess.kill();
       process.exit(0);
     });
   }
@@ -79,12 +99,16 @@ export default class FirecrackerClient {
     this.log.debug('cleaning up sockets and files');
 
     try {
-      await fs.rm(config.get('firecracker.sockets'), {
-        recursive: true,
-        force: true,
-      });
+      await fs.rm(this.options.fcSocket, { force: true });
+      await fs.rm(this.options.agentSocket, { force: true });
     } catch (err) {
-      this.log.warn('could not remove sockets dir', err);
+      this.log.warn('could not remove sockets', err);
+    }
+
+    try {
+      spawn('ip', ['link', 'del', this.tapDeviceName]);
+    } catch {
+      this.log.debug(`could not delete ${this.tapDeviceName}`);
     }
 
     try {
@@ -112,8 +136,46 @@ export default class FirecrackerClient {
     }
   }
 
+  private setIps(vmId: number) {
+    const ipsPerVM = 4;
+    const netIpId = vmId * ipsPerVM;
+
+    const tapDeviceIpId = netIpId + 1;
+    const vmIpId = netIpId + 2;
+
+    // Using bitwise operations to calculate the first and second part of the ip
+    // Instead of using modulo because it's faster
+    const tapFirstIpPart = (tapDeviceIpId & ((2 ** 8 - 1) << 8)) >> 8;
+    const tapSecondIpPart = tapDeviceIpId & (2 ** 8 - 1);
+    const vmFirstIpPart = (vmIpId & ((2 ** 8 - 1) << 8)) >> 8;
+    const vmSecondIpPart = vmIpId & (2 ** 8 - 1);
+
+    this.tapDeviceIp = `${IP_PREFIX}${tapFirstIpPart}.${tapSecondIpPart}`;
+    this.vmIp = `${IP_PREFIX}${vmFirstIpPart}.${vmSecondIpPart}`;
+  }
+
+  private setupNetwork() {
+    spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
+    spawn('sysctl', ['-w', `net.ipv4.conf.${this.tapDeviceName}.proxy_arp=1`]);
+    spawn('sysctl', [
+      '-w',
+      `net.ipv6.conf.${this.tapDeviceName}.disable_ipv6=1`,
+    ]);
+
+    spawn('ip', [
+      'addr',
+      'add',
+      `${this.tapDeviceIp}/${TAP_DEVICE_CIDR}`,
+      'dev',
+      this.tapDeviceName,
+    ]);
+    spawn('ip', ['link', 'set', 'dev', this.tapDeviceName, 'up']);
+  }
+
   async spawn() {
     await this.ensureResources();
+
+    this.setupNetwork();
 
     const cmd = 'firecracker';
     const args = [
@@ -143,13 +205,16 @@ export default class FirecrackerClient {
       this.childProcess.stderr?.pipe(stderrFileStream);
       this.childProcess.stdout?.pipe(stdoutFileStream);
 
-      this.childProcess.on('error', (error) => {
+      this.childProcess.on('error', async (error) => {
         this.log.error('child process error: ', { error });
+        await this.cleanUp();
         return reject(error);
       });
 
-      this.childProcess.on('exit', (code) => {
+      this.childProcess.on('exit', async (code) => {
         this.log.debug(`child process exited with code ${code}`);
+        this.totalVMsGauge.dec(1);
+        await this.cleanUp();
       });
 
       this.childProcess.on('spawn', async () => {
@@ -162,13 +227,17 @@ export default class FirecrackerClient {
   async shutdown() {
     this.log.debug('shutting down vm...');
 
-    await this.httpSock
-      .put('actions', {
-        json: {
-          action_type: 'SendCtrlAltDel',
-        },
-      })
-      .json();
+    try {
+      await this.httpSock
+        .put('actions', {
+          json: {
+            action_type: 'SendCtrlAltDel',
+          },
+        })
+        .json();
+    } catch (error) {
+      this.log.error('could not send ctrl alt del', error);
+    }
 
     this.childProcess.kill();
 
@@ -178,50 +247,41 @@ export default class FirecrackerClient {
         resolve('success');
       });
     });
-
-    await this.cleanUp();
   }
 
   async setupVM() {
-    try {
-      await this.httpSock.put('boot-source', {
-        json: {
-          kernel_image_path: this.options.kernelImage,
-          boot_args:
-            'console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ip=172.16.0.2::172.16.0.1:255.255.255.0::eth0:off',
-        },
-      });
+    const mask = new Netmask(`255.255.255.255/${TAP_DEVICE_CIDR}`).mask;
+    const ipArgs = `ip=${this.vmIp}::${this.tapDeviceIp}:${mask}::eth0:off`;
 
-      await this.httpSock.put('drives/rootfs', {
-        json: {
-          drive_id: 'rootfs',
-          path_on_host: this.options.rootfs,
-          is_root_device: true,
-          is_read_only: false,
-        },
-      });
+    await this.httpSock.put('boot-source', {
+      json: {
+        kernel_image_path: this.options.kernelImage,
+        boot_args: `console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ${ipArgs}`,
+      },
+    });
 
-      await this.httpSock.put('vsock', {
-        json: {
-          guest_cid: 3,
-          uds_path: this.options.agentSocket,
-        },
-      });
+    await this.httpSock.put('drives/rootfs', {
+      json: {
+        drive_id: 'rootfs',
+        path_on_host: this.options.rootfs,
+        is_root_device: true,
+        is_read_only: false,
+      },
+    });
 
-      await this.httpSock.put('network-interfaces/eth0', {
-        json: {
-          iface_id: 'eth0',
-          guest_mac: `02:FC:00:00:${Math.floor(this.id / 256)
-            .toString()
-            .padStart(2, '0')}:${Math.floor(this.id % 256)
-            .toString()
-            .padStart(2, '0')}`,
-          host_dev_name: `fc-${this.id}-tap0`,
-        },
-      });
-    } catch (err) {
-      this.log.error('setting up vm failed', err);
-    }
+    await this.httpSock.put('vsock', {
+      json: {
+        guest_cid: 3,
+        uds_path: this.options.agentSocket,
+      },
+    });
+
+    await this.httpSock.put('network-interfaces/eth0', {
+      json: {
+        iface_id: 'eth0',
+        host_dev_name: this.tapDeviceName,
+      },
+    });
   }
 
   async startVM() {
@@ -236,6 +296,8 @@ export default class FirecrackerClient {
           action_type: 'InstanceStart',
         },
       });
+
+      this.totalVMsGauge.inc(1);
     } catch (err) {
       this.log.error('staring vm failed', err);
     }

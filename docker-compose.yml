@@ -78,6 +78,10 @@ services:
       TAKARO_DEV_USER_NAME: ${TAKARO_DEV_USER_NAME}
       TAKARO_DEV_DOMAIN_NAME: ${TAKARO_DEV_DOMAIN_NAME}
 
+      HOOKS_QUEUE_CONCURRENCY: ${HOOKS_QUEUE_CONCURRENCY:-5}
+      COMMANDS_QUEUE_CONCURRENCY: ${COMMANDS_QUEUE_CONCURRENCY:-5}
+      CRONJOBS_QUEUE_CONCURRENCY: ${CRONJOBS_QUEUE_CONCURRENCY:-5}
+
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
 
@@ -174,3 +178,11 @@ services:
 
 volumes:
   pgadmin:
+
+networks:
+  default:
+    name: takaro
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.16.238.0/24'

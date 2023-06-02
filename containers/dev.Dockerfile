@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y git net-tools iproute2 iptables socat n
 
 WORKDIR /app
 
-RUN npm install -g npm@8
+# Version 9+ is required to run npm scripts as root
+RUN npm install -g npm@9
 
 # Fix to avoid requiring root permissions 
 RUN npm config set cache /app/.npm-cache --global
@@ -26,6 +27,8 @@ COPY nodemon.json ./
 COPY jest.config.js ./
 COPY .mocharc.js ./
 
+COPY ./containers/takaro/ssh_config /root/.ssh/config
+
 RUN npm ci
 
-CMD sh -c './scripts/dev-setup-network-tap.sh && npm run start:dev'
+CMD sh -c './scripts/setup-network.sh && npm run start:dev'
