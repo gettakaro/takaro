@@ -33,7 +33,7 @@ export const ModuleList: FC<ModuleListProps> = ({
   });
 
   return (
-    <div>
+    <>
       {directories.map((dir) => (
         <Directory
           key={dir}
@@ -58,6 +58,6 @@ export const ModuleList: FC<ModuleListProps> = ({
           />
         );
       })}
-    </div>
+    </>
   );
 };
