@@ -1,6 +1,3 @@
-export { TabSwitch } from './TabSwitch';
-export type { TabSwitchProps } from './TabSwitch';
-
 export { Stepper } from './Steppers/Stepper';
 export type { StepperProps } from './Steppers/Stepper';
 
