@@ -35,7 +35,11 @@ export const IconNav: FC<IconNavProps> = ({ items }) => {
     <Container>
       <FloatingDelayGroup delay={{ open: 2000, close: 200 }}>
         {items.map(({ to, icon, title }, index) => (
-          <Tooltip label={title} placement="right" key={index}>
+          <Tooltip
+            label={title}
+            placement="right"
+            key={`icon-${title}-${index}`}
+          >
             <Link key={`icon-nav-${title}`} to={to}>
               {cloneElement(icon, { size: 25 })}
             </Link>
