@@ -19,6 +19,7 @@ export function CheckBoxWidget<
     readonly,
     label = '',
     onChange,
+    value,
     options,
   } = props;
 
@@ -32,13 +33,14 @@ export function CheckBoxWidget<
   return (
     <GenericCheckBox
       name={name}
+      value={value}
       readOnly={readonly}
       description={description}
       label={label}
       disabled={disabled}
       onChange={onChange}
       required={required}
-      value={schema.default as boolean}
+      onBlur={() => {}}
     />
   );
 }

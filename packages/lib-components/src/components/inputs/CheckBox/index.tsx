@@ -17,7 +17,7 @@ import {
   GenericInputProps,
 } from '../InputProps';
 
-interface CheckBoxProps extends GenericInputProps {
+export interface CheckBoxProps {
   labelPosition?: 'left' | 'right';
 }
 
@@ -26,10 +26,12 @@ const variants = {
   checked: { scale: 1 },
 };
 
-const defaultsApplier =
-  defaultInputPropsFactory<CheckBoxProps>(defaultInputProps);
+type GenericCheckBoxProps = CheckBoxProps & GenericInputProps;
 
-export const GenericCheckBox: FC<CheckBoxProps> = (props) => {
+const defaultsApplier =
+  defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
+
+export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
   const {
     name,
     size,

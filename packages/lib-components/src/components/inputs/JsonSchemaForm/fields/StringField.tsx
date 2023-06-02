@@ -83,8 +83,10 @@ export const StringField = ({
   return (
     <GenericTextField
       name={name}
-      onChange={onChange}
-      onBlur={onBlur}
+      onChange={(val) => onChange(val)}
+      onBlur={() => {
+        /* TODO */
+      }}
       disabled={disabled}
       placeholder={placeholder}
       loading={false}

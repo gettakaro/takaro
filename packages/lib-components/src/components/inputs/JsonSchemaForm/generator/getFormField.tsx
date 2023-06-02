@@ -116,8 +116,8 @@ export const FormField: FC<FormFieldProps> = ({
         <CheckBox
           key={`${input.type}-default-${id}`}
           control={control}
-          label="Default value"
           labelPosition="left"
+          label="Default value"
           name={`configFields.${index}.default`}
           description="If no value is given, what should the default be?"
         />

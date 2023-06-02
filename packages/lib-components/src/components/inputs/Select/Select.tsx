@@ -36,15 +36,20 @@ import {
   GenericInputProps,
 } from '../InputProps';
 
-export interface SelectProps extends GenericInputProps {
+export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
 }
 
+export type GenericSelectProps = SelectProps & GenericInputProps;
 const defaultsApplier =
-  defaultInputPropsFactory<PropsWithChildren<SelectProps>>(defaultInputProps);
+  defaultInputPropsFactory<PropsWithChildren<GenericSelectProps>>(
+    defaultInputProps
+  );
 
 // TODO: implement **required** (but this should only be done after the label reimplementation.
-export const GenericSelect: FC<PropsWithChildren<SelectProps>> = (props) => {
+export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
+  props
+) => {
   const {
     required,
     size: componentSize,

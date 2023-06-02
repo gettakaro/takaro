@@ -5,9 +5,7 @@ import { ControlledInputProps } from '../InputProps';
 
 export interface ControlledCheckBoxProps
   extends CheckBoxProps,
-    ControlledInputProps {
-  onChange?: (val: boolean) => unknown;
-}
+    ControlledInputProps {}
 
 export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
   hint,
@@ -20,7 +18,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
   required,
   label,
   readOnly,
-  onChange = () => {},
   labelPosition,
 }) => {
   const { field, fieldState } = useController({
@@ -41,10 +38,8 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
       description={description}
       hint={hint}
       error={fieldState.error?.message}
-      onChange={(val: boolean) => {
-        onChange(val);
-        field.onChange(val);
-      }}
+      onChange={field.onChange}
+      onBlur={field.onBlur}
       value={field.value}
     />
   );

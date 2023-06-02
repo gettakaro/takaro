@@ -16,6 +16,7 @@ export function RadioWidget<
   options,
   disabled,
   rawErrors,
+  value,
   required,
   label,
   readonly,
@@ -36,6 +37,7 @@ export function RadioWidget<
   return (
     <GenericRadioGroup
       name={name}
+      value={value}
       readOnly={readonly}
       disabled={disabled}
       label={label}

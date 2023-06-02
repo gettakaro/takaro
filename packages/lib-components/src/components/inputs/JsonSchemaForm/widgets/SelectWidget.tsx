@@ -20,6 +20,7 @@ export function SelectWidget<
   rawErrors,
   required,
   readonly,
+  value,
   onChange,
 }: WidgetProps<T, S, F>) {
   const { enumOptions, emptyValue } = options;
@@ -32,6 +33,7 @@ export function SelectWidget<
       error={rawErrors ? rawErrors[0] : undefined}
       required={required}
       readOnly={readonly}
+      value={value}
       onChange={(val) => onChange(val)}
       onBlur={() => {
         /* placeholder */

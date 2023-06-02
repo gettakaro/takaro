@@ -28,6 +28,7 @@ export function RangeWidget<
   return (
     <GenericSlider
       name={name}
+      value={value}
       min={sliderProps.min ? sliderProps.min : 0}
       max={sliderProps.max ? sliderProps.max : 100}
       step={sliderProps.step ? sliderProps.step : 1}

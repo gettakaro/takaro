@@ -16,6 +16,7 @@ export function BooleanField<
   disabled,
   rawErrors,
   readonly,
+  value,
   required,
   onChange,
   uiSchema,
@@ -45,6 +46,7 @@ export function BooleanField<
       name={name}
       onChange={(val) => onChange(val as T)}
       onBlur={() => {}}
+      value={value}
       disabled={disabled}
       loading={false}
       error={rawErrors ? rawErrors[0] : undefined}
