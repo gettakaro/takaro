@@ -45,3 +45,5 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
     </Form>
   );
 };
+
+export { SchemaGenerator, generateJSONSchema } from './generator';

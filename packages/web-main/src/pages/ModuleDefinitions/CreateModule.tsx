@@ -12,6 +12,7 @@ import {
   ErrorMessage,
   styled,
   Divider,
+  SchemaGenerator,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -20,13 +21,11 @@ import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { useModuleCreate } from 'queries/modules';
-import { generateJSONSchema, Input, InputType } from 'lib/jsonSchemaGenerator';
-import { FormField } from 'lib/getFormField';
 
 interface IFormInputs {
   name: string;
   description?: string;
-  configFields: Input[];
+  configFields: string;
 }
 
 const ButtonContainer = styled.div`
@@ -38,6 +37,7 @@ const ButtonContainer = styled.div`
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
+  const [schema, setSchema] = useState({});
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useModuleCreate();
 
@@ -52,11 +52,6 @@ const CreateModule: FC = () => {
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const { fields, append } = useFieldArray({
-    control,
-    name: 'configFields',
-  });
-
   const onSubmit: SubmitHandler<IFormInputs> = async ({
     name,
     description,
@@ -64,12 +59,10 @@ const CreateModule: FC = () => {
     try {
       setError('');
 
-      const configSchema = await generateJSONSchema(fields);
-
       mutateAsync({
         name,
         description,
-        configSchema: JSON.stringify(configSchema),
+        configSchema: JSON.stringify(schema),
       });
 
       navigate(PATHS.moduleDefinitions());
@@ -103,28 +96,7 @@ const CreateModule: FC = () => {
                 />
               </CollapseList.Item>
               <CollapseList.Item title="Config">
-                {fields.map((field) => {
-                  return (
-                    <>
-                      <FormField input={field} control={control} />
-                      <Divider />
-                    </>
-                  );
-                })}
-
-                <Button
-                  text="Add Config Field"
-                  type="button"
-                  onClick={() => {
-                    append({
-                      name: 'test',
-                      type: InputType.string,
-                      description: 'test',
-                      required: true,
-                      default: 'test',
-                    });
-                  }}
-                />
+                <SchemaGenerator onSchemaChange={setSchema} />
               </CollapseList.Item>
               {error && <ErrorMessage message={error} />}
             </form>

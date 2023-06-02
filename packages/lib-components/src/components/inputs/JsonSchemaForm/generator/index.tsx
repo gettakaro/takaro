@@ -9,6 +9,14 @@ import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AnyInputExceptArray, InputType, Input } from './InputTypes';
 import { Form } from './style';
 
+interface TakaroConfigSchema {
+  type: 'object';
+  properties: {
+    [name: string]: any;
+  };
+  required: string[];
+}
+
 function getJsonSchemaElement(input: AnyInputExceptArray) {
   const res: SchemaObject = {
     type: input.type,
@@ -63,8 +71,8 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
   return res;
 }
 
-export async function generateJSONSchema(inputs: Array<Input>) {
-  const schema: AnySchema = {
+export function generateJSONSchema(inputs: Array<Input>): TakaroConfigSchema {
+  const schema: TakaroConfigSchema = {
     type: 'object',
     properties: {},
     required: [],
@@ -89,6 +97,74 @@ export async function generateJSONSchema(inputs: Array<Input>) {
   return schema;
 }
 
+export function schemaToInputs(schema: TakaroConfigSchema): Input[] {
+  const normalizedSchema: TakaroConfigSchema = {
+    type: 'object',
+    properties: schema.properties,
+    required: schema.required,
+  };
+
+  const inputs = [];
+
+  for (const [name, property] of Object.entries(normalizedSchema.properties)) {
+    const input: Record<string, any> = {
+      name,
+      type: property.type as InputType,
+      required: normalizedSchema.required.includes(name),
+    };
+
+    if (property.default !== undefined) {
+      input.default = property.default;
+    }
+
+    if (property.title) {
+      input.title = property.title;
+    }
+
+    if (property.description) {
+      input.description = property.description;
+    }
+
+    switch (property.type) {
+      case InputType.enum:
+        input.enum = property.enum;
+        break;
+
+      case InputType.number:
+        if (property.minimum) {
+          input.minimum = property.minimum;
+        }
+
+        if (property.maximum) {
+          input.maximum = property.maximum;
+        }
+
+        break;
+
+      case InputType.string:
+        if (property.minLength) {
+          input.minLength = property.minLength;
+        }
+
+        if (property.maxLength) {
+          input.maxLength = property.maxLength;
+        }
+
+        break;
+
+      case InputType.boolean:
+        break;
+
+      default:
+        throw new Error('Unknown input type');
+    }
+
+    inputs.push(input);
+  }
+
+  return inputs as Input[];
+}
+
 export interface IFormInputs {
   name: string;
   description?: string;
@@ -97,14 +173,20 @@ export interface IFormInputs {
 
 interface ISchemaGeneratorProps {
   onSchemaChange: (schema: AnySchema) => void;
+  initialSchema?: Input[];
 }
 
 export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   onSchemaChange,
+  initialSchema,
 }) => {
   const { control, handleSubmit, getValues } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
+    defaultValues: {
+      // @ts-expect-error 😠 form types are weird
+      configFields: schemaToInputs(initialSchema) ?? [],
+    },
   });
 
   const { configFields } = useWatch<IFormInputs>({ control });
@@ -130,10 +212,9 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
 
   const onSubmit = () => {
     const formValues = getValues();
-    console.log('formValues', formValues);
-    generateJSONSchema(formValues.configFields).then((schema) => {
-      onSchemaChange(schema);
-    });
+    console.log(formValues);
+    const schema = generateJSONSchema(formValues.configFields);
+    onSchemaChange(schema);
   };
 
   const formValues = getValues();
