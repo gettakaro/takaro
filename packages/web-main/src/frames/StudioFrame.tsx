@@ -189,7 +189,7 @@ export const StudioFrame: FC = () => {
         <ModuleOnboarding>
           <InfoCard
             title="Commands"
-            onClick={async () => await createComponent('command')}
+            onClick={async () => await createComponent('hook')}
           >
             Commands are triggered by a user. They are triggered when a player
             sends a chat message starting with the configured command prefix.

@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../styled';
 import { Link } from 'react-router-dom';
 import { FloatingOverlay } from '@floating-ui/react';
-import { Breakpoint } from '../../styled/breakpoints';
+import { Breakpoint } from '../../styled/breakpoint';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -43,9 +43,16 @@ export const ModuleOnboarding: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
+const ClickableCard = styled(Card)`
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.0125);
+  }
+`;
+
 type InfoCardProps = {
   title: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
 };
 
 export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
@@ -53,13 +60,13 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
   onClick,
   children,
 }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    // stops the parent onClick from firing
+    e.stopPropagation();
+  };
+
   return (
-    <Card
-      elevation={1}
-      size="large"
-      onClick={onClick}
-      style={{ cursor: 'pointer' }}
-    >
+    <ClickableCard elevation={1} size="large" onClick={onClick}>
       <Flex>
         <h2>{title}</h2>
         {children}
@@ -67,10 +74,11 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
           className="underline"
           to={`https://docs.takaro.io/docs/application/modules#${title.toLowerCase()}`}
           target="_blank"
+          onClick={handleClick}
         >
           <a>Learn more</a>
         </Link>
       </Flex>
-    </Card>
+    </ClickableCard>
   );
 };

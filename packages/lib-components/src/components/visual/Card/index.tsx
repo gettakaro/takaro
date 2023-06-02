@@ -36,7 +36,7 @@ export interface CardProps {
   size?: Size;
   loading?: boolean;
   elevation?: Elevation;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   className?: string;
   style?: CSSProperties;
 }
