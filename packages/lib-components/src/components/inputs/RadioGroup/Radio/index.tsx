@@ -5,23 +5,17 @@ import { Label } from '../../../../components';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  InputProps,
+  GenericInputProps,
 } from '../../InputProps';
 
-export interface RadioProps extends InputProps {
-  name: string;
+export interface RadioProps {
   selected: boolean;
   setSelected: Dispatch<SetStateAction<string>>;
   defaultSelected?: boolean;
-  value: string;
   labelPosition: 'left' | 'right';
 }
 
-interface GenericRadioProps extends RadioProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
+type GenericRadioProps = GenericInputProps & RadioProps;
 
 const variants = {
   selected: { scale: 1 },
@@ -51,7 +45,7 @@ export const GenericRadio: FC<GenericRadioProps> = (props) => {
 
   const handleOnClick = () => {
     if (readOnly) return;
-    setSelected(value);
+    setSelected(value as string);
   };
 
   useEffect(() => {

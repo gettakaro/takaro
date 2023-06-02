@@ -3,28 +3,23 @@ import { Container, TextAreaContainer, TextArea } from './style';
 import { Label, ErrorMessage } from '../../../components';
 
 import {
-  InputProps,
+  GenericInputProps,
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
 
-export interface TextAreaFieldProps extends InputProps {
+export interface TextAreaFieldProps {
   placeholder?: string;
   rows?: number;
 }
 
-interface GenericTextAreaProps extends TextAreaFieldProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
-
-const defaultsApplier =
-  defaultInputPropsFactory<GenericTextAreaProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<
+  TextAreaFieldProps & GenericInputProps
+>(defaultInputProps);
 
 export const GenericTextAreaField = forwardRef<
   HTMLTextAreaElement,
-  GenericTextAreaProps
+  TextAreaFieldProps & GenericInputProps
 >((props, ref) => {
   const {
     loading,

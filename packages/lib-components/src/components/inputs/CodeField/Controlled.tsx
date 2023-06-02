@@ -11,7 +11,6 @@ export const ControlledCodeField: FC<ControlledCodeFieldProps> = ({
   disabled,
   loading,
   size,
-  value,
   name,
   required,
   label,
@@ -24,7 +23,6 @@ export const ControlledCodeField: FC<ControlledCodeFieldProps> = ({
   const { field, fieldState } = useController({
     name,
     control,
-    defaultValue: value,
   });
 
   return (
@@ -33,7 +31,7 @@ export const ControlledCodeField: FC<ControlledCodeFieldProps> = ({
       label={label}
       required={required}
       name={name}
-      value={value}
+      value={field.value}
       size={size}
       loading={loading}
       disabled={disabled}

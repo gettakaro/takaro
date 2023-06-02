@@ -20,20 +20,14 @@ export const ControlledTextField: FC<ControlledInputProps & TextFieldProps> = ({
   prefix,
   suffix,
 }) => {
-  const {
-    field,
-    fieldState: { error },
-  } = useController({
+  const { field, fieldState } = useController({
     name,
     control,
-    rules: {
-      required: required,
-    },
   });
 
   return (
     <GenericTextField
-      error={error?.message}
+      error={fieldState.error?.message}
       onChange={field.onChange}
       onBlur={field.onBlur}
       disabled={disabled}

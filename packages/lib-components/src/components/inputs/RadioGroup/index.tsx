@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  InputProps,
+  GenericInputProps,
 } from '../InputProps';
 import { GenericRadio } from './Radio';
 import { FieldSet } from './style';
@@ -13,20 +13,14 @@ export interface Option {
   value: string;
 }
 
-export interface RadioGroupProps extends InputProps {
+export interface RadioGroupProps extends GenericInputProps {
   options: Option[];
 }
 
-interface GenericRadioGroupProps extends RadioGroupProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
-
 const defaultsApplier =
-  defaultInputPropsFactory<GenericRadioGroupProps>(defaultInputProps);
+  defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
 
-export const GenericRadioGroup: FC<GenericRadioGroupProps> = (props) => {
+export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
   // TODO: implement hint and description
   const {
     loading,

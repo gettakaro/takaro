@@ -12,19 +12,13 @@ import { AiOutlineCheck as Icon } from 'react-icons/ai';
 import { getTransition } from '../../../helpers';
 
 import {
-  InputProps,
   defaultInputPropsFactory,
   defaultInputProps,
+  GenericInputProps,
 } from '../InputProps';
 
-export interface CheckBoxProps extends InputProps {
+interface CheckBoxProps extends GenericInputProps {
   labelPosition?: 'left' | 'right';
-}
-
-interface GenericCheckBoxProps extends CheckBoxProps {
-  onChange: (value: boolean) => void;
-  error?: string;
-  value: boolean;
 }
 
 const variants = {
@@ -33,9 +27,9 @@ const variants = {
 };
 
 const defaultsApplier =
-  defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
+  defaultInputPropsFactory<CheckBoxProps>(defaultInputProps);
 
-export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
+export const GenericCheckBox: FC<CheckBoxProps> = (props) => {
   const {
     name,
     size,

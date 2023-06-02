@@ -3,7 +3,8 @@ import { GenericTextAreaField, TextAreaFieldProps } from '.';
 import { ControlledInputProps } from '../InputProps';
 import { useController } from 'react-hook-form';
 
-type ControlledTextAreaFieldProps = TextAreaFieldProps & ControlledInputProps;
+export type ControlledTextAreaFieldProps = TextAreaFieldProps &
+  ControlledInputProps;
 
 export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = ({
   placeholder,
@@ -13,7 +14,6 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = ({
   readOnly,
   description,
   size,
-  value,
   required,
   disabled,
   control,
@@ -25,10 +25,6 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = ({
   } = useController({
     name,
     control,
-    defaultValue: value ?? '',
-    rules: {
-      required: required,
-    },
   });
 
   return (
@@ -42,7 +38,7 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = ({
       required={required}
       readOnly={readOnly}
       description={description}
-      value={value}
+      value={field.value}
       size={size}
       label={label}
       hint={hint}

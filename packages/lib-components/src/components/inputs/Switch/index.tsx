@@ -5,19 +5,13 @@ import { Wrapper, Container, Dot, Line, ContentContainer } from './style';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  InputProps,
+  GenericInputProps,
 } from '../InputProps';
 
-interface GenericSwitchProps extends InputProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
-
 const defaultsApplier =
-  defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
+  defaultInputPropsFactory<GenericInputProps>(defaultInputProps);
 
-export const GenericSwitch: FC<GenericSwitchProps> = (props) => {
+export const GenericSwitch: FC<GenericInputProps> = (props) => {
   const {
     readOnly,
     size,

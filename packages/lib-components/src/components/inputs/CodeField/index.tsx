@@ -8,24 +8,20 @@ import React, {
 } from 'react';
 import { Container, InputContainer, Input, LoadingField } from './style';
 import {
-  InputProps,
   defaultInputProps,
+  GenericInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
 import { Label, ErrorMessage } from '../../../components';
 
-export interface CodeFieldProps extends InputProps {
+export interface CodeFieldProps {
   name: string;
   fields: number;
   allowedCharacters?: RegExp;
   autoSubmit?: () => unknown;
 }
 
-interface GenericCodeFieldProps extends CodeFieldProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
+type GenericCodeFieldProps = GenericInputProps & CodeFieldProps;
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericCodeFieldProps>(defaultInputProps);

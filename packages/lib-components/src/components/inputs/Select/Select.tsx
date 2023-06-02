@@ -31,30 +31,20 @@ import {
 } from '@floating-ui/react';
 
 import {
-  InputProps,
   defaultInputPropsFactory,
   defaultInputProps,
+  GenericInputProps,
 } from '../InputProps';
 
-export interface SelectProps extends InputProps {
+export interface SelectProps extends GenericInputProps {
   render: (selectedIndex: number) => React.ReactNode;
 }
 
-export interface GenericSelectProps extends SelectProps {
-  onChange: (...event: unknown[]) => unknown;
-  onBlur: (...event: unknown[]) => unknown;
-  error?: string;
-}
-
 const defaultsApplier =
-  defaultInputPropsFactory<PropsWithChildren<GenericSelectProps>>(
-    defaultInputProps
-  );
+  defaultInputPropsFactory<PropsWithChildren<SelectProps>>(defaultInputProps);
 
 // TODO: implement **required** (but this should only be done after the label reimplementation.
-export const GenericSelect: FC<PropsWithChildren<GenericSelectProps>> = (
-  props
-) => {
+export const GenericSelect: FC<PropsWithChildren<SelectProps>> = (props) => {
   const {
     required,
     size: componentSize,

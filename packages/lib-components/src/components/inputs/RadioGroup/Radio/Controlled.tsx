@@ -14,7 +14,6 @@ export const ControlledRadio: FC<RadioProps & ControlledInputProps> = ({
   hint,
   control,
   name,
-  value,
   selected,
   setSelected,
   labelPosition,
@@ -23,7 +22,6 @@ export const ControlledRadio: FC<RadioProps & ControlledInputProps> = ({
   const { field, fieldState } = useController({
     name,
     control,
-    defaultValue: selected ?? value,
   });
 
   return (
@@ -32,7 +30,7 @@ export const ControlledRadio: FC<RadioProps & ControlledInputProps> = ({
       labelPosition={labelPosition}
       setSelected={setSelected}
       selected={selected}
-      value={value}
+      value={field.value}
       name={name}
       hint={hint}
       size={size}

@@ -12,6 +12,7 @@ export type { ControlledSwitchProps as SwitchProps } from './Switch/Controlled';
 export { ControlledTextField as TextField } from './TextField/Controlled';
 
 export { ControlledTextAreaField as TextAreaField } from './TextAreaField/Controlled';
+export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField/Controlled';
 
 export { ControlledSlider as Slider } from './Slider/Controlled';
 export type { ControlledSlider } from './Slider/Controlled';

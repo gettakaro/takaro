@@ -1,5 +1,5 @@
 import { forwardRef, KeyboardEvent, ClipboardEvent, useState } from 'react';
-import { InputProps } from '../InputProps';
+import { GenericInputProps } from '../InputProps';
 import { ZodType } from 'zod';
 import { Container, TagsContainer, Tag } from './style';
 import { ErrorMessage, Label } from '../../../components';
@@ -7,12 +7,11 @@ import { splitPaste, useDidUpdateEffect } from './util';
 
 const defaultSeparators = ['Enter'];
 
-export interface TagFieldProps extends InputProps {
+export interface TagFieldProps {
   onRemoved?: (tag: string) => void;
   tagValidationSchema?: ZodType<{ tags: string[] }, any, any>;
   separators?: string[];
   disableBackspaceRemove?: boolean;
-
   // When using backspace, the item itself is removed and the value is shown in the inputfield
   isEditOnRemove?: boolean;
   onExisting?: (tag: string) => void;
@@ -22,11 +21,8 @@ export interface TagFieldProps extends InputProps {
 }
 
 // these are props that should only be available on the generic version.
-export interface GenericTagFieldProps extends TagFieldProps {
-  onChange: (tags: string[]) => unknown;
-  onBlur: (...event: any[]) => unknown;
-  value?: string[];
-  error?: string;
+export interface GenericTagFieldProps extends TagFieldProps, GenericInputProps {
+  value: string[];
 }
 
 export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(

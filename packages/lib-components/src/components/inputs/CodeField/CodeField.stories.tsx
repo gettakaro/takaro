@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { GenericCodeField, CodeFieldProps } from './index';
+import { CodeField, CodeFieldProps } from '../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button } from '../../actions';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 export default {
   title: 'Inputs/CodeField',
-  component: GenericCodeField,
+  component: CodeField,
   args: {
     required: true,
     disabled: false,
@@ -38,7 +38,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
     [args.fields]
   );
 
-  const { handleSubmit, formState } = useForm<FormFields>({
+  const { handleSubmit, control } = useForm<FormFields>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
@@ -49,10 +49,8 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <GenericCodeField
-          error={formState.errors.code?.message}
-          onChange={() => {}}
-          onBlur={() => {}}
+        <CodeField
+          control={control}
           fields={args.fields}
           name="code"
           loading={args.loading}
@@ -71,7 +69,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
 
 export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   const [result, setResult] = useState<string>();
-  const { formState, handleSubmit } = useForm<FormFields>();
+  const { control, handleSubmit } = useForm<FormFields>();
   const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<FormFields> = async ({ code }) => {
@@ -85,11 +83,9 @@ export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <GenericCodeField
+        <CodeField
           autoSubmit={handleSubmit(onSubmit)}
-          error={formState.errors.code?.message}
-          onChange={() => {}}
-          onBlur={() => {}}
+          control={control}
           fields={6}
           loading={loading}
           name="code"

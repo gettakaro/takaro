@@ -1,6 +1,7 @@
 import { Control, FieldValues } from 'react-hook-form';
 import { Size } from '../../styled';
 
+// These fields that auto set a default value (see: factory below)
 interface DefaultInputProps {
   required?: boolean;
   loading?: boolean;
@@ -9,12 +10,19 @@ interface DefaultInputProps {
   size?: Size;
 }
 
-export interface InputProps extends DefaultInputProps {
+// these are input fields that should be available both on generic
+interface InputProps extends DefaultInputProps {
   name: string;
   label?: string;
   hint?: string;
   description?: string;
-  value?: unknown;
+}
+
+export interface GenericInputProps extends InputProps {
+  value: unknown;
+  error?: string;
+  onChange: (...event: unknown[]) => unknown;
+  onBlur: (...event: unknown[]) => unknown;
 }
 
 export interface ControlledInputProps extends InputProps {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { TagField, TagFieldProps } from '../../../components';
 import { z } from 'zod';
@@ -24,7 +24,6 @@ export default {
 } as Meta<TagFieldProps>;
 
 export const Default: StoryFn<TagFieldProps> = (args) => {
-  const [selected, setSelected] = useState(['papaya']);
   const { control } = useForm();
 
   const beforeAddValidationSchema = z.object({
@@ -35,9 +34,7 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
     <div style={{ marginBottom: '32px' }}>
       <h1>Add Fruits</h1>
       <pre>paste tester: apple,banana,jeroen</pre>
-      <pre>{JSON.stringify(selected)}</pre>
       <TagField
-        onChange={(tags) => setSelected(tags)}
         name={args.name}
         label={args.label}
         control={control}

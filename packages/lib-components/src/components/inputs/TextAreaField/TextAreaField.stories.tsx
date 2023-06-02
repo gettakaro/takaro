@@ -2,9 +2,8 @@ import React from 'react';
 import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { TextAreaField, TextAreaFieldProps } from '.';
+import { TextAreaField, TextAreaFieldProps, Button } from '../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button } from '../../../';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 

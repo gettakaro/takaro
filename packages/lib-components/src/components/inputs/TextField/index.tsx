@@ -23,13 +23,13 @@ import { getFieldType, getInputMode } from './util';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  InputProps,
+  GenericInputProps,
 } from '../InputProps';
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number';
 
 // these are props that should be available both on the generic and controlled version
-export interface TextFieldProps extends InputProps {
+export interface TextFieldProps {
   type?: TextFieldType;
   placeholder?: string;
   size?: Size;
@@ -39,13 +39,7 @@ export interface TextFieldProps extends InputProps {
   description?: string;
 }
 
-// these are props that should only be available on the generic version.
-interface GenericTextFieldProps extends TextFieldProps {
-  onChange: (...event: any[]) => unknown;
-  onBlur: (...event: any[]) => unknown;
-  error?: string;
-  value: string;
-}
+type GenericTextFieldProps = GenericInputProps & TextFieldProps;
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);

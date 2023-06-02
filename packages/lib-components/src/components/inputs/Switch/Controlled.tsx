@@ -1,5 +1,4 @@
 import { ControlledInputProps } from '../InputProps';
-
 import { useController } from 'react-hook-form';
 import { FC } from 'react';
 import { GenericSwitch } from '.';
@@ -11,7 +10,6 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = ({
   loading,
   disabled,
   required,
-  value,
   size,
   description,
   label,
@@ -22,7 +20,6 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = ({
   const { field, fieldState } = useController({
     name,
     control,
-    defaultValue: value,
   });
 
   return (
@@ -32,7 +29,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = ({
       label={label}
       description={description}
       size={size}
-      value={value}
+      value={field.value}
       required={required}
       disabled={disabled}
       loading={loading}

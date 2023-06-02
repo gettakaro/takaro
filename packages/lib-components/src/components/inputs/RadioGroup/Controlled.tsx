@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import { RadioGroupProps } from '.';
+import { useController } from 'react-hook-form';
+import { Option } from '.';
 import {
   ControlledInputProps,
   defaultInputProps,
@@ -8,57 +9,58 @@ import {
 import { ControlledRadio } from './Radio/Controlled';
 import { FieldSet } from './style';
 
-export type ControlledRadioGroupProps = ControlledInputProps & RadioGroupProps;
+export interface ControlledRadioGroupProps extends ControlledInputProps {
+  options: Option[];
+}
 
 const defaultsApplier =
   defaultInputPropsFactory<ControlledRadioGroupProps>(defaultInputProps);
 
-export const ControlledRadioGroup: FC<ControlledInputProps & RadioGroupProps> =
-  (props) => {
-    // TODO: implement hint and description
-    const {
-      loading,
-      readOnly,
-      value,
-      name,
-      size,
-      label,
-      options,
-      control,
-      required,
-      disabled,
-    } = defaultsApplier(props);
+export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
+  // TODO: implement hint and description
+  const {
+    loading,
+    readOnly,
+    name,
+    size,
+    label,
+    options,
+    control,
+    required,
+    disabled,
+  } = defaultsApplier(props);
 
-    const [selected, setSelected] = useState<string>(
-      // check if value exists in options
-      options.some((option) => option.value === value)
-        ? (value as string)
-        : options[0].value
-    );
+  const { field } = useController({ name, control });
 
-    return (
-      <FieldSet>
-        <legend>{label}</legend>
-        <div>
-          {options.map(({ label, labelPosition, value }) => {
-            return (
-              <ControlledRadio
-                label={label}
-                labelPosition={labelPosition}
-                loading={loading}
-                name={name}
-                readOnly={readOnly}
-                selected={selected === value}
-                setSelected={setSelected}
-                value={value}
-                size={size}
-                control={control}
-                required={required}
-                disabled={disabled}
-              />
-            );
-          })}
-        </div>
-      </FieldSet>
-    );
-  };
+  const [selected, setSelected] = useState<string>(
+    // check if value exists in options
+    options.some((option) => option.value === field.value)
+      ? field.value
+      : options[0].value
+  );
+
+  return (
+    <FieldSet>
+      <legend>{label}</legend>
+      <div>
+        {options.map(({ label, labelPosition, value }) => {
+          return (
+            <ControlledRadio
+              label={label}
+              labelPosition={labelPosition}
+              loading={loading}
+              name={name}
+              readOnly={readOnly}
+              selected={selected === value}
+              setSelected={setSelected}
+              size={size}
+              control={control}
+              required={required}
+              disabled={disabled}
+            />
+          );
+        })}
+      </div>
+    </FieldSet>
+  );
+};
