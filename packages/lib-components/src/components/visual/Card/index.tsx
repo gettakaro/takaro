@@ -1,7 +1,10 @@
-import { FC, PropsWithChildren } from 'react';
+import { CSSProperties, FC, PropsWithChildren } from 'react';
 import { Elevation, Size, styled } from '../../../styled';
 
-const Container = styled.div<{ size: Size; elevation: Elevation }>`
+const Container = styled.div<{
+  size: Size;
+  elevation: Elevation;
+}>`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
@@ -32,7 +35,10 @@ const Container = styled.div<{ size: Size; elevation: Elevation }>`
 export interface CardProps {
   size?: Size;
   loading?: boolean;
-  elevation: Elevation;
+  elevation?: Elevation;
+  onClick?: () => void;
+  className?: string;
+  style?: CSSProperties;
 }
 
 // TODO: implement skeleton loading
@@ -40,13 +46,22 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
   children,
   size = 'medium',
   loading = false,
-  elevation,
+  elevation = 0,
+  className = '',
+  style = {},
+  onClick,
 }) => {
   if (loading)
     return <Container elevation={0} size="large" className="placeholder" />;
 
   return (
-    <Container elevation={elevation} size={size}>
+    <Container
+      elevation={elevation}
+      size={size}
+      onClick={onClick}
+      className={className}
+      style={style}
+    >
       {children}
     </Container>
   );
