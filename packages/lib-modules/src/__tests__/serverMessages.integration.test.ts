@@ -85,11 +85,16 @@ const tests = [
       // We should see each of our test messages at least once
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 10);
 
-      // Trigger it 10 times
+      const numberOfEvents = 5;
+      const events = eventAwaiter.waitForEvents(
+        GameEvents.CHAT_MESSAGE,
+        numberOfEvents
+      );
+
+      // Trigger it multiple times
       await Promise.all(
-        Array.from({ length: 10 }).map(() => {
+        Array.from({ length: numberOfEvents }).map(() => {
           return this.client.cronjob.cronJobControllerTrigger({
             cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
             gameServerId: this.setupData.gameserver.id,

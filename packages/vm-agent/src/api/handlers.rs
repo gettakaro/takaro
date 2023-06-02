@@ -1,8 +1,15 @@
-use axum::{debug_handler, Json};
+use axum::Json;
+use hyper::HeaderMap;
+use opentelemetry::{
+    global,
+    trace::{Span, Tracer},
+    KeyValue,
+};
+use opentelemetry_http::HeaderExtractor;
 use serde_derive::{Deserialize, Serialize};
-use std::env;
-use std::os::unix::process::ExitStatusExt;
+use std::{env, os::unix::process::ExitStatusExt};
 use tokio::process::Command;
+use tracing::instrument;
 
 #[derive(Debug, Serialize)]
 pub struct ExecResponse {
@@ -32,8 +39,26 @@ pub struct ExecRequest {
     env: NodeEnv,
 }
 
-#[debug_handler]
-pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse> {
+pub async fn health() -> &'static str {
+    tracing::info!("inside health request");
+
+    "OK"
+}
+
+#[instrument]
+pub async fn exec_cmd(
+    headers: HeaderMap,
+    Json(mut payload): Json<ExecRequest>,
+) -> Json<ExecResponse> {
+    let parent_cx = global::get_text_map_propagator(|propagator| {
+        propagator.extract(&HeaderExtractor(&headers))
+    });
+
+    let tracer = global::tracer("vm-agent");
+
+    let mut span = tracer.start_with_context("exec_cmd", &parent_cx);
+
+    span.add_event("loading environment variables", vec![]);
     payload.env.load();
 
     let full_cmd = payload.cmd.join(" ");
@@ -44,27 +69,36 @@ pub async fn exec_cmd(Json(mut payload): Json<ExecRequest>) -> Json<ExecResponse
         command.arg(arg);
     }
 
-    let output = command.output().await.unwrap();
+    span.add_event("executing command", vec![KeyValue::new("cmd", full_cmd)]);
+
+    let output = command.output().await.expect("failed to execute command");
     let status = output.status;
 
-    tracing::debug!(
-        "command '{}' exited with code: {}",
-        full_cmd,
-        status
-            .code()
-            .map(|i| i.to_string())
-            .unwrap_or_else(|| "unknown".to_string())
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
+    span.add_event(
+        "done executing",
+        vec![
+            KeyValue::new("exit_code", status.code().unwrap_or_else(|| 1) as i64),
+            KeyValue::new("stdout", stdout.clone()),
+            KeyValue::new("stderr", stderr.clone()),
+        ],
     );
+
+    // manually end span before returning so we can export the trace
+    span.end();
 
     Json(ExecResponse {
         exit_code: status.code(),
         exit_signal: status.signal(),
-        stderr: String::from_utf8(output.stderr).unwrap(),
-        stdout: String::from_utf8(output.stdout).unwrap(),
+        stderr,
+        stdout,
     })
 }
 
 #[cfg(test)]
+#[allow(unused_must_use)]
 mod tests {
     use super::*;
     use std::env;
@@ -80,7 +114,7 @@ mod tests {
             env: NodeEnv::default(),
         };
 
-        let response = exec_cmd(Json(request)).await;
+        let response = exec_cmd(HeaderMap::new(), Json(request)).await;
 
         assert_eq!(response.exit_code, Some(0));
         assert_eq!(response.stdout, "Hello, world!\n".to_owned());
@@ -103,7 +137,7 @@ mod tests {
             env: mock_env.clone(),
         };
 
-        exec_cmd(Json(request)).await;
+        exec_cmd(HeaderMap::new(), Json(request)).await;
 
         assert_eq!(
             env::var("DATA").unwrap_or("".to_owned()),
