@@ -5,8 +5,8 @@ import { executeFunction } from './executeFunction.js';
 import { ctx } from '@takaro/util';
 
 export class HookWorker extends TakaroWorker<IJobData> {
-  constructor() {
-    super(config.get('queues.hooks.name'), processHook);
+  constructor(concurrency: number) {
+    super(config.get('queues.hooks.name'), concurrency, processHook);
   }
 }
 

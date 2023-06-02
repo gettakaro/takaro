@@ -11,6 +11,7 @@ import {
   CollapseList,
   ErrorMessage,
   styled,
+  SchemaGenerator,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -51,6 +52,7 @@ const EditModule: FC = () => {
 const EditModuleForm: FC<Props> = ({ mod }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
+  const [schema, setSchema] = useState({});
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useModuleUpdate();
 
@@ -81,6 +83,7 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
         moduleUpdate: {
           name,
           description,
+          configSchema: JSON.stringify(schema),
         },
       });
 
@@ -112,6 +115,12 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
                   loading={isLoading}
                   name="description"
                   placeholder="This module does cool stuff"
+                />
+              </CollapseList.Item>
+              <CollapseList.Item title="Config">
+                <SchemaGenerator
+                  onSchemaChange={setSchema}
+                  initialSchema={JSON.parse(mod.configSchema)}
                 />
               </CollapseList.Item>
               {error && <ErrorMessage message={error} />}

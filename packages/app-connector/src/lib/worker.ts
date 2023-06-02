@@ -7,7 +7,7 @@ const log = logger('worker:connector');
 
 export class ConnectorWorker extends TakaroWorker<IConnectorQueueData> {
   constructor() {
-    super('connector', processJob);
+    super('connector', 1, processJob);
   }
 }
 
