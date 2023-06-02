@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../styled';
 import { Link } from 'react-router-dom';
 import { FloatingOverlay } from '@floating-ui/react';
-import { Breakpoints } from '../../styled/breakpoints';
+import { Breakpoint } from '../../styled/breakpoints';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -25,7 +25,7 @@ const CenterGrid = styled.div`
   place-items: center;
   margin: auto;
   height: 75%;
-  max-width: ${Breakpoints.medium};
+  max-width: ${Breakpoint.medium};
 `;
 
 export const ModuleOnboarding: FC<PropsWithChildren> = ({ children }) => {
