@@ -6,10 +6,4 @@ export default {
   component: ModuleOnboardingComponent,
 } as Meta;
 
-export const Default: StoryFn = () => (
-  <ModuleOnboardingComponent
-    onClick={() => {
-      console.log('clicked');
-    }}
-  />
-);
+export const Default: StoryFn = () => <ModuleOnboardingComponent />;
