@@ -12,15 +12,13 @@ export const FileExplorer: FC<FileExplorerProps> = ({
   const { sandpack } = useSandpack();
 
   return (
-    <div>
-      <ModuleList
-        activeFile={sandpack.activeFile}
-        files={sandpack.files}
-        prefixedPath="/"
-        autoHiddenFiles={autoHiddenFiles}
-        selectFile={sandpack.openFile}
-        visibleFiles={sandpack.visibleFilesFromProps}
-      />
-    </div>
+    <ModuleList
+      activeFile={sandpack.activeFile}
+      files={sandpack.files}
+      prefixedPath="/"
+      autoHiddenFiles={autoHiddenFiles}
+      selectFile={sandpack.openFile}
+      visibleFiles={sandpack.visibleFilesFromProps}
+    />
   );
 };

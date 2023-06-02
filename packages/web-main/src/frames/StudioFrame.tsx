@@ -1,6 +1,10 @@
 import { FC, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { styled, IconNavProps, IconNav } from '@takaro/lib-components';
+import {
+  styled,
+  IconNavProps,
+  IconNav,
+  ModuleOnboarding,
+} from '@takaro/lib-components';
 import {
   AiFillFile as FileIcon,
   AiFillSetting as SettingsIcon,
@@ -24,16 +28,15 @@ import {
   ModuleItemProperties,
 } from '../context/moduleContext';
 import { PATHS } from 'paths';
+import { InfoCard } from '@takaro/lib-components/src/views/ModuleOnboarding';
 
-const Container = styled.div`
+const Flex = styled.div`
   display: flex;
   height: 100%;
 `;
 
-const ContentContainer = styled(motion.div)`
-  background-color: ${({ theme }): string => theme.colors.background};
+const Wrapper = styled.div`
   width: 100%;
-  opacity: 0;
   overflow-y: auto;
 `;
 
@@ -122,7 +125,7 @@ export const StudioFrame: FC = () => {
   ];
 
   if (error) {
-    console.log(error);
+    console.error(error);
     return <>{error}</>;
   }
 
@@ -165,7 +168,7 @@ export const StudioFrame: FC = () => {
           break;
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     await refetch();
   };
@@ -183,29 +186,35 @@ export const StudioFrame: FC = () => {
   ) {
     return (
       <ModuleContext.Provider value={providerModuleData}>
-        <div>there are no hooks no commands and no cron jobs yet.</div>
-
-        <button
-          onClick={() => {
-            createComponent('hook');
-          }}
-        >
-          create hook
-        </button>
-        <button
-          onClick={() => {
-            createComponent('cronjob');
-          }}
-        >
-          create cronjob
-        </button>
-        <button
-          onClick={() => {
-            createComponent('command');
-          }}
-        >
-          create command
-        </button>
+        <ModuleOnboarding>
+          <InfoCard
+            title="Commands"
+            onClick={async () => await createComponent('command')}
+          >
+            Commands are triggered by a user. They are triggered when a player
+            sends a chat message starting with the configured command prefix.
+            Note that this means that commands are a manual action, unlike Hooks
+            and Cronjobs which are triggered with any user-intervention.
+          </InfoCard>
+          <InfoCard
+            title="Hooks"
+            onClick={async () => await createComponent('hook')}
+          >
+            Hooks are triggered when a certain event happens on a Gameserver.
+            Think of it as a callback function that is executed when a certain
+            event happens. For example, when a player joins a server, a Hook can
+            be triggered that will send a message to the player.
+          </InfoCard>
+          <InfoCard
+            title="CronJobs"
+            onClick={async () => await createComponent('cronjob')}
+          >
+            Cronjobs are triggered based on time. This can be a simple repeating
+            pattern like "Every 5 minutes" or "Every day" or you can use raw
+            Cron (opens in a new tab) syntax to define more complex patterns
+            like "Every Monday, Wednesday and Friday at 2 PM";
+          </InfoCard>
+        </ModuleOnboarding>
       </ModuleContext.Provider>
     );
   }
@@ -234,17 +243,12 @@ export const StudioFrame: FC = () => {
         files={files}
         prefix=""
       >
-        <Container>
+        <Flex>
           <IconNav items={navigation} />
-          <ContentContainer
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <div>
-              <Outlet />
-            </div>
-          </ContentContainer>
-        </Container>
+          <Wrapper>
+            <Outlet />
+          </Wrapper>
+        </Flex>
       </SandpackProvider>
     </ModuleContext.Provider>
   );
