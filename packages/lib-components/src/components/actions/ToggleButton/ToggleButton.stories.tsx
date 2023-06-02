@@ -28,7 +28,10 @@ export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
   };
 
   return (
-    <ToggleButtonGroup onChange={handleOnChange} exclusive>
+    <ToggleButtonGroup
+      onChange={(val) => handleOnChange(val as string)}
+      exclusive
+    >
       <ToggleButton value="left">
         <MdOutlineFormatAlignLeft size={17} />
       </ToggleButton>
@@ -52,7 +55,7 @@ export const Vertical: StoryFn<ToggleButtonGroupProps> = () => {
 
   return (
     <ToggleButtonGroup
-      onChange={handleOnChange}
+      onChange={(val) => handleOnChange(val as string)}
       orientation="vertical"
       exclusive
     >
@@ -79,7 +82,7 @@ export const FullWidth: StoryFn<ToggleButtonGroupProps> = () => {
 
   return (
     <ToggleButtonGroup
-      onChange={handleOnChange}
+      onChange={(val) => handleOnChange(val as string)}
       orientation="horizontal"
       fullWidth
       exclusive
@@ -107,7 +110,7 @@ export const Text: StoryFn<ToggleButtonGroupProps> = () => {
 
   return (
     <ToggleButtonGroup
-      onChange={handleOnChange}
+      onChange={(val) => handleOnChange(val as string)}
       orientation="horizontal"
       exclusive
     >
@@ -126,7 +129,7 @@ export const NonExclusive: StoryFn<ToggleButtonGroupProps> = () => {
 
   return (
     <ToggleButtonGroup
-      onChange={handleOnChange}
+      onChange={(val) => handleOnChange(val)}
       orientation="horizontal"
       exclusive={false}
     >
