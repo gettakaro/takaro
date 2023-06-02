@@ -20,8 +20,8 @@ export interface RadioGroupProps extends GenericInputProps {
 const defaultsApplier =
   defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
 
+// TODO: implement hint and description
 export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
-  // TODO: implement hint and description
   const {
     loading,
     readOnly,
@@ -48,26 +48,25 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
     <FieldSet>
       <legend>{label}</legend>
       <div>
-        {options.map(({ label, labelPosition, value }) => {
-          return (
-            <GenericRadio
-              onChange={onChange}
-              onBlur={onBlur}
-              error={error}
-              label={label}
-              labelPosition={labelPosition}
-              loading={loading}
-              name={name}
-              readOnly={readOnly}
-              selected={selected === value}
-              setSelected={setSelected}
-              value={value}
-              size={size}
-              required={required}
-              disabled={disabled}
-            />
-          );
-        })}
+        {options.map(({ label, labelPosition, value }) => (
+          <GenericRadio
+            key={`radio-option-${label}-${name}`}
+            onChange={onChange}
+            onBlur={onBlur}
+            error={error}
+            label={label}
+            labelPosition={labelPosition}
+            loading={loading}
+            name={name}
+            readOnly={readOnly}
+            selected={selected === value}
+            setSelected={setSelected}
+            value={value}
+            size={size}
+            required={required}
+            disabled={disabled}
+          />
+        ))}
       </div>
     </FieldSet>
   );

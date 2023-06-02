@@ -3,6 +3,8 @@ import { useController } from 'react-hook-form';
 import { GenericTextField, TextFieldProps } from '.';
 import { ControlledInputProps } from '../InputProps';
 
+export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
+
 export const ControlledTextField: FC<ControlledInputProps & TextFieldProps> = ({
   name,
   control,

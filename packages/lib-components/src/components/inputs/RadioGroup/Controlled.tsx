@@ -46,6 +46,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
         {options.map(({ label, labelPosition, value }) => {
           return (
             <ControlledRadio
+              key={`controlled-radio-option-${label}`}
               label={label}
               labelPosition={labelPosition}
               loading={loading}

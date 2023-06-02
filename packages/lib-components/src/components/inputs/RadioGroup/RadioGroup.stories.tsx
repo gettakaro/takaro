@@ -5,12 +5,10 @@ import { Button, RadioGroup, RadioGroupProps } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ControlledRadio as Radio } from './Radio/Controlled';
 
 export default {
   title: 'Inputs/RadioGroup',
   component: RadioGroup,
-  subcomponents: { Radio },
   args: {
     readOnly: false,
     loading: false,
