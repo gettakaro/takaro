@@ -5,9 +5,9 @@ import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useGameServerOutletContext } from 'frames/GameServerFrame';
+import { Breakpoints } from '@takaro/lib-components/src/styled/breakpoints';
 
 const ConsoleContainer = styled.div`
-  width: 600px;
   height: 80vh;
 `;
 
