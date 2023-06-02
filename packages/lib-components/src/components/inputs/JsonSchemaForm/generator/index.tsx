@@ -104,7 +104,7 @@ export function schemaToInputs(schema: TakaroConfigSchema): Input[] {
     required: schema.required,
   };
 
-  const inputs = [];
+  const inputs: any[] = [];
 
   for (const [name, property] of Object.entries(normalizedSchema.properties)) {
     const input: Record<string, any> = {

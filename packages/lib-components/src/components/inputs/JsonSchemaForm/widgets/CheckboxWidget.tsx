@@ -38,6 +38,7 @@ export function CheckBoxWidget<
       disabled={disabled}
       onChange={onChange}
       required={required}
+      value={schema.default as boolean}
     />
   );
 }

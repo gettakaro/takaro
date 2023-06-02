@@ -47,6 +47,7 @@ export const NumberField = ({
       error={rawErrors ? rawErrors[0] : undefined}
       required={required}
       readOnly={readonly}
+      value={schema.default?.toString() ?? ''}
       type="number"
     />
   );

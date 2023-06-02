@@ -91,6 +91,7 @@ export const StringField = ({
       error={rawErrors ? rawErrors[0] : undefined}
       required={required}
       readOnly={readonly}
+      value={schema.default?.toString() ?? ''}
       type="text"
     />
   );
