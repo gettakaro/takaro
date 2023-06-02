@@ -86,7 +86,7 @@ export const StepCounter = styled.div<{
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.CURRENT
       ? theme.colors.primary
-      : theme.colors.backgroundAlt};
+      : theme.colors.background};
   transition: all 0.2s ease-in-out;
   margin-bottom: ${({ theme }) => theme.spacing[1]};
   color: ${({ theme, stepState }) =>
