@@ -9,12 +9,15 @@ import {
   DrawerBody,
   CollapseList,
   styled,
+  JsonSchemaForm,
+  Loading,
 } from '@takaro/lib-components';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { useGameServerModuleInstall } from 'queries/gameservers';
+import { useModule } from 'queries/modules';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -29,6 +32,7 @@ const InstallModule: FC = () => {
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
+  const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
 
   if (!serverId || !moduleId) {
     throw new Error('No serverId or moduleId');
@@ -44,6 +48,10 @@ const InstallModule: FC = () => {
     mode: 'onSubmit',
     //  resolver: zodResolver(moduleValidationSchema),
   });
+
+  if (moduleLoading) {
+    return <Loading />;
+  }
 
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
     try {
@@ -68,9 +76,18 @@ const InstallModule: FC = () => {
         <DrawerHeading>Install Module</DrawerHeading>
         <DrawerBody>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="install-module-form">
-              TODO: generic config via json schema
-            </form>
+            <JsonSchemaForm
+              schema={JSON.parse(mod?.configSchema as string)}
+              uiSchema={{}}
+              initialData={{}}
+            />
+          </CollapseList>
+          <CollapseList>
+            <JsonSchemaForm
+              schema={JSON.parse(mod?.systemConfigSchema as string)}
+              uiSchema={{}}
+              initialData={{}}
+            />
           </CollapseList>
         </DrawerBody>
         <DrawerFooter>

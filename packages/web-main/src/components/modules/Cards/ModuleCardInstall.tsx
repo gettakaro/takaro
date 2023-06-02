@@ -66,7 +66,16 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
             <>
               <Tooltip label="Configure">
                 <div>
-                  <WrenchIcon />
+                  <WrenchIcon
+                    onClick={() => {
+                      navigate(
+                        PATHS.gameServer.moduleInstallations.install(
+                          gameServerId,
+                          mod.id
+                        )
+                      );
+                    }}
+                  />
                 </div>
               </Tooltip>
               <Tooltip label="Uninstall">
