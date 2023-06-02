@@ -13,7 +13,6 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   hint,
   size,
   label,
-  value,
   loading,
   disabled,
   readOnly,
@@ -30,7 +29,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = ({
   return (
     <GenericSelect
       name={name}
-      value={value}
+      value={field.value}
       description={description}
       required={required}
       readOnly={readOnly}
