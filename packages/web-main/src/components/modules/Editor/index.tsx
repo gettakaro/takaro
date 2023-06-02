@@ -15,9 +15,6 @@ import { defineTheme } from './theme';
 
 const Wrapper = styled.div`
   flex: 1;
-  padding-top: 8px;
-  background-color: ${({ theme }): string => theme.colors.primary};
-
   a,
   p,
   div,
@@ -84,7 +81,6 @@ export const Editor: FC = () => {
             height="100%"
             language="typescript"
             theme="takaro"
-            loading={<div>loading...</div>}
             key={sandpack.activeFile}
             defaultValue={code}
             className="code-editor"
