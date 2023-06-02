@@ -6,7 +6,7 @@ import {
   UiSchema,
 } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { FC, PropsWithChildren } from 'react';
+import { FC, Fragment, PropsWithChildren } from 'react';
 import { customFields } from './fields';
 import { customWidgets } from './widgets';
 
@@ -15,6 +15,7 @@ interface JsonSchemaFormProps {
   uiSchema: UiSchema;
   formContext?: FormContextType;
   initialData: unknown;
+  onChange?: (data: unknown) => void;
 }
 
 function ErrorListTemplate(_props: ErrorListProps) {
@@ -28,7 +29,7 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
   uiSchema,
   initialData,
   formContext,
-  children,
+  onChange,
 }) => {
   return (
     <Form
@@ -40,8 +41,9 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
       validator={validator}
       formContext={formContext}
       templates={{ ErrorListTemplate }}
+      onChange={onChange}
     >
-      {children}
+      <Fragment />
     </Form>
   );
 };

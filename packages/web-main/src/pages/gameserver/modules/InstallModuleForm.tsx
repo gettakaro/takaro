@@ -103,6 +103,7 @@ const InstallModule: FC = () => {
               text="Install"
               type="submit"
               form="install-module-form"
+              onClick={handleSubmit(onSubmit)}
             />
           </ButtonContainer>
         </DrawerFooter>
