@@ -23,7 +23,7 @@ import { useSandpack } from '@codesandbox/sandpack-react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
-import { getFileName, getNewPath } from './utils';
+import { getNewPath } from './utils';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -72,7 +72,7 @@ const ButtonContainer = styled.div`
 `;
 
 export interface FileProps {
-  path: string;
+  filePath: string;
 
   // This is a wrapper function around sandpack.openFile()
   // in case it is undefined it means that it is a directory
@@ -84,7 +84,7 @@ export interface FileProps {
 }
 
 export const File: FC<FileProps> = ({
-  path,
+  filePath,
   selectFile,
   isDirOpen,
   active,
@@ -93,7 +93,7 @@ export const File: FC<FileProps> = ({
 }) => {
   // TODO: create prop: IsDir() based on selectFile.
 
-  const fileName = path.split('/').filter(Boolean).pop()!;
+  const fileName = filePath.split('/').filter(Boolean).pop()!;
   const { moduleData } = useModule();
   const apiClient = useApiClient();
   const theme = useTheme();
@@ -110,7 +110,7 @@ export const File: FC<FileProps> = ({
     event: React.MouseEvent<HTMLButtonElement>
   ): void => {
     if (selectFile) {
-      selectFile(path);
+      selectFile(filePath);
     }
 
     // handle directory
@@ -120,7 +120,8 @@ export const File: FC<FileProps> = ({
   const handleRename = async (newFileName: string) => {
     setEditing(false);
 
-    const toRename = moduleData.fileMap[fileName];
+    const toRename = moduleData.fileMap[filePath];
+
     switch (toRename.type) {
       case FunctionType.Hooks:
         await apiClient.hook.hookControllerUpdate(toRename.itemId, {
@@ -141,17 +142,17 @@ export const File: FC<FileProps> = ({
 
     // change path in moduleData
     // change path in sandpack
-    const newPath = getNewPath(path, newFileName);
-    const code = sandpack.files[path].code;
+    const newPath = getNewPath(filePath, newFileName);
+    const code = sandpack.files[filePath].code;
     sandpack.files[newPath] = { code: code };
     sandpack.setActiveFile(newPath);
-    sandpack.closeFile(path);
-    delete sandpack.files[path];
+    sandpack.closeFile(filePath);
+    delete sandpack.files[filePath];
     setInternalFileName(newFileName);
   };
 
   const handleDelete = async () => {
-    const toDelete = moduleData.fileMap[getFileName(path)];
+    const toDelete = moduleData.fileMap[filePath];
 
     try {
       switch (toDelete.type) {
@@ -168,8 +169,8 @@ export const File: FC<FileProps> = ({
           throw new Error('Invalid type');
       }
       // delete file from sandpack
-      sandpack.closeFile(path);
-      sandpack.deleteFile(path);
+      sandpack.closeFile(filePath);
+      sandpack.deleteFile(filePath);
     } catch (e) {
       // TODO: handle error
       // deleting file failed
@@ -179,10 +180,10 @@ export const File: FC<FileProps> = ({
 
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
-    const type = path.split('/').join('');
+    const type = filePath.split('/').join('');
 
     try {
-      switch (path.split('/').join('')) {
+      switch (filePath.split('/').join('')) {
         case FunctionType.Hooks:
           await apiClient.hook.hookControllerCreate({
             moduleId: moduleData.id!,
@@ -238,7 +239,7 @@ export const File: FC<FileProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setShowNewFileField(true);
-    sandpack.updateFile(`${path.slice(0, -1)}newFileeeee.tsx`);
+    sandpack.updateFile(`${filePath.slice(0, -1)}newFileeeee.tsx`);
   };
 
   const getIcon = (): JSX.Element => {
