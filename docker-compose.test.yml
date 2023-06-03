@@ -55,7 +55,7 @@ services:
     container_name: takaro
     build:
       context: .
-      dockerfile: containers/dev.Dockerfile      
+      dockerfile: containers/takaro/dev.Dockerfile
     command: ["sh"]
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
