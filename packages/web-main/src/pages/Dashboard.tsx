@@ -10,6 +10,12 @@ export const Container = styled.div`
   }
 `;
 
+const Flex = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
 const Dashboard: FC = () => {
   const { socket, isConnected } = useSocket();
   const { userData } = useUser();
@@ -39,10 +45,14 @@ const Dashboard: FC = () => {
     <Container>
       <h1>Hello, {userData.name}</h1>
 
-      <p>Connected: {'' + isConnected}</p>
-      <p>Last pong: {lastPong || '-'}</p>
-      <p>Last event: {lastEvent || '-'}</p>
-      <Button text={'Send ping'} onClick={sendPing} />
+      <Flex>
+        <span>
+          <p>Connected: {'' + isConnected}</p>
+          <p>Last pong: {lastPong || '-'}</p>
+          <p>Last event: {lastEvent || '-'}</p>
+        </span>
+        <Button text={'Send ping'} onClick={sendPing} />
+      </Flex>
     </Container>
   );
 };
