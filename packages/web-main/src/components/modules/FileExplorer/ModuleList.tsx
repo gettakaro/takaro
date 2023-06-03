@@ -53,7 +53,7 @@ export const ModuleList: FC<ModuleListProps> = ({
             key={file}
             active={activeFile === file}
             depth={depth}
-            path={file}
+            filePath={file}
             selectFile={selectFile}
           />
         );
