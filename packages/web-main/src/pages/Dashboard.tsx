@@ -12,6 +12,7 @@ export const Container = styled.div`
 
 const Flex = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing[4]};
 `;
