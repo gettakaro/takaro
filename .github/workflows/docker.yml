@@ -17,7 +17,7 @@ jobs:
             },
             {
               name: 'app-vmm',
-              dockerfile: './containers/app-vmm/Dockerfile',
+              dockerfile: './containers/vmm/Dockerfile',
             },
             {
               name: 'web-main',
