@@ -19,6 +19,8 @@ import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
+import GameServerSettings from 'pages/gameserver/GameServerSettings';
+import GameServerModules from 'pages/gameserver/GameServerModules';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -28,13 +30,13 @@ const Studio = lazy(() => import('./pages/studio'));
 // const GameServerDashboard = lazy(
 //   () => import('./pages/gameserver/GameServerDashboard')
 // );
-const GameServerSettings = lazy(
-  () => import('./pages/gameserver/GameServerSettings')
-);
-
-const GameServerModules = lazy(
-  () => import('./pages/gameserver/GameServerModules')
-);
+// const GameServerSettings = lazy(
+//   () => import('./pages/gameserver/GameServerSettings')
+// );
+//
+// const GameServerModules = lazy(
+//   () => import('./pages/gameserver/GameServerModules')
+// );
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // eventually we probably want to use react query in combination with the new data api
