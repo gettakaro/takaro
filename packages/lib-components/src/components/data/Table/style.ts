@@ -29,33 +29,20 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
     color: ${({ theme }) => theme.colors.text};
     font-size: 1.5rem;
     th {
-      font-weight: 600;
       background-color: ${({ theme }) => theme.colors.backgroundAlt};
       color: ${({ theme }) => darken(0.3, theme.colors.text)};
-      border-top: 2rem solid ${({ theme }) => theme.colors.backgroundAlt};
-      border-bottom: 2rem solid ${({ theme }) => theme.colors.backgroundAlt};
 
-      &:first-child {
-        border-top-left-radius: 0.5rem;
-        border-bottom-left-radius: 0.5rem;
-        border-left: 2rem solid ${({ theme }) => theme.colors.backgroundAlt};
-      }
-
-      &:last-child {
-        border-bottom-right-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
-      }
+      padding: ${({ theme }) => theme.spacing[2]};
 
       & > div {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+        font-weight: 600;
       }
     }
   }
 
   tbody {
+    background-color: ${({ theme }) => theme.colors.background};
+
     tr {
       text-align: left;
 
@@ -66,13 +53,7 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
       }
 
       td {
-        padding: 0;
-        border-top: 1.8rem solid ${({ theme }) => theme.colors.background};
-        border-bottom: 1.8rem solid ${({ theme }) => theme.colors.background};
-
-        &:first-child {
-          border-left: 1rem solid ${({ theme }) => theme.colors.background};
-        }
+        padding: ${({ theme }) => theme.spacing[2]};
       }
     }
   }
