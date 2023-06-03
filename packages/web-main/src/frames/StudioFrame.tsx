@@ -59,7 +59,7 @@ export const StudioFrame: FC = () => {
       prev: Record<string, ModuleItemProperties>,
       item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO
     ) => {
-      prev[item.name] = {
+      prev[`/${functionType}/${item.name}`] = {
         functionId: item.function.id,
         type: functionType,
         itemId: item.id,
@@ -147,21 +147,20 @@ export const StudioFrame: FC = () => {
           await apiClient.hook.hookControllerCreate({
             eventType: 'log',
             moduleId: moduleId!,
-            name: 'index.ts',
+            name: 'my-hook',
             regex: `/w/*/`,
           });
-
           break;
         case 'cronjob':
           await apiClient.cronjob.cronJobControllerCreate({
-            name: 'index.ts',
+            name: 'my-cronjob',
             moduleId: moduleId!,
             temporalValue: '5 4 * * *',
           });
           break;
         case 'command':
           await apiClient.command.commandControllerCreate({
-            name: 'index.ts',
+            name: 'my-command',
             moduleId: moduleId!,
             trigger: 'test',
           });
@@ -221,14 +220,14 @@ export const StudioFrame: FC = () => {
 
   const getFiles = () => {
     const files = {} as SandpackFiles;
+
+    // Convert to sandpack file format
     Object.keys(moduleData.fileMap).forEach((key) => {
       const moduleItem = moduleData.fileMap[key];
-      // build path
-      files[`${moduleItem.type}/${key}`] = { code: moduleItem.code };
+
+      files[key] = { code: moduleItem.code };
     });
 
-    // sandpack includes a package.json by default
-    delete files['package.json'];
     return files;
   };
   const files = getFiles();
