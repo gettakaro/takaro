@@ -27,7 +27,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-family: 'Inter', sans-serif;
     font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
-    font-feature-settings: "cv02","cv03","cv04","cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
