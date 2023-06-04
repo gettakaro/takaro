@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextAreaField, TextField } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
+import { useGameServerSettings } from 'queries/gameservers';
 import { useCommand, useCommandUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -22,6 +23,7 @@ const validationSchema = z.object({
 
 export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
   const { data } = useCommand(moduleItem.itemId);
+  const { data: settings } = useGameServerSettings();
   const { mutateAsync } = useCommandUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({
@@ -50,12 +52,13 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
         name="trigger"
         label="trigger"
         description="What users type ingame to trigger this command"
+        prefix={settings?.commandPrefix}
       />
       <TextAreaField
         control={control}
         name="helpText"
         label="Help text"
-        description="What the command does"
+        description="Description of what the command does, this can be displayed to users ingame"
       />
       <Button fullWidth type="submit" text="Save" />
     </form>
