@@ -4,11 +4,19 @@ import { IoMdArrowDropup as ArrowUp } from 'react-icons/io';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../../hooks';
 
-// this needs a waaaay better name
+const StyledList = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  & > div:last-child {
+    flex-grow: 1;
+  }
+`;
+
 export const CollapseList: FC<PropsWithChildren> & {
   Item: FC<PropsWithChildren<ItemProps>>;
 } = ({ children }) => {
-  return <div>{children}</div>;
+  return <StyledList>{children}</StyledList>;
 };
 
 interface ItemProps {
@@ -54,7 +62,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
         {!isCollapsed && (
           <motion.div
             variants={{
-              open: { opacity: 1, height: 'auto' },
+              open: { opacity: 1, height: '100%' },
               collapsed: { opacity: 0, height: 0 },
             }}
             initial="collapsed"

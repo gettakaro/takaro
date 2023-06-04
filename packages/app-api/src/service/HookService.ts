@@ -97,6 +97,10 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   regex: string;
 
+  @IsEnum(GameEvents)
+  @IsOptional()
+  eventType: GameEvents;
+
   @IsOptional()
   @IsString()
   function?: string;

@@ -8,10 +8,10 @@ import {
 } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import { useModule } from 'hooks/useModule';
-import { useApiClient } from 'hooks/useApiClient';
 import { useDebounce, styled } from '@takaro/lib-components';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
+import { useFunctionUpdate } from 'queries/modules/queries';
 
 const StyledFileTabs = styled(FileTabs)`
   border-bottom: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
@@ -24,10 +24,10 @@ export type EditorProps = {
 export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const { code, updateCode } = useActiveCode();
   const monaco = useMonaco();
-  const apiClient = useApiClient();
   const debouncedCode = useDebounce<string>(code, 2000);
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
+  const { mutateAsync: updateFunction } = useFunctionUpdate();
 
   // TODO: find a better solution to exclude package.json
   useEffect(() => {
@@ -46,15 +46,14 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     }
   }, [monaco]);
 
-  // TODO: this should be moved to react query
   useEffect(() => {
     if (debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
-      apiClient.function.functionControllerUpdate(
-        moduleData.fileMap[sandpack.activeFile].functionId,
-        { code: debouncedCode }
-      );
+      updateFunction({
+        functionId: moduleData.fileMap[sandpack.activeFile].functionId,
+        fn: { code: debouncedCode },
+      });
     }
-  }, [debouncedCode, sandpack.activeFile, apiClient, moduleData.fileMap]);
+  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap]);
 
   return (
     <SandpackThemeProvider theme="auto">

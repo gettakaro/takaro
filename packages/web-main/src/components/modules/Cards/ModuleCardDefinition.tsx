@@ -39,7 +39,12 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer active={false} onClick={onClick}>
+    <ModuleCardContainer
+      target="_blank"
+      href={PATHS.studio.module(mod.id)}
+      active={false}
+      onClick={onClick}
+    >
       <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>

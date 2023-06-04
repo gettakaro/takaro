@@ -6,4 +6,40 @@ Inside a Function, you will have access to data about the event that triggered i
 
 For example, you can send a message to a player when they join a server, or you can teleport a player to a specific location.
 
-// TODO: more in-depth explanation of how to write code for a Function
+## Writing functions
+
+All functions will have the same basic skeleton, which looks like this:
+
+```js
+import { getTakaro, getData } from '@takaro/helpers';
+async function main() {
+    const data = await getData();
+    const takaro = await getTakaro(data);
+
+    // TODO: write my function...
+}
+main();
+```
+
+Let's dissect this line by line
+
+`import { getTakaro, getData } from '@takaro/helpers';`
+
+This line imports two helper functions from the @takaro/helpers module. These functions, `getTakaro`and `getData`, provide access to the necessary data and the Takaro instance within the function. The `takaro` object is a wrapper around the API, with this object you can read and write data from/to Takaro. `getData` will provide you with information about the triggered event, for example if you are writing a Command, this object will contain information about the player who executed the command.
+
+```js
+async function main() {
+}
+main();
+```
+
+These lines of code define a function and immediately calls it. This is necessary because the Takaro Function runtime expects a function to be exported from the file. The function is called `main` but you can name it whatever you want.
+
+```js
+    const data = await getData();
+    const takaro = await getTakaro(data);
+
+    // TODO: write my function...
+```
+
+These lines of code call the helper functions we imported earlier. `getData` will return an object containing information about the event that triggered the function. `getTakaro` will return a Takaro instance, which you can use to interact with the API.

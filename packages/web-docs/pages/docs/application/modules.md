@@ -50,11 +50,15 @@ And a Hook on the event `playerConnected`, which fires whenever a Player connect
 
 ```js
 
-import { Client } from '@takaro/apiclient
+import { getTakaro } from '@takaro/helpers';
 
-export default async function (config, data) {
-  await Client.executeCommandOnGameServer(`say "Welcome to the server, ${data.player.name}! ${config.extraMessage}"`)
+async function main() {
+    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+      message: `Welcome to the server, ${data.player.name}. ${data.config.extraMessage}`,
+  });
 }
+
+main();
 
 ```
 
@@ -62,4 +66,4 @@ Would result in a message in-game saying `Welcome to the server, John Doe! Don't
 
 # Built-in modules
 
-Takaro comes with a set of built-in modules. When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. If you want to customize the code, you can eject the Module which will create a copy of the Module in your own project. You can then edit the code and customize it to your liking.
+Takaro comes with a set of built-in modules. When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
