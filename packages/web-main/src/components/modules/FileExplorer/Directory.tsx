@@ -43,7 +43,7 @@ export const Directory: FC<DirectoryProps> = ({
           depth={depth}
           isDirOpen={isOpen}
           onClick={toggle}
-          path={prefixedPath + '/'}
+          filePath={prefixedPath + '/'}
         />
         {isOpen && (
           <ModuleList

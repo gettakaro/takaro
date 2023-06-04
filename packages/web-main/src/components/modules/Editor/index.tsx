@@ -49,6 +49,11 @@ export const Editor: FC = () => {
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
 
+  // TODO: find a better solution to exclude package.json
+  useEffect(() => {
+    sandpack.deleteFile('/package.json');
+  }, []);
+
   useMemo(() => {
     if (monaco) {
       defineTheme(monaco);
