@@ -156,9 +156,7 @@ export class HookService extends TakaroService<
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
-          code: '',
-        })
+        await new FunctionCreateDTO()
       );
       fnIdToAdd = newFn.id;
     }
