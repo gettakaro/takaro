@@ -1,6 +1,7 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
   Button,
+  Chip,
   Dialog,
   DialogContent,
   DialogHeading,
@@ -54,6 +55,9 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
     setOpenDialog(false);
   };
 
+  const status = data?.data.connectable ? 'online' : 'offline';
+  const statusColor = status === 'online' ? 'success' : 'error';
+
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
@@ -62,7 +66,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
             <Skeleton variant="text" width="50px" height="15px" />
           ) : (
             <Tooltip label="Takaro server reachability" placement="bottom">
-              <div>{data.data.connectable ? 'online' : 'offline'}</div>
+              <Chip label={status} color={statusColor} />
             </Tooltip>
           )}
           <Dropdown
