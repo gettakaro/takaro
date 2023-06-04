@@ -1,15 +1,4 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import {
-  styled,
-  IconNavProps,
-  IconNav,
-  ModuleOnboarding,
-} from '@takaro/lib-components';
-import {
-  AiFillFile as FileIcon,
-  AiFillSetting as SettingsIcon,
-  AiFillHome as HomeIcon,
-} from 'react-icons/ai';
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { useParams } from 'react-router-dom';
@@ -17,7 +6,6 @@ import {
   CommandOutputDTO,
   CronJobOutputDTO,
   HookOutputDTO,
-  ModuleOutputDTOAPI,
 } from '@takaro/apiclient';
 import {
   FunctionType,
@@ -25,14 +13,14 @@ import {
   ModuleData,
   ModuleItemProperties,
 } from '../context/moduleContext';
-import { PATHS } from 'paths';
-import { InfoCard } from '@takaro/lib-components/src/views/ModuleOnboarding';
 import {
   useCommandCreate,
   useCronJobCreate,
   useHookCreate,
   useModule,
 } from 'queries/modules';
+import { styled } from '@takaro/lib-components';
+import { InfoCard, ModuleOnboarding } from 'views/ModuleOnboarding';
 
 const Flex = styled.div`
   display: flex;
@@ -114,24 +102,6 @@ export const StudioFrame: FC = () => {
     }
   }, [mod]);
 
-  const navigation: IconNavProps['items'] = [
-    {
-      icon: <HomeIcon />,
-      title: 'Home',
-      to: PATHS.home(),
-    },
-    {
-      icon: <FileIcon />,
-      title: 'Explorer',
-      to: '/explorer',
-    },
-    {
-      icon: <SettingsIcon />,
-      title: 'Settings',
-      to: PATHS.studio.settings(moduleId ?? ''),
-    },
-  ];
-
   if (isError) {
     return <>{'Module fetching failed'}</>;
   }
@@ -170,6 +140,10 @@ export const StudioFrame: FC = () => {
     }
     await refetch();
   };
+
+  if (isLoading || isRefetching) {
+    return <></>;
+  }
 
   /*
    * Sandpack requires atleast one file
@@ -227,15 +201,6 @@ export const StudioFrame: FC = () => {
     return files;
   };
   const files = getFiles();
-
-  if (
-    isLoading ||
-    isRefetching ||
-    !Object.keys(moduleData.fileMap).length ||
-    (moduleData && moduleData.id === undefined)
-  ) {
-    return <>loading..</>;
-  }
 
   return (
     <ModuleContext.Provider value={providerModuleData}>

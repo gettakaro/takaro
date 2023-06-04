@@ -1,9 +1,6 @@
-import { Card } from '../../components';
 import { FC, PropsWithChildren } from 'react';
-import { styled } from '../../styled';
 import { Link } from 'react-router-dom';
-import { FloatingOverlay } from '@floating-ui/react';
-import { Breakpoint } from '../../styled/breakpoint';
+import { Card, styled } from '@takaro/lib-components';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -20,26 +17,29 @@ const Grid = styled.div<{ columns: number }>`
   gap: ${({ theme }) => theme.spacing[4]};
 `;
 
-const CenterGrid = styled.div`
-  display: grid;
-  place-items: center;
+const Title = styled.h1`
+  text-align: center;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[8]};
+
   margin: auto;
-  height: 75%;
-  max-width: ${Breakpoint.medium};
+  margin-top: -200px;
+  height: 100vh;
+
+  max-width: ${({ theme }) => theme.breakpoint.large};
 `;
 
 export const ModuleOnboarding: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <FloatingOverlay lockScroll>
-      <CenterGrid>
-        <Card size="large" elevation={2}>
-          <Flex>
-            <h1>Choose one to get started</h1>
-            <Grid columns={3}>{children}</Grid>
-          </Flex>
-        </Card>
-      </CenterGrid>
-    </FloatingOverlay>
+    <Wrapper>
+      <Title>Choose one to get started</Title>
+      <Grid columns={3}>{children}</Grid>
+    </Wrapper>
   );
 };
 
@@ -76,7 +76,7 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
           target="_blank"
           onClick={handleClick}
         >
-          <a>Learn more</a>
+          Learn more
         </Link>
       </Flex>
     </ClickableCard>

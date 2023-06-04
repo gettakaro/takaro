@@ -1,4 +1,4 @@
-export const Breakpoint = {
+export const breakpoint = {
   tiny: '640px',
   small: '768px',
   medium: '1024px',
