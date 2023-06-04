@@ -1,15 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import {
-  styled,
-  IconNavProps,
-  IconNav,
-  ModuleOnboarding,
-} from '@takaro/lib-components';
-import {
-  AiFillFile as FileIcon,
-  AiFillSetting as SettingsIcon,
-  AiFillHome as HomeIcon,
-} from 'react-icons/ai';
+import { styled, ModuleOnboarding } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { useParams } from 'react-router-dom';
@@ -17,7 +7,6 @@ import {
   CommandOutputDTO,
   CronJobOutputDTO,
   HookOutputDTO,
-  ModuleOutputDTOAPI,
 } from '@takaro/apiclient';
 import {
   FunctionType,
@@ -25,7 +14,6 @@ import {
   ModuleData,
   ModuleItemProperties,
 } from '../context/moduleContext';
-import { PATHS } from 'paths';
 import { InfoCard } from '@takaro/lib-components/src/views/ModuleOnboarding';
 import {
   useCommandCreate,
@@ -36,7 +24,6 @@ import {
 
 const Flex = styled.div`
   display: flex;
-  height: 100%;
 `;
 
 const Wrapper = styled.div`
@@ -112,25 +99,7 @@ export const StudioFrame: FC = () => {
         fileMap: nameToId,
       }));
     }
-  }, [mod]);
-
-  const navigation: IconNavProps['items'] = [
-    {
-      icon: <HomeIcon />,
-      title: 'Home',
-      to: PATHS.home(),
-    },
-    {
-      icon: <FileIcon />,
-      title: 'Explorer',
-      to: '/explorer',
-    },
-    {
-      icon: <SettingsIcon />,
-      title: 'Settings',
-      to: PATHS.studio.settings(moduleId ?? ''),
-    },
-  ];
+  }, [mod, isSuccess]);
 
   if (isError) {
     return <>{'Module fetching failed'}</>;
