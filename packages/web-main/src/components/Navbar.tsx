@@ -47,7 +47,6 @@ const Nav = styled.nav`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 8px 0;
     transition: 0.2s transform ease-in-out;
 
     span {

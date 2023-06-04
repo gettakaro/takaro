@@ -10,7 +10,7 @@ export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: ${({ theme }) => theme.spacing[1]};
   cursor: pointer;
 `;
 
