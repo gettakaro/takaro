@@ -100,8 +100,8 @@ export function generateJSONSchema(inputs: Array<Input>): TakaroConfigSchema {
 export function schemaToInputs(schema: TakaroConfigSchema): Input[] {
   const normalizedSchema: TakaroConfigSchema = {
     type: 'object',
-    properties: schema.properties,
-    required: schema.required,
+    properties: schema.properties ?? {},
+    required: schema.required ?? [],
   };
 
   const inputs: any[] = [];
@@ -185,7 +185,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
     resolver: zodResolver(validationSchema),
     defaultValues: {
       // @ts-expect-error 😠 form types are weird
-      configFields: schemaToInputs(initialSchema) ?? [],
+      configFields: schemaToInputs(initialSchema ?? {}),
     },
   });
 
