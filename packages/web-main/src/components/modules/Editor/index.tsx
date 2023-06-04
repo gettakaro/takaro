@@ -13,35 +13,15 @@ import { useDebounce, styled } from '@takaro/lib-components';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
 
-const Wrapper = styled.div`
-  flex: 1;
-  a,
-  p,
-  div,
-  li,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  header,
-  footer {
-    font-family: 'Fira Code';
-    color: none;
-  }
-`;
-
 const StyledFileTabs = styled(FileTabs)`
-  &:hover {
-    svg {
-      fill: ${({ theme }): string => theme.colors.primary};
-      stroke: ${({ theme }): string => theme.colors.primary};
-    }
-  }
+  border-bottom: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
 `;
 
-export const Editor: FC = () => {
+export type EditorProps = {
+  readOnly?: boolean;
+};
+
+export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const { code, updateCode } = useActiveCode();
   const monaco = useMonaco();
   const apiClient = useApiClient();
@@ -80,29 +60,29 @@ export const Editor: FC = () => {
     <SandpackThemeProvider theme="auto">
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
         <StyledFileTabs closableTabs />
-        <Wrapper>
-          <MonacoEditor
-            width="100%"
-            height="100%"
-            language="typescript"
-            theme="takaro"
-            key={sandpack.activeFile}
-            defaultValue={code}
-            className="code-editor"
-            onChange={(value) => updateCode(value || '')}
-            options={{
-              minimap: { enabled: false },
-              wordWrap: 'on',
-              lineNumbers: 'on',
-              contextmenu: false,
-              'semanticHighlighting.enabled': true,
-              readOnly: false,
-              fontSize: 17,
-              fontWeight: 'bold',
-              fontLigatures: false,
-            }}
-          />
-        </Wrapper>
+        <MonacoEditor
+          width="100%"
+          height="100%"
+          language="typescript"
+          theme="takaro"
+          key={sandpack.activeFile}
+          defaultValue={code}
+          onChange={(value) => updateCode(value || '')}
+          options={{
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            renderWhitespace: 'none',
+            lineNumbers: 'on',
+            contextmenu: false,
+            'semanticHighlighting.enabled': true,
+            readOnly,
+            fontSize: 12,
+            fontFamily: 'Fira Code',
+            lineHeight: 22,
+            fontWeight: '400',
+            fontLigatures: false,
+          }}
+        />
       </SandpackStack>
     </SandpackThemeProvider>
   );

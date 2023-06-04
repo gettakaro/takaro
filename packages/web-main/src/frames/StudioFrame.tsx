@@ -113,11 +113,6 @@ export const StudioFrame: FC = () => {
       to: PATHS.home(),
     },
     {
-      icon: <FileIcon />,
-      title: 'Explorer',
-      to: '/explorer',
-    },
-    {
       icon: <SettingsIcon />,
       title: 'Settings',
       to: PATHS.studio.settings(moduleId ?? ''),

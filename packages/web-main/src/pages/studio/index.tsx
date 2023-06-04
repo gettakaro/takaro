@@ -12,6 +12,10 @@ const Container = styled.div`
   display: flex;
 `;
 
+const StyledResizable = styled(Resizable)`
+  border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+`;
+
 const Studio: FC = () => {
   const client = useApiClient();
 
@@ -30,7 +34,7 @@ const Studio: FC = () => {
         <title>Takaro - Studio</title>
       </Helmet>
       <Container>
-        <Resizable
+        <StyledResizable
           enable={{
             top: false,
             topRight: false,
@@ -42,10 +46,10 @@ const Studio: FC = () => {
             topLeft: false,
           }}
           defaultSize={{
-            width: '20%',
+            width: '300px',
             height: '100vh',
           }}
-          minWidth="350px"
+          minWidth="300px"
           maxHeight="100vh"
           minHeight="100vh"
         >
@@ -54,7 +58,7 @@ const Studio: FC = () => {
               <FileExplorer />
             </CollapseList.Item>
           </CollapseList>
-        </Resizable>
+        </StyledResizable>
         <div style={{ width: '100%' }}>
           <Editor />
         </div>

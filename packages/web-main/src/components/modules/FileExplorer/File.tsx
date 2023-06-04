@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
-  EditableField,
   styled,
   Button as TakaroButton,
   Tooltip,
@@ -9,14 +8,18 @@ import {
   DialogHeading,
   DialogContent,
   DialogBody,
+  EditableField,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
   AiFillFolderOpen as DirOpenIcon,
-  AiFillFile as FileIcon,
   AiFillEdit as RenameIcon,
   AiOutlineClose as DeleteIcon,
+  AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
+
+import { DiJsBadge as JsIcon } from 'react-icons/di';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
@@ -30,10 +33,11 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0.2rem 0;
+  padding: 0;
   background-color: transparent;
   padding-left: ${({ depth }) => `${depth * 2}rem`};
   border-radius: 0;
+  line-height: 2;
 
   div {
     display: flex;
@@ -46,15 +50,16 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
     overflow: hidden;
     color: ${({ isActive, theme }) =>
       isActive ? theme.colors.primary : theme.colors.text};
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.gray};
-    }
   }
 
   svg {
     margin-right: 1rem;
   }
+`;
+
+const FileContainer = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const NewFileContainer = styled.div<{ depth: number }>`
@@ -243,12 +248,12 @@ export const File: FC<FileProps> = ({
   };
 
   const getIcon = (): JSX.Element => {
-    if (selectFile) return <FileIcon size={20} />;
+    if (selectFile) return <JsIcon size={12} />;
 
     return isDirOpen ? (
-      <DirOpenIcon fill={theme.colors.primary} size={20} />
+      <DirOpenIcon fill={theme.colors.primary} size={18} />
     ) : (
-      <DirClosedIcon fill={theme.colors.primary} size={20} />
+      <DirClosedIcon fill={theme.colors.primary} size={18} />
     );
   };
 
@@ -257,14 +262,10 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="Rename" placement="top">
-            <div>
-              <RenameIcon size={16} onClick={handleOnRenameClick} />
-            </div>
+            <RenameIcon size={18} onClick={handleOnRenameClick} />
           </Tooltip>
           <Tooltip label="Delete" placement="top">
-            <div>
-              <DeleteIcon onClick={handleOnDeleteClick} size={16} />
-            </div>
+            <DeleteIcon onClick={handleOnDeleteClick} size={18} />
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -272,9 +273,7 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="New file" placement="top">
-            <div>
-              <FileIcon size={16} onClick={handleOnNewFileClick} />
-            </div>
+            <AddFileIcon size={18} onClick={handleOnNewFileClick} />
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -293,7 +292,7 @@ export const File: FC<FileProps> = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div>
+        <FileContainer>
           {getIcon()}
           {isEditing || selectFile ? (
             <EditableField
@@ -307,7 +306,7 @@ export const File: FC<FileProps> = ({
           ) : (
             <span>{fileName}</span>
           )}
-        </div>
+        </FileContainer>
 
         <AnimatePresence>
           {hover && (
@@ -324,7 +323,7 @@ export const File: FC<FileProps> = ({
 
       {showNewFileField && (
         <NewFileContainer depth={depth}>
-          <FileIcon size={20} />
+          <JsIcon width={12} />
           <EditableField
             allowEmpty={false}
             name="new-file"
@@ -341,7 +340,7 @@ export const File: FC<FileProps> = ({
           <DialogHeading>Delete file</DialogHeading>
           <DialogBody>
             <h4>
-              Are you sure you want to delete '{fileName}'? The file will be
+              Are you sure you want to uwmaken '{fileName}'? The file will be
               permanently removed.
             </h4>
             <ButtonContainer>

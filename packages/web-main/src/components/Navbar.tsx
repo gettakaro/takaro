@@ -37,6 +37,7 @@ const Container = styled(motion.div)`
 
 const Nav = styled.nav`
   display: flex;
+  gap: ${({ theme }) => theme.spacing[1]};
   width: 100%;
   flex-direction: column;
 
@@ -48,6 +49,7 @@ const Nav = styled.nav`
     align-items: center;
     justify-content: space-between;
     transition: 0.2s transform ease-in-out;
+    font-weight: 500;
 
     span {
       display: flex;

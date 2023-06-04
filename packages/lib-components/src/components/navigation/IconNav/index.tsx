@@ -5,10 +5,8 @@ import { FloatingDelayGroup } from '@floating-ui/react';
 import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
-  min-width: 6rem;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   height: 100vh;
-  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,7 +16,7 @@ const Container = styled.nav`
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 5rem;
+    padding: ${({ theme }) => theme.spacing[1]};
     border-radius: ${({ theme }) => theme.borderRadius.small};
     &:hover {
       background-color: ${({ theme }) => theme.colors.primary};
@@ -41,7 +39,7 @@ export const IconNav: FC<IconNavProps> = ({ items }) => {
             key={`icon-${title}-${index}`}
           >
             <Link key={`icon-nav-${title}`} to={to}>
-              {cloneElement(icon, { size: 25 })}
+              {cloneElement(icon, { size: 24 })}
             </Link>
           </Tooltip>
         ))}

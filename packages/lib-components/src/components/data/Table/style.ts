@@ -27,7 +27,6 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
 
   thead {
     color: ${({ theme }) => theme.colors.text};
-    font-size: 1.5rem;
     th {
       background-color: ${({ theme }) => theme.colors.backgroundAlt};
       color: ${({ theme }) => darken(0.3, theme.colors.text)};
