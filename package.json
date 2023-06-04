@@ -21,7 +21,7 @@
   },
   "engines": {
     "node": "18.x.x",
-    "npm": "8.x.x"
+    "npm": ">=8"
   },
   "author": "Niek Candaele",
   "license": "AGPL-3.0-or-later",
