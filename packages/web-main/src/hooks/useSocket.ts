@@ -1,24 +1,15 @@
 import { EnvVars } from 'EnvVars';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useConfig } from './useConfig';
 
 let socket: Socket<never, never> | null = null;
 
 export const useSocket = () => {
-  const [isConnected, setIsConnected] = useState(false);
   const cfg = useConfig();
 
   useEffect(() => {
     if (!socket) return;
-
-    socket.on('connect', () => {
-      setIsConnected(true);
-    });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-    });
 
     return () => {
       if (!socket) return;
@@ -28,7 +19,8 @@ export const useSocket = () => {
   }, []);
 
   if (socket) {
-    return { socket, isConnected };
+    socket.emit('ping');
+    return { socket, isConnected: socket.connected };
   }
 
   const apiUrl = cfg?.apiUrl;
@@ -39,5 +31,6 @@ export const useSocket = () => {
     withCredentials: true,
   });
 
-  return { socket, isConnected };
+  socket.emit('ping');
+  return { socket, isConnected: socket.connected };
 };
