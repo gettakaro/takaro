@@ -100,6 +100,8 @@ services:
       - ./packages/lib-queues:/app/packages/lib-queues
       - ./packages/lib-util:/app/packages/lib-util
 
+      - ./packages/test:/app/packages/test
+
       - ./reports:/app/reports
       - ./scripts:/app/scripts
     env_file:
