@@ -6,6 +6,7 @@ import {
   CommandUpdateDTO,
   CronJobCreateDTO,
   CronJobOutputDTO,
+  CronJobUpdateDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
   FunctionUpdateDTO,
@@ -334,7 +335,7 @@ export const useCronJobCreate = () => {
 
 interface CronJobUpdate {
   cronJobId: string;
-  cronJob: CommandUpdateDTO;
+  cronJob: CronJobUpdateDTO;
 }
 export const useCronJobUpdate = () => {
   const apiClient = useApiClient();

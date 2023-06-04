@@ -7,6 +7,12 @@ import { useQuery } from 'react-query';
 import { ModuleOutputArrayDTOAPI } from '@takaro/apiclient';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from 'components/modules/FileExplorer';
+import { useSandpack } from '@codesandbox/sandpack-react';
+import { useModule } from 'hooks/useModule';
+import { FunctionType } from 'context/moduleContext';
+import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
+import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
+import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
 
 const Container = styled.div`
   display: flex;
@@ -14,6 +20,8 @@ const Container = styled.div`
 
 const Studio: FC = () => {
   const client = useApiClient();
+  const { sandpack } = useSandpack();
+  const { moduleData } = useModule();
 
   const { data, isLoading } = useQuery<ModuleOutputArrayDTOAPI>(
     'modules',
@@ -22,6 +30,26 @@ const Studio: FC = () => {
 
   if (isLoading || data === undefined) {
     return <Loading />;
+  }
+
+  function getConfigComponent(type: FunctionType) {
+    switch (type) {
+      case FunctionType.Hooks:
+        return (
+          <HookConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
+        );
+      case FunctionType.Commands:
+        return (
+          <CommandConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
+        );
+      case FunctionType.CronJobs:
+        return (
+          <CronJobConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
+        );
+      default:
+        return null;
+        break;
+    }
   }
 
   return (
@@ -51,7 +79,10 @@ const Studio: FC = () => {
         >
           <CollapseList>
             <CollapseList.Item title="File explorer">
-              <FileExplorer />
+              <FileExplorer sandpack={sandpack} />
+            </CollapseList.Item>
+            <CollapseList.Item title="Config">
+              {getConfigComponent(moduleData.fileMap[sandpack.activeFile].type)}
             </CollapseList.Item>
           </CollapseList>
         </Resizable>

@@ -22,3 +22,6 @@ export type { EditableFieldProps } from './EditableField';
 
 export { Label } from './Label';
 export type { LabelProps } from './Label';
+
+export { TextAreaField } from './TextAreaField';
+export type { TextAreaFieldProps } from './TextAreaField';
