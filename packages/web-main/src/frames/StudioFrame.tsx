@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import {
   styled,
   IconNavProps,
@@ -13,14 +13,12 @@ import {
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
 import {
   CommandOutputDTO,
   CronJobOutputDTO,
   HookOutputDTO,
   ModuleOutputDTOAPI,
 } from '@takaro/apiclient';
-import { useApiClient } from 'hooks/useApiClient';
 import {
   FunctionType,
   ModuleContext,
@@ -29,6 +27,12 @@ import {
 } from '../context/moduleContext';
 import { PATHS } from 'paths';
 import { InfoCard } from '@takaro/lib-components/src/views/ModuleOnboarding';
+import {
+  useCommandCreate,
+  useCronJobCreate,
+  useHookCreate,
+  useModule,
+} from 'queries/modules';
 
 const Flex = styled.div`
   display: flex;
@@ -50,9 +54,19 @@ const Wrapper = styled.div`
 
 export const StudioFrame: FC = () => {
   // TODO: catch 404 module id does not exist errors
-  const apiClient = useApiClient();
   const { moduleId } = useParams();
+  const {
+    data: mod,
+    isSuccess,
+    isError,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useModule(moduleId!);
 
+  const { mutateAsync: createHook } = useHookCreate();
+  const { mutateAsync: createCommand } = useCommandCreate();
+  const { mutateAsync: createCronJob } = useCronJobCreate();
   const moduleItemPropertiesReducer =
     (functionType: FunctionType) =>
     (
@@ -68,35 +82,6 @@ export const StudioFrame: FC = () => {
       return prev;
     };
 
-  const { data, isLoading, error, refetch, isRefetching } =
-    useQuery<ModuleOutputDTOAPI>(
-      `module/${moduleId}`,
-      async () =>
-        (await apiClient.module.moduleControllerGetOne(moduleId!)).data,
-      {
-        cacheTime: 0,
-        onSuccess: (data) => {
-          const nameToId = data.data.hooks.reduce(
-            moduleItemPropertiesReducer(FunctionType.Hooks),
-            {}
-          );
-          data.data.cronJobs.reduce(
-            moduleItemPropertiesReducer(FunctionType.CronJobs),
-            nameToId
-          );
-          data.data.commands.reduce(
-            moduleItemPropertiesReducer(FunctionType.Commands),
-            nameToId
-          );
-          setModuleData((moduleData) => ({
-            ...moduleData,
-            id: data.data.id,
-            fileMap: nameToId,
-          }));
-        },
-      }
-    );
-
   const [moduleData, setModuleData] = useState<ModuleData>({
     fileMap: {},
     id: '',
@@ -105,6 +90,29 @@ export const StudioFrame: FC = () => {
     () => ({ moduleData, setModuleData }),
     [moduleData, setModuleData]
   );
+
+  useEffect(() => {
+    if (isSuccess && mod) {
+      const nameToId = mod.hooks.reduce(
+        moduleItemPropertiesReducer(FunctionType.Hooks),
+        {}
+      );
+      mod.cronJobs.reduce(
+        moduleItemPropertiesReducer(FunctionType.CronJobs),
+        nameToId
+      );
+      mod.commands.reduce(
+        moduleItemPropertiesReducer(FunctionType.Commands),
+        nameToId
+      );
+
+      setModuleData((moduleData) => ({
+        ...moduleData,
+        id: mod.id,
+        fileMap: nameToId,
+      }));
+    }
+  }, [mod]);
 
   const navigation: IconNavProps['items'] = [
     {
@@ -124,17 +132,8 @@ export const StudioFrame: FC = () => {
     },
   ];
 
-  if (error) {
-    console.error(error);
-    return <>{error}</>;
-  }
-
-  if (
-    isLoading ||
-    isRefetching ||
-    (moduleData && moduleData.id === undefined)
-  ) {
-    return <>loading..</>;
+  if (isError) {
+    return <>{'Module fetching failed'}</>;
   }
 
   // TODO: should come from existing type
@@ -144,22 +143,22 @@ export const StudioFrame: FC = () => {
     try {
       switch (componentType) {
         case 'hook':
-          await apiClient.hook.hookControllerCreate({
+          await createHook({
+            name: 'my-hook',
             eventType: 'log',
             moduleId: moduleId!,
-            name: 'my-hook',
             regex: `/w/*/`,
           });
           break;
         case 'cronjob':
-          await apiClient.cronjob.cronJobControllerCreate({
+          await createCronJob({
             name: 'my-cronjob',
             moduleId: moduleId!,
             temporalValue: '5 4 * * *',
           });
           break;
         case 'command':
-          await apiClient.command.commandControllerCreate({
+          await createCommand({
             name: 'my-command',
             moduleId: moduleId!,
             trigger: 'test',
@@ -178,11 +177,8 @@ export const StudioFrame: FC = () => {
    * We need to show a different view with a view cards
    * NOTE: This complete return and createComponent can be moved to a different file.
    */
-  if (
-    !data?.data.hooks.length &&
-    !data?.data.cronJobs.length &&
-    !data?.data.commands.length
-  ) {
+  if (!mod?.hooks.length && !mod?.cronJobs.length && !mod?.commands.length) {
+    // TODO: move this to a different file
     return (
       <ModuleContext.Provider value={providerModuleData}>
         <ModuleOnboarding>
@@ -231,6 +227,15 @@ export const StudioFrame: FC = () => {
     return files;
   };
   const files = getFiles();
+
+  if (
+    isLoading ||
+    isRefetching ||
+    !Object.keys(moduleData.fileMap).length ||
+    (moduleData && moduleData.id === undefined)
+  ) {
+    return <>loading..</>;
+  }
 
   return (
     <ModuleContext.Provider value={providerModuleData}>

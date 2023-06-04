@@ -118,9 +118,15 @@ export const File: FC<FileProps> = ({
   const { mutateAsync: updateCommand } = useCommandUpdate();
   const { mutateAsync: updateCronJob } = useCronJobUpdate();
 
-  const { mutateAsync: removeHook } = useHookRemove();
-  const { mutateAsync: removeCommand } = useCommandRemove();
-  const { mutateAsync: removeCronJob } = useCronJobRemove();
+  const { mutateAsync: removeHook } = useHookRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCommand } = useCommandRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCronJob } = useCronJobRemove({
+    moduleId: moduleData.id,
+  });
 
   const { mutateAsync: createHook } = useHookCreate();
   const { mutateAsync: createCommand } = useCommandCreate();
