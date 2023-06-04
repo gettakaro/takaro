@@ -22,13 +22,11 @@ COPY .mocharc.js    ./
 
 COPY packages/lib-apiclient           ./packages/lib-apiclient
 COPY packages/lib-auth                ./packages/lib-auth
-COPY packages/lib-components          ./packages/lib-components
 COPY packages/lib-config              ./packages/lib-config
 COPY packages/lib-db                  ./packages/lib-db
 COPY packages/lib-function-helpers    ./packages/lib-function-helpers
 COPY packages/lib-gameserver          ./packages/lib-gameserver
 COPY packages/lib-http                ./packages/lib-http
-COPY packages/lib-modules             ./packages/lib-modules
 COPY packages/lib-queues              ./packages/lib-queues
 COPY packages/lib-util                ./packages/lib-util
 COPY packages/test                    ./packages/test
