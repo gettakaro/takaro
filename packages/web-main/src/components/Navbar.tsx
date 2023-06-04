@@ -16,14 +16,13 @@ const Container = styled(motion.div)`
   align-items: flex-start;
   flex-direction: column;
   justify-content: flex-start;
+  gap: ${({ theme }) => theme.spacing[8]};
   border-right: 1px solid ${({ theme }) => theme.colors.secondary};
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]}`};
 
   .company-icon {
-    margin: 0 auto;
-    padding: 3rem 0;
+    margin-left: ${({ theme }) => theme.spacing['1_5']};
     cursor: pointer;
-    margin-bottom: 11rem;
   }
 
   img {
@@ -48,7 +47,6 @@ const Nav = styled.nav`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 8px 0;
     transition: 0.2s transform ease-in-out;
 
     span {
@@ -57,7 +55,6 @@ const Nav = styled.nav`
     }
 
     &:hover {
-      transform: translateY(-3px);
       background-color: ${({ theme }) => theme.colors.background};
     }
 
@@ -66,7 +63,7 @@ const Nav = styled.nav`
     }
 
     svg {
-      fill: ${({ theme }) => theme.colors.secondary};
+      fill: ${({ theme }) => theme.colors.textAlt};
     }
 
     &.active {
@@ -100,7 +97,7 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
   return (
     <Container
       animate={{ width: 325 }}
-      transition={{ duration: 1, type: 'spring', bounce: 0.6 }}
+      transition={{ duration: 1, type: 'spring', bounce: 0.5 }}
     >
       <Link className="company-icon" to={PATHS.home()}>
         <Company />

@@ -100,6 +100,7 @@ const columns = [
 ];
 
 export default {
+  title: 'Data/Table',
   component: Table,
   args: {
     sort: false,
