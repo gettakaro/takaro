@@ -85,6 +85,8 @@ services:
       - ./packages/app-connector:/app/packages/app-connector
       - ./packages/app-mock-gameserver:/app/packages/app-mock-gameserver
 
+      - ./packages/web-main:/app/packages/web-main
+
       - ./packages/lib-apiclient:/app/packages/lib-apiclient
       - ./packages/lib-auth:/app/packages/lib-auth
       - ./packages/lib-components:/app/packages/lib-components
