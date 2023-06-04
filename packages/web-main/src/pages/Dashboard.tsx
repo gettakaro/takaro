@@ -29,6 +29,10 @@ const Dashboard: FC = () => {
   };
 
   useEffect(() => {
+    socket.emit('ping');
+  }, [socket, isConnected]);
+
+  useEffect(() => {
     socket.on('pong', () => {
       setLastPong(new Date().toISOString());
     });

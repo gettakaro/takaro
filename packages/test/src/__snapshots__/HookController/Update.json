@@ -1,24 +1,27 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-24T11:54:42.455Z"
-    },
+    "meta": {},
     "data": {
+      "id": "41de64f1-9227-4864-9a76-f326ec645fb7",
+      "createdAt": "2023-06-04T17:10:32.903Z",
+      "updatedAt": "2023-06-04T17:10:32.916Z",
       "name": "Updated hook",
       "regex": "/new [regex]/g",
-      "updatedAt": "2022-09-24T11:54:42.447Z",
-      "createdAt": "2022-09-24T11:54:42.425Z",
-      "id": "b7de409e-8711-4477-85a1-ccb0f355791d",
-      "eventType": "log",
-      "moduleId": "ee6b276f-f3a8-48f8-afa2-49d8d51a1c5a",
       "function": {
-        "code": ""
-      }
+        "id": "a94a6da6-32d7-42b5-8bc8-e559895d10e8",
+        "createdAt": "2023-06-04T17:10:32.901Z",
+        "updatedAt": "2023-06-04T17:10:32.901Z",
+        "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n \n    // TODO: write my function...\n}\nmain();"
+      },
+      "eventType": "log",
+      "moduleId": "a1cc9215-adf4-443c-bf8b-7e3bbc120d8c",
+      "functionId": "a94a6da6-32d7-42b5-8bc8-e559895d10e8"
     }
   },
   "status": 200,
   "test": {
     "group": "HookController",
+    "snapshot": true,
     "name": "Update",
     "filteredFields": [
       "moduleId",

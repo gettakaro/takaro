@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
@@ -13,13 +13,23 @@ export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
 
 export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
   @IsString()
-  code!: string;
+  @IsOptional()
+  code?: string;
 }
 
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
   code!: string;
 }
+
+const defaultFunctionCode = `import { getTakaro, getData } from '@takaro/helpers';
+async function main() {
+    const data = await getData();
+    const takaro = await getTakaro(data);
+ 
+    // TODO: write my function...
+}
+main();`;
 
 export class FunctionService extends TakaroService<
   FunctionModel,
@@ -42,6 +52,7 @@ export class FunctionService extends TakaroService<
   }
 
   create(data: FunctionCreateDTO): Promise<FunctionOutputDTO> {
+    if (!data.code) data.code = defaultFunctionCode;
     return this.repo.create(data);
   }
 
