@@ -6,6 +6,9 @@ import {
   CommandUpdateDTO,
   CronJobCreateDTO,
   CronJobOutputDTO,
+  FunctionCreateDTO,
+  FunctionOutputDTO,
+  FunctionUpdateDTO,
   HookCreateDTO,
   HookOutputDTO,
   HookUpdateDTO,
@@ -37,6 +40,12 @@ export const cronJobKeys = {
   all: ['cronjobs'] as const,
   list: () => [...cronJobKeys.all, 'list'] as const,
   detail: (id: string) => [...cronJobKeys.all, 'detail', id] as const,
+};
+
+export const functionKeys = {
+  all: ['functions'] as const,
+  list: () => [...functionKeys.all, 'list'] as const,
+  detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
 // TODO: this should include the pagination logic
@@ -134,7 +143,7 @@ export const useHook = (hookId: string) => {
   const apiClient = useApiClient();
 
   return useQuery({
-    queryKey: moduleKeys.detail(hookId),
+    queryKey: hookKeys.detail(hookId),
     queryFn: async () =>
       (await apiClient.hook.hookControllerGetOne(hookId)).data.data,
   });
@@ -152,11 +161,13 @@ export const useHookCreate = () => {
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
         hooks ? [...hooks, newHook] : hooks!
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
     },
   });
 };
 
-export const useHookRemove = () => {
+export const useHookRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
@@ -172,7 +183,7 @@ export const useHookRemove = () => {
       // Invalidate removed hook's query
       queryClient.invalidateQueries(hookKeys.detail(removedHook.id));
 
-      // TODO: somehow whenever a hook is removed the module in which it is used should be updated
+      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
   });
 };
@@ -197,6 +208,8 @@ export const useHookUpdate = () => {
             )
           : hooks!
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
     },
   });
 };
@@ -227,6 +240,8 @@ export const useCommandCreate = () => {
         commandKeys.list(),
         (commands) => (commands ? [...commands, newCommand] : commands!)
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
     },
   });
 };
@@ -254,11 +269,13 @@ export const useCommandUpdate = () => {
               )
             : commands!
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
     },
   });
 };
 
-export const useCommandRemove = () => {
+export const useCommandRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
@@ -278,7 +295,7 @@ export const useCommandRemove = () => {
       // Invalidate removed hook's query
       queryClient.invalidateQueries(hookKeys.detail(removedCommand.id));
 
-      // TODO: somehow, whenever a command is removed the module in which it is used should be updated
+      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
   });
 };
@@ -309,6 +326,8 @@ export const useCronJobCreate = () => {
         cronJobKeys.list(),
         (cronJobs) => (cronJobs ? [...cronJobs, newCronJob] : cronJobs!)
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
     },
   });
 };
@@ -336,11 +355,13 @@ export const useCronJobUpdate = () => {
               )
             : cronJobs!
       );
+
+      queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
     },
   });
 };
 
-export const useCronJobRemove = () => {
+export const useCronJobRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
@@ -360,7 +381,75 @@ export const useCronJobRemove = () => {
       // Invalidate removed cronjob's query
       queryClient.invalidateQueries(cronJobKeys.detail(removedCronJob.id));
 
-      // TODO: somehow, whenever a command is removed the module in which it is used should be updated
+      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+    },
+  });
+};
+
+// ==================================
+//              functions
+// ==================================
+export const useFunction = (functionId: string) => {
+  const apiClient = useApiClient();
+
+  return useQuery({
+    queryKey: functionKeys.detail(functionId),
+    queryFn: async () =>
+      (await apiClient.function.functionControllerGetOne(functionId)).data.data,
+  });
+};
+
+export const useFunctionCreate = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (fn: FunctionCreateDTO) =>
+      (await apiClient.function.functionControllerCreate(fn)).data.data,
+    onSuccess: async (newFn: FunctionOutputDTO) => {
+      queryClient.setQueryData<FunctionOutputDTO[]>(
+        functionKeys.list(),
+        (functions) => (functions ? [...functions, newFn] : functions!)
+      );
+    },
+  });
+};
+
+interface FunctionUpdate {
+  functionId: string;
+  fn: FunctionUpdateDTO;
+}
+export const useFunctionUpdate = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ functionId, fn }: FunctionUpdate) =>
+      (await apiClient.function.functionControllerUpdate(functionId, fn)).data
+        .data,
+    onSuccess: async (updated: FunctionOutputDTO) => {
+      queryClient.setQueryData<FunctionOutputDTO[]>(
+        functionKeys.list(),
+        (fns) =>
+          fns ? fns.map((fn) => (fn.id === updated.id ? updated : fn)) : fns!
+      );
+    },
+  });
+};
+
+export const useFunctionRemove = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ functionId }: { functionId: string }) =>
+      (await apiClient.function.functionControllerRemove(functionId)).data.data,
+    onSuccess: async (removed: IdUuidDTO) => {
+      // Remove item from list of cronjobs
+      queryClient.setQueryData<FunctionOutputDTO[]>(
+        functionKeys.list(),
+        (fns) => (fns ? fns.filter((fn) => fn.id !== removed.id) : fns!)
+      );
     },
   });
 };

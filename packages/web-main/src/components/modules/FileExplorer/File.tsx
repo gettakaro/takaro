@@ -20,10 +20,20 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
-import { useApiClient } from 'hooks/useApiClient';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
 import { getNewPath } from './utils';
+import {
+  useCommandCreate,
+  useCommandRemove,
+  useCommandUpdate,
+  useCronJobCreate,
+  useCronJobRemove,
+  useCronJobUpdate,
+  useHookCreate,
+  useHookRemove,
+  useHookUpdate,
+} from 'queries/modules';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -95,7 +105,6 @@ export const File: FC<FileProps> = ({
 
   const fileName = filePath.split('/').filter(Boolean).pop()!;
   const { moduleData } = useModule();
-  const apiClient = useApiClient();
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
@@ -104,6 +113,24 @@ export const File: FC<FileProps> = ({
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
+
+  const { mutateAsync: updateHook } = useHookUpdate();
+  const { mutateAsync: updateCommand } = useCommandUpdate();
+  const { mutateAsync: updateCronJob } = useCronJobUpdate();
+
+  const { mutateAsync: removeHook } = useHookRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCommand } = useCommandRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCronJob } = useCronJobRemove({
+    moduleId: moduleData.id,
+  });
+
+  const { mutateAsync: createHook } = useHookCreate();
+  const { mutateAsync: createCommand } = useCommandCreate();
+  const { mutateAsync: createCronJob } = useCronJobCreate();
 
   // item is clicked in explorer
   const handleOnFileClick = (
@@ -124,20 +151,25 @@ export const File: FC<FileProps> = ({
 
     switch (toRename.type) {
       case FunctionType.Hooks:
-        await apiClient.hook.hookControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateHook({
+          hookId: toRename.itemId,
+          hook: { name: newFileName },
         });
         break;
       case FunctionType.Commands:
-        await apiClient.command.commandControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateCommand({
+          commandId: toRename.itemId,
+          command: { name: newFileName },
         });
         break;
       case FunctionType.CronJobs:
-        await apiClient.cronjob.cronJobControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateCronJob({
+          cronJobId: toRename.itemId,
+          cronJob: { name: newFileName },
         });
         break;
+      default:
+        throw new Error('Invalid type');
     }
 
     // change path in moduleData
@@ -157,13 +189,13 @@ export const File: FC<FileProps> = ({
     try {
       switch (toDelete.type) {
         case FunctionType.Hooks:
-          await apiClient.hook.hookControllerRemove(toDelete.itemId);
+          await removeHook({ hookId: toDelete.itemId });
           break;
         case FunctionType.Commands:
-          await apiClient.command.commandControllerRemove(toDelete.itemId);
+          await removeCommand({ commandId: toDelete.itemId });
           break;
         case FunctionType.CronJobs:
-          await apiClient.cronjob.cronJobControllerRemove(toDelete.itemId);
+          await removeCronJob({ cronJobId: toDelete.itemId });
           break;
         default:
           throw new Error('Invalid type');
@@ -185,23 +217,22 @@ export const File: FC<FileProps> = ({
     try {
       switch (filePath.split('/').join('')) {
         case FunctionType.Hooks:
-          await apiClient.hook.hookControllerCreate({
+          await createHook({
             moduleId: moduleData.id!,
             name: newFileName,
             eventType: 'log',
             regex: `/w+/`,
           });
-
           break;
         case FunctionType.Commands:
-          await apiClient.command.commandControllerCreate({
+          await createCommand({
             moduleId: moduleData.id!,
             name: newFileName,
             trigger: newFileName,
           });
           break;
         case FunctionType.CronJobs:
-          await apiClient.cronjob.cronJobControllerCreate({
+          await createCronJob({
             moduleId: moduleData.id!,
             name: newFileName,
             temporalValue: '0 0 * * *',
