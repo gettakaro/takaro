@@ -23,6 +23,9 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     margin: 0;
     padding: 0;
     scroll-behavior: smooth;
+    line-height: 1.5;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400; /* Default size */
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -42,9 +45,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
   a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
-    font-weight: 400; /* Default size */
-    font-family: 'Inter', sans-serif;
-    font-feature-settings: "cv02","cv03","cv04","cv11";
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     margin: 0;
@@ -58,16 +58,16 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
   h1 {
+    font-weight: 600;
     font-size: ${({ theme }) => theme.fontSize.large}
-    font-weight: 800;
   }
   h2 {
+    font-weight: 600;
     font-size: ${({ theme }) => theme.fontSize.mediumLarge}
-    font-weight: 800;
   }
   h3 {
+    font-weight: 500;
     font-size: ${({ theme }) => theme.fontSize.medium}
-    font-weight: 600;
   }
 
 

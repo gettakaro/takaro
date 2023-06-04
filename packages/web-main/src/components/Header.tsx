@@ -18,7 +18,9 @@ import {
 
 const Container = styled.header`
   height: 80px;
-  padding: 0 5rem;
+  padding: ${({ theme }) => {
+    return `0 ${theme.spacing[7]}`;
+  }};
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
