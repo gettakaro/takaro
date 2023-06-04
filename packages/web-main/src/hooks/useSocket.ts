@@ -19,7 +19,6 @@ export const useSocket = () => {
   }, []);
 
   if (socket) {
-    socket.emit('ping');
     return { socket, isConnected: socket.connected };
   }
 
