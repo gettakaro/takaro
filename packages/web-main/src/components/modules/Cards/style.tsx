@@ -7,7 +7,7 @@ export const ModuleCards = styled.ul`
   gap: ${({ theme }) => theme.spacing['1_5']};
 `;
 
-export const ModuleCardContainer = styled.div<{ active: boolean }>`
+export const ModuleCardContainer = styled.a<{ active: boolean }>`
   background-color: ${({ theme, active }) =>
     active ? theme.colors.secondary : theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.large};

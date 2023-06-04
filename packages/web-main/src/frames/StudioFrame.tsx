@@ -248,7 +248,6 @@ export const StudioFrame: FC = () => {
         prefix=""
       >
         <Flex>
-          <IconNav items={navigation} />
           <Wrapper>
             <Outlet />
           </Wrapper>
