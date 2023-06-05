@@ -7,7 +7,6 @@ import { useTheme } from '../../../hooks';
 const StyledList = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
   & > div:last-child {
     flex-grow: 1;
   }
