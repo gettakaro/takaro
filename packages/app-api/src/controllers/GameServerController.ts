@@ -73,6 +73,10 @@ class GameServerSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
+
+  @IsOptional()
+  @IsEnum(GAME_SERVER_TYPE)
+  type!: GAME_SERVER_TYPE;
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
