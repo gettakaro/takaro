@@ -39,6 +39,7 @@ export const fromPropsToModules = ({
 
   const modules = fileListWithoutPrefix
     .filter((file) => !file.includes('/'))
+    .filter((file) => !file.endsWith('package.json'))
     .map((file) => `${prefixedPath}${file}`);
 
   return {
