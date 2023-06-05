@@ -29,11 +29,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const { sandpack } = useSandpack();
   const { mutateAsync: updateFunction } = useFunctionUpdate();
 
-  // TODO: find a better solution to exclude package.json
-  useEffect(() => {
-    sandpack.deleteFile('/package.json');
-  }, []);
-
   useMemo(() => {
     if (monaco) {
       defineTheme(monaco);
