@@ -17,7 +17,7 @@ export const Container = styled.div<{ textVisible?: boolean; size: Size }>`
   }
 
   div {
-    font-weight: 800;
+    font-weight: 700;
     color: ${({ theme }): string => theme.colors.text};
 
     font-size: ${({ size }) => {

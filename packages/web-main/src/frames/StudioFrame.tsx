@@ -24,7 +24,6 @@ import { InfoCard, ModuleOnboarding } from 'views/ModuleOnboarding';
 
 const Flex = styled.div`
   display: flex;
-  height: 100%;
 `;
 
 const Wrapper = styled.div`
@@ -100,7 +99,7 @@ export const StudioFrame: FC = () => {
         fileMap: nameToId,
       }));
     }
-  }, [mod]);
+  }, [mod, isSuccess]);
 
   if (isError) {
     return <>{'Module fetching failed'}</>;
