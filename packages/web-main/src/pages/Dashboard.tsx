@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Button, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
-import { useUser } from 'hooks/useUser';
 
 export const Container = styled.div`
   h1 {
@@ -19,7 +18,6 @@ const Flex = styled.div`
 
 const Dashboard: FC = () => {
   const { socket, isConnected } = useSocket();
-  const { userData } = useUser();
 
   const [lastPong, setLastPong] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
@@ -48,8 +46,6 @@ const Dashboard: FC = () => {
 
   return (
     <Container>
-      <h1>Hello, {userData.name}</h1>
-
       <Flex>
         <span>
           <p>Connected: {'' + isConnected}</p>

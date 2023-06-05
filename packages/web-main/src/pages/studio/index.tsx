@@ -1,10 +1,7 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Loading, CollapseList } from '@takaro/lib-components';
-import { useApiClient } from 'hooks/useApiClient';
+import { styled, CollapseList } from '@takaro/lib-components';
 import { Editor } from '../../components/modules/Editor';
-import { useQuery } from 'react-query';
-import { ModuleOutputArrayDTOAPI } from '@takaro/apiclient';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from 'components/modules/FileExplorer';
 import { useSandpack } from '@codesandbox/sandpack-react';
@@ -23,18 +20,8 @@ const StyledResizable = styled(Resizable)`
 `;
 
 const Studio: FC = () => {
-  const client = useApiClient();
   const { sandpack } = useSandpack();
   const { moduleData } = useModule();
-
-  const { data, isLoading } = useQuery<ModuleOutputArrayDTOAPI>(
-    'modules',
-    async () => (await client.module.moduleControllerSearch()).data
-  );
-
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
 
   function getConfigComponent(type: FunctionType) {
     switch (type) {
@@ -52,7 +39,6 @@ const Studio: FC = () => {
         );
       default:
         return null;
-        break;
     }
   }
 

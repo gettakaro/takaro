@@ -1,5 +1,4 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { styled, ModuleOnboarding } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { useParams } from 'react-router-dom';
@@ -14,13 +13,9 @@ import {
   ModuleData,
   ModuleItemProperties,
 } from '../context/moduleContext';
-import { InfoCard } from '@takaro/lib-components/src/views/ModuleOnboarding';
-import {
-  useCommandCreate,
-  useCronJobCreate,
-  useHookCreate,
-  useModule,
-} from 'queries/modules';
+import { useModule } from 'queries/modules';
+import { styled } from '@takaro/lib-components';
+import { ModuleOnboarding } from 'views/ModuleOnboarding';
 
 const Flex = styled.div`
   display: flex;
@@ -48,12 +43,18 @@ export const StudioFrame: FC = () => {
     isError,
     isLoading,
     isRefetching,
-    refetch,
   } = useModule(moduleId!);
 
-  const { mutateAsync: createHook } = useHookCreate();
-  const { mutateAsync: createCommand } = useCommandCreate();
-  const { mutateAsync: createCronJob } = useCronJobCreate();
+  const [moduleData, setModuleData] = useState<ModuleData>({
+    fileMap: {},
+    id: '',
+  });
+
+  const providerModuleData = useMemo(
+    () => ({ moduleData, setModuleData }),
+    [moduleData, setModuleData]
+  );
+
   const moduleItemPropertiesReducer =
     (functionType: FunctionType) =>
     (
@@ -68,15 +69,6 @@ export const StudioFrame: FC = () => {
       };
       return prev;
     };
-
-  const [moduleData, setModuleData] = useState<ModuleData>({
-    fileMap: {},
-    id: '',
-  });
-  const providerModuleData = useMemo(
-    () => ({ moduleData, setModuleData }),
-    [moduleData, setModuleData]
-  );
 
   useEffect(() => {
     if (isSuccess && mod) {
@@ -101,89 +93,7 @@ export const StudioFrame: FC = () => {
     }
   }, [mod, isSuccess]);
 
-  if (isError) {
-    return <>{'Module fetching failed'}</>;
-  }
-
-  // TODO: should come from existing type
-  const createComponent = async (
-    componentType: 'hook' | 'cronjob' | 'command'
-  ) => {
-    try {
-      switch (componentType) {
-        case 'hook':
-          await createHook({
-            name: 'my-hook',
-            eventType: 'log',
-            moduleId: moduleId!,
-            regex: `/w/*/`,
-          });
-          break;
-        case 'cronjob':
-          await createCronJob({
-            name: 'my-cronjob',
-            moduleId: moduleId!,
-            temporalValue: '5 4 * * *',
-          });
-          break;
-        case 'command':
-          await createCommand({
-            name: 'my-command',
-            moduleId: moduleId!,
-            trigger: 'test',
-          });
-          break;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    await refetch();
-  };
-
-  /*
-   * Sandpack requires atleast one file
-   * In case there are none yet (no hooks, no crons and no commands)
-   * We need to show a different view with a view cards
-   * NOTE: This complete return and createComponent can be moved to a different file.
-   */
-  if (!mod?.hooks.length && !mod?.cronJobs.length && !mod?.commands.length) {
-    // TODO: move this to a different file
-    return (
-      <ModuleContext.Provider value={providerModuleData}>
-        <ModuleOnboarding>
-          <InfoCard
-            title="Commands"
-            onClick={async () => await createComponent('command')}
-          >
-            Commands are triggered by a user. They are triggered when a player
-            sends a chat message starting with the configured command prefix.
-            Note that this means that commands are a manual action, unlike Hooks
-            and Cronjobs which are triggered with any user-intervention.
-          </InfoCard>
-          <InfoCard
-            title="Hooks"
-            onClick={async () => await createComponent('hook')}
-          >
-            Hooks are triggered when a certain event happens on a Gameserver.
-            Think of it as a callback function that is executed when a certain
-            event happens. For example, when a player joins a server, a Hook can
-            be triggered that will send a message to the player.
-          </InfoCard>
-          <InfoCard
-            title="CronJobs"
-            onClick={async () => await createComponent('cronjob')}
-          >
-            Cronjobs are triggered based on time. This can be a simple repeating
-            pattern like "Every 5 minutes" or "Every day" or you can use raw
-            Cron (opens in a new tab) syntax to define more complex patterns
-            like "Every Monday, Wednesday and Friday at 2 PM";
-          </InfoCard>
-        </ModuleOnboarding>
-      </ModuleContext.Provider>
-    );
-  }
-
-  const getFiles = () => {
+  const files = (() => {
     const files = {} as SandpackFiles;
 
     // Convert to sandpack file format
@@ -194,16 +104,29 @@ export const StudioFrame: FC = () => {
     });
 
     return files;
-  };
-  const files = getFiles();
+  })();
+
+  if (isLoading || isRefetching) {
+    return <></>;
+  }
+
+  if (isError) {
+    return <>error</>;
+  }
 
   if (
-    isLoading ||
-    isRefetching ||
-    !Object.keys(moduleData.fileMap).length ||
-    (moduleData && moduleData.id === undefined)
+    isSuccess &&
+    !mod.hooks.length &&
+    !mod.cronJobs.length &&
+    !mod.commands.length
   ) {
-    return <>loading..</>;
+    return <ModuleOnboarding moduleId={moduleId!} />;
+  }
+
+  // Prevents rendering of empty sandpack
+  // Because the moduleData is set asynchronously
+  if (!Object.keys(moduleData.fileMap).length) {
+    return <></>;
   }
 
   return (
