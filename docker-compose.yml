@@ -61,7 +61,6 @@ services:
       - ./packages/lib-queues:/app/packages/lib-queues
       - ./packages/lib-util:/app/packages/lib-util
 
-      - ./firecracker:/app/firecracker
       - ./scripts:/app/scripts
     env_file:
       - .env
@@ -71,6 +70,8 @@ services:
       TAKARO_HOST: http://takaro:3000
       TEST_HTTP_TARGET: http://takaro:3000
       TAKARO_OAUTH_HOST: http://hydra:4444
+      TRACING_ENDPOINT: http://tempo:4317
+      TAKARO_SERVICE: dev-vmm
     ports:
       # vmm
       - 13004:3001
