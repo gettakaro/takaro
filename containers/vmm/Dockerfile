@@ -35,7 +35,6 @@ WORKDIR /app
 
 RUN mkdir -p /app/firecracker
 
-COPY ./firecracker /app/firecracker
 COPY ./packages/vm-agent /app/packages/vm-agent
 
 COPY --from=node-builder /app/node_modules /app/node_modules
