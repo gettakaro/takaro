@@ -2,6 +2,8 @@ import FirecrackerClient from '../../lib/firecracker/index.js';
 import { VmClient } from '../../lib/vmClient.js';
 import { logger } from '@takaro/util';
 import promClient from 'prom-client';
+import fs from 'node:fs/promises';
+import { config } from '../../config.js';
 
 /*
  * Virtual Machine Manager
@@ -26,7 +28,17 @@ export class VMM {
     help: 'Total number of VMs',
   });
 
+  private async cleanSocketsDir() {
+    try {
+      await fs.rmdir(config.get('firecracker.sockets'), { recursive: true });
+    } catch (err) {
+      this.log.warn(err);
+    }
+  }
+
   async initPool(amount = 15, sync = false) {
+    await this.cleanSocketsDir();
+
     this.log.info(`creating a pool of ${amount} VMs`);
 
     if (sync) {
