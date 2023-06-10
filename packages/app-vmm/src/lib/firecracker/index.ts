@@ -89,10 +89,13 @@ export default class FirecrackerClient {
     });
 
     // make sure to clean up on exit
-    process.on('SIGINT', () => {
-      this.childProcess.kill();
-      process.exit(0);
-    });
+    process.on('SIGINT', this.handleKillSignal);
+    process.on('SIGTERM', this.handleKillSignal);
+  }
+
+  private handleKillSignal() {
+    this.childProcess?.kill();
+    process.exit(0);
   }
 
   private async cleanUp() {
@@ -119,21 +122,14 @@ export default class FirecrackerClient {
   }
 
   private async ensureResources() {
-    try {
-      await this.cleanUp();
-    } catch {}
+    const tasks = [];
 
-    try {
-      await fs.mkdir(config.get('firecracker.sockets'), { recursive: true });
-    } catch {
-      this.log.debug('sockets folder already exists');
-    }
+    tasks.push(
+      fs.mkdir(config.get('firecracker.sockets'), { recursive: true })
+    );
+    tasks.push(fs.writeFile(this.options.logPath, ''));
 
-    try {
-      await fs.writeFile(this.options.logPath, '');
-    } catch {
-      this.log.debug('log file already exists');
-    }
+    await Promise.all(tasks);
   }
 
   private setIps(vmId: number) {
@@ -205,16 +201,15 @@ export default class FirecrackerClient {
       this.childProcess.stderr?.pipe(stderrFileStream);
       this.childProcess.stdout?.pipe(stdoutFileStream);
 
-      this.childProcess.on('error', async (error) => {
-        this.log.error('child process error: ', { error });
-        await this.cleanUp();
-        return reject(error);
-      });
-
-      this.childProcess.on('exit', async (code) => {
-        this.log.debug(`child process exited with code ${code}`);
+      this.childProcess.on('close', async (code) => {
+        this.log.debug(`child process closed with code ${code}`);
         this.totalVMsGauge.dec(1);
         await this.cleanUp();
+      });
+
+      this.childProcess.on('error', async (error) => {
+        this.log.error('child process error: ', { error });
+        return reject(error);
       });
 
       this.childProcess.on('spawn', async () => {
@@ -243,7 +238,7 @@ export default class FirecrackerClient {
 
     // wait for childProcess to exit
     await new Promise((resolve, _) => {
-      this.childProcess.on('exit', () => {
+      this.childProcess.on('close', () => {
         resolve('success');
       });
     });
@@ -253,38 +248,41 @@ export default class FirecrackerClient {
     const mask = new Netmask(`255.255.255.255/${TAP_DEVICE_CIDR}`).mask;
     const ipArgs = `ip=${this.vmIp}::${this.tapDeviceIp}:${mask}::eth0:off`;
 
-    await this.httpSock.put('boot-source', {
-      json: {
-        kernel_image_path: this.options.kernelImage,
-        boot_args: `console=ttyS0 reboot=k panic=1 pci=off quiet noacpi nomodules ${ipArgs}`,
-      },
-    });
+    const tasks = [
+      this.httpSock.put('boot-source', {
+        json: {
+          kernel_image_path: this.options.kernelImage,
+          boot_args: `console=ttyS0 noapic reboot=k panic=1 pci=off nomodules random.trust_cpu=on i8042.nokbd i8042.noaux ipv6.disable=1 ${ipArgs}`,
+        },
+      }),
+      this.httpSock.put('drives/rootfs', {
+        json: {
+          drive_id: 'rootfs',
+          path_on_host: this.options.rootfs,
+          is_root_device: true,
+          is_read_only: false,
+        },
+      }),
+      this.httpSock.put('vsock', {
+        json: {
+          guest_cid: 3,
+          uds_path: this.options.agentSocket,
+        },
+      }),
+      this.httpSock.put('network-interfaces/eth0', {
+        json: {
+          iface_id: 'eth0',
+          host_dev_name: this.tapDeviceName,
+        },
+      }),
+    ];
 
-    await this.httpSock.put('drives/rootfs', {
-      json: {
-        drive_id: 'rootfs',
-        path_on_host: this.options.rootfs,
-        is_root_device: true,
-        is_read_only: false,
-      },
-    });
-
-    await this.httpSock.put('vsock', {
-      json: {
-        guest_cid: 3,
-        uds_path: this.options.agentSocket,
-      },
-    });
-
-    await this.httpSock.put('network-interfaces/eth0', {
-      json: {
-        iface_id: 'eth0',
-        host_dev_name: this.tapDeviceName,
-      },
-    });
+    await Promise.all(tasks);
   }
 
   async startVM() {
+    await this.cleanUp();
+
     try {
       await this.spawn();
       await this.setupVM();

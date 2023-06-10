@@ -34,6 +34,7 @@ COPY packages/test                    ./packages/test
 COPY packages/app-vmm ./packages/app-vmm
 
 COPY scripts ./scripts
+COPY firecracker ./firecracker
 
 COPY ./containers/takaro/ssh_config /root/.ssh/config
 
