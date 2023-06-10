@@ -38,6 +38,11 @@ export class Rust implements IGameServer {
 
     return Promise.race([
       new Promise<WebSocket>((resolve, reject) => {
+        this.client?.on('error', (err) => {
+          this.log.warn('getClient', err);
+          this.client?.close();
+          return reject(err);
+        });
         this.client?.on('unexpected-response', (req, res) => {
           this.log.debug('unexpected-response', {
             req,
@@ -50,10 +55,6 @@ export class Rust implements IGameServer {
           if (this.client) {
             return resolve(this.client);
           }
-        });
-        this.client?.on('error', (err) => {
-          this.log.warn('getClient', err);
-          reject(err);
         });
       }),
       new Promise<WebSocket>((_, reject) => {
@@ -124,8 +125,8 @@ export class Rust implements IGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string) {
+    const client = await this.getClient();
     return new Promise<CommandOutput>(async (resolve, reject) => {
-      const client = await this.getClient();
       const command = rawCommand.trim();
       const requestId = this.getRequestId();
 
@@ -138,7 +139,6 @@ export class Rust implements IGameServer {
           return;
         }
 
-        console.log(parsed);
         let commandResult = '';
 
         try {
