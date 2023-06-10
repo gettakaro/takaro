@@ -159,8 +159,8 @@ export class RustEmitter extends TakaroEmitter {
     ) {
       const player = await new IGamePlayer().construct({
         name: expSearch.groups.name,
-        steamId: expSearch.groups.steamId,
-        gameId: expSearch.groups.steamId,
+        steamId: expSearch.groups.platformId,
+        gameId: expSearch.groups.platformId,
       });
 
       return new EventPlayerDisconnected().construct({
