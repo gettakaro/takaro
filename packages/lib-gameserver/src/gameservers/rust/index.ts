@@ -29,38 +29,8 @@ export class Rust implements IGameServer {
       return this.client;
     }
 
-    this.client = RustEmitter.constructWs(this.connectionInfo);
-
-    this.log.debug('getClient', {
-      host: this.connectionInfo.host,
-      port: this.connectionInfo.rconPort,
-    });
-
-    return Promise.race([
-      new Promise<WebSocket>((resolve, reject) => {
-        this.client?.on('error', (err) => {
-          this.log.warn('getClient', err);
-          this.client?.close();
-          return reject(err);
-        });
-        this.client?.on('unexpected-response', (req, res) => {
-          this.log.debug('unexpected-response', {
-            req,
-            res,
-          });
-          reject(new errors.InternalServerError());
-        });
-        this.client?.on('open', () => {
-          this.log.debug('Connection opened');
-          if (this.client) {
-            return resolve(this.client);
-          }
-        });
-      }),
-      new Promise<WebSocket>((_, reject) => {
-        setTimeout(() => reject(new errors.WsTimeOutError('Timeout')), 5000);
-      }),
-    ]);
+    this.client = await RustEmitter.getClient(this.connectionInfo);
+    return this.client;
   }
 
   getEventEmitter() {

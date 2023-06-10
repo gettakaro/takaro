@@ -32,45 +32,63 @@ export interface RustEvent {
 
 export class RustEmitter extends TakaroEmitter {
   private ws: WebSocket | null = null;
-  private logger = logger('rust:ws');
+  private log = logger('rust:ws');
 
   constructor(private config: RustConnectionInfo) {
     super();
   }
 
-  static constructWs(config: RustConnectionInfo) {
+  static async getClient(config: RustConnectionInfo) {
+    const log = logger('rust:ws');
+
     const protocol = config.useTls ? 'wss' : 'ws';
-    return new WebSocket(
+    const client = new WebSocket(
       `${protocol}://${config.host}:${config.rconPort}/${config.rconPassword}`
     );
+
+    log.debug('getClient', {
+      host: config.host,
+      port: config.rconPort,
+    });
+
+    return Promise.race([
+      new Promise<WebSocket>((resolve, reject) => {
+        client?.on('error', (err) => {
+          log.warn('getClient', err);
+          client?.close();
+          return reject(err);
+        });
+        client?.on('unexpected-response', (req, res) => {
+          log.debug('unexpected-response', {
+            req,
+            res,
+          });
+          reject(new errors.InternalServerError());
+        });
+        client?.on('open', () => {
+          log.debug('Connection opened');
+          if (client) {
+            return resolve(client);
+          }
+        });
+      }),
+      new Promise<WebSocket>((_, reject) => {
+        setTimeout(() => reject(new errors.WsTimeOutError('Timeout')), 5000);
+      }),
+    ]);
   }
 
   async start(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug('Connecting to [RUST] game server...');
+    this.ws = await RustEmitter.getClient(this.config);
 
-      this.ws = RustEmitter.constructWs(this.config);
-      this.logger.debug('Connecting to [RUST] game server');
-
-      this.ws.on('message', (m: Buffer) => {
-        this.listener(m.toString());
-      });
-
-      this.ws.on('open', () => {
-        this.logger.info('Connected to [RUST] game server.');
-        return resolve();
-      });
-
-      this.ws.on('error', (e) => {
-        this.logger.error('Could not connect to [RUST] game server!', e);
-        return reject();
-      });
+    this.ws?.on('message', (m: Buffer) => {
+      this.listener(m.toString());
     });
   }
 
   async stop(): Promise<void> {
     this.ws?.close();
-    this.logger.debug('Websocket connection has been closed');
+    this.log.debug('Websocket connection has been closed');
     return;
   }
 
@@ -78,7 +96,7 @@ export class RustEmitter extends TakaroEmitter {
     // TODO: We probably want to handle the stacktrace first, because in that case it might be an invalid message.
     // TODO: Certain events have a different type. We could split the events based on these types to improve performance.
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.Message)) {
-      this.logger.debug('regexje');
+      this.log.debug('regexje');
       const data = await this.handlePlayerConnected(e);
       this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
@@ -125,7 +143,7 @@ export class RustEmitter extends TakaroEmitter {
         ip: expSearch.groups.ip,
       });
 
-      this.logger.debug('player: ', player);
+      this.log.debug('player: ', player);
 
       return new EventPlayerConnected().construct({
         player,
@@ -134,7 +152,7 @@ export class RustEmitter extends TakaroEmitter {
       });
     }
 
-    this.logger.error(
+    this.log.error(
       'Could not parse `PlayerConnected` event correctly.',
       msg,
       expSearch
@@ -170,7 +188,7 @@ export class RustEmitter extends TakaroEmitter {
       });
     }
 
-    this.logger.error(
+    this.log.error(
       'Could not parse `playerDisconnected` event correctly.',
       msg,
       expSearch
@@ -196,9 +214,9 @@ export class RustEmitter extends TakaroEmitter {
     try {
       const event = JSON.parse(data);
       await this.parseMessage(event);
-      this.logger.debug('event: ', event);
+      this.log.debug('event: ', event);
     } catch (error) {
-      this.logger.error('Error handling message from game server', error);
+      this.log.error('Error handling message from game server', error);
     }
   }
 }
