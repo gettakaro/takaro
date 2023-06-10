@@ -1,10 +1,4 @@
-import {
-  register,
-  collectDefaultMetrics,
-  Counter,
-  CounterConfiguration,
-} from 'prom-client';
-import { logger } from './logger.js';
+import { register, Counter, CounterConfiguration } from 'prom-client';
 import { ctx } from './main.js';
 
 const counters = new Map<string, Counter<string>>();
@@ -50,15 +44,6 @@ export function addCounter(
       throw error;
     }
   };
-}
-
-export function enableDefaultNodejsMetrics() {
-  const log = logger('metrics');
-  try {
-    collectDefaultMetrics();
-  } catch (error) {
-    log.warn('Failed to enable NodeJS metrics', error);
-  }
 }
 
 export function getMetrics() {

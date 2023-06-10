@@ -1,11 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import {
-  logger,
-  errors,
-  enableDefaultNodejsMetrics,
-  Sentry,
-} from '@takaro/util';
+import { logger, errors, Sentry } from '@takaro/util';
 import { getBullBoard } from '@takaro/queues';
 import { Server, createServer } from 'http';
 import {
@@ -36,7 +31,6 @@ export class HTTP {
     private httpOptions: IHTTPOptions = {}
   ) {
     this.logger = logger('http');
-    enableDefaultNodejsMetrics();
     this.app = express();
     this.httpServer = createServer(this.app);
     this.app.use(Sentry.Handlers.requestHandler());
