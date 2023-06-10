@@ -142,6 +142,12 @@ jobs:
           override: true
           target: x86_64-unknown-linux-musl
 
+      - name: Install musl-tools
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
       - run: ./scripts/dev-vm.sh
 
       - name: Set up QEMU
