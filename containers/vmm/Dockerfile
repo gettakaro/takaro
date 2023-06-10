@@ -23,6 +23,11 @@ RUN find packages -type d -name 'lib-*' -exec sh -c 'npm run -w {} build && mkdi
 
 FROM node:18-alpine as runner
 
+RUN wget -q https://github.com/firecracker-microvm/firecracker/releases/download/v1.1.2/firecracker-v1.1.2-x86_64.tgz && \
+    tar -xf firecracker-v1.1.2-x86_64.tgz && \
+    mv release-v1.1.2-x86_64/firecracker-v1.1.2-x86_64 /usr/local/bin/firecracker && \
+    mv release-v1.1.2-x86_64/jailer-v1.1.2-x86_64 /usr/local/bin/jailer
+
 RUN apk update && apk add iproute2 iptables bash
 
 RUN npm install -g npm@8
@@ -44,5 +49,7 @@ RUN npm ci --only=production
 COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
 
 COPY scripts/dev-setup-network-tap.sh ./scripts/dev-setup-network-tap.sh
+
+COPY  ./firecracker /app/firecracker
 
 CMD sh -c "./scripts/dev-setup-network-tap.sh && npm -w packages/${PACKAGE} run start"

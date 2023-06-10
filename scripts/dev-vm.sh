@@ -12,7 +12,24 @@ build_vm_node_helper() {
 
 	mkdir -p "$VM_NODE_HELPER/node_modules/@takaro/"
 
-	cp -r -L ./node_modules/@takaro/{config,helpers,apiclient,util} "$VM_NODE_HELPER/node_modules/@takaro"
+	npm ci
+
+	npm run-script -w packages/lib-config build
+	npm run-script -w packages/lib-util build
+	npm run-script -w packages/lib-apiclient build
+	npm run-script -w packages/lib-auth build
+	npm run-script -w packages/lib-db build
+	npm run-script -w packages/lib-gameserver build
+	npm run-script -w packages/lib-queues build
+	npm run-script -w packages/lib-http build
+	npm run-script -w packages/lib-function-helpers build
+
+	npm run-script -w packages/test build
+
+	cp -r -L ./node_modules/@takaro/config "$VM_NODE_HELPER/node_modules/@takaro"
+	cp -r -L ./node_modules/@takaro/helpers "$VM_NODE_HELPER/node_modules/@takaro"
+	cp -r -L ./node_modules/@takaro/apiclient "$VM_NODE_HELPER/node_modules/@takaro"
+	cp -r -L ./node_modules/@takaro/util "$VM_NODE_HELPER/node_modules/@takaro"
 
 	cat >"$VM_NODE_HELPER/package.json" <<EOF
 {
