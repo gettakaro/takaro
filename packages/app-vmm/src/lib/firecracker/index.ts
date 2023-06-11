@@ -6,7 +6,6 @@ import { logger } from '@takaro/util';
 import got, { Got } from 'got';
 import { config } from '../../config.js';
 import { Netmask } from 'netmask';
-import promClient from 'prom-client';
 
 type FcLogLevel = 'debug' | 'warn' | 'info' | 'error';
 
@@ -26,7 +25,6 @@ const TAP_DEVICE_CIDR = 30;
 export default class FirecrackerClient {
   private childProcess: ChildProcess;
   private log;
-  private totalVMsGauge: promClient.Gauge;
 
   options: FcOptions;
   id: number;
@@ -37,10 +35,6 @@ export default class FirecrackerClient {
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
-    this.totalVMsGauge = promClient.register.getSingleMetric(
-      'vm_total'
-    ) as promClient.Gauge;
-
     this.id = args.id;
     this.log = logger(`firecracker(${this.id})`);
 
@@ -203,7 +197,6 @@ export default class FirecrackerClient {
 
       this.childProcess.on('close', async (code) => {
         this.log.debug(`child process closed with code ${code}`);
-        this.totalVMsGauge.dec(1);
         await this.cleanUp();
       });
 
@@ -294,8 +287,6 @@ export default class FirecrackerClient {
           action_type: 'InstanceStart',
         },
       });
-
-      this.totalVMsGauge.inc(1);
     } catch (err) {
       this.log.error('staring vm failed', err);
     }

@@ -23,10 +23,6 @@ export class VMM {
     name: 'vm_pool',
     help: 'Number of VMs in the pool',
   });
-  totalVMsGauge = new promClient.Gauge({
-    name: 'vm_total',
-    help: 'Total number of VMs',
-  });
 
   private async cleanSocketsDir() {
     try {
