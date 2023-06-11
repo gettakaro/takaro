@@ -14,4 +14,5 @@ export {
   useGameServerModuleUninstall,
   useGameServerModuleInstallation,
   useGameServerModuleInstallations,
+  useGameServerReachabilityByConfig,
 } from './queries';

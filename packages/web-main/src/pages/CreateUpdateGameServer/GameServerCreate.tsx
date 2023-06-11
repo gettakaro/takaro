@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { SubmitHandler, useForm, Control } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   Select,
@@ -12,7 +12,6 @@ import {
   DrawerFooter,
   DrawerBody,
   CollapseList,
-  Tooltip,
   ErrorMessage,
 } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
@@ -25,8 +24,16 @@ import {
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
+import {
+  AiFillCloseCircle as ErrorIcon,
+  AiFillCheckCircle as SuccessIcon,
+  AiOutlineEllipsis as EllipsisIcon,
+} from 'react-icons/ai';
 import * as Sentry from '@sentry/react';
-import { useGameServerCreate } from 'queries/gameservers';
+import {
+  useGameServerCreate,
+  useGameServerReachabilityByConfig,
+} from 'queries/gameservers';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 
@@ -39,8 +46,13 @@ export interface IFormInputs {
 const CreateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
+  const [connectionOk, setConnectionOk] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerCreate();
+  const {
+    mutateAsync: testReachabilityMutation,
+    isLoading: testingConnection,
+  } = useGameServerReachabilityByConfig();
 
   useEffect(() => {
     if (!open) {
@@ -70,6 +82,22 @@ const CreateGameServer: FC = () => {
       navigate(PATHS.gameServers.overview());
     } catch (error) {
       Sentry.captureException(error);
+    }
+  };
+
+  const { type, connectionInfo, name } = watch();
+
+  const clickTestReachability = async () => {
+    setError('');
+    const response = await testReachabilityMutation({
+      type,
+      connectionInfo: JSON.stringify(connectionInfo),
+    });
+
+    if (response.data.data.connectable) {
+      setConnectionOk(true);
+    } else {
+      setError(response.data.data.reason || 'Connection error');
     }
   };
 
@@ -135,9 +163,9 @@ const CreateGameServer: FC = () => {
                   </OptionGroup>
                 </Select>
               </CollapseList.Item>
-              {watch('type') !== undefined && (
+              {type !== undefined && (
                 <CollapseList.Item title="Connection info">
-                  {connectionInfoFieldsMap(isLoading, control)[watch('type')]}
+                  {connectionInfoFieldsMap(isLoading, control)[type]}
                 </CollapseList.Item>
               )}
               {error && <ErrorMessage message={error} />}
@@ -151,14 +179,26 @@ const CreateGameServer: FC = () => {
               onClick={() => setOpen(false)}
               color="background"
             />
-            <Tooltip label="You need to test the connection before we can save">
+            <Button
+              fullWidth
+              isLoading={testingConnection}
+              onClick={clickTestReachability}
+              text="Test connection"
+            />
+            {connectionOk && (
               <Button
                 fullWidth
                 text="Save changes"
-                type="submit"
+                onClick={() => {
+                  onSubmit({
+                    type,
+                    connectionInfo,
+                    name,
+                  });
+                }}
                 form="create-game-server-form"
               />
-            </Tooltip>
+            )}
           </ButtonContainer>
         </DrawerFooter>
       </DrawerContent>
