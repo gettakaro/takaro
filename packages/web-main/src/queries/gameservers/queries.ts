@@ -2,6 +2,7 @@ import {
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerTestReachabilityDTOAPI,
+  GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
   IdUuidDTO,
   ModuleInstallationOutputDTO,
@@ -230,8 +231,6 @@ export const useGameServerUpdate = () => {
       ).data.data;
     },
     onSuccess: async (newGameServer) => {
-      console.log(newGameServer);
-
       // Update item in server list
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
@@ -291,4 +290,22 @@ export const useGameServerReachabilityById = (id: string) => {
       (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
         .data
   );
+};
+
+export const useGameServerReachabilityByConfig = () => {
+  const apiClient = useApiClient();
+  return useMutation({
+    mutationFn: async ({
+      type,
+      connectionInfo,
+    }: {
+      type: GameServerTestReachabilityInputDTOTypeEnum;
+      connectionInfo: string;
+    }) => {
+      return await apiClient.gameserver.gameServerControllerTestReachability({
+        type,
+        connectionInfo,
+      });
+    },
+  });
 };
