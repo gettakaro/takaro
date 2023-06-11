@@ -31,9 +31,5 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
 
   @IsString()
   @IsOptional()
-  device?: string;
-
-  @IsString()
-  @IsOptional()
   ip?: string;
 }

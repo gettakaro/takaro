@@ -30,7 +30,6 @@ const tests = [
         name: 'brunkel',
         gameId: uuid(),
         steamId: '76561198021481871',
-        device: 'windows',
       });
 
       await playerService.sync(MOCK_PLAYER, this.setupData.id);
