@@ -106,7 +106,6 @@ export class VMM {
 
       // Execute the function
       await vmClient.exec(fn, data, token);
-      this.runningGauge.dec(1);
     } catch (err) {
       this.log.error(err);
       throw err;
@@ -114,6 +113,7 @@ export class VMM {
       if (vm) {
         // Destroy the VM
         await vm.shutdown();
+        this.runningGauge.dec(1);
 
         // Create a new VM to replace the one we just destroyed
         await this.createVM(vm.id);
