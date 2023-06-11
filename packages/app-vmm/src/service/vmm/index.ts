@@ -1,67 +1,134 @@
 import FirecrackerClient from '../../lib/firecracker/index.js';
 import { VmClient } from '../../lib/vmClient.js';
 import { logger } from '@takaro/util';
+import promClient from 'prom-client';
+import fs from 'node:fs/promises';
+import { config } from '../../config.js';
 
 /*
  * Virtual Machine Manager
  * Responsible for managing firecracker microVMs
  */
 export class VMM {
-  vms: Array<FirecrackerClient>;
-  log;
+  log = logger('VMM');
 
-  constructor() {
-    this.vms = [];
-    this.log = logger('VMM');
+  hotVMs: Array<FirecrackerClient> = [];
+  runningVMS: Array<number> = [];
+
+  runningGauge = new promClient.Gauge({
+    name: 'vm_running',
+    help: 'Number of running VMs',
+  });
+  poolGauge = new promClient.Gauge({
+    name: 'vm_pool',
+    help: 'Number of VMs in the pool',
+  });
+  totalVMsGauge = new promClient.Gauge({
+    name: 'vm_total',
+    help: 'Total number of VMs',
+  });
+
+  private async cleanSocketsDir() {
+    try {
+      await fs.rmdir(config.get('firecracker.sockets'), { recursive: true });
+    } catch (err) {
+      this.log.warn(err);
+    }
   }
 
-  async createVM() {
-    const id = 1;
+  async initPool(amount = 15, sync = false) {
+    await this.cleanSocketsDir();
 
-    this.log.debug(`creating a new vm with id: ${id}`);
+    this.log.info(`creating a pool of ${amount} VMs`);
 
-    const fcClient = new FirecrackerClient({
-      id,
-      logLevel: 'debug',
-    });
-    await fcClient.startVM();
+    if (sync) {
+      for (let i = 1; i <= amount; i++) {
+        await this.createVM(i);
+      }
+      return;
+    }
 
-    this.vms.push(fcClient);
+    const promises = [];
 
-    return fcClient;
+    for (let i = 1; i <= amount; i++) {
+      promises.push(this.createVM(i));
+    }
+
+    await Promise.all(promises);
   }
 
-  async removeVM(id: number) {
-    const fcClient = this.vms.at(id - 1);
+  async createVM(id: number) {
+    let vm;
 
-    this.log.debug(`killing vm with id ${id}`);
+    try {
+      vm = new FirecrackerClient({
+        id,
+        logLevel: 'debug',
+      });
+      await vm.startVM();
+    } catch (err) {
+      throw err;
+    }
 
-    await fcClient?.shutdown();
+    this.hotVMs.push(vm);
+    this.poolGauge.set(this.hotVMs.length);
 
-    this.vms.splice(id - 1, 1);
+    return vm;
   }
 
+  async getVM() {
+    const hotVM = this.hotVMs.pop();
+    this.poolGauge.set(this.hotVMs.length);
+
+    if (!hotVM) {
+      throw new Error('no available VMs');
+    }
+
+    return hotVM;
+  }
+
+  // Pops a VM from the pool, executes the function, then pushes the VM back
   async executeFunction(
     fn: string,
     data: Record<string, unknown>,
     token: string
   ) {
-    let vmId;
+    let vm;
 
     try {
-      const fcClient = await this.createVM();
-      vmId = fcClient.id;
+      // Pop a free VM from the pool
+      vm = await this.getVM();
+      this.runningGauge.inc(1);
 
-      const vmClient = new VmClient(fcClient.options.agentSocket, 8000);
+      // Wait until the VM is healthy
+      const vmClient = new VmClient(vm.options.agentSocket, 8000);
       await vmClient.waitUntilHealthy();
 
+      // Execute the function
       await vmClient.exec(fn, data, token);
+      this.runningGauge.dec(1);
     } catch (err) {
       this.log.error(err);
+      throw err;
     } finally {
-      if (vmId) {
-        await this.removeVM(vmId);
+      if (vm) {
+        // Destroy the VM
+        await vm.shutdown();
+
+        // Create a new VM to replace the one we just destroyed
+        await this.createVM(vm.id);
       }
     }
   }
+}
+
+// singleton
+let vmm: VMM | undefined;
+
+export async function getVMM() {
+  if (!vmm) {
+    vmm = new VMM();
+  }
+
+  return vmm;
 }

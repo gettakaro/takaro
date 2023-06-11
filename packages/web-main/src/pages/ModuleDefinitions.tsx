@@ -6,11 +6,8 @@ import { useModules } from 'queries/modules';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { FloatingDelayGroup } from '@floating-ui/react';
-import {
-  ModuleCard,
-  AddModuleCard,
-  ModuleCards,
-} from './ModuleDefinitions/ModuleCards';
+import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
+import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -43,24 +40,19 @@ export const ModuleDefinitions: FC = () => {
         <Divider />
         <h1>Available modules</h1>
         <ModuleCards>
+          <AddModuleCard
+            active={true}
+            onClick={() => {
+              navigate(PATHS.modules.create());
+            }}
+          >
+            <FiPlus size={24} />
+            <h3>new module</h3>
+          </AddModuleCard>
           <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
             {modules.map((mod) => (
-              <ModuleCard
-                onClick={() => {
-                  navigate(PATHS.studio.module(mod.id));
-                }}
-                key={mod.id}
-                mod={mod}
-              />
+              <ModuleCardDefinition key={mod.id} mod={mod} />
             ))}
-            <AddModuleCard
-              onClick={() => {
-                navigate(PATHS.modules.create());
-              }}
-            >
-              <FiPlus size={24} />
-              <h3>new module</h3>
-            </AddModuleCard>
             <Outlet />
           </FloatingDelayGroup>
         </ModuleCards>

@@ -63,7 +63,7 @@ async function main() {
   new EventsWorker();
   log.info('👷 Event worker started');
 
-  getSocketServer(server.server as HttpServer);
+  await getSocketServer(server.server as HttpServer);
   await server.start();
 
   log.info('🚀 Server started');
@@ -80,16 +80,6 @@ async function main() {
     const gameServerService = new GameServerService(domain.id);
     const cronjobService = new CronJobService(domain.id);
     const gameServers = await gameServerService.find({});
-
-    // GameService.find() does not decrypt the connectioninfo
-    const gameServersDecrypted = await Promise.all(
-      gameServers.results.map(async (gameserver) => {
-        const gs = await gameServerService.findOne(gameserver.id);
-        return gs;
-      })
-    );
-
-    await gameServerService.manager.init(domain.id, gameServersDecrypted);
 
     await Promise.all(
       gameServers.results.map(async (gameserver) => {

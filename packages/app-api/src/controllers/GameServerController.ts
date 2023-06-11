@@ -15,6 +15,7 @@ import {
   TestReachabilityOutput,
   CommandOutput,
   IMessageOptsDTO,
+  GAME_SERVER_TYPE,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -42,7 +43,6 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
-import { GAME_SERVER_TYPE } from '../db/gameserver.js';
 import { Response } from 'express';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
@@ -73,6 +73,10 @@ class GameServerSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
+
+  @IsOptional()
+  @IsEnum(GAME_SERVER_TYPE)
+  type!: GAME_SERVER_TYPE;
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {

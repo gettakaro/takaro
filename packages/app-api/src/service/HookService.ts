@@ -97,6 +97,10 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   regex: string;
 
+  @IsEnum(GameEvents)
+  @IsOptional()
+  eventType: GameEvents;
+
   @IsOptional()
   @IsString()
   function?: string;
@@ -152,9 +156,7 @@ export class HookService extends TakaroService<
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
-          code: '',
-        })
+        await new FunctionCreateDTO()
       );
       fnIdToAdd = newFn.id;
     }

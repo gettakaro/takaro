@@ -40,10 +40,7 @@ export const GlobalGameServerSettings: FC = () => {
   const validationSchema = useMemo(() => {
     const schema = {};
     if (data) {
-      mapSettings(
-        data.data,
-        async (key) => (schema[key] = z.string().nonempty())
-      );
+      mapSettings(data, async (key) => (schema[key] = z.string().nonempty()));
     }
     return z.object(schema);
   }, [data]);
@@ -67,7 +64,7 @@ export const GlobalGameServerSettings: FC = () => {
   const settingsComponents: ReactElement[] = [];
 
   if (data) {
-    mapSettings(data.data, async (key, value) =>
+    mapSettings(data, async (key, value) =>
       settingsComponents.push(
         <TextField
           control={control}

@@ -1,0 +1,49 @@
+Host *
+  User root
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+
+Host 1
+  HostName 10.231.0.6
+
+Host 2
+  HostName 10.231.0.10
+
+Host 3
+  HostName 10.231.0.14
+
+Host 4
+  HostName 10.231.0.18
+
+Host 5
+  HostName 10.231.0.22
+
+Host 6
+  HostName 10.231.0.26
+
+Host 7
+  HostName 10.231.0.30
+
+Host 8
+  HostName 10.231.0.34
+
+Host 9
+  HostName 10.231.0.38
+
+Host 10
+  HostName 10.231.0.42
+
+Host 11
+  HostName 10.231.0.46
+
+Host 12
+  HostName 10.231.0.50
+
+Host 13
+  HostName 10.231.0.54
+
+Host 14
+  HostName 10.231.0.58
+
+Host 15
+  HostName 10.231.0.62

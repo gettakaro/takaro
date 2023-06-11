@@ -12,28 +12,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background-color: ${({ theme }) => theme.colors.primary};
     color: white;
   }
+
   :root {
     font-size: 62.5%; /* (62.5/100) * 16px = 10px */
     box-sizing: border-box;
-  }
-
-  html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: ${({ theme }) => theme.colors.background};
-  }
-
-  body{
-    padding: 0;
-    margin: 0;
-    transition: background-color 0.2s linear;
-    overflow: hidden;
   }
 
   #root {
@@ -41,33 +23,47 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow-x: hidden;
   }
 
-  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
-    font-weight: 400; /* Default size */
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    line-height: 1.5;
     font-family: 'Inter', sans-serif;
-    font-feature-settings: "cv02","cv03","cv04","cv11";
+    font-weight: 400; /* Default size */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: ${({ theme }) => theme.colors.background};
+  }
+
+  body{
+    transition: background-color 0.2s linear;
+    overflow: hidden;
+  }
+
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
+    font-size: ${({ theme }) => theme.fontSize.medium};
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     color: ${({ theme }) => theme.colors.text};
   }
 
-  p, span, div, h4 {
-    font-size: ${({ theme }) => theme.fontSize.small};
-  }
-
   h1 {
-    font-size: ${({ theme }) => theme.fontSize.large}
-    font-weight: 800;
+    font-size: ${({ theme }) => theme.fontSize.large};
+    font-weight: 600;
   }
   h2 {
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge}
-    font-weight: 800;
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    font-weight: 600;
   }
   h3 {
-    font-size: ${({ theme }) => theme.fontSize.medium}
-    font-weight: 600;
+    font-size: ${({ theme }) => theme.fontSize.medium};
+    font-weight: 500;
   }
 
 
@@ -115,7 +111,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   button {
     display: block;
-    font-weight: 700;
     padding: ${({ theme }) =>
       `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
     border-radius: ${({ theme }) => theme.borderRadius.medium};

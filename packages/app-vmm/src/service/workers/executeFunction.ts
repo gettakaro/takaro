@@ -1,8 +1,8 @@
 import { config, EXECUTION_MODE } from '../../config.js';
 import { logger } from '@takaro/util';
 import { AdminClient, Client } from '@takaro/apiclient';
-import { getVMM } from '../../main.js';
 import { executeFunctionLocal } from './executeLocal.js';
+import { getVMM } from '../vmm/index.js';
 
 const log = logger('worker:function');
 
@@ -13,6 +13,7 @@ const takaro = new AdminClient({
     clientSecret: config.get('hydra.adminClientSecret'),
   },
   OAuth2URL: config.get('hydra.publicUrl'),
+  log: logger('adminClient'),
 });
 
 async function getJobToken(domainId: string) {
@@ -35,6 +36,7 @@ export async function executeFunction(
       token,
     },
     url: config.get('takaro.url'),
+    log: logger('domainClient'),
   });
 
   const functionRes = await client.function.functionControllerGetOne(

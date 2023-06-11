@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12002 dist/main.js'  --config ../../nodemon.json",
+    "dev": "nodemon --exec 'npm run build && node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12002 dist/main.js'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "echo 'No tests (yet :))'",
@@ -19,6 +19,10 @@
   "license": "ISC",
   "dependencies": {
     "@takaro/db": "0.0.1",
-    "@takaro/http": "0.0.1"
+    "@takaro/http": "0.0.1",
+    "netmask": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/netmask": "^2.0.0"
   }
 }

@@ -114,8 +114,8 @@ export const Welcome: FC = () => {
           </ShortTitle>
           <ContentWrapper>
             <ContentContainer>
-              <Tile game="7 days to die"></Tile>
-              <Tile game="rust">Rust</Tile>
+              <Tile game="7 days to die" />
+              <Tile game="rust" />
             </ContentContainer>
           </ContentWrapper>
         </Grid>

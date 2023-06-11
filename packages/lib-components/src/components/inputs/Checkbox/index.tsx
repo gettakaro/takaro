@@ -43,7 +43,7 @@ export const Checkbox: FC<CheckboxProps> = (props) => {
     readOnly,
     disabled,
     value,
-    labelPosition,
+    labelPosition = 'left',
     hint,
   } = defaultsApplier(props);
 

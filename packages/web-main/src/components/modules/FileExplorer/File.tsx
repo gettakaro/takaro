@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
-  EditableField,
   styled,
   Button as TakaroButton,
   Tooltip,
@@ -9,31 +8,46 @@ import {
   DialogHeading,
   DialogContent,
   DialogBody,
+  EditableField,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
   AiFillFolderOpen as DirOpenIcon,
-  AiFillFile as FileIcon,
   AiFillEdit as RenameIcon,
   AiOutlineClose as DeleteIcon,
+  AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
+
+import { DiJsBadge as JsIcon } from 'react-icons/di';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
-import { useApiClient } from 'hooks/useApiClient';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
-import { getFileName, getNewPath } from './utils';
+import { getNewPath } from './utils';
+import {
+  useCommandCreate,
+  useCommandRemove,
+  useCommandUpdate,
+  useCronJobCreate,
+  useCronJobRemove,
+  useCronJobUpdate,
+  useHookCreate,
+  useHookRemove,
+  useHookUpdate,
+} from 'queries/modules';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0.2rem 0;
+  padding: 0;
   background-color: transparent;
   padding-left: ${({ depth }) => `${depth * 2}rem`};
   border-radius: 0;
+  line-height: 2;
 
   div {
     display: flex;
@@ -46,15 +60,16 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
     overflow: hidden;
     color: ${({ isActive, theme }) =>
       isActive ? theme.colors.primary : theme.colors.text};
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.gray};
-    }
   }
 
   svg {
     margin-right: 1rem;
   }
+`;
+
+const FileContainer = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const NewFileContainer = styled.div<{ depth: number }>`
@@ -72,7 +87,7 @@ const ButtonContainer = styled.div`
 `;
 
 export interface FileProps {
-  path: string;
+  filePath: string;
 
   // This is a wrapper function around sandpack.openFile()
   // in case it is undefined it means that it is a directory
@@ -84,7 +99,7 @@ export interface FileProps {
 }
 
 export const File: FC<FileProps> = ({
-  path,
+  filePath,
   selectFile,
   isDirOpen,
   active,
@@ -93,9 +108,8 @@ export const File: FC<FileProps> = ({
 }) => {
   // TODO: create prop: IsDir() based on selectFile.
 
-  const fileName = path.split('/').filter(Boolean).pop()!;
+  const fileName = filePath.split('/').filter(Boolean).pop()!;
   const { moduleData } = useModule();
-  const apiClient = useApiClient();
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
@@ -105,12 +119,30 @@ export const File: FC<FileProps> = ({
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
 
+  const { mutateAsync: updateHook } = useHookUpdate();
+  const { mutateAsync: updateCommand } = useCommandUpdate();
+  const { mutateAsync: updateCronJob } = useCronJobUpdate();
+
+  const { mutateAsync: removeHook } = useHookRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCommand } = useCommandRemove({
+    moduleId: moduleData.id,
+  });
+  const { mutateAsync: removeCronJob } = useCronJobRemove({
+    moduleId: moduleData.id,
+  });
+
+  const { mutateAsync: createHook } = useHookCreate();
+  const { mutateAsync: createCommand } = useCommandCreate();
+  const { mutateAsync: createCronJob } = useCronJobCreate();
+
   // item is clicked in explorer
   const handleOnFileClick = (
     event: React.MouseEvent<HTMLButtonElement>
   ): void => {
     if (selectFile) {
-      selectFile(path);
+      selectFile(filePath);
     }
 
     // handle directory
@@ -120,56 +152,62 @@ export const File: FC<FileProps> = ({
   const handleRename = async (newFileName: string) => {
     setEditing(false);
 
-    const toRename = moduleData.fileMap[fileName];
+    const toRename = moduleData.fileMap[filePath];
+
     switch (toRename.type) {
       case FunctionType.Hooks:
-        await apiClient.hook.hookControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateHook({
+          hookId: toRename.itemId,
+          hook: { name: newFileName },
         });
         break;
       case FunctionType.Commands:
-        await apiClient.command.commandControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateCommand({
+          commandId: toRename.itemId,
+          command: { name: newFileName },
         });
         break;
       case FunctionType.CronJobs:
-        await apiClient.cronjob.cronJobControllerUpdate(toRename.itemId, {
-          name: newFileName,
+        await updateCronJob({
+          cronJobId: toRename.itemId,
+          cronJob: { name: newFileName },
         });
         break;
+      default:
+        throw new Error('Invalid type');
     }
 
     // change path in moduleData
     // change path in sandpack
-    const newPath = getNewPath(path, newFileName);
-    const code = sandpack.files[path].code;
+    const newPath = getNewPath(filePath, newFileName);
+    const code = sandpack.files[filePath].code;
     sandpack.files[newPath] = { code: code };
     sandpack.setActiveFile(newPath);
-    sandpack.closeFile(path);
-    delete sandpack.files[path];
+    sandpack.closeFile(filePath);
+    delete sandpack.files[filePath];
     setInternalFileName(newFileName);
   };
 
   const handleDelete = async () => {
-    const toDelete = moduleData.fileMap[getFileName(path)];
+    const toDelete = moduleData.fileMap[filePath];
 
     try {
       switch (toDelete.type) {
         case FunctionType.Hooks:
-          await apiClient.hook.hookControllerRemove(toDelete.itemId);
+          await removeHook({ hookId: toDelete.itemId });
           break;
         case FunctionType.Commands:
-          await apiClient.command.commandControllerRemove(toDelete.itemId);
+          await removeCommand({ commandId: toDelete.itemId });
           break;
         case FunctionType.CronJobs:
-          await apiClient.cronjob.cronJobControllerRemove(toDelete.itemId);
+          await removeCronJob({ cronJobId: toDelete.itemId });
           break;
         default:
           throw new Error('Invalid type');
       }
       // delete file from sandpack
-      sandpack.closeFile(path);
-      sandpack.deleteFile(path);
+      sandpack.closeFile(filePath);
+      sandpack.deleteFile(filePath);
     } catch (e) {
       // TODO: handle error
       // deleting file failed
@@ -179,28 +217,27 @@ export const File: FC<FileProps> = ({
 
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
-    const type = path.split('/').join('');
+    const type = filePath.split('/').join('');
 
     try {
-      switch (path.split('/').join('')) {
+      switch (filePath.split('/').join('')) {
         case FunctionType.Hooks:
-          await apiClient.hook.hookControllerCreate({
+          await createHook({
             moduleId: moduleData.id!,
             name: newFileName,
             eventType: 'log',
             regex: `/w+/`,
           });
-
           break;
         case FunctionType.Commands:
-          await apiClient.command.commandControllerCreate({
+          await createCommand({
             moduleId: moduleData.id!,
             name: newFileName,
             trigger: newFileName,
           });
           break;
         case FunctionType.CronJobs:
-          await apiClient.cronjob.cronJobControllerCreate({
+          await createCronJob({
             moduleId: moduleData.id!,
             name: newFileName,
             temporalValue: '0 0 * * *',
@@ -238,16 +275,16 @@ export const File: FC<FileProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setShowNewFileField(true);
-    sandpack.updateFile(`${path.slice(0, -1)}newFileeeee.tsx`);
+    sandpack.updateFile(`${filePath.slice(0, -1)}newFileeeee.tsx`);
   };
 
   const getIcon = (): JSX.Element => {
-    if (selectFile) return <FileIcon size={20} />;
+    if (selectFile) return <JsIcon size={12} />;
 
     return isDirOpen ? (
-      <DirOpenIcon fill={theme.colors.primary} size={20} />
+      <DirOpenIcon fill={theme.colors.primary} size={18} />
     ) : (
-      <DirClosedIcon fill={theme.colors.primary} size={20} />
+      <DirClosedIcon fill={theme.colors.primary} size={18} />
     );
   };
 
@@ -256,14 +293,10 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="Rename" placement="top">
-            <div>
-              <RenameIcon size={16} onClick={handleOnRenameClick} />
-            </div>
+            <RenameIcon size={18} onClick={handleOnRenameClick} />
           </Tooltip>
           <Tooltip label="Delete" placement="top">
-            <div>
-              <DeleteIcon onClick={handleOnDeleteClick} size={16} />
-            </div>
+            <DeleteIcon onClick={handleOnDeleteClick} size={18} />
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -271,9 +304,7 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="New file" placement="top">
-            <div>
-              <FileIcon size={16} onClick={handleOnNewFileClick} />
-            </div>
+            <AddFileIcon size={18} onClick={handleOnNewFileClick} />
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -292,7 +323,7 @@ export const File: FC<FileProps> = ({
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
-        <div>
+        <FileContainer>
           {getIcon()}
           {isEditing || selectFile ? (
             <EditableField
@@ -306,7 +337,7 @@ export const File: FC<FileProps> = ({
           ) : (
             <span>{fileName}</span>
           )}
-        </div>
+        </FileContainer>
 
         <AnimatePresence>
           {hover && (
@@ -323,7 +354,7 @@ export const File: FC<FileProps> = ({
 
       {showNewFileField && (
         <NewFileContainer depth={depth}>
-          <FileIcon size={20} />
+          <JsIcon width={12} />
           <EditableField
             allowEmpty={false}
             name="new-file"
@@ -340,7 +371,7 @@ export const File: FC<FileProps> = ({
           <DialogHeading>Delete file</DialogHeading>
           <DialogBody>
             <h4>
-              Are you sure you want to delete '{fileName}'? The file will be
+              Are you sure you want to uwmaken '{fileName}'? The file will be
               permanently removed.
             </h4>
             <ButtonContainer>

@@ -67,9 +67,10 @@ export class VmClient {
     });
     this.customAgent = new HttpAgent(socketPath, port);
 
+    // TODO: find a better solution than a hardcoded IP
     this.takaroURL =
       config.get('mode') === 'development'
-        ? `http://${this.getHostAddress()}:3000`
+        ? 'http://172.16.238.253:3000'
         : config.get('takaro.url');
   }
 
@@ -88,7 +89,7 @@ export class VmClient {
     return defaultInterface.address;
   }
 
-  async waitUntilHealthy(maxRetry = 5000) {
+  async waitUntilHealthy(maxRetry = 2500) {
     let response;
     let tries = 0;
 

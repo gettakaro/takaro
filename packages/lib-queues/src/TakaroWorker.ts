@@ -4,9 +4,9 @@ import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 
 export abstract class TakaroWorker<T> {
   log = logger('worker');
-  private bullWorker: Worker<T, unknown>;
+  public bullWorker: Worker<T, unknown>;
 
-  constructor(name: string, fn: Processor<T, unknown>) {
+  constructor(name: string, concurrency = 1, fn: Processor<T, unknown>) {
     const label = `worker:${name}`;
 
     const instrumentedProcessor = ctx.wrap(
@@ -19,6 +19,7 @@ export abstract class TakaroWorker<T> {
 
     this.bullWorker = new Worker(name, instrumentedProcessor, {
       connection: getRedisConnectionOptions(),
+      concurrency,
     });
   }
 }

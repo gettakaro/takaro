@@ -1223,7 +1223,7 @@ export interface FunctionCreateDTO {
    * @type {string}
    * @memberof FunctionCreateDTO
    */
-  code: string;
+  code?: string;
 }
 /**
  *
@@ -1516,7 +1516,23 @@ export interface GameServerSearchInputAllowedFilters {
    * @memberof GameServerSearchInputAllowedFilters
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  type?: GameServerSearchInputAllowedFiltersTypeEnum;
 }
+
+export const GameServerSearchInputAllowedFiltersTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerSearchInputAllowedFiltersTypeEnum =
+  typeof GameServerSearchInputAllowedFiltersTypeEnum[keyof typeof GameServerSearchInputAllowedFiltersTypeEnum];
+
 /**
  *
  * @export
@@ -2090,8 +2106,25 @@ export interface HookUpdateDTO {
    * @type {string}
    * @memberof HookUpdateDTO
    */
+  eventType?: HookUpdateDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
   function?: string;
 }
+
+export const HookUpdateDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+} as const;
+
+export type HookUpdateDTOEventTypeEnum =
+  typeof HookUpdateDTOEventTypeEnum[keyof typeof HookUpdateDTOEventTypeEnum];
+
 /**
  *
  * @export
@@ -3699,12 +3732,6 @@ export interface TakaroTokenDTO {
  * @interface TeleportPlayerInputDTO
  */
 export interface TeleportPlayerInputDTO {
-  /**
-   *
-   * @type {IPlayerReferenceDTO}
-   * @memberof TeleportPlayerInputDTO
-   */
-  player: IPlayerReferenceDTO;
   /**
    *
    * @type {number}

@@ -1,75 +1,33 @@
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import {
-  styled,
   Company,
   Tooltip,
   Dialog,
   DialogContent,
   DialogHeading,
   Button,
-  DialogBody,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
 import { FaTrash as TrashIcon, FaPencilAlt as EditIcon } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
-export const ModuleCards = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-auto-rows: 160px;
-  gap: ${({ theme }) => theme.spacing['1_5']};
-`;
-
-const ModuleCardContainer = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  padding: ${({ theme }) => theme.spacing[2]};
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-export const AddModuleCard = styled(ModuleCardContainer)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-`;
-
-const DeleteDialogContainer = styled(DialogBody)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
+import {
+  ModuleCardContainer,
+  SpacedRow,
+  ActionIconsContainer,
+  DeleteDialogContainer,
+} from './style';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
   onClick?: () => void;
 }
 
-interface IModuleEditProps {
-  mod: ModuleOutputDTO;
-}
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ActionIconsContainer = styled.span`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[1]};
-
-  svg:hover {
-    color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-export const ModuleCard: FC<IModuleCardProps> = ({ mod, onClick }) => {
+export const ModuleCardDefinition: FC<IModuleCardProps> = ({
+  mod,
+  onClick,
+}) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const { mutateAsync, isLoading: isDeleting } = useModuleRemove();
   const navigate = useNavigate();
@@ -81,8 +39,13 @@ export const ModuleCard: FC<IModuleCardProps> = ({ mod, onClick }) => {
   };
 
   return (
-    <ModuleCardContainer onClick={onClick}>
-      <Header>
+    <ModuleCardContainer
+      target="_blank"
+      href={PATHS.studio.module(mod.id)}
+      active={false}
+      onClick={onClick}
+    >
+      <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>
           {mod.builtin ? (
@@ -113,7 +76,7 @@ export const ModuleCard: FC<IModuleCardProps> = ({ mod, onClick }) => {
             </>
           )}
         </ActionIconsContainer>
-      </Header>
+      </SpacedRow>
       <p>{mod.description}</p>
       <span>
         {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}

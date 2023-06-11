@@ -18,7 +18,7 @@ export const gameServerKeys = {
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
 
-  settings: (id: string) => [...gameServerKeys.all, 'settings', id] as const,
+  settings: (id?: string) => [...gameServerKeys.all, 'settings', id] as const,
   reachability: (id: string) =>
     [...gameServerKeys.all, 'reachable', id] as const,
 };
@@ -176,15 +176,15 @@ export const useGameServerModuleUninstall = () => {
       ).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
-      queryClient.setQueryData<ModuleOutputDTO[]>(
+      queryClient.setQueryData<ModuleInstallationOutputDTO[]>(
         installedModuleKeys.list(deletedModule.gameserverId),
-        (old) =>
-          old
-            ? old.filter(
-                (installedModule) =>
-                  installedModule.id !== deletedModule.gameserverId
-              )
-            : old!
+        (old) => {
+          return old
+            ? old.filter((installedModule) => {
+                return installedModule.moduleId !== deletedModule.moduleId;
+              })
+            : old!;
+        }
       );
 
       queryClient.invalidateQueries(
@@ -198,13 +198,13 @@ export const useGameServerModuleUninstall = () => {
 };
 
 // SERVER SETTINGS
-export const useGameServerSettings = (id: string) => {
+export const useGameServerSettings = (id?: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<SettingsOutputObjectDTOAPI>({
+  return useQuery<SettingsOutputObjectDTOAPI['data']>({
     queryKey: gameServerKeys.settings(id),
     queryFn: async () =>
-      (await apiClient.settings.settingsControllerGet(undefined, id)).data,
+      (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
   });
 };
 

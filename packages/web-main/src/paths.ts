@@ -22,6 +22,10 @@ export const PATHS = {
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
     update: (serverId: string) => `/server/${serverId}/update`,
+    moduleInstallations: {
+      install: (serverId: string, moduleId: string) =>
+        `/server/${serverId}/modules/${moduleId}/install`,
+    },
   },
 
   modules: {

@@ -28,7 +28,6 @@ export function createAxiosClient(baseURL: string) {
         } ${response.status} ${response.statusText}`,
         {
           status: response.status,
-          statusText: response.statusText,
           method: response.request.method,
           url: response.request.url,
         }

@@ -159,16 +159,14 @@ export function Table<DataType extends object>({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(({ id, colSpan, column }) => (
                 <th key={id} colSpan={colSpan} scope="col">
-                  <div>
-                    {column.getCanSort() && sorting !== undefined && (
-                      <Sorting
-                        header={column.columnDef.header as string}
-                        setSorting={sorting.setSortingState!}
-                        sorting={sorting.sortingState}
-                        id={column.id}
-                      />
-                    )}
-                  </div>
+                  {column.getCanSort() && sorting !== undefined && (
+                    <Sorting
+                      header={column.columnDef.header as string}
+                      setSorting={sorting.setSortingState!}
+                      sorting={sorting.sortingState}
+                      id={column.id}
+                    />
+                  )}
                 </th>
               ))}
             </tr>

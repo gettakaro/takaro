@@ -7,7 +7,6 @@ import { useGameServer } from 'queries/gameservers';
 import { useGameServerOutletContext } from 'frames/GameServerFrame';
 
 const ConsoleContainer = styled.div`
-  width: 600px;
   height: 80vh;
 `;
 
