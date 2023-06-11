@@ -88,86 +88,77 @@ export const CommandArgumentArray: FC<Props> = ({
   ];
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <ArgumentList>
-          {fields.map((field, index) => (
-            <ArgumentCard key={field.id}>
-              <ContentContainer className="content">
-                <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-                  <Tooltip label="Move argument by dragging">
-                    <div>
-                      <DragIcon
-                        size={18}
-                        cursor="pointer"
-                        onClick={() => remove(index)}
-                      />
-                    </div>
-                  </Tooltip>
-
-                  <TextField
-                    label="Argument Name"
-                    control={control}
-                    name={`${commandId}.${index}.name`}
-                    required
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <ArgumentList>
+        {fields.map((field, index) => (
+          <ArgumentCard key={field.id}>
+            <ContentContainer className="content">
+              <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
+                <Tooltip label="Move argument by dragging">
+                  <DragIcon
+                    size={18}
+                    cursor="pointer"
+                    onClick={() => remove(index)}
                   />
-                  <TextField
-                    label="Help Text"
-                    control={control}
-                    name={`${commandId}.${index}.helpText`}
-                    required
-                  />
-                  <Select
-                    control={control}
-                    name="type"
-                    label="Command type"
-                    required
-                    render={(selectedIndex) => (
-                      <div>
-                        {argumentTypeSelectOptions[selectedIndex]?.name ??
-                          'Select...'}
-                      </div>
-                    )}
-                  >
-                    <OptionGroup label="Options">
-                      {argumentTypeSelectOptions.map(({ name, value }) => (
-                        <Option
-                          key={`${field.id}-select-${name}`}
-                          value={value}
-                        >
-                          <div>
-                            <span>{name}</span>
-                          </div>
-                        </Option>
-                      ))}
-                    </OptionGroup>
-                  </Select>
+                </Tooltip>
 
-                  <Tooltip label="Remove argument">
+                <TextField
+                  label="Argument Name"
+                  control={control}
+                  name={`${commandId}.${index}.name`}
+                  required
+                />
+                <TextField
+                  label="Help Text"
+                  control={control}
+                  name={`${commandId}.${index}.helpText`}
+                  required
+                />
+                <Select
+                  control={control}
+                  name="type"
+                  label="Command type"
+                  required
+                  render={(selectedIndex) => (
                     <div>
-                      <CloseIcon
-                        size={18}
-                        cursor="pointer"
-                        onClick={() => remove(index)}
-                      />
+                      {argumentTypeSelectOptions[selectedIndex]?.name ??
+                        'Select...'}
                     </div>
-                  </Tooltip>
-                </FloatingDelayGroup>
-              </ContentContainer>
-            </ArgumentCard>
-          ))}
-        </ArgumentList>
-        {fields.length < 5 && (
-          <Button
-            onClick={() => {
-              append({ name: '', helpText: '' });
-            }}
-            fullWidth
-            text="Add argument"
-          />
-        )}
-        <Button type="submit" text="Save command" />
-      </form>
-    </div>
+                  )}
+                >
+                  <OptionGroup label="Options">
+                    {argumentTypeSelectOptions.map(({ name, value }) => (
+                      <Option key={`${field.id}-select-${name}`} value={value}>
+                        <div>
+                          <span>{name}</span>
+                        </div>
+                      </Option>
+                    ))}
+                  </OptionGroup>
+                </Select>
+
+                <Tooltip label="Remove argument">
+                  <CloseIcon
+                    size={18}
+                    cursor="pointer"
+                    onClick={() => remove(index)}
+                  />
+                </Tooltip>
+              </FloatingDelayGroup>
+            </ContentContainer>
+          </ArgumentCard>
+        ))}
+      </ArgumentList>
+      {fields.length < 5 && (
+        <Button
+          onClick={() => {
+            append({ name: '', helpText: '' });
+          }}
+          fullWidth
+          text="Add argument"
+        />
+      )}
+      <Button type="submit" text="Save command" />
+    </form>
   );
 };
