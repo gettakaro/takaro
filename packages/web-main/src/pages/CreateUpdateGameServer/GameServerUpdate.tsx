@@ -29,7 +29,10 @@ import { PATHS } from 'paths';
 import { useParams } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { useGameServer } from 'queries/gameservers';
-import { useGameServerUpdate } from 'queries/gameservers/queries';
+import {
+  useGameServerReachabilityByConfig,
+  useGameServerUpdate,
+} from 'queries/gameservers/queries';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 
@@ -60,6 +63,7 @@ const gameTypeSelectOptions = [
 export const CreateUpdateGameServer = () => {
   const { serverId } = useParams();
   const { data, isLoading } = useGameServer(serverId!);
+  const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   if (isLoading) {
     return <>isLoading</>;
@@ -82,6 +86,11 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerUpdate();
+  const {
+    mutateAsync: testReachabilityMutation,
+    isLoading: testingConnection,
+  } = useGameServerReachabilityByConfig();
+  const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   useEffect(() => {
     if (!open) {
@@ -89,7 +98,7 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, watch } = useForm<IFormInputs>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     defaultValues: {
@@ -105,7 +114,6 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   }) => {
     try {
       setError('');
-      console.log('is this fired');
       mutateAsync({
         gameServerId: serverId!,
         gameServerDetails: {
@@ -117,6 +125,22 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
       navigate(PATHS.gameServers.overview());
     } catch (error) {
       Sentry.captureException(error);
+    }
+  };
+
+  const { type, connectionInfo, name } = watch();
+
+  const clickTestReachability = async () => {
+    setError('');
+    const response = await testReachabilityMutation({
+      type,
+      connectionInfo: JSON.stringify(connectionInfo),
+    });
+
+    if (response.data.data.connectable) {
+      setConnectionOk(true);
+    } else {
+      setError(response.data.data.reason || 'Connection error');
     }
   };
 
@@ -179,14 +203,26 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               color="background"
               type="button"
             />
-            <Tooltip label="You need to test the connection before we can save">
+            <Button
+              fullWidth
+              isLoading={testingConnection}
+              onClick={clickTestReachability}
+              text="Test connection"
+            />
+            {connectionOk && (
               <Button
                 fullWidth
                 text="Save changes"
-                type="submit"
-                form="update-game-server-form"
+                onClick={() => {
+                  onSubmit({
+                    type,
+                    connectionInfo,
+                    name,
+                  });
+                }}
+                form="create-game-server-form"
               />
-            </Tooltip>
+            )}
           </ButtonContainer>
         </DrawerFooter>
       </DrawerContent>

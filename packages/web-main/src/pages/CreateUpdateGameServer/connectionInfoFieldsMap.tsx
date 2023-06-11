@@ -53,31 +53,9 @@ export const connectionInfoFieldsMap = (
         label="Host"
         name="connectionInfo.host"
         description="Where the deployed mock server is running"
-        placeholder="127.0.0.1:3002"
+        placeholder="http://127.0.0.1:3002"
         key="mock-event-host"
         loading={isLoading}
-      />,
-      <TextField
-        control={control}
-        label="Event interval"
-        name="connectionInfo.eventInterval"
-        description="How often the server should send events to the backend (in ms)"
-        placeholder="500"
-        type="number"
-        key="mock-event-interval"
-        loading={isLoading}
-        required
-      />,
-      <TextField
-        control={control}
-        label="Player pool size"
-        name="connectionInfo.playerPoolSize"
-        description="How large is the pool of fake players"
-        placeholder="200"
-        type="number"
-        key="mock-player-pool-size"
-        loading={isLoading}
-        required
       />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
