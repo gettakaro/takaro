@@ -4,13 +4,15 @@ import { RustEmitter, RustEvent, RustEventType } from '../emitter.js';
 import { RustConnectionInfo } from '../connectionInfo.js';
 import { IGamePlayer } from '../../../interfaces/GamePlayer.js';
 import { GameEvents } from '../../../interfaces/events.js';
+import { CommandOutput } from '../../../interfaces/GameServer.js';
+import { Rust } from '../index.js';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
-  message:
+  Message:
     '169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]',
-  identifier: 0,
-  type: RustEventType.DEFAULT,
-  stacktrace: '',
+  Identifier: 0,
+  Type: RustEventType.DEFAULT,
+  Stacktrace: '',
 };
 
 const MOCK_PLAYER = new IGamePlayer().construct({
@@ -18,7 +20,6 @@ const MOCK_PLAYER = new IGamePlayer().construct({
   name: 'brunkel',
   gameId: '76561198021481871',
   steamId: '76561198021481871',
-  device: 'windows',
 });
 
 const MOCK_CONNECTION_INFO = new RustConnectionInfo().construct({
@@ -49,5 +50,53 @@ describe('rust event detection', () => {
     expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(
       await MOCK_PLAYER
     );
+  });
+
+  describe('[getPlayerLocation]', () => {
+    it('Works for a single player', async () => {
+      const res = await new CommandOutput().construct({
+        rawResult: `SteamID           DisplayName POS                    ROT               \n${
+          (
+            await MOCK_PLAYER
+          ).gameId
+        } Catalysm    (-770.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n`,
+        success: undefined,
+        errorMessage: undefined,
+      });
+
+      const rustInstance = new Rust({} as RustConnectionInfo);
+      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+
+      const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
+
+      expect(location).to.deep.equal({
+        x: -770.0,
+        y: 1.0,
+        z: -1090.7,
+      });
+    });
+
+    it('When output has multiple players', async () => {
+      const res = await new CommandOutput().construct({
+        rawResult: `SteamID           DisplayName POS                    ROT               \nfake_steam_id Catalysm    (-123.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n${
+          (
+            await MOCK_PLAYER
+          ).gameId
+        } Player2    (-780.0, 2.0, -1100.7) (1.1, -0.2, -0.2) \n76561198028175943 Player3    (-790.0, 3.0, -1110.7) (1.2, -0.3, -0.3) \n`,
+        success: undefined,
+        errorMessage: undefined,
+      });
+
+      const rustInstance = new Rust({} as RustConnectionInfo);
+      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+
+      const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
+
+      expect(location).to.deep.equal({
+        x: -780.0,
+        y: 2.0,
+        z: -1100.7,
+      });
+    });
   });
 });
