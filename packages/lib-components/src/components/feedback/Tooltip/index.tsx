@@ -15,7 +15,7 @@ import {
   useDelayGroupContext,
   useDelayGroup,
 } from '@floating-ui/react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { mergeRefs } from 'react-merge-refs';
 import { useTheme } from '../../../hooks';
 
@@ -26,7 +26,7 @@ export interface TooltipProps {
   elevation?: Elevation;
 }
 
-const Container = styled(motion.div)<{ elevation: Elevation }>`
+const Container = styled.div<{ elevation: Elevation }>`
   background: ${({ theme }) => theme.colors.background};
   color: white;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
@@ -87,23 +87,12 @@ export const Tooltip: FC<TooltipProps> = ({
         {open && (
           <Container
             elevation={elevation}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={
-              // When in "grouped phase", make the transition faster
-              // The open delay becomes 1ms during this phase.
-              typeof delay === 'object' && delay.open === 1
-                ? { duration: 0.1 }
-                : { type: 'spring', damping: 20, stiffness: 300 }
-            }
-            layoutId="tooltip"
-            ref={floating}
             style={{
               position: strategy,
               top: y ?? 0,
               left: x ?? 0,
             }}
+            ref={floating}
             {...getFloatingProps()}
           >
             {label}
