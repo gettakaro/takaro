@@ -1,17 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Button,
-  Option,
-  OptionGroup,
-  Select,
-  TextField,
-} from '@takaro/lib-components';
+import { Option, OptionGroup, Select, TextField } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useHook, useHookUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
+import { StyledButton } from './style';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
@@ -74,7 +69,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
           ))}
         </OptionGroup>
       </Select>
-      <Button fullWidth type="submit" text="Save" />
+      <StyledButton fullWidth type="submit" text="Save" />
     </form>
   );
 };

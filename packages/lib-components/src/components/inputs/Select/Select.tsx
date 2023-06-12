@@ -58,6 +58,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
     disabled,
     hint,
     loading,
+    minWidth,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -188,7 +189,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
         dataRef: context.dataRef,
       }}
     >
-      <Container>
+      <Container minWidth={minWidth}>
         {label && (
           <Label
             error={!!error}
@@ -210,7 +211,7 @@ export const Select: FC<PropsWithChildren<SelectProps>> = (props) => {
           readOnly={readOnly}
         >
           {render(selectedIndex - 1)}
-          {!readOnly && <ArrowIcon size={18} />}
+          {!readOnly && <ArrowIcon size={14} />}
 
           {/* error && <ErrorMessage message={error.message!} /> */}
         </SelectButton>

@@ -51,7 +51,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   }, [debouncedCode, sandpack.activeFile, moduleData.fileMap]);
 
   return (
-    <SandpackThemeProvider theme="auto">
+    <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
         <StyledFileTabs closableTabs />
         <MonacoEditor

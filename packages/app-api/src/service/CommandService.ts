@@ -118,8 +118,7 @@ export class CommandArgumentCreateDTO
   defaultValue?: string;
 
   @IsNumber()
-  @IsOptional()
-  position?: number;
+  position: number;
 
   @IsUUID()
   commandId: string;

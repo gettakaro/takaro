@@ -17,6 +17,7 @@ export interface InputProps extends DefaultInputProps {
   hint?: string;
   description?: string;
   value?: unknown;
+  minWidth?: string;
 }
 
 type Required<T> = {

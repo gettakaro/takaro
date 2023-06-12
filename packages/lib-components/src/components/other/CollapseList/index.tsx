@@ -49,7 +49,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
   const theme = useTheme();
 
   return (
-    <>
+    <div style={{ width: '100%' }}>
       <Header
         isCollapsed={isCollapsed}
         onClick={() => setIsCollapsed((prev) => !prev)}
@@ -85,7 +85,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
