@@ -30,6 +30,7 @@ export interface TextFieldProps extends InputProps {
   prefix?: string;
   suffix?: string;
   type?: FieldType;
+  marginBottom?: string;
 }
 
 const defaultsApplier =
@@ -52,6 +53,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
     type = 'text',
     prefix,
     suffix,
+    marginBottom,
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState(false);
@@ -106,7 +108,7 @@ export const TextField: FC<TextFieldProps> = (props) => {
   }
 
   return (
-    <Container>
+    <Container marginBottom={marginBottom}>
       {label && (
         <Label
           required={required}
