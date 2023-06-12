@@ -293,10 +293,14 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="Rename" placement="top">
-            <RenameIcon size={18} onClick={handleOnRenameClick} />
+            <span>
+              <RenameIcon size={18} onClick={handleOnRenameClick} />
+            </span>
           </Tooltip>
           <Tooltip label="Delete" placement="top">
-            <DeleteIcon onClick={handleOnDeleteClick} size={18} />
+            <span>
+              <DeleteIcon onClick={handleOnDeleteClick} size={18} />
+            </span>
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -304,7 +308,9 @@ export const File: FC<FileProps> = ({
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
           <Tooltip label="New file" placement="top">
-            <AddFileIcon size={18} onClick={handleOnNewFileClick} />
+            <span>
+              <AddFileIcon size={18} onClick={handleOnNewFileClick} />
+            </span>
           </Tooltip>
         </FloatingDelayGroup>
       );
@@ -316,7 +322,6 @@ export const File: FC<FileProps> = ({
       <Button
         isActive={active ? true : false}
         depth={depth}
-        title={fileName}
         onClick={handleOnFileClick}
         type="button"
         role="handle"

@@ -1,7 +1,5 @@
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { TextField, Switch } from '@takaro/lib-components';
-import { IFormInputs as ICreateFormInputs } from './GameServerCreate';
-import { IFormInputs as IUpdateFormInputs } from './GameServerUpdate';
 import { Control } from 'react-hook-form';
 
 export const connectionInfoFieldsMap = (
