@@ -23,20 +23,16 @@ const Studio: FC = () => {
   const { sandpack } = useSandpack();
   const { moduleData } = useModule();
 
+  const activeModule = moduleData.fileMap[sandpack.activeFile];
+
   function getConfigComponent(type: FunctionType) {
     switch (type) {
       case FunctionType.Hooks:
-        return (
-          <HookConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
-        );
+        return <HookConfig moduleItem={activeModule} />;
       case FunctionType.Commands:
-        return (
-          <CommandConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
-        );
+        return <CommandConfig moduleItem={activeModule} />;
       case FunctionType.CronJobs:
-        return (
-          <CronJobConfig moduleItem={moduleData.fileMap[sandpack.activeFile]} />
-        );
+        return <CronJobConfig moduleItem={activeModule} />;
       default:
         return null;
     }
@@ -63,7 +59,7 @@ const Studio: FC = () => {
             width: '300px',
             height: '100vh',
           }}
-          minWidth="300px"
+          minWidth="500px"
           maxHeight="100vh"
           minHeight="100vh"
         >
@@ -72,13 +68,11 @@ const Studio: FC = () => {
               <FileExplorer sandpack={sandpack} />
             </CollapseList.Item>
             <CollapseList.Item title="Config">
-              {getConfigComponent(moduleData.fileMap[sandpack.activeFile].type)}
+              {getConfigComponent(activeModule.type)}
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>
-        <div style={{ width: '100%' }}>
-          <Editor />
-        </div>
+        <Editor />
       </Container>
     </Fragment>
   );
