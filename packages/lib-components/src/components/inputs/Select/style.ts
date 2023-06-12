@@ -1,9 +1,9 @@
 import { styled } from '../../../styled';
 
 // This wraps everything
-export const Container = styled.div`
+export const Container = styled.div<{ minWidth?: string }>`
   display: relative;
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  min-width: ${({ minWidth }) => minWidth || 'auto'};
 `;
 
 export const SelectButton = styled.div<{ readOnly: boolean }>`
