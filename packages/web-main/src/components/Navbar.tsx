@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Company, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { AiOutlineLink as ExternalLinkIcon } from 'react-icons/ai';
+import { GameServerSelectNav } from './GameServerSelectNav';
 
 const Container = styled(motion.div)`
   width: 0;
@@ -93,9 +94,10 @@ export interface NavbarLink {
 
 interface NavbarProps {
   links: NavbarLink[];
+  gameServerNav?: boolean;
 }
 
-export const Navbar: FC<NavbarProps> = ({ links }) => {
+export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
   return (
     <Container
       animate={{ width: 325 }}
@@ -104,6 +106,8 @@ export const Navbar: FC<NavbarProps> = ({ links }) => {
       <Link className="company-icon" to={PATHS.home()}>
         <Company />
       </Link>
+
+      {gameServerNav && <GameServerSelectNav />}
 
       <Nav>
         {links.map(({ path, label, icon, external = false }) =>
