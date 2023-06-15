@@ -1,8 +1,8 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { useForm } from 'react-hook-form';
-import { ControlledSlider, ControlledSliderProps } from './Controlled';
+import { useForm, useWatch } from 'react-hook-form';
+import { SliderProps, Slider } from '../../../components';
 import 'rc-slider/assets/index.css';
 
 const Wrapper = styled.div`
@@ -18,13 +18,28 @@ const Wrapper = styled.div`
 
 export default {
   title: 'Inputs/Slider',
-  component: ControlledSlider,
+  component: Slider,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
-} as Meta<ControlledSliderProps>;
+  args: {
+    readOnly: false,
+    description: 'Slider description',
+    min: 0,
+    max: 100,
+    dots: false,
+    hint: 'This is the hint',
+    name: 'Slider',
+    step: 1,
+    showTooltip: true,
+    label: 'Slider label',
+    disabled: false,
+    loading: false,
+    required: false,
+  },
+} as Meta<SliderProps>;
 
-const Template: StoryFn<ControlledSliderProps> = (args) => {
+const Template: StoryFn<SliderProps> = (args) => {
   const { control } = useForm();
-  return <ControlledSlider {...args} control={control} />;
+  return <Slider {...args} control={control} />;
 };
 
 // Default Checkbox
@@ -34,7 +49,6 @@ Default.args = {
   min: 0,
   max: 100,
   step: 1,
-  showDots: false,
   loading: false,
   label: 'slider label',
   color: 'primary',
@@ -60,4 +74,30 @@ StepsWithDots.args = {
   showDots: true,
   loading: false,
   color: 'primary',
+};
+
+export const onChange: StoryFn<SliderProps> = (args) => {
+  const { control } = useForm({ mode: 'onChange' });
+  const sliderValue = useWatch({ control, name: 'Slider' });
+
+  return (
+    <>
+      <Slider
+        control={control}
+        description="slider description"
+        readOnly={args.readOnly}
+        label={args.label}
+        loading={args.loading}
+        showTooltip={args.showTooltip}
+        showDots={args.showDots}
+        max={args.max}
+        min={args.min}
+        name={args.name}
+        step={args.step}
+        required={args.required}
+        disabled={args.disabled}
+      />
+      <pre>value: {sliderValue}</pre>
+    </>
+  );
 };

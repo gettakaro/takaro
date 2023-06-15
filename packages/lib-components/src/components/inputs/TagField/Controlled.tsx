@@ -1,26 +1,34 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { GenericTagField, TagFieldProps } from '.';
-import { ControlledInputProps } from '../InputProps';
+import { TagFieldProps, GenericTagField } from '.';
+import { Label, ErrorMessage } from '../../../components';
+import { Container, TagsContainer } from './style';
+import {
+  ControlledInputProps,
+  defaultInputProps,
+  defaultInputPropsFactory,
+} from '../InputProps';
 
 export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
 
-export const ControlledTagField: FC<ControlledTagFieldProps> = ({
-  name,
-  control,
-  placeholder,
-  hint,
-  size,
-  label,
-  disabled,
-  required,
-  description,
-  onRemoved,
-  readOnly,
-  onExisting,
-  separators,
-  isEditOnRemove,
-}) => {
+const defaultsApplier =
+  defaultInputPropsFactory<ControlledTagFieldProps>(defaultInputProps);
+
+export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
+  const {
+    loading,
+    label,
+    hint,
+    disabled,
+    required,
+    description,
+    placeholder,
+    name,
+    size,
+    readOnly,
+    control,
+  } = defaultsApplier(props);
+
   const {
     field,
     fieldState: { error },
@@ -29,27 +37,65 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = ({
     control,
   });
 
+  const [showError, setShowError] = useState<boolean>(false);
+
+  const handleOnBlur = () => {
+    field.onBlur();
+    setShowError(false);
+  };
+
+  const handleOnFocus = () => {};
+
+  if (loading) {
+    return (
+      <Container>
+        {label && (
+          <Label
+            required={required}
+            htmlFor={name}
+            error={!!error}
+            size={size}
+            disabled={disabled}
+            text={label}
+            position="top"
+          />
+        )}
+        <TagsContainer className="placeholder" />
+      </Container>
+    );
+  }
+
   return (
-    <GenericTagField
-      placeholder={placeholder}
-      label={label}
-      size={size}
-      hint={hint}
-      name={name}
-      value={field.value}
-      onChange={field.onChange}
-      onBlur={field.onBlur}
-      loading={false}
-      disabled={disabled}
-      required={required}
-      error={error?.message}
-      ref={field.ref}
-      description={description}
-      onRemoved={onRemoved}
-      readOnly={readOnly}
-      onExisting={onExisting}
-      separators={separators}
-      isEditOnRemove={isEditOnRemove}
-    />
+    <Container>
+      {label && (
+        <Label
+          text={label}
+          htmlFor={name}
+          error={false}
+          disabled={disabled}
+          required={required}
+          position="top"
+          size="medium"
+          hint={hint}
+        />
+      )}
+
+      <GenericTagField
+        readOnly={readOnly}
+        size={size}
+        name={name}
+        ref={field.ref}
+        onBlur={handleOnBlur}
+        onFocus={handleOnFocus}
+        onChange={field.onChange}
+        placeholder={placeholder}
+        hasError={!!error}
+        value={field.value as string[]}
+      />
+      {description && <p>{description}</p>}
+      {error && error.message && showError && (
+        <ErrorMessage message={error.message} />
+      )}
+    </Container>
   );
 };

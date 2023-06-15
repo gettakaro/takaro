@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useContext } from 'react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { SelectContext } from './context';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
 

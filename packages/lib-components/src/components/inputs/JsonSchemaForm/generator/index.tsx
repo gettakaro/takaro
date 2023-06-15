@@ -26,8 +26,8 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
     res.default = input.default;
   }
 
-  if (input.title) {
-    res.title = input.title;
+  if (input.name) {
+    res.title = input.name;
   }
 
   if (input.description) {
@@ -79,10 +79,6 @@ export function generateJSONSchema(inputs: Array<Input>): TakaroConfigSchema {
   };
 
   for (const input of inputs) {
-    schema.properties[input.name] = {
-      type: input.type,
-    };
-
     if (input.required !== false) {
       schema.required.push(input.name);
     }
@@ -197,13 +193,15 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   });
 
   useEffect(() => {
-    append({
-      name: 'Default name',
-      type: InputType.string,
-      description: 'A helpful description',
-      required: true,
-      default: 'The default value',
-    });
+    if (!configFields?.length) {
+      append({
+        name: 'Default name',
+        type: InputType.string,
+        description: 'A helpful description',
+        required: true,
+        default: 'The default value',
+      });
+    }
   }, []);
 
   useEffect(() => {

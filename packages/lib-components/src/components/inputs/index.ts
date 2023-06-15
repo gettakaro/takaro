@@ -1,31 +1,33 @@
-export { ControlledCheckBox as CheckBox } from './CheckBox/Controlled';
-export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox/Controlled';
+export { ControlledCheckBox as CheckBox } from './CheckBox';
+export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox';
 
-export { ControlledSelect as Select } from './Select/Controlled';
-export { OptionGroup, Option } from './Select';
+export { ControlledSelect as Select, OptionGroup, Option } from './Select';
+export type {
+  ControlledSelectProps as SelectProps,
+  OptionGroupProps,
+  OptionProps,
+} from './Select';
 
-export type { OptionProps, OptionGroupProps } from './Select';
+export { ControlledSwitch as Switch } from './Switch';
+export type { ControlledSwitchProps as SwitchProps } from './Switch';
 
-export { ControlledSwitch as Switch } from './Switch/Controlled';
-export type { ControlledSwitchProps as SwitchProps } from './Switch/Controlled';
+export { ControlledTextField as TextField } from './TextField';
+export type { ControlledTextFieldProps as TextFieldProps } from './TextField';
 
-export { ControlledTextField as TextField } from './TextField/Controlled';
-export type { ControlledTextFieldProps as TextFieldProps } from './TextField/Controlled';
+export { ControlledTextAreaField as TextAreaField } from './TextAreaField';
+export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField';
 
-export { ControlledTextAreaField as TextAreaField } from './TextAreaField/Controlled';
-export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField/Controlled';
+export { ControlledSlider as Slider } from './Slider';
+export type { ControlledSliderProps as SliderProps } from './Slider';
 
-export { ControlledSlider as Slider } from './Slider/Controlled';
-export type { ControlledSlider } from './Slider/Controlled';
-
-export { ControlledCodeField as CodeField } from './CodeField/Controlled';
-export type { ControlledCodeFieldProps as CodeFieldProps } from './CodeField/Controlled';
+export { CodeField } from './CodeField';
+export type { CodeFieldProps } from './CodeField';
 
 export { ControlledRadioGroup as RadioGroup } from './RadioGroup/Controlled';
 export type { ControlledRadioGroupProps as RadioGroupProps } from './RadioGroup/Controlled';
 
-export { ControlledTagField as TagField } from './TagField/Controlled';
-export type { ControlledTagFieldProps as TagFieldProps } from './TagField/Controlled';
+export { ControlledTagField as TagField } from './TagField';
+export type { ControlledTagFieldProps as TagFieldProps } from './TagField';
 
 export { EditableField } from './EditableField';
 export type { EditableFieldProps } from './EditableField';

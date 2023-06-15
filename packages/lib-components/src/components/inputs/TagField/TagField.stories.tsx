@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { TagField, TagFieldProps } from '../../../components';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 export default {
   title: 'Inputs/TagField',
@@ -23,7 +23,7 @@ export default {
   },
 } as Meta<TagFieldProps>;
 
-export const Default: StoryFn<TagFieldProps> = (args) => {
+export const OnSubmit: StoryFn<TagFieldProps> = (args) => {
   const { control } = useForm();
 
   const beforeAddValidationSchema = z.object({
@@ -35,19 +35,22 @@ export const Default: StoryFn<TagFieldProps> = (args) => {
       <h1>Add Fruits</h1>
       <pre>paste tester: apple,banana,jeroen</pre>
       <TagField
-        name={args.name}
-        label={args.label}
-        control={control}
-        hint={args.hint}
-        placeholder={args.placeholder}
-        disabled={args.disabled}
-        isEditOnRemove={args.isEditOnRemove}
+        {...args}
         tagValidationSchema={beforeAddValidationSchema}
-        required={args.required}
-        readOnly={args.readOnly}
-        separators={args.separators}
-        description={args.description}
+        control={control}
       />
     </div>
+  );
+};
+
+export const OnChange: StoryFn<TagFieldProps> = (args) => {
+  const { control } = useForm({ mode: 'onChange' });
+  const TagFieldValues = useWatch({ control, name: args.name });
+
+  return (
+    <>
+      <TagField {...args} control={control} />
+      <pre>{TagFieldValues}</pre>
+    </>
   );
 };

@@ -20,7 +20,7 @@ export const StringField = ({
     schema.enum &&
     schema.enum.length &&
     uiSchema &&
-    uiSchema!['ui:widget'] === 'radioWidget'
+    uiSchema['ui:widget'] === 'radioWidget'
   ) {
     return (
       <RadioWidget
@@ -52,7 +52,7 @@ export const StringField = ({
     schema.enum &&
     schema.enum.length &&
     uiSchema &&
-    uiSchema!['ui:widget'] === 'selectWidget'
+    uiSchema['ui:widget'] === 'selectWidget'
   ) {
     return (
       <SelectWidget
@@ -83,14 +83,12 @@ export const StringField = ({
   return (
     <GenericTextField
       name={name}
-      onChange={(val) => onChange(val)}
-      onBlur={() => {
-        /* TODO */
+      onChange={(val: string) => {
+        onChange(val);
       }}
       disabled={disabled}
       placeholder={placeholder}
-      loading={false}
-      error={rawErrors ? rawErrors[0] : undefined}
+      hasError={rawErrors ? !!rawErrors.length : false}
       required={required}
       readOnly={readonly}
       value={schema.default?.toString() ?? ''}

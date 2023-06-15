@@ -1,8 +1,7 @@
 import { forwardRef, KeyboardEvent, ClipboardEvent, useState } from 'react';
 import { GenericInputProps } from '../InputProps';
 import { ZodType } from 'zod';
-import { Container, TagsContainer, Tag } from './style';
-import { ErrorMessage, Label } from '../../../components';
+import { TagsContainer, Tag } from './style';
 import { splitPaste, useDidUpdateEffect } from './util';
 
 const defaultSeparators = ['Enter'];
@@ -17,13 +16,13 @@ export interface TagFieldProps {
   onExisting?: (tag: string) => void;
   placeholder?: string;
   onKeyUp?: (e: KeyboardEvent<HTMLInputElement>) => void;
-  description?: string;
 }
 
 // these are props that should only be available on the generic version.
-export interface GenericTagFieldProps extends TagFieldProps, GenericInputProps {
-  value: string[];
-}
+export type GenericTagFieldProps = TagFieldProps &
+  GenericInputProps<HTMLInputElement> & {
+    value: string[];
+  };
 
 export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
   (
@@ -33,26 +32,21 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       name,
       readOnly,
       placeholder,
-      label,
       // TODO: tagValidationSchema,
       disableBackspaceRemove,
-      onChange,
       value = [],
       onKeyUp,
       onExisting,
       isEditOnRemove,
       disabled = false,
-      required = false,
-      description,
-      error,
-      onBlur,
-      hint,
+      onBlur = () => {},
+      onFocus = () => {},
+      onChange,
     },
     ref
   ) => {
     const combinedSeparators = [...defaultSeparators, ...separators];
     const [tags, setTags] = useState<string[]>(value);
-    const [showError, setShowError] = useState(false);
 
     useDidUpdateEffect(() => {
       onChange(tags);
@@ -97,11 +91,6 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       onRemoved && onRemoved(text);
     };
 
-    const handleOnBlur = () => {
-      onBlur();
-      setShowError(false);
-    };
-
     const handleOnPaste = (event: ClipboardEvent<HTMLInputElement>) => {
       const pasteText = event.clipboardData.getData('text');
       if (pasteText.length < 1) return;
@@ -116,43 +105,28 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     };
 
     return (
-      <Container>
-        {label && (
-          <Label
-            text={label}
-            htmlFor={name}
-            error={false}
+      <TagsContainer aria-labelledby={name} ref={ref}>
+        {tags.map((tag) => (
+          <Tag
+            key={tag}
+            label={tag}
+            onDelete={() => onTagDelete(tag)}
             disabled={disabled}
-            required={required}
-            position="top"
-            size="medium"
-            hint={hint}
           />
-        )}
-        <TagsContainer aria-labelledby={name} ref={ref}>
-          {tags.map((tag) => (
-            <Tag
-              key={tag}
-              label={tag}
-              onDelete={() => onTagDelete(tag)}
-              disabled={disabled}
-            />
-          ))}
-          <input
-            type="text"
-            name={name}
-            placeholder={placeholder}
-            disabled={disabled}
-            onKeyDown={handleKeyDown}
-            onKeyUp={onKeyUp}
-            readOnly={readOnly}
-            onBlur={handleOnBlur}
-            onPaste={handleOnPaste}
-          />
-        </TagsContainer>
-        {description && <p>{description}</p>}
-        {error && showError && <ErrorMessage message={error} />}
-      </Container>
+        ))}
+        <input
+          type="text"
+          name={name}
+          placeholder={placeholder}
+          disabled={disabled}
+          onKeyDown={handleKeyDown}
+          onKeyUp={onKeyUp}
+          readOnly={readOnly}
+          onBlur={onBlur}
+          onPaste={handleOnPaste}
+          onFocus={onFocus}
+        />
+      </TagsContainer>
     );
   }
 );

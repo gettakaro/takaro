@@ -1,14 +1,10 @@
 import Form from '@rjsf/core';
-import {
-  ErrorListProps,
-  FormContextType,
-  RJSFSchema,
-  UiSchema,
-} from '@rjsf/utils';
+import { FormContextType, RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { FC, Fragment, PropsWithChildren } from 'react';
 import { customFields } from './fields';
 import { customWidgets } from './widgets';
+import { customTemplates } from './templates';
 
 interface JsonSchemaFormProps {
   schema: RJSFSchema;
@@ -16,12 +12,6 @@ interface JsonSchemaFormProps {
   formContext?: FormContextType;
   initialData: unknown;
   onChange?: (data: unknown) => void;
-}
-
-function ErrorListTemplate(_props: ErrorListProps) {
-  // This is a stub component, which effectively disables the default error list
-  // Otherwise, we have errors displayed twice, once on the field and once on top (this error list)
-  return <></>;
 }
 
 export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
@@ -37,10 +27,11 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
       fields={customFields}
       widgets={customWidgets}
       uiSchema={uiSchema}
+      showErrorList={false}
       formData={initialData}
       validator={validator}
       formContext={formContext}
-      templates={{ ErrorListTemplate }}
+      templates={customTemplates}
       onChange={onChange}
     >
       <Fragment />

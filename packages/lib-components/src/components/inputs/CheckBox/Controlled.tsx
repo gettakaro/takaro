@@ -1,46 +1,126 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
-import { CheckBoxProps, GenericCheckBox } from '.';
-import { ControlledInputProps } from '../InputProps';
+import { GenericCheckBox } from '.';
+import { Container, CheckboxContainer } from './style';
+import { Label, ErrorMessage } from '../../../components';
 
-export interface ControlledCheckBoxProps
-  extends CheckBoxProps,
-    ControlledInputProps {}
+import {
+  defaultInputProps,
+  defaultInputPropsFactory,
+  ControlledInputProps,
+} from '../InputProps';
 
-export const ControlledCheckBox: FC<ControlledCheckBoxProps> = ({
-  hint,
-  description,
-  disabled,
-  loading,
-  size,
-  control,
-  name,
-  required,
-  label,
-  readOnly,
-  labelPosition,
-}) => {
-  const { field, fieldState } = useController({
+export interface CheckBoxProps {
+  labelPosition?: 'left' | 'right';
+}
+
+export type ControlledCheckBoxProps = ControlledInputProps & CheckBoxProps;
+
+const defaultsApplier =
+  defaultInputPropsFactory<ControlledCheckBoxProps>(defaultInputProps);
+
+export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
+  const {
+    name,
+    size,
+    label,
+    loading,
+    required,
+    readOnly,
+    disabled,
+    description,
+    labelPosition = 'left',
+    hint,
+    control,
+  } = defaultsApplier(props);
+
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
     name,
     control,
   });
 
+  if (loading) {
+    return (
+      <Container>
+        {/* CASE: Show label before <CheckBox /> */}
+        {labelPosition === 'left' && label && (
+          <Label
+            error={!!error}
+            position={labelPosition}
+            size={size}
+            text={label}
+            disabled={disabled}
+            required={required}
+            hint={hint}
+            htmlFor={name}
+          />
+        )}
+        <CheckboxContainer
+          className="placeholder"
+          readOnly={readOnly}
+          error={!!error}
+          disabled={disabled}
+        />
+        {/* CASE: show label after <CheckBox /> */}
+        {labelPosition === 'right' && label && (
+          <Label
+            error={!!error}
+            position={labelPosition}
+            size={size}
+            text={label}
+            disabled={disabled}
+            required={required}
+            hint={hint}
+            htmlFor={name}
+          />
+        )}
+      </Container>
+    );
+  }
+
   return (
-    <GenericCheckBox
-      labelPosition={labelPosition}
-      readOnly={readOnly}
-      label={label}
-      required={required}
-      name={name}
-      size={size}
-      loading={loading}
-      disabled={disabled}
-      description={description}
-      hint={hint}
-      error={fieldState.error?.message}
-      onChange={field.onChange}
-      onBlur={field.onBlur}
-      value={field.value}
-    />
+    <Container>
+      {/* CASE: Show label before <CheckBox /> */}
+      {labelPosition === 'left' && label && (
+        <Label
+          error={!!error}
+          position={labelPosition}
+          size={size}
+          text={label}
+          disabled={disabled}
+          required={required}
+          htmlFor={name}
+        />
+      )}
+      <GenericCheckBox
+        name={name}
+        disabled={disabled}
+        size={size}
+        onBlur={field.onBlur}
+        readOnly={readOnly}
+        hasError={!!error}
+        required={required}
+        onChange={field.onChange}
+        value={field.value}
+      />
+
+      {/* CASE: show label after <CheckBox /> */}
+      {labelPosition === 'right' && label && (
+        <Label
+          error={!!error}
+          position={labelPosition}
+          text={label}
+          disabled={disabled}
+          required={required}
+          htmlFor={name}
+          size={size}
+        />
+      )}
+      {error && error.message && <ErrorMessage message={error.message} />}
+      {description && <p>description</p>}
+    </Container>
   );
 };

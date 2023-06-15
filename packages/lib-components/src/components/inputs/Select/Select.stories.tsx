@@ -1,10 +1,15 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useMemo, useState } from 'react';
-import { Button } from '../../../components';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Button,
+  SelectProps,
+  Select,
+  OptionGroup,
+  Option,
+} from '../../../components';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../styled';
-import { Select, SelectProps, Option, OptionGroup } from './index';
 import { films } from './data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +18,8 @@ export default {
   title: 'Inputs/Select',
   args: {
     label: 'Film',
+    description: 'This is the description',
+    hint: 'This is the hint',
   },
 } as Meta<SelectProps>;
 
@@ -25,7 +32,43 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const Default: StoryFn<SelectProps> = (args) => {
+export const onChange: StoryFn<SelectProps> = (args) => {
+  const { control } = useForm();
+  const selectValue = useWatch({ control, name: 'film' });
+
+  return (
+    <>
+      <Select
+        description={args.description}
+        label={args.label}
+        control={control}
+        name="film"
+        hint={args.hint}
+        render={(selectedIndex) => (
+          <div>
+            {films[selectedIndex] && (
+              <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
+            )}
+            {films[selectedIndex]?.name ?? 'Select...'}
+          </div>
+        )}
+      >
+        <OptionGroup label="films">
+          {films.map(({ name }) => (
+            <Option key={name} value={name}>
+              <div>
+                <span>{name}</span>
+              </div>
+            </Option>
+          ))}
+        </OptionGroup>
+      </Select>
+      <pre>result: {selectValue}</pre>
+    </>
+  );
+};
+
+export const OnSubmit: StoryFn<SelectProps> = (args) => {
   type FormFields = { film: string };
   const [result, setResult] = useState<string>('none');
 
@@ -55,6 +98,7 @@ export const Default: StoryFn<SelectProps> = (args) => {
           control={control}
           name="film"
           label={args.label}
+          description={args.description}
           render={(selectedIndex) => (
             <div>
               {films[selectedIndex] && (
@@ -76,7 +120,7 @@ export const Default: StoryFn<SelectProps> = (args) => {
         </Select>
         <Button type="submit" text="Submit" />
       </form>
-      <span>result: {result}</span>
+      <pre>result: {result}</pre>
     </>
   );
 };

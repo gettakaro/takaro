@@ -9,7 +9,7 @@ export enum InputType {
 export interface BaseObject {
   type: InputType;
   required?: boolean;
-  title?: string;
+  name?: string;
   description?: string;
 }
 

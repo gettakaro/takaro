@@ -5,7 +5,6 @@ import {
   GenericInputProps,
 } from '../InputProps';
 import { GenericRadio } from './Radio';
-import { FieldSet } from './style';
 
 export interface Option {
   labelPosition: 'left' | 'right';
@@ -13,7 +12,7 @@ export interface Option {
   value: string;
 }
 
-export interface RadioGroupProps extends GenericInputProps {
+export interface RadioGroupProps extends GenericInputProps<HTMLDivElement> {
   options: Option[];
 }
 
@@ -23,18 +22,17 @@ const defaultsApplier =
 // TODO: implement hint and description
 export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
   const {
-    loading,
     readOnly,
     value,
     name,
     size,
-    label,
     options,
     required,
     onChange,
     onBlur,
-    error,
+    hasError,
     disabled,
+    onFocus,
   } = defaultsApplier(props);
 
   const [selected, setSelected] = useState<string>(
@@ -45,29 +43,24 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
   );
 
   return (
-    <FieldSet>
-      <legend>{label}</legend>
-      <div>
-        {options.map(({ label, labelPosition, value }) => (
-          <GenericRadio
-            key={`radio-option-${label}-${name}`}
-            onChange={onChange}
-            onBlur={onBlur}
-            error={error}
-            label={label}
-            labelPosition={labelPosition}
-            loading={loading}
-            name={name}
-            readOnly={readOnly}
-            selected={selected === value}
-            setSelected={setSelected}
-            value={value}
-            size={size}
-            required={required}
-            disabled={disabled}
-          />
-        ))}
-      </div>
-    </FieldSet>
+    <>
+      {options.map(({ label, value }) => (
+        <GenericRadio
+          key={`radio-option-${label}-${name}`}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          name={name}
+          readOnly={readOnly}
+          selected={selected === value}
+          setSelected={setSelected}
+          value={value as string}
+          size={size}
+          required={required}
+          disabled={disabled}
+          hasError={hasError}
+        />
+      ))}
+    </>
   );
 };

@@ -9,24 +9,24 @@ import React, {
 import { Container, InputContainer, Input, LoadingField } from './style';
 import {
   defaultInputProps,
-  GenericInputProps,
   defaultInputPropsFactory,
+  ControlledInputProps,
 } from '../InputProps';
 import { Label, ErrorMessage } from '../../../components';
+import { useController } from 'react-hook-form';
 
-export interface CodeFieldProps {
+export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
   name: string;
   fields: number;
   allowedCharacters?: RegExp;
   autoSubmit?: () => unknown;
-}
-
-type GenericCodeFieldProps = GenericInputProps & CodeFieldProps;
+};
 
 const defaultsApplier =
-  defaultInputPropsFactory<GenericCodeFieldProps>(defaultInputProps);
+  defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
 
-export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
+// TODO: implement readonly
+export const CodeField: FC<CodeFieldProps> = (props) => {
   const {
     loading,
     name,
@@ -36,13 +36,18 @@ export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
     hint,
     size,
     disabled,
-    onChange,
-    error,
+    control,
     required,
+    description,
     label,
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState<boolean>(false);
+
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control });
 
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
@@ -54,7 +59,7 @@ export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
 
   const sendResult = () => {
     const res = fieldRefs.current.map((field) => field.value).join('');
-    onChange(res);
+    field.onChange(res);
 
     if (res.length === fields) {
       if (autoSubmit) autoSubmit();
@@ -80,7 +85,6 @@ export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
 
   const handleOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
-
     setShowError(true);
     e.target.select();
   };
@@ -103,6 +107,7 @@ export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
 
   const handleOnBlur = () => {
     if (disabled) return;
+    field.onBlur();
     setShowError(false);
   };
 
@@ -173,7 +178,10 @@ export const GenericCodeField: FC<GenericCodeFieldProps> = (props) => {
             type="text"
           />
         ))}
-        {error && showError && <ErrorMessage message={error} />}
+        {error && error.message && showError && (
+          <ErrorMessage message={error.message} />
+        )}
+        {description && <p>{description}</p>}
       </InputContainer>
     </Container>
   );

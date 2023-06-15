@@ -1,4 +1,5 @@
 import Slider, { SliderTooltip } from 'rc-slider';
+import { FC } from 'react';
 const { Handle } = Slider;
 
 interface handleParams {
@@ -21,7 +22,12 @@ interface handleParams {
   ref?: React.Ref<any>;
 }
 
-export const handle = ({ value, dragging, index, ...restProps }: handleParams) => {
+export const handle: FC<handleParams> = ({
+  value,
+  dragging,
+  index,
+  ...restProps
+}) => {
   return (
     <SliderTooltip
       key={index}

@@ -28,6 +28,8 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
     control,
     required,
     disabled,
+    hint,
+    description,
   } = defaultsApplier(props);
 
   const { field } = useController({ name, control });
@@ -58,6 +60,9 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
               control={control}
               required={required}
               disabled={disabled}
+              value={field.value}
+              hint={hint}
+              description={description}
             />
           );
         })}

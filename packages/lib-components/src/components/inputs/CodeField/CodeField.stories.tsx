@@ -23,7 +23,7 @@ export default {
 
 type FormFields = { code: string };
 
-export const Default: StoryFn<CodeFieldProps> = (args) => {
+export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
   const [result, setResult] = useState<string>();
 
   const validationSchema = useMemo(

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { CheckBox, CheckBoxProps } from '../../../components';
-import { useForm } from 'react-hook-form';
+import { CheckBox, CheckBoxProps, Button } from '../../../components';
+import { useForm, useWatch } from 'react-hook-form';
 
 const Wrapper = styled.div`
   display: grid;
@@ -30,7 +30,33 @@ export default {
   },
 } as Meta<CheckBoxProps>;
 
-export const Default: StoryFn<CheckBoxProps> = (args) => {
+export const OnSubmit: StoryFn<CheckBoxProps> = (args) => {
+  const { control, handleSubmit } = useForm();
+  const [result, setResult] = React.useState<boolean>(false);
+
+  const onSubmit = (val) => {
+    setResult(val.checkbox);
+  };
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CheckBox {...args} control={control} />
+        <Button type="submit" text="submit" />
+      </form>
+      <pre>value: {result}</pre>
+    </>
+  );
+};
+
+export const OnChange: StoryFn<CheckBoxProps> = (args) => {
   const { control } = useForm();
-  return <CheckBox {...args} control={control} />;
+  const CheckBoxValue = useWatch({ control, name: args.name });
+
+  return (
+    <>
+      <CheckBox {...args} control={control} />
+      <pre>value: {CheckBoxValue}</pre>
+    </>
+  );
 };
