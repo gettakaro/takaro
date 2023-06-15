@@ -35,7 +35,7 @@ type FormFields = {
   hasCar: boolean;
 };
 
-export const onSubmit = () => {
+export const onSubmit: StoryFn<SwitchProps> = (args) => {
   const [value, setValue] = useState<boolean>();
   const { control, handleSubmit } = useForm<FormFields>();
 
@@ -46,7 +46,17 @@ export const onSubmit = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Switch name={args.name} label={args.label} control={control} />
+        <Switch
+          name={args.name}
+          label={args.label}
+          control={control}
+          description={args.description}
+          hint={args.hint}
+          loading={args.loading}
+          disabled={args.disabled}
+          required={args.required}
+          readOnly={args.readOnly}
+        />
         <Button type="submit" text="submit" />
       </form>
       submitted value: {value ? 'true' : 'false'}
@@ -55,12 +65,22 @@ export const onSubmit = () => {
 };
 
 export const OnChange: StoryFn<SwitchProps> = (args) => {
-  const { control } = useForm<FormFields>({ mode: 'onChange' });
+  const { control } = useForm({ mode: 'onChange' });
   const switchValue = useWatch({ control, name: args.name });
 
   return (
     <>
-      <Switch control={control} name={args.name} />
+      <Switch
+        control={control}
+        name={args.name}
+        label={args.label}
+        description={args.description}
+        hint={args.hint}
+        loading={args.loading}
+        disabled={args.disabled}
+        required={args.required}
+        readOnly={args.readOnly}
+      />
       <pre>value: {switchValue ? 'true' : 'false'}</pre>
     </>
   );

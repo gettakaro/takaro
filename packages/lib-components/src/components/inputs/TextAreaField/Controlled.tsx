@@ -47,6 +47,9 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
     field.onBlur();
     setShowError(false);
   };
+  const handleOnFocus = () => {
+    setShowError(true);
+  };
 
   if (loading) {
     return (
@@ -91,6 +94,7 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
         value={field.value}
         onBlur={handleOnBlur}
         onChange={field.onChange}
+        onFocus={handleOnFocus}
         hasError={!!error}
         ref={field.ref}
       />

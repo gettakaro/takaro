@@ -75,7 +75,9 @@ export const GenericTextField = forwardRef<
 
   return (
     <InputContainer>
-      {prefix && <PrefixContainer>{prefix}</PrefixContainer>}
+      {prefix && (
+        <PrefixContainer hasError={hasError}>{prefix}</PrefixContainer>
+      )}
       {icon && cloneElement(icon, { size: 22, className: 'icon' })}
       <Input
         autoCapitalize="off"
@@ -118,7 +120,9 @@ export const GenericTextField = forwardRef<
             size="22"
           />
         ))}
-      {suffix && <SuffixContainer>{suffix}</SuffixContainer>}
+      {suffix && (
+        <SuffixContainer hasError={hasError}>{suffix}</SuffixContainer>
+      )}
     </InputContainer>
   );
 });

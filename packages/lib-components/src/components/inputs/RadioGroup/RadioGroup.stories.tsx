@@ -1,12 +1,7 @@
 import React from 'react';
 import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import {
-  Button,
-  RadioGroup,
-  RadioGroupProps,
-  UnControlledCheckBox,
-} from '../../../components';
+import { Button, RadioGroup, RadioGroupProps } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,15 +15,7 @@ export default {
   },
 } as Meta<RadioGroupProps>;
 
-export const UnControlled: StoryFn<RadioGroupProps> = () => {
-  return (
-    <>
-      <UnControlledCheckBox />
-    </>
-  );
-};
-
-export const Controlled: StoryFn<RadioGroupProps> = (args) => {
+export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
   type FormFields = {
     gender: string;
   };

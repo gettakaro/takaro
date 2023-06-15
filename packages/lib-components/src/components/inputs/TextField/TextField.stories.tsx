@@ -106,7 +106,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
         <TextField
           control={control}
           label={args.label}
-          name={args.label}
+          name={args.name}
           placeholder={args.placeholder}
           prefix={args.prefix}
           suffix={args.suffix}

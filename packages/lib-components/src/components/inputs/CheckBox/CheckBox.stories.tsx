@@ -44,7 +44,7 @@ export const OnSubmit: StoryFn<CheckBoxProps> = (args) => {
         <CheckBox {...args} control={control} />
         <Button type="submit" text="submit" />
       </form>
-      <pre>value: {result}</pre>
+      <pre>value: {result ? 'true' : 'false'}</pre>
     </>
   );
 };
@@ -56,7 +56,7 @@ export const OnChange: StoryFn<CheckBoxProps> = (args) => {
   return (
     <>
       <CheckBox {...args} control={control} />
-      <pre>value: {CheckBoxValue}</pre>
+      <pre>value: {CheckBoxValue ? 'true' : 'false'}</pre>
     </>
   );
 };
