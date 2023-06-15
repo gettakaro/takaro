@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
 import { GenericCheckBox } from '.';
-import { Container, CheckboxContainer } from './style';
+import { Wrapper, Container, CheckboxContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
 
 import {
@@ -44,6 +44,48 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
 
   if (loading) {
     return (
+      <Wrapper>
+        <Container>
+          {/* CASE: Show label before <CheckBox /> */}
+          {labelPosition === 'left' && label && (
+            <Label
+              error={!!error}
+              position={labelPosition}
+              size={size}
+              text={label}
+              disabled={disabled}
+              required={required}
+              hint={hint}
+              htmlFor={name}
+            />
+          )}
+          <CheckboxContainer
+            className="placeholder"
+            readOnly={readOnly}
+            error={!!error}
+            disabled={disabled}
+          />
+          {/* CASE: show label after <CheckBox /> */}
+          {labelPosition === 'right' && label && (
+            <Label
+              error={!!error}
+              position={labelPosition}
+              size={size}
+              text={label}
+              disabled={disabled}
+              required={required}
+              hint={hint}
+              htmlFor={name}
+            />
+          )}
+        </Container>
+        {description && <p>{description}</p>}
+      </Wrapper>
+    );
+  }
+
+  return (
+    <Wrapper>
       <Container>
         {/* CASE: Show label before <CheckBox /> */}
         {labelPosition === 'left' && label && (
@@ -54,73 +96,36 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
             text={label}
             disabled={disabled}
             required={required}
-            hint={hint}
             htmlFor={name}
           />
         )}
-        <CheckboxContainer
-          className="placeholder"
-          readOnly={readOnly}
-          error={!!error}
+        <GenericCheckBox
+          name={name}
           disabled={disabled}
+          size={size}
+          onBlur={field.onBlur}
+          readOnly={readOnly}
+          hasError={!!error}
+          required={required}
+          onChange={field.onChange}
+          value={field.value}
         />
+
         {/* CASE: show label after <CheckBox /> */}
         {labelPosition === 'right' && label && (
           <Label
             error={!!error}
             position={labelPosition}
-            size={size}
             text={label}
             disabled={disabled}
             required={required}
-            hint={hint}
             htmlFor={name}
+            size={size}
           />
         )}
+        {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
-    );
-  }
-
-  return (
-    <Container>
-      {/* CASE: Show label before <CheckBox /> */}
-      {labelPosition === 'left' && label && (
-        <Label
-          error={!!error}
-          position={labelPosition}
-          size={size}
-          text={label}
-          disabled={disabled}
-          required={required}
-          htmlFor={name}
-        />
-      )}
-      <GenericCheckBox
-        name={name}
-        disabled={disabled}
-        size={size}
-        onBlur={field.onBlur}
-        readOnly={readOnly}
-        hasError={!!error}
-        required={required}
-        onChange={field.onChange}
-        value={field.value}
-      />
-
-      {/* CASE: show label after <CheckBox /> */}
-      {labelPosition === 'right' && label && (
-        <Label
-          error={!!error}
-          position={labelPosition}
-          text={label}
-          disabled={disabled}
-          required={required}
-          htmlFor={name}
-          size={size}
-        />
-      )}
-      {error && error.message && <ErrorMessage message={error.message} />}
-      {description && <p>description</p>}
-    </Container>
+      {description && <p>{description}</p>}
+    </Wrapper>
   );
 };

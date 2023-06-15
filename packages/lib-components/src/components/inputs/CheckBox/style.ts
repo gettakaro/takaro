@@ -1,12 +1,16 @@
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
 
+export const Wrapper = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing['1_5']};
+`;
+
 export const Container = styled.div`
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing['1_5']};
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const Input = styled.input`

@@ -66,8 +66,8 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           onChange={field.onChange}
           onBlur={field.onBlur}
           value={field.value}
-          ref={field.ref}
         />
+        ref={field.ref}
       </Container>
       <p>{props.description}</p>
     </Wrapper>

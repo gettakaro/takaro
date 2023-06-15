@@ -28,6 +28,7 @@ export default {
     label: 'Do you have a car?',
     loading: false,
     name: 'hasCar',
+    description: 'This is a description',
   },
 } as Meta<SwitchProps>;
 
