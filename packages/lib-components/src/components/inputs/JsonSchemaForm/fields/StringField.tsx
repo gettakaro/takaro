@@ -13,6 +13,8 @@ export const StringField = ({
   readonly,
   name,
   schema,
+  onFocus,
+  formData,
   uiSchema,
   registry,
 }: FieldProps) => {
@@ -71,9 +73,9 @@ export const StringField = ({
         }}
         onChange={onChange}
         onBlur={onBlur}
+        onFocus={onFocus}
         disabled={disabled}
         placeholder={placeholder}
-        onFocus={() => {}}
         label={schema.title || name}
         registry={registry}
       />
@@ -91,7 +93,9 @@ export const StringField = ({
       hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
-      value={schema.default?.toString() ?? ''}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      value={formData as string}
       type="text"
     />
   );
