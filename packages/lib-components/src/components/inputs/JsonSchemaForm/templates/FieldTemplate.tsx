@@ -40,7 +40,6 @@ export function FieldTemplate<
     label,
     required,
     errors,
-    help,
     description,
     rawErrors = [],
     rawDescription,
@@ -64,7 +63,6 @@ export function FieldTemplate<
       {children}
       {errors}
       {displayLabel && rawDescription && <p>{description}</p>}
-      {help && <p>{help}</p>}
     </Container>
   );
 }

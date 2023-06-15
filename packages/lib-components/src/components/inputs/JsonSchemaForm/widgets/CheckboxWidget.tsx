@@ -36,7 +36,6 @@ export function CheckBoxWidget<
       onChange={onChange}
       required={required}
       hasError={!!rawErrors.length}
-      onBlur={() => {}}
     />
   );
 }

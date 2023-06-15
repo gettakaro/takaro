@@ -32,7 +32,7 @@ export function RangeWidget<
       min={sliderProps.min ? sliderProps.min : 0}
       max={sliderProps.max ? sliderProps.max : 100}
       step={sliderProps.step ? sliderProps.step : 1}
-      showDots={true}
+      showDots={false}
       readOnly={readonly}
       disabled={disabled}
       onChange={onChange}
