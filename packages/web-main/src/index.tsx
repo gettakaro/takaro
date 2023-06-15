@@ -12,6 +12,9 @@ import {
   matchRoutes,
 } from 'react-router-dom';
 
+// styles required for slider component we rely on
+import 'rc-slider/assets/index.css';
+
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
