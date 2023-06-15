@@ -2,15 +2,10 @@ import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { CheckBox, CheckBoxProps, Button } from '../../../components';
-import { useForm, useWatch } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto;
-  grid-gap: 2rem;
   padding: 5rem;
-  background: ${({ theme }) => theme.colors.background};
-  border-radius: 1rem;
 `;
 
 export default {
@@ -30,12 +25,20 @@ export default {
   },
 } as Meta<CheckBoxProps>;
 
-export const OnSubmit: StoryFn<CheckBoxProps> = (args) => {
-  const { control, handleSubmit } = useForm();
+export const OnSubmit: StoryFn<CheckBoxProps & { defaultValue: boolean }> = (
+  args
+) => {
+  type FormFields = { checkbox: boolean };
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    defaultValues: {
+      checkbox: args.defaultValue,
+    },
+  });
   const [result, setResult] = React.useState<boolean>(false);
 
-  const onSubmit = (val) => {
-    setResult(val.checkbox);
+  const onSubmit: SubmitHandler<FormFields> = (values) => {
+    setResult(values[args.name]);
   };
 
   return (
@@ -45,6 +48,10 @@ export const OnSubmit: StoryFn<CheckBoxProps> = (args) => {
         <Button type="submit" text="submit" />
       </form>
       <pre>value: {result ? 'true' : 'false'}</pre>
+      <p>
+        NOTE: defaultValue will only be set on initial load. Limitation of
+        react-hook-form.
+      </p>
     </>
   );
 };
