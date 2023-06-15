@@ -3,7 +3,6 @@ import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { useForm, useWatch } from 'react-hook-form';
 import { SliderProps, Slider } from '../../../components';
-import 'rc-slider/assets/index.css';
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,7 +24,6 @@ export default {
     description: 'Slider description',
     min: 0,
     max: 100,
-    dots: false,
     hint: 'This is the hint',
     name: 'Slider',
     step: 1,
