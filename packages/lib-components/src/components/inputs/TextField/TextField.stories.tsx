@@ -6,6 +6,7 @@ import { TextField, TextFieldProps, Button } from '../../../components';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { GenericTextField } from './Generic';
 
 const Wrapper = styled.div`
   display: flex;
@@ -142,5 +143,23 @@ export const Password: StoryFn<TextFieldProps> = (args) => {
         loading={args.loading}
       />
     </Wrapper>
+  );
+};
+
+export const Generic: StoryFn = () => {
+  const [value, setValue] = useState<string>('');
+
+  return (
+    <>
+      <GenericTextField
+        hasError={false}
+        onChange={(val: string) => setValue(val)}
+        placeholder="placeholder"
+        required={false}
+        name="name"
+        value={value}
+      />
+      <pre>{value}</pre>
+    </>
   );
 };
