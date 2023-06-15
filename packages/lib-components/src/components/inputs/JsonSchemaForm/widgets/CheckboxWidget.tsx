@@ -12,8 +12,15 @@ export function CheckBoxWidget<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any
 >(props: WidgetProps<T, S, F>) {
-  const { schema, name, disabled, readonly, onChange, value, rawErrors } =
-    props;
+  const {
+    schema,
+    name,
+    disabled,
+    readonly,
+    onChange,
+    value,
+    rawErrors = [],
+  } = props;
 
   // Because an unchecked checkbox will cause html5 validation to fail, only add
   // the "required" attribute if the field value must be "true", due to the
@@ -28,7 +35,7 @@ export function CheckBoxWidget<
       disabled={disabled}
       onChange={onChange}
       required={required}
-      hasError={!!rawErrors && !!rawErrors.length}
+      hasError={!!rawErrors.length}
       onBlur={() => {}}
     />
   );

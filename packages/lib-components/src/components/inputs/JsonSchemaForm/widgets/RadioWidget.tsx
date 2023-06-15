@@ -15,7 +15,7 @@ export function RadioWidget<
   name,
   options,
   disabled,
-  rawErrors,
+  rawErrors = [],
   value,
   required,
   readonly,
@@ -45,7 +45,7 @@ export function RadioWidget<
       }}
       options={radioOptions}
       required={required}
-      hasError={!!rawErrors && !!rawErrors.length}
+      hasError={!!rawErrors.length}
     />
   );
 }

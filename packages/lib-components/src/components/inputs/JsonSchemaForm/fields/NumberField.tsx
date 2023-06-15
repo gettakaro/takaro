@@ -8,7 +8,7 @@ export const NumberField = ({
   onFocus,
   disabled,
   placeholder,
-  rawErrors,
+  rawErrors = [],
   required,
   readonly,
   name,
@@ -43,8 +43,7 @@ export const NumberField = ({
       onBlur={onBlur}
       disabled={disabled}
       placeholder={placeholder}
-      loading={false}
-      error={rawErrors ? rawErrors[0] : undefined}
+      error={!!rawErrors.length}
       required={required}
       readOnly={readonly}
       value={schema.default?.toString() ?? ''}

@@ -14,7 +14,7 @@ export function RangeWidget<
   F extends FormContextType = any
 >({
   disabled,
-  rawErrors,
+  rawErrors = [],
   required,
   schema,
   name,
@@ -40,7 +40,7 @@ export function RangeWidget<
         /* placeholder */
       }}
       required={required}
-      hasError={!!rawErrors && !!rawErrors.length}
+      hasError={!!rawErrors.length}
     />
   );
 }

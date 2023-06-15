@@ -14,7 +14,7 @@ export function BooleanField<
 >({
   name,
   disabled,
-  rawErrors,
+  rawErrors = [],
   readonly,
   value,
   required,
@@ -44,14 +44,12 @@ export function BooleanField<
   return (
     <GenericSwitch
       name={name}
-      onChange={(val) => onChange(val as T)}
+      onChange={(val: boolean) => onChange(val as T)}
       onBlur={() => {}}
       value={value}
       disabled={disabled}
-      loading={false}
-      error={rawErrors ? rawErrors[0] : undefined}
+      hasError={!!rawErrors.length}
       required={required}
-      label={name}
       readOnly={readonly}
     />
   );

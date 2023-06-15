@@ -17,7 +17,7 @@ export function TextareaWidget<
   onChange,
   name,
   value,
-  rawErrors,
+  rawErrors = [],
 }: WidgetProps<T, S, F>) {
   let rows: string | number = 5;
   if (typeof options.rows === 'string' || typeof options.rows === 'number') {
@@ -29,13 +29,10 @@ export function TextareaWidget<
       name={name}
       onChange={onChange}
       rows={rows}
-      onBlur={() => {
-        /* on blur */
-      }}
       value={value}
       disabled={disabled}
       readOnly={readonly}
-      hasError={!!rawErrors && !!rawErrors.length}
+      hasError={!!rawErrors.length}
     />
   );
 }

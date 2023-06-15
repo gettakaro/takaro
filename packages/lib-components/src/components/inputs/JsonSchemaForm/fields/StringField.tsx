@@ -8,7 +8,7 @@ export const StringField = ({
   onBlur,
   disabled,
   placeholder,
-  rawErrors,
+  rawErrors = [],
   required,
   readonly,
   name,
@@ -88,7 +88,7 @@ export const StringField = ({
       }}
       disabled={disabled}
       placeholder={placeholder}
-      hasError={rawErrors ? !!rawErrors.length : false}
+      hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
       value={schema.default?.toString() ?? ''}
