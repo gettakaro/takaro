@@ -58,7 +58,7 @@ export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
         variants={variants}
       />
       <CheckMarkContainer isChecked={isChecked}>
-        <Icon size={18} />
+        <Icon size={15} />
       </CheckMarkContainer>
     </CheckboxContainer>
   );

@@ -20,8 +20,8 @@ export const Input = styled.input`
 
 export const BackgroundContainer = styled(motion.div)`
   position: absolute;
-  width: 2.3rem;
-  height: 2.3rem;
+  width: 2rem;
+  height: 2rem;
   background-color: ${({ theme }) => theme.colors.primary};
   z-index: 0;
   border-radius: ${({ theme }) => theme.borderRadius.small};
@@ -35,8 +35,8 @@ export const CheckboxContainer = styled.div<{
 }>`
   display: flex;
   position: relative;
-  min-width: 2.3rem;
-  min-height: 2.3rem;
+  min-width: 2rem;
+  min-height: 2rem;
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
