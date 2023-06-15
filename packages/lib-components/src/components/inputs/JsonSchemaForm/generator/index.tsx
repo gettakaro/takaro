@@ -199,7 +199,6 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
         type: InputType.string,
         description: 'A helpful description',
         required: true,
-        default: 'The default value',
       });
     }
   }, []);

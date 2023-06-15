@@ -125,7 +125,6 @@ export const FormField: FC<FormFieldProps> = ({
           labelPosition="left"
           label="Default value"
           name={`configFields.${index}.default`}
-          description="If no value is given, what should the default be?"
         />
       );
       break;
@@ -202,7 +201,6 @@ export const FormField: FC<FormFieldProps> = ({
         label="Is Field required?"
         labelPosition="left"
         name={`configFields.${index}.required`}
-        description="If this field is required to be filled out"
       />
     </>
   );
