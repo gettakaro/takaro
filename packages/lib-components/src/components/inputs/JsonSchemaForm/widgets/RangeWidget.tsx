@@ -35,13 +35,12 @@ export function RangeWidget<
       showDots={true}
       readOnly={readonly}
       disabled={disabled}
-      label={label as string}
       onChange={onChange}
       onBlur={() => {
         /* placeholder */
       }}
       required={required}
-      error={rawErrors ? rawErrors[0] : undefined}
+      hasError={!!rawErrors && !!rawErrors.length}
     />
   );
 }

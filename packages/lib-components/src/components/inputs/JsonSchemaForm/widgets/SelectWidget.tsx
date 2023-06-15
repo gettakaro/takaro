@@ -5,7 +5,7 @@ import {
   StrictRJSFSchema,
   WidgetProps,
 } from '@rjsf/utils';
-import { GenericSelect } from '../../Select/Select';
+import { GenericSelect } from '../../Select/Generic';
 import { OptionGroup, Option } from '../../../../components';
 
 // TODO: implement multiselect
@@ -29,15 +29,11 @@ export function SelectWidget<
     <GenericSelect
       name={name}
       disabled={disabled}
-      loading={false}
-      error={rawErrors ? rawErrors[0] : undefined}
+      hasError={!!rawErrors && !!rawErrors.length}
       required={required}
       readOnly={readonly}
       value={value}
-      onChange={(val) => onChange(val)}
-      onBlur={() => {
-        /* placeholder */
-      }}
+      onChange={(val: string) => onChange(val)}
       render={(selectedIndex) => (
         <div>
           {enumOptionsValueForIndex(selectedIndex, enumOptions, emptyValue) ??

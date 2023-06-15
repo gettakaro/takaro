@@ -18,7 +18,6 @@ export function RadioWidget<
   rawErrors,
   value,
   required,
-  label,
   readonly,
   onChange,
 }: WidgetProps<T, S, F>) {
@@ -40,14 +39,13 @@ export function RadioWidget<
       value={value}
       readOnly={readonly}
       disabled={disabled}
-      label={label}
       onChange={onChange}
       onBlur={() => {
         /* placeholder */
       }}
       options={radioOptions}
       required={required}
-      error={rawErrors ? rawErrors[0] : undefined}
+      hasError={!!rawErrors && !!rawErrors.length}
     />
   );
 }
