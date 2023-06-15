@@ -19,6 +19,8 @@ export function BooleanField<
   value,
   required,
   onChange,
+  onBlur,
+  onFocus,
   uiSchema,
   schema,
   registry,
@@ -32,9 +34,9 @@ export function BooleanField<
         value={schema.default ?? false}
         options={{}}
         onChange={onChange}
-        onBlur={() => {}}
+        onBlur={onBlur}
         disabled={disabled}
-        onFocus={() => {}}
+        onFocus={onFocus}
         label={schema.title || name}
         registry={registry}
       />
@@ -45,10 +47,11 @@ export function BooleanField<
     <GenericSwitch
       name={name}
       onChange={(val: boolean) => onChange(val as T)}
-      onBlur={() => {}}
       value={value}
       disabled={disabled}
       hasError={!!rawErrors.length}
+      onFocus={onFocus}
+      onBlur={onBlur}
       required={required}
       readOnly={readonly}
     />
