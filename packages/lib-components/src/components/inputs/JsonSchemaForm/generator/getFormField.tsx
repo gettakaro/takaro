@@ -51,8 +51,14 @@ export const FormField: FC<FormFieldProps> = ({
     name: `configFields.${index}.name`,
   });
 
+  const fieldType = useWatch<IFormInputs>({
+    control,
+    name: `configFields.${index}.type`,
+  });
+
   const typeSpecificFields: JSX.Element[] = [];
-  switch (input.type) {
+
+  switch (fieldType) {
     case InputType.string:
       typeSpecificFields.push(
         <TextField
@@ -190,7 +196,6 @@ export const FormField: FC<FormFieldProps> = ({
           ))}
         </OptionGroup>
       </Select>
-
       {typeSpecificFields}
       <CheckBox
         control={control}
