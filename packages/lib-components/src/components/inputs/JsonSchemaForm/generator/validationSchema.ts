@@ -64,7 +64,7 @@ export const validationSchema = z.object({
       if (data[0].type === InputType.string.valueOf()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Mins hould be less than Max',
+          message: 'Min should be less than Max',
         });
       }
     }),
