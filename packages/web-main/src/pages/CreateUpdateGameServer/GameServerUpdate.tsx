@@ -12,7 +12,6 @@ import {
   DrawerFooter,
   DrawerBody,
   CollapseList,
-  Tooltip,
   ErrorMessage,
 } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
@@ -137,10 +136,10 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
       connectionInfo: JSON.stringify(connectionInfo),
     });
 
-    if (response.data.data.connectable) {
+    if (response.connectable) {
       setConnectionOk(true);
     } else {
-      setError(response.data.data.reason || 'Connection error');
+      setError(response.reason || 'Connection error');
     }
   };
 

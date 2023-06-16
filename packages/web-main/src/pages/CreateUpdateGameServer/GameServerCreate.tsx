@@ -24,11 +24,6 @@ import {
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiFillCloseCircle as ErrorIcon,
-  AiFillCheckCircle as SuccessIcon,
-  AiOutlineEllipsis as EllipsisIcon,
-} from 'react-icons/ai';
 import * as Sentry from '@sentry/react';
 import {
   useGameServerCreate,
@@ -94,10 +89,10 @@ const CreateGameServer: FC = () => {
       connectionInfo: JSON.stringify(connectionInfo),
     });
 
-    if (response.data.data.connectable) {
+    if (response.connectable) {
       setConnectionOk(true);
     } else {
-      setError(response.data.data.reason || 'Connection error');
+      setError(response.reason || 'Connection error');
     }
   };
 

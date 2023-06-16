@@ -55,7 +55,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
     setOpenDialog(false);
   };
 
-  const status = data?.data.connectable ? 'online' : 'offline';
+  const status = data?.connectable ? 'online' : 'offline';
   const statusColor = status === 'online' ? 'success' : 'error';
 
   return (
