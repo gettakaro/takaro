@@ -1,5 +1,7 @@
 import { useMutation } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
+import { APIOutput } from '@takaro/apiclient';
+import { TakaroError } from 'queries/errorType';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -14,17 +16,19 @@ interface RoleInput {
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
-    mutationFn: async ({ userId, roleId }: RoleInput) =>
+  return useMutation<APIOutput, TakaroError, RoleInput>({
+    mutationFn: async ({ userId, roleId }) =>
       (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useUserRemoveRole = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
+  return useMutation<APIOutput, TakaroError, RoleInput>({
     mutationFn: async ({ userId, roleId }: RoleInput) =>
       (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { PlayerOutputDTO } from '@takaro/apiclient';
+import { TakaroError } from 'queries/errorType';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -12,18 +13,21 @@ export const playerKeys = {
 export const usePlayers = () => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<PlayerOutputDTO[], TakaroError>({
     queryKey: playerKeys.list(),
-    queryFn: async () => await apiClient.player.playerControllerSearch(),
+    queryFn: async () =>
+      (await apiClient.player.playerControllerSearch()).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const usePlayer = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<PlayerOutputDTO>({
+  return useQuery<PlayerOutputDTO, TakaroError>({
     queryKey: playerKeys.detail(id),
     queryFn: async () =>
       (await apiClient.player.playerControllerGetOne(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

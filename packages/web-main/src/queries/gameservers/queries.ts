@@ -1,18 +1,20 @@
 import {
+  APIOutput,
   GameServerCreateDTO,
   GameServerOutputDTO,
-  GameServerTestReachabilityDTOAPI,
   GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
   IdUuidDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallDTO,
-  ModuleOutputDTO,
   SettingsOutputObjectDTOAPI,
+  TestReachabilityOutput,
 } from '@takaro/apiclient';
+
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
+import { TakaroError } from '../errorType';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -45,13 +47,13 @@ export const useGameServers = () => {
 export const useGameServer = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<GameServerOutputDTO>({
+  return useQuery<GameServerOutputDTO, TakaroError>({
     queryKey: gameServerKeys.detail(id),
     queryFn: async () => {
-      const resp = (await apiClient.gameserver.gameServerControllerGetOne(id))
-        .data.data;
-      return resp;
+      const resp = await apiClient.gameserver.gameServerControllerGetOne(id);
+      return resp.data.data;
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
     enabled: Boolean(id),
   });
 };
@@ -61,35 +63,37 @@ export const useGameServerCreate = () => {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return useMutation({
+  return useMutation<GameServerOutputDTO, TakaroError, GameServerCreateDTO>({
     mutationFn: async (gameServer: GameServerCreateDTO) =>
-      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data,
+      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data
+        .data,
     onSuccess: async (data) => {
       // Add item to cached list
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
-        (old) => (old ? (old = [...old, data.data]) : old!)
+        (old) => (old ? (old = [...old, data]) : old!)
       );
-
       enqueueSnackbar('Game server has been created', { variant: 'default' });
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useGameServerSendMessage = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
-    mutationFn: async ({ gameServerId }: { gameServerId: string }) =>
+  return useMutation<APIOutput, TakaroError, { gameServerId: string }>({
+    mutationFn: async ({ gameServerId }) =>
       (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId))
         .data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 // INSTALLED MODULES
 export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
-  return useQuery<ModuleInstallationOutputDTO[]>({
+  return useQuery<ModuleInstallationOutputDTO[], TakaroError>({
     queryKey: installedModuleKeys.list(gameServerId),
     queryFn: async () =>
       (
@@ -97,6 +101,7 @@ export const useGameServerModuleInstallations = (gameServerId: string) => {
           gameServerId
         )
       ).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -106,7 +111,7 @@ export const useGameServerModuleInstallation = (
 ) => {
   const apiClient = useApiClient();
 
-  return useQuery<ModuleInstallationOutputDTO>({
+  return useQuery<ModuleInstallationOutputDTO, TakaroError>({
     queryKey: installedModuleKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
       (
@@ -115,6 +120,7 @@ export const useGameServerModuleInstallation = (
           moduleId
         )
       ).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -128,7 +134,11 @@ export const useGameServerModuleInstall = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    ModuleInstallationOutputDTO,
+    TakaroError,
+    GameServerModuleInstall
+  >({
     mutationFn: async ({
       gameServerId,
       moduleId,
@@ -154,21 +164,25 @@ export const useGameServerModuleInstall = () => {
         )
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
+
+interface GameServerModuleUninstall {
+  gameServerId: string;
+  moduleId: string;
+}
 
 export const useGameServerModuleUninstall = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      gameServerId,
-      moduleId,
-    }: {
-      gameServerId: string;
-      moduleId: string;
-    }) =>
+  return useMutation<
+    ModuleInstallationOutputDTO,
+    TakaroError,
+    GameServerModuleUninstall
+  >({
+    mutationFn: async ({ gameServerId, moduleId }) =>
       (
         await apiClient.gameserver.gameServerControllerUninstallModule(
           gameServerId,
@@ -195,6 +209,7 @@ export const useGameServerModuleUninstall = () => {
         )
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -202,10 +217,11 @@ export const useGameServerModuleUninstall = () => {
 export const useGameServerSettings = (id?: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<SettingsOutputObjectDTOAPI['data']>({
+  return useQuery<SettingsOutputObjectDTOAPI['data'], TakaroError>({
     queryKey: gameServerKeys.settings(id),
     queryFn: async () =>
       (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -218,11 +234,8 @@ export const useGameServerUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      gameServerId,
-      gameServerDetails,
-    }: GameServerUpdate) => {
+  return useMutation<GameServerOutputDTO, TakaroError, GameServerUpdate>({
+    mutationFn: async ({ gameServerId, gameServerDetails }) => {
       return (
         await apiClient.gameserver.gameServerControllerUpdate(
           gameServerId,
@@ -246,10 +259,10 @@ export const useGameServerUpdate = () => {
           return oldGameServerList!;
         }
       );
-
       // invalidate the specific gameserver query
       queryClient.invalidateQueries(gameServerKeys.detail(newGameServer.id));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -257,8 +270,8 @@ export const useRemoveGameServer = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id }: { id: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { id: string }>({
+    mutationFn: async ({ id }) =>
       (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: (removedGameServer: IdUuidDTO) => {
       // update list that contain this gameserver
@@ -278,34 +291,42 @@ export const useRemoveGameServer = () => {
         queryKey: gameServerKeys.reachability(removedGameServer.id),
       });
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useGameServerReachabilityById = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<GameServerTestReachabilityDTOAPI>(
-    gameServerKeys.reachability(id),
-    async () =>
+  return useQuery<TestReachabilityOutput, TakaroError>({
+    queryKey: gameServerKeys.reachability(id),
+    queryFn: async () =>
       (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
-        .data
-  );
+        .data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+};
+
+type GameServerTestReachabilityConfig = {
+  type: GameServerTestReachabilityInputDTOTypeEnum;
+  connectionInfo: string;
 };
 
 export const useGameServerReachabilityByConfig = () => {
   const apiClient = useApiClient();
-  return useMutation({
-    mutationFn: async ({
-      type,
-      connectionInfo,
-    }: {
-      type: GameServerTestReachabilityInputDTOTypeEnum;
-      connectionInfo: string;
-    }) => {
-      return await apiClient.gameserver.gameServerControllerTestReachability({
-        type,
-        connectionInfo,
-      });
+  return useMutation<
+    TestReachabilityOutput,
+    TakaroError,
+    GameServerTestReachabilityConfig
+  >({
+    mutationFn: async ({ type, connectionInfo }) => {
+      return (
+        await apiClient.gameserver.gameServerControllerTestReachability({
+          type,
+          connectionInfo,
+        })
+      ).data.data;
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

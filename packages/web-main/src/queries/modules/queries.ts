@@ -18,6 +18,7 @@ import {
   ModuleOutputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
+import { TakaroError } from 'queries/errorType';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -53,20 +54,22 @@ export const functionKeys = {
 export const useModules = () => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<ModuleOutputDTO[], TakaroError>({
     queryKey: moduleKeys.list(),
     queryFn: async () =>
       (await apiClient.module.moduleControllerSearch()).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useModule = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<ModuleOutputDTO>({
+  return useQuery<ModuleOutputDTO, TakaroError>({
     queryKey: moduleKeys.detail(id),
     queryFn: async () =>
       (await apiClient.module.moduleControllerGetOne(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -74,8 +77,8 @@ export const useModuleCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (moduleCreateDTO: ModuleCreateDTO) =>
+  return useMutation<ModuleOutputDTO, TakaroError, ModuleCreateDTO>({
+    mutationFn: async (moduleCreateDTO) =>
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data
         .data,
     onSuccess: (newModule: ModuleOutputDTO) => {
@@ -84,6 +87,7 @@ export const useModuleCreate = () => {
         old ? [...old, newModule] : old!
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -91,8 +95,8 @@ export const useModuleRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id }: { id: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { id: string }>({
+    mutationFn: async ({ id }) =>
       (await apiClient.module.moduleControllerRemove(id)).data.data,
     onSuccess: (removedModule: IdUuidDTO) => {
       // Remove item from module list
@@ -103,6 +107,7 @@ export const useModuleRemove = () => {
       // Invalidate query of specific module
       queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -114,8 +119,8 @@ export const useModuleUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id, moduleUpdate }: ModuleUpdate) =>
+  return useMutation<ModuleOutputDTO, TakaroError, ModuleUpdate>({
+    mutationFn: async ({ id, moduleUpdate }) =>
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data
         .data,
     onSuccess: (updatedModule: ModuleOutputDTO) => {
@@ -134,6 +139,7 @@ export const useModuleUpdate = () => {
         updatedModule
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -143,10 +149,11 @@ export const useModuleUpdate = () => {
 export const useHook = (hookId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<HookOutputDTO, TakaroError>({
     queryKey: hookKeys.detail(hookId),
     queryFn: async () =>
       (await apiClient.hook.hookControllerGetOne(hookId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -154,7 +161,7 @@ export const useHookCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<HookOutputDTO, TakaroError, HookCreateDTO>({
     mutationFn: async (hook: HookCreateDTO) =>
       (await apiClient.hook.hookControllerCreate(hook)).data.data,
     onSuccess: async (newHook: HookOutputDTO) => {
@@ -162,9 +169,9 @@ export const useHookCreate = () => {
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
         hooks ? [...hooks, newHook] : hooks!
       );
-
       queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -172,8 +179,8 @@ export const useHookRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ hookId }: { hookId: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { hookId: string }>({
+    mutationFn: async ({ hookId }) =>
       (await apiClient.hook.hookControllerRemove(hookId)).data.data,
     onSuccess: async (removedHook: IdUuidDTO) => {
       // Remove item from list of hooks
@@ -186,6 +193,7 @@ export const useHookRemove = ({ moduleId }) => {
 
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -197,7 +205,7 @@ export const useHookUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<HookOutputDTO, TakaroError, HookUpdate>({
     mutationFn: async ({ hookId, hook }: HookUpdate) =>
       (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
     onSuccess: async (updatedHook: HookOutputDTO) => {
@@ -209,9 +217,9 @@ export const useHookUpdate = () => {
             )
           : hooks!
       );
-
       queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -221,10 +229,11 @@ export const useHookUpdate = () => {
 export const useCommand = (commandId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<CommandOutputDTO, TakaroError>({
     queryKey: commandKeys.detail(commandId),
     queryFn: async () =>
       (await apiClient.command.commandControllerGetOne(commandId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -232,7 +241,7 @@ export const useCommandCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<CommandOutputDTO, TakaroError, CommandCreateDTO>({
     mutationFn: async (command: CommandCreateDTO) =>
       (await apiClient.command.commandControllerCreate(command)).data.data,
     onSuccess: async (newCommand: CommandOutputDTO) => {
@@ -241,9 +250,9 @@ export const useCommandCreate = () => {
         commandKeys.list(),
         (commands) => (commands ? [...commands, newCommand] : commands!)
       );
-
       queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -255,7 +264,7 @@ export const useCommandUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<CommandOutputDTO, TakaroError, CommandUpdate>({
     mutationFn: async ({ commandId, command }: CommandUpdate) =>
       (await apiClient.command.commandControllerUpdate(commandId, command)).data
         .data,
@@ -270,9 +279,9 @@ export const useCommandUpdate = () => {
               )
             : commands!
       );
-
       queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -280,8 +289,8 @@ export const useCommandRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ commandId }: { commandId: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { commandId: string }>({
+    mutationFn: async ({ commandId }) =>
       (await apiClient.command.commandControllerRemove(commandId)).data.data,
     onSuccess: async (removedCommand: IdUuidDTO) => {
       // Remove item from list of commands
@@ -295,9 +304,9 @@ export const useCommandRemove = ({ moduleId }) => {
 
       // Invalidate removed hook's query
       queryClient.invalidateQueries(hookKeys.detail(removedCommand.id));
-
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -307,10 +316,11 @@ export const useCommandRemove = ({ moduleId }) => {
 export const useCronJob = (cronJobId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<CronJobOutputDTO, TakaroError>({
     queryKey: cronJobKeys.detail(cronJobId),
     queryFn: async () =>
       (await apiClient.cronjob.cronJobControllerGetOne(cronJobId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -318,9 +328,9 @@ export const useCronJobCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (cronjob: CronJobCreateDTO) =>
-      (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
+  return useMutation<CronJobOutputDTO, TakaroError, CronJobCreateDTO>({
+    mutationFn: async (cronJob) =>
+      (await apiClient.cronjob.cronJobControllerCreate(cronJob)).data.data,
     onSuccess: async (newCronJob: CronJobOutputDTO) => {
       // add item to command list
       queryClient.setQueryData<CronJobOutputDTO[]>(
@@ -330,6 +340,7 @@ export const useCronJobCreate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -341,8 +352,8 @@ export const useCronJobUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ cronJobId, cronJob }: CronJobUpdate) =>
+  return useMutation<CronJobOutputDTO, TakaroError, CronJobUpdate>({
+    mutationFn: async ({ cronJobId, cronJob }) =>
       (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data
         .data,
     onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
@@ -356,9 +367,9 @@ export const useCronJobUpdate = () => {
               )
             : cronJobs!
       );
-
       queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -366,8 +377,8 @@ export const useCronJobRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { cronJobId: string }>({
+    mutationFn: async ({ cronJobId }) =>
       (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
     onSuccess: async (removedCronJob: IdUuidDTO) => {
       // Remove item from list of cronjobs
@@ -384,6 +395,7 @@ export const useCronJobRemove = ({ moduleId }) => {
 
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -393,10 +405,11 @@ export const useCronJobRemove = ({ moduleId }) => {
 export const useFunction = (functionId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<FunctionOutputDTO, TakaroError>({
     queryKey: functionKeys.detail(functionId),
     queryFn: async () =>
       (await apiClient.function.functionControllerGetOne(functionId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -404,8 +417,8 @@ export const useFunctionCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (fn: FunctionCreateDTO) =>
+  return useMutation<FunctionOutputDTO, TakaroError, FunctionCreateDTO>({
+    mutationFn: async (fn) =>
       (await apiClient.function.functionControllerCreate(fn)).data.data,
     onSuccess: async (newFn: FunctionOutputDTO) => {
       queryClient.setQueryData<FunctionOutputDTO[]>(
@@ -413,6 +426,7 @@ export const useFunctionCreate = () => {
         (functions) => (functions ? [...functions, newFn] : functions!)
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -424,8 +438,8 @@ export const useFunctionUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ functionId, fn }: FunctionUpdate) =>
+  return useMutation<FunctionOutputDTO, TakaroError, FunctionUpdate>({
+    mutationFn: async ({ functionId, fn }) =>
       (await apiClient.function.functionControllerUpdate(functionId, fn)).data
         .data,
     onSuccess: async (updated: FunctionOutputDTO) => {
@@ -435,6 +449,7 @@ export const useFunctionUpdate = () => {
           fns ? fns.map((fn) => (fn.id === updated.id ? updated : fn)) : fns!
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -442,8 +457,8 @@ export const useFunctionRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ functionId }: { functionId: string }) =>
+  return useMutation<IdUuidDTO, TakaroError, { functionId: string }>({
+    mutationFn: async ({ functionId }) =>
       (await apiClient.function.functionControllerRemove(functionId)).data.data,
     onSuccess: async (removed: IdUuidDTO) => {
       // Remove item from list of cronjobs
@@ -452,5 +467,6 @@ export const useFunctionRemove = () => {
         (fns) => (fns ? fns.filter((fn) => fn.id !== removed.id) : fns!)
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
