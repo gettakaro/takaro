@@ -66,6 +66,17 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 500;
   }
 
+  strong {
+    padding: ${({ theme }) => `0 ${theme.spacing['0_25']}`};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+    border: 1px solid ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    text-transform: capitalize;
+    font-weight: 400;
+  }
+
+
+
 
   form {
     display: block;
