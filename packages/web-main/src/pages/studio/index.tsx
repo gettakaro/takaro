@@ -1,7 +1,7 @@
-import { FC, Fragment } from 'react';
+import { FC } from 'react';
 import { Helmet } from 'react-helmet';
 import { styled, CollapseList } from '@takaro/lib-components';
-import { Editor } from '../../components/modules/Editor';
+import { Editor } from 'components/modules/Editor';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from 'components/modules/FileExplorer';
 import { useSandpack } from '@codesandbox/sandpack-react';
@@ -11,12 +11,34 @@ import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
 import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
 import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
 
+const Wrapper = styled.div`
+  padding: ${({ theme }) => `0 ${theme.spacing[2]}}`};
+`;
+
 const Container = styled.div`
   display: flex;
 `;
 
+const ConfigWrapper = styled.div`
+  padding: ${({ theme }) => theme.spacing[1]};
+`;
+
+const Header = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 35px;
+  background-color: ${({ theme }) => theme.colors.background};
+  text-transform: capitalize;
+`;
+
 const StyledResizable = styled(Resizable)`
-  border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+  border-right: 2px solid ${({ theme }): string => theme.colors.background};
+  border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+  &:hover {
+    border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+  }
 `;
 
 const Studio: FC = () => {
@@ -39,10 +61,11 @@ const Studio: FC = () => {
   }
 
   return (
-    <Fragment>
+    <Wrapper>
       <Helmet>
         <title>Takaro - Studio</title>
       </Helmet>
+      <Header>{moduleData.name}</Header>
       <Container>
         <StyledResizable
           enable={{
@@ -68,13 +91,15 @@ const Studio: FC = () => {
               <FileExplorer sandpack={sandpack} />
             </CollapseList.Item>
             <CollapseList.Item title="Config">
-              {getConfigComponent(activeModule.type)}
+              <ConfigWrapper>
+                {getConfigComponent(activeModule.type)}
+              </ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>
         <Editor />
       </Container>
-    </Fragment>
+    </Wrapper>
   );
 };
 
