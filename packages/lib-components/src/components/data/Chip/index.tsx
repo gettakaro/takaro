@@ -15,7 +15,7 @@ export interface ChipProps {
   dot?: boolean;
   onClick?: () => void;
   onDelete?: () => void;
-  color?: ChipColor;
+  color: ChipColor;
   variant?: Variant;
   isLoading?: boolean;
 }
@@ -24,14 +24,14 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
   (
     {
       avatar,
-      color = 'gray',
+      color,
       variant = 'default',
       label,
       disabled = false,
       onClick = undefined,
       onDelete = undefined,
       isLoading = false,
-      dot,
+      dot = false,
     },
     ref
   ) => {
@@ -47,7 +47,8 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           onClick={onClick ? onClick : undefined}
           className="placeholder"
         >
-          <>{label}</>
+          {dot && <Dot color={color} outline={variant !== 'default'} />}
+          <span>{label}</span>
         </Container>
       );
     }

@@ -29,6 +29,7 @@ export default {
     disabled: false,
     dot: false,
     variant: 'default',
+    isLoading: false,
   },
 } as Meta<ChipProps>;
 
@@ -68,21 +69,3 @@ export const AvatarChip: StoryObj<ChipProps> = {
     ),
   },
 };
-
-export const Examples = () => (
-  <>
-    <Chip label="Default Chip" variant="default" />
-    <Chip color="primary" label="Primary default Chip" />
-
-    <Chip label="Outlined Chip" variant="outline" />
-    <Chip color="secondary" label="secondary outlined Chip" variant="outline" />
-
-    <Chip color="tertiary" dot label="Tertiary chip with dot" />
-    <Chip
-      color="quaternary"
-      dot
-      label="Quaternary outlined Chip with dot"
-      variant="outline"
-    />
-  </>
-);
