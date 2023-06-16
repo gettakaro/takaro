@@ -18,7 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
-import { useModule, useModuleCreate, useModuleUpdate } from 'queries/modules';
+import { useModule, useModuleUpdate } from 'queries/modules';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 
 interface IFormInputs {
