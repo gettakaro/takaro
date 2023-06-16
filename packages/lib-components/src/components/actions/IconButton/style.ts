@@ -58,10 +58,3 @@ export const Outline = styled(Default)<{ color: Color }>`
     background: transparent;
   }
 `;
-
-export const Clear = styled(Outline)<{ color: Color }>`
-  &:hover {
-    background: rgb(243, 245, 249) none repeat scroll 0% 0%;
-  }
-  border: none;
-`;

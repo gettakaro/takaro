@@ -18,7 +18,8 @@ export interface ButtonProps {
   fullWidth?: boolean;
   size?: Size;
   type?: 'submit' | 'reset' | 'button';
-  variant?: Variant | 'white';
+  // TODO: clear should be renamed to text
+  variant?: Variant | 'white' | 'clear';
   color?: ButtonColor | 'white';
   text: string;
 

@@ -1,6 +1,6 @@
 import { cloneElement, FC, ReactElement } from 'react';
 import { Color, Size, Variant } from '../../../styled/types';
-import { Default, Outline, Clear } from './style';
+import { Default, Outline } from './style';
 
 export interface IconButtonProps {
   size?: Size;
@@ -30,8 +30,6 @@ export const IconButton: FC<IconButtonProps> = ({
     switch (variant) {
       case 'default':
         return <Default {...props}>{cloneElement(icon, { size: 24 })}</Default>;
-      case 'clear':
-        return <Clear {...props}>{cloneElement(icon, { size: 24 })}</Clear>;
       case 'outline':
         return <Outline {...props}>{cloneElement(icon, { size: 24 })}</Outline>;
     }
