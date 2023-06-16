@@ -28,10 +28,12 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  min-height: 40px;
+  min-height: 4rem;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.small};
+  margin-bottom: ${({ theme, isCollapsed }) =>
+    isCollapsed ? theme.spacing['0_75'] : 0};
 
   svg {
     transform: ${({ isCollapsed }) =>
@@ -54,14 +56,15 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
         isCollapsed={isCollapsed}
         onClick={() => setIsCollapsed((prev) => !prev)}
       >
-        <span>{title}</span>
+        <h3>{title}</h3>
         <ArrowUp size={18} />
       </Header>
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
+            key={`collapse-item-${title}`}
             variants={{
-              open: { opacity: 1, height: '100%' },
+              open: { opacity: 1, height: 'auto' },
               collapsed: { opacity: 0, height: 0 },
             }}
             initial="collapsed"
@@ -77,7 +80,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
               transition={{ duration: 0.125, ease: 'linear' }}
               style={{
                 transformOrigin: 'top center',
-                padding: `${theme.spacing[1]} ${theme.spacing[1]}`,
+                padding: `${theme.spacing['0_75']} ${theme.spacing['0']} ${theme.spacing['1_5']} ${theme.spacing['0']}`,
               }}
             >
               {children}
