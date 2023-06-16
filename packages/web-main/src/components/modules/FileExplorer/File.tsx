@@ -45,9 +45,14 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   width: 100%;
   padding: 0;
   background-color: transparent;
-  padding-left: ${({ depth }) => `${depth * 2}rem`};
+  padding-left: ${({ depth }) => `calc(${depth * 2}rem + .2rem)`};
   border-radius: 0;
-  line-height: 2;
+  min-height: 2.8rem;
+  line-height: 1;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  }
 
   div {
     display: flex;
