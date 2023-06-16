@@ -5,33 +5,52 @@ import { Default, Outline } from './style';
 export interface IconButtonProps {
   size?: Size;
   variant?: Variant;
-  color?: Color;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => any;
+  color: Color;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
-  isLoading?: boolean;
 }
+
+const getSize = (size: Size) => {
+  switch (size) {
+    case 'tiny':
+      return 15;
+    case 'small':
+      return 16;
+    case 'medium':
+      return 18;
+    case 'large':
+      return 20;
+    case 'huge':
+      return 24;
+  }
+};
 
 export const IconButton: FC<IconButtonProps> = ({
   variant = 'default',
   icon,
-  color = 'primary',
+  color,
   size = 'medium',
   onClick = () => {},
 }) => {
-  // TODO: define size in switch
-
   const getVariant = () => {
     const props = {
       color: color,
       onClick: onClick,
-      size: size,
     };
 
     switch (variant) {
       case 'default':
-        return <Default {...props}>{cloneElement(icon, { size: 24 })}</Default>;
+        return (
+          <Default {...props}>
+            {cloneElement(icon, { size: getSize(size) })}
+          </Default>
+        );
       case 'outline':
-        return <Outline {...props}>{cloneElement(icon, { size: 24 })}</Outline>;
+        return (
+          <Outline {...props}>
+            {cloneElement(icon, { size: getSize(size) })}
+          </Outline>
+        );
     }
   };
 
