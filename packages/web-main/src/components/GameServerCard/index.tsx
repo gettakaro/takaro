@@ -56,7 +56,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   };
 
   const status = data?.data.connectable ? 'online' : 'offline';
-  const statusColor = status === 'online' ? 'success' : 'error';
 
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
@@ -64,10 +63,10 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
         <Header>
           {isLoading || !data ? (
             <Skeleton variant="text" width="50px" height="15px" />
+          ) : status === 'online' ? (
+            <>{status}</>
           ) : (
-            <Tooltip label="Takaro server reachability" placement="bottom">
-              <Chip label={status} color={statusColor} />
-            </Tooltip>
+            <Chip label={status} color="error" variant="outline" />
           )}
           <Dropdown
             open={openDropdown}
