@@ -48,6 +48,7 @@ export const StudioFrame: FC = () => {
   const [moduleData, setModuleData] = useState<ModuleData>({
     fileMap: {},
     id: '',
+    name: '',
   });
 
   const providerModuleData = useMemo(
@@ -89,6 +90,7 @@ export const StudioFrame: FC = () => {
         ...moduleData,
         id: mod.id,
         fileMap: nameToId,
+        name: mod.name,
       }));
     }
   }, [mod, isSuccess]);
