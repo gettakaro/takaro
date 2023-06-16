@@ -1,4 +1,4 @@
-import { cloneElement, FC, ReactElement } from 'react';
+import { cloneElement, forwardRef, ReactElement } from 'react';
 import { Color, Size } from '../../../styled/types';
 import { Default } from './style';
 
@@ -24,19 +24,12 @@ const getSize = (size: Size) => {
   }
 };
 
-export const IconButton: FC<IconButtonProps> = ({
-  icon,
-  color,
-  size = 'medium',
-  onClick = () => {},
-}) => {
-  <Default color={color} onClick={onClick}>
-    {cloneElement(icon, { size: getSize(size) })}
-  </Default>;
-
-  return (
-    <Default color={color} onClick={onClick}>
-      {cloneElement(icon, { size: getSize(size) })}
-    </Default>
-  );
-};
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ icon, color, size = 'medium', onClick = () => {} }, ref) => {
+    return (
+      <Default color={color} onClick={onClick} ref={ref}>
+        {cloneElement(icon, { size: getSize(size) })}
+      </Default>
+    );
+  }
+);
