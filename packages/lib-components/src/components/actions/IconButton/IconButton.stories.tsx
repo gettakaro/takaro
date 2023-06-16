@@ -1,7 +1,8 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { IconButton, IconButtonProps } from '.';
-import { AiFillAccountBook as Icon } from 'react-icons/ai';
+import { AiOutlineBell as Icon } from 'react-icons/ai';
 
 const Wrapper = styled.div`
   display: flex;
@@ -16,7 +17,6 @@ export default {
   component: IconButton,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
-    onClick: undefined,
     size: 'medium',
     color: 'primary',
     icon: <Icon />,
