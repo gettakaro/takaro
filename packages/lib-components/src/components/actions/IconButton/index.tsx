@@ -1,10 +1,9 @@
 import { cloneElement, FC, ReactElement } from 'react';
-import { Color, Size, Variant } from '../../../styled/types';
-import { Default, Outline } from './style';
+import { Color, Size } from '../../../styled/types';
+import { Default } from './style';
 
 export interface IconButtonProps {
   size?: Size;
-  variant?: Variant;
   color: Color;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
@@ -26,33 +25,18 @@ const getSize = (size: Size) => {
 };
 
 export const IconButton: FC<IconButtonProps> = ({
-  variant = 'default',
   icon,
   color,
   size = 'medium',
   onClick = () => {},
 }) => {
-  const getVariant = () => {
-    const props = {
-      color: color,
-      onClick: onClick,
-    };
+  <Default color={color} onClick={onClick}>
+    {cloneElement(icon, { size: getSize(size) })}
+  </Default>;
 
-    switch (variant) {
-      case 'default':
-        return (
-          <Default {...props}>
-            {cloneElement(icon, { size: getSize(size) })}
-          </Default>
-        );
-      case 'outline':
-        return (
-          <Outline {...props}>
-            {cloneElement(icon, { size: getSize(size) })}
-          </Outline>
-        );
-    }
-  };
-
-  return getVariant();
+  return (
+    <Default color={color} onClick={onClick}>
+      {cloneElement(icon, { size: getSize(size) })}
+    </Default>
+  );
 };

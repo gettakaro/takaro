@@ -31,17 +31,3 @@ export const Default = styled.button<{ color: Color }>`
     stroke: ${({ theme }) => theme.colors.text};
   }
 `;
-
-export const Outline = styled(Default)<{ color: Color }>`
-  svg {
-    path {
-      fill: ${({ theme, color }) => theme.colors[color]};
-      stroke: ${({ theme, color }) => theme.colors[color]};
-    }
-  }
-  background: none;
-  border: 0.1rem solid ${({ theme, color }) => theme.colors[color]};
-  &:hover {
-    background: transparent;
-  }
-`;

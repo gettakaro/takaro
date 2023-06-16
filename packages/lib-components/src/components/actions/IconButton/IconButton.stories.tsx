@@ -19,7 +19,6 @@ export default {
   args: {
     size: 'medium',
     color: 'primary',
-    isLoading: false,
     icon: <Icon />,
   },
 } as Meta<IconButtonProps>;
