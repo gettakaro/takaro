@@ -34,6 +34,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     margin: 0;
     transition: background-color 0.2s linear;
     overflow: hidden;
+    scrollbar-gutter: stable both-edges;
   }
 
   #root {
