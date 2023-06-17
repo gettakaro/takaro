@@ -23,6 +23,10 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
 
   @IsString()
   idpId: string;
+
+  @IsString()
+  @IsOptional()
+  discordId?: string;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
@@ -47,8 +51,17 @@ export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
 }
 
 export class UserUpdateDTO extends TakaroDTO<UserUpdateDTO> {
+  @IsString()
   @Length(3, 50)
-  name: string;
+  @IsOptional()
+  name?: string;
+}
+
+export class UserUpdateAuthDTO extends TakaroDTO<UserUpdateAuthDTO> {
+  @IsString()
+  @IsOptional()
+  @Length(18, 18)
+  discordId?: string;
 }
 
 export class UserService extends TakaroService<
@@ -103,7 +116,10 @@ export class UserService extends TakaroService<
     return this.extendWithOry.bind(this)(createdUser);
   }
 
-  async update(id: string, data: UserUpdateDTO): Promise<UserOutputDTO> {
+  async update(
+    id: string,
+    data: UserUpdateAuthDTO | UserUpdateDTO
+  ): Promise<UserOutputDTO> {
     await this.repo.update(id, data);
     return this.extendWithOry.bind(this)(await this.repo.findOne(id));
   }
