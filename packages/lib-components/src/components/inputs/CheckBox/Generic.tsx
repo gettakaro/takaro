@@ -13,7 +13,7 @@ import { getTransition } from '../../../helpers';
 import {
   defaultInputPropsFactory,
   defaultInputProps,
-  GenericInputProps,
+  GenericInputPropsFunctionHandlers,
 } from '../InputProps';
 
 const variants = {
@@ -21,7 +21,7 @@ const variants = {
   checked: { scale: 1 },
 };
 
-export type GenericCheckBoxProps = GenericInputProps<HTMLDivElement>;
+export type GenericCheckBoxProps = GenericInputPropsFunctionHandlers<boolean>;
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
@@ -41,7 +41,6 @@ export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
 
   useEffect(() => {
     onChange(isChecked);
-    if (props.onChange) props.onChange(isChecked);
   }, [isChecked]);
 
   return (

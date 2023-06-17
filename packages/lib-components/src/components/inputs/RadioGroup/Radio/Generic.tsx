@@ -4,7 +4,7 @@ import { RadioContainer, Inner } from './style';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  GenericInputProps,
+  GenericInputPropsFunctionHandlers,
 } from '../../InputProps';
 
 export interface RadioProps {
@@ -14,7 +14,11 @@ export interface RadioProps {
   value: string;
 }
 
-type GenericRadioProps = GenericInputProps<HTMLDivElement> & RadioProps;
+type GenericRadioProps = GenericInputPropsFunctionHandlers<
+  string,
+  HTMLDivElement
+> &
+  RadioProps;
 
 const variants = {
   selected: { scale: 1 },

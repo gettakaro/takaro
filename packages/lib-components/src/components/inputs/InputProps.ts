@@ -1,3 +1,4 @@
+import { ChangeEventHandler, FocusEventHandler } from 'react';
 import { Control, FieldValues } from 'react-hook-form';
 import { Size } from '../../styled';
 
@@ -10,9 +11,16 @@ interface InputProps extends DefaultInputProps {
 export interface GenericInputProps<T> extends InputProps {
   value: unknown;
   hasError: boolean;
-  onChange: React.changeEventHandler<T>;
-  onBlur?: React.focusEventHandler<T>;
-  onFocus?: React.focusEventHandler<T>;
+  onChange: ChangeEventHandler<T>;
+  onBlur?: FocusEventHandler<T>;
+  onFocus?: FocusEventHandler<T>;
+}
+export interface GenericInputPropsFunctionHandlers<T, D> extends InputProps {
+  value: unknown;
+  hasError: boolean;
+  onChange: (val: T) => void;
+  onBlur?: FocusEventHandler<D>;
+  onFocus?: FocusEventHandler<D>;
 }
 
 export interface ControlledInputProps extends InputProps {

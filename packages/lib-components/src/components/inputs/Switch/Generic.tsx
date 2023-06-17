@@ -4,10 +4,13 @@ import { Dot, Line, ContentContainer } from './style';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  GenericInputProps,
+  GenericInputPropsFunctionHandlers,
 } from '../InputProps';
 
-export type GenericSwitchProps = GenericInputProps<HTMLDivElement>;
+export type GenericSwitchProps = GenericInputPropsFunctionHandlers<
+  boolean,
+  HTMLDivElement
+>;
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);

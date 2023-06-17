@@ -66,11 +66,10 @@ export const GenericTextField = forwardRef<
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (type === 'number' && !isNaN(parseInt(event.target.value))) {
-      // try to parse first
       onChange(parseInt(event.target.value));
       return;
     }
-    onChange(event.target.value);
+    onChange(event);
   };
 
   return (
