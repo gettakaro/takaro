@@ -302,10 +302,7 @@ export class AuthService extends DomainScoped {
                 })
               );
 
-              return cb(null, {
-                id: userInfo.id,
-                email: userInfo.email,
-              });
+              return cb(null, user);
             } catch (error) {
               log.error('Error in discord auth', error);
               return cb(error);

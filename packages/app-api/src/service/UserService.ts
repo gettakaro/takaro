@@ -23,6 +23,10 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
 
   @IsString()
   idpId: string;
+
+  @IsString()
+  @IsOptional()
+  discordId?: string;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {

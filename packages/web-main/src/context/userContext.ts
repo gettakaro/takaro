@@ -1,14 +1,9 @@
+import { UserOutputDTO } from '@takaro/apiclient';
 import { Dispatch, createContext } from 'react';
 
 export interface IUserContext {
-  userData: Partial<UserData>;
-  setUserData: Dispatch<Partial<UserData>>;
-}
-
-export interface UserData {
-  id: string | null;
-  email: string | null;
-  name: string | null;
+  userData: Partial<UserOutputDTO>;
+  setUserData: Dispatch<Partial<UserOutputDTO>>;
 }
 
 export const UserContext = createContext<IUserContext>(undefined!);
