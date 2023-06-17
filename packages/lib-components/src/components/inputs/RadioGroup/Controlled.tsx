@@ -7,8 +7,7 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 import { Label } from '../../../components';
-import { FieldSet } from './style';
-import { Container } from './Radio/style';
+import { FieldSet, Container } from './style';
 import { GenericRadio } from './Radio';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
