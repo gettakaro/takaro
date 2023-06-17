@@ -12,6 +12,10 @@ export default {
   args: {
     readOnly: false,
     loading: false,
+    hint: 'this is the hint',
+    label: 'Enter your gender',
+    description: 'this is the description',
+    required: true,
   },
 } as Meta<RadioGroupProps>;
 
@@ -35,6 +39,7 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async ({ gender }) => {
+    console.log('this fired', gender);
     setResult(gender);
   };
 
@@ -45,8 +50,11 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
           control={control}
           loading={args.loading}
           readOnly={args.readOnly}
-          label="Enter your gender"
+          label={args.label}
           name="gender"
+          hint={args.hint}
+          required={args.required}
+          description={args.description}
           options={[
             { label: 'male', labelPosition: 'right', value: 'm' },
             { label: 'female', labelPosition: 'right', value: 'f' },

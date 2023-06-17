@@ -6,8 +6,10 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
-import { ControlledRadio } from './Radio/Controlled';
+import { Label } from '../../../components';
 import { FieldSet } from './style';
+import { Container } from './Radio/style';
+import { GenericRadio } from './Radio';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
   options: Option[];
@@ -17,9 +19,7 @@ const defaultsApplier =
   defaultInputPropsFactory<ControlledRadioGroupProps>(defaultInputProps);
 
 export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
-  // TODO: implement hint and description
   const {
-    loading,
     readOnly,
     name,
     size,
@@ -32,7 +32,10 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
     description,
   } = defaultsApplier(props);
 
-  const { field } = useController({ name, control });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control });
 
   const [selected, setSelected] = useState<string>(
     // check if value exists in options
@@ -41,32 +44,68 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
       : options[0].value
   );
 
+  const handleChange = (val: string) => {
+    if (readOnly || disabled) return;
+    setSelected(val);
+    field.onChange(val);
+  };
+
+  // TODO: implement loading state
+
   return (
     <FieldSet>
       <legend>{label}</legend>
       <div>
         {options.map(({ label, labelPosition, value }) => {
           return (
-            <ControlledRadio
-              key={`controlled-radio-option-${label}`}
-              label={label}
-              labelPosition={labelPosition}
-              loading={loading}
-              name={name}
-              readOnly={readOnly}
-              selected={selected === value}
-              setSelected={setSelected}
-              size={size}
-              control={control}
-              required={required}
-              disabled={disabled}
-              value={field.value}
-              hint={hint}
-              description={description}
-            />
+            <Container
+              isSelected={value === selected}
+              onClick={() => handleChange(value)}
+            >
+              {label && labelPosition === 'left' && (
+                <Label
+                  htmlFor={name}
+                  text={label}
+                  required={required}
+                  position={labelPosition}
+                  size={size}
+                  error={!!error}
+                  disabled={disabled}
+                  hint={hint}
+                  onClick={() => handleChange(value)}
+                />
+              )}
+              <GenericRadio
+                hasError={!!error}
+                readOnly={readOnly}
+                disabled={disabled}
+                required={required}
+                name={name}
+                value={value}
+                selected={selected === value}
+                setSelected={setSelected}
+                onChange={field.onChange}
+                size={size}
+              />
+
+              {label && labelPosition === 'right' && (
+                <Label
+                  htmlFor={name}
+                  position={labelPosition}
+                  required={required}
+                  error={!!error}
+                  text={label}
+                  size={size}
+                  disabled={disabled}
+                  hint={hint}
+                  onClick={() => handleChange(value)}
+                />
+              )}
+            </Container>
           );
         })}
       </div>
+      <p>{description}</p>
     </FieldSet>
   );
 };

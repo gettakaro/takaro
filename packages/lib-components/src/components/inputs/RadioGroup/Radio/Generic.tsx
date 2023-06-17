@@ -1,12 +1,11 @@
 import { getTransition } from '../../../../helpers';
-import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { RadioContainer, Inner } from './style';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
   GenericInputProps,
 } from '../../InputProps';
-import { GenericHandlers } from '.';
 
 export interface RadioProps {
   selected: boolean;
@@ -15,9 +14,7 @@ export interface RadioProps {
   value: string;
 }
 
-type GenericRadioProps = GenericInputProps<HTMLDivElement> &
-  RadioProps &
-  GenericHandlers;
+type GenericRadioProps = GenericInputProps<HTMLDivElement> & RadioProps;
 
 const variants = {
   selected: { scale: 1 },
@@ -42,13 +39,8 @@ export const GenericRadio: FC<GenericRadioProps> = (props) => {
   const handleOnClick = () => {
     if (readOnly || disabled) return;
     setSelected(value as string);
+    onChange(value);
   };
-
-  useEffect(() => {
-    if (selected && !readOnly) {
-      onChange(value);
-    }
-  }, [selected]);
 
   return (
     <RadioContainer
