@@ -1,7 +1,7 @@
 import Form from '@rjsf/core';
 import { FormContextType, RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { FC, Fragment, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { customFields } from './fields';
 import { customWidgets } from './widgets';
 import { customTemplates } from './templates';
@@ -33,9 +33,7 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
       formContext={formContext}
       templates={customTemplates}
       onChange={onChange}
-    >
-      <Fragment />
-    </Form>
+    />
   );
 };
 

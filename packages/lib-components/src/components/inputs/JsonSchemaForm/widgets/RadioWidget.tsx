@@ -40,9 +40,6 @@ export function RadioWidget<
       readOnly={readonly}
       disabled={disabled}
       onChange={onChange}
-      onBlur={() => {
-        /* placeholder */
-      }}
       options={radioOptions}
       required={required}
       hasError={!!rawErrors.length}

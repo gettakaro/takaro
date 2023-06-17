@@ -1,4 +1,9 @@
-import { Control, UseFieldArrayRemove, useWatch } from 'react-hook-form';
+import {
+  Control,
+  UseFieldArrayRemove,
+  UseFormResetField,
+  useWatch,
+} from 'react-hook-form';
 import {
   CheckBox,
   Option,
@@ -10,7 +15,7 @@ import {
 } from '../../../../components';
 import { IFormInputs } from '.';
 import { Input, InputType } from './InputTypes';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { styled } from '../../../../styled';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 
@@ -37,6 +42,7 @@ interface FormFieldProps {
   id: string;
   index: number;
   remove: UseFieldArrayRemove;
+  resetField: UseFormResetField<IFormInputs>;
 }
 
 export const FormField: FC<FormFieldProps> = ({
@@ -45,6 +51,7 @@ export const FormField: FC<FormFieldProps> = ({
   index,
   remove,
   id,
+  // resetField,
 }) => {
   const output = useWatch<IFormInputs>({
     control,
@@ -56,6 +63,15 @@ export const FormField: FC<FormFieldProps> = ({
     name: `configFields.${index}.type`,
   });
 
+  // whenever the field type changes we reset all type dependent fields.
+  // Because some of the fields have the same form name the default value is not reset.
+  // which results in impossible default values for the new type.
+  useEffect(() => {
+    console.log('this fires');
+    // TODO: resetField takes a default value, we could set this depending on the fieldType
+    // resetField(`configFields.${index}.default`, { defaultValue: 'moneky' });
+  }, [fieldType]);
+
   const typeSpecificFields: JSX.Element[] = [];
 
   switch (fieldType) {
@@ -66,7 +82,7 @@ export const FormField: FC<FormFieldProps> = ({
           control={control}
           type="text"
           label="Default value"
-          name={`configFields.${index}.default`}
+          name={`,configFields.${index}.default`}
         />
       );
       typeSpecificFields.push(

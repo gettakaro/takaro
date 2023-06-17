@@ -21,7 +21,7 @@ export const Default = () => {
       isValid: {
         type: 'boolean',
         default: false,
-        description: 'Is the underlying thing valid?',
+        description: 'This is the description',
         title: 'Is valid?',
       },
     },

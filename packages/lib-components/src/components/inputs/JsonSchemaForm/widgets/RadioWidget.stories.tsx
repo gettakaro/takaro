@@ -18,6 +18,7 @@ export const Default = () => {
     type: 'object',
     properties: {
       recurrence: {
+        description: 'This is the description',
         type: 'string',
         enum: ['Never', 'Daily', 'Weekly', 'Monthly'],
       },

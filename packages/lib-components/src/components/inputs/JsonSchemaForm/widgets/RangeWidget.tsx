@@ -6,6 +6,11 @@ import {
   WidgetProps,
 } from '@rjsf/utils';
 import { GenericSlider } from '../../Slider';
+import { styled } from '../../../../styled';
+
+const Container = styled.div`
+  padding: 2.5rem 1.5rem 0 1.5rem;
+`;
 
 // TODO: implement multiselect
 export function RangeWidget<
@@ -19,28 +24,29 @@ export function RangeWidget<
   schema,
   name,
   value,
-  label,
   readonly,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const sliderProps = { value, label, name, ...rangeSpec<S>(schema) };
+  const { min = 0, max = 100, step = 1 } = { ...rangeSpec<S>(schema) };
 
   return (
-    <GenericSlider
-      name={name}
-      value={value}
-      min={sliderProps.min ? sliderProps.min : 0}
-      max={sliderProps.max ? sliderProps.max : 100}
-      step={sliderProps.step ? sliderProps.step : 1}
-      showDots={false}
-      readOnly={readonly}
-      disabled={disabled}
-      onChange={onChange}
-      onBlur={() => {
-        /* placeholder */
-      }}
-      required={required}
-      hasError={!!rawErrors.length}
-    />
+    <Container>
+      <GenericSlider
+        name={name}
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        showDots={false}
+        readOnly={readonly}
+        disabled={disabled}
+        onChange={onChange}
+        onBlur={() => {
+          /* placeholder */
+        }}
+        required={required}
+        hasError={!!rawErrors.length}
+      />
+    </Container>
   );
 }

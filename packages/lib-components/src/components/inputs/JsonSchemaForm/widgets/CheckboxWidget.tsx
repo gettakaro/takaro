@@ -6,6 +6,11 @@ import {
   WidgetProps,
 } from '@rjsf/utils';
 import { GenericCheckBox } from '../../CheckBox';
+import { styled } from '../../../../styled';
+
+const Container = styled.div`
+  display: inline-block;
+`;
 
 export function CheckBoxWidget<
   T = unknown,
@@ -28,14 +33,16 @@ export function CheckBoxWidget<
   const required = schemaRequiresTrueValue<S>(schema);
 
   return (
-    <GenericCheckBox
-      name={name}
-      value={value}
-      readOnly={readonly}
-      disabled={disabled}
-      onChange={onChange}
-      required={required}
-      hasError={!!rawErrors.length}
-    />
+    <Container>
+      <GenericCheckBox
+        name={name}
+        value={value}
+        readOnly={readonly}
+        disabled={disabled}
+        onChange={onChange}
+        required={required}
+        hasError={!!rawErrors.length}
+      />
+    </Container>
   );
 }

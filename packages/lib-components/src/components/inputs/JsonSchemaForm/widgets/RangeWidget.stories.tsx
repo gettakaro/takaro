@@ -6,6 +6,10 @@ import { Button } from '../../../actions';
 
 const Container = styled.div`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 600px;
   padding: 2rem;
 `;
 
@@ -19,6 +23,7 @@ export const Default = () => {
     type: 'object',
     properties: {
       amount: {
+        description: 'This is the description',
         type: 'integer',
         minimum: 1,
         maximum: 50,

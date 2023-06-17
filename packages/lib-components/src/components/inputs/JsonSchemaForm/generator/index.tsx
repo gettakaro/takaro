@@ -176,14 +176,16 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   onSchemaChange,
   initialSchema,
 }) => {
-  const { control, handleSubmit, getValues } = useForm<IFormInputs>({
-    mode: 'onSubmit',
-    resolver: zodResolver(validationSchema),
-    defaultValues: {
-      // @ts-expect-error 😠 form types are weird
-      configFields: schemaToInputs(initialSchema ?? {}),
-    },
-  });
+  const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>(
+    {
+      mode: 'onSubmit',
+      resolver: zodResolver(validationSchema),
+      defaultValues: {
+        // @ts-expect-error 😠 form types are weird
+        configFields: schemaToInputs(initialSchema ?? {}),
+      },
+    }
+  );
 
   const { configFields } = useWatch<IFormInputs>({ control });
 
@@ -209,7 +211,6 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
 
   const onSubmit = () => {
     const formValues = getValues();
-    console.log(formValues);
     const schema = generateJSONSchema(formValues.configFields);
     onSchemaChange(schema);
   };
@@ -229,6 +230,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
                   control={control}
                   index={index}
                   remove={remove}
+                  resetField={resetField}
                 />
                 {index != fields.length - 1 && (
                   <Divider key={`config-field-divider-${field.id}`} />
