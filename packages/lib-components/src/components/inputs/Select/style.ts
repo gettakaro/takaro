@@ -1,3 +1,4 @@
+import { FloatingOverlay } from '@floating-ui/react';
 import { styled } from '../../../styled';
 
 // This wraps everything
@@ -36,6 +37,11 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
   span {
     display: flex;
   }
+`;
+
+export const StyledFloatingOverlay = styled(FloatingOverlay)`
+  width: 100%;
+  height: 100%;
 `;
 
 export const SelectContainer = styled.div`

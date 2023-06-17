@@ -1,4 +1,3 @@
-// TODO: implement required, test error display, add grouped example, implement setShowError
 import {
   FC,
   Children,
@@ -11,7 +10,12 @@ import {
 } from 'react';
 import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 import { SelectContext } from './context';
-import { GroupLabel, SelectButton, SelectContainer } from '../style';
+import {
+  GroupLabel,
+  SelectButton,
+  SelectContainer,
+  StyledFloatingOverlay,
+} from '../style';
 
 import {
   useFloating,
@@ -25,7 +29,6 @@ import {
   useDismiss,
   FloatingFocusManager,
   autoUpdate,
-  FloatingOverlay,
   size,
 } from '@floating-ui/react';
 
@@ -46,6 +49,7 @@ export type GenericSelectProps = PropsWithChildren<
 const defaultsApplier =
   defaultInputPropsFactory<GenericSelectProps>(defaultInputProps);
 
+// TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
 export const GenericSelect: FC<GenericSelectProps> = (props) => {
   const { render, children, readOnly, value, onBlur, onChange } =
@@ -81,14 +85,17 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(5),
-      flip({ fallbackPlacements: ['top', 'bottom'] }),
       size({
         apply({ rects, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`, // based on the width of currently selected element
-            maxHeight: `${availableHeight}px`,
+            width: `${rects.reference.width}px`,
+            maxHeight: `${Math.max(150, availableHeight)}px`,
           });
         },
+      }),
+      flip({
+        fallbackStrategy: 'bestFit',
+        fallbackPlacements: ['top', 'bottom'],
       }),
     ],
   });
@@ -179,7 +186,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
         {!readOnly && <ArrowIcon size={18} />}
       </SelectButton>
       {open && !readOnly && (
-        <FloatingOverlay lockScroll style={{ zIndex: 1000 }}>
+        <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
           <FloatingFocusManager context={context} initialFocus={selectedIndex}>
             <SelectContainer
               {...getFloatingProps({
@@ -204,7 +211,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
               {options}
             </SelectContainer>
           </FloatingFocusManager>
-        </FloatingOverlay>
+        </StyledFloatingOverlay>
       )}
     </SelectContext.Provider>
   );
