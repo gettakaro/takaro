@@ -245,17 +245,15 @@ export class AuthService extends DomainScoped {
 
   static initPassport(): string[] {
     const initializedStrategies: string[] = [];
-
-    if (
-      config.get('auth.discord.clientId') &&
-      config.get('auth.discord.clientSecret')
-    ) {
+    const discordClientId = config.get('auth.discord.clientId');
+    const discordClientSecret = config.get('auth.discord.clientSecret');
+    if (discordClientId && discordClientSecret) {
       passport.use(
         'discord',
         new oauth.Strategy(
           {
-            clientID: config.get('auth.discord.clientId'),
-            clientSecret: config.get('auth.discord.clientSecret'),
+            clientID: discordClientId,
+            clientSecret: discordClientSecret,
             callbackURL: `${config.get('http.baseUrl')}/auth/discord/return`,
             scope: ['identify', 'email', 'guilds'],
             authorizationURL: 'https://discordapp.com/api/oauth2/authorize',

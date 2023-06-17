@@ -18,8 +18,8 @@ interface IHttpConfig extends IBaseConfig {
     jwtSecret: string;
     jwtExpiresIn: string;
     discord: {
-      clientId: string;
-      clientSecret: string;
+      clientId?: string;
+      clientSecret?: string;
     };
   };
   takaro: {
@@ -84,13 +84,13 @@ const configSchema = {
       clientId: {
         doc: 'The client ID for the discord OAuth app',
         format: String,
-        default: null,
+        default: undefined,
         env: 'DISCORD_CLIENT_ID',
       },
       clientSecret: {
         doc: 'The client secret for the discord OAuth app',
         format: String,
-        default: null,
+        default: undefined,
         env: 'DISCORD_CLIENT_SECRET',
       },
     },
