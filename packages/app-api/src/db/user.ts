@@ -18,6 +18,7 @@ export class UserModel extends TakaroModel {
   name!: string;
 
   idpId: string;
+  discordId?: string;
 
   static relationMappings = {
     roles: {

@@ -1,6 +1,10 @@
 import { DomainScoped } from '../lib/DomainScoped.js';
 import { ctx, errors, logger } from '@takaro/util';
-import { UserOutputWithRolesDTO, UserService } from '../service/UserService.js';
+import {
+  UserOutputWithRolesDTO,
+  UserService,
+  UserUpdateAuthDTO,
+} from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
@@ -8,7 +12,29 @@ import ms from 'ms';
 import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
+import passport from 'passport';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
+import oauth from 'passport-oauth2';
 
+interface DiscordUserInfo {
+  id: string;
+  username: string;
+  global_name: string;
+  avatar: string;
+  discriminator: string;
+  public_flags: number;
+  flags: number;
+  banner: string | null;
+  banner_color: string | null;
+  accent_color: string | null;
+  locale: string;
+  mfa_enabled: boolean;
+  premium_type: number;
+  avatar_decoration: string | null;
+  email: string;
+  verified: boolean;
+}
 interface IJWTPayload {
   sub: string;
   domainId: string;
@@ -215,5 +241,89 @@ export class AuthService extends DomainScoped {
         return next(new errors.ForbiddenError());
       }
     };
+  }
+
+  static initPassport(): string[] {
+    const initializedStrategies: string[] = [];
+
+    if (
+      config.get('auth.discord.clientId') &&
+      config.get('auth.discord.clientSecret')
+    ) {
+      passport.use(
+        'discord',
+        new oauth.Strategy(
+          {
+            clientID: config.get('auth.discord.clientId'),
+            clientSecret: config.get('auth.discord.clientSecret'),
+            callbackURL: `${config.get('http.baseUrl')}/auth/discord/return`,
+            scope: ['identify', 'email', 'guilds'],
+            authorizationURL: 'https://discordapp.com/api/oauth2/authorize',
+            tokenURL: 'https://discordapp.com/api/oauth2/token',
+            passReqToCallback: true,
+          },
+          async function (
+            origReq: Request,
+            accessToken: string,
+            _refreshToken: string,
+            profile: unknown,
+            cb: CallableFunction
+          ) {
+            const req = origReq as AuthenticatedRequest;
+            try {
+              const rest = new REST({
+                version: '10',
+                authPrefix: 'Bearer',
+              }).setToken(accessToken);
+
+              const userInfo = (await rest.get(
+                Routes.user('@me')
+              )) as DiscordUserInfo;
+
+              if (!userInfo.verified) {
+                return cb(
+                  new errors.BadRequestError(
+                    'You must verify your Discord account before you can use it to log in.'
+                  )
+                );
+              }
+
+              const service = new UserService(req.domainId);
+              const user = await service.findOne(req.user.id);
+
+              if (!user) {
+                return cb(new errors.NotFoundError('User not found'));
+              }
+
+              await service.update(
+                user.id,
+                await new UserUpdateAuthDTO().construct({
+                  discordId: userInfo.id,
+                })
+              );
+
+              return cb(null, {
+                id: userInfo.id,
+                email: userInfo.email,
+              });
+            } catch (error) {
+              log.error('Error in discord auth', error);
+              return cb(error);
+            }
+          }
+        )
+      );
+
+      initializedStrategies.push('discord');
+    }
+
+    passport.serializeUser(function (user, done) {
+      done(null, user);
+    });
+    passport.deserializeUser(function (obj, done) {
+      done(null, null);
+    });
+
+    return initializedStrategies;
   }
 }
