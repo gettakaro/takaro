@@ -1,9 +1,10 @@
 import { Control } from 'react-hook-form';
 import { Input, InputType } from '../InputTypes';
 import { TextField, TagField, CheckBox } from '../../../../../components';
+import { IFormInputs } from '..';
 
 export const TypeSpecificFieldsMap = (
-  control: Control<any>,
+  control: Control<IFormInputs>,
   input: Input,
   index: number,
   id: string
