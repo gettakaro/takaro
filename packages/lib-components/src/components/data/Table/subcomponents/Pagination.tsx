@@ -90,8 +90,8 @@ export const Pagination: FC<PaginationProps> = ({
 
   const pages = range(pageWindow.start, pageWindow.end);
 
-  const showJumps = pageCount > windowSize;
   const showButtons = pageCount > 1;
+  const showJumps = showButtons && pageCount > windowSize;
 
   return (
     <PaginationContainer border={false}>
