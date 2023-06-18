@@ -13,7 +13,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from 'hooks/useAuth';
-import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -79,7 +78,6 @@ const LogIn: FC = () => {
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
   const { logIn, createLoginFlow } = useAuth();
-  const { setUserData } = useUser();
   const navigate = useNavigate();
 
   const validationSchema = useMemo(
@@ -119,14 +117,8 @@ const LogIn: FC = () => {
     setLoading(true);
     setError(undefined);
     try {
-      if (setUserData && loginFlow?.id) {
-        const userData = await logIn(
-          loginFlow?.id,
-          email,
-          password,
-          csrfToken!
-        );
-        setUserData(userData);
+      if (loginFlow?.id) {
+        await logIn(loginFlow?.id, email, password, csrfToken!);
         navigate(PATHS.home());
       }
     } catch (error) {

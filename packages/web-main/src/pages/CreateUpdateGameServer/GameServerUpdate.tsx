@@ -60,10 +60,9 @@ const gameTypeSelectOptions = [
   },
 ].filter(({ show }) => show);
 
-export const CreateUpdateGameServer = () => {
+export const UpdateGameServer = () => {
   const { serverId } = useParams();
   const { data, isLoading } = useGameServer(serverId!);
-  const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   if (isLoading) {
     return <>isLoading</>;
@@ -73,7 +72,7 @@ export const CreateUpdateGameServer = () => {
     return <>something went wrong</>;
   }
 
-  return <CreateUpdateGameServerForm data={data} serverId={serverId} />;
+  return <UpdateGameServerForm data={data} serverId={serverId} />;
 };
 
 interface Props {
@@ -81,7 +80,7 @@ interface Props {
   serverId: string;
 }
 
-const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
+const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
@@ -230,4 +229,4 @@ const CreateUpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   );
 };
 
-export default CreateUpdateGameServer;
+export default UpdateGameServer;

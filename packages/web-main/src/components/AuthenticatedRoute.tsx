@@ -23,29 +23,31 @@ interface AuthenticatedRouteProps {
 }
 
 export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
-  const { getSession } = useAuth();
+  const { session, isLoading: isLoadingSession } = useAuth();
   const { setUserData } = useUser();
   const navigate = useNavigate();
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [loading, isLoading] = useState<boolean>(true);
 
-  const handleAuth = useCallback(async () => {
+  const handleAuth = useCallback(() => {
+    if (isLoadingSession) return;
     try {
-      const user = await getSession();
-      setUser({ id: user.id! });
+      if (!session) return navigate(PATHS.login());
+
+      setUser({ id: session.id! });
       setIsAuth(true);
-      setUserData(user); // because on refresh the context is cleared. we need to re-set the user data.
+      setUserData(session); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
       navigate(PATHS.login());
     } finally {
       isLoading(false);
     }
-  }, [getSession, setUserData]);
+  }, [session, setUserData]);
 
   useEffect(() => {
     handleAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoadingSession]);
 
   function handleFrame() {
     switch (frame) {
