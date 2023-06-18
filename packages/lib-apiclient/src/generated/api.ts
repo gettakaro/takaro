@@ -842,6 +842,19 @@ export interface CronJobUpdateDTO {
 /**
  *
  * @export
+ * @interface DiscordParamId
+ */
+export interface DiscordParamId {
+  /**
+   *
+   * @type {string}
+   * @memberof DiscordParamId
+   */
+  id: string;
+}
+/**
+ *
+ * @export
  * @interface DomainCreateInputDTO
  */
 export interface DomainCreateInputDTO {
@@ -1775,6 +1788,165 @@ export interface GetUserDTO {
    * @memberof GetUserDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface GuildApiUpdateDTO
+ */
+export interface GuildApiUpdateDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof GuildApiUpdateDTO
+   */
+  takaroEnabled?: boolean;
+}
+/**
+ *
+ * @export
+ * @interface GuildOutputDTO
+ */
+export interface GuildOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GuildOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildOutputDTO
+   */
+  discordId: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GuildOutputDTO
+   */
+  takaroEnabled: boolean;
+}
+/**
+ *
+ * @export
+ * @interface GuildOutputDTOAPI
+ */
+export interface GuildOutputDTOAPI {
+  /**
+   *
+   * @type {GuildOutputDTO}
+   * @memberof GuildOutputDTOAPI
+   */
+  data: GuildOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GuildOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface GuildSearchInputAllowedFilters
+ */
+export interface GuildSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof GuildSearchInputAllowedFilters
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildSearchInputAllowedFilters
+   */
+  discordId?: string;
+}
+/**
+ *
+ * @export
+ * @interface GuildSearchInputDTO
+ */
+export interface GuildSearchInputDTO {
+  /**
+   *
+   * @type {GuildSearchInputAllowedFilters}
+   * @memberof GuildSearchInputDTO
+   */
+  filters?: GuildSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof GuildSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
+   * @type {number}
+   * @memberof GuildSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GuildSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildSearchInputDTO
+   */
+  sortDirection?: GuildSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GuildSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const GuildSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type GuildSearchInputDTOSortDirectionEnum =
+  typeof GuildSearchInputDTOSortDirectionEnum[keyof typeof GuildSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface GuildUpdateDTO
+ */
+export interface GuildUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GuildUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GuildUpdateDTO
+   */
+  takaroEnabled?: boolean;
 }
 /**
  *
@@ -3545,6 +3717,19 @@ export interface SearchRoleInputDTO {
    * @memberof SearchRoleInputDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface SendMessageInputDTO
+ */
+export interface SendMessageInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof SendMessageInputDTO
+   */
+  message: string;
 }
 /**
  *
@@ -6051,6 +6236,398 @@ export class CronJobApi extends BaseAPI {
   ) {
     return CronJobApiFp(this.configuration)
       .cronJobControllerUpdate(id, cronJobUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * DiscordApi - axios parameter creator
+ * @export
+ */
+export const DiscordApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Search
+     * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerSearch: async (
+      guildSearchInputDTO?: GuildSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/discord/guilds/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        guildSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Send message
+     * @param {string} id
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerSendMessage: async (
+      id: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerSendMessage', 'id', id);
+      const localVarPath = `/discord/channels/{id}/message`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        sendMessageInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update guild
+     * @param {string} id
+     * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateGuild: async (
+      id: string,
+      guildApiUpdateDTO?: GuildApiUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('discordControllerUpdateGuild', 'id', id);
+      const localVarPath = `/discord/guilds/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'PUT',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        guildApiUpdateDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * DiscordApi - functional programming interface
+ * @export
+ */
+export const DiscordApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = DiscordApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Search
+     * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerSearch(
+      guildSearchInputDTO?: GuildSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<GuildOutputDTOAPI>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.discordControllerSearch(
+          guildSearchInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Send message
+     * @param {string} id
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerSendMessage(
+      id: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.discordControllerSendMessage(
+          id,
+          sendMessageInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Update guild
+     * @param {string} id
+     * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerUpdateGuild(
+      id: string,
+      guildApiUpdateDTO?: GuildApiUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<GuildOutputDTOAPI>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.discordControllerUpdateGuild(
+          id,
+          guildApiUpdateDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * DiscordApi - factory interface
+ * @export
+ */
+export const DiscordApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = DiscordApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Search
+     * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerSearch(
+      guildSearchInputDTO?: GuildSearchInputDTO,
+      options?: any
+    ): AxiosPromise<Array<GuildOutputDTOAPI>> {
+      return localVarFp
+        .discordControllerSearch(guildSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Send message
+     * @param {string} id
+     * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerSendMessage(
+      id: string,
+      sendMessageInputDTO?: SendMessageInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .discordControllerSendMessage(id, sendMessageInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update guild
+     * @param {string} id
+     * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerUpdateGuild(
+      id: string,
+      guildApiUpdateDTO?: GuildApiUpdateDTO,
+      options?: any
+    ): AxiosPromise<GuildOutputDTOAPI> {
+      return localVarFp
+        .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * DiscordApi - object-oriented interface
+ * @export
+ * @class DiscordApi
+ * @extends {BaseAPI}
+ */
+export class DiscordApi extends BaseAPI {
+  /**
+   *
+   * @summary Search
+   * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerSearch(
+    guildSearchInputDTO?: GuildSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerSearch(guildSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Send message
+   * @param {string} id
+   * @param {SendMessageInputDTO} [sendMessageInputDTO] SendMessageInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerSendMessage(
+    id: string,
+    sendMessageInputDTO?: SendMessageInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerSendMessage(id, sendMessageInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update guild
+   * @param {string} id
+   * @param {GuildApiUpdateDTO} [guildApiUpdateDTO] GuildApiUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerUpdateGuild(
+    id: string,
+    guildApiUpdateDTO?: GuildApiUpdateDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerUpdateGuild(id, guildApiUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

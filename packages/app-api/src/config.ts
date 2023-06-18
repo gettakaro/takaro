@@ -22,6 +22,9 @@ interface IHttpConfig extends IBaseConfig {
       clientSecret?: string;
     };
   };
+  discord: {
+    botToken?: string;
+  };
   takaro: {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
@@ -93,6 +96,14 @@ const configSchema = {
         default: undefined,
         env: 'DISCORD_CLIENT_SECRET',
       },
+    },
+  },
+  discord: {
+    botToken: {
+      doc: 'The token for the discord bot',
+      format: String,
+      default: undefined,
+      env: 'DISCORD_BOT_TOKEN',
     },
   },
   takaro: {

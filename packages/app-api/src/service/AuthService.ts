@@ -14,8 +14,12 @@ import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import passport from 'passport';
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v10';
+import {
+  Routes,
+  RESTGetAPICurrentUserGuildsResult,
+} from 'discord-api-types/v10';
 import oauth from 'passport-oauth2';
+import { DiscordService } from './DiscordService.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -299,6 +303,12 @@ export class AuthService extends DomainScoped {
                   discordId: userInfo.id,
                 })
               );
+
+              const guilds = (await rest.get(
+                Routes.userGuilds()
+              )) as RESTGetAPICurrentUserGuildsResult;
+              const discordService = new DiscordService(req.domainId);
+              await discordService.syncGuilds(guilds, req.user.id);
 
               return cb(null, user);
             } catch (error) {
