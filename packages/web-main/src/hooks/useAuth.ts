@@ -1,8 +1,9 @@
-import { UserData } from 'context/userContext';
 import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
 
 import { Configuration, FrontendApi } from '@ory/client';
+import { useQuery } from 'react-query';
+import { UserOutputDTO } from '@takaro/apiclient';
 
 let cachedClient: FrontendApi | null = null;
 
@@ -11,14 +12,19 @@ export interface IAuthContext {
     email: string,
     password: string,
     redirect?: string
-  ) => Promise<UserData>;
+  ) => Promise<UserOutputDTO>;
   logOut: () => Promise<boolean>;
-  getSession: () => Promise<UserData>;
+  getSession: () => Promise<UserOutputDTO>;
 }
 
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
+  const {
+    data: sessionData,
+    isLoading,
+    refetch,
+  } = useQuery('session', () => apiClient.user.userControllerMe());
 
   if (!cachedClient) {
     cachedClient = new FrontendApi(
@@ -50,7 +56,7 @@ export function useAuth() {
     email: string,
     password: string,
     csrf_token: string
-  ): Promise<UserData> {
+  ): Promise<void> {
     await cachedClient!.updateLoginFlow({
       flow,
       updateLoginFlowBody: {
@@ -60,17 +66,7 @@ export function useAuth() {
         method: 'password',
       },
     });
-    return getSession();
-  }
-
-  // This returns the User details (name,email,...)
-  async function getSession(): Promise<UserData> {
-    const session = await apiClient.user.userControllerMe();
-    return {
-      email: session.data.data.email,
-      id: session.data.data.id,
-      name: session.data.data.name,
-    };
+    refetch();
   }
 
   async function logOut(): Promise<boolean> {
@@ -79,5 +75,12 @@ export function useAuth() {
     return true;
   }
 
-  return { logIn, logOut, getSession, getCurrentFlow, createLoginFlow };
+  return {
+    logIn,
+    logOut,
+    getCurrentFlow,
+    createLoginFlow,
+    session: sessionData?.data.data,
+    isLoading,
+  };
 }

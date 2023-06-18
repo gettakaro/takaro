@@ -10,13 +10,14 @@ import {
 } from '@takaro/lib-components';
 import { Router } from './Router';
 import { useMemo, useState } from 'react';
-import { UserContext, UserData } from 'context/userContext';
+import { UserContext } from 'context/userContext';
 import {
   ConfigContext,
   TakaroConfig,
   getConfigVar,
 } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
+import { UserOutputDTO } from '@takaro/apiclient';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,14 +28,15 @@ const queryClient = new QueryClient({
   },
 });
 
-const defaultUserData: UserData = {
-  id: null,
-  email: null,
-  name: null,
+const defaultUserData: Partial<UserOutputDTO> = {
+  id: undefined,
+  email: undefined,
+  name: undefined,
 };
 
 function App() {
-  const [userData, setUserData] = useState<Partial<UserData>>(defaultUserData);
+  const [userData, setUserData] =
+    useState<Partial<UserOutputDTO>>(defaultUserData);
   const [config, setConfig] = useState<TakaroConfig>();
   const [loading, setLoading] = useState<boolean>(true);
 

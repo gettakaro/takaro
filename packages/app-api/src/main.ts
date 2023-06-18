@@ -23,6 +23,8 @@ import { CommandController } from './controllers/CommandController.js';
 import { ModuleService } from './service/ModuleService.js';
 import { VariableController } from './controllers/VariableController.js';
 import { CronJobService } from './service/CronJobService.js';
+import { ExternalAuthController } from './controllers/ExternalAuthController.js';
+import { AuthService } from './service/AuthService.js';
 
 export const server = new HTTP(
   {
@@ -39,6 +41,7 @@ export const server = new HTTP(
       SettingsController,
       CommandController,
       VariableController,
+      ExternalAuthController,
     ],
   },
   {
@@ -59,6 +62,11 @@ async function main() {
   await migrate();
 
   log.info('🦾 Database up to date');
+
+  const initProviders = await AuthService.initPassport();
+  log.info(
+    `🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`
+  );
 
   new EventsWorker();
   log.info('👷 Event worker started');

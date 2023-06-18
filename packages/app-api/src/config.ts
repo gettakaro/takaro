@@ -12,10 +12,15 @@ interface IHttpConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
+    baseUrl: string;
   };
   auth: {
     jwtSecret: string;
     jwtExpiresIn: string;
+    discord: {
+      clientId?: string;
+      clientSecret?: string;
+    };
   };
   takaro: {
     clusterMode: CLUSTER_MODE;
@@ -55,6 +60,12 @@ const configSchema = {
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
     },
+    baseUrl: {
+      doc: 'The base URL of the API',
+      format: String,
+      default: 'http://127.0.0.1:13000',
+      env: 'BASE_URL',
+    },
   },
   auth: {
     jwtSecret: {
@@ -68,6 +79,20 @@ const configSchema = {
       format: String,
       default: '1 day',
       env: 'JWT_EXPIRES_IN',
+    },
+    discord: {
+      clientId: {
+        doc: 'The client ID for the discord OAuth app',
+        format: String,
+        default: undefined,
+        env: 'DISCORD_CLIENT_ID',
+      },
+      clientSecret: {
+        doc: 'The client secret for the discord OAuth app',
+        format: String,
+        default: undefined,
+        env: 'DISCORD_CLIENT_SECRET',
+      },
     },
   },
   takaro: {
