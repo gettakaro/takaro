@@ -40,7 +40,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
       resolver: zodResolver(validationSchema),
       defaultValues: {
         // @ts-expect-error 😠 form types are weird
-        configFields: schemaToInputs(initialSchema),
+        configFields: schemaToInputs(initialSchema ?? {}),
       },
     }
   );
