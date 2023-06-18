@@ -1,8 +1,8 @@
-import { Button } from '../../../actions';
 import { FC } from 'react';
+import { Button } from '../../../actions';
 import { styled } from '../../../../styled';
 
-export const PaginationContainer = styled.div`
+export const PaginationContainer = styled.div<{ border?: boolean }>`
   display: flex;
   justify-content: flex-end;
 
@@ -27,6 +27,8 @@ export const PaginationContainer = styled.div`
       }
       z-index: 1;
     }
+
+    ${({ border }) => !border && 'border: 0;'}
   }
 
   button:first-of-type {
@@ -36,6 +38,8 @@ export const PaginationContainer = styled.div`
   button:last-of-type {
     border-right: ${({ theme }) => `solid 1px ${theme.colors.textAlt}`};
     border-radius: 0 0.25rem 0.25rem 0;
+
+    ${({ border }) => !border && 'border: 0;'}
   }
 `;
 
@@ -90,7 +94,7 @@ export const Pagination: FC<PaginationProps> = ({
   const showButtons = pageCount > 1;
 
   return (
-    <PaginationContainer>
+    <PaginationContainer border={false}>
       {showJumps && (
         <Button
           onClick={() => setPageIndex(0)}
