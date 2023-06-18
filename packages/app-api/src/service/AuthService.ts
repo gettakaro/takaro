@@ -304,11 +304,17 @@ export class AuthService extends DomainScoped {
                 })
               );
 
-              const guilds = (await rest.get(
-                Routes.userGuilds()
-              )) as RESTGetAPICurrentUserGuildsResult;
-              const discordService = new DiscordService(req.domainId);
-              await discordService.syncGuilds(guilds, req.user.id);
+              if (
+                user.roles.find((r) =>
+                  r.permissions.find((p) => p.permission === PERMISSIONS.ROOT)
+                )
+              ) {
+                const guilds = (await rest.get(
+                  Routes.userGuilds()
+                )) as RESTGetAPICurrentUserGuildsResult;
+                const discordService = new DiscordService(req.domainId);
+                await discordService.syncGuilds(guilds);
+              }
 
               return cb(null, user);
             } catch (error) {

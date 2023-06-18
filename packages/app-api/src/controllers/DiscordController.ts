@@ -7,6 +7,7 @@ import {
   Post,
   Params,
   Put,
+  Get,
 } from 'routing-controllers';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import {
@@ -28,6 +29,7 @@ import {
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
 import { ParamId } from '../lib/validators.js';
+import { discordBot } from '../lib/DiscordBot.js';
 
 class GuildSearchInputAllowedFilters {
   @IsOptional()
@@ -37,6 +39,10 @@ class GuildSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   discordId!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  takaroEnabled!: boolean;
 }
 
 class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
@@ -51,10 +57,10 @@ class DiscordParamId {
   id!: string;
 }
 
-class GuildOutputDTOAPI extends APIOutput<GuildOutputDTO> {
+class GuildOutputDTOAPI extends APIOutput<GuildOutputDTO[]> {
   @Type(() => GuildOutputDTO)
-  @ValidateNested()
-  declare data: GuildOutputDTO;
+  @ValidateNested({ each: true })
+  declare data: GuildOutputDTO[];
 }
 
 class GuildApiUpdateDTO extends TakaroDTO<GuildApiUpdateDTO> {
@@ -63,11 +69,23 @@ class GuildApiUpdateDTO extends TakaroDTO<GuildApiUpdateDTO> {
   takaroEnabled!: boolean;
 }
 
+class InviteOutputDTO extends TakaroDTO<InviteOutputDTO> {
+  @IsString()
+  botInvite!: string;
+  @IsString()
+  devServer!: string;
+}
+class DiscordInviteOutputDTO extends APIOutput<InviteOutputDTO> {
+  @Type(() => InviteOutputDTO)
+  @ValidateNested()
+  declare data: InviteOutputDTO;
+}
+
 @UseBefore(AuthService.getAuthMiddleware([]))
 @JsonController()
 export class DiscordController {
   @Post('/discord/guilds/search')
-  @ResponseSchema(GuildOutputDTOAPI, { isArray: true })
+  @ResponseSchema(GuildOutputDTOAPI)
   async search(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
@@ -110,5 +128,14 @@ export class DiscordController {
     const service = new DiscordService(req.domainId);
     const updated = await service.update(params.id, body);
     return apiResponse(updated);
+  }
+
+  @Get('/discord/invite')
+  @ResponseSchema(DiscordInviteOutputDTO)
+  async getInvite() {
+    return apiResponse({
+      botInvite: discordBot.inviteLink,
+      devServer: 'https://catalysm.net/discord',
+    });
   }
 }

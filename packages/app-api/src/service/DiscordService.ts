@@ -23,17 +23,29 @@ export class GuildOutputDTO extends TakaroDTO<GuildOutputDTO> {
   discordId: string;
   @IsBoolean()
   takaroEnabled: boolean;
+  @IsString()
+  @IsOptional()
+  icon?: string | null;
 }
 
 export class GuildCreateInputDTO extends TakaroDTO<GuildCreateInputDTO> {
+  @IsString()
   name!: string;
-  discordId?: string;
+  @IsString()
+  @Length(18, 18)
+  discordId: string;
+  @IsString()
+  @IsOptional()
+  icon?: string | null;
 }
 
 export class GuildUpdateDTO extends TakaroDTO<GuildUpdateDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsString()
+  @IsOptional()
+  icon?: string | null;
   @IsBoolean()
   @IsOptional()
   takaroEnabled?: boolean;
@@ -63,16 +75,18 @@ export class DiscordService extends TakaroService<
   }
 
   async update(id: string, input: GuildUpdateDTO) {
-    const userId = ctx.data.user;
-    if (!userId) throw new errors.ForbiddenError();
-    const serversWithPermission =
-      await this.repo.getServersWithManagePermission(userId);
+    if (input.takaroEnabled !== undefined) {
+      const userId = ctx.data.user;
+      if (!userId) throw new errors.ForbiddenError();
+      const serversWithPermission =
+        await this.repo.getServersWithManagePermission(userId);
 
-    if (!serversWithPermission.find((server) => server.id === id)) {
-      this.log.warn(
-        `User ${userId} tried to update guild ${id} without permission`
-      );
-      throw new errors.ForbiddenError();
+      if (!serversWithPermission.find((server) => server.id === id)) {
+        this.log.warn(
+          `User ${userId} tried to update guild ${id} without permission`
+        );
+        throw new errors.ForbiddenError();
+      }
     }
 
     return this.repo.update(id, input);
@@ -92,54 +106,80 @@ export class DiscordService extends TakaroService<
   }
 
   // TODO: optimization for later is to move this into a bull job
-  async syncGuilds(guilds: RESTGetAPICurrentUserGuildsResult, userId: string) {
+  async syncGuilds(inputGuilds: RESTGetAPICurrentUserGuildsResult) {
+    const guilds = inputGuilds.filter((guild) => {
+      const permissions = new PermissionsBitField(BigInt(guild.permissions));
+      return permissions.has(PermissionsBitField.Flags.ManageGuild);
+    });
+
     const existingDbGuilds = await this.repo.find({
       limit: 3000,
     });
 
-    const removedGuilds = existingDbGuilds.results.filter((dbGuild) => {
-      return !guilds.find((guild) => guild.id === dbGuild.discordId);
-    });
     const addedGuilds = guilds.filter((guild) => {
       return !existingDbGuilds.results.find(
         (dbGuild) => dbGuild.discordId === guild.id
       );
     });
+    const toUpdate = guilds.filter((guild) => {
+      return existingDbGuilds.results.find(
+        (dbGuild) => dbGuild.discordId === guild.id
+      );
+    });
 
-    this.log.info(
-      `Syncing guilds: ${addedGuilds.length} added, ${removedGuilds.length} removed`
-    );
+    this.log.info(`Syncing guilds: ${addedGuilds.length} added`);
 
-    await Promise.all(removedGuilds.map((guild) => this.delete(guild.id)));
     await Promise.all(
       addedGuilds.map(async (guild) =>
         this.create(
           await new GuildCreateInputDTO().construct({
             discordId: guild.id,
             name: guild.name,
+            icon: guild.icon,
           })
         )
       )
+    );
+    await Promise.all(
+      toUpdate.map(async (guild) => {
+        const dbGuild = existingDbGuilds.results.find(
+          (dbGuild) => dbGuild.discordId === guild.id
+        );
+        if (!dbGuild) return;
+        return this.update(
+          dbGuild.id,
+          await new GuildUpdateDTO().construct({
+            name: guild.name,
+            icon: guild.icon,
+          })
+        );
+      })
     );
 
     const newDbGuilds = await this.repo.find({
       limit: 3000,
     });
 
-    await Promise.all(
-      guilds.map((guild) => {
-        const permissions = new PermissionsBitField(BigInt(guild.permissions));
-        const dbGuild = newDbGuilds.results.find(
-          (dbGuild) => dbGuild.discordId === guild.id
-        );
-        if (!dbGuild) return;
-        return this.repo.setUserRelation(
-          userId,
-          dbGuild.id,
-          permissions.has(PermissionsBitField.Flags.ManageGuild)
-        );
-      })
-    );
+    const userId = ctx.data.user;
+
+    if (userId) {
+      await Promise.all(
+        guilds.map((guild) => {
+          const permissions = new PermissionsBitField(
+            BigInt(guild.permissions)
+          );
+          const dbGuild = newDbGuilds.results.find(
+            (dbGuild) => dbGuild.discordId === guild.id
+          );
+          if (!dbGuild) return;
+          return this.repo.setUserRelation(
+            userId,
+            dbGuild.id,
+            permissions.has(PermissionsBitField.Flags.ManageGuild)
+          );
+        })
+      );
+    }
   }
 
   async sendMessage(channelId: string, message: SendMessageInputDTO) {

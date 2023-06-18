@@ -12,10 +12,19 @@ import { errors } from '@takaro/util';
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
 const USER_ON_DISCORD_GUILD_TABLE_NAME = 'userOnDiscordGuild';
 
+export class UserOnGuildModel extends TakaroModel {
+  static tableName = USER_ON_DISCORD_GUILD_TABLE_NAME;
+
+  userId!: string;
+  discordGuildId!: string;
+
+  hasManageServer: boolean;
+}
 export class DiscordGuildModel extends TakaroModel {
   static tableName = DISCORD_GUILDS_TABLE_NAME;
 
   name!: string;
+  icon?: string | null;
   discordId: string;
 
   takaroEnabled: boolean;
@@ -33,16 +42,15 @@ export class DiscordGuildModel extends TakaroModel {
         to: `${USER_TABLE_NAME}.id`,
       },
     },
+    guildPermission: {
+      relation: Model.HasOneRelation,
+      modelClass: UserOnGuildModel,
+      join: {
+        from: `${DISCORD_GUILDS_TABLE_NAME}.id`,
+        to: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
+      },
+    },
   };
-}
-
-export class UserOnGuildModel extends TakaroModel {
-  static tableName = USER_ON_DISCORD_GUILD_TABLE_NAME;
-
-  userId!: string;
-  discordGuildId!: string;
-
-  hasManageServer: boolean;
 }
 
 export class DiscordRepo extends ITakaroRepo<
@@ -97,6 +105,7 @@ export class DiscordRepo extends ITakaroRepo<
         discordId: data.discordId,
         name: data.name,
         domain: this.domainId,
+        icon: data.icon,
       })
       .returning('*');
     return this.findOne(item.id);
@@ -104,10 +113,12 @@ export class DiscordRepo extends ITakaroRepo<
 
   async update(id: string, data: GuildUpdateDTO) {
     const { query } = await this.getModel();
+
     const item = await query
       .patchAndFetchById(id, {
         name: data.name,
         takaroEnabled: data.takaroEnabled,
+        icon: data.icon,
       })
       .returning('*');
     return this.findOne(item.id);

@@ -842,6 +842,25 @@ export interface CronJobUpdateDTO {
 /**
  *
  * @export
+ * @interface DiscordInviteOutputDTO
+ */
+export interface DiscordInviteOutputDTO {
+  /**
+   *
+   * @type {InviteOutputDTO}
+   * @memberof DiscordInviteOutputDTO
+   */
+  data: InviteOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof DiscordInviteOutputDTO
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface DiscordParamId
  */
 export interface DiscordParamId {
@@ -1805,6 +1824,31 @@ export interface GuildApiUpdateDTO {
 /**
  *
  * @export
+ * @interface GuildCreateInputDTO
+ */
+export interface GuildCreateInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GuildCreateInputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildCreateInputDTO
+   */
+  discordId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildCreateInputDTO
+   */
+  icon?: string;
+}
+/**
+ *
+ * @export
  * @interface GuildOutputDTO
  */
 export interface GuildOutputDTO {
@@ -1832,6 +1876,12 @@ export interface GuildOutputDTO {
    * @memberof GuildOutputDTO
    */
   takaroEnabled: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildOutputDTO
+   */
+  icon?: string;
 }
 /**
  *
@@ -1841,10 +1891,10 @@ export interface GuildOutputDTO {
 export interface GuildOutputDTOAPI {
   /**
    *
-   * @type {GuildOutputDTO}
+   * @type {Array<GuildOutputDTO>}
    * @memberof GuildOutputDTOAPI
    */
-  data: GuildOutputDTO;
+  data: Array<GuildOutputDTO>;
   /**
    *
    * @type {MetadataOutput}
@@ -1870,6 +1920,12 @@ export interface GuildSearchInputAllowedFilters {
    * @memberof GuildSearchInputAllowedFilters
    */
   discordId?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GuildSearchInputAllowedFilters
+   */
+  takaroEnabled?: boolean;
 }
 /**
  *
@@ -1941,6 +1997,12 @@ export interface GuildUpdateDTO {
    * @memberof GuildUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildUpdateDTO
+   */
+  icon?: string;
   /**
    *
    * @type {boolean}
@@ -2461,6 +2523,25 @@ export interface IdUuidDTOAPI {
    * @memberof IdUuidDTOAPI
    */
   meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface InviteOutputDTO
+ */
+export interface InviteOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof InviteOutputDTO
+   */
+  botInvite: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InviteOutputDTO
+   */
+  devServer: string;
 }
 /**
  *
@@ -6250,6 +6331,45 @@ export const DiscordApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @summary Get invite
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetInvite: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/discord/invite`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Search
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -6418,6 +6538,29 @@ export const DiscordApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Get invite
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async discordControllerGetInvite(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<DiscordInviteOutputDTO>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.discordControllerGetInvite(options);
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Search
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -6430,7 +6573,7 @@ export const DiscordApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string
-      ) => AxiosPromise<Array<GuildOutputDTOAPI>>
+      ) => AxiosPromise<GuildOutputDTOAPI>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.discordControllerSearch(
@@ -6519,6 +6662,19 @@ export const DiscordApiFactory = function (
   return {
     /**
      *
+     * @summary Get invite
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    discordControllerGetInvite(
+      options?: any
+    ): AxiosPromise<DiscordInviteOutputDTO> {
+      return localVarFp
+        .discordControllerGetInvite(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Search
      * @param {GuildSearchInputDTO} [guildSearchInputDTO] GuildSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -6527,7 +6683,7 @@ export const DiscordApiFactory = function (
     discordControllerSearch(
       guildSearchInputDTO?: GuildSearchInputDTO,
       options?: any
-    ): AxiosPromise<Array<GuildOutputDTOAPI>> {
+    ): AxiosPromise<GuildOutputDTOAPI> {
       return localVarFp
         .discordControllerSearch(guildSearchInputDTO, options)
         .then((request) => request(axios, basePath));
@@ -6576,6 +6732,19 @@ export const DiscordApiFactory = function (
  * @extends {BaseAPI}
  */
 export class DiscordApi extends BaseAPI {
+  /**
+   *
+   * @summary Get invite
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DiscordApi
+   */
+  public discordControllerGetInvite(options?: AxiosRequestConfig) {
+    return DiscordApiFp(this.configuration)
+      .discordControllerGetInvite(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @summary Search

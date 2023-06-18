@@ -12,6 +12,7 @@ export async function up(knex: Knex): Promise<void> {
 
     table.string('discordId').notNullable();
     table.string('name').notNullable();
+    table.string('icon');
     table.boolean('takaroEnabled').defaultTo(false);
 
     table.unique(['discordId', 'domain']);
