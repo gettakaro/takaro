@@ -1,4 +1,4 @@
-import { TextFieldType } from '.';
+import { TextFieldType } from './Generic';
 
 export const getFieldType = (type: TextFieldType, passwordVisible: boolean) => {
   // we only use the type number to transform the output to number

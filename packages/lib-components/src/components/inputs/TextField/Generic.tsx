@@ -64,12 +64,8 @@ export const GenericTextField = forwardRef<
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (type === 'number' && !isNaN(parseInt(event.target.value))) {
-      onChange(parseInt(event.target.value));
-      return;
-    }
-    onChange(event);
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e);
   };
 
   return (

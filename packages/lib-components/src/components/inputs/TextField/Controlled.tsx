@@ -37,6 +37,7 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
     name,
     control,
   });
+
   const [showError, setShowError] = useState<boolean>(false);
 
   const handleOnFocus = () => {
@@ -88,7 +89,20 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
         required={required}
         size={size}
         readOnly={readOnly}
-        onChange={field.onChange}
+        onChange={(e) => {
+          if (type === 'number') {
+            if (Number(e.target.value)) {
+              field.onChange(Number(e.target.value));
+            } else {
+              field.onChange(e.target.value);
+            }
+            if (e.target.value === '') {
+              field.onChange();
+            }
+          } else {
+            field.onChange(e.target.value);
+          }
+        }}
         onFocus={handleOnFocus}
         prefix={prefix}
         suffix={suffix}
