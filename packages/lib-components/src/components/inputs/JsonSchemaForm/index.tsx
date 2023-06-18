@@ -37,4 +37,5 @@ export const JsonSchemaForm: FC<PropsWithChildren<JsonSchemaFormProps>> = ({
   );
 };
 
-export { SchemaGenerator, generateJSONSchema } from './generator';
+export { SchemaGenerator } from './generator';
+export { inputsToSchema as generateJsonSchema } from './generator/inputsToSchema';

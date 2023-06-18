@@ -38,5 +38,5 @@ export type { LabelProps } from './Label';
 export {
   JsonSchemaForm,
   SchemaGenerator,
-  generateJSONSchema,
+  generateJsonSchema,
 } from './JsonSchemaForm';
