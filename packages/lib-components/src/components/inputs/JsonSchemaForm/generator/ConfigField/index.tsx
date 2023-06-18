@@ -10,14 +10,14 @@ import {
   OptionGroup,
   Select,
   TextField,
-  TagField,
   Chip,
 } from '../../../../../components';
 import { Header } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from '../InputTypes';
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
+import { TypeSpecificFieldsMap } from './TypeSpecificFieldsMap';
 
 interface ConfigFieldProps {
   input: Input;
@@ -44,105 +44,30 @@ export const ConfigField: FC<ConfigFieldProps> = ({
   const fieldType = useWatch<IFormInputs>({
     control,
     name: `configFields.${index}.type`,
-  });
+  }) as InputType;
 
   // whenever the field type changes we reset all type dependent fields.
   // Because some of the fields have the same form name the default value is not reset.
   // which results in impossible default values for the new type.
   useEffect(() => {
-    // TODO: resetField takes a default value, we could set this depending on the fieldType
-    resetField(`configFields.${index}.default`, { defaultValue: '' });
+    switch (fieldType) {
+      case InputType.boolean:
+        resetField(`configFields.${index}.default`, { defaultValue: true });
+        break;
+      case InputType.string:
+        resetField(`configFields.${index}.default`, { defaultValue: '' });
+        break;
+      case InputType.number:
+        resetField(`configFields.${index}.default`, { defaultValue: 0 });
+        break;
+    }
   }, [fieldType]);
 
-  const typeSpecificFields: JSX.Element[] = [];
-
-  switch (fieldType) {
-    case InputType.string:
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-default-${id}`}
-          control={control}
-          type="text"
-          label="Default value"
-          name={`configFields.${index}.default`}
-        />
-      );
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-minLength-${id}`}
-          control={control}
-          type="number"
-          label="Minimum length"
-          name={`configFields.${index}.minLength`}
-        />
-      );
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-maxLength-${id}`}
-          control={control}
-          type="number"
-          label="Maximum length"
-          name={`configFields.${index}.maxLength`}
-        />
-      );
-      break;
-    case InputType.number:
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-default-${id}`}
-          control={control}
-          type="number"
-          label="Default value"
-          name={`configFields.${index}.default`}
-        />
-      );
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-minimum-${id}`}
-          control={control}
-          type="number"
-          label="Minimum"
-          name={`configFields.${index}.minimum`}
-        />
-      );
-      typeSpecificFields.push(
-        <TextField
-          key={`${input.type}-maximum-${id}`}
-          control={control}
-          type="number"
-          label="Maximum"
-          name={`configFields.${index}.maximum`}
-        />
-      );
-      break;
-    case InputType.boolean:
-      typeSpecificFields.push(
-        <CheckBox
-          key={`${input.type}-default-${id}`}
-          control={control}
-          labelPosition="left"
-          label="Default value"
-          name={`configFields.${index}.default`}
-        />
-      );
-      break;
-    case InputType.enum:
-      typeSpecificFields.push(
-        <TagField
-          key={`${input.type}-enum-${id}`}
-          control={control}
-          name={`configFields.${index}.enum`}
-          label="Possible values"
-          isEditOnRemove
-          placeholder="Press enter to add a value."
-        />
-      );
-      break;
-    case InputType.array:
-      break;
-    default:
-      throw new Error(`Unknown input type: ${input}`);
-  }
+  const typeSpecificFields = useCallback(TypeSpecificFieldsMap, [
+    fieldType,
+    index,
+    id,
+  ]);
 
   return (
     <>
@@ -183,7 +108,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({
           ))}
         </OptionGroup>
       </Select>
-      {typeSpecificFields}
+      {typeSpecificFields(control, input, index, id)[fieldType]}
       <CheckBox
         control={control}
         label="Is Field required?"
