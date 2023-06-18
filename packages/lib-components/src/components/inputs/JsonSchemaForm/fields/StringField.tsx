@@ -18,9 +18,6 @@ export const StringField = ({
   uiSchema,
   registry,
 }: FieldProps) => {
-  console.log('monkey');
-  console.log(schema);
-
   if (
     schema.enum &&
     schema.enum.length &&
@@ -46,7 +43,7 @@ export const StringField = ({
         onBlur={onBlur}
         disabled={disabled}
         placeholder={placeholder}
-        onFocus={() => {}}
+        onFocus={onFocus}
         label={schema.title || name}
         registry={registry}
       />
