@@ -1,164 +1,21 @@
-import { AnySchema, SchemaObject } from 'ajv';
+import { FC, useEffect, Fragment } from 'react';
+import { AnySchema } from 'ajv';
 import { Button, Divider } from '../../../../components';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { FormField } from './getFormField';
-import { FC, useEffect, Fragment } from 'react';
+import { ConfigField } from './ConfigField';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { InputType, Input, AnyInput } from './InputTypes';
+import { InputType, Input } from './InputTypes';
 import { Form } from './style';
+import { inputsToSchema } from './inputsToSchema';
 
-interface TakaroConfigSchema {
+export interface TakaroConfigSchema {
   type: 'object';
   properties: {
     [name: string]: any;
   };
   required: string[];
-}
-
-function getJsonSchemaElement(input: AnyInput) {
-  const res: SchemaObject = {
-    type: input.type,
-  };
-
-  if (input.default !== undefined) {
-    res.default = input.default;
-  }
-
-  if (input.name) {
-    res.title = input.name;
-  }
-
-  if (input.description) {
-    res.description = input.description;
-  }
-
-  switch (input.type) {
-    case InputType.enum:
-      res.enum = input.enum ?? [];
-      res.type = 'string';
-      break;
-
-    case InputType.number:
-      if (input.minimum) {
-        res.minimum = input.minimum;
-      }
-
-      if (input.maximum) {
-        res.maximum = input.maximum;
-      }
-
-      break;
-
-    case InputType.string:
-      if (input.minLength) {
-        res.minLength = input.minLength;
-      }
-
-      if (input.maxLength) {
-        res.maxLength = input.maxLength;
-      }
-
-      break;
-
-    case InputType.boolean:
-      break;
-
-    case InputType.array:
-      res.items = { type: 'string' };
-      break;
-
-    default:
-      throw new Error('Unknown input type');
-  }
-
-  return res;
-}
-
-export function generateJSONSchema(inputs: Array<Input>): TakaroConfigSchema {
-  const schema: TakaroConfigSchema = {
-    type: 'object',
-    properties: {},
-    required: [],
-  };
-
-  for (const input of inputs) {
-    if (input.required !== false) {
-      schema.required.push(input.name);
-    }
-    schema.properties[input.name] = getJsonSchemaElement(input);
-  }
-
-  return schema;
-}
-
-export function schemaToInputs(schema: TakaroConfigSchema): Input[] {
-  const normalizedSchema: TakaroConfigSchema = {
-    type: 'object',
-    properties: schema.properties ?? {},
-    required: schema.required ?? [],
-  };
-
-  const inputs: any[] = [];
-
-  for (const [name, property] of Object.entries(normalizedSchema.properties)) {
-    const input: Record<string, any> = {
-      name,
-      type: property.type as InputType,
-      required: normalizedSchema.required.includes(name),
-    };
-
-    if (property.default !== undefined) {
-      input.default = property.default;
-    }
-
-    if (property.title) {
-      input.title = property.title;
-    }
-
-    if (property.description) {
-      input.description = property.description;
-    }
-
-    switch (property.type) {
-      case InputType.enum:
-        input.enum = property.enum;
-        break;
-
-      case InputType.number:
-        if (property.minimum) {
-          input.minimum = property.minimum;
-        }
-
-        if (property.maximum) {
-          input.maximum = property.maximum;
-        }
-
-        break;
-
-      case InputType.string:
-        if (property.minLength) {
-          input.minLength = property.minLength;
-        }
-
-        if (property.maxLength) {
-          input.maxLength = property.maxLength;
-        }
-
-        break;
-
-      case InputType.boolean:
-        break;
-
-      default:
-        throw new Error('Unknown input type');
-    }
-
-    inputs.push(input);
-  }
-
-  return inputs as Input[];
 }
 
 export interface IFormInputs {
@@ -182,7 +39,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
       resolver: zodResolver(validationSchema),
       defaultValues: {
         // @ts-expect-error 😠 form types are weird
-        configFields: schemaToInputs(initialSchema ?? {}),
+        configFields: schemaToInputs(initialSchema),
       },
     }
   );
@@ -211,7 +68,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
 
   const onSubmit = () => {
     const formValues = getValues();
-    const schema = generateJSONSchema(formValues.configFields);
+    const schema = inputsToSchema(formValues.configFields);
     onSchemaChange(schema);
   };
 
@@ -223,7 +80,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
         ? fields.map((field, index) => {
             return (
               <Fragment key={`config-field-wrapper-${field.id}`}>
-                <FormField
+                <ConfigField
                   key={`config-field-${field.id}`}
                   id={field.id}
                   input={field}
