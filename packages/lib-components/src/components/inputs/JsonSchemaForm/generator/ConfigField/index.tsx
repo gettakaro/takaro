@@ -46,9 +46,10 @@ export const ConfigField: FC<ConfigFieldProps> = ({
     name: `configFields.${index}.type`,
   }) as InputType;
 
-  // whenever the field type changes we reset all type dependent fields.
-  // Because some of the fields have the same form name the default value is not reset.
-  // which results in impossible default values for the new type.
+  /* whenever the field type changes we swap all type dependent fields.
+    `configFields.${index}.default` has the same name across different inputTypes.
+    We need to reset the default value to the new type default value.
+  */
   useEffect(() => {
     switch (fieldType) {
       case InputType.boolean:
