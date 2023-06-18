@@ -1,5 +1,5 @@
 import { forwardRef, KeyboardEvent, ClipboardEvent, useState } from 'react';
-import { GenericInputProps } from '../InputProps';
+import { GenericInputPropsFunctionHandlers } from '../InputProps';
 import { ZodType } from 'zod';
 import { TagsContainer, Tag } from './style';
 import { splitPaste, useDidUpdateEffect } from './util';
@@ -20,7 +20,7 @@ export interface TagFieldProps {
 
 // these are props that should only be available on the generic version.
 export type GenericTagFieldProps = TagFieldProps &
-  GenericInputProps<HTMLInputElement> & {
+  GenericInputPropsFunctionHandlers<string[], HTMLInputElement> & {
     value: string[];
   };
 

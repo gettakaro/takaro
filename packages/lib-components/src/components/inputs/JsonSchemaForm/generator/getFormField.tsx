@@ -51,7 +51,7 @@ export const FormField: FC<FormFieldProps> = ({
   index,
   remove,
   id,
-  // resetField,
+  resetField,
 }) => {
   const output = useWatch<IFormInputs>({
     control,
@@ -67,9 +67,8 @@ export const FormField: FC<FormFieldProps> = ({
   // Because some of the fields have the same form name the default value is not reset.
   // which results in impossible default values for the new type.
   useEffect(() => {
-    console.log('this fires');
     // TODO: resetField takes a default value, we could set this depending on the fieldType
-    // resetField(`configFields.${index}.default`, { defaultValue: 'moneky' });
+    resetField(`configFields.${index}.default`, { defaultValue: '' });
   }, [fieldType]);
 
   const typeSpecificFields: JSX.Element[] = [];
@@ -82,7 +81,7 @@ export const FormField: FC<FormFieldProps> = ({
           control={control}
           type="text"
           label="Default value"
-          name={`,configFields.${index}.default`}
+          name={`configFields.${index}.default`}
         />
       );
       typeSpecificFields.push(
@@ -157,16 +156,6 @@ export const FormField: FC<FormFieldProps> = ({
       );
       break;
     case InputType.array:
-      typeSpecificFields.push(
-        <TagField
-          key={`${input.type}-array-${id}`}
-          control={control}
-          name={`configFields.${index}.array`}
-          label="List of values"
-          isEditOnRemove
-          placeholder="Press enter to add a value."
-        />
-      );
       break;
     default:
       throw new Error(`Unknown input type: ${input}`);

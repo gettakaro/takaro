@@ -18,6 +18,9 @@ export const StringField = ({
   uiSchema,
   registry,
 }: FieldProps) => {
+  console.log('monkey');
+  console.log(schema);
+
   if (
     schema.enum &&
     schema.enum.length &&
@@ -50,12 +53,7 @@ export const StringField = ({
     );
   }
 
-  if (
-    schema.enum &&
-    schema.enum.length &&
-    uiSchema &&
-    uiSchema['ui:widget'] === 'selectWidget'
-  ) {
+  if (schema.enum) {
     return (
       <SelectWidget
         name={name}
@@ -85,16 +83,12 @@ export const StringField = ({
   return (
     <GenericTextField
       name={name}
-      onChange={(val: string) => {
-        onChange(val);
-      }}
+      onChange={onChange}
       disabled={disabled}
       placeholder={placeholder}
       hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
-      onBlur={onBlur}
-      onFocus={onFocus}
       value={formData as string}
       type="text"
     />

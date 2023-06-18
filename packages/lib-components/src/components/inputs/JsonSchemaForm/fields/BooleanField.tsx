@@ -50,8 +50,6 @@ export function BooleanField<
       value={value}
       disabled={disabled}
       hasError={!!rawErrors.length}
-      onFocus={onFocus}
-      onBlur={onBlur}
       required={required}
       readOnly={readonly}
     />

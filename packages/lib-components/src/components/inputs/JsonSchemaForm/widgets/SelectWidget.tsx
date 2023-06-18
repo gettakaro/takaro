@@ -33,7 +33,7 @@ export function SelectWidget<
       required={required}
       readOnly={readonly}
       value={value}
-      onChange={(val: string) => onChange(val)}
+      onChange={onChange}
       render={(selectedIndex) => (
         <div>
           {enumOptionsValueForIndex(selectedIndex, enumOptions, emptyValue) ??
@@ -41,7 +41,7 @@ export function SelectWidget<
         </div>
       )}
     >
-      <OptionGroup label="Games">
+      <OptionGroup label="options">
         {enumOptions &&
           enumOptions.map(({ value, label }) => (
             <Option key={`select-${value}`} value={value}>

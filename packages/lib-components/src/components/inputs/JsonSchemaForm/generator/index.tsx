@@ -6,7 +6,7 @@ import { FC, useEffect, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { AnyInputExceptArray, InputType, Input } from './InputTypes';
+import { InputType, Input, AnyInput } from './InputTypes';
 import { Form } from './style';
 
 interface TakaroConfigSchema {
@@ -17,7 +17,7 @@ interface TakaroConfigSchema {
   required: string[];
 }
 
-function getJsonSchemaElement(input: AnyInputExceptArray) {
+function getJsonSchemaElement(input: AnyInput) {
   const res: SchemaObject = {
     type: input.type,
   };
@@ -36,7 +36,8 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
 
   switch (input.type) {
     case InputType.enum:
-      res.enum = input.enum;
+      res.enum = input.enum ?? [];
+      res.type = 'string';
       break;
 
     case InputType.number:
@@ -64,6 +65,10 @@ function getJsonSchemaElement(input: AnyInputExceptArray) {
     case InputType.boolean:
       break;
 
+    case InputType.array:
+      res.items = { type: 'string' };
+      break;
+
     default:
       throw new Error('Unknown input type');
   }
@@ -82,12 +87,7 @@ export function generateJSONSchema(inputs: Array<Input>): TakaroConfigSchema {
     if (input.required !== false) {
       schema.required.push(input.name);
     }
-
-    if (input.type === InputType.array) {
-      schema.properties[input.name].items = getJsonSchemaElement(input.items);
-    } else {
-      schema.properties[input.name] = getJsonSchemaElement(input);
-    }
+    schema.properties[input.name] = getJsonSchemaElement(input);
   }
 
   return schema;
