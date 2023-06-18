@@ -93,6 +93,9 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
 
   return (
     <>
+      NOTE: You can ignore the width changing when opening the select. This is
+      due to the select being rendered in a storybook iframe which has incorrect
+      gutter size.
       <form onSubmit={handleSubmit(submit)}>
         <Select
           control={control}
