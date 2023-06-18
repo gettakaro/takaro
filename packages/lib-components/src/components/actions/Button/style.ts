@@ -111,9 +111,9 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
   }
   &:disabled {
     background: none;
-    border-color: ${({ theme }): string => theme.colors.gray};
+    border-color: ${({ theme }): string => theme.colors.text};
     span {
-      color: ${({ theme }): string => theme.colors.gray};
+      color: ${({ theme }): string => theme.colors.text};
     }
     svg {
       fill: ${({ theme }): string => theme.colors.gray};
