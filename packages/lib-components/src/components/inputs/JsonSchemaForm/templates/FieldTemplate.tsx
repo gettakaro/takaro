@@ -62,7 +62,7 @@ export function FieldTemplate<
       />
       {children}
       {errors}
-      {displayLabel && rawDescription && <p>{description}</p>}
+      {displayLabel && rawDescription && description}
     </Container>
   );
 }
