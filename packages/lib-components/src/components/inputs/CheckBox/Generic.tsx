@@ -1,6 +1,4 @@
-// TODO: Improve accessibility
-import { FC, useEffect, useState } from 'react';
-
+import { useEffect, useState, forwardRef } from 'react';
 import {
   BackgroundContainer,
   CheckboxContainer,
@@ -21,44 +19,52 @@ const variants = {
   checked: { scale: 1 },
 };
 
-export type GenericCheckBoxProps = GenericInputPropsFunctionHandlers<boolean>;
+export type GenericCheckBoxProps = GenericInputPropsFunctionHandlers<
+  boolean,
+  HTMLDivElement
+> & { value: boolean };
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
 
-export const GenericCheckBox: FC<GenericCheckBoxProps> = (props) => {
-  const { readOnly, disabled, value, hasError, onChange } =
-    defaultsApplier(props);
+// TODO: write a test that checks if the value is being processed as a boolean.
+export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
+  (props, ref) => {
+    const { readOnly, disabled, value, hasError, onChange, name } =
+      defaultsApplier(props);
 
-  const [isChecked, setChecked] = useState<boolean>(value as boolean);
+    const [isChecked, setChecked] = useState<boolean>(Boolean(value));
 
-  function handleOnClick(): void {
-    if (readOnly || disabled) {
-      return;
+    function handleOnClick(): void {
+      if (readOnly || disabled) {
+        return;
+      }
+      setChecked(!isChecked);
     }
-    setChecked(!isChecked);
+
+    useEffect(() => {
+      onChange(isChecked);
+    }, [isChecked]);
+
+    return (
+      <CheckboxContainer
+        id={name}
+        isChecked={isChecked}
+        onClick={handleOnClick}
+        readOnly={readOnly}
+        error={hasError}
+        disabled={disabled}
+        ref={ref}
+      >
+        <BackgroundContainer
+          animate={isChecked ? 'checked' : 'unchecked'}
+          transition={getTransition()}
+          variants={variants}
+        />
+        <CheckMarkContainer isChecked={isChecked}>
+          <Icon size={15} />
+        </CheckMarkContainer>
+      </CheckboxContainer>
+    );
   }
-
-  useEffect(() => {
-    onChange(isChecked);
-  }, [isChecked]);
-
-  return (
-    <CheckboxContainer
-      isChecked={isChecked}
-      onClick={handleOnClick}
-      readOnly={readOnly}
-      error={hasError}
-      disabled={disabled}
-    >
-      <BackgroundContainer
-        animate={isChecked ? 'checked' : 'unchecked'}
-        transition={getTransition()}
-        variants={variants}
-      />
-      <CheckMarkContainer isChecked={isChecked}>
-        <Icon size={15} />
-      </CheckMarkContainer>
-    </CheckboxContainer>
-  );
-};
+);

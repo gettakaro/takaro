@@ -109,6 +109,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
           required={required}
           onChange={field.onChange}
           value={field.value}
+          ref={field.ref}
         />
 
         {/* CASE: show label after <CheckBox /> */}
