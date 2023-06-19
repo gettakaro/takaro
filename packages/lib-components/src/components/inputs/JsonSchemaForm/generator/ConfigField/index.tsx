@@ -51,16 +51,22 @@ export const ConfigField: FC<ConfigFieldProps> = ({
     We need to reset the default value to the new type default value.
   */
   useEffect(() => {
-    switch (fieldType) {
-      case InputType.boolean:
-        resetField(`configFields.${index}.default`, { defaultValue: true });
-        break;
-      case InputType.string:
-        resetField(`configFields.${index}.default`, { defaultValue: '' });
-        break;
-      case InputType.number:
-        resetField(`configFields.${index}.default`, { defaultValue: 0 });
-        break;
+    if (fieldType) {
+      switch (fieldType) {
+        case InputType.boolean:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: true,
+          });
+          break;
+        case InputType.string:
+          resetField(`configFields.${index}.default`, { defaultValue: '' });
+          break;
+        case InputType.number:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: 0,
+          });
+          break;
+      }
     }
   }, [fieldType]);
 
