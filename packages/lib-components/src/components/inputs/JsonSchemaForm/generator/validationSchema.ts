@@ -40,8 +40,8 @@ export const validationSchema = z.object({
           }),
           z.object({
             type: z.literal(InputType.number.valueOf()),
-            default: z.number().min(1),
-            minimum: z.number().min(1).optional(),
+            default: z.number().min(0),
+            minimum: z.number().min(0).optional(),
             maximum: z.number().min(1).optional(),
           }),
           z.object({
