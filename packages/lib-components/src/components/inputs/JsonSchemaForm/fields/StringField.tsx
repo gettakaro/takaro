@@ -80,7 +80,7 @@ export const StringField = ({
   return (
     <GenericTextField
       name={name}
-      onChange={onChange}
+      onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
       placeholder={placeholder}
       hasError={!!rawErrors.length}
