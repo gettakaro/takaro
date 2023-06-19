@@ -41,7 +41,7 @@ export interface BooleanInput extends BaseObject {
 export interface ArrayInput extends BaseObject {
   type: InputType.array;
   items: AnyInputExceptArray;
-  default?: unknown[];
+  default?: string[];
 }
 
 export type AnyInputExceptArray =
