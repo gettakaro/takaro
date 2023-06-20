@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import {
   defaultInputProps,
   defaultInputPropsFactory,
-  GenericInputProps,
+  GenericInputPropsFunctionHandlers,
 } from '../InputProps';
 import { GenericRadio } from './Radio';
 import { Container } from './style';
@@ -14,7 +14,8 @@ export interface Option {
   value: string;
 }
 
-export interface RadioGroupProps extends GenericInputProps<HTMLDivElement> {
+export interface RadioGroupProps
+  extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
   options: Option[];
 }
 

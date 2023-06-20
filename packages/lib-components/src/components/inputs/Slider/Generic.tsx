@@ -4,8 +4,8 @@ import { Color } from '../../../styled';
 import { StyledSlider } from './style';
 import {
   defaultInputProps,
-  GenericInputProps,
   defaultInputPropsFactory,
+  GenericInputPropsFunctionHandlers,
 } from '../InputProps';
 
 interface Mark {
@@ -24,14 +24,13 @@ export interface SliderProps {
 }
 
 export type GenericSliderProps = SliderProps &
-  GenericInputProps<HTMLDivElement>;
+  GenericInputPropsFunctionHandlers<number, HTMLDivElement>;
 
 const defaultsApplier =
   defaultInputPropsFactory<GenericSliderProps>(defaultInputProps);
 
 // TODO: should probably switch to the radixUI version
-// TODO: not sure how to type this ref correctly
-export const GenericSlider = forwardRef<any, GenericSliderProps>(
+export const GenericSlider = forwardRef<HTMLDivElement, GenericSliderProps>(
   (props, ref) => {
     const {
       color = 'primary',
