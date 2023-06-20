@@ -75,6 +75,15 @@ export const TypeSpecificFieldsMap = (
         placeholder="Press enter to add a value."
       />,
     ],
-    [InputType.array]: [],
+    [InputType.array]: [
+      <TagField
+        key={`${input.type}-default-${id}`}
+        control={control}
+        name={`configFields.${index}.default`}
+        label="Default values"
+        isEditOnRemove
+        placeholder="Press enter to add a value."
+      />,
+    ],
   };
 };

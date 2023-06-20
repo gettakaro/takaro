@@ -66,6 +66,9 @@ export const ConfigField: FC<ConfigFieldProps> = ({
             defaultValue: 0,
           });
           break;
+        case InputType.array:
+          resetField(`configFields.${index}.default`, { defaultValue: [] });
+          break;
       }
     }
   }, [fieldType]);
