@@ -16,7 +16,7 @@ export const NumberField = ({
   uiSchema,
   registry,
 }: FieldProps) => {
-  if (uiSchema && uiSchema!['ui:widget'] === 'slider') {
+  if (uiSchema && uiSchema['ui:widget'] === 'slider') {
     return (
       <RangeWidget
         name={name}
@@ -39,11 +39,10 @@ export const NumberField = ({
   return (
     <GenericTextField
       name={name}
-      onChange={onChange}
-      onBlur={onBlur}
+      onChange={(number) => onChange(number)}
       disabled={disabled}
       placeholder={placeholder}
-      error={!!rawErrors.length}
+      hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
       value={schema.default?.toString() ?? ''}
