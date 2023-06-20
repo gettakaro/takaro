@@ -55,6 +55,7 @@ export const validationSchema = z.object({
           z.object({
             type: z.literal(InputType.array.valueOf()),
             array: z.array(z.string()).nonempty(),
+            default: z.array(z.string()).nonempty(),
           }),
         ])
         .and(baseShape)

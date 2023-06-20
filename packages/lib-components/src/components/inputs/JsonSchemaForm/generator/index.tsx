@@ -9,6 +9,7 @@ import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { InputType, Input } from './InputTypes';
 import { Form } from './style';
 import { inputsToSchema } from './inputsToSchema';
+import { schemaToInputs } from './SchemaToInputs';
 
 export interface TakaroConfigSchema {
   type: 'object';
@@ -26,15 +27,21 @@ export interface IFormInputs {
 
 interface ISchemaGeneratorProps {
   onSchemaChange: (schema: AnySchema) => void;
+  // e.g. when a user edits a module config, we start from an existing schema
+  initialSchema?: TakaroConfigSchema;
 }
 
 export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   onSchemaChange,
+  initialSchema,
 }) => {
   const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>(
     {
       mode: 'onChange',
       resolver: zodResolver(validationSchema),
+      defaultValues: {
+        configFields: initialSchema ? schemaToInputs(initialSchema) ?? [] : [],
+      },
     }
   );
 
