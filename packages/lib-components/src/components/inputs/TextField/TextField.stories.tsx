@@ -153,7 +153,7 @@ export const Generic: StoryFn = () => {
     <>
       <GenericTextField
         hasError={false}
-        onChange={(val: string) => setValue(val)}
+        onChange={(e) => setValue(e.target.value)}
         placeholder="placeholder"
         required={false}
         name="name"
