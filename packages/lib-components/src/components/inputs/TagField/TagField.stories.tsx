@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { TagField, TagFieldProps } from '../../../components';
+import { Button, TagField, TagFieldProps } from '../../../components';
 import { z } from 'zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 
 export default {
   title: 'Inputs/TagField',
@@ -23,22 +23,41 @@ export default {
   },
 } as Meta<TagFieldProps>;
 
+interface FormInputs {
+  tags: string[];
+}
+
 export const OnSubmit: StoryFn<TagFieldProps> = (args) => {
-  const { control } = useForm();
+  const [result, setResult] = useState<string[]>([]);
+  const { control, handleSubmit } = useForm<FormInputs>({
+    defaultValues: {
+      tags: ['jari'],
+    },
+  });
 
   const beforeAddValidationSchema = z.object({
     tags: z.array(z.string()),
   });
 
+  const onSubmit: SubmitHandler<FormInputs> = ({ tags }) => {
+    console.log('in on submit', tags);
+    setResult(() => [...tags]);
+  };
+
   return (
     <div style={{ marginBottom: '32px' }}>
       <h1>Add Fruits</h1>
       <pre>paste tester: apple,banana,jeroen</pre>
-      <TagField
-        {...args}
-        tagValidationSchema={beforeAddValidationSchema}
-        control={control}
-      />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TagField
+          {...args}
+          tagValidationSchema={beforeAddValidationSchema}
+          control={control}
+          name="tags"
+        />
+        <Button type="submit" text="Submit" />
+      </form>
+      <pre>result: {result.join(', ')}</pre>
     </div>
   );
 };

@@ -87,7 +87,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
         ref={field.ref}
         onBlur={handleOnBlur}
         onFocus={handleOnFocus}
-        onChange={field.onChange}
+        onChange={(values) => field.onChange(values)}
         placeholder={placeholder}
         hasError={!!error}
         value={field.value as string[]}

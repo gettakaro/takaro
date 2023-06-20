@@ -46,7 +46,9 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     ref
   ) => {
     const combinedSeparators = [...defaultSeparators, ...separators];
-    const [tags, setTags] = useState<string[]>(value);
+    const [tags, setTags] = useState<string[]>(
+      Array.isArray(value) ? value : []
+    );
 
     useDidUpdateEffect(() => {
       onChange(tags);
