@@ -139,6 +139,12 @@ export function Item<DataType extends object>({
     },
   });
 
+  // TODO: fix this
+  // column.getIsVisible(); --> is column currently visible in table
+  // column.toggleVisibility(); --> toggle column visibility in table
+  // checked --> value of checkbox in column controller
+  //
+
   const [, dragRef] = useDrag({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -161,13 +167,9 @@ export function Item<DataType extends object>({
       <CheckBox
         key={`column-visibility-checkbox-${column.id}`}
         name={`column-visiblity-${column.id}`}
-        value={column.getIsVisible()}
         control={control}
         labelPosition="right"
         label={labelText()}
-        onChange={(visible: boolean) => {
-          column.toggleVisibility(visible);
-        }}
       />
       <div ref={dragRef} data-handler-id={handlerId}>
         <DragIcon style={{ cursor: 'pointer' }} />
