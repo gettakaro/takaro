@@ -1,5 +1,5 @@
-import { Button } from '../../../../components';
 import { AiOutlinePlus as AddIcon } from 'react-icons/ai';
+import { Button } from '../../../../components';
 import {
   FormContextType,
   IconButtonProps,
@@ -18,6 +18,7 @@ export function AddButton<
   const { translateString } = registry;
   return (
     <Button
+      {...props}
       disabled={props.disabled}
       color="primary"
       size="small"
