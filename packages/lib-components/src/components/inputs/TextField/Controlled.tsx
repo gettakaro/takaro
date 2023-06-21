@@ -95,10 +95,10 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
             if (Number(e.target.value)) {
               field.onChange(Number(e.target.value));
             } else {
-              field.onChange();
+              field.onChange(null);
             }
             if (e.target.value === '') {
-              field.onChange();
+              field.onChange(null);
             }
           } else {
             field.onChange(e.target.value);
