@@ -1,4 +1,4 @@
-import { IconButton } from '../../../../components';
+import { IconButton, Tooltip } from '../../../../components';
 import {
   AiOutlineArrowUp as ArrowUpIcon,
   AiOutlineArrowDown as ArrowDownIcon,
@@ -20,7 +20,9 @@ export function TakaroButton<
   F extends FormContextType = any
 >(props: IconButtonProps<T, S, F>) {
   const { icon, color: _color, ...otherProps } = props;
-  return <IconButton icon={icon as ReactElement} {...otherProps} />;
+  return (
+    <IconButton icon={icon as ReactElement} {...otherProps} color="primary" />
+  );
 }
 
 export function CopyButton<
@@ -28,7 +30,14 @@ export function CopyButton<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any
 >(props: IconButtonProps<T, S, F>) {
-  return <TakaroButton {...props} icon={<CopyIcon />} />;
+  const {
+    registry: { translateString },
+  } = props;
+  return (
+    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
+      <TakaroButton {...props} icon={<CopyIcon />} />
+    </Tooltip>
+  );
 }
 
 export function MoveDownButton<
@@ -40,11 +49,13 @@ export function MoveDownButton<
     registry: { translateString },
   } = props;
   return (
-    <TakaroButton
-      title={translateString(TranslatableString.MoveDownButton)}
-      {...props}
-      icon={<ArrowDownIcon />}
-    />
+    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
+      <TakaroButton
+        title={translateString(TranslatableString.MoveDownButton)}
+        {...props}
+        icon={<ArrowDownIcon />}
+      />
+    </Tooltip>
   );
 }
 
@@ -57,11 +68,9 @@ export function MoveUpButton<
     registry: { translateString },
   } = props;
   return (
-    <TakaroButton
-      title={translateString(TranslatableString.MoveUpButton)}
-      {...props}
-      icon={<ArrowUpIcon />}
-    />
+    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
+      <TakaroButton {...props} icon={<ArrowUpIcon />} />
+    </Tooltip>
   );
 }
 
@@ -75,11 +84,13 @@ export function RemoveButton<
     registry: { translateString },
   } = otherProps;
   return (
-    <TakaroButton
-      title={translateString(TranslatableString.RemoveButton)}
-      {...otherProps}
-      color="secondary"
-      icon={<DeleteIcon />}
-    />
+    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
+      <TakaroButton
+        title={translateString(TranslatableString.RemoveButton)}
+        {...otherProps}
+        color="secondary"
+        icon={<DeleteIcon />}
+      />
+    </Tooltip>
   );
 }
