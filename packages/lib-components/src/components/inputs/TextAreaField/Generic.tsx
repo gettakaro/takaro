@@ -31,7 +31,7 @@ export const GenericTextAreaField = forwardRef<
     onChange,
     onFocus = () => {},
     name,
-    rows = 5,
+    rows = 4,
     hasError,
     readOnly,
     id,
