@@ -1,4 +1,3 @@
-import { GenericSwitch } from '../../Switch';
 import {
   FormContextType,
   RJSFSchema,
@@ -14,46 +13,32 @@ export function BooleanField<
 >({
   name,
   disabled,
-  rawErrors = [],
-  readonly,
-  value,
-  required,
   onChange,
   onBlur,
   onFocus,
   idSchema,
-  uiSchema,
+  required,
+  readonly,
   schema,
   registry,
+  uiSchema,
 }: FieldProps<T, S, F>) {
-  if (uiSchema && uiSchema['ui:widget'] === 'checkbox') {
-    return (
-      <CheckBoxWidget
-        name={name}
-        id={idSchema.$id}
-        schema={schema}
-        value={schema.default ?? false}
-        onChange={onChange}
-        options={{}}
-        onBlur={onBlur}
-        disabled={disabled}
-        onFocus={onFocus}
-        label={schema.title || name}
-        registry={registry}
-      />
-    );
-  }
-
   return (
-    <GenericSwitch
-      id={idSchema.$id}
+    <CheckBoxWidget
       name={name}
-      onChange={(val: boolean) => onChange(val as T)}
-      value={value}
+      id={idSchema.$id}
+      schema={schema}
+      value={schema.default ?? false}
+      onChange={onChange}
+      options={{}}
+      onBlur={onBlur}
       disabled={disabled}
-      hasError={!!rawErrors.length}
       required={required}
-      readOnly={readonly}
+      readonly={readonly}
+      onFocus={onFocus}
+      label={schema.title || name}
+      registry={registry}
+      uiSchema={uiSchema}
     />
   );
 }
