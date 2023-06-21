@@ -1,4 +1,4 @@
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { RJSFSchema } from '@rjsf/utils';
 import React from 'react';
 import { JsonSchemaForm } from '..';
 import { styled } from '../../../../styled';
@@ -14,6 +14,8 @@ export default {
 };
 
 export const Default = () => {
+  const [result, setResult] = React.useState<boolean>(false);
+
   const schema: RJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
@@ -27,21 +29,25 @@ export const Default = () => {
     },
   };
 
-  const uiSchema: UiSchema = {
-    isValid: {
-      'ui:widget': 'checkbox',
-    },
+  const onSubmit = (data: { isValid: boolean }) => {
+    setResult(data.isValid);
   };
 
   return (
     <Container>
-      <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
+      <JsonSchemaForm
+        schema={schema}
+        initialData={{}}
+        uiSchema={{}}
+        onSubmit={onSubmit}
+      >
         <Button
           type="submit"
           text="Submit"
           onClick={() => console.log('form submitted')}
         />
       </JsonSchemaForm>
+      <pre>result: {result}</pre>
     </Container>
   );
 };
