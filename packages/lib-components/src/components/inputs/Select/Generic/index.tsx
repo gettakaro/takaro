@@ -52,7 +52,7 @@ const defaultsApplier =
 // TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
 export const GenericSelect: FC<GenericSelectProps> = (props) => {
-  const { render, children, readOnly, value, onBlur, onChange, id } =
+  const { render, children, readOnly, value, onBlur, onChange, id, hasError } =
     defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -184,6 +184,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
         onBlur={onBlur}
         isOpen={open}
         tabIndex={readOnly ? -1 : 0}
+        hasError={hasError}
       >
         {render(selectedIndex - 1)}
         {!readOnly && <ArrowIcon size={18} />}

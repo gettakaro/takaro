@@ -7,7 +7,11 @@ export const Container = styled.div<{ minWidth?: string }>`
   min-width: ${({ minWidth }) => minWidth || 'auto'};
 `;
 
-export const SelectButton = styled.div<{ readOnly: boolean; isOpen: boolean }>`
+export const SelectButton = styled.div<{
+  readOnly: boolean;
+  isOpen: boolean;
+  hasError: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +32,8 @@ export const SelectButton = styled.div<{ readOnly: boolean; isOpen: boolean }>`
   margin-bottom: ${({ theme }) => theme.spacing['0_75']};
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme, hasError }) =>
+      hasError ? theme.colors.error : theme.colors.primary};
   }
 
   & > div {
