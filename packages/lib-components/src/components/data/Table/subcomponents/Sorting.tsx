@@ -10,6 +10,7 @@ export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  gap: ${({ theme }) => theme.spacing[1]};
   cursor: pointer;
 `;
 
@@ -47,8 +48,8 @@ export const Sorting: FC<SortDropdownProps> = ({
   };
 
   return (
-    <Wrapper>
-      <div onClick={handleSortClick}>{header}</div>
+    <Wrapper onClick={handleSortClick}>
+      {header}
       {isDesc() &&
         sorting[0].id === id &&
         (sorting[0].desc ? <DescendingIcon /> : <AscendingIcon />)}

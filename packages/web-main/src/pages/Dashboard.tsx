@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Button, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
-import { useUser } from 'hooks/useUser';
 
 export const Container = styled.div`
   h1 {
@@ -10,9 +9,15 @@ export const Container = styled.div`
   }
 `;
 
+const Flex = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
 const Dashboard: FC = () => {
   const { socket, isConnected } = useSocket();
-  const { userData } = useUser();
 
   const [lastPong, setLastPong] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
@@ -20,6 +25,10 @@ const Dashboard: FC = () => {
   const sendPing = () => {
     socket.emit('ping');
   };
+
+  useEffect(() => {
+    socket.emit('ping');
+  }, [socket, isConnected]);
 
   useEffect(() => {
     socket.on('pong', () => {
@@ -37,12 +46,14 @@ const Dashboard: FC = () => {
 
   return (
     <Container>
-      <h1>Hello, {userData.name}</h1>
-
-      <p>Connected: {'' + isConnected}</p>
-      <p>Last pong: {lastPong || '-'}</p>
-      <p>Last event: {lastEvent || '-'}</p>
-      <Button text={'Send ping'} onClick={sendPing} />
+      <Flex>
+        <span>
+          <p>Connected: {'' + isConnected}</p>
+          <p>Last pong: {lastPong || '-'}</p>
+          <p>Last event: {lastEvent || '-'}</p>
+        </span>
+        <Button text={'Send ping'} onClick={sendPing} />
+      </Flex>
     </Container>
   );
 };

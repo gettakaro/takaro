@@ -1,4 +1,4 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsBoolean } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 
 export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
@@ -8,6 +8,8 @@ export class RustConnectionInfo extends TakaroDTO<RustConnectionInfo> {
   public readonly rconPort!: string;
   @IsString()
   public readonly rconPassword!: string;
+  @IsBoolean()
+  public readonly useTls!: boolean;
 }
 
 export const rustJsonSchema = {
@@ -24,6 +26,10 @@ export const rustJsonSchema = {
     rconPassword: {
       type: 'string',
     },
+    useTls: {
+      type: 'boolean',
+      default: false,
+    },
   },
-  required: ['host', 'rconPort', 'rconPassword'],
+  required: ['host', 'rconPort', 'rconPassword', 'useTls'],
 };

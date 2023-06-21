@@ -1,36 +1,73 @@
-import { FC, Fragment } from 'react';
+import { FC } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Loading, CollapseList } from '@takaro/lib-components';
-import { useApiClient } from 'hooks/useApiClient';
-import { Editor } from '../../components/modules/Editor';
-import { useQuery } from 'react-query';
-import { ModuleOutputArrayDTOAPI } from '@takaro/apiclient';
+import { styled, CollapseList } from '@takaro/lib-components';
+import { Editor } from 'components/modules/Editor';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from 'components/modules/FileExplorer';
+import { useSandpack } from '@codesandbox/sandpack-react';
+import { useModule } from 'hooks/useModule';
+import { FunctionType } from 'context/moduleContext';
+import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
+import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
+import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
+
+const Wrapper = styled.div`
+  padding: ${({ theme }) => `0 ${theme.spacing[2]}}`};
+`;
 
 const Container = styled.div`
   display: flex;
 `;
 
+const ConfigWrapper = styled.div`
+  padding: ${({ theme }) => theme.spacing[1]};
+`;
+
+const Header = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 35px;
+  background-color: ${({ theme }) => theme.colors.background};
+  text-transform: capitalize;
+`;
+
+const StyledResizable = styled(Resizable)`
+  border-right: 2px solid ${({ theme }): string => theme.colors.background};
+  border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+  &:hover {
+    border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+  }
+`;
+
 const Studio: FC = () => {
-  const client = useApiClient();
+  const { sandpack } = useSandpack();
+  const { moduleData } = useModule();
 
-  const { data, isLoading } = useQuery<ModuleOutputArrayDTOAPI>(
-    'modules',
-    async () => (await client.module.moduleControllerSearch()).data
-  );
+  const activeModule = moduleData.fileMap[sandpack.activeFile];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
+  function getConfigComponent(type: FunctionType) {
+    switch (type) {
+      case FunctionType.Hooks:
+        return <HookConfig moduleItem={activeModule} />;
+      case FunctionType.Commands:
+        return <CommandConfig moduleItem={activeModule} />;
+      case FunctionType.CronJobs:
+        return <CronJobConfig moduleItem={activeModule} />;
+      default:
+        return null;
+    }
   }
 
   return (
-    <Fragment>
+    <Wrapper>
       <Helmet>
         <title>Takaro - Studio</title>
       </Helmet>
+      <Header>{moduleData.name}</Header>
       <Container>
-        <Resizable
+        <StyledResizable
           enable={{
             top: false,
             topRight: false,
@@ -42,24 +79,27 @@ const Studio: FC = () => {
             topLeft: false,
           }}
           defaultSize={{
-            width: '20%',
+            width: '300px',
             height: '100vh',
           }}
-          minWidth="350px"
+          minWidth="500px"
           maxHeight="100vh"
           minHeight="100vh"
         >
           <CollapseList>
             <CollapseList.Item title="File explorer">
-              <FileExplorer />
+              <FileExplorer sandpack={sandpack} />
+            </CollapseList.Item>
+            <CollapseList.Item title="Config">
+              <ConfigWrapper>
+                {getConfigComponent(activeModule.type)}
+              </ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>
-        </Resizable>
-        <div style={{ width: '100%' }}>
-          <Editor />
-        </div>
+        </StyledResizable>
+        <Editor />
       </Container>
-    </Fragment>
+    </Wrapper>
   );
 };
 

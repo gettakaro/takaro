@@ -1,10 +1,13 @@
 import { Color, Size, styled } from '../../../styled';
 
-export const Container = styled.div<{ size: Size }>`
+export const Container = styled.div<{ textVisible?: boolean; size: Size }>`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: row;
+
+  gap: ${({ theme, textVisible }) =>
+    textVisible ? theme.spacing['1'] : theme.spacing[0]};
 
   a {
     display: flex;
@@ -14,7 +17,7 @@ export const Container = styled.div<{ size: Size }>`
   }
 
   div {
-    font-weight: 800;
+    font-weight: 700;
     color: ${({ theme }): string => theme.colors.text};
 
     font-size: ${({ size }) => {
@@ -35,25 +38,22 @@ export const Container = styled.div<{ size: Size }>`
 `;
 
 export const Svg = styled.svg<{
-  textVisible: boolean;
   size: Size;
   color: Color;
 }>`
   ${({ size }) => {
     switch (size) {
       case 'tiny':
-        return 'width: 15px; height: 15px;';
+        return 'width: 1.5rem; height: 1.5rem;';
       case 'small':
-        return 'width: 20px; height: 20px';
+        return 'width: 2rem; height: 2rem';
       case 'medium':
-        return 'width: 30px; height: 30px;';
+        return 'width: 3rem; height: 3rem;';
       case 'large':
-        return 'width: 45px; height: 45px;';
+        return 'width: 4rem; height: 4rem;';
       case 'huge':
-        return 'width: 75px; height: 75px;';
+        return 'width: 5rem; height: 5rem;';
     }
   }};
   fill: ${({ theme, color }): string => theme.colors[color]};
-  margin-right: ${({ theme, textVisible }) =>
-    textVisible ? theme.spacing['1_5'] : theme.spacing[0]};
 `;

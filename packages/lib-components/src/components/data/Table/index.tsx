@@ -12,7 +12,7 @@ import {
   ColumnOrderState,
   VisibilityState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, Header } from './style';
+import { Wrapper, StyledTable, Header, PaginationContainer } from './style';
 import { Empty, Button } from '../../../components';
 import { AiOutlineReload as ReloadIcon } from 'react-icons/ai';
 import { ColumnController, Pagination, Sorting } from './subcomponents';
@@ -29,9 +29,10 @@ export interface TableProps<DataType extends object> {
   };
   pagination?: {
     paginationState: PaginationState;
-    pageCount: number;
     setPaginationState: OnChangeFn<PaginationState>;
+    pageCount: number;
     total: number;
+    pageSize?: number;
   };
   columnFiltering?: {
     columnFiltersState: ColumnFiltersState;
@@ -159,16 +160,14 @@ export function Table<DataType extends object>({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(({ id, colSpan, column }) => (
                 <th key={id} colSpan={colSpan} scope="col">
-                  <div>
-                    {column.getCanSort() && sorting !== undefined && (
-                      <Sorting
-                        header={column.columnDef.header as string}
-                        setSorting={sorting.setSortingState!}
-                        sorting={sorting.sortingState}
-                        id={column.id}
-                      />
-                    )}
-                  </div>
+                  {column.getCanSort() && sorting !== undefined && (
+                    <Sorting
+                      header={column.columnDef.header as string}
+                      setSorting={sorting.setSortingState!}
+                      sorting={sorting.sortingState}
+                      id={column.id}
+                    />
+                  )}
                 </th>
               ))}
             </tr>
@@ -189,16 +188,18 @@ export function Table<DataType extends object>({
           <tr>
             {pagination && (
               <td colSpan={columns.length}>
-                <span>{pagination.total} results</span>
-                <Pagination
-                  pageCount={pagination.pageCount}
-                  hasNext={table.getCanNextPage()}
-                  hasPrevious={table.getCanPreviousPage()}
-                  previousPage={table.previousPage}
-                  nextPage={table.nextPage}
-                  pageIndex={table.getState().pagination.pageIndex}
-                  setPageIndex={table.setPageIndex}
-                />
+                <PaginationContainer>
+                  <span>{pagination.total} results</span>
+                  <Pagination
+                    pageCount={pagination.pageCount}
+                    hasNext={table.getCanNextPage()}
+                    hasPrevious={table.getCanPreviousPage()}
+                    previousPage={table.previousPage}
+                    nextPage={table.nextPage}
+                    pageIndex={table.getState().pagination.pageIndex}
+                    setPageIndex={table.setPageIndex}
+                  />
+                </PaginationContainer>
               </td>
             )}
           </tr>

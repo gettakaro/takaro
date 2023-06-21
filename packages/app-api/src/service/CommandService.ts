@@ -118,8 +118,7 @@ export class CommandArgumentCreateDTO
   defaultValue?: string;
 
   @IsNumber()
-  @IsOptional()
-  position?: number;
+  position: number;
 
   @IsUUID()
   commandId: string;
@@ -210,9 +209,7 @@ export class CommandService extends TakaroService<
       fnIdToAdd = newFn.id;
     } else {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
-          code: '',
-        })
+        await new FunctionCreateDTO()
       );
       fnIdToAdd = newFn.id;
     }

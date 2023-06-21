@@ -125,7 +125,7 @@ export interface CommandArgumentCreateDTO {
    * @type {number}
    * @memberof CommandArgumentCreateDTO
    */
-  position?: number;
+  position: number;
   /**
    *
    * @type {string}
@@ -1223,7 +1223,7 @@ export interface FunctionCreateDTO {
    * @type {string}
    * @memberof FunctionCreateDTO
    */
-  code: string;
+  code?: string;
 }
 /**
  *
@@ -1516,7 +1516,23 @@ export interface GameServerSearchInputAllowedFilters {
    * @memberof GameServerSearchInputAllowedFilters
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  type?: GameServerSearchInputAllowedFiltersTypeEnum;
 }
+
+export const GameServerSearchInputAllowedFiltersTypeEnum = {
+  Mock: 'MOCK',
+  Sevendaystodie: 'SEVENDAYSTODIE',
+  Rust: 'RUST',
+} as const;
+
+export type GameServerSearchInputAllowedFiltersTypeEnum =
+  typeof GameServerSearchInputAllowedFiltersTypeEnum[keyof typeof GameServerSearchInputAllowedFiltersTypeEnum];
+
 /**
  *
  * @export
@@ -2090,8 +2106,25 @@ export interface HookUpdateDTO {
    * @type {string}
    * @memberof HookUpdateDTO
    */
+  eventType?: HookUpdateDTOEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
   function?: string;
 }
+
+export const HookUpdateDTOEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+} as const;
+
+export type HookUpdateDTOEventTypeEnum =
+  typeof HookUpdateDTOEventTypeEnum[keyof typeof HookUpdateDTOEventTypeEnum];
+
 /**
  *
  * @export
@@ -2134,12 +2167,6 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   platformId?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof IGamePlayer
-   */
-  device?: string;
   /**
    *
    * @type {string}
@@ -3190,6 +3217,19 @@ export interface PlayerUpdateDTO {
 /**
  *
  * @export
+ * @interface RedirectQs
+ */
+export interface RedirectQs {
+  /**
+   *
+   * @type {string}
+   * @memberof RedirectQs
+   */
+  redirect: string;
+}
+/**
+ *
+ * @export
  * @interface RoleCreateInputDTO
  */
 export interface RoleCreateInputDTO {
@@ -3434,31 +3474,6 @@ export type RoleUpdateInputDTOPermissionsEnum =
 /**
  *
  * @export
- * @interface RustConfig
- */
-export interface RustConfig {
-  /**
-   *
-   * @type {string}
-   * @memberof RustConfig
-   */
-  hostname: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RustConfig
-   */
-  port: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RustConfig
-   */
-  password: string;
-}
-/**
- *
- * @export
  * @interface RustConnectionInfo
  */
 export interface RustConnectionInfo {
@@ -3480,6 +3495,12 @@ export interface RustConnectionInfo {
    * @memberof RustConnectionInfo
    */
   rconPassword: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof RustConnectionInfo
+   */
+  useTls: boolean;
 }
 /**
  *
@@ -3701,12 +3722,6 @@ export interface TakaroTokenDTO {
 export interface TeleportPlayerInputDTO {
   /**
    *
-   * @type {IPlayerReferenceDTO}
-   * @memberof TeleportPlayerInputDTO
-   */
-  player: IPlayerReferenceDTO;
-  /**
-   *
    * @type {number}
    * @memberof TeleportPlayerInputDTO
    */
@@ -3867,6 +3882,12 @@ export interface UserOutputDTO {
    * @type {string}
    * @memberof UserOutputDTO
    */
+  discordId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputDTO
+   */
   id: string;
   /**
    *
@@ -3948,6 +3969,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   idpId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserOutputWithRolesDTO
+   */
+  discordId?: string;
 }
 /**
  *
@@ -4023,6 +4050,19 @@ export type UserSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface UserUpdateAuthDTO
+ */
+export interface UserUpdateAuthDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UserUpdateAuthDTO
+   */
+  discordId?: string;
+}
+/**
+ *
+ * @export
  * @interface UserUpdateDTO
  */
 export interface UserUpdateDTO {
@@ -4031,7 +4071,7 @@ export interface UserUpdateDTO {
    * @type {string}
    * @memberof UserUpdateDTO
    */
-  name: string;
+  name?: string;
 }
 /**
  *
@@ -6721,6 +6761,243 @@ export class DomainApi extends BaseAPI {
   ) {
     return DomainApiFp(this.configuration)
       .domainControllerUpdate(id, domainUpdateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * ExternalAuthApi - axios parameter creator
+ * @export
+ */
+export const ExternalAuthApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @summary Auth discord
+     * @param {string} redirect
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    externalAuthControllerAuthDiscord: async (
+      redirect: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'redirect' is not null or undefined
+      assertParamExists(
+        'externalAuthControllerAuthDiscord',
+        'redirect',
+        redirect
+      );
+      const localVarPath = `/auth/discord`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (redirect !== undefined) {
+        localVarQueryParameter['redirect'] = redirect;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Auth discord return
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    externalAuthControllerAuthDiscordReturn: async (
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/auth/discord/return`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ExternalAuthApi - functional programming interface
+ * @export
+ */
+export const ExternalAuthApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator =
+    ExternalAuthApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Auth discord
+     * @param {string} redirect
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async externalAuthControllerAuthDiscord(
+      redirect: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.externalAuthControllerAuthDiscord(
+          redirect,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary Auth discord return
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async externalAuthControllerAuthDiscordReturn(
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.externalAuthControllerAuthDiscordReturn(
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * ExternalAuthApi - factory interface
+ * @export
+ */
+export const ExternalAuthApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = ExternalAuthApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Auth discord
+     * @param {string} redirect
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    externalAuthControllerAuthDiscord(
+      redirect: string,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .externalAuthControllerAuthDiscord(redirect, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Auth discord return
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    externalAuthControllerAuthDiscordReturn(options?: any): AxiosPromise<void> {
+      return localVarFp
+        .externalAuthControllerAuthDiscordReturn(options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ExternalAuthApi - object-oriented interface
+ * @export
+ * @class ExternalAuthApi
+ * @extends {BaseAPI}
+ */
+export class ExternalAuthApi extends BaseAPI {
+  /**
+   *
+   * @summary Auth discord
+   * @param {string} redirect
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ExternalAuthApi
+   */
+  public externalAuthControllerAuthDiscord(
+    redirect: string,
+    options?: AxiosRequestConfig
+  ) {
+    return ExternalAuthApiFp(this.configuration)
+      .externalAuthControllerAuthDiscord(redirect, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Auth discord return
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ExternalAuthApi
+   */
+  public externalAuthControllerAuthDiscordReturn(options?: AxiosRequestConfig) {
+    return ExternalAuthApiFp(this.configuration)
+      .externalAuthControllerAuthDiscordReturn(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

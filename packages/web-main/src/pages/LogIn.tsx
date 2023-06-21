@@ -1,7 +1,6 @@
 import { FC, useState, useMemo, useEffect } from 'react';
 import {
   Button,
-  Divider,
   TextField,
   ErrorMessage,
   styled,
@@ -9,15 +8,12 @@ import {
   Company,
 } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
-import { FaDiscord as Discord, FaGoogle as Google } from 'react-icons/fa';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from 'hooks/useAuth';
-import { useUser } from 'hooks/useUser';
 import { PATHS } from 'paths';
-import { Page } from './Page';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,62 +30,41 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const Wrapper = styled.div`
-  padding: 5rem;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Header = styled.header`
-  width: 100%;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 2rem;
-  margin-bottom: 5rem;
-
-  p {
-    margin-right: 1rem;
-    font-weight: 600;
-  }
-`;
+// const Header = styled.header`
+//   width: 100%;
+//   height: 60px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
+//   padding: 2rem;
+//   margin-bottom: 5rem;
+//
+//   p {
+//     margin-right: 1rem;
+//     font-weight: 600;
+//   }
+// `;
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  flex-direction: column;
-  width: 600px;
-  height: calc(100vh - 60px - 5rem - 25vh);
+  height: 100vh;
+
+  max-width: 600px;
   text-align: center;
-  margin: 0 auto;
+  margin: -200px auto 0 auto;
 
-  form {
-    width: 100%;
-  }
-
-  .company {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    h2 {
-      margin-left: 1rem;
-    }
-  }
-
-  h1 {
-    margin-bottom: 4rem;
-  }
-
-  button {
-    width: 100%;
-    margin-bottom: 3rem;
-    margin-top: 1rem;
-  }
+  gap: ${({ theme }) => theme.spacing[6]};
 `;
+
+// const Header = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   gap: ${({ theme }) => theme.spacing['0_5']};
+// `;
 
 interface IFormInputs {
   email: string;
@@ -103,7 +78,6 @@ const LogIn: FC = () => {
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
   const { logIn, createLoginFlow } = useAuth();
-  const { setUserData } = useUser();
   const navigate = useNavigate();
 
   const validationSchema = useMemo(
@@ -143,14 +117,8 @@ const LogIn: FC = () => {
     setLoading(true);
     setError(undefined);
     try {
-      if (setUserData && loginFlow?.id) {
-        const userData = await logIn(
-          loginFlow?.id,
-          email,
-          password,
-          csrfToken!
-        );
-        setUserData(userData);
+      if (loginFlow?.id) {
+        await logIn(loginFlow?.id, email, password, csrfToken!);
         navigate(PATHS.home());
       }
     } catch (error) {
@@ -168,77 +136,60 @@ const LogIn: FC = () => {
   };
 
   return (
-    <Page>
+    <>
       <Helmet>
         <title>Log in - Takaro </title>
       </Helmet>
-      <Wrapper>
-        <Header>
-          <p>
-            Don't have an account yet? Please contact your domain administrator
-            to make one
-          </p>
-        </Header>
-
-        <Container>
-          <Company to="/" />
-          <h1>We're just having fun!</h1>
+      <Container>
+        <Company size="huge" />
+        {/* 
           <Button
             color="primary"
             icon={<Google />}
-            onClick={() => {
-              /* dummy */
-            }}
             text="Log in with Google"
             variant="default"
           />
           <Button
             color="primary"
             icon={<Discord />}
-            onClick={() => {
-              /* dummy */
-            }}
             text="Log in with Discord"
             variant="default"
           />
-
           <Divider
             label={{ labelPosition: 'center', text: 'or' }}
             size="huge"
           />
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {error && <ErrorMessage message={error} />}
-            <TextField
-              control={control}
-              label="Email"
-              loading={loading}
-              name="email"
-              placeholder="hi cutie"
-              required
-            />
-            <TextField
-              control={control}
-              label="Password"
-              loading={loading}
-              name="password"
-              required
-              type="password"
-            />
-            <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
-            <Button
-              icon={<Mail />}
-              isLoading={loading}
-              onClick={() => {
-                /* dummy */
-              }}
-              text="Log in with Email"
-              type="submit"
-              variant="default"
-            />
-          </form>
-        </Container>
-      </Wrapper>
-    </Page>
+        */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {error && <ErrorMessage message={error} />}
+          <TextField
+            control={control}
+            label="Email"
+            loading={loading}
+            name="email"
+            placeholder="hi cutie"
+            required
+          />
+          <TextField
+            control={control}
+            label="Password"
+            loading={loading}
+            name="password"
+            required
+            type="password"
+          />
+          <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
+          <Button
+            icon={<Mail />}
+            isLoading={loading}
+            fullWidth
+            text="Log in with Email"
+            type="submit"
+            variant="default"
+          />
+        </form>
+      </Container>
+    </>
   );
 };
 

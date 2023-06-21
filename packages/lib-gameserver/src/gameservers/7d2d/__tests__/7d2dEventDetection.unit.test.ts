@@ -41,7 +41,6 @@ describe('7d2d event detection', () => {
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
-      device: undefined,
       ip: undefined,
       platformId: undefined,
     });
@@ -65,7 +64,6 @@ describe('7d2d event detection', () => {
       steamId: undefined,
       xboxLiveId: '123456abcdef',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
-      device: undefined,
       ip: undefined,
       platformId: undefined,
     });
@@ -89,7 +87,6 @@ describe('7d2d event detection', () => {
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
-      device: undefined,
       ip: undefined,
       platformId: undefined,
     });
@@ -113,7 +110,6 @@ describe('7d2d event detection', () => {
       gameId: '171',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
-      device: undefined,
       ip: undefined,
       platformId: undefined,
       epicOnlineServicesId: undefined,
@@ -140,7 +136,6 @@ describe('7d2d event detection', () => {
       gameId: '549',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
-      device: undefined,
       ip: undefined,
       platformId: undefined,
       epicOnlineServicesId: undefined,

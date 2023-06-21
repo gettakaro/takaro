@@ -52,11 +52,9 @@ export const ModuleDefinitions: FC = () => {
           <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
             {modules.map((mod) => (
               <ModuleCardDefinition
-                onClick={() => {
-                  navigate(PATHS.studio.module(mod.id));
-                }}
                 key={mod.id}
                 mod={mod}
+                onClick={() => navigate(PATHS.studio.module(mod.id))}
               />
             ))}
             <Outlet />

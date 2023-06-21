@@ -1,6 +1,7 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
   Button,
+  Chip,
   Dialog,
   DialogContent,
   DialogHeading,
@@ -54,16 +55,18 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
     setOpenDialog(false);
   };
 
+  const status = data?.data.connectable ? 'online' : 'offline';
+
   return (
     <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
       <Body>
         <Header>
           {isLoading || !data ? (
             <Skeleton variant="text" width="50px" height="15px" />
+          ) : status === 'online' ? (
+            <>{status}</>
           ) : (
-            <Tooltip label="Takaro server reachability" placement="bottom">
-              <div>{data.data.connectable ? 'online' : 'offline'}</div>
-            </Tooltip>
+            <Chip label={status} color="error" variant="outline" />
           )}
           <Dropdown
             open={openDropdown}
@@ -95,10 +98,15 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-          <DialogHeading>gameserver </DialogHeading>
+          <DialogHeading>
+            gameserver:{' '}
+            <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
+          </DialogHeading>
           <StyledDialogBody size="medium">
             <h2>Delete gameserver</h2>
-            <p>Are you sure you want to delete `{name}`?</p>
+            <p>
+              Are you sure you want to delete <strong>{name}</strong>?
+            </p>
             <Button
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}

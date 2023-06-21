@@ -69,7 +69,7 @@ export const ServerFrame: FC = () => {
 
   return (
     <Container>
-      <Navbar links={links} />
+      <Navbar links={links} gameServerNav />
       <ContentContainer
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}

@@ -1,4 +1,5 @@
 import baseStyled, { ThemedStyledInterface } from 'styled-components';
+import { breakpoint } from './breakpoint';
 import { elevationLight, elevationDark } from './elevation';
 import { spacing } from './spacing';
 
@@ -23,6 +24,7 @@ const borderRadius = {
 export const lightTheme = {
   elevation: elevationLight,
   spacing,
+  breakpoint,
   fontSize,
   borderRadius,
   colors: {
@@ -51,6 +53,7 @@ export const lightTheme = {
 export const darkTheme: ThemeType = {
   elevation: elevationDark,
   spacing,
+  breakpoint,
   fontSize,
   borderRadius,
   colors: {
@@ -64,7 +67,7 @@ export const darkTheme: ThemeType = {
     gray: '#0e0e0e',
     shade: '#eaf8f0',
     text: '#c2c2c2',
-    textAlt: '#a1a1a1',
+    textAlt: '#818181',
     background: '#151515',
     backgroundAlt: '#202020',
     disabled: '#151515',

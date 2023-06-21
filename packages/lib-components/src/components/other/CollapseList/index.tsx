@@ -4,11 +4,18 @@ import { IoMdArrowDropup as ArrowUp } from 'react-icons/io';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../../hooks';
 
-// this needs a waaaay better name
+const StyledList = styled.div`
+  display: flex;
+  flex-direction: column;
+  & > div:last-child {
+    flex-grow: 1;
+  }
+`;
+
 export const CollapseList: FC<PropsWithChildren> & {
   Item: FC<PropsWithChildren<ItemProps>>;
 } = ({ children }) => {
-  return <div>{children}</div>;
+  return <StyledList>{children}</StyledList>;
 };
 
 interface ItemProps {
@@ -21,18 +28,17 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  min-height: 4rem;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  margin-bottom: ${({ theme }) => theme.spacing[1]};
+  margin-bottom: ${({ theme, isCollapsed }) =>
+    isCollapsed ? theme.spacing['0_75'] : 0};
 
   svg {
     transform: ${({ isCollapsed }) =>
       isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'};
     transition: transform 0.1s ease-in-out;
-  }
-  span {
-    font-size: 1.4rem;
   }
 `;
 
@@ -45,17 +51,18 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
   const theme = useTheme();
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <Header
         isCollapsed={isCollapsed}
         onClick={() => setIsCollapsed((prev) => !prev)}
       >
-        <span>{title}</span>
+        <h3>{title}</h3>
         <ArrowUp size={18} />
       </Header>
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
+            key={`collapse-item-${title}`}
             variants={{
               open: { opacity: 1, height: 'auto' },
               collapsed: { opacity: 0, height: 0 },
@@ -63,7 +70,6 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
             initial="collapsed"
             animate="open"
             exit="collapsed"
-            style={{ padding: theme.spacing['0_5'], overflowX: 'hidden' }}
             transition={{ duration: 0.125, ease: 'linear' }}
           >
             <motion.div
@@ -74,7 +80,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({
               transition={{ duration: 0.125, ease: 'linear' }}
               style={{
                 transformOrigin: 'top center',
-                padding: `${theme.spacing[1]} 0`,
+                padding: `${theme.spacing['0_75']} ${theme.spacing['0']} ${theme.spacing['1_5']} ${theme.spacing['0']}`,
               }}
             >
               {children}

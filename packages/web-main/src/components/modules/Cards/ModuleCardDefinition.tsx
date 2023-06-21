@@ -39,7 +39,7 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer active={false} onClick={onClick}>
+    <ModuleCardContainer target="_blank" active={false} onClick={onClick}>
       <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>
@@ -81,12 +81,15 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-          <DialogHeading>Module "{mod.name}" </DialogHeading>
+          <DialogHeading size={4}>
+            Module:{' '}
+            <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
+          </DialogHeading>
           <DeleteDialogContainer>
             <h2>Delete module</h2>
             <p>
-              Are you sure you want to delete the module "{mod.name}"? This
-              action is irreversible!{' '}
+              Are you sure you want to delete the module{' '}
+              <strong>{mod.name}</strong>? This action is irreversible!{' '}
             </p>
             <Button
               isLoading={isDeleting}

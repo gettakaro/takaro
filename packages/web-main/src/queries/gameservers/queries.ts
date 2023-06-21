@@ -2,6 +2,7 @@ import {
   GameServerCreateDTO,
   GameServerOutputDTO,
   GameServerTestReachabilityDTOAPI,
+  GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
   IdUuidDTO,
   ModuleInstallationOutputDTO,
@@ -18,7 +19,7 @@ export const gameServerKeys = {
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
 
-  settings: (id: string) => [...gameServerKeys.all, 'settings', id] as const,
+  settings: (id?: string) => [...gameServerKeys.all, 'settings', id] as const,
   reachability: (id: string) =>
     [...gameServerKeys.all, 'reachable', id] as const,
 };
@@ -198,13 +199,13 @@ export const useGameServerModuleUninstall = () => {
 };
 
 // SERVER SETTINGS
-export const useGameServerSettings = (id: string) => {
+export const useGameServerSettings = (id?: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<SettingsOutputObjectDTOAPI>({
+  return useQuery<SettingsOutputObjectDTOAPI['data']>({
     queryKey: gameServerKeys.settings(id),
     queryFn: async () =>
-      (await apiClient.settings.settingsControllerGet(undefined, id)).data,
+      (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
   });
 };
 
@@ -230,8 +231,6 @@ export const useGameServerUpdate = () => {
       ).data.data;
     },
     onSuccess: async (newGameServer) => {
-      console.log(newGameServer);
-
       // Update item in server list
       queryClient.setQueryData<GameServerOutputDTO[]>(
         gameServerKeys.list(),
@@ -291,4 +290,22 @@ export const useGameServerReachabilityById = (id: string) => {
       (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
         .data
   );
+};
+
+export const useGameServerReachabilityByConfig = () => {
+  const apiClient = useApiClient();
+  return useMutation({
+    mutationFn: async ({
+      type,
+      connectionInfo,
+    }: {
+      type: GameServerTestReachabilityInputDTOTypeEnum;
+      connectionInfo: string;
+    }) => {
+      return await apiClient.gameserver.gameServerControllerTestReachability({
+        type,
+        connectionInfo,
+      });
+    },
+  });
 };

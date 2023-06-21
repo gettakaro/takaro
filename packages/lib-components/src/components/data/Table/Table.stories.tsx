@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { FC, useEffect } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 
 import { Table, TableProps } from '.';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Chip } from '../../../components';
+import { useTableActions } from '../../../hooks';
 
 type User = {
   firstName: string;
@@ -100,19 +101,39 @@ const columns = [
 ];
 
 export default {
-  title: 'data/Table',
+  title: 'Data/Table',
   component: Table,
   args: {
     sort: false,
-    refetching: false,
+    refetching: true,
   },
 } as Meta<TableProps<User>>;
 
+const Users: FC<TableProps<User>> = (props) => {
+  const { pagination } = useTableActions<User>();
+
+  useEffect(() => {
+    pagination.setPaginationState({
+      ...pagination.paginationState,
+      pageSize: 1,
+    });
+  }, []);
+
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      refetch={async () => {}}
+      refetching={props.refetching}
+      pagination={{
+        ...pagination,
+        pageCount: 20,
+        total: 10,
+      }}
+    />
+  );
+};
+
 export const TableExample: StoryFn<TableProps<User>> = (args) => (
-  <Table
-    data={data}
-    columns={columns}
-    refetch={async () => {}}
-    refetching={args.refetching}
-  />
+  <Users {...args} />
 );

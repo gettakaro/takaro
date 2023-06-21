@@ -1,8 +1,9 @@
 import { styled } from '../../../styled';
 
-export const Container = styled.div`
+export const Container = styled.div<{ marginBottom?: string }>`
   width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  margin-bottom: ${({ theme, marginBottom }) =>
+    marginBottom ? marginBottom : theme.spacing[2]};
   position: relative;
 
   p {

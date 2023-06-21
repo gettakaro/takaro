@@ -1,41 +1,35 @@
-import { cloneElement, FC, ReactElement } from 'react';
-import { Color, Size, Variant } from '../../../styled/types';
-import { Default, Outline, Clear } from './style';
+import { cloneElement, forwardRef, ReactElement } from 'react';
+import { Color, Size } from '../../../styled/types';
+import { Default } from './style';
 
 export interface IconButtonProps {
   size?: Size;
-  variant?: Variant;
-  color?: Color;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => any;
+  color: Color;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
-  isLoading?: boolean;
 }
 
-export const IconButton: FC<IconButtonProps> = ({
-  variant = 'default',
-  icon,
-  color = 'primary',
-  size = 'medium',
-  onClick = () => {},
-}) => {
-  // TODO: define size in switch
-
-  const getVariant = () => {
-    const props = {
-      color: color,
-      onClick: onClick,
-      size: size,
-    };
-
-    switch (variant) {
-      case 'default':
-        return <Default {...props}>{cloneElement(icon, { size: 24 })}</Default>;
-      case 'clear':
-        return <Clear {...props}>{cloneElement(icon, { size: 24 })}</Clear>;
-      case 'outline':
-        return <Outline {...props}>{cloneElement(icon, { size: 24 })}</Outline>;
-    }
-  };
-
-  return getVariant();
+const getSize = (size: Size) => {
+  switch (size) {
+    case 'tiny':
+      return 15;
+    case 'small':
+      return 16;
+    case 'medium':
+      return 18;
+    case 'large':
+      return 20;
+    case 'huge':
+      return 24;
+  }
 };
+
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ icon, color, size = 'medium', onClick = () => {} }, ref) => {
+    return (
+      <Default color={color} onClick={onClick} ref={ref}>
+        {cloneElement(icon, { size: getSize(size) })}
+      </Default>
+    );
+  }
+);

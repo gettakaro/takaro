@@ -1,5 +1,5 @@
 import { styled, Color, Size, AlertVariants } from '../../../styled';
-import { lighten } from 'polished';
+import { shade, lighten } from 'polished';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
@@ -109,11 +109,19 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
   span {
     color: ${({ theme, color }): string => theme.colors[color]};
   }
+
+  &:hover {
+    background-position: right center;
+    background-color: ${({ theme, color }) => shade(0.65, theme.colors[color])};
+    border-color: ${({ theme, color }): string =>
+      lighten(0.1, theme.colors[color])};
+  }
+
   &:disabled {
     background: none;
-    border-color: ${({ theme }): string => theme.colors.gray};
+    border-color: ${({ theme }): string => theme.colors.text};
     span {
-      color: ${({ theme }): string => theme.colors.gray};
+      color: ${({ theme }): string => theme.colors.text};
     }
     svg {
       fill: ${({ theme }): string => theme.colors.gray};
