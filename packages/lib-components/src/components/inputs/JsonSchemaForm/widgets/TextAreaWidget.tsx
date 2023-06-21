@@ -17,6 +17,7 @@ export function TextareaWidget<
   onChange,
   name,
   value,
+  id,
   rawErrors = [],
 }: WidgetProps<T, S, F>) {
   let rows: string | number = 5;
@@ -26,6 +27,7 @@ export function TextareaWidget<
 
   return (
     <GenericTextAreaField
+      id={id}
       name={name}
       onChange={onChange}
       rows={rows}

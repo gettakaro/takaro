@@ -23,6 +23,7 @@ export function RangeWidget<
   required,
   schema,
   name,
+  id,
   value,
   readonly,
   onChange,
@@ -32,6 +33,7 @@ export function RangeWidget<
   return (
     <Container>
       <GenericSlider
+        id={id}
         name={name}
         value={value}
         min={min}

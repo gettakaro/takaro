@@ -19,6 +19,7 @@ export function SelectWidget<
   disabled,
   rawErrors = [],
   required,
+  id,
   readonly,
   value,
   onChange,
@@ -27,6 +28,7 @@ export function SelectWidget<
 
   return (
     <GenericSelect
+      id={id}
       name={name}
       disabled={disabled}
       hasError={!!rawErrors.length}

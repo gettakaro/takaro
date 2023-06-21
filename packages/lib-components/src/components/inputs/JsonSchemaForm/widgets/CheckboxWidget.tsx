@@ -24,6 +24,7 @@ export function CheckBoxWidget<
     readonly,
     onChange,
     value,
+    id,
     rawErrors = [],
   } = props;
 
@@ -35,6 +36,7 @@ export function CheckBoxWidget<
   return (
     <Container>
       <GenericCheckBox
+        id={id}
         name={name}
         value={value}
         readOnly={readonly}

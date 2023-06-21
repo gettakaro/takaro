@@ -19,6 +19,7 @@ export function RadioWidget<
   value,
   required,
   readonly,
+  id,
   onChange,
 }: WidgetProps<T, S, F>) {
   const { enumOptions } = options;
@@ -35,6 +36,7 @@ export function RadioWidget<
 
   return (
     <GenericRadioGroup
+      id={id}
       name={name}
       value={value}
       readOnly={readonly}
