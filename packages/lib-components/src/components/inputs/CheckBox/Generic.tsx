@@ -57,6 +57,7 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
         ref={ref}
         role="checkbox"
         aria-checked={isChecked}
+        tabIndex={readOnly || disabled ? -1 : 0}
       >
         <BackgroundContainer
           animate={isChecked ? 'checked' : 'unchecked'}
