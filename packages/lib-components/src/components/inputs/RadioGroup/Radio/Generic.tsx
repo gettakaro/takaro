@@ -28,6 +28,7 @@ const variants = {
 const defaultsApplier =
   defaultInputPropsFactory<GenericRadioProps>(defaultInputProps);
 
+// TODO: add keyboard support
 export const GenericRadio: FC<GenericRadioProps> = (props) => {
   const {
     readOnly,
@@ -53,6 +54,8 @@ export const GenericRadio: FC<GenericRadioProps> = (props) => {
       readOnly={readOnly}
       onBlur={onBlur}
       onFocus={onFocus}
+      tabIndex={readOnly || disabled ? -1 : 0}
+      role="radio"
     >
       <Inner
         animate={selected ? 'selected' : 'deselected'}

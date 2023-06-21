@@ -59,6 +59,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
           <Container
             isSelected={value === selected}
             onClick={() => handleChange(value)}
+            role="radiogroup"
           >
             {label && labelPosition === 'left' && (
               <Label
