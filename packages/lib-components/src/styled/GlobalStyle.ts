@@ -110,7 +110,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   textarea {
     resize: vertical;
     width: calc(100% - ${({ theme }) => theme.spacing[1]} * 2);
-    min-height: 200px;
   }
 
   input[type='search']::-webkit-search-decoration,
