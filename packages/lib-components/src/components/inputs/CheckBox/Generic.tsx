@@ -55,6 +55,8 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
         error={hasError}
         disabled={disabled}
         ref={ref}
+        role="checkbox"
+        aria-checked={isChecked}
       >
         <BackgroundContainer
           animate={isChecked ? 'checked' : 'unchecked'}
