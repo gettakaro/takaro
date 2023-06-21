@@ -7,7 +7,7 @@ export const Container = styled.div<{ minWidth?: string }>`
   min-width: ${({ minWidth }) => minWidth || 'auto'};
 `;
 
-export const SelectButton = styled.div<{ readOnly: boolean }>`
+export const SelectButton = styled.div<{ readOnly: boolean; isOpen: boolean }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,10 +19,13 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
   outline: 0;
   position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 0.1rem solid ${({ theme }) => theme.colors.background};
+  border: 0.1rem solid
+    ${({ theme, isOpen }) =>
+      isOpen ? theme.colors.primary : theme.colors.background};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   font-weight: 500;
   text-transform: capitalize;
+  margin-bottom: ${({ theme }) => theme.spacing['0_75']};
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
