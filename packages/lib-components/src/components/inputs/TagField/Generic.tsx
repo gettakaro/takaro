@@ -114,6 +114,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
             label={tag}
             onDelete={() => onTagDelete(tag)}
             disabled={disabled}
+            color="secondary"
           />
         ))}
         <input
