@@ -5,6 +5,13 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
 } from '@rjsf/utils';
+import { styled } from '../../../../styled';
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+`;
 
 /** The `ArrayFieldItemTemplate` component is the template used to render an items of an array.
  *
@@ -41,9 +48,8 @@ export function ArrayFieldItemTemplate<
     minWidth: 0,
   };
   return (
-    <div>
+    <Container>
       <div>{children}</div>
-
       {hasToolbar && (
         <div>
           {(hasMoveUp || hasMoveDown) && (
@@ -84,6 +90,6 @@ export function ArrayFieldItemTemplate<
           )}
         </div>
       )}
-    </div>
+    </Container>
   );
 }

@@ -7,6 +7,14 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
 } from '@rjsf/utils';
+import { styled } from '../../../../styled';
+
+const Container = styled.div`
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  padding: ${({ theme }) => theme.spacing['2']};
+`;
+
+const ItemListContainer = styled.div``;
 
 /** The `ArrayFieldTemplate` component is the template used to render all items in an array.
  *
@@ -37,11 +45,13 @@ export function ArrayFieldTemplate<
     S,
     F
   >('ArrayFieldDescriptionTemplate', registry, uiOptions);
+
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
     'ArrayFieldItemTemplate',
     registry,
     uiOptions
   );
+
   const ArrayFieldTitleTemplate = getTemplate<
     'ArrayFieldTitleTemplate',
     T,
@@ -53,7 +63,7 @@ export function ArrayFieldTemplate<
     ButtonTemplates: { AddButton },
   } = registry.templates;
   return (
-    <div>
+    <Container>
       <ArrayFieldTitleTemplate
         idSchema={idSchema}
         title={uiOptions.title || title}
@@ -69,7 +79,7 @@ export function ArrayFieldTemplate<
         uiSchema={uiSchema}
         registry={registry}
       />
-      <div key={`array-item-list-${idSchema.$id}`}>
+      <ItemListContainer key={`array-item-list-${idSchema.$id}`}>
         {items &&
           items.map(
             ({ key, ...itemProps }: ArrayFieldTemplateItemType<T, S, F>) => (
@@ -85,7 +95,7 @@ export function ArrayFieldTemplate<
             registry={registry}
           />
         )}
-      </div>
-    </div>
+      </ItemListContainer>
+    </Container>
   );
 }

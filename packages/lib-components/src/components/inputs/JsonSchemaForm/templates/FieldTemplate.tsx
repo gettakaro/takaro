@@ -51,15 +51,17 @@ export function FieldTemplate<
 
   return (
     <Container>
-      <Label
-        disabled={disabled}
-        position="top"
-        required={required ? required : false}
-        error={!!rawErrors.length}
-        text={label}
-        htmlFor={id}
-        size="medium"
-      />
+      {displayLabel && (
+        <Label
+          disabled={disabled}
+          position="top"
+          required={required ? required : false}
+          error={!!rawErrors.length}
+          text={label}
+          htmlFor={id}
+          size="medium"
+        />
+      )}
       {children}
       {errors}
       {displayLabel && rawDescription && description}
