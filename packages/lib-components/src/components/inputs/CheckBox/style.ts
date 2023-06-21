@@ -69,7 +69,8 @@ export const CheckboxContainer = styled.div<{
 `;
 
 export const CheckMarkContainer = styled.div<{ isChecked: boolean }>`
-  display: ${({ isChecked }): string => (isChecked ? 'flex' : 'none')};
+  display: flex;
+  visibility: ${({ isChecked }): string => (isChecked ? 'visible' : 'hidden')};
   width: 100%;
   height: 100%;
   align-items: center;
