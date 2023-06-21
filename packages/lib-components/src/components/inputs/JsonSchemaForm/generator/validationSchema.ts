@@ -2,25 +2,25 @@ import { z } from 'zod';
 import { InputType } from './InputTypes';
 
 const baseShape = z.object({
-  title: z
+  name: z
     .string()
     .min(4, {
-      message: 'Title requires a minimum length of 4 characters',
+      message: 'Name requires a minimum length of 4 characters',
     })
     .max(25, {
-      message: 'Title requires a maximum length of 25 characters',
+      message: 'Name requires a maximum length of 25 characters',
     })
-    .nonempty('Title cannot be empty'),
+    .nonempty('Name cannot be empty'),
   description: z
     .string()
     .min(4, {
-      message: 'Title requires a minimum length of 4 characters',
+      message: 'Description requires a minimum length of 4 characters',
     })
     .max(1000, {
-      message: 'Title requires a maximum length of 1000 characters',
+      message: 'Description requires a maximum length of 1000 characters',
     })
-    .default('No description'),
-  required: z.boolean().default(false),
+    .nonempty('Description cannot be empty'),
+  required: z.boolean(),
 });
 
 /* based on selected value in select field (with name type)
@@ -60,13 +60,44 @@ export const validationSchema = z.object({
         ])
         .and(baseShape)
     )
-    .superRefine((data, ctx) => {
-      // TODO: compare min max string (type=string + type number)
-      if (data[0].type === InputType.string.valueOf()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Min should be less than Max',
-        });
+
+    .refine(
+      (data) => {
+        const names = data.map((item) => item.name);
+        return new Set(names).size === names.length;
+      },
+      {
+        message: 'Each configField should have a unique name',
+        path: ['0', 'name'],
+        params: {
+          ref: { name: 'name' },
+        },
       }
+    )
+
+    .superRefine((data, ctx) => {
+      data.forEach((item) => {
+        if (item.type === InputType.string.valueOf()) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          if (item.minLength >= item.maxLength) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Min should be less than Max',
+            });
+          }
+        }
+
+        if (item.type === InputType.number.valueOf()) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          if (item.minimum >= item.maximum) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Min should be less than Max',
+            });
+          }
+        }
+      });
     }),
 });

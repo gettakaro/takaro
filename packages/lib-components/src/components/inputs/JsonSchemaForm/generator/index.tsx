@@ -19,16 +19,16 @@ export interface TakaroConfigSchema {
   required: string[];
 }
 
-export interface IFormInputs {
-  name: string;
-  description?: string;
-  configFields: Input[];
-}
-
 interface ISchemaGeneratorProps {
   onSchemaChange: (schema: AnySchema) => void;
   // e.g. when a user edits a module config, we start from an existing schema
   initialSchema?: TakaroConfigSchema;
+}
+
+export interface IFormInputs {
+  name: string;
+  description?: string;
+  configFields: Input[];
 }
 
 export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
@@ -38,7 +38,15 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>(
     {
       mode: 'onChange',
-      resolver: zodResolver(validationSchema),
+      resolver: async (data, context, options) => {
+        // you can debug your validation schema here
+        console.log('formData', data);
+        console.log(
+          'validation result',
+          await zodResolver(validationSchema)(data, context, options)
+        );
+        return zodResolver(validationSchema)(data, context, options);
+      },
       defaultValues: {
         configFields: initialSchema ? schemaToInputs(initialSchema) ?? [] : [],
       },
@@ -55,7 +63,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   useEffect(() => {
     if (!configFields?.length) {
       append({
-        name: 'Default name',
+        name: 'Config field 1',
         type: InputType.string,
         description: 'A helpful description',
         required: true,
@@ -104,13 +112,19 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
         icon={<PlusIcon />}
         onClick={() => {
           append({
-            name: 'Default name',
+            name: `Config field ${fields.length + 1}`,
             type: InputType.string,
             description: 'A helpful description',
             default: '',
           });
         }}
       />
+
+      {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
+        unique name validation. So for now we just add note to the user that the name must be unique 
+        issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
+        */}
+      <p>Make sure all config field names are unique!</p>
       <Button text="Save schema" type="submit" />
     </Form>
   );
