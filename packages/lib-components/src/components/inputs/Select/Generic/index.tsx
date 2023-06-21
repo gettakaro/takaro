@@ -182,6 +182,8 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
         })}
         readOnly={readOnly}
         onBlur={onBlur}
+        isOpen={open}
+        tabIndex={readOnly ? -1 : 0}
       >
         {render(selectedIndex - 1)}
         {!readOnly && <ArrowIcon size={18} />}
