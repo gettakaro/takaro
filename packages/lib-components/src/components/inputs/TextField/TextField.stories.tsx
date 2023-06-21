@@ -50,6 +50,7 @@ export const onChange: StoryFn<TextFieldProps> = (args) => {
         placeholder={args.placeholder}
         required={args.required}
         loading={args.loading}
+        label={args.label}
         hint={args.hint}
       />
       <p>Value: {TextFieldValue}</p>
