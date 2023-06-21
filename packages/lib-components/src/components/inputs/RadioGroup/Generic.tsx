@@ -36,6 +36,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
     hasError,
     disabled,
     onFocus,
+    id,
   } = defaultsApplier(props);
 
   const [selected, setSelected] = useState<string>(
@@ -71,6 +72,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
               />
             )}
             <GenericRadio
+              id={id}
               key={`radio-option-${label}-${name}`}
               onChange={handleChange}
               onBlur={onBlur}

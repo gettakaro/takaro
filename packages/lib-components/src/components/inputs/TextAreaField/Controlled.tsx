@@ -86,6 +86,7 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
       )}
       <GenericTextAreaField
         name={name}
+        id={name}
         required={required}
         readOnly={readOnly}
         disabled={disabled}

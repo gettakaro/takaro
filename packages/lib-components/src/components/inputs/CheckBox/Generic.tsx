@@ -30,7 +30,7 @@ const defaultsApplier =
 // TODO: write a test that checks if the value is being processed as a boolean.
 export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
   (props, ref) => {
-    const { readOnly, disabled, value, hasError, onChange, name } =
+    const { readOnly, disabled, value, hasError, onChange, id } =
       defaultsApplier(props);
 
     const [isChecked, setChecked] = useState<boolean>(Boolean(value));
@@ -48,7 +48,7 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
 
     return (
       <CheckboxContainer
-        id={name}
+        id={id}
         isChecked={isChecked}
         onClick={handleOnClick}
         readOnly={readOnly}

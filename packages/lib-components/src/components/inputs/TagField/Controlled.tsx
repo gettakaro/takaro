@@ -84,6 +84,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
         readOnly={readOnly}
         size={size}
         name={name}
+        id={name}
         ref={field.ref}
         onBlur={handleOnBlur}
         onFocus={handleOnFocus}

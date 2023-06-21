@@ -100,6 +100,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
           />
         )}
         <GenericCheckBox
+          id={name}
           name={name}
           disabled={disabled}
           size={size}

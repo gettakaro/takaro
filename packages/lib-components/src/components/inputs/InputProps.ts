@@ -10,6 +10,8 @@ interface InputProps extends DefaultInputProps {
 // Props for generic input props
 export interface GenericInputProps<T> extends InputProps {
   value: unknown;
+  // Although name could be used as a unique field identifier, name is not retrievable in JsonSchemaForm/FieldTemplate
+  id: string;
   hasError: boolean;
   onChange: ChangeEventHandler<T>;
   onBlur?: FocusEventHandler<T>;
@@ -17,6 +19,7 @@ export interface GenericInputProps<T> extends InputProps {
 }
 export interface GenericInputPropsFunctionHandlers<T, D> extends InputProps {
   value: unknown;
+  id: string;
   hasError: boolean;
   onChange: (val: T) => void;
   onBlur?: FocusEventHandler<D>;

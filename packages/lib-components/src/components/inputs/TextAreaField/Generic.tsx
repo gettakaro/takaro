@@ -34,13 +34,14 @@ export const GenericTextAreaField = forwardRef<
     rows = 5,
     hasError,
     readOnly,
+    id,
   } = defaultsApplier(props);
 
   return (
     <TextAreaContainer>
       <TextArea
         hasError={hasError}
-        id={name}
+        id={id}
         name={name}
         onChange={onChange}
         onBlur={onBlur}

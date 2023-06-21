@@ -57,6 +57,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           />
         )}
         <GenericSwitch
+          id={name}
           hasError={!!error}
           readOnly={readOnly}
           required={required}

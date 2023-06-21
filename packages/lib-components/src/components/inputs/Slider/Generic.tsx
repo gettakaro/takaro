@@ -44,6 +44,7 @@ export const GenericSlider = forwardRef<HTMLDivElement, GenericSliderProps>(
       showTooltip = true,
       showDots,
       onChange,
+      id,
     } = defaultsApplier(props);
 
     const handleOnChange = (value: number) => {
@@ -58,6 +59,7 @@ export const GenericSlider = forwardRef<HTMLDivElement, GenericSliderProps>(
 
     return (
       <StyledSlider
+        id={id}
         activeDotStyle={{ scale: 1.1 }}
         color={color}
         defaultValue={value as number}

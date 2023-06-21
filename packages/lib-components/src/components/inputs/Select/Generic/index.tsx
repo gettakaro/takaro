@@ -52,7 +52,7 @@ const defaultsApplier =
 // TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
 export const GenericSelect: FC<GenericSelectProps> = (props) => {
-  const { render, children, readOnly, value, onBlur, onChange } =
+  const { render, children, readOnly, value, onBlur, onChange, id } =
     defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -176,6 +176,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
       }}
     >
       <SelectButton
+        id={id}
         {...getReferenceProps({
           ref: reference,
         })}

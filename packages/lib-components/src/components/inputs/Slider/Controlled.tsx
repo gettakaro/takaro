@@ -66,6 +66,7 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
       <GenericSlider
         disabled={disabled}
         name={name}
+        id={name}
         required={required}
         min={min}
         max={max}

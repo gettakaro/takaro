@@ -32,7 +32,6 @@ export function FieldTemplate<
   F extends FormContextType = any
 >(props: FieldTemplateProps<T, S, F>) {
   const {
-    id,
     children,
     disabled,
     displayLabel,
@@ -40,6 +39,7 @@ export function FieldTemplate<
     label,
     required,
     errors,
+    id,
     description,
     rawErrors = [],
     rawDescription,

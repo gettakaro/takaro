@@ -86,6 +86,7 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
         hasError={!!fieldState.error}
         disabled={disabled}
         name={name}
+        id={name}
         required={required}
         size={size}
         readOnly={readOnly}

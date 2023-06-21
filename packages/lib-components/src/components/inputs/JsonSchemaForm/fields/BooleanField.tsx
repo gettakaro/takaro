@@ -21,19 +21,20 @@ export function BooleanField<
   onChange,
   onBlur,
   onFocus,
+  idSchema,
   uiSchema,
   schema,
   registry,
 }: FieldProps<T, S, F>) {
-  if (uiSchema && uiSchema!['ui:widget'] === 'checkbox') {
+  if (uiSchema && uiSchema['ui:widget'] === 'checkbox') {
     return (
       <CheckBoxWidget
         name={name}
-        id={name}
+        id={idSchema.$id}
         schema={schema}
         value={schema.default ?? false}
-        options={{}}
         onChange={onChange}
+        options={{}}
         onBlur={onBlur}
         disabled={disabled}
         onFocus={onFocus}
@@ -45,6 +46,7 @@ export function BooleanField<
 
   return (
     <GenericSwitch
+      id={idSchema.$id}
       name={name}
       onChange={(val: boolean) => onChange(val as T)}
       value={value}

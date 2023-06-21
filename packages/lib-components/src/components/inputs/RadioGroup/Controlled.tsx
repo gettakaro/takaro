@@ -80,6 +80,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 disabled={disabled}
                 required={required}
                 name={name}
+                id={name}
                 value={value}
                 selected={selected === value}
                 setSelected={setSelected}

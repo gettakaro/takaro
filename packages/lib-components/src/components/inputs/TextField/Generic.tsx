@@ -60,6 +60,7 @@ export const GenericTextField = forwardRef<
     prefix,
     suffix,
     value,
+    id,
   } = defaultsApplier(props);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -82,7 +83,7 @@ export const GenericTextField = forwardRef<
         hasPrefix={!!prefix}
         hasSuffix={!!suffix}
         isPassword={type === 'password'}
-        id={name}
+        id={id}
         name={name}
         required={required}
         onChange={handleOnChange}

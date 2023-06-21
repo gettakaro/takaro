@@ -11,6 +11,7 @@ export const NumberField = ({
   rawErrors = [],
   required,
   readonly,
+  idSchema,
   name,
   schema,
   uiSchema,
@@ -39,6 +40,7 @@ export const NumberField = ({
   return (
     <GenericTextField
       name={name}
+      id={idSchema.$id}
       onChange={(number) => onChange(number)}
       disabled={disabled}
       placeholder={placeholder}

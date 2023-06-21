@@ -17,7 +17,7 @@ const defaultsApplier =
 
 export const GenericSwitch = forwardRef<HTMLDivElement, GenericSwitchProps>(
   (props, ref) => {
-    const { readOnly, name, onChange, value } = defaultsApplier(props);
+    const { readOnly, onChange, value, id } = defaultsApplier(props);
 
     const [isChecked, setChecked] = useState<boolean>(value as boolean);
 
@@ -30,7 +30,7 @@ export const GenericSwitch = forwardRef<HTMLDivElement, GenericSwitchProps>(
     }, [isChecked]);
 
     return (
-      <ContentContainer onClick={handleOnClick} ref={ref} id={name}>
+      <ContentContainer onClick={handleOnClick} ref={ref} id={id}>
         <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}

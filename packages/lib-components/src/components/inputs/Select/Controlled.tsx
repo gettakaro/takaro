@@ -67,6 +67,7 @@ export const ControlledSelect: FC<ControlledSelectProps> = (props) => {
       )}
       <GenericSelect
         name={name}
+        id={name}
         hasError={!!error}
         readOnly={readOnly}
         disabled={disabled}

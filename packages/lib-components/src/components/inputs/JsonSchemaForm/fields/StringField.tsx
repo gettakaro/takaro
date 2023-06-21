@@ -14,6 +14,7 @@ export const StringField = ({
   name,
   schema,
   onFocus,
+  idSchema,
   formData,
   uiSchema,
   registry,
@@ -27,7 +28,7 @@ export const StringField = ({
     return (
       <RadioWidget
         name={name}
-        id={name}
+        id={idSchema.$id}
         schema={schema}
         value={schema.enum[0]}
         options={{
@@ -54,7 +55,7 @@ export const StringField = ({
     return (
       <SelectWidget
         name={name}
-        id={name}
+        id={idSchema.$id}
         schema={schema}
         value={schema.enum[0]}
         options={{
@@ -80,6 +81,7 @@ export const StringField = ({
   return (
     <GenericTextField
       name={name}
+      id={idSchema.$id}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
       placeholder={placeholder}
