@@ -1,4 +1,4 @@
-import { ChangeEvent, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { TextAreaContainer, TextArea } from './style';
 
 import {
@@ -36,17 +36,13 @@ export const GenericTextAreaField = forwardRef<
     readOnly,
   } = defaultsApplier(props);
 
-  const handleOnChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(event.target.value);
-  };
-
   return (
     <TextAreaContainer>
       <TextArea
         hasError={hasError}
         id={name}
         name={name}
-        onChange={handleOnChange}
+        onChange={onChange}
         onBlur={onBlur}
         onFocus={onFocus}
         placeholder={placeholder}
