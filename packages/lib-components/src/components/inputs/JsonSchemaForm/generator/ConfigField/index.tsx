@@ -11,6 +11,7 @@ import {
   Select,
   TextField,
   Chip,
+  TextAreaField,
 } from '../../../../../components';
 import { Header } from './style';
 import { IFormInputs } from '..';
@@ -93,9 +94,10 @@ export const ConfigField: FC<ConfigFieldProps> = ({
         label="Name"
         name={`configFields.${index}.name`}
       />
-      <TextField
+      <TextAreaField
         control={control}
         label="Description"
+        rows={8}
         name={`configFields.${index}.description`}
       />
       <Select
