@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { StoryFn } from '@storybook/react';
 import { RJSFSchema } from '@rjsf/utils';
+import Form from '@rjsf/core';
 import { JsonSchemaForm } from './index';
 import { styled } from '../../../styled';
 import { Button } from '../../../components';
@@ -53,7 +54,9 @@ export const Default: StoryFn = () => {
   );
 };
 
-export const ModuleTeleports: StoryFn = () => {
+export const submitProgrammatically: StoryFn = () => {
+  const [data, setData] = useState({});
+
   const teleportsSchema: RJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
@@ -69,19 +72,34 @@ export const ModuleTeleports: StoryFn = () => {
     additionalProperties: false,
   };
 
+  const onSubmit = ({ formData }, e) => {
+    e.preventDefault();
+    setData(formData);
+  };
+
+  const formRef = useRef<Form>(null);
+  console.log(formRef);
+
   return (
     <Container>
       <JsonSchemaForm
         schema={teleportsSchema}
         initialData={initialData}
         uiSchema={{}}
-      >
-        <Button
-          type="submit"
-          text="Submit"
-          onClick={() => console.log('form submitted')}
-        />
-      </JsonSchemaForm>
+        ref={formRef}
+        hideSubmitButton
+        onSubmit={onSubmit}
+      />
+      <p>
+        This button is a default button outside of the form, since we have to
+        trigger the submit somehow
+      </p>
+      <Button
+        type="button"
+        text="Programmatically submit form"
+        onClick={() => formRef.current?.submit()}
+      />
+      <pre>result: {JSON.stringify(data, null, 2)}</pre>
     </Container>
   );
 };
