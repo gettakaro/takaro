@@ -149,13 +149,15 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
             role="group"
             aria-labelledby={`select-${child.props.label}`}
           >
-            <GroupLabel
-              role="presentation"
-              id={`select-${child.props.label}`}
-              aria-hidden="true"
-            >
-              {child.props.label}
-            </GroupLabel>
+            {child.props.label && (
+              <GroupLabel
+                role="presentation"
+                id={`select-${child.props.label}`}
+                aria-hidden="true"
+              >
+                {child.props.label}
+              </GroupLabel>
+            )}
             {Children.map(child.props.children, (child) =>
               cloneElement(child, {
                 index: 1 + optionIndex++,

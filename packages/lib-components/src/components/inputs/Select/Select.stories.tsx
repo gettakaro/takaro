@@ -8,14 +8,19 @@ import { films } from './data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+interface ExtraStoryProps {
+  optionGroupLabel: string;
+}
+
 export default {
   title: 'Inputs/Select',
   args: {
     label: 'Film',
     description: 'This is the description',
     hint: 'This is the hint',
+    optionGroupLabel: 'Films',
   },
-} as Meta<SelectProps>;
+} as Meta<SelectProps & ExtraStoryProps>;
 
 const OptionIcon = styled.img`
   width: 24px;
@@ -26,7 +31,7 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const onChange: StoryFn<SelectProps> = (args) => {
+export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });
 
@@ -47,7 +52,7 @@ export const onChange: StoryFn<SelectProps> = (args) => {
           </div>
         )}
       >
-        <Select.OptionGroup label="films">
+        <Select.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
             <Select.Option key={name} value={name}>
               <div>
