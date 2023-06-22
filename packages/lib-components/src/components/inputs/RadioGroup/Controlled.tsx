@@ -71,11 +71,13 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
         {options.map(({ label, labelPosition, value }) => {
           return (
             <Container
+              key={`radiogroup-container-${name}-${value}`}
               isSelected={value === selected}
               onClick={() => handleChange(value)}
             >
               {label && labelPosition === 'left' && (
                 <Label
+                  key={`radiogroup-label-${name}-${value}`}
                   htmlFor={name}
                   text={label}
                   required={required}
@@ -88,6 +90,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 />
               )}
               <GenericRadio
+                key={`radiogroup-radio-${name}-${value}`}
                 hasError={!!error}
                 readOnly={readOnly}
                 disabled={disabled}
@@ -106,6 +109,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
 
               {label && labelPosition === 'right' && (
                 <Label
+                  key={`radiogroup-label-${name}-${value}`}
                   htmlFor={name}
                   position={labelPosition}
                   required={required}
