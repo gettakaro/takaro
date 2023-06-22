@@ -36,6 +36,6 @@ export const Flex = styled.div<{ direction?: 'row' | 'column' }>`
   width: 100%;
   display: flex;
   flex-direction: ${({ direction }) => direction || 'row'};
-  align-items: center;
+  align-items: flex-start;
   gap: ${({ theme }) => theme.spacing[1]};
 `;
