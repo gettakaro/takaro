@@ -39,12 +39,18 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
     id,
   } = defaultsApplier(props);
 
-  const [selected, setSelected] = useState<string>(
-    // check if value exists in options
-    options.some((option) => option.value === value)
+  const setDefaultvalue = () => {
+    const val = options.some((option) => option.value === value)
       ? (value as string)
-      : options[0].value
-  );
+      : options[0].value;
+
+    onChange(val);
+
+    return val;
+  };
+
+  const [selected, setSelected] = useState<string>(setDefaultvalue());
+  // check if value exists in options
 
   const handleChange = (val: string) => {
     if (readOnly || disabled) return;

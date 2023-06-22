@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { Option } from '.';
 import {
@@ -6,8 +6,8 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
-import { Label } from '../../../components';
-import { FieldSet, Container } from './style';
+import { ErrorMessage, Label } from '../../../components';
+import { Wrapper, Container, FieldSet } from './style';
 import { GenericRadio } from './Radio';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
@@ -36,12 +36,25 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
     fieldState: { error },
   } = useController({ name, control });
 
-  const [selected, setSelected] = useState<string>(
-    // check if value exists in options
-    options.some((option) => option.value === field.value)
-      ? field.value
-      : options[0].value
-  );
+  const [showError, setShowError] = useState<boolean>(false);
+
+  const handleOnFocus = () => {
+    setShowError(true);
+  };
+
+  const handleOnBlur = () => {
+    setShowError(false);
+    field.onBlur();
+  };
+
+  useEffect(() => {
+    // if suddenly the error is set, show it
+    if (error) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  const [selected, setSelected] = useState<string>('');
 
   const handleChange = (val: string) => {
     if (readOnly || disabled) return;
@@ -54,7 +67,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
   return (
     <FieldSet>
       <legend>{label}</legend>
-      <div>
+      <Wrapper>
         {options.map(({ label, labelPosition, value }) => {
           return (
             <Container
@@ -86,6 +99,9 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 setSelected={setSelected}
                 onChange={field.onChange}
                 size={size}
+                onBlur={handleOnBlur}
+                onFocus={handleOnFocus}
+                ref={field.ref}
               />
 
               {label && labelPosition === 'right' && (
@@ -104,7 +120,10 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
             </Container>
           );
         })}
-      </div>
+        {error && showError && error.message && (
+          <ErrorMessage message={error.message} />
+        )}
+      </Wrapper>
       <p>{description}</p>
     </FieldSet>
   );
