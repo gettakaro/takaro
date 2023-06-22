@@ -138,10 +138,8 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                             label="Name"
                             control={control}
                             name={`arguments.${index}.name`}
-                            marginBottom="0"
                           />
                           <Select
-                            minWidth={'128px'}
                             control={control}
                             name={`arguments.${index}.type`}
                             label="Type"

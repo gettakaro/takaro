@@ -8,13 +8,13 @@ import {
   useLayoutEffect,
   PropsWithChildren,
 } from 'react';
-import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 import { SelectContext } from './context';
 import {
   GroupLabel,
   SelectButton,
   SelectContainer,
   StyledFloatingOverlay,
+  StyledArrowIcon,
 } from '../style';
 
 import {
@@ -86,9 +86,9 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
     middleware: [
       offset(5),
       size({
-        apply({ rects, availableHeight, elements }) {
+        apply({ rects, availableHeight, elements, availableWidth }) {
           Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
+            width: `${Math.min(rects.reference.width + 25, availableWidth)}px`,
             maxHeight: `${Math.max(150, availableHeight)}px`,
           });
         },
@@ -187,7 +187,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
         hasError={hasError}
       >
         {render(selectedIndex - 1)}
-        {!readOnly && <ArrowIcon size={18} />}
+        {!readOnly && <StyledArrowIcon size={16} isOpen={open} />}
       </SelectButton>
       {open && !readOnly && (
         <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>

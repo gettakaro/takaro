@@ -1,5 +1,6 @@
 import { FloatingOverlay } from '@floating-ui/react';
 import { styled } from '../../../styled';
+import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 // This wraps everything
 export const Container = styled.div<{ minWidth?: string }>`
@@ -19,7 +20,7 @@ export const SelectButton = styled.div<{
   width: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
   font-family: inherit;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   outline: 0;
   position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
@@ -45,6 +46,11 @@ export const SelectButton = styled.div<{
   span {
     display: flex;
   }
+`;
+
+export const StyledArrowIcon = styled(ArrowIcon)<{ isOpen: boolean }>`
+  margin-left: ${({ theme }) => theme.spacing['0_75']};
+  transform: rotate(${({ isOpen }) => (isOpen ? '180deg' : '0deg')});
 `;
 
 export const StyledFloatingOverlay = styled(FloatingOverlay)`

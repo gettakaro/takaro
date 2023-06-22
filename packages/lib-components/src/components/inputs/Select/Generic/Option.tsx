@@ -4,7 +4,7 @@ import { SelectContext } from './context';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
 
 const OptionContainer = styled.div<{ isSelected: boolean }>`
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -104,7 +104,8 @@ export const Option: FC<OptionProps> = ({
         onKeyUp: handleKeyUp,
       })}
     >
-      {children} {selectedIndex === index && <CheckIcon />}
+      <span>{children}</span>{' '}
+      {selectedIndex === index && <CheckIcon size={15} />}
     </OptionContainer>
   );
 };
