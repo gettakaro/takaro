@@ -2,8 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   CollapseList,
-  Option,
-  OptionGroup,
   Select,
   TextAreaField,
   TextField,
@@ -150,18 +148,18 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                               </>
                             )}
                           >
-                            <OptionGroup label="Options">
+                            <Select.OptionGroup label="Options">
                               {argumentTypeSelectOptions.map(
                                 ({ name, value }) => (
-                                  <Option
+                                  <Select.Option
                                     key={`${field.id}-select-${name}`}
                                     value={value}
                                   >
                                     {name}
-                                  </Option>
+                                  </Select.Option>
                                 )
                               )}
-                            </OptionGroup>
+                            </Select.OptionGroup>
                           </Select>
                         </FloatingDelayGroup>
                       </Flex>

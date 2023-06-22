@@ -6,8 +6,6 @@ import {
 } from 'react-hook-form';
 import {
   CheckBox,
-  Option,
-  OptionGroup,
   Select,
   TextField,
   Chip,
@@ -112,13 +110,13 @@ export const ConfigField: FC<ConfigFieldProps> = ({
           </div>
         )}
       >
-        <OptionGroup label="type">
+        <Select.OptionGroup label="type">
           {Object.values(InputType).map((type) => (
-            <Option key={`${type}-${id}`} value={type}>
+            <Select.Option key={`${type}-${id}`} value={type}>
               <span>{type}</span>
-            </Option>
+            </Select.Option>
           ))}
-        </OptionGroup>
+        </Select.OptionGroup>
       </Select>
       {typeSpecificFields(control, input, index, id)[fieldType]}
       <CheckBox

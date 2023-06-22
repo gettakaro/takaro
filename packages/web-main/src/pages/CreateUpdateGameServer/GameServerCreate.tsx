@@ -3,8 +3,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   Select,
-  OptionGroup,
-  Option,
   TextField,
   Drawer,
   CollapseList,
@@ -143,15 +141,15 @@ const CreateGameServer: FC = () => {
                     </div>
                   )}
                 >
-                  <OptionGroup label="Games">
+                  <Select.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Option key={`select-${name}`} value={value}>
+                      <Select.Option key={`select-${name}`} value={value}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Option>
+                      </Select.Option>
                     ))}
-                  </OptionGroup>
+                  </Select.OptionGroup>
                 </Select>
               </CollapseList.Item>
               {type !== undefined && (

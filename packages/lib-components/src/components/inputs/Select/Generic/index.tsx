@@ -37,6 +37,9 @@ import {
   defaultInputProps,
   GenericInputProps,
 } from '../../InputProps';
+import { Option } from './Option';
+import { OptionGroup } from './OptionGroup';
+import { SubComponentTypes } from '..';
 
 export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
@@ -51,7 +54,9 @@ const defaultsApplier =
 
 // TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
-export const GenericSelect: FC<GenericSelectProps> = (props) => {
+export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
+  props
+) => {
   const { render, children, readOnly, value, onBlur, onChange, id, hasError } =
     defaultsApplier(props);
 
@@ -220,3 +225,6 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
     </SelectContext.Provider>
   );
 };
+
+GenericSelect.Option = Option;
+GenericSelect.OptionGroup = OptionGroup;

@@ -6,9 +6,11 @@ import {
   defaultInputPropsFactory,
   defaultInputProps,
 } from '../InputProps';
-import { GenericSelect } from '.';
+import { GenericSelect, SubComponentTypes } from '.';
 import { ErrorMessage, Label } from '../../../components';
 import { SelectProps } from './Generic';
+import { Option } from './Generic/Option';
+import { OptionGroup } from './Generic/OptionGroup';
 
 export type ControlledSelectProps = PropsWithChildren<
   ControlledInputProps & SelectProps
@@ -17,7 +19,9 @@ export type ControlledSelectProps = PropsWithChildren<
 const defaultsApplier =
   defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
 
-export const ControlledSelect: FC<ControlledSelectProps> = (props) => {
+export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
+  props
+) => {
   const {
     required,
     size: componentSize,
@@ -87,3 +91,6 @@ export const ControlledSelect: FC<ControlledSelectProps> = (props) => {
     </Container>
   );
 };
+
+ControlledSelect.OptionGroup = OptionGroup;
+ControlledSelect.Option = Option;

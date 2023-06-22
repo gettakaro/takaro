@@ -1,13 +1,7 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useMemo, useState } from 'react';
-import {
-  Button,
-  SelectProps,
-  Select,
-  OptionGroup,
-  Option,
-} from '../../../components';
+import { Button, SelectProps, Select } from '../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../styled';
 import { films } from './data';
@@ -53,15 +47,15 @@ export const onChange: StoryFn<SelectProps> = (args) => {
           </div>
         )}
       >
-        <OptionGroup label="films">
+        <Select.OptionGroup label="films">
           {films.map(({ name }) => (
-            <Option key={name} value={name}>
+            <Select.Option key={name} value={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Option>
+            </Select.Option>
           ))}
-        </OptionGroup>
+        </Select.OptionGroup>
       </Select>
       <pre>result: {selectValue}</pre>
     </>
@@ -111,15 +105,15 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
             </div>
           )}
         >
-          <OptionGroup label="films">
+          <Select.OptionGroup label="films">
             {films.map(({ name }) => (
-              <Option key={name} value={name}>
+              <Select.Option key={name} value={name}>
                 <div>
                   <span>{name}</span>
                 </div>
-              </Option>
+              </Select.Option>
             ))}
-          </OptionGroup>
+          </Select.OptionGroup>
         </Select>
         <Button type="submit" text="Submit" />
       </form>

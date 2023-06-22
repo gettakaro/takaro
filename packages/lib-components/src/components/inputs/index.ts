@@ -1,12 +1,8 @@
 export { ControlledCheckBox as CheckBox } from './CheckBox';
 export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox';
 
-export { ControlledSelect as Select, OptionGroup, Option } from './Select';
-export type {
-  ControlledSelectProps as SelectProps,
-  OptionGroupProps,
-  OptionProps,
-} from './Select';
+export { ControlledSelect as Select } from './Select';
+export type { ControlledSelectProps as SelectProps } from './Select';
 
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';

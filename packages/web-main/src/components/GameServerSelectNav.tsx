@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
-import { OptionGroup, Option, Select } from '@takaro/lib-components';
+import { Select } from '@takaro/lib-components';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 type FormFields = { gameServer: string };
@@ -42,15 +42,15 @@ export const GameServerSelectNav: FC = () => {
           </div>
         )}
       >
-        <OptionGroup label="Gameservers">
+        <Select.OptionGroup label="Gameservers">
           {gameServers.map(({ name, id }) => (
-            <Option key={id} value={name}>
+            <Select.Option key={id} value={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Option>
+            </Select.Option>
           ))}
-        </OptionGroup>
+        </Select.OptionGroup>
       </Select>
     </form>
   );

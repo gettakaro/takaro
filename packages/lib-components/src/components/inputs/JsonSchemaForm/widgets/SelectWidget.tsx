@@ -6,7 +6,6 @@ import {
   WidgetProps,
 } from '@rjsf/utils';
 import { GenericSelect } from '../../Select/Generic';
-import { OptionGroup, Option } from '../../../../components';
 
 // TODO: implement multiselect
 export function SelectWidget<
@@ -43,16 +42,16 @@ export function SelectWidget<
         </div>
       )}
     >
-      <OptionGroup label="options">
+      <GenericSelect.OptionGroup label="options">
         {enumOptions &&
           enumOptions.map(({ value, label }) => (
-            <Option key={`select-${value}`} value={value}>
+            <GenericSelect.Option key={`select-${value}`} value={value}>
               <div>
                 <span>{label}</span>
               </div>
-            </Option>
+            </GenericSelect.Option>
           ))}
-      </OptionGroup>
+      </GenericSelect.OptionGroup>
     </GenericSelect>
   );
 }
