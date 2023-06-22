@@ -1,15 +1,8 @@
 import React, { useMemo } from 'react';
 import { useState } from 'react';
-// import { useForm } from 'react-hook-form';
 import { Meta, StoryFn } from '@storybook/react';
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerBody,
-  DrawerHeading,
-  DrawerFooter,
-} from '.';
+import { Drawer } from '.';
 import {
   Button,
   TextField,
@@ -75,9 +68,9 @@ export const Default: StoryFn = () => {
     <>
       <Button onClick={() => setOpen(true)} text="Open drawer" />
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <DrawerHeading>Product Details</DrawerHeading>
-          <DrawerBody>
+        <Drawer.Content>
+          <Drawer.Heading>Product Details</Drawer.Heading>
+          <Drawer.Body>
             <Status>
               Status: <Chip label="active" color="success" variant="outline" />
             </Status>
@@ -141,8 +134,8 @@ export const Default: StoryFn = () => {
                 />
               </CollapseList.Item>
             </form>
-          </DrawerBody>
-          <DrawerFooter>
+          </Drawer.Body>
+          <Drawer.Footer>
             <ButtonContainer>
               <Button
                 text="Cancel"
@@ -156,8 +149,8 @@ export const Default: StoryFn = () => {
                 form="myform"
               />
             </ButtonContainer>
-          </DrawerFooter>
-        </DrawerContent>
+          </Drawer.Footer>
+        </Drawer.Content>
       </Drawer>
     </>
   );

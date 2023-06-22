@@ -1,17 +1,13 @@
-import { FC, useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FC, useEffect, useRef, useState } from 'react';
 import {
   Button,
-  DrawerContent,
-  DrawerHeading,
   Drawer,
-  DrawerFooter,
-  DrawerBody,
   CollapseList,
   styled,
   JsonSchemaForm,
   Loading,
 } from '@takaro/lib-components';
+import Form from '@rjsf/core';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
@@ -25,14 +21,18 @@ const ButtonContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-interface IFormInputs {}
-
 const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
+
+  const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
+  const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
+
+  const userConfigFormRef = useRef<Form>(null);
+  const systemConfigFormRef = useRef<Form>(null);
 
   if (!serverId || !moduleId) {
     throw new Error('No serverId or moduleId');
@@ -44,53 +44,76 @@ const InstallModule: FC = () => {
     }
   }, [open, navigate, serverId]);
 
-  const { handleSubmit } = useForm<IFormInputs>({
-    mode: 'onSubmit',
-    //  resolver: zodResolver(moduleValidationSchema),
-  });
-
   if (moduleLoading) {
     return <Loading />;
   }
 
-  const onSubmit: SubmitHandler<IFormInputs> = async () => {
-    try {
-      mutateAsync({
-        gameServerId: serverId,
-        moduleId: moduleId,
-        moduleInstall: {
-          systemConfig: JSON.stringify({}),
-          userConfig: JSON.stringify({}),
-        },
-      });
+  const onUserConfigSubmit = ({ formData }, e) => {
+    e.preventDefault();
+    setUserConfig(formData);
+    onSubmit();
+    return false;
+  };
 
-      navigate(PATHS.gameServer.modules(serverId));
-    } catch (error) {
-      Sentry.captureException(error);
+  const onSystemConfigSubmit = ({ formData }, e) => {
+    e.preventDefault();
+    setSystemConfig(formData);
+    onSubmit();
+    return false;
+  };
+
+  const onSubmit = async () => {
+    if (
+      Object.keys(userConfig).length > 0 &&
+      Object.keys(systemConfig).length > 0
+    ) {
+      console.log('this is fired');
+      try {
+        mutateAsync({
+          gameServerId: serverId,
+          moduleId: moduleId,
+          moduleInstall: {
+            systemConfig: JSON.stringify({}),
+            userConfig: JSON.stringify({}),
+          },
+        });
+
+        // navigate(PATHS.gameServer.modules(serverId));
+      } catch (error) {
+        Sentry.captureException(error);
+      }
     }
   };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeading>Install Module</DrawerHeading>
-        <DrawerBody>
+      <Drawer.Content>
+        <Drawer.Heading>Install Module</Drawer.Heading>
+        <Drawer.Body>
           <CollapseList>
-            <JsonSchemaForm
-              schema={JSON.parse(mod?.configSchema as string)}
-              uiSchema={{}}
-              initialData={{}}
-            />
+            <CollapseList.Item title="User config">
+              <JsonSchemaForm
+                schema={JSON.parse(mod?.configSchema as string)}
+                uiSchema={{}}
+                initialData={{}}
+                hideSubmitButton
+                onSubmit={onUserConfigSubmit}
+                ref={userConfigFormRef}
+              />
+            </CollapseList.Item>
+            <CollapseList.Item title="System config">
+              <JsonSchemaForm
+                schema={JSON.parse(mod?.systemConfigSchema as string)}
+                uiSchema={{}}
+                initialData={{}}
+                hideSubmitButton
+                onSubmit={onSystemConfigSubmit}
+                ref={systemConfigFormRef}
+              />
+            </CollapseList.Item>
           </CollapseList>
-          <CollapseList>
-            <JsonSchemaForm
-              schema={JSON.parse(mod?.systemConfigSchema as string)}
-              uiSchema={{}}
-              initialData={{}}
-            />
-          </CollapseList>
-        </DrawerBody>
-        <DrawerFooter>
+        </Drawer.Body>
+        <Drawer.Footer>
           <ButtonContainer>
             <Button
               text="Cancel"
@@ -101,13 +124,15 @@ const InstallModule: FC = () => {
               fullWidth
               isLoading={isLoading}
               text="Install"
-              type="submit"
-              form="install-module-form"
-              onClick={handleSubmit(onSubmit)}
+              type="button"
+              onClick={() => {
+                systemConfigFormRef.current?.formElement.current.requestSubmit();
+                userConfigFormRef.current?.formElement.current.requestSubmit();
+              }}
             />
           </ButtonContainer>
-        </DrawerFooter>
-      </DrawerContent>
+        </Drawer.Footer>
+      </Drawer.Content>
     </Drawer>
   );
 };

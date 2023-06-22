@@ -3,11 +3,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   TextField,
-  DrawerContent,
-  DrawerHeading,
   Drawer,
-  DrawerFooter,
-  DrawerBody,
   CollapseList,
   ErrorMessage,
   styled,
@@ -95,9 +91,9 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeading>Edit Module</DrawerHeading>
-        <DrawerBody>
+      <Drawer.Content>
+        <Drawer.Heading>Edit Module</Drawer.Heading>
+        <Drawer.Body>
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="edit-module-form">
               <CollapseList.Item title="General">
@@ -126,8 +122,8 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
               {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
-        </DrawerBody>
-        <DrawerFooter>
+        </Drawer.Body>
+        <Drawer.Footer>
           <ButtonContainer>
             <Button
               text="Cancel"
@@ -141,8 +137,8 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
               form="edit-module-form"
             />
           </ButtonContainer>
-        </DrawerFooter>
-      </DrawerContent>
+        </Drawer.Footer>
+      </Drawer.Content>
     </Drawer>
   );
 };
