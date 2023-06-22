@@ -19,7 +19,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     box-sizing: border-box;
   }
 
-  #root {
+  #takaro-root {
     margin: 0 auto;
     overflow-x: hidden;
   }
