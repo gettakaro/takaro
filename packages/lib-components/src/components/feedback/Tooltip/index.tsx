@@ -35,7 +35,7 @@ const Container = styled.div<{ elevation: Elevation }>`
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['0_75']}`};
   font-size: 1.4rem;
   width: max-content;
-  z-index: 100;
+  z-index: ${({ theme }) => theme.zIndex.tooltip};
 `;
 
 export const Tooltip: FC<TooltipProps> = ({

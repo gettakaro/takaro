@@ -14,6 +14,7 @@ const Container = styled(motion.div)<{ elevation: Elevation }>`
   will-change: height;
   overflow: hidden;
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
+  z-index: ${({ theme }) => theme.zIndex.notificationBanner};
 
   div {
     display: flex;

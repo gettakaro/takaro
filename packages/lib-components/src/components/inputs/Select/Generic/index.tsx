@@ -187,7 +187,7 @@ export const GenericSelect: FC<GenericSelectProps> = (props) => {
         hasError={hasError}
       >
         {render(selectedIndex - 1)}
-        {!readOnly && <StyledArrowIcon size={16} isOpen={open} />}
+        {!readOnly && <StyledArrowIcon size={16} />}
       </SelectButton>
       {open && !readOnly && (
         <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>

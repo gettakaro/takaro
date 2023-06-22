@@ -48,9 +48,8 @@ export const SelectButton = styled.div<{
   }
 `;
 
-export const StyledArrowIcon = styled(ArrowIcon)<{ isOpen: boolean }>`
+export const StyledArrowIcon = styled(ArrowIcon)`
   margin-left: ${({ theme }) => theme.spacing['0_75']};
-  transform: rotate(${({ isOpen }) => (isOpen ? '180deg' : '0deg')});
 `;
 
 export const StyledFloatingOverlay = styled(FloatingOverlay)`
@@ -68,6 +67,7 @@ export const SelectContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
   text-transform: capitalize;
+  z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
 export const GroupLabel = styled.li`

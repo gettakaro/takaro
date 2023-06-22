@@ -23,7 +23,6 @@ export const BackgroundContainer = styled(motion.div)`
   width: 2rem;
   height: 2rem;
   background-color: ${({ theme }) => theme.colors.primary};
-  z-index: 0;
   border-radius: ${({ theme }) => theme.borderRadius.small};
 `;
 
@@ -57,7 +56,6 @@ export const CheckboxContainer = styled.div<{
   transition: box-shadow 100ms linear, border-color 100ms linear;
   cursor: ${({ readOnly, disabled }) =>
     readOnly || disabled ? 'not-allowed' : 'pointer'};
-  z-index: 1;
   overflow: visible;
   &.placeholder {
     border: none; /* Otherwise the border does not have the animation */
@@ -75,7 +73,6 @@ export const CheckMarkContainer = styled.div<{ isChecked: boolean }>`
   height: 100%;
   align-items: center;
   justify-content: center;
-  z-index: 2;
   opacity: ${({ isChecked }): number => (isChecked ? 1 : 0)};
   transition: 0.2s opacity ease-in-out cubic-bezier(0.215, 0.61, 0.355, 1);
 

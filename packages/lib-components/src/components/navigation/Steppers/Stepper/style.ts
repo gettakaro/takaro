@@ -26,7 +26,6 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
     width: 100%;
     top: 22px;
     left: calc(50% + 20px);
-    z-index: 1;
   }
 
   &:first-child {
@@ -51,7 +50,6 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
       width: 100%;
       top: 22px;
       left: -50%;
-      z-index: 3;
     `
       : '';
   }}
@@ -70,19 +68,21 @@ export const StepCounter = styled.div<{
   canStepBack: boolean;
 }>`
   position: relative;
-  z-index: 5;
+
+  /* makes sure the before and after lines don't show above the step circles */
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 5rem;
+  height: 5rem;
   padding: 0.8rem;
   border-radius: 50%;
   border: 0.1rem solid
     ${({ theme, stepState }) =>
       stepState !== StepStates.OTHER
         ? theme.colors.primary
-        : theme.colors.background};
+        : theme.colors.backgroundAlt};
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.CURRENT
       ? theme.colors.primary
@@ -107,7 +107,6 @@ export const StepCounter = styled.div<{
           return '#ccc';
       }
     }};
-    z-index: 5;
   }
 `;
 

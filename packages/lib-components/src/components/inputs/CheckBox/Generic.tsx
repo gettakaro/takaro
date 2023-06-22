@@ -16,7 +16,7 @@ import {
 
 const variants = {
   unchecked: { scale: 0, opacity: 0 },
-  checked: { scale: 1 },
+  checked: { scale: 1, opacity: 1 },
 };
 
 export type GenericCheckBoxProps = GenericInputPropsFunctionHandlers<
@@ -63,10 +63,11 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
           animate={isChecked ? 'checked' : 'unchecked'}
           transition={getTransition()}
           variants={variants}
-        />
-        <CheckMarkContainer isChecked={isChecked}>
-          <Icon size={15} />
-        </CheckMarkContainer>
+        >
+          <CheckMarkContainer isChecked={isChecked}>
+            <Icon size={15} />
+          </CheckMarkContainer>
+        </BackgroundContainer>
       </CheckboxContainer>
     );
   }

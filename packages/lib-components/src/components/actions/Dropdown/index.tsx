@@ -13,6 +13,7 @@ const FloatingContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   box-shadow: ${({ theme }) => theme.elevation[3]};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
 const ReferenceContainer = styled.div`
@@ -67,6 +68,7 @@ export const Dropdown: FC<Dropdown> = ({
             position: strategy,
             top: y ?? 0,
             left: x ?? 0,
+            zIndex: 1000,
           }}
           {...getFloatingProps()}
         >

@@ -27,6 +27,7 @@ const Container = styled(motion.div)`
   height: 100vh;
   max-height: 100vh;
   min-height: 100%;
+  z-index: ${({ theme }) => theme.zIndex.drawer};
 `;
 
 export const DrawerContent = forwardRef<

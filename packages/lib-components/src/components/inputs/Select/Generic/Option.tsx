@@ -20,7 +20,6 @@ const OptionContainer = styled.div<{ isSelected: boolean }>`
     background-color: ${({ theme }) => theme.colors.primary};
     color: rgba(255, 255, 255, 0.9);
     position: relative;
-    z-index: 1;
   }
 
   &:hover {
