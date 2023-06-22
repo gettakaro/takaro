@@ -84,7 +84,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
     setPointer(false);
   }
 
-  const { x, y, reference, floating, strategy, context } = useFloating({
+  const { x, y, refs, strategy, context } = useFloating({
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
@@ -184,9 +184,8 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
     >
       <SelectButton
         id={id}
-        {...getReferenceProps({
-          ref: reference,
-        })}
+        ref={refs.setReference}
+        {...getReferenceProps()}
         readOnly={readOnly}
         onBlur={onBlur}
         isOpen={open}
@@ -200,8 +199,8 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
         <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
           <FloatingFocusManager context={context} initialFocus={selectedIndex}>
             <SelectContainer
+              ref={refs.setFloating}
               {...getFloatingProps({
-                ref: floating,
                 style: {
                   position: strategy,
                   top: y ?? 0,
