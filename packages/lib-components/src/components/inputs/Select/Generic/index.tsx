@@ -185,12 +185,12 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
       <SelectButton
         id={id}
         ref={refs.setReference}
-        {...getReferenceProps()}
         readOnly={readOnly}
         onBlur={onBlur}
         isOpen={open}
         tabIndex={readOnly ? -1 : 0}
         hasError={hasError}
+        {...getReferenceProps()}
       >
         {render(selectedIndex - 1)}
         {!readOnly && <StyledArrowIcon size={16} />}
@@ -200,23 +200,19 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
           <FloatingFocusManager context={context} initialFocus={selectedIndex}>
             <SelectContainer
               ref={refs.setFloating}
-              {...getFloatingProps({
-                style: {
-                  position: strategy,
-                  top: y ?? 0,
-                  left: x ?? 0,
-                  overflow: 'auto',
-                },
-                onPointerMove() {
-                  setPointer(true);
-                },
-                onKeyDown(event) {
-                  setPointer(false);
-                  if (event.key === 'Tab') {
-                    setOpen(false);
-                  }
-                },
-              })}
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+                overflow: 'auto',
+              }}
+              onPointerMove={() => setPointer(true)}
+              onKeyDown={(event) => {
+                if (event.key === 'Tab') {
+                  setOpen(false);
+                }
+              }}
+              {...getFloatingProps()}
             >
               {options}
             </SelectContainer>
