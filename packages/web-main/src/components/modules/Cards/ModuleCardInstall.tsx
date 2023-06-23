@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogHeading,
   Button,
-  styled,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
