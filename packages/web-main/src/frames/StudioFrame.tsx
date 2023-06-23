@@ -49,6 +49,7 @@ export const StudioFrame: FC = () => {
     fileMap: {},
     id: '',
     name: '',
+    isBuiltIn: false,
   });
 
   const providerModuleData = useMemo(
@@ -91,6 +92,7 @@ export const StudioFrame: FC = () => {
         id: mod.id,
         fileMap: nameToId,
         name: mod.name,
+        isBuiltIn: mod.builtin !== '' ? true : false,
       }));
     }
   }, [mod, isSuccess]);

@@ -294,6 +294,10 @@ export const File: FC<FileProps> = ({
   };
 
   const getActions = (): JSX.Element => {
+    if (moduleData.isBuiltIn) {
+      return <></>;
+    }
+
     if (selectFile) {
       return (
         <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
