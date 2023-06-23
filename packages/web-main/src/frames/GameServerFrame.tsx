@@ -1,6 +1,11 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import { ErrorFallback, LoadingPage, styled } from '@takaro/lib-components';
+import {
+  ErrorFallback,
+  Loading,
+  LoadingPage,
+  styled,
+} from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar, NavbarLink } from 'components/Navbar';
@@ -77,7 +82,6 @@ export const ServerFrame: FC = () => {
         <Header />
         <Page>
           <ErrorBoundary fallback={<ErrorFallback />}>
-            {isLoading && <LoadingPage />}
             {isError ? (
               <div>Server not found</div>
             ) : (

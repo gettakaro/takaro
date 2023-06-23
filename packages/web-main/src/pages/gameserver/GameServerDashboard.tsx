@@ -1,4 +1,4 @@
-import { Console, Message, styled } from '@takaro/lib-components';
+import { Console, Message, Skeleton, styled } from '@takaro/lib-components';
 import { Dispatch, FC, Fragment, SetStateAction } from 'react';
 import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
@@ -16,18 +16,23 @@ const GameServerDashboard: FC = () => {
   const { gameServerId } = useGameServerOutletContext();
   const { data: gameServer, isLoading } = useGameServer(gameServerId);
 
-  // TODO: handle this
   if (isLoading) {
-    return <>'console loading...'</>;
+    return (
+      <>
+        <Skeleton variant="rectangular" width="100%" height="30px" />
+        <br />
+        <Skeleton variant="rectangular" width="100%" height="80vh" />
+      </>
+    );
   }
 
   // TODO: handle this
   if (gameServer === undefined) {
-    return <>'could not load data'</>;
+    return <>could not load data</>;
   }
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
-    const handler = (handleGameserverId: string, type, data) => {
+    const handler = (handleGameserverId: string, data) => {
       if (handleGameserverId !== gameServerId) return;
       setter((prev: Message[]) => [
         ...prev,

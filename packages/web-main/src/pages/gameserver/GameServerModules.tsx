@@ -1,4 +1,4 @@
-import { Loading, styled } from '@takaro/lib-components';
+import { Loading, Skeleton, styled } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, Outlet } from 'react-router-dom';
@@ -16,7 +16,9 @@ const Page = styled.div`
 
 const GameServerModules: FC = () => {
   const { serverId } = useParams();
-  const { data: installations } = useGameServerModuleInstallations(serverId!);
+  const { data: installations, isLoading } = useGameServerModuleInstallations(
+    serverId!
+  );
   const { data: modules } = useModules();
 
   const mappedModules = useMemo(() => {
@@ -35,6 +37,16 @@ const GameServerModules: FC = () => {
       };
     });
   }, [installations, modules]);
+
+  if (isLoading) {
+    return (
+      <ModuleCards>
+        {Array.from({ length: 10 }).map((_, i) => (
+          <Skeleton key={i} variant="rectangular" height="100%" width="100%" />
+        ))}
+      </ModuleCards>
+    );
+  }
 
   if (!installations || !modules || !mappedModules) {
     return <Loading />;
