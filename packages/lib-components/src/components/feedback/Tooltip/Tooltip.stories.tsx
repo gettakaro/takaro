@@ -31,8 +31,10 @@ export const UnControlledCustomChild: StoryFn<
   TooltipProps & ExtraTooltipStoryProps
 > = () => (
   <>
-    By default the component is rendered in a div tag. By setting the asChild
-    prop, the component will be rendered as the trigger component.
+    By default the component is rendered in a div tag. because the component is
+    expected to have a ref. So if the component you want to render as the
+    trigger does not have a ref, you can NOT set the asChild prop. By setting
+    the asChild prop, the component will be rendered as the trigger component.
     <Tooltip>
       <Tooltip.Trigger asChild>
         <IconButton icon={<Icon />} />
