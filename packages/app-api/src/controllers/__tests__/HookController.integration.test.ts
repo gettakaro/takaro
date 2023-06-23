@@ -134,6 +134,44 @@ const tests = [
     expectedStatus: 409,
     filteredFields: ['moduleId'],
   }),
+  new IntegrationTest<{ id: string }>({
+    group,
+    snapshot: true,
+    name: 'discordChannelId is required when event-type is discord-message, throws validation error',
+    test: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
+      return this.client.hook.hookControllerCreate({
+        ...mockHook(module.id),
+        eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+      });
+    },
+    expectedStatus: 400,
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<{ id: string }>({
+    group,
+    snapshot: true,
+    name: 'discordChannelId is required when event-type is discord-message, happy path',
+    test: async function () {
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
+      return this.client.hook.hookControllerCreate({
+        ...mockHook(module.id),
+        eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+        discordChannelId: '123',
+      });
+    },
+    filteredFields: ['moduleId', 'functionId'],
+  }),
 ];
 
 describe(group, function () {

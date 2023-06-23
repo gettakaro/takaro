@@ -1,4 +1,4 @@
-import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, QueryBuilder, TakaroModel, getKnex } from '@takaro/db';
 import { Model } from 'objection';
 import { USER_TABLE_NAME, UserModel } from './user.js';
 import { ITakaroRepo } from './base.js';
@@ -7,7 +7,7 @@ import {
   GuildOutputDTO,
   GuildUpdateDTO,
 } from '../service/DiscordService.js';
-import { errors } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
 const USER_ON_DISCORD_GUILD_TABLE_NAME = 'userOnDiscordGuild';
@@ -59,6 +59,36 @@ export class DiscordRepo extends ITakaroRepo<
   GuildCreateInputDTO,
   GuildUpdateDTO
 > {
+  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
+    guildId: string
+  ): Promise<string | null> {
+    const knex = await getKnex();
+    const model = DiscordGuildModel.bindKnex(knex);
+    const result = (await model
+      .query()
+      .select(`${DISCORD_GUILDS_TABLE_NAME}.domain`)
+      .where(`${DISCORD_GUILDS_TABLE_NAME}.discordId`, guildId)
+      .where(`${DISCORD_GUILDS_TABLE_NAME}.takaroEnabled`, true)) as {
+      domain: string;
+    }[];
+
+    // Check if all domain IDs are the same
+    // Otherwise, it means that the guild is associated with multiple domains
+    if (
+      result.length > 1 &&
+      !result.every((r) => r.domain === result[0].domain)
+    ) {
+      logger('discord').warn(
+        `POTENTIAL DOMAIN SCOPING ISSUE: ${guildId} has multiple domains associated with it. `
+      );
+      throw new errors.BadRequestError(
+        'Could not resolve Takaro domain from guild ID, have you associated your guild with multiple Takaro domains?'
+      );
+    }
+
+    return result[0]?.domain ?? null;
+  }
+
   async getModel() {
     const knex = await this.getKnex();
     const model = DiscordGuildModel.bindKnex(knex);

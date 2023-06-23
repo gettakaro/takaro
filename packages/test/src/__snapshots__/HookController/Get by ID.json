@@ -2,20 +2,21 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "701d1d47-e00b-4287-9cae-77644cabc1fa",
-      "createdAt": "2023-06-04T17:10:32.544Z",
-      "updatedAt": "2023-06-04T17:10:32.546Z",
+      "id": "cb6714a1-e66a-442f-a008-4d4a98a266f2",
+      "createdAt": "2023-06-22T23:31:54.461Z",
+      "updatedAt": "2023-06-22T23:31:54.463Z",
       "name": "Test hook",
       "regex": "/this (is) a [regex]/g",
       "function": {
-        "id": "b2c52a45-3625-4323-9747-05c1594fc451",
-        "createdAt": "2023-06-04T17:10:32.543Z",
-        "updatedAt": "2023-06-04T17:10:32.543Z",
+        "id": "e8687398-add1-4c4b-8148-58c70a046505",
+        "createdAt": "2023-06-22T23:31:54.458Z",
+        "updatedAt": "2023-06-22T23:31:54.460Z",
         "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n \n    // TODO: write my function...\n}\nmain();"
       },
       "eventType": "log",
-      "moduleId": "46d1ef27-3f63-4098-93ef-2e1c0e798b39",
-      "functionId": "b2c52a45-3625-4323-9747-05c1594fc451"
+      "moduleId": "9ddcbb4b-4850-4386-9364-bfbea2a24caf",
+      "functionId": "e8687398-add1-4c4b-8148-58c70a046505",
+      "discordChannelId": null
     }
   },
   "status": 200,

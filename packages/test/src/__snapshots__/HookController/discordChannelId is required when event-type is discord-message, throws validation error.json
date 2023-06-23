@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Check constraint \"discord_channel_id_required_if_event_type_is_discord_message\" failed"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "HookController",
+    "snapshot": true,
+    "name": "discordChannelId is required when event-type is discord-message, throws validation error",
+    "expectedStatus": 400,
+    "filteredFields": [
+      "moduleId"
+    ],
+    "standardEnvironment": true
+  }
+}

@@ -3,7 +3,7 @@ import { DiscordGuildModel, DiscordRepo } from '../db/discord.js';
 import { TakaroService } from './Base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
-import { PermissionsBitField } from 'discord.js';
+import { Message, PermissionsBitField } from 'discord.js';
 import { discordBot } from '../lib/DiscordBot.js';
 import {
   IsBoolean,
@@ -12,6 +12,8 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
+import { HookEventDiscordMessage, HookService } from './HookService.js';
+import { GameServerService } from './GameServerService.js';
 
 export class GuildOutputDTO extends TakaroDTO<GuildOutputDTO> {
   @IsUUID()
@@ -200,5 +202,31 @@ export class DiscordService extends TakaroService<
     }
 
     await discordBot.sendMessage(channelId, message.message);
+  }
+
+  async handleMessage(message: Message<true>) {
+    const { channel, author } = message;
+
+    const messageDTO = await new HookEventDiscordMessage().construct({
+      channelDiscordId: channel.id,
+      senderDiscordId: author.id,
+      msg: message.content,
+    });
+
+    const gameServerService = new GameServerService(this.domainId);
+    const gameServers = await gameServerService.find({});
+
+    await Promise.all(
+      gameServers.results.map((gameServer) => {
+        const hookService = new HookService(gameServer.id);
+        return hookService.handleEvent(messageDTO, gameServer.id);
+      })
+    );
+  }
+
+  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
+    guildId: string
+  ): Promise<string | null> {
+    return DiscordRepo.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId);
   }
 }

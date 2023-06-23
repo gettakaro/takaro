@@ -2059,6 +2059,12 @@ export interface HookCreateDTO {
    * @memberof HookCreateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookCreateDTO
+   */
+  discordChannelId?: string;
 }
 
 export const HookCreateDTOEventTypeEnum = {
@@ -2066,11 +2072,43 @@ export const HookCreateDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  DiscordMessage: 'discord-message',
 } as const;
 
 export type HookCreateDTOEventTypeEnum =
   typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface HookEventDiscordMessage
+ */
+export interface HookEventDiscordMessage {
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  msg: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  senderDiscordId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  channelDiscordId: string;
+}
 /**
  *
  * @export
@@ -2151,6 +2189,7 @@ export const HookOutputDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  DiscordMessage: 'discord-message',
 } as const;
 
 export type HookOutputDTOEventTypeEnum =
@@ -2212,6 +2251,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  DiscordMessage: 'discord-message',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -2312,6 +2352,7 @@ export const HookTriggerDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  DiscordMessage: 'discord-message',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -2347,6 +2388,12 @@ export interface HookUpdateDTO {
    * @memberof HookUpdateDTO
    */
   function?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookUpdateDTO
+   */
+  discordChannelId?: string;
 }
 
 export const HookUpdateDTOEventTypeEnum = {
@@ -2354,6 +2401,7 @@ export const HookUpdateDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  DiscordMessage: 'discord-message',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum =

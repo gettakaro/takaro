@@ -9,7 +9,9 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { GameEvents } from '@takaro/gameserver';
 import {
+  DiscordEvents,
   HookCreateDTO,
+  HookEventTypes,
   HookOutputDTO,
   HookService,
   HookTriggerDTO,
@@ -60,8 +62,8 @@ class HookSearchInputAllowedFilters {
   name!: string;
 
   @IsOptional()
-  @IsEnum(GameEvents)
-  eventType!: GameEvents;
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  eventType!: HookEventTypes;
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {

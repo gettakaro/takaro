@@ -2,10 +2,12 @@ import {
   Client,
   GatewayIntentBits,
   GuildBasedChannel,
+  Message,
   TextChannel,
 } from 'discord.js';
 import { errors, logger } from '@takaro/util';
 import { config } from '../config.js';
+import { DiscordService } from '../service/DiscordService.js';
 
 class DiscordBot {
   private client: Client;
@@ -13,7 +15,11 @@ class DiscordBot {
 
   constructor() {
     this.client = new Client({
-      intents: [GatewayIntentBits.Guilds],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
     });
   }
 
@@ -36,8 +42,12 @@ class DiscordBot {
         resolve();
       });
 
+      this.client.on('messageCreate', (message) =>
+        this.messageHandler(message)
+      );
+
       try {
-        await this.client.login(process.env.DISCORD_BOT_TOKEN);
+        await this.client.login(config.get('discord.botToken'));
       } catch (error) {
         reject(error);
       }
@@ -62,6 +72,26 @@ class DiscordBot {
     const textChannel = channel as TextChannel;
 
     return textChannel.send(message);
+  }
+
+  async messageHandler(message: Message) {
+    if (!message.inGuild()) {
+      // Ignore DMs
+      return;
+    }
+
+    const domainId =
+      await DiscordService.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
+        message.guild.id
+      );
+
+    if (!domainId) {
+      // Ignore messages from guilds that are not linked to a domain
+      return;
+    }
+
+    const service = new DiscordService(domainId);
+    await service.handleMessage(message);
   }
 }
 
