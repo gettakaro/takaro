@@ -2,7 +2,7 @@ import { forwardRef, HTMLProps, useId, useLayoutEffect } from 'react';
 import { useDrawerContext } from './DrawerContext';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { styled } from '../../../styled';
-import { Tooltip } from '../../../components';
+import { IconButton, Tooltip } from '../../../components';
 
 const Container = styled.div`
   display: flex;
@@ -34,10 +34,9 @@ export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
         {hasClose && (
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <CloseIcon
-                size={18}
+              <IconButton
                 onClick={() => setOpen(false)}
-                cursor="pointer"
+                icon={<CloseIcon size={18} cursor="pointer" />}
               />
             </Tooltip.Trigger>
             <Tooltip.Content>Close</Tooltip.Content>
