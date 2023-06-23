@@ -34,8 +34,10 @@ export const GameServerSelectNav: FC = () => {
     gameServers,
   ]);
 
-  if (!gameServers) return null;
+  // if there is there is only 1 server, don't show the dropdown
+  if (!gameServers || gameServers.length === 1) return null;
 
+  /* form tag is here to stretch width to 100% */
   return (
     <form>
       <Select
@@ -48,7 +50,7 @@ export const GameServerSelectNav: FC = () => {
           </div>
         )}
       >
-        <Select.OptionGroup label="Gameservers">
+        <Select.OptionGroup>
           {gameServers.map(({ name, id }) => (
             <Select.Option key={id} value={name}>
               <div>
