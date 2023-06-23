@@ -66,15 +66,11 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
               <Tooltip>
                 <Tooltip.Trigger>
                   <IconButton
-                    icon={
-                      <EditIcon
-                        key={`edit-module-icon-${mod.id}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(PATHS.modules.update(mod.id));
-                        }}
-                      />
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(PATHS.modules.update(mod.id));
+                    }}
+                    icon={<EditIcon key={`edit-module-icon-${mod.id}`} />}
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Edit module</Tooltip.Content>
@@ -82,15 +78,11 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
               <Tooltip>
                 <Tooltip.Trigger>
                   <IconButton
-                    icon={
-                      <DeleteIcon
-                        key={`remove-module-icon-${mod.id}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDialog(true);
-                        }}
-                      />
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenDialog(true);
+                    }}
+                    icon={<DeleteIcon key={`remove-module-icon-${mod.id}`} />}
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Delete module</Tooltip.Content>

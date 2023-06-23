@@ -41,11 +41,7 @@ export const Default = () => {
   return (
     <Container>
       <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-        <Button
-          type="submit"
-          text="Submit"
-          onClick={() => console.log('form submitted')}
-        />
+        <Button type="submit" text="Submit" />
       </JsonSchemaForm>
     </Container>
   );

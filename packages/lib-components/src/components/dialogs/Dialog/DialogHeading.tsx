@@ -2,7 +2,7 @@ import { forwardRef, HTMLProps, useId, useLayoutEffect } from 'react';
 import { useDialogContext } from './DialogContext';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { styled } from '../../../styled';
-import { Tooltip } from '../../../components';
+import { IconButton, Tooltip } from '../../../components';
 
 const Container = styled.div`
   display: flex;
@@ -37,12 +37,12 @@ export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
         {hasClose && (
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <CloseIcon
-                cursor="pointer"
+              <IconButton
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpen(false);
                 }}
+                icon={<CloseIcon cursor="pointer" />}
               />
             </Tooltip.Trigger>
             <Tooltip.Content>Close dialog</Tooltip.Content>

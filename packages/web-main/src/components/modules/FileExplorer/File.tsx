@@ -4,8 +4,9 @@ import {
   Button as TakaroButton,
   Tooltip,
   useTheme,
-  Dialog,
   EditableField,
+  Dialog,
+  IconButton,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
@@ -257,22 +258,20 @@ export const File: FC<FileProps> = ({
     }
   };
 
-  // add file to sandpack
-
   // handle click events
-  const handleOnDeleteClick = (e: MouseEvent<SVGElement>) => {
+  const handleOnDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenDialog(true);
   };
 
-  const handleOnRenameClick = (e: MouseEvent<SVGElement>) => {
+  const handleOnRenameClick = (e: MouseEvent<HTMLButtonElement>) => {
     setEditing(true);
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleOnNewFileClick = async (e: MouseEvent<SVGElement>) => {
+  const handleOnNewFileClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setShowNewFileField(true);
@@ -295,13 +294,16 @@ export const File: FC<FileProps> = ({
         <>
           <Tooltip placement="top">
             <Tooltip.Trigger>
-              <RenameIcon size={18} onClick={handleOnRenameClick} />
+              <IconButton
+                onClick={handleOnRenameClick}
+                icon={<RenameIcon size={18} />}
+              />
             </Tooltip.Trigger>
             <Tooltip.Content>Rename</Tooltip.Content>
           </Tooltip>
           <Tooltip placement="top">
             <Tooltip.Trigger>
-              <DeleteIcon onClick={handleOnDeleteClick} size={18} />
+              <IconButton icon={<DeleteIcon />} onClick={handleOnDeleteClick} />
             </Tooltip.Trigger>
             <Tooltip.Content>Delete</Tooltip.Content>
           </Tooltip>
@@ -311,7 +313,10 @@ export const File: FC<FileProps> = ({
       return (
         <Tooltip placement="top">
           <Tooltip.Trigger>
-            <AddFileIcon size={18} onClick={handleOnNewFileClick} />
+            <IconButton
+              onClick={handleOnNewFileClick}
+              icon={<AddFileIcon size={18} />}
+            />
           </Tooltip.Trigger>
           <Tooltip.Content>New file</Tooltip.Content>
         </Tooltip>

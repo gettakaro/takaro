@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Meta, StoryFn } from '@storybook/react';
 
 import { Dialog } from '.';
@@ -12,12 +12,16 @@ export default {
 } as Meta;
 
 export const Default: StoryFn = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const { control } = useForm();
+  interface IFormInputs {
+    moduleName: string;
+  }
 
-  // this should be typed ofcourse
-  const handleSubmit = (data: any) => {
-    console.log(data);
+  const [open, setOpen] = useState<boolean>(false);
+  const [data, setData] = useState<IFormInputs>();
+  const { control, handleSubmit } = useForm<IFormInputs>();
+
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+    setData(data);
     setOpen(false);
   };
 
@@ -30,10 +34,13 @@ export const Default: StoryFn = () => {
           <Dialog.Body>
             <h2>Create module</h2>
             <p>Modules are what makes Takaro great.</p>
-            <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              style={{ marginTop: '20px' }}
+            >
               <TextField
                 label="Module name"
-                name="module-name"
+                name="moduleName"
                 placeholder="cute kittens"
                 control={control}
               />
@@ -42,6 +49,7 @@ export const Default: StoryFn = () => {
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
+      <pre>result: {data?.moduleName}</pre>
     </>
   );
 };

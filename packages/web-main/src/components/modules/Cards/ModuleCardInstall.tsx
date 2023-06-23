@@ -64,18 +64,15 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
               <Tooltip>
                 <Tooltip.Trigger asChild>
                   <IconButton
-                    icon={
-                      <ConfigIcon
-                        onClick={() => {
-                          navigate(
-                            PATHS.gameServer.moduleInstallations.install(
-                              gameServerId,
-                              mod.id
-                            )
-                          );
-                        }}
-                      />
-                    }
+                    onClick={() => {
+                      navigate(
+                        PATHS.gameServer.moduleInstallations.install(
+                          gameServerId,
+                          mod.id
+                        )
+                      );
+                    }}
+                    icon={<ConfigIcon />}
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Configure</Tooltip.Content>
@@ -83,14 +80,12 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
               <Tooltip>
                 <Tooltip.Trigger asChild>
                   <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenDialog(true);
+                    }}
                     icon={
-                      <DeleteIcon
-                        key={`uninstall-module-icon-${mod.id}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDialog(true);
-                        }}
-                      />
+                      <DeleteIcon key={`uninstall-module-icon-${mod.id}`} />
                     }
                   />
                 </Tooltip.Trigger>

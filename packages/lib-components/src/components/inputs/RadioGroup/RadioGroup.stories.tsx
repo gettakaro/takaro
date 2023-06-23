@@ -39,7 +39,6 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
   });
 
   const onSubmit: SubmitHandler<FormFields> = async ({ gender }) => {
-    console.log('this fired', gender);
     setResult(gender);
   };
 
