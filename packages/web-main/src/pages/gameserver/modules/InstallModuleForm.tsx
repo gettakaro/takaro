@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Drawer,
@@ -38,52 +38,54 @@ const InstallModule: FC = () => {
     throw new Error('No serverId or moduleId');
   }
 
+  const onUserConfigSubmit = ({ formData }, e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUserConfig(formData);
+  };
+
+  const onSystemConfigSubmit = (
+    { formData },
+    e: FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    setSystemConfig(formData);
+  };
+
   useEffect(() => {
     if (!open) {
       navigate(PATHS.gameServer.modules(serverId));
     }
   }, [open, navigate, serverId]);
 
-  if (moduleLoading) {
-    return <Loading />;
-  }
+  const onSubmit = useCallback(async () => {
+    try {
+      mutateAsync({
+        gameServerId: serverId,
+        moduleId: moduleId,
+        moduleInstall: {
+          systemConfig: JSON.stringify({}),
+          userConfig: JSON.stringify({}),
+        },
+      });
 
-  const onUserConfigSubmit = ({ formData }, e) => {
-    e.preventDefault();
-    setUserConfig(formData);
-    onSubmit();
-    return false;
-  };
+      navigate(PATHS.gameServer.modules(serverId));
+    } catch (error) {
+      Sentry.captureException(error);
+    }
+  }, [moduleId, mutateAsync, navigate, serverId]);
 
-  const onSystemConfigSubmit = ({ formData }, e) => {
-    e.preventDefault();
-    setSystemConfig(formData);
-    onSubmit();
-    return false;
-  };
-
-  const onSubmit = async () => {
+  useEffect(() => {
     if (
       Object.keys(userConfig).length > 0 &&
       Object.keys(systemConfig).length > 0
     ) {
-      console.log('this is fired');
-      try {
-        mutateAsync({
-          gameServerId: serverId,
-          moduleId: moduleId,
-          moduleInstall: {
-            systemConfig: JSON.stringify({}),
-            userConfig: JSON.stringify({}),
-          },
-        });
-
-        // navigate(PATHS.gameServer.modules(serverId));
-      } catch (error) {
-        Sentry.captureException(error);
-      }
+      onSubmit();
     }
-  };
+  }, [userConfig, systemConfig, onSubmit]);
+
+  if (moduleLoading) {
+    return <Loading />;
+  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
