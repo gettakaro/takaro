@@ -19,16 +19,16 @@ export interface TakaroConfigSchema {
   required: string[];
 }
 
-interface ISchemaGeneratorProps {
-  onSchemaChange: (schema: AnySchema) => void;
-  // e.g. when a user edits a module config, we start from an existing schema
-  initialSchema?: TakaroConfigSchema;
-}
-
 export interface IFormInputs {
   name: string;
   description?: string;
   configFields: Input[];
+}
+
+interface ISchemaGeneratorProps {
+  onSchemaChange: (schema: AnySchema) => void;
+  // e.g. when a user edits a module config, we start from an existing schema
+  initialSchema?: TakaroConfigSchema;
 }
 
 export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
@@ -38,15 +38,7 @@ export const SchemaGenerator: FC<ISchemaGeneratorProps> = ({
   const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>(
     {
       mode: 'onChange',
-      resolver: async (data, context, options) => {
-        // you can debug your validation schema here
-        console.log('formData', data);
-        console.log(
-          'validation result',
-          await zodResolver(validationSchema)(data, context, options)
-        );
-        return zodResolver(validationSchema)(data, context, options);
-      },
+      resolver: zodResolver(validationSchema),
       defaultValues: {
         configFields: initialSchema ? schemaToInputs(initialSchema) ?? [] : [],
       },

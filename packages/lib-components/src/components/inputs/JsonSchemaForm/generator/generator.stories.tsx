@@ -12,7 +12,7 @@ const Container = styled.div`
 const LayoutWrapper = styled.div`
   padding: 2rem;
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  grid-template-columns: 1fr 1fr;
 `;
 
 const FirstColumn = styled.div`

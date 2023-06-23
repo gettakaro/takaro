@@ -1,4 +1,4 @@
-import { forwardRef, PropsWithChildren } from 'react';
+import { forwardRef, PropsWithChildren, FormEvent } from 'react';
 import Form from '@rjsf/core';
 import { FormContextType, RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
@@ -12,8 +12,9 @@ interface JsonSchemaFormProps {
   formContext?: FormContextType;
   initialData: unknown;
   onChange?: (data: any) => void;
-  onSubmit?: any;
+  onSubmit?: (data: any, event: FormEvent<HTMLFormElement>) => void;
   hideSubmitButton?: boolean;
+  readOnly?: boolean;
 }
 
 export const JsonSchemaForm = forwardRef<
@@ -27,8 +28,9 @@ export const JsonSchemaForm = forwardRef<
       initialData,
       formContext,
       onChange,
-      onSubmit,
+      onSubmit = () => {},
       hideSubmitButton = false,
+      readOnly = false,
     },
     ref
   ) => {
@@ -56,6 +58,7 @@ export const JsonSchemaForm = forwardRef<
         onChange={onChange}
         onSubmit={onSubmit}
         ref={ref}
+        readonly={readOnly}
       />
     );
   }
