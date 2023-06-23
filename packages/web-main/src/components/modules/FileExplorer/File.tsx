@@ -293,26 +293,26 @@ export const File: FC<FileProps> = ({
       return (
         <>
           <Tooltip placement="top">
-            <Tooltip.Trigger>
+            <Tooltip.Trigger asChild>
               <IconButton
                 onClick={handleOnRenameClick}
                 icon={<RenameIcon size={18} />}
               />
             </Tooltip.Trigger>
-            <Tooltip.Content>Rename</Tooltip.Content>
+            <Tooltip.Content>Rename file</Tooltip.Content>
           </Tooltip>
           <Tooltip placement="top">
-            <Tooltip.Trigger>
+            <Tooltip.Trigger asChild>
               <IconButton icon={<DeleteIcon />} onClick={handleOnDeleteClick} />
             </Tooltip.Trigger>
-            <Tooltip.Content>Delete</Tooltip.Content>
+            <Tooltip.Content>Delete file</Tooltip.Content>
           </Tooltip>
         </>
       );
     } else {
       return (
         <Tooltip placement="top">
-          <Tooltip.Trigger>
+          <Tooltip.Trigger asChild>
             <IconButton
               onClick={handleOnNewFileClick}
               icon={<AddFileIcon size={18} />}
@@ -380,22 +380,17 @@ export const File: FC<FileProps> = ({
       )}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
-          <Dialog.Heading>Delete file</Dialog.Heading>
+          <Dialog.Heading>Remove file</Dialog.Heading>
           <Dialog.Body>
-            <h4>
-              Are you sure you want to uwmaken '{fileName}'? The file will be
-              permanently removed.
-            </h4>
+            <p>
+              Are you sure you want to <strong>{fileName}</strong>? The file
+              will be permanently removed.
+            </p>
             <ButtonContainer>
               <TakaroButton
-                onClick={() => setOpenDialog(false)}
-                text="Cancel"
-                variant="clear"
-                color="background"
-              />
-              <TakaroButton
+                fullWidth
                 onClick={handleDelete}
-                text="Delete"
+                text="Remove file"
                 color="error"
               />
             </ButtonContainer>

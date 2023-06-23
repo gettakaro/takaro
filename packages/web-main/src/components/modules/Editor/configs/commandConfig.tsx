@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   CollapseList,
+  IconButton,
   Select,
   TextAreaField,
   TextField,
@@ -112,14 +113,14 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
           control={control}
           name="trigger"
           label="trigger"
-          description="What users type ingame to trigger this command"
+          description="What users type ingame to trigger this command."
           prefix={settings?.commandPrefix}
         />
         <TextAreaField
           control={control}
           name="helpText"
           label="Help text"
-          description="Description of what the command does, this can be displayed to users ingame"
+          description="Description of what the command does, this can be displayed to users in-game."
         />
         <CollapseList.Item title="Arguments">
           <ContentContainer>
@@ -167,11 +168,9 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                     </Flex>
                     <Tooltip>
                       <Tooltip.Trigger asChild>
-                        <CloseIcon
-                          size={16}
-                          cursor="pointer"
-                          style={{ marginTop: '14px' }}
+                        <IconButton
                           onClick={() => remove(index)}
+                          icon={<CloseIcon size={16} cursor="pointer" />}
                         />
                       </Tooltip.Trigger>
                       <Tooltip.Content>Remove argument</Tooltip.Content>
