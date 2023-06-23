@@ -23,7 +23,7 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
 
 const Container = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.background};
-  width: 460px;
+  width: 640px;
   height: 100vh;
   max-height: 100vh;
   min-height: 100%;
