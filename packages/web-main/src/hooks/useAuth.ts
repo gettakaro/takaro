@@ -24,7 +24,9 @@ export function useAuth() {
     data: sessionData,
     isLoading,
     refetch,
-  } = useQuery('session', () => apiClient.user.userControllerMe());
+  } = useQuery('session', () => apiClient.user.userControllerMe(), {
+    retry: 0,
+  });
 
   if (!cachedClient) {
     cachedClient = new FrontendApi(
