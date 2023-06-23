@@ -32,7 +32,7 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem }) => {
     if (data) {
       setValue('temporalValue', data?.temporalValue);
     }
-  }, [data]);
+  }, [data, setValue]);
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     await mutateAsync({

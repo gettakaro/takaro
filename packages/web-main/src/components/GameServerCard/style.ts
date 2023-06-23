@@ -1,4 +1,4 @@
-import { styled, Dialog, Chip } from '@takaro/lib-components';
+import { styled, Dialog } from '@takaro/lib-components';
 
 export const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.large};

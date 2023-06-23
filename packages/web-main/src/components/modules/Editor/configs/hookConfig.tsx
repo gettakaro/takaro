@@ -36,7 +36,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
       setValue('regex', data?.regex);
       setValue('eventType', data?.eventType);
     }
-  }, [data]);
+  }, [data, setValue]);
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     await mutateAsync({

@@ -95,7 +95,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
         })
       );
     }
-  }, [data]);
+  }, [data, setValue, replace, moduleItem.itemId]);
 
   const commandId = moduleItem.itemId;
 

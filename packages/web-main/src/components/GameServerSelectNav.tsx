@@ -26,7 +26,13 @@ export const GameServerSelectNav: FC = () => {
         navigate(newLink);
       }
     }
-  }, [gameServer]);
+  }, [
+    gameServer,
+    navigate,
+    currentLocationServer,
+    location.pathname,
+    gameServers,
+  ]);
 
   if (!gameServers) return null;
 

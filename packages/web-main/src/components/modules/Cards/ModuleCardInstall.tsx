@@ -2,7 +2,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleOutputDTO,
 } from '@takaro/apiclient';
-import { Tooltip, Dialog, Button, styled } from '@takaro/lib-components';
+import { Tooltip, Dialog, Button } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import { FaTrash as TrashIcon, FaWrench as WrenchIcon } from 'react-icons/fa';

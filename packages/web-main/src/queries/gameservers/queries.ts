@@ -7,7 +7,6 @@ import {
   IdUuidDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallDTO,
-  ModuleOutputDTO,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
