@@ -55,11 +55,11 @@ export const Router: FC = () => (
         <Route element={<SettingsFrame />}>
           <Route
             element={<GlobalGameServerSettings />}
-            path={PATHS.settings.GameServerSettings}
+            path={PATHS.settings.GameServerSettings()}
           />
           <Route
             element={<ConnectionSettings />}
-            path={PATHS.settings.connections}
+            path={PATHS.settings.connections()}
           />
         </Route>
         <Route element={<GameServers />} path="/server/" />
