@@ -5,9 +5,6 @@ import {
   Tooltip,
   useTheme,
   Dialog,
-  DialogHeading,
-  DialogContent,
-  DialogBody,
   EditableField,
 } from '@takaro/lib-components';
 import {
@@ -377,9 +374,9 @@ export const File: FC<FileProps> = ({
         </NewFileContainer>
       )}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>Delete file</DialogHeading>
-          <DialogBody>
+        <Dialog.Content>
+          <Dialog.Heading>Delete file</Dialog.Heading>
+          <Dialog.Body>
             <h4>
               Are you sure you want to uwmaken '{fileName}'? The file will be
               permanently removed.
@@ -397,8 +394,8 @@ export const File: FC<FileProps> = ({
                 color="error"
               />
             </ButtonContainer>
-          </DialogBody>
-        </DialogContent>
+          </Dialog.Body>
+        </Dialog.Content>
       </Dialog>
     </>
   );

@@ -2,14 +2,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleOutputDTO,
 } from '@takaro/apiclient';
-import {
-  Tooltip,
-  Dialog,
-  DialogContent,
-  DialogHeading,
-  Button,
-  styled,
-} from '@takaro/lib-components';
+import { Tooltip, Dialog, Button, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import { FaTrash as TrashIcon, FaWrench as WrenchIcon } from 'react-icons/fa';
@@ -110,11 +103,11 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
       </SpacedRow>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>
+        <Dialog.Content>
+          <Dialog.Heading>
             Module:{' '}
             <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <DeleteDialogContainer>
             <h2>Uninstall module</h2>
             <p>
@@ -129,7 +122,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
               color="error"
             />
           </DeleteDialogContainer>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>
   );

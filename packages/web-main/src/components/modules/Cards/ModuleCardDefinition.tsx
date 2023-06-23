@@ -3,8 +3,6 @@ import {
   Company,
   Tooltip,
   Dialog,
-  DialogContent,
-  DialogHeading,
   Button,
   IconButton,
 } from '@takaro/lib-components';
@@ -109,11 +107,11 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
       </span>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading size={4}>
+        <Dialog.Content>
+          <Dialog.Heading size={4}>
             Module:{' '}
             <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <DeleteDialogContainer>
             <h2>Delete module</h2>
             <p>
@@ -128,7 +126,7 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
               color="error"
             />
           </DeleteDialogContainer>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>
   );

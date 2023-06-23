@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Meta, StoryFn } from '@storybook/react';
 
-import { Dialog, DialogBody, DialogHeading, DialogContent } from '.';
+import { Dialog } from '.';
 import { Button, TextField } from '../../../components';
 
 export default {
@@ -25,9 +25,9 @@ export const Default: StoryFn = () => {
     <>
       <Button onClick={() => setOpen(true)} text="Open dialog" />
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeading>New Module</DialogHeading>
-          <DialogBody>
+        <Dialog.Content>
+          <Dialog.Heading>New Module</Dialog.Heading>
+          <Dialog.Body>
             <h2>Create module</h2>
             <p>Modules are what makes Takaro great.</p>
             <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
@@ -39,8 +39,8 @@ export const Default: StoryFn = () => {
               />
               <Button text="Create module" type="submit" fullWidth />
             </form>
-          </DialogBody>
-        </DialogContent>
+          </Dialog.Body>
+        </Dialog.Content>
       </Dialog>
     </>
   );
@@ -57,9 +57,9 @@ export const SingleActionDialog: StoryFn = () => {
     <>
       <Button onClick={() => setOpen(true)} text="Open dialog" />
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeading>New Module</DialogHeading>
-          <DialogBody size="small">
+        <Dialog.Content>
+          <Dialog.Heading>New Module</Dialog.Heading>
+          <Dialog.Body size="small">
             <h2>Go back to dashboard!</h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -71,8 +71,8 @@ export const SingleActionDialog: StoryFn = () => {
               fullWidth
               text="Go back to dashboard"
             />
-          </DialogBody>
-        </DialogContent>
+          </Dialog.Body>
+        </Dialog.Content>
       </Dialog>
     </>
   );

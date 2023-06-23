@@ -3,8 +3,6 @@ import {
   Button,
   Chip,
   Dialog,
-  DialogContent,
-  DialogHeading,
   Dropdown,
   MenuList,
   Skeleton,
@@ -105,11 +103,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
       </Body>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>
+        <Dialog.Content>
+          <Dialog.Heading>
             gameserver:{' '}
             <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <StyledDialogBody size="medium">
             <h2>Delete gameserver</h2>
             <p>
@@ -123,7 +121,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
               color="error"
             />
           </StyledDialogBody>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </Container>
   );
