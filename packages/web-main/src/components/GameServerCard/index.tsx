@@ -41,10 +41,12 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
+    setOpenDropdown(false);
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
+    setOpenDropdown(false);
   };
 
   const handleOnDelete = async (e: MouseEvent) => {
