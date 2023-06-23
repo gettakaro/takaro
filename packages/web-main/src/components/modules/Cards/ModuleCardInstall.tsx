@@ -2,10 +2,13 @@ import {
   ModuleInstallationOutputDTO,
   ModuleOutputDTO,
 } from '@takaro/apiclient';
-import { Tooltip, Dialog, Button } from '@takaro/lib-components';
+import { Tooltip, Dialog, Button, IconButton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
-import { FaTrash as TrashIcon, FaWrench as WrenchIcon } from 'react-icons/fa';
+import {
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineSetting as ConfigIcon,
+} from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import {
   ModuleCardContainer,
@@ -60,27 +63,35 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
             <>
               <Tooltip>
                 <Tooltip.Trigger asChild>
-                  <WrenchIcon
-                    onClick={() => {
-                      navigate(
-                        PATHS.gameServer.moduleInstallations.install(
-                          gameServerId,
-                          mod.id
-                        )
-                      );
-                    }}
+                  <IconButton
+                    icon={
+                      <ConfigIcon
+                        onClick={() => {
+                          navigate(
+                            PATHS.gameServer.moduleInstallations.install(
+                              gameServerId,
+                              mod.id
+                            )
+                          );
+                        }}
+                      />
+                    }
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Configure</Tooltip.Content>
               </Tooltip>
               <Tooltip>
                 <Tooltip.Trigger asChild>
-                  <TrashIcon
-                    key={`uninstall-module-icon-${mod.id}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenDialog(true);
-                    }}
+                  <IconButton
+                    icon={
+                      <DeleteIcon
+                        key={`uninstall-module-icon-${mod.id}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDialog(true);
+                        }}
+                      />
+                    }
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Uninstall</Tooltip.Content>
