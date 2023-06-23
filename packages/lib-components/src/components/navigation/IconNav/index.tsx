@@ -1,7 +1,6 @@
 import { FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
@@ -31,19 +30,16 @@ export interface IconNavProps {
 export const IconNav: FC<IconNavProps> = ({ items }) => {
   return (
     <Container>
-      <FloatingDelayGroup delay={{ open: 2000, close: 200 }}>
-        {items.map(({ to, icon, title }, index) => (
-          <Tooltip
-            label={title}
-            placement="right"
-            key={`icon-${title}-${index}`}
-          >
+      {items.map(({ to, icon, title }, index) => (
+        <Tooltip placement="right" key={`icon-${title}-${index}`}>
+          <Tooltip.Trigger asChild>
             <Link key={`icon-nav-${title}`} to={to}>
               {cloneElement(icon, { size: 24 })}
             </Link>
-          </Tooltip>
-        ))}
-      </FloatingDelayGroup>
+          </Tooltip.Trigger>
+          <Tooltip.Content>{title}</Tooltip.Content>
+        </Tooltip>
+      ))}
     </Container>
   );
 };

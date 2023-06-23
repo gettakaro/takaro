@@ -51,7 +51,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer active={false}>
+    <ModuleCardContainer>
       <h2>{mod.name}</h2>
 
       <p>{mod.description}</p>
@@ -65,8 +65,8 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
         <ActionIconsContainer>
           {installation ? (
             <>
-              <Tooltip label="Configure">
-                <div>
+              <Tooltip>
+                <Tooltip.Trigger asChild>
                   <WrenchIcon
                     onClick={() => {
                       navigate(
@@ -77,10 +77,11 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
                       );
                     }}
                   />
-                </div>
+                </Tooltip.Trigger>
+                <Tooltip.Content>Configure</Tooltip.Content>
               </Tooltip>
-              <Tooltip label="Uninstall">
-                <div>
+              <Tooltip>
+                <Tooltip.Trigger asChild>
                   <TrashIcon
                     key={`uninstall-module-icon-${mod.id}`}
                     onClick={(e) => {
@@ -88,7 +89,8 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
                       setOpenDialog(true);
                     }}
                   />
-                </div>
+                </Tooltip.Trigger>
+                <Tooltip.Content>Uninstall</Tooltip.Content>
               </Tooltip>
             </>
           ) : (

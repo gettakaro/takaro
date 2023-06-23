@@ -4,7 +4,7 @@ import { Default } from './style';
 
 export interface IconButtonProps {
   size?: Size;
-  color: Color;
+  color?: Color;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
   disabled?: boolean;
@@ -26,7 +26,10 @@ const getSize = (size: Size) => {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ icon, color, size = 'medium', disabled, onClick = () => {} }, ref) => {
+  (
+    { icon, color = 'primary', size = 'medium', disabled, onClick = () => {} },
+    ref
+  ) => {
     return (
       <Default color={color} onClick={onClick} ref={ref} disabled={disabled}>
         {cloneElement(icon, { size: getSize(size) })}

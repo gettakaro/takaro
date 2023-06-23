@@ -35,14 +35,17 @@ export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
           {children}
         </h4>
         {hasClose && (
-          <Tooltip label="Close dialog">
-            <CloseIcon
-              cursor="pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-              }}
-            />
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <CloseIcon
+                cursor="pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen(false);
+                }}
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Close dialog</Tooltip.Content>
           </Tooltip>
         )}
       </Container>

@@ -5,7 +5,6 @@ import { FiPlus } from 'react-icons/fi';
 import { useModules } from 'queries/modules';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
 
@@ -41,7 +40,6 @@ export const ModuleDefinitions: FC = () => {
         <h1>Available modules</h1>
         <ModuleCards>
           <AddModuleCard
-            active={true}
             onClick={() => {
               navigate(PATHS.modules.create());
             }}
@@ -49,16 +47,14 @@ export const ModuleDefinitions: FC = () => {
             <FiPlus size={24} />
             <h3>new module</h3>
           </AddModuleCard>
-          <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-            {modules.map((mod) => (
-              <ModuleCardDefinition
-                key={mod.id}
-                mod={mod}
-                onClick={() => navigate(PATHS.studio.module(mod.id))}
-              />
-            ))}
-            <Outlet />
-          </FloatingDelayGroup>
+          {modules.map((mod) => (
+            <ModuleCardDefinition
+              key={mod.id}
+              mod={mod}
+              onClick={() => navigate(PATHS.studio.module(mod.id))}
+            />
+          ))}
+          <Outlet />
         </ModuleCards>
       </Page>
     </>

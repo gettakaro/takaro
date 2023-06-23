@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Tooltip, TooltipProps } from '.';
-import { IconButton } from '../../actions';
+import { Button, IconButton } from '../../actions';
 import { AiOutlineWoman as Icon } from 'react-icons/ai';
 
 interface ExtraTooltipStoryProps {
@@ -30,21 +30,36 @@ export const UnControlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> = (
 export const UnControlledCustomChild: StoryFn<
   TooltipProps & ExtraTooltipStoryProps
 > = () => (
-  <Tooltip>
-    <Tooltip.Trigger asChild>
-      <IconButton icon={<Icon />} />
-    </Tooltip.Trigger>
-    <Tooltip.Content>tooltip content here</Tooltip.Content>
-  </Tooltip>
+  <>
+    By default the component is rendered in a div tag. By setting the asChild
+    prop, the component will be rendered as the trigger component.
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <IconButton icon={<Icon />} />
+      </Tooltip.Trigger>
+      <Tooltip.Content>tooltip content here</Tooltip.Content>
+    </Tooltip>
+  </>
 );
 
 export const Controlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> =
   () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState<boolean>(false);
+
     return (
-      <Tooltip open={open} onOpenChange={setOpen}>
-        <Tooltip.Trigger>component here</Tooltip.Trigger>
-        <Tooltip.Content>controlled tooltip</Tooltip.Content>
-      </Tooltip>
+      <>
+        A controlled open means that the child component is responsible for
+        opening and closing the tooltip. Which is e.g. useful when you want to
+        open the tooltip on click instead of hover. or when you want to open a
+        tooltip on a different component than the trigger.
+        <Tooltip open={open} onOpenChange={setOpen}>
+          <Tooltip.Trigger>I am the trigger</Tooltip.Trigger>
+          <Tooltip.Content>controlled tooltip</Tooltip.Content>
+        </Tooltip>
+        <Button
+          onClick={() => setOpen(true)}
+          text="open tooltip on, I am the trigger"
+        />
+      </>
     );
   };

@@ -21,7 +21,6 @@ import {
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
@@ -296,28 +295,29 @@ export const File: FC<FileProps> = ({
   const getActions = (): JSX.Element => {
     if (selectFile) {
       return (
-        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-          <Tooltip label="Rename" placement="top">
-            <span>
+        <>
+          <Tooltip placement="top">
+            <Tooltip.Trigger>
               <RenameIcon size={18} onClick={handleOnRenameClick} />
-            </span>
+            </Tooltip.Trigger>
+            <Tooltip.Content>Rename</Tooltip.Content>
           </Tooltip>
-          <Tooltip label="Delete" placement="top">
-            <span>
+          <Tooltip placement="top">
+            <Tooltip.Trigger>
               <DeleteIcon onClick={handleOnDeleteClick} size={18} />
-            </span>
+            </Tooltip.Trigger>
+            <Tooltip.Content>Delete</Tooltip.Content>
           </Tooltip>
-        </FloatingDelayGroup>
+        </>
       );
     } else {
       return (
-        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-          <Tooltip label="New file" placement="top">
-            <span>
-              <AddFileIcon size={18} onClick={handleOnNewFileClick} />
-            </span>
-          </Tooltip>
-        </FloatingDelayGroup>
+        <Tooltip placement="top">
+          <Tooltip.Trigger>
+            <AddFileIcon size={18} onClick={handleOnNewFileClick} />
+          </Tooltip.Trigger>
+          <Tooltip.Content>New file</Tooltip.Content>
+        </Tooltip>
       );
     }
   };

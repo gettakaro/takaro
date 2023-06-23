@@ -4,6 +4,11 @@ import { TooltipContext } from './TooltipContext';
 import { TooltipTrigger } from './TooltipTrigger';
 import { TooltipContent } from './TooltipContent';
 
+/*
+ * tooltip is the wrapper component that provides the context
+ * trigger is the component that triggers the tooltip to open (the thing you hover over)
+ * content is the component that is rendered inside the tooltip
+ */
 interface SubComponentTypes {
   Trigger: typeof TooltipTrigger;
   Content: typeof TooltipContent;

@@ -16,7 +16,6 @@ import { FC, useEffect } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { StyledButton } from './style';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { DevTool } from '@hookform/devtools';
 import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
 
@@ -131,37 +130,35 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                   <ArgumentCard key={field.id}>
                     <Flex direction="column">
                       <Flex direction="row">
-                        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-                          <TextField
-                            label="Name"
-                            control={control}
-                            name={`arguments.${index}.name`}
-                          />
-                          <Select
-                            control={control}
-                            name={`arguments.${index}.type`}
-                            label="Type"
-                            render={(selectedIndex) => (
-                              <>
-                                {argumentTypeSelectOptions[selectedIndex]
-                                  ?.name ?? 'Select...'}
-                              </>
+                        <TextField
+                          label="Name"
+                          control={control}
+                          name={`arguments.${index}.name`}
+                        />
+                        <Select
+                          control={control}
+                          name={`arguments.${index}.type`}
+                          label="Type"
+                          render={(selectedIndex) => (
+                            <>
+                              {argumentTypeSelectOptions[selectedIndex]?.name ??
+                                'Select...'}
+                            </>
+                          )}
+                        >
+                          <Select.OptionGroup label="Options">
+                            {argumentTypeSelectOptions.map(
+                              ({ name, value }) => (
+                                <Select.Option
+                                  key={`${field.id}-select-${name}`}
+                                  value={value}
+                                >
+                                  {name}
+                                </Select.Option>
+                              )
                             )}
-                          >
-                            <Select.OptionGroup label="Options">
-                              {argumentTypeSelectOptions.map(
-                                ({ name, value }) => (
-                                  <Select.Option
-                                    key={`${field.id}-select-${name}`}
-                                    value={value}
-                                  >
-                                    {name}
-                                  </Select.Option>
-                                )
-                              )}
-                            </Select.OptionGroup>
-                          </Select>
-                        </FloatingDelayGroup>
+                          </Select.OptionGroup>
+                        </Select>
                       </Flex>
                       <TextField
                         control={control}
@@ -169,15 +166,16 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                         name={`arguments.${index}.helpText`}
                       />
                     </Flex>
-                    <Tooltip label="Remove argument">
-                      <span>
+                    <Tooltip>
+                      <Tooltip.Trigger asChild>
                         <CloseIcon
                           size={16}
                           cursor="pointer"
                           style={{ marginTop: '14px' }}
                           onClick={() => remove(index)}
                         />
-                      </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Remove argument</Tooltip.Content>
                     </Tooltip>
                   </ArgumentCard>
                 ))}

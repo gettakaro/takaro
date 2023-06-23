@@ -34,8 +34,13 @@ export function CopyButton<
     registry: { translateString },
   } = props;
   return (
-    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
-      <TakaroButton {...props} icon={<CopyIcon />} />
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <TakaroButton {...props} icon={<CopyIcon />} />
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        {translateString(TranslatableString.CopyButton)}
+      </Tooltip.Content>
     </Tooltip>
   );
 }
@@ -49,12 +54,13 @@ export function MoveDownButton<
     registry: { translateString },
   } = props;
   return (
-    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
-      <TakaroButton
-        title={translateString(TranslatableString.MoveDownButton)}
-        {...props}
-        icon={<ArrowDownIcon />}
-      />
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <TakaroButton {...props} icon={<ArrowDownIcon />} />
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        {translateString(TranslatableString.MoveDownButton)}
+      </Tooltip.Content>
     </Tooltip>
   );
 }
@@ -68,8 +74,13 @@ export function MoveUpButton<
     registry: { translateString },
   } = props;
   return (
-    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
-      <TakaroButton {...props} icon={<ArrowUpIcon />} />
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <TakaroButton {...props} icon={<ArrowUpIcon />} />
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        {translateString(TranslatableString.MoveUpButton)}
+      </Tooltip.Content>
     </Tooltip>
   );
 }
@@ -84,13 +95,18 @@ export function RemoveButton<
     registry: { translateString },
   } = otherProps;
   return (
-    <Tooltip label={translateString(TranslatableString.MoveUpButton)}>
-      <TakaroButton
-        title={translateString(TranslatableString.RemoveButton)}
-        {...otherProps}
-        color="secondary"
-        icon={<DeleteIcon />}
-      />
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <TakaroButton
+          title={translateString(TranslatableString.RemoveButton)}
+          {...otherProps}
+          color="secondary"
+          icon={<DeleteIcon />}
+        />
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        {translateString(TranslatableString.RemoveButton)}
+      </Tooltip.Content>
     </Tooltip>
   );
 }

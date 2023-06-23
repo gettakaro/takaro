@@ -5,9 +5,6 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
 
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
-  }
   &:active {
     border-color: ${({ theme }) => theme.colors.primary};
   }

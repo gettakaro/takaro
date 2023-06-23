@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet';
 import { useParams, Outlet } from 'react-router-dom';
 import { ModuleCards } from '../../components/modules/Cards/style';
 import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useModules } from 'queries/modules';
 
@@ -50,16 +49,14 @@ const GameServerModules: FC = () => {
         <h1>Modules</h1>
 
         <ModuleCards>
-          <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-            {mappedModules.map((mod) => (
-              <ModuleCardInstall
-                key={mod.id}
-                mod={mod}
-                installation={mod.installation}
-              />
-            ))}
-            <Outlet />
-          </FloatingDelayGroup>
+          {mappedModules.map((mod) => (
+            <ModuleCardInstall
+              key={mod.id}
+              mod={mod}
+              installation={mod.installation}
+            />
+          ))}
+          <Outlet />
         </ModuleCards>
       </Page>
     </>
