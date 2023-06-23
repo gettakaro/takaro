@@ -16,7 +16,6 @@ import { FC, useEffect } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { StyledButton } from './style';
-import { DevTool } from '@hookform/devtools';
 import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
 
 interface IProps {
@@ -202,7 +201,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
         </CollapseList.Item>
         <StyledButton fullWidth type="submit" text="Save" />
       </form>
-      <DevTool control={control} />
     </>
   );
 };
