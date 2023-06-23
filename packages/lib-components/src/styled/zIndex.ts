@@ -9,7 +9,8 @@ type ComponentType =
   | 'drawer'
   | 'dropdown'
   | 'overlay'
-  | 'notificationBanner';
+  | 'notificationBanner'
+  | 'errorMessage';
 
 // IMPORTANT: types, in order of their desired z-index
 // Overlay is the backdrop for drawer and dialog
@@ -20,6 +21,7 @@ const types: ComponentType[] = [
   'notificationBanner',
   'overlay',
   'dropdown',
+  'errorMessage',
 ];
 
 // This is a magic value that is loosely based on our websites.

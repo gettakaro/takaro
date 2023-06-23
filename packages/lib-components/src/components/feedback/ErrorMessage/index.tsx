@@ -13,6 +13,7 @@ const Container = styled(motion.div)`
   background-color: ${({ theme }): string => theme.colors.error};
   overflow: hidden;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  z-index: ${({ theme }) => theme.zIndex.errorMessage};
 `;
 
 const Content = styled.span`
