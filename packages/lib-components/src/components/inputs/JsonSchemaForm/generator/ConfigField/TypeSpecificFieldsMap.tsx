@@ -17,7 +17,7 @@ export const TypeSpecificFieldsMap = (
   const enumValues = useWatch<IFormInputs>({
     name: `configFields.${index}.enum`,
     control,
-  });
+  }) as string[];
 
   return {
     [InputType.string]: [
@@ -111,7 +111,7 @@ export const TypeSpecificFieldsMap = (
           )}
         >
           <Select.OptionGroup>
-            {enumValues.map((enumValue) => (
+            {enumValues.map((enumValue: string) => (
               <Select.Option key={`${enumValue}-${id}`} value={enumValue}>
                 <span>{enumValue}</span>
               </Select.Option>

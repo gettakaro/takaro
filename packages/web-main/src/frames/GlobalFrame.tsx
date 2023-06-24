@@ -61,7 +61,7 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Settings',
-      path: PATHS.settings.connections(),
+      path: PATHS.settings.GameServerSettings(),
       icon: <SettingsIcon />,
       end: false,
     },
