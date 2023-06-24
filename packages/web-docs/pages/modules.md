@@ -1,14 +1,14 @@
 # Modules
 
-You can create your own features in Takaro using Modules.
+The core of Takaro is built around Modules. Modules are a very powerful and flexible way of creating features..
 
-Each modules consists of one or more of the following components:
+Takaro comes with a set of [built-in modules](./builtin-modules.mdx). When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
+
+Each module consists of one or more of the following components:
 
 - Hooks
 - Cronjobs
 - Commands
-
-Each of these has a [Function](./functions.md) attached to it. The Function is the actual code that is executed when the Hook, Cronjob or Command is triggered. The main difference between Hooks, Cronjobs and Commands is how they are triggered.
 
 ## Hooks
 
@@ -63,7 +63,3 @@ main();
 ```
 
 Would result in a message in-game saying `Welcome to the server, John Doe! Don't forget to read the rules :)`
-
-# Built-in modules
-
-Takaro comes with a set of built-in modules. When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
