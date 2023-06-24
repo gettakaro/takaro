@@ -9,9 +9,7 @@
         "gameserverId": "a5394e1c-b5ef-4209-adc6-c45a92c8c092",
         "moduleId": "34daf0bf-b225-4a72-8060-988a5f411058",
         "userConfig": {},
-        "systemConfig": {
-          "cronJobs": {}
-        }
+        "systemConfig": {}
       }
     ]
   },

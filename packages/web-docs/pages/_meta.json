@@ -1,7 +1,10 @@
 {
   "index": "Introduction",
-  "docs": {
-    "title": "Documentation"
+  "modules": "Modules",
+  "builtin-modules": "Builtin Modules",
+  "games": "Supported games",
+  "advanced": {
+    "title": "Advanced"
   },
   "development": {
     "title": "Development"

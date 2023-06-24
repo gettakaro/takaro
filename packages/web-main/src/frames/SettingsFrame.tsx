@@ -19,8 +19,8 @@ export const SettingsFrame: FC = () => {
       to: PATHS.settings.GameServerSettings(),
     },
     {
-      text: 'Connections',
-      to: PATHS.settings.connections(),
+      text: 'Discord',
+      to: PATHS.settings.discordSettings(),
     },
   ];
 

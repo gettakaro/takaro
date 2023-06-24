@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
-import { GameEvents } from '@takaro/gameserver';
+import { HookEventTypes } from '@takaro/modules';
 import {
   HookCreateDTO,
   HookOutputDTO,
@@ -16,7 +16,7 @@ export class HookModel extends TakaroModel {
   static tableName = HOOKS_TABLE_NAME;
   name!: string;
   regex!: string;
-  eventType!: GameEvents;
+  eventType!: HookEventTypes;
 
   functionId: string;
 
@@ -80,6 +80,7 @@ export class HookRepo extends ITakaroRepo<
 
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
     const { query } = await this.getModel();
+
     const data = await query.insert({
       ...item.toJSON(),
       domain: this.domainId,
@@ -113,7 +114,7 @@ export class HookRepo extends ITakaroRepo<
   }
 
   async getTriggeredHooks(
-    eventType: GameEvents,
+    eventType: HookEventTypes,
     msg: string,
     gameServerId: string
   ): Promise<HookOutputDTO[]> {

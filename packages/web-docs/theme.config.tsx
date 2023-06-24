@@ -13,6 +13,11 @@ const config: DocsThemeConfig = {
   footer: {
     text: 'Takaro Documentation',
   },
+  useNextSeoProps() {
+    return {
+      titleTemplate: '%s – Takaro',
+    };
+  },
 };
 
 export default config;

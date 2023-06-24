@@ -10,11 +10,11 @@ import {
   UserOutputWithRolesDTO,
 } from '../service/UserService.js';
 
-const TABLE_NAME = 'users';
+export const USER_TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
 
 export class UserModel extends TakaroModel {
-  static tableName = TABLE_NAME;
+  static tableName = USER_TABLE_NAME;
   name!: string;
 
   idpId: string;
@@ -25,7 +25,7 @@ export class UserModel extends TakaroModel {
       relation: Model.ManyToManyRelation,
       modelClass: RoleModel,
       join: {
-        from: `${TABLE_NAME}.id`,
+        from: `${USER_TABLE_NAME}.id`,
         through: {
           from: `${ROLE_ON_USER_TABLE_NAME}.userId`,
           to: `${ROLE_ON_USER_TABLE_NAME}.roleId`,
