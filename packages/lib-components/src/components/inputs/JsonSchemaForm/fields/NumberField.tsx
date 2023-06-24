@@ -41,7 +41,12 @@ export const NumberField = ({
     <GenericTextField
       name={name}
       id={idSchema.$id}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        if (e.target.value === '') {
+          onChange(undefined);
+        }
+        onChange(e.target.valueAsNumber);
+      }}
       disabled={disabled}
       placeholder={placeholder}
       hasError={!!rawErrors.length}
