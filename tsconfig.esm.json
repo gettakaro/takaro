@@ -10,5 +10,9 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "ts-node": {
+    "esm": true,
+    "compiler": "typescript"
+  }
 }
