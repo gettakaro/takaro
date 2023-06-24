@@ -2837,10 +2837,10 @@ export interface ModuleInstallationOutputDTO {
   userConfig: object;
   /**
    *
-   * @type {ModuleInstallationOutputDTOSystemConfig}
+   * @type {object}
    * @memberof ModuleInstallationOutputDTO
    */
-  systemConfig: ModuleInstallationOutputDTOSystemConfig;
+  systemConfig: object;
   /**
    *
    * @type {string}
@@ -2878,19 +2878,6 @@ export interface ModuleInstallationOutputDTOAPI {
    * @memberof ModuleInstallationOutputDTOAPI
    */
   meta: MetadataOutput;
-}
-/**
- *
- * @export
- * @interface ModuleInstallationOutputDTOSystemConfig
- */
-export interface ModuleInstallationOutputDTOSystemConfig {
-  /**
-   *
-   * @type {object}
-   * @memberof ModuleInstallationOutputDTOSystemConfig
-   */
-  cronJobs?: object;
 }
 /**
  *

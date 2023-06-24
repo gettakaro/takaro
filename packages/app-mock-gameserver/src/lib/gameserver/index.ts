@@ -156,6 +156,16 @@ class MockGameserver implements IMockGameServer {
       output.success = true;
     }
 
+    if (rawCommand.startsWith('say')) {
+      const message = rawCommand.replace('say ', '');
+      await this.sendMessage(
+        message,
+        await new IMessageOptsDTO().construct({})
+      );
+      output.rawResult = `Sent message: ${message}`;
+      output.success = true;
+    }
+
     await this.sendLog(
       `${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`
     );

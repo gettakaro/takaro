@@ -8,7 +8,7 @@
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
-      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{\"cronJobs\":{\"type\":\"object\",\"properties\":{},\"required\":[],\"default\":{}}},\"required\":[]}",
+      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}",
       "builtin": null,
       "cronJobs": [],
       "hooks": [],

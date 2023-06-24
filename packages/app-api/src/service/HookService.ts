@@ -34,6 +34,7 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
+import { DiscordEvents, HookEventTypes, HookEvents } from '@takaro/modules';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -41,28 +42,6 @@ export class IsSafeRegex implements ValidatorConstraintInterface {
     return safeRegex(regex);
   }
 }
-
-export enum DiscordEvents {
-  DISCORD_MESSAGE = 'discord-message',
-}
-
-export class HookEventDiscordMessage extends TakaroDTO<HookEventDiscordMessage> {
-  @IsString()
-  type = DiscordEvents.DISCORD_MESSAGE;
-
-  @IsString()
-  msg: string;
-
-  @IsString()
-  senderDiscordId: string;
-
-  @IsString()
-  channelDiscordId: string;
-}
-
-export type HookEvents = EventMapping[GameEvents] | HookEventDiscordMessage;
-export type HookEventTypes = HookEvents['type'];
-
 export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;

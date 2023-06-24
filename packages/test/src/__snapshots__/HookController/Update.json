@@ -15,8 +15,7 @@
       },
       "eventType": "log",
       "moduleId": "b52bda9c-1178-4a7b-b562-b9f03987937d",
-      "functionId": "5de280c1-765d-401c-9980-1ed0164a8b37",
-      "discordChannelId": null
+      "functionId": "5de280c1-765d-401c-9980-1ed0164a8b37"
     }
   },
   "status": 200,

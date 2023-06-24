@@ -1,17 +1,11 @@
-import {
-  TakaroModel,
-  ITakaroQuery,
-  QueryBuilder,
-  parseCheckViolationError,
-} from '@takaro/db';
+import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
-import { GameEvents } from '@takaro/gameserver';
+import { HookEventTypes } from '@takaro/modules';
 import {
   HookCreateDTO,
-  HookEventTypes,
   HookOutputDTO,
   HookUpdateDTO,
 } from '../service/HookService.js';
@@ -22,7 +16,7 @@ export class HookModel extends TakaroModel {
   static tableName = HOOKS_TABLE_NAME;
   name!: string;
   regex!: string;
-  eventType!: GameEvents;
+  eventType!: HookEventTypes;
 
   functionId: string;
 
@@ -87,27 +81,16 @@ export class HookRepo extends ITakaroRepo<
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
     const { query } = await this.getModel();
 
-    try {
-      const data = await query.insert({
-        ...item.toJSON(),
-        domain: this.domainId,
-      });
+    const data = await query.insert({
+      ...item.toJSON(),
+      domain: this.domainId,
+    });
 
-      if (item.function) {
-        await this.assign(data.id, item.function);
-      }
-
-      return this.findOne(data.id);
-    } catch (error) {
-      const isCheckViolationError = parseCheckViolationError(
-        error,
-        'discord_channel_id_required_if_event_type_is_discord_message'
-      );
-      if (isCheckViolationError) {
-        throw isCheckViolationError;
-      }
-      throw error;
+    if (item.function) {
+      await this.assign(data.id, item.function);
     }
+
+    return this.findOne(data.id);
   }
 
   async delete(id: string): Promise<boolean> {

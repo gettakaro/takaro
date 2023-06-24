@@ -12,8 +12,10 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
-import { HookEventDiscordMessage, HookService } from './HookService.js';
+import { HookService } from './HookService.js';
 import { GameServerService } from './GameServerService.js';
+
+import { HookEventDiscordMessage } from '@takaro/modules';
 
 export class GuildOutputDTO extends TakaroDTO<GuildOutputDTO> {
   @IsUUID()
@@ -218,7 +220,7 @@ export class DiscordService extends TakaroService<
 
     await Promise.all(
       gameServers.results.map((gameServer) => {
-        const hookService = new HookService(gameServer.id);
+        const hookService = new HookService(this.domainId);
         return hookService.handleEvent(messageDTO, gameServer.id);
       })
     );

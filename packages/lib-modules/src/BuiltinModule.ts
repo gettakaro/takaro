@@ -1,7 +1,7 @@
-import { GameEvents } from '@takaro/gameserver';
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import * as url from 'url';
+import { HookEventTypes } from './dto.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IModuleItem {
   name: string;
@@ -23,7 +23,7 @@ export interface ICommand extends IModuleItem {
 }
 
 export interface IHook extends IModuleItem {
-  eventType: GameEvents;
+  eventType: HookEventTypes;
 }
 
 export interface ICronJob extends IModuleItem {

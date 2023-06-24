@@ -9,9 +9,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { GameEvents } from '@takaro/gameserver';
 import {
-  DiscordEvents,
   HookCreateDTO,
-  HookEventTypes,
   HookOutputDTO,
   HookService,
   HookTriggerDTO,
@@ -35,6 +33,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { DiscordEvents, HookEventTypes } from '@takaro/modules';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)

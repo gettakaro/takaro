@@ -10,9 +10,7 @@
       "userConfig": {
         "maxTeleports": 42
       },
-      "systemConfig": {
-        "cronJobs": {}
-      }
+      "systemConfig": {}
     }
   },
   "status": 200,
