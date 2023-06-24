@@ -22,6 +22,7 @@ jobs:
             lib-http,
             lib-util,
             lib-queues,
+            lib-modules,
             test,
             web-main,
           ]
