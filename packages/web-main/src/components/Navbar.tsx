@@ -22,7 +22,7 @@ const Container = styled(motion.div)`
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]}`};
 
   .company-icon {
-    margin-left: ${({ theme }) => theme.spacing['1_5']};
+    margin: 0 auto;
     cursor: pointer;
   }
 

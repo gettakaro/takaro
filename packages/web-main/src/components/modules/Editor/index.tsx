@@ -14,7 +14,7 @@ import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
 
 const StyledFileTabs = styled(FileTabs)`
-  border-bottom: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
+  border-bottom: 0px;
 `;
 
 export type EditorProps = {

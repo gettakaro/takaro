@@ -98,10 +98,15 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-          <DialogHeading>gameserver </DialogHeading>
+          <DialogHeading>
+            gameserver:{' '}
+            <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
+          </DialogHeading>
           <StyledDialogBody size="medium">
             <h2>Delete gameserver</h2>
-            <p>Are you sure you want to delete `{name}`?</p>
+            <p>
+              Are you sure you want to delete <strong>{name}</strong>?
+            </p>
             <Button
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}

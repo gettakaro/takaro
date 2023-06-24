@@ -45,4 +45,5 @@ tsconfig.*.tsbuildinfo
 _data/
 
 # Firecracker
-/firecracker
+!firecracker/.gitkeep
+firecracker/*

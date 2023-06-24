@@ -60,8 +60,15 @@ export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
   tfoot {
     tr {
       td {
-        padding-top: 3.5rem;
+        padding-top: ${({ theme }) => theme.spacing[4]};
       }
     }
   }
+`;
+
+export const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;

@@ -19,15 +19,17 @@ export const server = new HTTP(
 async function main() {
   log.info('Starting...');
 
-  const vmm = await getVMM();
-  const poolSize =
-    config.get('queues.commands.concurrency') +
-    config.get('queues.cronjobs.concurrency') +
-    config.get('queues.hooks.concurrency');
-  vmm.initPool(poolSize);
-
   config.validate();
   log.info('✅ Config validated');
+
+  if (config.get('functions.executionMode') === 'firecracker') {
+    const vmm = await getVMM();
+    const poolSize =
+      config.get('queues.commands.concurrency') +
+      config.get('queues.cronjobs.concurrency') +
+      config.get('queues.hooks.concurrency');
+    vmm.initPool(poolSize);
+  }
 
   await server.start();
   log.info('🚀 Server started');
