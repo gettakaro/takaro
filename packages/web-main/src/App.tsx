@@ -2,6 +2,7 @@ import { ThemeProvider } from 'styled-components';
 import { Helmet } from 'react-helmet';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import 'simplebar-react/dist/simplebar.min.css';
 
 import {
   GlobalStyle,

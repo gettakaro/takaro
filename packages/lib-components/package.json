@@ -66,6 +66,6 @@
     "react-hook-form": "^7.34.0",
     "react-virtualized-auto-sizer": "^1.0.9",
     "react-window": "^1.8.8",
-    "simplebar-react": "^2.4.1"
+    "simplebar-react": "^3.2.4"
   }
 }
