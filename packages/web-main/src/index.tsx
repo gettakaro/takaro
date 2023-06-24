@@ -14,6 +14,7 @@ import {
 
 // styles required for slider component we rely on
 import 'rc-slider/assets/index.css';
+import 'simplebar-react/dist/simplebar.min.css';
 
 const container = document.getElementById('takaro-root')!;
 const root = createRoot(container);
