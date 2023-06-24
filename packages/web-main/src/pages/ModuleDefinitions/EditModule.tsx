@@ -1,13 +1,13 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   TextField,
   Drawer,
   CollapseList,
-  ErrorMessage,
   styled,
   SchemaGenerator,
+  TextAreaField,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -17,6 +17,7 @@ import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { useModule, useModuleUpdate } from 'queries/modules';
 import { ModuleOutputDTO } from '@takaro/apiclient';
+import { AnySchema } from 'ajv';
 
 interface IFormInputs {
   name: string;
@@ -47,8 +48,10 @@ const EditModule: FC = () => {
 
 const EditModuleForm: FC<Props> = ({ mod }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
-  const [schema, setSchema] = useState({});
+
+  const [generalData, setGeneralData] = useState<IFormInputs>();
+  const [schema, setSchema] = useState<AnySchema>({});
+  const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useModuleUpdate();
 
@@ -67,27 +70,47 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({
+  // submit of the general form
+  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({
     name,
     description,
   }) => {
+    setGeneralData({ name, description });
+  };
+
+  const onGeneratorSubmit = async (schema: AnySchema) => {
+    setSchema(schema);
+  };
+
+  useEffect(() => {
     try {
-      setError('');
-
-      mutateAsync({
-        id: mod.id,
-        moduleUpdate: {
-          name,
-          description,
-          configSchema: JSON.stringify(schema),
-        },
-      });
-
-      navigate(PATHS.moduleDefinitions());
+      if (
+        generalData &&
+        Object.keys(generalData).length !== 0 &&
+        Object.keys(schema).length !== 0
+      ) {
+        mutateAsync({
+          id: mod.id,
+          moduleUpdate: {
+            name: generalData.name,
+            description: generalData.description,
+            configSchema: JSON.stringify(schema),
+          },
+        });
+        navigate(PATHS.moduleDefinitions());
+      }
     } catch (error) {
       Sentry.captureException(error);
     }
-  };
+  }, [
+    generalData,
+    setGeneralData,
+    mutateAsync,
+    navigate,
+    mod.id,
+    schema,
+    setSchema,
+  ]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -95,8 +118,8 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
         <Drawer.Heading>Edit Module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="edit-module-form">
-              <CollapseList.Item title="General">
+            <CollapseList.Item title="General">
+              <form>
                 <TextField
                   control={control}
                   label="Name"
@@ -105,22 +128,22 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
                   placeholder="My cool module"
                   required
                 />
-                <TextField
+                <TextAreaField
                   control={control}
                   label="Description"
                   loading={isLoading}
                   name="description"
-                  placeholder="This module does cool stuff"
+                  placeholder=""
                 />
-              </CollapseList.Item>
-              <CollapseList.Item title="Config">
-                <SchemaGenerator
-                  onSchemaChange={setSchema}
-                  initialSchema={JSON.parse(mod.configSchema)}
-                />
-              </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
-            </form>
+              </form>
+            </CollapseList.Item>
+            <CollapseList.Item title="Config">
+              <SchemaGenerator
+                initialSchema={JSON.parse(mod.configSchema)}
+                onSubmit={onGeneratorSubmit}
+                ref={SchemaGeneratorFormRef}
+              />
+            </CollapseList.Item>
           </CollapseList>
         </Drawer.Body>
         <Drawer.Footer>
@@ -133,8 +156,12 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
             <Button
               fullWidth
               text="Save changes"
-              type="submit"
-              form="edit-module-form"
+              onClick={() => {
+                handleSubmit(onGeneralSubmit)();
+                SchemaGeneratorFormRef.current?.dispatchEvent(
+                  new Event('submit', { cancelable: true, bubbles: true })
+                );
+              }}
             />
           </ButtonContainer>
         </Drawer.Footer>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { Alert, AlertProps } from '.';
 
@@ -7,19 +8,18 @@ export default {
   args: {
     text: 'This is the title',
     variant: 'info',
-  }
-
+  },
 } as Meta<AlertProps>;
 
-export const Default: StoryFn<AlertProps> = (args) => (<Alert {...args} />);
+export const Default: StoryFn<AlertProps> = (args) => <Alert {...args} />;
 
 export const Success: StoryObj<AlertProps> = {
   args: {
     title: 'Order complete',
     text: 'Your order has been sucessfully processed. We are completing the report.',
     variant: 'success',
-    dismiss: true
-  }
+    dismiss: true,
+  },
 };
 
 export const Error: StoryObj<AlertProps> = {
@@ -27,10 +27,10 @@ export const Error: StoryObj<AlertProps> = {
     title: 'There were errors with your submission',
     text: [
       'Your password must be at least 8 characters',
-      'Your password must include at least one pro wrestling finishing move'
+      'Your password must include at least one pro wrestling finishing move',
     ],
     variant: 'error',
-  }
+  },
 };
 
 export const Warning: StoryObj<AlertProps> = {
@@ -39,15 +39,17 @@ export const Warning: StoryObj<AlertProps> = {
     text: 'This is a warning! Please read this carefully before you continue!',
     variant: 'warning',
     action: {
-      execute: () => {/* */ },
-      text: 'View status'
-    }
-  }
+      execute: () => {
+        /* */
+      },
+      text: 'View status',
+    },
+  },
 };
 
 export const SingleLine: StoryObj<AlertProps> = {
   args: {
     text: 'This is a single line now',
-    variant: 'info'
-  }
+    variant: 'info',
+  },
 };

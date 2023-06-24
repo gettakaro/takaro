@@ -74,9 +74,11 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
   const [open, setOpen] = useState(false);
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(
-    Math.max(0, listContentRef.current.indexOf(value))
-  );
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const defaultIndex = Math.max(0, listContentRef.current.indexOf(value));
+    onChange(listContentRef.current[defaultIndex]);
+    return defaultIndex;
+  });
 
   const [pointer, setPointer] = useState(false);
 

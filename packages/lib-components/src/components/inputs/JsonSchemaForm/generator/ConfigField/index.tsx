@@ -5,16 +5,17 @@ import {
   useWatch,
 } from 'react-hook-form';
 import {
-  CheckBox,
   Select,
   TextField,
   Chip,
   TextAreaField,
+  IconButton,
+  Tooltip,
 } from '../../../../../components';
 import { Header } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from '../InputTypes';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 import { TypeSpecificFieldsMap } from './TypeSpecificFieldsMap';
 
@@ -35,6 +36,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({
   id,
   resetField,
 }) => {
+  const [initialised, setInitialised] = useState<boolean>(false);
   const output = useWatch<IFormInputs>({
     control,
     name: `configFields.${index}.name`,
@@ -50,7 +52,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({
     We need to reset the default value to the new type default value.
   */
   useEffect(() => {
-    if (fieldType) {
+    if (fieldType && initialised) {
       switch (fieldType) {
         case InputType.boolean:
           resetField(`configFields.${index}.default`, {
@@ -58,7 +60,9 @@ export const ConfigField: FC<ConfigFieldProps> = ({
           });
           break;
         case InputType.string:
-          resetField(`configFields.${index}.default`, { defaultValue: '' });
+          resetField(`configFields.${index}.default`, {
+            defaultValue: '',
+          });
           break;
         case InputType.number:
           resetField(`configFields.${index}.default`, {
@@ -69,6 +73,8 @@ export const ConfigField: FC<ConfigFieldProps> = ({
           resetField(`configFields.${index}.default`, { defaultValue: [] });
           break;
       }
+    } else {
+      setInitialised(true);
     }
   }, [fieldType]);
 
@@ -85,18 +91,28 @@ export const ConfigField: FC<ConfigFieldProps> = ({
           <Chip color="primary" label={`Field ${index + 1}`} />
           <h3>{output as string}</h3>
         </div>
-        <RemoveIcon cursor="pointer" size={18} onClick={() => remove(index)} />
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <IconButton
+              onClick={() => remove(index)}
+              icon={<RemoveIcon cursor="pointer" size={18} />}
+            />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Remove field</Tooltip.Content>
+        </Tooltip>
       </Header>
       <TextField
         control={control}
         label="Name"
         name={`configFields.${index}.name`}
+        required
       />
       <TextAreaField
         control={control}
         label="Description"
         rows={8}
         name={`configFields.${index}.description`}
+        required
       />
       <Select
         control={control}
@@ -119,12 +135,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({
         </Select.OptionGroup>
       </Select>
       {typeSpecificFields(control, input, index, id)[fieldType]}
-      <CheckBox
-        control={control}
-        label="Is Field required?"
-        labelPosition="left"
-        name={`configFields.${index}.required`}
-      />
     </>
   );
 };

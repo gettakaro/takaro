@@ -8,9 +8,16 @@ export enum InputType {
 
 export interface BaseObject {
   type: InputType;
-  required?: boolean;
-  name?: string;
-  description?: string;
+  required: boolean;
+  name: string;
+  description: string;
+}
+
+export interface StringInput extends BaseObject {
+  type: InputType.string;
+  minLength?: number;
+  maxLength?: number;
+  default?: string;
 }
 
 export interface EnumInput extends BaseObject {
@@ -24,13 +31,6 @@ export interface NumberInput extends BaseObject {
   minimum?: number;
   maximum?: number;
   default?: number;
-}
-
-export interface StringInput extends BaseObject {
-  type: InputType.string;
-  minLength?: number;
-  maxLength?: number;
-  default?: string;
 }
 
 export interface BooleanInput extends BaseObject {

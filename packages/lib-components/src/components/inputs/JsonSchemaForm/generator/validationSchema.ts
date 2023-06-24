@@ -20,7 +20,6 @@ const baseShape = z.object({
       message: 'Description requires a maximum length of 1000 characters',
     })
     .nonempty('Description cannot be empty'),
-  required: z.boolean(),
 });
 
 /* based on selected value in select field (with name type)
@@ -35,18 +34,21 @@ export const validationSchema = z.object({
           z.object({
             type: z.literal(InputType.string.valueOf()),
             default: z.string(),
-            minLength: z.number().min(1).max(100).optional(),
-            maxLength: z.number().min(2).max(100).optional(),
+            minLength: z.number().min(1).max(100).optional().nullable(),
+            maxLength: z.number().min(2).max(100).optional().nullable(),
+            required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.number.valueOf()),
             default: z.number().min(0),
-            minimum: z.number().min(0).optional(),
-            maximum: z.number().min(1).optional(),
+            minimum: z.number().min(0).optional().nullable(),
+            maximum: z.number().min(1).optional().nullable(),
+            required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.enum.valueOf()),
             enum: z.array(z.string()).nonempty(),
+            default: z.string().nonempty(),
           }),
           z.object({
             type: z.literal(InputType.boolean.valueOf()),
@@ -54,8 +56,8 @@ export const validationSchema = z.object({
           }),
           z.object({
             type: z.literal(InputType.array.valueOf()),
-            array: z.array(z.string()).nonempty(),
             default: z.array(z.string()).nonempty(),
+            required: z.boolean(),
           }),
         ])
         .and(baseShape)

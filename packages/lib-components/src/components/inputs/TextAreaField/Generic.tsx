@@ -33,6 +33,7 @@ export const GenericTextAreaField = forwardRef<
     name,
     rows = 4,
     hasError,
+    value,
     readOnly,
     id,
   } = defaultsApplier(props);
@@ -52,6 +53,7 @@ export const GenericTextAreaField = forwardRef<
         disabled={disabled}
         required={required}
         ref={ref}
+        value={value as string}
         rows={rows}
       />
     </TextAreaContainer>
