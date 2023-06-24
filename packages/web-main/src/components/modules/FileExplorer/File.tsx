@@ -45,9 +45,14 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   width: 100%;
   padding: 0;
   background-color: transparent;
-  padding-left: ${({ depth }) => `${depth * 2}rem`};
+  padding-left: ${({ depth }) => `calc(${depth * 2}rem + .2rem)`};
   border-radius: 0;
-  line-height: 2;
+  min-height: 2.8rem;
+  line-height: 1;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  }
 
   div {
     display: flex;
@@ -59,7 +64,7 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
     white-space: nowrap;
     overflow: hidden;
     color: ${({ isActive, theme }) =>
-      isActive ? theme.colors.primary : theme.colors.text};
+      isActive ? theme.colors.text : theme.colors.textAlt};
   }
 
   svg {
@@ -279,12 +284,12 @@ export const File: FC<FileProps> = ({
   };
 
   const getIcon = (): JSX.Element => {
-    if (selectFile) return <JsIcon size={12} />;
+    if (selectFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
 
     return isDirOpen ? (
-      <DirOpenIcon fill={theme.colors.primary} size={18} />
+      <DirOpenIcon fill={theme.colors.secondary} size={18} />
     ) : (
-      <DirClosedIcon fill={theme.colors.primary} size={18} />
+      <DirClosedIcon fill={theme.colors.secondary} size={18} />
     );
   };
 

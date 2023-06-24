@@ -67,7 +67,7 @@ export const darkTheme: ThemeType = {
     gray: '#0e0e0e',
     shade: '#eaf8f0',
     text: '#c2c2c2',
-    textAlt: '#a1a1a1',
+    textAlt: '#818181',
     background: '#151515',
     backgroundAlt: '#202020',
     disabled: '#151515',

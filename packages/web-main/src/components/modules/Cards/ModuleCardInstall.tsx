@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeading,
   Button,
+  styled,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
@@ -99,12 +100,15 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
-          <DialogHeading>Module "{mod.name}" </DialogHeading>
+          <DialogHeading>
+            Module:{' '}
+            <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
+          </DialogHeading>
           <DeleteDialogContainer>
             <h2>Uninstall module</h2>
             <p>
-              Are you sure you want to uninstall the module "{mod.name}"? This
-              action is irreversible!
+              Are you sure you want to uninstall the module{' '}
+              <strong>{mod.name}</strong>? This action is irreversible!
             </p>
             <Button
               isLoading={isDeleting}

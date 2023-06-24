@@ -28,6 +28,7 @@ export interface ModuleItemProperties {
 
 export interface ModuleData {
   id: string;
+  name: string;
   fileMap: Record<FilePath, ModuleItemProperties>;
 }
 

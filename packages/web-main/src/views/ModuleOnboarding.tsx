@@ -120,9 +120,6 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
 
 const ClickableCard = styled(Card)`
   cursor: pointer;
-  &:hover {
-    transform: scale(1.0125);
-  }
 `;
 
 type InfoCardProps = {
