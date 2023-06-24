@@ -1,7 +1,18 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
+import {
+  ModuleOutputDTO,
+  GameServerOutputDTO,
+  HookCreateDTOEventTypeEnum,
+} from '@takaro/apiclient';
 
 const group = 'Module Assignments';
+
+const mockHook = (moduleId: string) => ({
+  name: 'Test hook',
+  regex: '/this (is) a [regex]/g',
+  eventType: HookCreateDTOEventTypeEnum.Log,
+  moduleId,
+});
 
 interface ISetupData {
   modules: ModuleOutputDTO[];
@@ -101,6 +112,68 @@ const tests = [
 
       return res;
     },
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    setup: defaultSetup,
+    name: 'discordChannelId is required when hook event-type is discord-message, throws validation error',
+    test: async function () {
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
+      await this.client.hook.hookControllerCreate({
+        ...mockHook(mod.id),
+        eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+      });
+
+      return this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        mod.id,
+        {
+          userConfig: JSON.stringify({}),
+        }
+      );
+    },
+    expectedStatus: 400,
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    setup: defaultSetup,
+    name: 'discordChannelId is required when hook event-type is discord-message, happy path',
+    test: async function () {
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+
+      const createdHookRes = await this.client.hook.hookControllerCreate({
+        ...mockHook(mod.id),
+        eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+      });
+
+      const hookName = createdHookRes.data.data.name;
+
+      return this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        mod.id,
+        {
+          userConfig: JSON.stringify({}),
+          systemConfig: JSON.stringify({
+            hooks: {
+              [`${hookName} Discord channel ID`]: '1234567890',
+            },
+          }),
+        }
+      );
+    },
+    filteredFields: ['moduleId', 'gameserverId'],
   }),
 ];
 

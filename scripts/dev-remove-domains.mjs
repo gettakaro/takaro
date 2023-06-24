@@ -15,6 +15,7 @@ const adminClient = new AdminClient({
 });
 
 async function main() {
+  await adminClient.waitUntilHealthy(300000);
   const domains = await adminClient.domain.domainControllerSearch();
 
   const promises = domains.data.data.map(async (domain) => {

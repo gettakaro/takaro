@@ -25,6 +25,8 @@ import { VariableController } from './controllers/VariableController.js';
 import { CronJobService } from './service/CronJobService.js';
 import { ExternalAuthController } from './controllers/ExternalAuthController.js';
 import { AuthService } from './service/AuthService.js';
+import { DiscordController } from './controllers/DiscordController.js';
+import { discordBot } from './lib/DiscordBot.js';
 
 export const server = new HTTP(
   {
@@ -42,6 +44,7 @@ export const server = new HTTP(
       CommandController,
       VariableController,
       ExternalAuthController,
+      DiscordController,
     ],
   },
   {
@@ -75,6 +78,8 @@ async function main() {
   await server.start();
 
   log.info('🚀 Server started');
+
+  await discordBot.start();
 
   const domainService = new DomainService();
   const domains = await domainService.find({});

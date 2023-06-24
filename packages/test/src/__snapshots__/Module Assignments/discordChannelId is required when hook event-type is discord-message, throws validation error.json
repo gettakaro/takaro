@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid config: /hooks must have required property 'Test hook Discord channel ID'"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "Module Assignments",
+    "snapshot": true,
+    "name": "discordChannelId is required when hook event-type is discord-message, throws validation error",
+    "expectedStatus": 400,
+    "filteredFields": [
+      "moduleId"
+    ],
+    "standardEnvironment": true
+  }
+}

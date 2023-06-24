@@ -59,6 +59,7 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
 
   private addAuthInterceptor(axios: AxiosInstance): AxiosInstance {
     axios.interceptors.request.use(async (request) => {
+      if (request.url?.includes('health')) return request;
       if (!this.token || this.token.expired()) {
         this.log.debug('Token expired, getting new token');
         this.token = await this.getOidcToken();

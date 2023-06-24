@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "gameserverId": "704cfc6a-2b92-4b78-b758-ef346f336191",
+      "moduleId": "c81d045f-8711-471b-9496-f6032a5664d3",
+      "userConfig": {},
+      "systemConfig": {
+        "hooks": {
+          "Test hook Discord channel ID": "1234567890"
+        }
+      }
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "Module Assignments",
+    "snapshot": true,
+    "name": "discordChannelId is required when hook event-type is discord-message, happy path",
+    "filteredFields": [
+      "moduleId",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

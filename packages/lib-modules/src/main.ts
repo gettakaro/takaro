@@ -1,4 +1,5 @@
 import { BuiltinModule } from './BuiltinModule.js';
+import { ChatBridge } from './modules/chatBridge/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
@@ -9,6 +10,8 @@ export {
   ICronJob,
   IHook,
 } from './BuiltinModule.js';
+
+export * from './dto.js';
 
 import { Utils } from './modules/utils/index.js';
 
@@ -21,6 +24,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new Teleports(),
       new PlayerOnboarding(),
       new ServerMessages(),
+      new ChatBridge(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
