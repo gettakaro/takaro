@@ -40,8 +40,6 @@ export const BreadCrumbs: FC<BreadCrumbsProps> = ({ idToNameMap = {} }) => {
     .filter((crumb) => crumb !== '')
     .map((crumb) => {
       currentLink += `/${crumb}`;
-
-      console.log(idToNameMap);
       const displayName = idToNameMap[crumb] || crumb;
 
       return (

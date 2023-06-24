@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 
-import { Drawer } from '.';
 import {
   Button,
   TextField,
@@ -10,6 +9,7 @@ import {
   Chip,
   RadioGroup,
   Switch,
+  Drawer,
 } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -100,7 +100,11 @@ export const Default: StoryFn = () => {
                     label="Selection a price type"
                     name="priceType"
                     options={[
-                      { label: 'Fixed', labelPosition: 'left', value: 'fixed' },
+                      {
+                        label: 'Fixed',
+                        labelPosition: 'left',
+                        value: 'fixed',
+                      },
                       {
                         label: 'Variable',
                         labelPosition: 'left',
