@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Switch, SwitchProps } from '.';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import {} from '.';
+import { Switch, SwitchProps, Button } from '../../../components';
+import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { useState } from 'react';
-import { Button } from '../..';
 
 const Wrapper = styled.div`
   padding: 5rem;
@@ -25,29 +25,20 @@ export default {
   component: Switch,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
-    label: 'I am a label',
+    label: 'Do you have a car?',
     loading: false,
-    name: 'switch01',
+    name: 'hasCar',
+    description: 'This is a description',
   },
 } as Meta<SwitchProps>;
 
-export const Default: StoryFn<SwitchProps> = (args) => {
-  const { control } = useForm();
-  return (
-    <div>
-      <Switch {...args} control={control} />
-    </div>
-  );
+type FormFields = {
+  hasCar: boolean;
 };
 
-export const Form = () => {
+export const onSubmit: StoryFn<SwitchProps> = (args) => {
   const [value, setValue] = useState<boolean>();
-
   const { control, handleSubmit } = useForm<FormFields>();
-
-  type FormFields = {
-    hasCar: boolean;
-  };
 
   const onSubmit: SubmitHandler<FormFields> = ({ hasCar }) => {
     setValue(hasCar);
@@ -56,16 +47,42 @@ export const Form = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Switch name="hasCar" label="Do you have a car?" control={control} />
-        <Button
-          type="submit"
-          text="submit"
-          onClick={() => {
-            /**/
-          }}
+        <Switch
+          name={args.name}
+          label={args.label}
+          control={control}
+          description={args.description}
+          hint={args.hint}
+          loading={args.loading}
+          disabled={args.disabled}
+          required={args.required}
+          readOnly={args.readOnly}
         />
+        <Button type="submit" text="submit" />
       </form>
       submitted value: {value ? 'true' : 'false'}
+    </>
+  );
+};
+
+export const OnChange: StoryFn<SwitchProps> = (args) => {
+  const { control } = useForm({ mode: 'onChange' });
+  const switchValue = useWatch({ control, name: args.name });
+
+  return (
+    <>
+      <Switch
+        control={control}
+        name={args.name}
+        label={args.label}
+        description={args.description}
+        hint={args.hint}
+        loading={args.loading}
+        disabled={args.disabled}
+        required={args.required}
+        readOnly={args.readOnly}
+      />
+      <pre>value: {switchValue ? 'true' : 'false'}</pre>
     </>
   );
 };

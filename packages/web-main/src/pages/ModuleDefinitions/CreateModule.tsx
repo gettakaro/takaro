@@ -3,14 +3,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   TextField,
-  DrawerContent,
-  DrawerHeading,
   Drawer,
-  DrawerFooter,
-  DrawerBody,
   CollapseList,
   ErrorMessage,
   styled,
+  SchemaGenerator,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -23,6 +20,7 @@ import { useModuleCreate } from 'queries/modules';
 interface IFormInputs {
   name: string;
   description?: string;
+  configFields: string;
 }
 
 const ButtonContainer = styled.div`
@@ -34,6 +32,7 @@ const ButtonContainer = styled.div`
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string>();
+  const [schema, setSchema] = useState({});
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useModuleCreate();
 
@@ -58,6 +57,7 @@ const CreateModule: FC = () => {
       mutateAsync({
         name,
         description,
+        configSchema: JSON.stringify(schema),
       });
 
       navigate(PATHS.moduleDefinitions());
@@ -68,9 +68,9 @@ const CreateModule: FC = () => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeading>Create Module</DrawerHeading>
-        <DrawerBody>
+      <Drawer.Content>
+        <Drawer.Heading>Create Module</Drawer.Heading>
+        <Drawer.Body>
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
               <CollapseList.Item title="General">
@@ -90,11 +90,14 @@ const CreateModule: FC = () => {
                   placeholder="This module does cool stuff"
                 />
               </CollapseList.Item>
+              <CollapseList.Item title="Config">
+                <SchemaGenerator onSchemaChange={setSchema} />
+              </CollapseList.Item>
               {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
-        </DrawerBody>
-        <DrawerFooter>
+        </Drawer.Body>
+        <Drawer.Footer>
           <ButtonContainer>
             <Button
               text="Cancel"
@@ -108,8 +111,8 @@ const CreateModule: FC = () => {
               form="create-module-form"
             />
           </ButtonContainer>
-        </DrawerFooter>
-      </DrawerContent>
+        </Drawer.Footer>
+      </Drawer.Content>
     </Drawer>
   );
 };

@@ -1,24 +1,25 @@
 import React from 'react';
 import { useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { RadioGroup, RadioGroupProps } from '.';
+import { Button, RadioGroup, RadioGroupProps } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Radio } from './Radio';
-import { Button } from '../../../components';
 
 export default {
   title: 'Inputs/RadioGroup',
   component: RadioGroup,
-  subcomponents: { Radio },
   args: {
     readOnly: false,
     loading: false,
+    hint: 'this is the hint',
+    label: 'Enter your gender',
+    description: 'this is the description',
+    required: true,
   },
 } as Meta<RadioGroupProps>;
 
-export const OnChange: StoryFn<RadioGroupProps> = (args) => {
+export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
   type FormFields = {
     gender: string;
   };
@@ -48,8 +49,11 @@ export const OnChange: StoryFn<RadioGroupProps> = (args) => {
           control={control}
           loading={args.loading}
           readOnly={args.readOnly}
-          label="Enter your gender"
+          label={args.label}
           name="gender"
+          hint={args.hint}
+          required={args.required}
+          description={args.description}
           options={[
             { label: 'male', labelPosition: 'right', value: 'm' },
             { label: 'female', labelPosition: 'right', value: 'f' },

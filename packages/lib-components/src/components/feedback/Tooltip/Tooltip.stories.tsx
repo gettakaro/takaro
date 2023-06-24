@@ -1,43 +1,67 @@
-import React from 'react';
-import { FloatingDelayGroup } from '@floating-ui/react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Tooltip, TooltipProps } from '.';
-import { styled } from '../../../styled';
+import { Button, IconButton } from '../../actions';
+import { AiOutlineWoman as Icon } from 'react-icons/ai';
 
-const Container = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-`;
+interface ExtraTooltipStoryProps {
+  label: string;
+}
 
 export default {
   title: 'Feedback/Tooltip',
   component: Tooltip,
   args: {
     placement: 'bottom',
-    label: 'I am the label',
   },
-} as Meta<TooltipProps>;
+} as Meta<TooltipProps & ExtraTooltipStoryProps>;
 
-export const Default: StoryFn<TooltipProps> = (args) => (
-  <Tooltip {...args}>
-    <a>I am content with a tooltip</a>
+export const UnControlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> = (
+  args
+) => (
+  <Tooltip placement={args.placement}>
+    <Tooltip.Trigger>
+      <span>trigger</span>
+    </Tooltip.Trigger>
+    <Tooltip.Content>tooltip content here</Tooltip.Content>
   </Tooltip>
 );
 
-export const Group: StoryFn<TooltipProps> = () => (
-  <Container>
-    If you go fast from one button to another you'll notice that the tooltip
-    shows immediately and ignores the initial delay
-    <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-      <Tooltip label="Tooltip one">
-        <button>Hover me</button>
-      </Tooltip>
-      <Tooltip label="Tooltip two">
-        <button>Hover me</button>
-      </Tooltip>
-      <Tooltip label="Tooltip three">
-        <button>Hover me</button>
-      </Tooltip>
-    </FloatingDelayGroup>
-  </Container>
+export const UnControlledCustomChild: StoryFn<
+  TooltipProps & ExtraTooltipStoryProps
+> = () => (
+  <>
+    By default the component is rendered in a div tag. because the component is
+    expected to have a ref. So if the component you want to render as the
+    trigger does not have a ref, you can NOT set the asChild prop. By setting
+    the asChild prop, the component will be rendered as the trigger component.
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <IconButton icon={<Icon />} />
+      </Tooltip.Trigger>
+      <Tooltip.Content>tooltip content here</Tooltip.Content>
+    </Tooltip>
+  </>
 );
+
+export const Controlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> =
+  () => {
+    const [open, setOpen] = useState<boolean>(false);
+
+    return (
+      <>
+        A controlled open means that the child component is responsible for
+        opening and closing the tooltip. Which is e.g. useful when you want to
+        open the tooltip on click instead of hover. or when you want to open a
+        tooltip on a different component than the trigger.
+        <Tooltip open={open} onOpenChange={setOpen}>
+          <Tooltip.Trigger>I am the trigger</Tooltip.Trigger>
+          <Tooltip.Content>controlled tooltip</Tooltip.Content>
+        </Tooltip>
+        <Button
+          onClick={() => setOpen(true)}
+          text="open tooltip on, I am the trigger"
+        />
+      </>
+    );
+  };

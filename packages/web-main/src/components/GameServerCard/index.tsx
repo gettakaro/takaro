@@ -3,11 +3,10 @@ import {
   Button,
   Chip,
   Dialog,
-  DialogContent,
-  DialogHeading,
   Dropdown,
   MenuList,
   Skeleton,
+  IconButton,
   Tooltip,
 } from '@takaro/lib-components';
 import {
@@ -18,7 +17,6 @@ import {
   TitleContainer,
   StyledDialogBody,
 } from './style';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,10 +41,12 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
+    setOpenDropdown(false);
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
+    setOpenDropdown(false);
   };
 
   const handleOnDelete = async (e: MouseEvent) => {
@@ -71,7 +71,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
           <Dropdown
             open={openDropdown}
             setOpen={setOpenDropdown}
-            renderReference={<MenuIcon size={18} cursor="pointer" />}
+            renderReference={
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} />
+                </Tooltip.Trigger>
+                <Tooltip.Content>Actions</Tooltip.Content>
+              </Tooltip>
+            }
             renderFloating={
               <MenuList>
                 <MenuList.Item onClick={handleOnEditClick}>
@@ -84,24 +91,25 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
             }
           />
         </Header>
-        <FloatingDelayGroup delay={{ open: 400, close: 200 }}>
-          <TitleContainer>
-            <h3>{name}</h3>
-            <div>
-              <Tooltip label="Game server type" placement="bottom">
+        <TitleContainer>
+          <h3>{name}</h3>
+          <div>
+            <Tooltip placement="bottom">
+              <Tooltip.Trigger asChild>
                 <p>{type}</p>
-              </Tooltip>
-            </div>
-          </TitleContainer>
-        </FloatingDelayGroup>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Game server type</Tooltip.Content>
+            </Tooltip>
+          </div>
+        </TitleContainer>
       </Body>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>
+        <Dialog.Content>
+          <Dialog.Heading>
             gameserver:{' '}
             <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <StyledDialogBody size="medium">
             <h2>Delete gameserver</h2>
             <p>
@@ -115,7 +123,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
               color="error"
             />
           </StyledDialogBody>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </Container>
   );
@@ -131,7 +139,7 @@ export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({
   return (
     <EmptyContainer onClick={onClick}>
       <PlusIcon size={24} />
-      <h3>new gameserver</h3>
+      <h3>Gameserver</h3>
     </EmptyContainer>
   );
 };

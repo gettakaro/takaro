@@ -3,14 +3,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   Select,
-  OptionGroup,
-  Option,
   TextField,
-  DrawerContent,
-  DrawerHeading,
   Drawer,
-  DrawerFooter,
-  DrawerBody,
   CollapseList,
   ErrorMessage,
 } from '@takaro/lib-components';
@@ -24,11 +18,6 @@ import {
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiFillCloseCircle as ErrorIcon,
-  AiFillCheckCircle as SuccessIcon,
-  AiOutlineEllipsis as EllipsisIcon,
-} from 'react-icons/ai';
 import * as Sentry from '@sentry/react';
 import {
   useGameServerCreate,
@@ -121,9 +110,9 @@ const CreateGameServer: FC = () => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeading>Create Game Server</DrawerHeading>
-        <DrawerBody>
+      <Drawer.Content>
+        <Drawer.Heading>Create Game Server</Drawer.Heading>
+        <Drawer.Body>
           <CollapseList>
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -152,15 +141,15 @@ const CreateGameServer: FC = () => {
                     </div>
                   )}
                 >
-                  <OptionGroup label="Games">
+                  <Select.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Option key={`select-${name}`} value={value}>
+                      <Select.Option key={`select-${name}`} value={value}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Option>
+                      </Select.Option>
                     ))}
-                  </OptionGroup>
+                  </Select.OptionGroup>
                 </Select>
               </CollapseList.Item>
               {type !== undefined && (
@@ -171,8 +160,8 @@ const CreateGameServer: FC = () => {
               {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
-        </DrawerBody>
-        <DrawerFooter>
+        </Drawer.Body>
+        <Drawer.Footer>
           <ButtonContainer>
             <Button
               text="Cancel"
@@ -200,8 +189,8 @@ const CreateGameServer: FC = () => {
               />
             )}
           </ButtonContainer>
-        </DrawerFooter>
-      </DrawerContent>
+        </Drawer.Footer>
+      </Drawer.Content>
     </Drawer>
   );
 };

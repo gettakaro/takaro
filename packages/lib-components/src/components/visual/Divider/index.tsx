@@ -29,9 +29,7 @@ const Label = styled.label<{
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
   p {
-    z-index: 20;
     color: gray;
     background-color: ${({ theme }) => theme.colors.background};
     font-size: 1.325rem;
@@ -59,7 +57,6 @@ const Line = styled.div`
   width: 100%;
   height: 1px;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  z-index: 0;
 `;
 
 type LabelProps = {

@@ -48,7 +48,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
         fn: { code: debouncedCode },
       });
     }
-  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap]);
+  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap, updateFunction]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>

@@ -1,20 +1,26 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useMemo, useState } from 'react';
-import { Button } from '../../../components';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Button, SelectProps, Select } from '../../../components';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../styled';
-import { Select, SelectProps, Option, OptionGroup } from './index';
 import { films } from './data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+interface ExtraStoryProps {
+  optionGroupLabel: string;
+}
 
 export default {
   title: 'Inputs/Select',
   args: {
     label: 'Film',
+    description: 'This is the description',
+    hint: 'This is the hint',
+    optionGroupLabel: 'Films',
   },
-} as Meta<SelectProps>;
+} as Meta<SelectProps & ExtraStoryProps>;
 
 const OptionIcon = styled.img`
   width: 24px;
@@ -25,7 +31,43 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const Default: StoryFn<SelectProps> = (args) => {
+export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
+  const { control } = useForm();
+  const selectValue = useWatch({ control, name: 'film' });
+
+  return (
+    <>
+      <Select
+        description={args.description}
+        label={args.label}
+        control={control}
+        name="film"
+        hint={args.hint}
+        render={(selectedIndex) => (
+          <div>
+            {films[selectedIndex] && (
+              <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
+            )}
+            {films[selectedIndex]?.name ?? 'Select...'}
+          </div>
+        )}
+      >
+        <Select.OptionGroup label={args.optionGroupLabel}>
+          {films.map(({ name }) => (
+            <Select.Option key={name} value={name}>
+              <div>
+                <span>{name}</span>
+              </div>
+            </Select.Option>
+          ))}
+        </Select.OptionGroup>
+      </Select>
+      <pre>result: {selectValue}</pre>
+    </>
+  );
+};
+
+export const OnSubmit: StoryFn<SelectProps> = (args) => {
   type FormFields = { film: string };
   const [result, setResult] = useState<string>('none');
 
@@ -50,11 +92,15 @@ export const Default: StoryFn<SelectProps> = (args) => {
 
   return (
     <>
+      NOTE: You can ignore the width changing when opening the select. This is
+      due to the select being rendered in a storybook iframe which has incorrect
+      gutter size.
       <form onSubmit={handleSubmit(submit)}>
         <Select
           control={control}
           name="film"
           label={args.label}
+          description={args.description}
           render={(selectedIndex) => (
             <div>
               {films[selectedIndex] && (
@@ -64,19 +110,19 @@ export const Default: StoryFn<SelectProps> = (args) => {
             </div>
           )}
         >
-          <OptionGroup label="films">
+          <Select.OptionGroup label="films">
             {films.map(({ name }) => (
-              <Option key={name} value={name}>
+              <Select.Option key={name} value={name}>
                 <div>
                   <span>{name}</span>
                 </div>
-              </Option>
+              </Select.Option>
             ))}
-          </OptionGroup>
+          </Select.OptionGroup>
         </Select>
         <Button type="submit" text="Submit" />
       </form>
-      <span>result: {result}</span>
+      <pre>result: {result}</pre>
     </>
   );
 };

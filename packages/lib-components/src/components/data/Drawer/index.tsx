@@ -1,18 +1,28 @@
 import { DrawerOptions, useDrawer } from './useDrawer';
 import { FC, PropsWithChildren } from 'react';
 import { DrawerContext } from './DrawerContext';
+import { DrawerContent } from './DrawerContent';
+import { DrawerHeading } from './DrawerHeading';
+import { DrawerBody } from './DrawerBody';
+import { DrawerFooter } from './DrawerFooter';
 
-export const Drawer: FC<PropsWithChildren<DrawerOptions>> = ({
-  children,
-  ...options
-}) => {
-  return (
-    <DrawerContext.Provider value={useDrawer(options)}>
-      {children}
-    </DrawerContext.Provider>
-  );
+type SubComponentTypes = {
+  Content: typeof DrawerContent;
+  Heading: typeof DrawerHeading;
+  Body: typeof DrawerBody;
+  Footer: typeof DrawerFooter;
 };
-export { DrawerContent } from './DrawerContent';
-export { DrawerHeading } from './DrawerHeading';
-export { DrawerBody } from './DrawerBody';
-export { DrawerFooter } from './DrawerFooter';
+
+export const Drawer: FC<PropsWithChildren<DrawerOptions>> & SubComponentTypes =
+  ({ children, ...options }) => {
+    return (
+      <DrawerContext.Provider value={useDrawer(options)}>
+        {children}
+      </DrawerContext.Provider>
+    );
+  };
+
+Drawer.Content = DrawerContent;
+Drawer.Heading = DrawerHeading;
+Drawer.Body = DrawerBody;
+Drawer.Footer = DrawerFooter;

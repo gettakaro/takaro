@@ -7,29 +7,28 @@ import React, {
   useState,
 } from 'react';
 import { Container, InputContainer, Input, LoadingField } from './style';
-import { useController } from 'react-hook-form';
 import {
-  InputProps,
   defaultInputProps,
   defaultInputPropsFactory,
+  ControlledInputProps,
 } from '../InputProps';
-import { Label } from '../Label';
-import { ErrorMessage } from '../ErrorMessage';
+import { Label, ErrorMessage } from '../../../components';
+import { useController } from 'react-hook-form';
 
-export interface CodeFieldProps extends InputProps {
+export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
   name: string;
   fields: number;
   allowedCharacters?: RegExp;
   autoSubmit?: () => unknown;
-}
+};
 
 const defaultsApplier =
   defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
 
+// TODO: implement readonly
 export const CodeField: FC<CodeFieldProps> = (props) => {
   const {
     loading,
-    control,
     name,
     fields,
     autoSubmit,
@@ -37,17 +36,19 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     hint,
     size,
     disabled,
+    control,
     required,
+    description,
     label,
-    value,
   } = defaultsApplier(props);
 
   const [showError, setShowError] = useState<boolean>(false);
 
   const {
-    field: { ...inputProps },
+    field,
     fieldState: { error },
-  } = useController({ name, control, defaultValue: value });
+  } = useController({ name, control });
+
   const fieldRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   const sendResult = () => {
     const res = fieldRefs.current.map((field) => field.value).join('');
-    inputProps.onChange(res);
+    field.onChange(res);
 
     if (res.length === fields) {
       if (autoSubmit) autoSubmit();
@@ -84,7 +85,6 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   const handleOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
-
     setShowError(true);
     e.target.select();
   };
@@ -107,6 +107,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
 
   const handleOnBlur = () => {
     if (disabled) return;
+    field.onBlur();
     setShowError(false);
   };
 
@@ -177,7 +178,10 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             type="text"
           />
         ))}
-        {error && showError && <ErrorMessage message={error.message!} />}
+        {error && error.message && showError && (
+          <ErrorMessage message={error.message} />
+        )}
+        {description && <p>{description}</p>}
       </InputContainer>
     </Container>
   );

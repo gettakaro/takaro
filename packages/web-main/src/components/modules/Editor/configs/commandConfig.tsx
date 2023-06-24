@@ -2,8 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   CollapseList,
-  Option,
-  OptionGroup,
+  IconButton,
   Select,
   TextAreaField,
   TextField,
@@ -18,8 +17,6 @@ import { FC, useEffect } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { StyledButton } from './style';
-import { FloatingDelayGroup } from '@floating-ui/react';
-import { DevTool } from '@hookform/devtools';
 import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
 
 interface IProps {
@@ -98,7 +95,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
         })
       );
     }
-  }, [data]);
+  }, [data, setValue, replace, moduleItem.itemId]);
 
   const commandId = moduleItem.itemId;
 
@@ -116,14 +113,14 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
           control={control}
           name="trigger"
           label="trigger"
-          description="What users type ingame to trigger this command"
+          description="What users type ingame to trigger this command."
           prefix={settings?.commandPrefix}
         />
         <TextAreaField
           control={control}
           name="helpText"
           label="Help text"
-          description="Description of what the command does, this can be displayed to users ingame"
+          description="Description of what the command does, this can be displayed to users in-game."
         />
         <CollapseList.Item title="Arguments">
           <ContentContainer>
@@ -133,39 +130,35 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                   <ArgumentCard key={field.id}>
                     <Flex direction="column">
                       <Flex direction="row">
-                        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-                          <TextField
-                            label="Name"
-                            control={control}
-                            name={`arguments.${index}.name`}
-                            marginBottom="0"
-                          />
-                          <Select
-                            minWidth={'128px'}
-                            control={control}
-                            name={`arguments.${index}.type`}
-                            label="Type"
-                            render={(selectedIndex) => (
-                              <>
-                                {argumentTypeSelectOptions[selectedIndex]
-                                  ?.name ?? 'Select...'}
-                              </>
+                        <TextField
+                          label="Name"
+                          control={control}
+                          name={`arguments.${index}.name`}
+                        />
+                        <Select
+                          control={control}
+                          name={`arguments.${index}.type`}
+                          label="Type"
+                          render={(selectedIndex) => (
+                            <>
+                              {argumentTypeSelectOptions[selectedIndex]?.name ??
+                                'Select...'}
+                            </>
+                          )}
+                        >
+                          <Select.OptionGroup label="Options">
+                            {argumentTypeSelectOptions.map(
+                              ({ name, value }) => (
+                                <Select.Option
+                                  key={`${field.id}-select-${name}`}
+                                  value={value}
+                                >
+                                  {name}
+                                </Select.Option>
+                              )
                             )}
-                          >
-                            <OptionGroup label="Options">
-                              {argumentTypeSelectOptions.map(
-                                ({ name, value }) => (
-                                  <Option
-                                    key={`${field.id}-select-${name}`}
-                                    value={value}
-                                  >
-                                    {name}
-                                  </Option>
-                                )
-                              )}
-                            </OptionGroup>
-                          </Select>
-                        </FloatingDelayGroup>
+                          </Select.OptionGroup>
+                        </Select>
                       </Flex>
                       <TextField
                         control={control}
@@ -173,15 +166,14 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                         name={`arguments.${index}.helpText`}
                       />
                     </Flex>
-                    <Tooltip label="Remove argument">
-                      <span>
-                        <CloseIcon
-                          size={16}
-                          cursor="pointer"
-                          style={{ marginTop: '14px' }}
+                    <Tooltip>
+                      <Tooltip.Trigger asChild>
+                        <IconButton
                           onClick={() => remove(index)}
+                          icon={<CloseIcon size={16} cursor="pointer" />}
                         />
-                      </span>
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Remove argument</Tooltip.Content>
                     </Tooltip>
                   </ArgumentCard>
                 ))}
@@ -208,7 +200,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
         </CollapseList.Item>
         <StyledButton fullWidth type="submit" text="Save" />
       </form>
-      <DevTool control={control} />
     </>
   );
 };

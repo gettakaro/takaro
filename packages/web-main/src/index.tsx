@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -12,7 +12,11 @@ import {
   matchRoutes,
 } from 'react-router-dom';
 
-const container = document.getElementById('root')!;
+// styles required for slider component we rely on
+import 'rc-slider/assets/index.css';
+import 'simplebar-react/dist/simplebar.min.css';
+
+const container = document.getElementById('takaro-root')!;
 const root = createRoot(container);
 
 Sentry.init({

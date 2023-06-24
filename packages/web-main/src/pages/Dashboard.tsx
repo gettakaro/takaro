@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Button, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
+import { Helmet } from 'react-helmet';
 
 export const Container = styled.div`
   h1 {
@@ -45,16 +46,21 @@ const Dashboard: FC = () => {
   });
 
   return (
-    <Container>
-      <Flex>
-        <span>
-          <p>Connected: {'' + isConnected}</p>
-          <p>Last pong: {lastPong || '-'}</p>
-          <p>Last event: {lastEvent || '-'}</p>
-        </span>
-        <Button text={'Send ping'} onClick={sendPing} />
-      </Flex>
-    </Container>
+    <>
+      <Helmet>
+        <title>Takaro - Dashboard</title>
+      </Helmet>
+      <Container>
+        <Flex>
+          <span>
+            <p>Connected: {'' + isConnected}</p>
+            <p>Last pong: {lastPong || '-'}</p>
+            <p>Last event: {lastEvent || '-'}</p>
+          </span>
+          <Button text={'Send ping'} onClick={sendPing} />
+        </Flex>
+      </Container>
+    </>
   );
 };
 

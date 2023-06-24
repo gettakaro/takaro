@@ -42,7 +42,7 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
     } finally {
       isLoading(false);
     }
-  }, [session, setUserData]);
+  }, [session, setUserData, isLoadingSession, navigate]);
 
   useEffect(() => {
     handleAuth();

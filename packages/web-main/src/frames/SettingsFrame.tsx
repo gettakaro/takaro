@@ -16,11 +16,11 @@ export const SettingsFrame: FC = () => {
     {
       text: 'Global Game Server Settings',
       // If serverId is not valid it will be directed by the failed requests.
-      to: PATHS.settings.GameServerSettings,
+      to: PATHS.settings.GameServerSettings(),
     },
     {
       text: 'Discord',
-      to: PATHS.settings.discordSettings,
+      to: PATHS.settings.discordSettings(),
     },
   ];
 

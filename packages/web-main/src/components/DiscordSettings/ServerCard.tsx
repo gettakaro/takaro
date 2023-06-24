@@ -1,5 +1,5 @@
 import { GuildOutputDTO } from '@takaro/apiclient';
-import { Card, Checkbox, Switch, styled } from '@takaro/lib-components';
+import { Card, Switch, styled } from '@takaro/lib-components';
 import { useDiscordGuildUpdate } from 'queries/discord';
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,11 +41,11 @@ export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
 
   useEffect(() => {
     mutate({ id: guild.id, input: { takaroEnabled } });
-  }, [takaroEnabled]);
+  }, [takaroEnabled, guild.id, mutate]);
 
   useEffect(() => {
     setValue('takaroEnabled', guild.takaroEnabled);
-  }, [isError]);
+  }, [isError, guild.takaroEnabled, setValue]);
 
   return (
     <StyledCard>

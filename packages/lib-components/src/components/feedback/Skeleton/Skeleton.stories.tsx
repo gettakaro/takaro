@@ -1,4 +1,5 @@
-import { Meta, Story, StoryFn, StoryObj } from '@storybook/react';
+import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Skeleton, SkeletonProps } from '.';
 
 export default {
@@ -7,7 +8,6 @@ export default {
 } as Meta<SkeletonProps>;
 
 export const Default: StoryFn<SkeletonProps> = (args) => <Skeleton {...args} />;
-
 
 export const Example = () => (
   <>

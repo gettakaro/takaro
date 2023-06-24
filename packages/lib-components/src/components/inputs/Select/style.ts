@@ -1,4 +1,6 @@
+import { FloatingOverlay } from '@floating-ui/react';
 import { styled } from '../../../styled';
+import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 // This wraps everything
 export const Container = styled.div<{ minWidth?: string }>`
@@ -6,7 +8,11 @@ export const Container = styled.div<{ minWidth?: string }>`
   min-width: ${({ minWidth }) => minWidth || 'auto'};
 `;
 
-export const SelectButton = styled.div<{ readOnly: boolean }>`
+export const SelectButton = styled.div<{
+  readOnly: boolean;
+  isOpen: boolean;
+  hasError: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -14,15 +20,21 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
   width: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
   font-family: inherit;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   outline: 0;
   position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 0.1rem solid ${({ theme }) => theme.colors.background};
+  border: 0.1rem solid
+    ${({ theme, isOpen }) =>
+      isOpen ? theme.colors.primary : theme.colors.background};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  font-weight: 500;
+  text-transform: capitalize;
+  margin-bottom: ${({ theme }) => theme.spacing['0_75']};
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme, hasError }) =>
+      hasError ? theme.colors.error : theme.colors.primary};
   }
 
   & > div {
@@ -30,11 +42,19 @@ export const SelectButton = styled.div<{ readOnly: boolean }>`
     align-items: center;
     gap: ${({ theme }) => theme.spacing[1]};
   }
-  font-weight: 500;
 
   span {
     display: flex;
   }
+`;
+
+export const StyledArrowIcon = styled(ArrowIcon)`
+  margin-left: ${({ theme }) => theme.spacing['0_75']};
+`;
+
+export const StyledFloatingOverlay = styled(FloatingOverlay)`
+  width: 100%;
+  height: 100%;
 `;
 
 export const SelectContainer = styled.div`
@@ -46,6 +66,8 @@ export const SelectContainer = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
+  text-transform: capitalize;
+  z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
 export const GroupLabel = styled.li`

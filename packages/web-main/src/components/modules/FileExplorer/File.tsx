@@ -4,11 +4,9 @@ import {
   Button as TakaroButton,
   Tooltip,
   useTheme,
-  Dialog,
-  DialogHeading,
-  DialogContent,
-  DialogBody,
   EditableField,
+  Dialog,
+  IconButton,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
@@ -21,7 +19,6 @@ import {
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { FloatingDelayGroup } from '@floating-ui/react';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
@@ -261,22 +258,20 @@ export const File: FC<FileProps> = ({
     }
   };
 
-  // add file to sandpack
-
   // handle click events
-  const handleOnDeleteClick = (e: MouseEvent<SVGElement>) => {
+  const handleOnDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setOpenDialog(true);
   };
 
-  const handleOnRenameClick = (e: MouseEvent<SVGElement>) => {
+  const handleOnRenameClick = (e: MouseEvent<HTMLButtonElement>) => {
     setEditing(true);
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleOnNewFileClick = async (e: MouseEvent<SVGElement>) => {
+  const handleOnNewFileClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setShowNewFileField(true);
@@ -296,28 +291,35 @@ export const File: FC<FileProps> = ({
   const getActions = (): JSX.Element => {
     if (selectFile) {
       return (
-        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-          <Tooltip label="Rename" placement="top">
-            <span>
-              <RenameIcon size={18} onClick={handleOnRenameClick} />
-            </span>
+        <>
+          <Tooltip placement="top">
+            <Tooltip.Trigger asChild>
+              <IconButton
+                onClick={handleOnRenameClick}
+                icon={<RenameIcon size={18} />}
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Rename file</Tooltip.Content>
           </Tooltip>
-          <Tooltip label="Delete" placement="top">
-            <span>
-              <DeleteIcon onClick={handleOnDeleteClick} size={18} />
-            </span>
+          <Tooltip placement="top">
+            <Tooltip.Trigger asChild>
+              <IconButton icon={<DeleteIcon />} onClick={handleOnDeleteClick} />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Delete file</Tooltip.Content>
           </Tooltip>
-        </FloatingDelayGroup>
+        </>
       );
     } else {
       return (
-        <FloatingDelayGroup delay={{ open: 1000, close: 200 }}>
-          <Tooltip label="New file" placement="top">
-            <span>
-              <AddFileIcon size={18} onClick={handleOnNewFileClick} />
-            </span>
-          </Tooltip>
-        </FloatingDelayGroup>
+        <Tooltip placement="top">
+          <Tooltip.Trigger asChild>
+            <IconButton
+              onClick={handleOnNewFileClick}
+              icon={<AddFileIcon size={18} />}
+            />
+          </Tooltip.Trigger>
+          <Tooltip.Content>New file</Tooltip.Content>
+        </Tooltip>
       );
     }
   };
@@ -377,28 +379,23 @@ export const File: FC<FileProps> = ({
         </NewFileContainer>
       )}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>Delete file</DialogHeading>
-          <DialogBody>
-            <h4>
-              Are you sure you want to uwmaken '{fileName}'? The file will be
-              permanently removed.
-            </h4>
+        <Dialog.Content>
+          <Dialog.Heading>Remove file</Dialog.Heading>
+          <Dialog.Body>
+            <p>
+              Are you sure you want to <strong>{fileName}</strong>? The file
+              will be permanently removed.
+            </p>
             <ButtonContainer>
               <TakaroButton
-                onClick={() => setOpenDialog(false)}
-                text="Cancel"
-                variant="clear"
-                color="background"
-              />
-              <TakaroButton
+                fullWidth
                 onClick={handleDelete}
-                text="Delete"
+                text="Remove file"
                 color="error"
               />
             </ButtonContainer>
-          </DialogBody>
-        </DialogContent>
+          </Dialog.Body>
+        </Dialog.Content>
       </Dialog>
     </>
   );

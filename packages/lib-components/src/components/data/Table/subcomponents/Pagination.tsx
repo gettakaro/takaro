@@ -14,7 +14,6 @@ export const PaginationContainer = styled.div<{ border?: boolean }>`
     background-color: ${({ theme }) => theme.colors.background};
     padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
     font-weight: 400;
-
     border-color: ${({ theme }) => theme.colors.textAlt};
     border-right: 0;
     border-radius: 0;
@@ -25,7 +24,6 @@ export const PaginationContainer = styled.div<{ border?: boolean }>`
       span {
         color: ${({ theme }) => theme.colors.text};
       }
-      z-index: 1;
     }
 
     ${({ border }) => !border && 'border: 0;'}

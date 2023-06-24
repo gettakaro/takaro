@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
-import { OptionGroup, Option, Select } from '@takaro/lib-components';
+import { Select } from '@takaro/lib-components';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 type FormFields = { gameServer: string };
@@ -26,10 +26,18 @@ export const GameServerSelectNav: FC = () => {
         navigate(newLink);
       }
     }
-  }, [gameServer]);
+  }, [
+    gameServer,
+    navigate,
+    currentLocationServer,
+    location.pathname,
+    gameServers,
+  ]);
 
-  if (!gameServers) return null;
+  // if there is there is only 1 server, don't show the dropdown
+  if (!gameServers || gameServers.length === 1) return null;
 
+  /* form tag is here to stretch width to 100% */
   return (
     <form>
       <Select
@@ -42,15 +50,15 @@ export const GameServerSelectNav: FC = () => {
           </div>
         )}
       >
-        <OptionGroup label="Gameservers">
+        <Select.OptionGroup>
           {gameServers.map(({ name, id }) => (
-            <Option key={id} value={name}>
+            <Select.Option key={id} value={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Option>
+            </Select.Option>
           ))}
-        </OptionGroup>
+        </Select.OptionGroup>
       </Select>
     </form>
   );

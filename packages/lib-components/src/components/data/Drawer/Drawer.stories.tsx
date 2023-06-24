@@ -1,15 +1,7 @@
 import React, { useMemo } from 'react';
 import { useState } from 'react';
-// import { useForm } from 'react-hook-form';
 import { Meta, StoryFn } from '@storybook/react';
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerBody,
-  DrawerHeading,
-  DrawerFooter,
-} from '.';
 import {
   Button,
   TextField,
@@ -17,6 +9,7 @@ import {
   Chip,
   RadioGroup,
   Switch,
+  Drawer,
 } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -75,9 +68,9 @@ export const Default: StoryFn = () => {
     <>
       <Button onClick={() => setOpen(true)} text="Open drawer" />
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <DrawerHeading>Product Details</DrawerHeading>
-          <DrawerBody>
+        <Drawer.Content>
+          <Drawer.Heading>Product Details</Drawer.Heading>
+          <Drawer.Body>
             <Status>
               Status: <Chip label="active" color="success" variant="outline" />
             </Status>
@@ -107,7 +100,11 @@ export const Default: StoryFn = () => {
                     label="Selection a price type"
                     name="priceType"
                     options={[
-                      { label: 'Fixed', labelPosition: 'left', value: 'fixed' },
+                      {
+                        label: 'Fixed',
+                        labelPosition: 'left',
+                        value: 'fixed',
+                      },
                       {
                         label: 'Variable',
                         labelPosition: 'left',
@@ -141,8 +138,8 @@ export const Default: StoryFn = () => {
                 />
               </CollapseList.Item>
             </form>
-          </DrawerBody>
-          <DrawerFooter>
+          </Drawer.Body>
+          <Drawer.Footer>
             <ButtonContainer>
               <Button
                 text="Cancel"
@@ -156,8 +153,8 @@ export const Default: StoryFn = () => {
                 form="myform"
               />
             </ButtonContainer>
-          </DrawerFooter>
-        </DrawerContent>
+          </Drawer.Footer>
+        </Drawer.Content>
       </Drawer>
     </>
   );

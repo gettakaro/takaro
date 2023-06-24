@@ -3,20 +3,24 @@ import {
   Company,
   Tooltip,
   Dialog,
-  DialogContent,
-  DialogHeading,
   Button,
+  IconButton,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
-import { FaTrash as TrashIcon, FaPencilAlt as EditIcon } from 'react-icons/fa';
+import {
+  AiOutlinePlus as AddIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineDelete as DeleteIcon,
+} from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import {
   ModuleCardContainer,
   SpacedRow,
   ActionIconsContainer,
   DeleteDialogContainer,
+  AddModuleCard,
 } from './style';
 
 interface IModuleCardProps {
@@ -39,35 +43,50 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer target="_blank" active={false} onClick={onClick}>
+    <ModuleCardContainer target="_blank" onClick={onClick}>
       <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>
           {mod.builtin ? (
-            <Tooltip label="This is a built-in module, you cannot edit or delete it">
-              <Company
-                key={`builtin-module-icon-${mod.id}`}
-                textVisible={false}
-                size="tiny"
-                iconColor="secondary"
-              />
+            <Tooltip>
+              <Tooltip.Trigger>
+                <Company
+                  key={`builtin-module-icon-${mod.id}`}
+                  textVisible={false}
+                  size="tiny"
+                  iconColor="secondary"
+                />
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                This is a built-in module, you cannot edit or delete it
+              </Tooltip.Content>
             </Tooltip>
           ) : (
             <>
-              <EditIcon
-                key={`edit-module-icon-${mod.id}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(PATHS.modules.update(mod.id));
-                }}
-              />
-              <TrashIcon
-                key={`remove-module-icon-${mod.id}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenDialog(true);
-                }}
-              />
+              <Tooltip>
+                <Tooltip.Trigger>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(PATHS.modules.update(mod.id));
+                    }}
+                    icon={<EditIcon key={`edit-module-icon-${mod.id}`} />}
+                  />
+                </Tooltip.Trigger>
+                <Tooltip.Content>Edit module</Tooltip.Content>
+              </Tooltip>
+              <Tooltip>
+                <Tooltip.Trigger>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenDialog(true);
+                    }}
+                    icon={<DeleteIcon key={`remove-module-icon-${mod.id}`} />}
+                  />
+                </Tooltip.Trigger>
+                <Tooltip.Content>Delete module</Tooltip.Content>
+              </Tooltip>
             </>
           )}
         </ActionIconsContainer>
@@ -80,11 +99,11 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
       </span>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading size={4}>
+        <Dialog.Content>
+          <Dialog.Heading size={4}>
             Module:{' '}
             <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <DeleteDialogContainer>
             <h2>Delete module</h2>
             <p>
@@ -99,8 +118,23 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
               color="error"
             />
           </DeleteDialogContainer>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>
+  );
+};
+
+interface EmptyModuleCardDefinitionProps {
+  onClick: () => void;
+}
+
+export const EmptyModuleCardDefinition: FC<EmptyModuleCardDefinitionProps> = ({
+  onClick,
+}) => {
+  return (
+    <AddModuleCard onClick={onClick}>
+      <AddIcon size={24} />
+      <h3>Module</h3>
+    </AddModuleCard>
   );
 };

@@ -1,12 +1,10 @@
-import { useContext, createContext } from 'react';
+import { useContext, createContext, SetStateAction, Dispatch } from 'react';
 import { useDrawer } from './useDrawer';
 
 type ContextType =
   | (ReturnType<typeof useDrawer> & {
-      setLabelId: React.Dispatch<React.SetStateAction<string | undefined>>;
-      setDescriptionId: React.Dispatch<
-        React.SetStateAction<string | undefined>
-      >;
+      setLabelId: Dispatch<SetStateAction<string | undefined>>;
+      setDescriptionId: Dispatch<SetStateAction<string | undefined>>;
     })
   | null;
 

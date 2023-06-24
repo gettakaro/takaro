@@ -23,7 +23,7 @@ export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
 
 export { ErrorMessage } from './ErrorMessage';
-export type { ErrorMessageProps } from './ErrorMessage';
+export type { ErrorProps } from './ErrorMessage';
 
 export { PageNotFound } from './PageNotFound';
 export type { PageNotFoundProps } from './PageNotFound';

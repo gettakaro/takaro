@@ -91,7 +91,12 @@ const InnerItem = styled.div`
   }
 `;
 
-export const Header: FC = () => {
+interface HeaderProps {
+  isLoading?: boolean;
+  idToNameMap?: Record<string, string>;
+}
+
+export const Header: FC<HeaderProps> = ({ isLoading, idToNameMap }) => {
   const { userData } = useUser();
   const { logOut } = useAuth();
   const navigate = useNavigate();
@@ -102,7 +107,7 @@ export const Header: FC = () => {
     <Container>
       <Left>
         <h2>{location.pathname.split('/')[1] || 'dashboard'}</h2>
-        <BreadCrumbs />
+        {!isLoading && <BreadCrumbs idToNameMap={idToNameMap} />}
       </Left>
       <Dropdown
         open={openDropdown}

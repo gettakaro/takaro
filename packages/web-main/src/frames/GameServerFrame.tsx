@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import { ErrorFallback, LoadingPage, styled } from '@takaro/lib-components';
+import { ErrorFallback, styled } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { Header } from 'components/Header';
 import { Navbar, NavbarLink } from 'components/Navbar';
@@ -40,7 +40,7 @@ export const ServerFrame: FC = () => {
     redirect(PATHS.gameServers.overview());
   }
 
-  const { isLoading, isError } = useGameServer(serverId!);
+  const { isError, isLoading, data: gameserver } = useGameServer(serverId!);
 
   const links: NavbarLink[] = [
     {
@@ -74,10 +74,14 @@ export const ServerFrame: FC = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <Header />
+        <Header
+          isLoading={isLoading}
+          idToNameMap={
+            gameserver ? { [serverId!]: gameserver.name } : undefined
+          }
+        />
         <Page>
           <ErrorBoundary fallback={<ErrorFallback />}>
-            {isLoading && <LoadingPage />}
             {isError ? (
               <div>Server not found</div>
             ) : (

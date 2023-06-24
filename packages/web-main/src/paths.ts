@@ -7,8 +7,8 @@ export const PATHS = {
   moduleDefinitions: () => '/modules',
 
   settings: {
-    GameServerSettings: '/settings/gameservers',
-    discordSettings: '/settings/discord',
+    GameServerSettings: () => '/settings/gameservers',
+    discordSettings: () => '/settings/discord',
   },
 
   gameServers: {

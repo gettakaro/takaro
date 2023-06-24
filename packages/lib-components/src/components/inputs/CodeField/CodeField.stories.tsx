@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { CodeField, CodeFieldProps } from './index';
+import { CodeField, CodeFieldProps } from '../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button } from '../../actions';
 import { z } from 'zod';
@@ -23,7 +23,7 @@ export default {
 
 type FormFields = { code: string };
 
-export const Default: StoryFn<CodeFieldProps> = (args) => {
+export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
   const [result, setResult] = useState<string>();
 
   const validationSchema = useMemo(
@@ -38,7 +38,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
     [args.fields]
   );
 
-  const { control, handleSubmit, formState } = useForm<FormFields>({
+  const { handleSubmit, control } = useForm<FormFields>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
@@ -51,7 +51,6 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <CodeField
           control={control}
-          error={formState.errors.code!}
           fields={args.fields}
           name="code"
           loading={args.loading}
@@ -70,7 +69,7 @@ export const Default: StoryFn<CodeFieldProps> = (args) => {
 
 export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   const [result, setResult] = useState<string>();
-  const { control, formState, handleSubmit } = useForm<FormFields>();
+  const { control, handleSubmit } = useForm<FormFields>();
   const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<FormFields> = async ({ code }) => {
@@ -87,7 +86,6 @@ export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
         <CodeField
           autoSubmit={handleSubmit(onSubmit)}
           control={control}
-          error={formState.errors.code}
           fields={6}
           loading={loading}
           name="code"
