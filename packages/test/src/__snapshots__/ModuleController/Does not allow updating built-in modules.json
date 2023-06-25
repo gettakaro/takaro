@@ -3,7 +3,7 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Cannot update builtin module"
+        "message": "Cannot modify builtin modules"
       }
     },
     "data": {}

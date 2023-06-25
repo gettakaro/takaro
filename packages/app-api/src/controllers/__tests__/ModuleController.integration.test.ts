@@ -102,7 +102,7 @@ const tests = [
             'BadRequestError'
           );
           expect(error.response?.data.meta.error.message).to.equal(
-            'Cannot update builtin module'
+            'Cannot modify builtin modules'
           );
         }
       }
@@ -146,7 +146,7 @@ const tests = [
             'BadRequestError'
           );
           expect(error.response?.data.meta.error.message).to.equal(
-            'Cannot delete builtin module'
+            'Cannot modify builtin modules'
           );
         }
       }
