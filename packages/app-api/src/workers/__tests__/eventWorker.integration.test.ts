@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { IGamePlayer } from '@takaro/gameserver';
+import { IGamePlayer } from '@takaro/modules';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
 import { PlayerService } from '../../service/PlayerService.js';

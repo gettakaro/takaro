@@ -1,4 +1,4 @@
-import { GameEvents, EventMapping } from '@takaro/gameserver';
+import { GameEvents, EventMapping } from '@takaro/modules';
 
 export interface IBaseJobData {
   [key: string]: unknown;

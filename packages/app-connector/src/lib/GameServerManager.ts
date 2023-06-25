@@ -1,4 +1,5 @@
-import { TakaroEmitter, GameEvents, getGame } from '@takaro/gameserver';
+import { TakaroEmitter, getGame } from '@takaro/gameserver';
+import { EventTypes, GameEvents } from '@takaro/modules';
 import { logger } from '@takaro/util';
 import { AdminClient, Client } from '@takaro/apiclient';
 import { config } from '../config.js';
@@ -111,10 +112,10 @@ class GameServerManager {
       this.log.error('Error from game server', error);
     });
 
-    emitter.on(GameEvents.LOG_LINE, async (logLine) => {
+    emitter.on(EventTypes.LOG_LINE, async (logLine) => {
       this.log.debug('Received a logline event', logLine);
       await this.eventsQueue.add({
-        type: GameEvents.LOG_LINE,
+        type: EventTypes.LOG_LINE,
         event: logLine,
         domainId,
         gameServerId,

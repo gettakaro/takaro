@@ -1,9 +1,6 @@
 export * from './interfaces/GameServer.js';
-export * from './interfaces/GamePlayer.js';
 
 export { TakaroEmitter } from './TakaroEmitter.js';
-
-export * from './interfaces/events.js';
 
 export { Mock } from './gameservers/mock/index.js';
 export {

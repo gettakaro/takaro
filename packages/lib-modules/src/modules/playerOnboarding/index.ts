@@ -1,6 +1,5 @@
-import { GameEvents } from '@takaro/gameserver';
 import { BuiltinModule } from '../../BuiltinModule.js';
-
+import { EventTypes } from '../../dto/index.js';
 export class PlayerOnboarding extends BuiltinModule {
   constructor() {
     super(
@@ -23,7 +22,7 @@ export class PlayerOnboarding extends BuiltinModule {
 
     this.hooks = [
       {
-        eventType: GameEvents.PLAYER_CONNECTED,
+        eventType: EventTypes.PLAYER_CONNECTED,
         name: 'playerConnected',
         function: '',
       },

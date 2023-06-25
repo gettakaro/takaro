@@ -1,6 +1,5 @@
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EventMapping, GameEvents } from '@takaro/gameserver';
 import { TakaroDTO } from '@takaro/util';
 
 export enum DiscordEvents {
@@ -47,6 +46,3 @@ export class HookEventDiscordMessage extends TakaroDTO<HookEventDiscordMessage> 
   @Type(() => EventDiscordChannel)
   channel: EventDiscordChannel;
 }
-
-export type HookEvents = EventMapping[GameEvents] | HookEventDiscordMessage;
-export type HookEventTypes = HookEvents['type'];

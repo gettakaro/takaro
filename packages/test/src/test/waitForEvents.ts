@@ -1,4 +1,4 @@
-import { GameEvents } from '@takaro/gameserver';
+import { GameEvents } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
