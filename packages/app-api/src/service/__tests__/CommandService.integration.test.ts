@@ -13,8 +13,8 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { IGamePlayer, Mock } from '@takaro/gameserver';
-import { EventChatMessage, EventTypes } from '@takaro/modules';
+import { Mock } from '@takaro/gameserver';
+import { IGamePlayer, EventChatMessage, EventTypes } from '@takaro/modules';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
