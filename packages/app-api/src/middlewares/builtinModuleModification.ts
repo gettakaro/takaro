@@ -16,6 +16,8 @@ export async function builtinModuleModificationMiddleware(
 
   if (req.body.moduleId) {
     mod = await moduleService.findOne(req.body.moduleId);
+  } else if (type === 'module') {
+    mod = await moduleService.findOne(req.params.id);
   } else {
     mod = await moduleService.findOneBy(
       type,

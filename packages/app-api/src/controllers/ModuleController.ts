@@ -115,8 +115,6 @@ export class ModuleController {
     const service = new ModuleService(req.domainId);
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
-    if (mod.builtin)
-      throw new errors.BadRequestError('Cannot update builtin module');
     return apiResponse(await service.update(params.id, data));
   }
 
@@ -130,8 +128,6 @@ export class ModuleController {
     const service = new ModuleService(req.domainId);
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
-    if (mod.builtin)
-      throw new errors.BadRequestError('Cannot delete builtin module');
     await service.delete(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
