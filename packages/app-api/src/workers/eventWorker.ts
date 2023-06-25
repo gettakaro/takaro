@@ -5,7 +5,7 @@ import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
   GameEvents,
   EventPlayerConnected,
-  BaseEvent,
+  BaseGameEvent,
   EventChatMessage,
 } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
@@ -25,11 +25,13 @@ export class EventsWorker extends TakaroWorker<IEventQueueData> {
   }
 }
 
-function isConnectedEvent(a: BaseEvent<unknown>): a is EventPlayerConnected {
+function isConnectedEvent(
+  a: BaseGameEvent<unknown>
+): a is EventPlayerConnected {
   return a.type === GameEvents.PLAYER_CONNECTED;
 }
 
-function isChatMessageEvent(a: BaseEvent<unknown>): a is EventChatMessage {
+function isChatMessageEvent(a: BaseGameEvent<unknown>): a is EventChatMessage {
   return a.type === GameEvents.CHAT_MESSAGE;
 }
 
