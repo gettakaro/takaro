@@ -208,9 +208,7 @@ export class CommandService extends TakaroService<
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(
-        await new FunctionCreateDTO()
-      );
+      const newFn = await functionsService.create(new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 

@@ -33,6 +33,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 import { DiscordEvents, HookEventTypes } from '@takaro/modules';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
@@ -105,7 +106,10 @@ export class HookController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(HookOutputDTOAPI)
   @Post('/hook')
   async create(@Req() req: AuthenticatedRequest, @Body() data: HookCreateDTO) {
@@ -113,7 +117,10 @@ export class HookController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(HookOutputDTOAPI)
   @Put('/hook/:id')
   async update(
@@ -125,7 +132,10 @@ export class HookController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

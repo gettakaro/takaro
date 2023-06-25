@@ -208,7 +208,7 @@ export class AuthService extends DomainScoped {
   static getAuthMiddleware(permissions: PERMISSIONS[]) {
     return async (
       req: AuthenticatedRequest,
-      res: Response,
+      _res: Response,
       next: NextFunction
     ) => {
       try {
