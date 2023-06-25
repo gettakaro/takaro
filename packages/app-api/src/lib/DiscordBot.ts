@@ -27,6 +27,10 @@ class DiscordBot {
     return `https://discord.com/oauth2/authorize?client_id=${this.client.user?.id}&scope=bot`;
   }
 
+  get botUserId() {
+    return this.client.user?.id;
+  }
+
   async start() {
     if (!config.get('discord.botToken')) {
       this.log.warn(
