@@ -10,9 +10,9 @@
   },
   "status": 400,
   "test": {
-    "group": "ModuleController",
+    "group": "modifyBuiltinModules",
     "snapshot": true,
-    "name": "Does not allow updating built-in modules",
+    "name": "cannot delete command",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true

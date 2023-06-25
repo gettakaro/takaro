@@ -244,4 +244,27 @@ export class ModuleService extends TakaroService<
 
     return Promise.all([commands, hooks, cronjobs]);
   }
+
+  async findOneBy(
+    itemType: string,
+    itemId: string | undefined
+  ): Promise<ModuleOutputDTO | undefined> {
+    if (!itemId) {
+      return;
+    }
+
+    switch (itemType) {
+      case 'cronjob':
+        return await this.repo.findByCronJob(itemId);
+
+      case 'command':
+        return await this.repo.findByCommand(itemId);
+
+      case 'hook':
+        return await this.repo.findByHook(itemId);
+
+      case 'function':
+        return await this.repo.findByFunction(itemId);
+    }
+  }
 }
