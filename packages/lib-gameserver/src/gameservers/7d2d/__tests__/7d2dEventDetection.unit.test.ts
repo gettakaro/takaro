@@ -4,7 +4,7 @@ import {
   EventChatMessage,
   EventPlayerConnected,
   GameEvents,
-} from '../../../interfaces/events.js';
+} from '@takaro/modules';
 import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
 
