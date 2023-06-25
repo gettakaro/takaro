@@ -11,12 +11,14 @@ export class ChatBridge extends BuiltinModule {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
-          allowBotMessage: {
+          sendPlayerConnected: {
             type: 'boolean',
-            default: false,
+            description: 'Send a message when a player connects.',
+            default: true,
           },
-          allowTakaroBot: {
+          sendPlayerDisconnected: {
             type: 'boolean',
+            description: 'Send a message when a player disconnects.',
             default: true,
           },
         },
@@ -33,6 +35,16 @@ export class ChatBridge extends BuiltinModule {
       {
         eventType: GameEvents.CHAT_MESSAGE,
         name: 'GameToDiscord',
+        function: '',
+      },
+      {
+        eventType: GameEvents.PLAYER_CONNECTED,
+        name: 'PlayerConnected',
+        function: '',
+      },
+      {
+        eventType: GameEvents.PLAYER_DISCONNECTED,
+        name: 'PlayerDisconnected',
         function: '',
       },
     ];
