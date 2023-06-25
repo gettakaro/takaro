@@ -1,4 +1,4 @@
-import { Chip } from '../../../components';
+import { Chip } from '../../data/Chip';
 import { styled } from '../../../styled';
 
 export const Container = styled.div``;

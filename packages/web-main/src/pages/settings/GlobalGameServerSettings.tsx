@@ -2,7 +2,6 @@ import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, TextField } from '@takaro/lib-components';
-import * as yup from 'yup';
 import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
@@ -63,16 +62,11 @@ export const GlobalGameServerSettings: FC = () => {
 
   const settingsComponents: ReactElement[] = [];
 
+  // TODO: this should be mapped using the new config generator
   if (data) {
     mapSettings(data, async (key, value) =>
       settingsComponents.push(
-        <TextField
-          control={control}
-          label={key}
-          name={key}
-          key={key}
-          value={value}
-        />
+        <TextField control={control} label={key} name={key} key={key} />
       )
     );
   }

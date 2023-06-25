@@ -10,6 +10,7 @@ import {
   SettingsApi,
   CommandApi,
   VariableApi,
+  DiscordApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -167,6 +168,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   get variable() {
     return new VariableApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get discord() {
+    return new DiscordApi(
       {
         isJsonMime: this.isJsonMime,
       },

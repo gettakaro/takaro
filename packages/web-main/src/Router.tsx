@@ -14,7 +14,7 @@ import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
 
 import { SettingsFrame } from './frames/SettingsFrame';
 import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
-import { ConnectionSettings } from './pages/settings/ConnectionSettings';
+import { DiscordSettings } from './pages/settings/DiscordSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
@@ -55,11 +55,11 @@ export const Router: FC = () => (
         <Route element={<SettingsFrame />}>
           <Route
             element={<GlobalGameServerSettings />}
-            path={PATHS.settings.GameServerSettings}
+            path={PATHS.settings.GameServerSettings()}
           />
           <Route
-            element={<ConnectionSettings />}
-            path={PATHS.settings.connections}
+            element={<DiscordSettings />}
+            path={PATHS.settings.discordSettings()}
           />
         </Route>
         <Route element={<GameServers />} path="/server/" />

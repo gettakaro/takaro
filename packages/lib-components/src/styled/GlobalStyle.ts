@@ -8,6 +8,7 @@ const skeletonLoading = keyframes`
 `;
 
 export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
+
   *::selection {
     background-color: ${({ theme }) => theme.colors.primary};
     color: white;
@@ -18,7 +19,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     box-sizing: border-box;
   }
 
-  #root {
+  #takaro-root {
     margin: 0 auto;
     overflow-x: hidden;
   }
@@ -32,10 +33,11 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     scroll-behavior: smooth;
     line-height: 1.5;
     font-family: 'Inter', sans-serif;
-    font-weight: 400; /* Default size */
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
+    scrollbar-gutter: stable both-edges;
   }
 
   body{
@@ -43,7 +45,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow: hidden;
   }
 
-  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend {
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend{
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     font-size: ${({ theme }) => theme.fontSize.medium};
@@ -75,20 +77,22 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 400;
   }
 
-
-
-
   form {
     display: block;
     width: 100%;
+    fieldset {
+      border: none;
+    }
   }
 
   input, textarea {
+    box-sizing: border-box;
     margin: 0;
     outline: 0;
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
     border-width: 0.1rem;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
+    font-size: ${({ theme }) => theme.fontSize.small};
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
@@ -106,7 +110,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   textarea {
     resize: vertical;
     width: calc(100% - ${({ theme }) => theme.spacing[1]} * 2);
-    min-height: 200px;
   }
 
   input[type='search']::-webkit-search-decoration,
@@ -179,8 +182,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       border: none;
     }
   }
-
-  
 
   /* notistack snackbar styling */
   ${SnackBarStyles}

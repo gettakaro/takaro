@@ -1,0 +1,76 @@
+import React from 'react';
+import modules from './modules.json';
+
+export function Commands({commands}) {
+  if(!commands.length) return null;
+  return (
+    <>
+      <h4>Commands</h4>
+      <ul>
+        {commands.map((command, commandIndex) => (
+          <li>${command.name} - {command.helpText}</li>
+        ))}
+      </ul>
+    </>
+  )
+}
+
+export function Hooks({hooks}) {
+  if(!hooks.length) return null;
+  return (
+    <>
+      <h4>Hooks</h4>
+      <ul>
+        {hooks.map((hook, hookIndex) => (
+          <li key={hookIndex}>
+            {hook.name} - Regex: {hook.regex}, Event Type: <code>{hook.eventType}</code>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export function CronJobs({cronJobs}) {
+  if(!cronJobs.length) return null;
+  return (
+    <>
+      <h4>Cron Jobs</h4>
+      <ul>
+        {cronJobs.map((job, jobIndex) => (
+          <li key={jobIndex}>
+            {job.name} - Temporal Value: {job.temporalValue}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export function ModulesList() {
+  return (
+    <div>
+      {modules.map((mod, index) => (
+        <div key={index}>
+          <h3>{mod.name}</h3>
+          <p>{mod.description}</p>
+          <Commands commands={mod.commands} />
+          <CronJobs cronJobs={mod.cronJobs} />
+          <Hooks hooks={mod.hooks} />
+
+        </div>
+      ))}
+    </div>
+
+);
+}
+
+# Builtin modules
+
+Takaro provides a set of builtin modules. These are created and maintained by the Takaro team. You can configure and install these without having to write any code.
+
+You can install modules by browsing to a gameserver and clicking the "Modules" link. From there you can configure and install modules.
+
+## Available modules
+
+<ModulesList />

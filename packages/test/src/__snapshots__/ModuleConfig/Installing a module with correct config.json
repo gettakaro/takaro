@@ -7,9 +7,7 @@
       "userConfig": {
         "foo": "bar"
       },
-      "systemConfig": {
-        "cronJobs": {}
-      }
+      "systemConfig": {}
     }
   },
   "status": 200,

@@ -34,6 +34,7 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
+import { DiscordEvents, HookEventTypes, HookEvents } from '@takaro/modules';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -41,7 +42,6 @@ export class IsSafeRegex implements ValidatorConstraintInterface {
     return safeRegex(regex);
   }
 }
-
 export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;
@@ -53,8 +53,8 @@ export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @ValidateNested()
   function: FunctionOutputDTO;
 
-  @IsEnum(GameEvents)
-  eventType: GameEvents;
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  eventType!: HookEventTypes;
 
   @IsUUID()
   moduleId: string;
@@ -75,12 +75,16 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsUUID()
   moduleId: string;
 
-  @IsEnum(GameEvents)
-  eventType: GameEvents;
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  eventType!: HookEventTypes;
 
   @IsOptional()
   @IsString()
   function?: string;
+
+  @IsOptional()
+  @IsString()
+  discordChannelId?: string;
 }
 
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
@@ -97,21 +101,25 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   regex: string;
 
-  @IsEnum(GameEvents)
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
   @IsOptional()
-  eventType: GameEvents;
+  eventType!: HookEventTypes;
 
   @IsOptional()
   @IsString()
   function?: string;
+
+  @IsOptional()
+  @IsString()
+  discordChannelId?: string;
 }
 
 export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
 
-  @IsEnum(GameEvents)
-  eventType: GameEvents;
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  eventType!: HookEventTypes;
 
   @Type(() => IPlayerReferenceDTO)
   @ValidateNested()
@@ -197,7 +205,7 @@ export class HookService extends TakaroService<
     return id;
   }
 
-  async handleEvent(eventData: EventMapping[GameEvents], gameServerId: string) {
+  async handleEvent(eventData: HookEvents, gameServerId: string) {
     this.log.debug('Handling hooks', { eventData });
     const gameServerService = new GameServerService(this.domainId);
 

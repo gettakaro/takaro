@@ -90,6 +90,7 @@ export interface NavbarLink {
   label: string;
   icon: ReactElement;
   external?: boolean;
+  end?: boolean;
 }
 
 interface NavbarProps {
@@ -110,7 +111,7 @@ export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
       {gameServerNav && <GameServerSelectNav />}
 
       <Nav>
-        {links.map(({ path, label, icon, external = false }) =>
+        {links.map(({ path, label, icon, external = false, end = true }) =>
           external ? (
             <a key={path} target="_blank" rel="noopener noreferrer" href={path}>
               <span>
@@ -120,7 +121,7 @@ export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
               <ExternalLinkIcon size={16} />
             </a>
           ) : (
-            <NavLink to={path} key={path} end>
+            <NavLink to={path} key={path} end={end}>
               <span>
                 {cloneElement(icon, { size: 20 })}
                 <p>{label}</p>

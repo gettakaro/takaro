@@ -2,6 +2,7 @@ import baseStyled, { ThemedStyledInterface } from 'styled-components';
 import { breakpoint } from './breakpoint';
 import { elevationLight, elevationDark } from './elevation';
 import { spacing } from './spacing';
+import { zIndex } from './zIndex';
 
 const fontSize = {
   tiny: '1rem',
@@ -27,6 +28,7 @@ export const lightTheme = {
   breakpoint,
   fontSize,
   borderRadius,
+  zIndex,
   colors: {
     primary: '#664de5',
     secondary: '#030917',
@@ -55,6 +57,7 @@ export const darkTheme: ThemeType = {
   spacing,
   breakpoint,
   fontSize,
+  zIndex,
   borderRadius,
   colors: {
     primary: '#664DE5',

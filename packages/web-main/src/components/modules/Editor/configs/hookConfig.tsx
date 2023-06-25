@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Option, OptionGroup, Select, TextField } from '@takaro/lib-components';
+import { Select, TextField } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useHook, useHookUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
@@ -36,7 +36,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
       setValue('regex', data?.regex);
       setValue('eventType', data?.eventType);
     }
-  }, [data]);
+  }, [data, setValue]);
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     await mutateAsync({
@@ -59,15 +59,15 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
           );
         }}
       >
-        <OptionGroup label="eventType">
+        <Select.OptionGroup label="eventType">
           {Object.values(HookCreateDTOEventTypeEnum).map((name) => (
-            <Option key={name} value={name}>
+            <Select.Option key={name} value={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Option>
+            </Select.Option>
           ))}
-        </OptionGroup>
+        </Select.OptionGroup>
       </Select>
       <StyledButton fullWidth type="submit" text="Save" />
     </form>

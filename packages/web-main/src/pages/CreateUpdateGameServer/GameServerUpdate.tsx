@@ -3,16 +3,9 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
   Select,
-  OptionGroup,
-  Option,
   TextField,
-  DrawerContent,
-  DrawerHeading,
   Drawer,
-  DrawerFooter,
-  DrawerBody,
   CollapseList,
-  Tooltip,
   ErrorMessage,
 } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
@@ -145,9 +138,9 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeading>Edit Game Server</DrawerHeading>
-        <DrawerBody>
+      <Drawer.Content>
+        <Drawer.Heading>Edit Game Server</Drawer.Heading>
+        <Drawer.Body>
           <CollapseList>
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -176,15 +169,15 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                     </div>
                   )}
                 >
-                  <OptionGroup label="Games">
+                  <Select.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Option key={`select-${name}`} value={value}>
+                      <Select.Option key={`select-${name}`} value={value}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Option>
+                      </Select.Option>
                     ))}
-                  </OptionGroup>
+                  </Select.OptionGroup>
                 </Select>
               </CollapseList.Item>
               <CollapseList.Item title="Connection info">
@@ -193,8 +186,8 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
-        </DrawerBody>
-        <DrawerFooter>
+        </Drawer.Body>
+        <Drawer.Footer>
           <ButtonContainer>
             <Button
               text="Cancel"
@@ -223,8 +216,8 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               />
             )}
           </ButtonContainer>
-        </DrawerFooter>
-      </DrawerContent>
+        </Drawer.Footer>
+      </Drawer.Content>
     </Drawer>
   );
 };

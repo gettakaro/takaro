@@ -45,15 +45,3 @@ Optionally (but recommended!), you can set up some testing data automatically.
 # Generate data for the standard development setup
 docker-compose exec takaro node scripts/dev-data.mjs
 ```
-
-### Working on app-agent
-
-app-agent will run inside the dev container but it will use the 'local execution mode'. This means code is executed directly in-process, without isolation. **THIS IS EXTREMELY INSECURE for production deployments**. If you need to work on app-agent with the real isolation, you will need to run app-agent on your host directly. app-agent needs to execute nerdctl to talk to containerd. I haven't been able to get this properly setup in the docker-compose file.. :(.
-
-```
-# install https://github.com/containerd/nerdctl
-
-# Install rootless
-sudo apt install uidmap
-containerd-rootless-setuptool.sh install
-```

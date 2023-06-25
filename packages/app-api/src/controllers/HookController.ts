@@ -34,6 +34,7 @@ import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { DiscordEvents, HookEventTypes } from '@takaro/modules';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -61,8 +62,8 @@ class HookSearchInputAllowedFilters {
   name!: string;
 
   @IsOptional()
-  @IsEnum(GameEvents)
-  eventType!: GameEvents;
+  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  eventType!: HookEventTypes;
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {

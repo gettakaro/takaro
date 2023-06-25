@@ -217,6 +217,7 @@ export class ModuleService extends TakaroService<
 
         const data = await new HookCreateDTO().construct({
           ...h,
+          eventType: h.eventType,
           moduleId: mod.id,
         });
         return hookService.create(data);

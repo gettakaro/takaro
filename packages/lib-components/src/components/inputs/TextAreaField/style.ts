@@ -20,4 +20,9 @@ export const TextArea = styled.textarea<{ hasError: boolean }>`
   border: 0.1rem solid
     ${({ theme, hasError }) =>
       hasError ? theme.colors.error : theme.colors.backgroundAlt};
+
+  &:focus {
+    border-color: ${({ theme, hasError }) =>
+      hasError ? theme.colors.error : theme.colors.primary};
+  }
 `;

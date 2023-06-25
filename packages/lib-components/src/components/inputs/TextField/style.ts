@@ -1,9 +1,12 @@
 import { styled } from '../../../styled';
 
-export const Container = styled.div<{ marginBottom?: string }>`
-  width: 100%;
+export const Wrapper = styled.div<{ marginBottom?: string }>`
   margin-bottom: ${({ theme, marginBottom }) =>
     marginBottom ? marginBottom : theme.spacing[2]};
+`;
+
+export const Container = styled.div`
+  width: 100%;
   position: relative;
 
   p {
@@ -51,8 +54,9 @@ export const InputContainer = styled.div`
   }
 `;
 
-export const PrefixContainer = styled.div`
-  background-color: ${({ theme }): string => theme.colors.primary};
+export const PrefixContainer = styled.div<{ hasError: boolean }>`
+  background-color: ${({ theme, hasError }): string =>
+    hasError ? theme.colors.error : theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,8 +65,9 @@ export const PrefixContainer = styled.div`
   border-bottom-left-radius: 0.25rem;
 `;
 
-export const SuffixContainer = styled.div`
-  background-color: ${({ theme }): string => theme.colors.primary};
+export const SuffixContainer = styled.div<{ hasError: boolean }>`
+  background-color: ${({ theme, hasError }): string =>
+    hasError ? theme.colors.error : theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;

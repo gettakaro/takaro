@@ -2,16 +2,13 @@ import {
   ModuleInstallationOutputDTO,
   ModuleOutputDTO,
 } from '@takaro/apiclient';
-import {
-  Tooltip,
-  Dialog,
-  DialogContent,
-  DialogHeading,
-  Button,
-} from '@takaro/lib-components';
+import { Tooltip, Dialog, Button, IconButton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
-import { FaTrash as TrashIcon, FaWrench as WrenchIcon } from 'react-icons/fa';
+import {
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineSetting as ConfigIcon,
+} from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import {
   ModuleCardContainer,
@@ -50,7 +47,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer active={false}>
+    <ModuleCardContainer>
       <h2>{mod.name}</h2>
 
       <p>{mod.description}</p>
@@ -64,21 +61,35 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
         <ActionIconsContainer>
           {installation ? (
             <>
-              <Tooltip label="Configure">
-                <div>
-                  <WrenchIcon />
-                </div>
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <IconButton
+                    onClick={() => {
+                      navigate(
+                        PATHS.gameServer.moduleInstallations.install(
+                          gameServerId,
+                          mod.id
+                        )
+                      );
+                    }}
+                    icon={<ConfigIcon />}
+                  />
+                </Tooltip.Trigger>
+                <Tooltip.Content>Configure</Tooltip.Content>
               </Tooltip>
-              <Tooltip label="Uninstall">
-                <div>
-                  <TrashIcon
-                    key={`uninstall-module-icon-${mod.id}`}
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
                       setOpenDialog(true);
                     }}
+                    icon={
+                      <DeleteIcon key={`uninstall-module-icon-${mod.id}`} />
+                    }
                   />
-                </div>
+                </Tooltip.Trigger>
+                <Tooltip.Content>Uninstall</Tooltip.Content>
               </Tooltip>
             </>
           ) : (
@@ -98,11 +109,11 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
       </SpacedRow>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeading>
+        <Dialog.Content>
+          <Dialog.Heading>
             Module:{' '}
             <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </DialogHeading>
+          </Dialog.Heading>
           <DeleteDialogContainer>
             <h2>Uninstall module</h2>
             <p>
@@ -117,7 +128,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
               color="error"
             />
           </DeleteDialogContainer>
-        </DialogContent>
+        </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>
   );

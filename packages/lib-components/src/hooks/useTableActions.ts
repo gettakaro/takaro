@@ -39,7 +39,7 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
     return {
       rows: response.data.data,
       pageCount: response.data.meta.total
-        ? Math.ceil(response.data.meta.total! / response.data.meta.limit!)
+        ? Math.ceil(response.data.meta.total / response.data.meta.limit!)
         : Math.ceil(response.data.data.length / response.data.meta.limit!),
       total: response.data.meta.total!,
     };

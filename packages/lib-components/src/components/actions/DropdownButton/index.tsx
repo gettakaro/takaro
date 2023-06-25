@@ -78,7 +78,7 @@ export interface DropdownButtonProps {
 export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [selected, setSelected] = useState<number>(0);
-  const { x, y, reference, floating, strategy } = useFloating();
+  const { x, y, refs, strategy } = useFloating();
 
   const parentRef = createRef<HTMLDivElement>();
 
@@ -97,7 +97,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
 
   return (
     <Wrapper ref={parentRef}>
-      <Container ref={reference}>
+      <Container ref={refs.setReference}>
         <CurrentAction onClick={handleSelectedActionClicked}>
           {children[selected].props.text}
         </CurrentAction>
@@ -111,7 +111,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
           <ActionMenu
             selectedState={[selected, setSelected]}
             attributes={{ x, y, strategy }}
-            ref={floating}
+            ref={refs.setFloating}
           >
             {children}
           </ActionMenu>

@@ -1,13 +1,10 @@
-import { styled, DialogBody, Chip } from '@takaro/lib-components';
+import { styled, Dialog } from '@takaro/lib-components';
 
 export const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.large};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
 
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
-  }
   &:active {
     border-color: ${({ theme }) => theme.colors.primary};
   }
@@ -55,7 +52,7 @@ export const Body = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
 `;
 
-export const StyledDialogBody = styled(DialogBody)`
+export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }

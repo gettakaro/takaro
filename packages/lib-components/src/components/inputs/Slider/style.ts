@@ -8,7 +8,9 @@ export const Container = styled.div`
   width: 100%;
 `;
 
-export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
+export const StyledSlider = styled<any | { color: Color; size: Size }>(
+  SliderComp
+)`
 
   .rc-slider-track {
     background-color: ${({ theme, color }): string => theme.colors[color]};
@@ -41,7 +43,7 @@ export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
       height: 25%;
       width: 25%;
       border-radius: 100%;
-      background-color: ${({ theme }) => theme.colors.white};
+      background-color: ${({ theme }) => theme.colors.white} ;
     }
 
     ${({ size, theme }) => {
@@ -84,6 +86,7 @@ export const StyledSlider = styled(SliderComp)<{ color: Color; size: Size }>`
 
   .rc-slider-tooltip-inner {
     background-color: ${({ theme, color }) => theme.colors[color]}!important;
+    box-shadow: ${({ theme }) => theme.elevation[2]};
     font-weight: 600;
   }
 
