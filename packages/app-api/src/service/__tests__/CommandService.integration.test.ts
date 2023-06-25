@@ -13,12 +13,8 @@ import {
 } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import {
-  EventChatMessage,
-  GameEvents,
-  IGamePlayer,
-  Mock,
-} from '@takaro/gameserver';
+import { IGamePlayer, Mock } from '@takaro/gameserver';
+import { EventChatMessage, EventTypes } from '@takaro/modules';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
@@ -71,7 +67,7 @@ async function setup(
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(
-    GameEvents.PLAYER_CONNECTED,
+    EventTypes.PLAYER_CONNECTED,
     5
   );
 

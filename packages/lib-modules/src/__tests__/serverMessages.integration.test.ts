@@ -1,9 +1,9 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
   modulesTestSetup,
 } from './setupData.integration.test.js';
+import { GameEvents } from '../dto/index.js';
 
 const group = 'Server messages';
 

@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { IncomingMessage, Server as HttpServer, ServerResponse } from 'http';
 import { config } from '../config.js';
 import { ctx, errors, logger } from '@takaro/util';
-import { GameEvents, EventMapping } from '@takaro/gameserver';
+import { EventMapping, HookEventTypes } from '@takaro/modules';
 import { instrument } from '@socket.io/admin-ui';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { NextFunction, Response } from 'express';
@@ -12,8 +12,8 @@ import { Redis } from '@takaro/db';
 interface ServerToClientEvents {
   gameEvent: (
     gameserverId: string,
-    type: GameEvents,
-    data: EventMapping[GameEvents]
+    type: HookEventTypes,
+    data: EventMapping[HookEventTypes]
   ) => void;
   pong: () => void;
 }

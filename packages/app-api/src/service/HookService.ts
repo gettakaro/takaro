@@ -1,14 +1,6 @@
 import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
-import {
-  GameEvents,
-  EventMapping,
-  EventChatMessage,
-  EventPlayerConnected,
-  EventPlayerDisconnected,
-  EventLogLine,
-  IPlayerReferenceDTO,
-} from '@takaro/gameserver';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
@@ -34,7 +26,16 @@ import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
-import { DiscordEvents, HookEventTypes, HookEvents } from '@takaro/modules';
+import {
+  EventMapping,
+  EventTypes,
+  HookEventTypes,
+  HookEvents,
+  EventChatMessage,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
+  EventLogLine,
+} from '@takaro/modules';
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -53,7 +54,7 @@ export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @ValidateNested()
   function: FunctionOutputDTO;
 
-  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  @IsEnum(EventTypes)
   eventType!: HookEventTypes;
 
   @IsUUID()
@@ -75,7 +76,7 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsUUID()
   moduleId: string;
 
-  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  @IsEnum(EventTypes)
   eventType!: HookEventTypes;
 
   @IsOptional()
@@ -101,7 +102,7 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   regex: string;
 
-  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  @IsEnum(EventTypes)
   @IsOptional()
   eventType!: HookEventTypes;
 
@@ -118,7 +119,7 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
 
-  @IsEnum({ ...GameEvents, ...DiscordEvents })
+  @IsEnum(EventTypes)
   eventType!: HookEventTypes;
 
   @Type(() => IPlayerReferenceDTO)
@@ -205,7 +206,7 @@ export class HookService extends TakaroService<
     return id;
   }
 
-  async handleEvent(eventData: HookEvents, gameServerId: string) {
+  async handleEvent(eventData: EventMapping[HookEvents], gameServerId: string) {
     this.log.debug('Handling hooks', { eventData });
     const gameServerService = new GameServerService(this.domainId);
 
@@ -241,7 +242,7 @@ export class HookService extends TakaroService<
   }
 
   async trigger(data: HookTriggerDTO) {
-    let eventData: EventMapping[GameEvents] | null = null;
+    let eventData: EventMapping[keyof EventMapping] | null = null;
     const gameServerService = new GameServerService(this.domainId);
 
     const player = await gameServerService.getPlayer(
@@ -252,25 +253,25 @@ export class HookService extends TakaroService<
     if (!player) throw new errors.NotFoundError('Player not found');
 
     switch (data.eventType) {
-      case GameEvents.CHAT_MESSAGE:
+      case EventTypes.CHAT_MESSAGE:
         eventData = await new EventChatMessage().construct({
           player,
           msg: data.msg,
         });
         break;
-      case GameEvents.PLAYER_CONNECTED:
+      case EventTypes.PLAYER_CONNECTED:
         eventData = await new EventPlayerConnected().construct({
           player,
           msg: 'Player connected',
         });
         break;
-      case GameEvents.PLAYER_DISCONNECTED:
+      case EventTypes.PLAYER_DISCONNECTED:
         eventData = await new EventPlayerDisconnected().construct({
           player,
           msg: 'Player disconnected',
         });
         break;
-      case GameEvents.LOG_LINE:
+      case EventTypes.LOG_LINE:
         eventData = await new EventLogLine().construct({
           msg: data.msg,
         });

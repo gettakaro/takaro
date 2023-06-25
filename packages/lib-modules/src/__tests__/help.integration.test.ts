@@ -1,10 +1,10 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import { GameEvents } from '@takaro/gameserver';
 import {
   IModuleTestsSetupData,
   modulesTestSetup,
   sorter,
 } from './setupData.integration.test.js';
+import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Help command';
 

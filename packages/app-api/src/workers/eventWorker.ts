@@ -7,7 +7,7 @@ import {
   EventPlayerConnected,
   BaseEvent,
   EventChatMessage,
-} from '@takaro/gameserver';
+} from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';

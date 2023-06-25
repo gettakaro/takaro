@@ -8,8 +8,8 @@ import {
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-} from '../../interfaces/events.js';
-import { IGamePlayer } from '../../interfaces/GamePlayer.js';
+  IGamePlayer,
+} from '@takaro/modules';
 
 export enum RustEventType {
   DEFAULT = 'Generic',
