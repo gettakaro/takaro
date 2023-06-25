@@ -97,7 +97,7 @@ const Studio: FC = () => {
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>
-        <Editor />
+        <Editor readOnly={moduleData.isBuiltIn} />
       </Container>
     </Wrapper>
   );

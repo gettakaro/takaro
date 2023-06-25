@@ -42,13 +42,23 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   }, [monaco]);
 
   useEffect(() => {
-    if (debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
+    if (
+      !readOnly &&
+      debouncedCode !== '' &&
+      moduleData.fileMap[sandpack.activeFile]
+    ) {
       updateFunction({
         functionId: moduleData.fileMap[sandpack.activeFile].functionId,
         fn: { code: debouncedCode },
       });
     }
-  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap, updateFunction]);
+  }, [
+    debouncedCode,
+    sandpack.activeFile,
+    moduleData.fileMap,
+    updateFunction,
+    readOnly,
+  ]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
@@ -61,7 +71,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           theme="takaro"
           key={sandpack.activeFile}
           defaultValue={code}
-          onChange={(value) => updateCode(value || '')}
+          onChange={(value) => !readOnly && updateCode(value || '')}
           options={{
             minimap: { enabled: false },
             wordWrap: 'on',
