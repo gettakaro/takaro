@@ -1,12 +1,13 @@
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
+
 import {
   GameEvents,
   EventMapping,
-  IPlayerReferenceDTO,
   EventLogLine,
   EventChatMessage,
   EventPlayerConnected,
   EventPlayerDisconnected,
-} from '@takaro/gameserver';
+} from '@takaro/modules';
 import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
 
