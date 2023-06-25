@@ -63,8 +63,8 @@ const InstallModule: FC = () => {
         gameServerId: serverId,
         moduleId: moduleId,
         moduleInstall: {
-          systemConfig: JSON.stringify({}),
-          userConfig: JSON.stringify({}),
+          systemConfig: JSON.stringify(systemConfig),
+          userConfig: JSON.stringify(userConfig),
         },
       });
 
@@ -72,7 +72,7 @@ const InstallModule: FC = () => {
     } catch (error) {
       Sentry.captureException(error);
     }
-  }, [moduleId, mutateAsync, navigate, serverId]);
+  }, [moduleId, mutateAsync, navigate, serverId, systemConfig, userConfig]);
 
   useEffect(() => {
     if (
