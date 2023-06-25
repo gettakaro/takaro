@@ -25,6 +25,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -86,7 +87,10 @@ export class FunctionController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
   async create(
@@ -97,7 +101,10 @@ export class FunctionController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
   async update(
@@ -109,7 +116,10 @@ export class FunctionController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

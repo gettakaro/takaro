@@ -26,6 +26,7 @@ import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
+import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -100,7 +101,10 @@ export class ModuleController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(ModuleOutputDTOAPI)
   @Put('/module/:id')
   async update(
@@ -116,7 +120,10 @@ export class ModuleController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]),
+    builtinModuleModificationMiddleware
+  )
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/module/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
