@@ -17,7 +17,9 @@
     "lint:fix": "npx --workspaces --if-present eslint \"**/*.{js,ts}\" --ignore-path ../../.eslintignore --fix --no-error-on-unmatched-pattern",
     "prettier": "npx --workspaces --if-present prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prettier:fix": "npx --workspaces --if-present prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
-    "prepare": "[ -d '.husky' ] && husky install || true"
+    "prepare": "[ -d '.husky' ] && husky install || true",
+    "e2e:codegen": "docker compose run e2e npm run --workspace=./packages/e2e codegen",
+    "e2e:ui": "docker compose run e2e npm run --workspace=./packages/e2e dev:ui"
   },
   "engines": {
     "node": "18.x.x",
