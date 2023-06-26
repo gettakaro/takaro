@@ -32,16 +32,19 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      headless: true,
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      headless: true,
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      headless: true,
     },
   ],
 });

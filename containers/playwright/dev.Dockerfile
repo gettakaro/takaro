@@ -16,4 +16,4 @@ COPY packages/test                    ./packages/test
 COPY packages/e2e                     ./packages/e2e
 
 RUN npm ci 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "--workspace", "packages/e2e", "run", "dev"]

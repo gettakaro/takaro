@@ -6,7 +6,7 @@
   "types": "",
   "type": "module",
   "scripts": {
-    "dev": "npx playwright test --ui",
+    "dev": "npx playwright test",
     "build": "echo not really anything to build here :)"
   },
   "keywords": [],
