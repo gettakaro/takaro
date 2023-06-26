@@ -1,0 +1,19 @@
+{
+  "name": "@takaro/e2e",
+  "version": "0.0.1",
+  "description": "e2e",
+  "main": "",
+  "types": "",
+  "type": "module",
+  "scripts": {
+    "dev": "npx playwright test --ui",
+    "build": "echo not really anything to build here :)"
+  },
+  "keywords": [],
+  "author": "Takaro Team",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@playwright/test": "^1.35.1",
+    "@takaro/apiclient": "0.0.1"
+  }
+}

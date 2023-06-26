@@ -129,6 +129,18 @@ services:
       # Docs
       - 13005:13005
 
+  e2e:
+    build:
+      context: .
+      dockerfile: containers/playwright/dev.Dockerfile
+    depends_on:
+      - takaro
+    ipc: host
+    volumes:
+      - ./packages/e2e:/app/packages/e2e
+    ports:
+      - 20000:20000
+
   kratos-migrate:
     image: oryd/kratos:v0.11.1
     environment:
