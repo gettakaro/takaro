@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,
@@ -15,9 +20,12 @@ import {
   HookUpdateDTO,
   IdUuidDTO,
   ModuleCreateDTO,
+  ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
+
+import { hasNextPage } from '../util';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -53,10 +61,12 @@ export const functionKeys = {
 export const useModules = () => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useInfiniteQuery<ModuleOutputArrayDTOAPI, ModuleOutputDTO[]>({
     queryKey: moduleKeys.list(),
-    queryFn: async () =>
-      (await apiClient.module.moduleControllerSearch()).data.data,
+    queryFn: async ({ pageParam }) =>
+      (await apiClient.module.moduleControllerSearch({ page: pageParam })).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
   });
 };
 

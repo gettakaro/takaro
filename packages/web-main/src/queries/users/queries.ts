@@ -11,6 +11,7 @@ interface RoleInput {
   userId: string;
   roleId: string;
 }
+
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
 

@@ -1,5 +1,6 @@
 import {
   GameServerCreateDTO,
+  GameServerOutputArrayDTOAPI,
   GameServerOutputDTO,
   GameServerTestReachabilityDTOAPI,
   GameServerTestReachabilityInputDTOTypeEnum,
@@ -9,9 +10,15 @@ import {
   ModuleInstallDTO,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
+import { hasNextPage } from '../util';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -34,10 +41,16 @@ export const installedModuleKeys = {
 export const useGameServers = () => {
   const apiClient = useApiClient();
 
-  return useQuery<GameServerOutputDTO[]>({
+  return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
     queryKey: gameServerKeys.list(),
-    queryFn: async () =>
-      (await apiClient.gameserver.gameServerControllerSearch()).data.data,
+    queryFn: async ({ pageParam = 0 }) =>
+      (
+        await apiClient.gameserver.gameServerControllerSearch({
+          page: pageParam,
+        })
+      ).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
   });
 };
 

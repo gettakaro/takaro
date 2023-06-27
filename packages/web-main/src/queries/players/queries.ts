@@ -1,6 +1,7 @@
-import { useQuery } from 'react-query';
+import { useInfiniteQuery, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { PlayerOutputDTO } from '@takaro/apiclient';
+import { hasNextPage } from '../util';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -8,13 +9,15 @@ export const playerKeys = {
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
 };
 
-// TODO: add filters
 export const usePlayers = () => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: playerKeys.list(),
-    queryFn: async () => await apiClient.player.playerControllerSearch(),
+    queryFn: async ({ pageParam }) =>
+      (await apiClient.player.playerControllerSearch({ page: pageParam })).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
   });
 };
 

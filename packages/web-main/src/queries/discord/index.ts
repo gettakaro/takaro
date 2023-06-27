@@ -1,13 +1,13 @@
 import {
-  GameServerOutputDTO,
   GuildOutputDTO,
+  GuildOutputDTOAPI,
   GuildSearchInputDTO,
   GuildUpdateDTO,
   InviteOutputDTO,
 } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { gameServerKeys } from 'queries/gameservers';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
+import { hasNextPage } from '../util';
 
 export const discordKeys = {
   guilds: ['discordGuilds'] as const,
@@ -17,10 +17,17 @@ export const discordKeys = {
 export const useDiscordGuilds = (input?: GuildSearchInputDTO) => {
   const apiClient = useApiClient();
 
-  return useQuery<GuildOutputDTO[]>({
+  return useInfiniteQuery<GuildOutputDTOAPI, any, GuildOutputDTO[]>({
     queryKey: discordKeys.guilds,
-    queryFn: async () =>
-      (await apiClient.discord.discordControllerSearch(input)).data.data,
+    queryFn: async ({ pageParam }) =>
+      (
+        await apiClient.discord.discordControllerSearch({
+          ...input,
+          page: pageParam,
+        })
+      ).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
   });
 };
 
