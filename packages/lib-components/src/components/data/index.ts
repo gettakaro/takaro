@@ -14,3 +14,6 @@ export { Console } from './Console';
 export type { ConsoleProps, Message } from './Console';
 
 export { Drawer } from './Drawer';
+
+export { InfiniteScroll } from './InfiniteScroll';
+export type { InfiniteScrollProps } from './InfiniteScroll';
