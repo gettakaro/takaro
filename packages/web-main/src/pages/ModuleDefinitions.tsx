@@ -1,5 +1,10 @@
-import { FC } from 'react';
-import { Divider, Loading, styled } from '@takaro/lib-components';
+import { FC, Fragment } from 'react';
+import {
+  Divider,
+  Loading,
+  styled,
+  InfiniteScroll,
+} from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
 import { useModules } from 'queries/modules';
@@ -16,11 +21,24 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
-  const { data: modules } = useModules();
+  const {
+    data: modules,
+    hasNextPage,
+    isFetching,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useModules();
+
   const navigate = useNavigate();
 
-  if (!modules) {
+  if (!isLoading) {
     return <Loading />;
+  }
+
+  // TODO: handle empty state
+  if (!modules) {
+    return <p></p>;
   }
 
   return (
@@ -47,13 +65,23 @@ export const ModuleDefinitions: FC = () => {
             <FiPlus size={24} />
             <h3>new module</h3>
           </AddModuleCard>
-          {modules.map((mod) => (
-            <ModuleCardDefinition
-              key={mod.id}
-              mod={mod}
-              onClick={() => navigate(PATHS.studio.module(mod.id))}
-            />
+          {modules.pages.map((page) => (
+            <Fragment key={`mod-${page.meta.page}`}>
+              {page.data.map((mod) => (
+                <ModuleCardDefinition
+                  key={mod.id}
+                  mod={mod}
+                  onClick={() => navigate(PATHS.studio.module(mod.id))}
+                />
+              ))}
+            </Fragment>
           ))}
+          <InfiniteScroll
+            isFetching={isFetching}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+          />
           <Outlet />
         </ModuleCards>
       </Page>
