@@ -1,4 +1,5 @@
 // TODO: save images locally so when there is no network they are still loaded.
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Avatar, AvatarProps } from '.';
@@ -21,7 +22,7 @@ export default {
 } as Meta<AvatarProps>;
 
 export const Default: StoryFn<AvatarProps> = (args) => (
-  <Avatar alt="Harry Potter" {...args} src={placeholder01} />
+  <Avatar {...args} alt="Harry Potter" src={placeholder01} />
 );
 
 export const Sizes: StoryFn = () => (
