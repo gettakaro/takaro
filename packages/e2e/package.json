@@ -7,9 +7,8 @@
   "type": "module",
   "scripts": {
     "dev": "npx playwright test",
-    "dev:ui": "npm run caddy && npx playwright test --ui",
-    "caddy": "caddy reverse-proxy --from http://127.0.0.1:13000 --to takaro:3000 &",
-    "codegen": "npm run caddy && npx playwright codegen takaro:13001",
+    "dev:ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen takaro:13001",
     "build": "echo not really anything to build here :)"
   },
   "keywords": [],

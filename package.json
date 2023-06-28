@@ -18,8 +18,9 @@
     "prettier": "npx --workspaces --if-present prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prettier:fix": "npx --workspaces --if-present prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md}'",
     "prepare": "[ -d '.husky' ] && husky install || true",
-    "e2e:codegen": "docker compose run e2e npm run --workspace=./packages/e2e codegen",
-    "e2e:ui": "docker compose run e2e npm run --workspace=./packages/e2e dev:ui"
+    "e2e:webmain": "docker compose exec takaro npm run --workspace=./packages/web-main start:dev &",
+    "e2e:codegen": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e codegen",
+    "e2e:ui": "npm run e2e:webmain && docker compose run e2e npm run --workspace=./packages/e2e dev:ui"
   },
   "engines": {
     "node": "18.x.x",

@@ -22,7 +22,6 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
   }
 }
 
-
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
 const POSTGRES_PASSWORD = randomUUID();
 const POSTGRES_ENCRYPTION_KEY = randomUUID();
@@ -101,13 +100,21 @@ async function main() {
     ]);
 
     console.log('Running tests with config', composeOpts);
-    await run('takaro', 'npm run test', composeOpts);
+
+    if (process.env.IS_E2E) {
+      $`npx playwright test`;
+    } else {
+      await run('takaro', 'npm run test', composeOpts);
+    }
   } catch (error) {
     console.error('Tests failed');
     failed = true;
   }
 
-  await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], composeOpts);
+  await logs(
+    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'],
+    composeOpts
+  );
   await cleanUp();
 
   if (failed) {
