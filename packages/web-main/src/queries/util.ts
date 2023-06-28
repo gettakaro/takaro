@@ -6,7 +6,7 @@ export function hasNextPage(pageInfo: MetadataOutput, pageIndex: number) {
   }
 
   if (pageIndex < pageInfo.total! / pageInfo.limit!) {
-    return true;
+    return pageIndex++;
   }
   return undefined;
 }

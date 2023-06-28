@@ -1,6 +1,4 @@
 import {
-  GuildOutputDTO,
-  GuildOutputDTOAPI,
   GuildSearchInputDTO,
   GuildUpdateDTO,
   InviteOutputDTO,
@@ -14,15 +12,18 @@ export const discordKeys = {
   invite: ['discordInvite'] as const,
 };
 
-export const useDiscordGuilds = (input?: GuildSearchInputDTO) => {
+export const useDiscordGuilds = ({
+  page = 0,
+  ...guildSearchInputArgs
+}: GuildSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<GuildOutputDTOAPI, any, GuildOutputDTO[]>({
+  return useInfiniteQuery({
     queryKey: discordKeys.guilds,
-    queryFn: async ({ pageParam }) =>
+    queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.discord.discordControllerSearch({
-          ...input,
+          ...guildSearchInputArgs,
           page: pageParam,
         })
       ).data,

@@ -2,6 +2,7 @@ import {
   GameServerCreateDTO,
   GameServerOutputArrayDTOAPI,
   GameServerOutputDTO,
+  GameServerSearchInputDTO,
   GameServerTestReachabilityDTOAPI,
   GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
@@ -38,15 +39,19 @@ export const installedModuleKeys = {
     [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
 };
 
-export const useGameServers = () => {
+export const useGameServers = ({
+  page = 0,
+  ...gameServerSearchInputArgs
+}: GameServerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
-    queryKey: gameServerKeys.list(),
-    queryFn: async ({ pageParam = 0 }) =>
+    queryKey: [gameServerKeys.list()],
+    queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.gameserver.gameServerControllerSearch({
           page: pageParam,
+          ...gameServerSearchInputArgs,
         })
       ).data,
     getNextPageParam: (lastPage, pages) =>

@@ -1,5 +1,7 @@
-import { useMutation } from 'react-query';
+import { useInfiniteQuery, useMutation } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
+import { UserSearchInputDTO } from '@takaro/apiclient';
+import { hasNextPage } from '../util';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -11,6 +13,26 @@ interface RoleInput {
   userId: string;
   roleId: string;
 }
+
+export const useUsers = ({
+  page = 0,
+  ...userSearchInputArgs
+}: UserSearchInputDTO = {}) => {
+  const apiClient = useApiClient();
+
+  return useInfiniteQuery({
+    queryKey: userKeys.list(),
+    queryFn: async ({ pageParam = page }) =>
+      (
+        await apiClient.user.userControllerSearch({
+          ...userSearchInputArgs,
+          page: pageParam,
+        })
+      ).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
+  });
+};
 
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();

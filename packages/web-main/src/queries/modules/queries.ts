@@ -22,6 +22,7 @@ import {
   ModuleCreateDTO,
   ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
+  ModuleSearchInputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
 
@@ -57,14 +58,21 @@ export const functionKeys = {
   detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
-// TODO: this should include the pagination logic
-export const useModules = () => {
+export const useModules = ({
+  page = 0,
+  ...moduleSearchInputArgs
+}: ModuleSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<ModuleOutputArrayDTOAPI, ModuleOutputDTO[]>({
+  return useInfiniteQuery<ModuleOutputArrayDTOAPI>({
     queryKey: moduleKeys.list(),
-    queryFn: async ({ pageParam }) =>
-      (await apiClient.module.moduleControllerSearch({ page: pageParam })).data,
+    queryFn: async ({ pageParam = page }) =>
+      (
+        await apiClient.module.moduleControllerSearch({
+          page: pageParam,
+          ...moduleSearchInputArgs,
+        })
+      ).data,
     getNextPageParam: (lastPage, pages) =>
       hasNextPage(lastPage.meta, pages.length),
   });
