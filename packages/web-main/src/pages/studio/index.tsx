@@ -24,18 +24,21 @@ const ConfigWrapper = styled.div`
 `;
 
 const Header = styled.header`
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+
   padding: ${({ theme }) => theme.spacing[1]};
-  background-color: ${({ theme }) => theme.colors.background};
+
   text-transform: capitalize;
 `;
 
 const StyledResizable = styled(Resizable)`
   border-right: 2px solid ${({ theme }): string => theme.colors.background};
   border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+
   &:hover {
     border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
   }
