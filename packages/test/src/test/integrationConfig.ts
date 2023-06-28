@@ -2,6 +2,7 @@ import { Config, IBaseConfig } from '@takaro/config';
 
 interface IIntegrationTestConfig extends IBaseConfig {
   host: string;
+  frontendHost: string;
   auth: {
     adminClientId: string;
     adminClientSecret: string;
@@ -21,6 +22,12 @@ const configSchema = {
     format: String,
     default: 'http://localhost:3000',
     env: 'TEST_HTTP_TARGET',
+  },
+  frontendHost: {
+    doc: 'The host to connect to',
+    format: String,
+    default: 'http://localhost:3000',
+    env: 'TEST_FRONTEND_TARGET',
   },
   auth: {
     adminClientId: {

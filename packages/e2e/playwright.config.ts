@@ -1,5 +1,6 @@
-import pkg from '@playwright/test';
-const { defineConfig, devices } = pkg;
+import playwright from '@playwright/test';
+
+const { defineConfig, devices } = playwright;
 
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
@@ -23,9 +24,11 @@ export default defineConfig({
     [process.env.CI ? 'github' : 'list', {}],
   ],
 
+  outputDir: '../../reports/playwright-results',
+
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
-    baseURL: 'http://0.0.0.0:20000',
+    baseURL: 'http://127.0.0.1:13001',
 
     // Collect trace when retrying the failed test.
     trace: 'on-first-retry',
@@ -35,19 +38,16 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      headless: true,
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-      headless: true,
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-      headless: true,
     },
   ],
 });
