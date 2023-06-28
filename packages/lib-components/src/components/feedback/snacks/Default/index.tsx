@@ -17,7 +17,7 @@ import {
   ButtonContainer,
 } from './style';
 import { useTheme } from '../../../../hooks';
-import { ButtonProps } from '../../../../components';
+import { ButtonProps, IconButton, Tooltip } from '../../../../components';
 import { AlertVariants } from '../../../../styled';
 
 /* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
@@ -79,9 +79,14 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
             )}
           </TextContainer>
         </ContentContainer>
-        <CloseContainer onClick={handleDismiss}>
-          <CloseIcon size={15} />
-        </CloseContainer>
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <CloseContainer onClick={handleDismiss}>
+              <IconButton icon={<CloseIcon size={15} />} />
+            </CloseContainer>
+          </Tooltip.Trigger>
+          <Tooltip.Content>Dismiss</Tooltip.Content>
+        </Tooltip>
       </Wrapper>
     );
   }

@@ -59,7 +59,7 @@ export const ButtonContainer = styled.div`
 
 export const CloseContainer = styled.div`
   position: absolute;
-  top: ${({ theme }) => theme.spacing['2']};
+  top: ${({ theme }) => theme.spacing['0_75']};
   cursor: pointer;
   right: ${({ theme }) => theme.spacing['2']};
 `;
