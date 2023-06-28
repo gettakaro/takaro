@@ -10,6 +10,7 @@ import { StyledButton } from './style';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
 }
 
 interface IFormInputs {
@@ -22,7 +23,7 @@ const validationSchema = z.object({
   eventType: z.string(),
 });
 
-export const HookConfig: FC<IProps> = ({ moduleItem }) => {
+export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useHook(moduleItem.itemId);
   const { mutateAsync } = useHookUpdate();
 
@@ -47,7 +48,12 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField control={control} name="regex" label="Regex" />
+      <TextField
+        control={control}
+        name="regex"
+        label="Regex"
+        readOnly={readOnly}
+      />
       <Select
         control={control}
         name="eventType"
@@ -58,6 +64,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
             'Select...'
           );
         }}
+        readOnly={readOnly}
       >
         <Select.OptionGroup label="eventType">
           {Object.values(HookCreateDTOEventTypeEnum).map((name) => (
@@ -69,7 +76,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem }) => {
           ))}
         </Select.OptionGroup>
       </Select>
-      <StyledButton fullWidth type="submit" text="Save" />
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
     </form>
   );
 };
