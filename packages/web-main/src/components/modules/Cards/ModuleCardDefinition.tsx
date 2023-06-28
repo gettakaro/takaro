@@ -25,13 +25,9 @@ import {
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
-  onClick?: () => void;
 }
 
-export const ModuleCardDefinition: FC<IModuleCardProps> = ({
-  mod,
-  onClick,
-}) => {
+export const ModuleCardDefinition: FC<IModuleCardProps> = ({ mod }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const { mutateAsync, isLoading: isDeleting } = useModuleRemove();
   const navigate = useNavigate();
@@ -43,7 +39,7 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({
   };
 
   return (
-    <ModuleCardContainer target="_blank" onClick={onClick}>
+    <ModuleCardContainer target="_blank" href={PATHS.studio.module(mod.id)}>
       <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>
