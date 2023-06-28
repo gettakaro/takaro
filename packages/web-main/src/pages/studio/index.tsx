@@ -28,7 +28,7 @@ const Header = styled.header`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 35px;
+  padding: ${({ theme }) => theme.spacing[1]};
   background-color: ${({ theme }) => theme.colors.background};
   text-transform: capitalize;
 `;

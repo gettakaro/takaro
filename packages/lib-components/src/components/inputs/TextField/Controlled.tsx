@@ -118,8 +118,8 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
         {fieldState.error && fieldState.error.message && showError && (
           <ErrorMessage message={fieldState.error.message} />
         )}
+        {description && <p>{description}</p>}
       </Container>
-      {description && <p>{description}</p>}
     </Wrapper>
   );
 };
