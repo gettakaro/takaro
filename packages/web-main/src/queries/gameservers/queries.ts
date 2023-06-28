@@ -16,10 +16,12 @@ import {
   useMutation,
   useQueryClient,
   useInfiniteQuery,
+  InfiniteData,
 } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
+import * as Sentry from '@sentry/react';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -46,7 +48,7 @@ export const useGameServers = ({
   const apiClient = useApiClient();
 
   return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
-    queryKey: [gameServerKeys.list()],
+    queryKey: gameServerKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.gameserver.gameServerControllerSearch({
@@ -80,12 +82,40 @@ export const useGameServerCreate = () => {
 
   return useMutation({
     mutationFn: async (gameServer: GameServerCreateDTO) =>
-      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data,
-    onSuccess: async (data) => {
-      // Add item to cached list
-      queryClient.setQueryData<GameServerOutputDTO[]>(
+      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data
+        .data,
+    onSuccess: async (newGameServer: GameServerOutputDTO) => {
+      queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
         gameServerKeys.list(),
-        (old) => (old ? (old = [...old, data.data]) : old!)
+        (prev) => {
+          // in case there are no game servers yet
+          if (!prev) {
+            return {
+              pages: [
+                {
+                  data: [newGameServer],
+                  meta: {
+                    page: 0,
+                    total: 1,
+                    limit: 100,
+                    error: { code: '', message: '', details: '' },
+                    serverTime: '',
+                  },
+                },
+              ],
+              pageParams: [0],
+            };
+          }
+
+          const newData = {
+            ...prev,
+            pages: prev?.pages.map((page) => ({
+              ...page,
+              data: [...page.data, newGameServer],
+            })),
+          };
+          return newData;
+        }
       );
 
       enqueueSnackbar('Game server has been created', { variant: 'default' });
@@ -194,6 +224,7 @@ export const useGameServerModuleUninstall = () => {
       ).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
+
       queryClient.setQueryData<ModuleInstallationOutputDTO[]>(
         installedModuleKeys.list(deletedModule.gameserverId),
         (old) => {
@@ -247,30 +278,47 @@ export const useGameServerUpdate = () => {
         )
       ).data.data;
     },
-    onSuccess: async (newGameServer) => {
-      // Update item in server list
-      queryClient.setQueryData<GameServerOutputDTO[]>(
-        gameServerKeys.list(),
-        (oldGameServerList) => {
-          if (oldGameServerList) {
-            return oldGameServerList.map((gameServer) => {
-              if (gameServer.id === newGameServer.id) {
-                return newGameServer;
-              }
-              return gameServer;
-            });
-          }
-          return oldGameServerList!;
-        }
-      );
+    onSuccess: async (updatedGameServer) => {
+      try {
+        // update gameServer in list of gameservers
+        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
+          gameServerKeys.list(),
+          (prev) => {
+            if (!prev) {
+              queryClient.invalidateQueries(gameServerKeys.list());
+              throw new Error(
+                'Cannot update gameserver list, because it does not exist'
+              );
+            }
 
-      // invalidate the specific gameserver query
-      queryClient.invalidateQueries(gameServerKeys.detail(newGameServer.id));
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.map((gameServer) => {
+                  if (gameServer.id === updatedGameServer.id) {
+                    return updatedGameServer;
+                  }
+                  return gameServer;
+                }),
+              })),
+            };
+          }
+        );
+
+        // TODO: I think we can just update the detail query instead of invalidating it
+        queryClient.invalidateQueries(
+          gameServerKeys.detail(updatedGameServer.id)
+        );
+      } catch (e) {
+        // TODO: pass extra context to the error
+        Sentry.captureException(e);
+      }
     },
   });
 };
 
-export const useRemoveGameServer = () => {
+export const useGameServerRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
@@ -278,22 +326,40 @@ export const useRemoveGameServer = () => {
     mutationFn: async ({ id }: { id: string }) =>
       (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: (removedGameServer: IdUuidDTO) => {
-      // update list that contain this gameserver
-      queryClient.setQueryData<GameServerOutputDTO[]>(
-        gameServerKeys.list(),
-        (old) =>
-          old
-            ? old.filter((gameServer) => gameServer.id !== removedGameServer.id)
-            : old!
-      );
+      try {
+        // update list that contain this gameserver
+        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
+          gameServerKeys.list(),
+          (prev) => {
+            if (!prev) {
+              throw new Error(
+                'Cannot remove gameserver from list, because list does not exist'
+              );
+            }
 
-      // remove all cached information about specific game server.
-      queryClient.invalidateQueries({
-        queryKey: gameServerKeys.detail(removedGameServer.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: gameServerKeys.reachability(removedGameServer.id),
-      });
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.filter(
+                  (gameServer) => gameServer.id !== removedGameServer.id
+                ),
+              })),
+            };
+          }
+        );
+
+        // remove all cached information about specific game server.
+        queryClient.invalidateQueries({
+          queryKey: gameServerKeys.detail(removedGameServer.id),
+        });
+        queryClient.invalidateQueries({
+          queryKey: gameServerKeys.reachability(removedGameServer.id),
+        });
+      } catch (e) {
+        // TODO: pass extra context to the error
+        Sentry.captureException(e);
+      }
     },
   });
 };
