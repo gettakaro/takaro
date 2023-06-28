@@ -348,6 +348,7 @@ export const File: FC<FileProps> = ({
               isEditing={isEditing}
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
+              disabled={moduleData.isBuiltIn}
               value={internalFileName}
             />
           ) : (
@@ -373,6 +374,7 @@ export const File: FC<FileProps> = ({
           <JsIcon width={12} />
           <EditableField
             allowEmpty={false}
+            disabled={moduleData.isBuiltIn}
             name="new-file"
             isEditing={true}
             editingChange={(e) => {
