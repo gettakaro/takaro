@@ -52,20 +52,22 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
 
   if (loading) {
     return (
-      <Container>
-        {label && (
-          <Label
-            required={required}
-            htmlFor={name}
-            error={!!fieldState.error}
-            size={size}
-            disabled={disabled}
-            text={label}
-            position="top"
-          />
-        )}
-        <InputContainer className="placeholder" />
-      </Container>
+      <Wrapper>
+        <Container>
+          {label && (
+            <Label
+              required={required}
+              htmlFor={name}
+              error={!!fieldState.error}
+              size={size}
+              disabled={disabled}
+              text={label}
+              position="top"
+            />
+          )}
+          <InputContainer className="placeholder" />
+        </Container>
+      </Wrapper>
     );
   }
 
