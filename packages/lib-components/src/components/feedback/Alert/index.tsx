@@ -18,8 +18,8 @@ type Action = {
 
 export interface AlertProps {
   variant: AlertVariants;
-  title: string;
-  text: string | string[];
+  title?: string;
+  text?: string | string[];
   elevation?: Elevation;
   dismiss?: boolean;
   action?: Action;
@@ -71,11 +71,13 @@ export const Alert: FC<AlertProps> = ({
             {typeof text === 'string' ? (
               <p>{text}</p>
             ) : (
-              <ul>
-                {text.map((message) => (
-                  <li>{message}</li>
-                ))}
-              </ul>
+              text && (
+                <ul>
+                  {text.map((message) => (
+                    <li>{message}</li>
+                  ))}
+                </ul>
+              )
             )}
             <div />
             <ButtonContainer
