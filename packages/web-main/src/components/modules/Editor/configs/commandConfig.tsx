@@ -125,84 +125,86 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           description="Description of what the command does, this can be displayed to users in-game."
           readOnly={readOnly}
         />
-        <CollapseList.Item title="Arguments">
-          <ContentContainer>
-            {fields.length > 0 && (
-              <ArgumentList>
-                {fields.map((field, index) => (
-                  <ArgumentCard key={field.id}>
-                    <Flex direction="column">
-                      <Flex direction="row">
-                        <TextField
-                          label="Name"
-                          control={control}
-                          name={`arguments.${index}.name`}
-                          readOnly={readOnly}
-                        />
-                        <Select
-                          control={control}
-                          name={`arguments.${index}.type`}
-                          label="Type"
-                          readOnly={readOnly}
-                          render={(selectedIndex) => (
-                            <>
-                              {argumentTypeSelectOptions[selectedIndex]?.name ??
-                                'Select...'}
-                            </>
-                          )}
-                        >
-                          <Select.OptionGroup label="Options">
-                            {argumentTypeSelectOptions.map(
-                              ({ name, value }) => (
-                                <Select.Option
-                                  key={`${field.id}-select-${name}`}
-                                  value={value}
-                                >
-                                  {name}
-                                </Select.Option>
-                              )
+        {fields.length > 0 && (
+          <CollapseList.Item title="Arguments">
+            <ContentContainer>
+              {fields.length > 0 && (
+                <ArgumentList>
+                  {fields.map((field, index) => (
+                    <ArgumentCard key={field.id}>
+                      <Flex direction="column">
+                        <Flex direction="row">
+                          <TextField
+                            label="Name"
+                            control={control}
+                            name={`arguments.${index}.name`}
+                            readOnly={readOnly}
+                          />
+                          <Select
+                            control={control}
+                            name={`arguments.${index}.type`}
+                            label="Type"
+                            readOnly={readOnly}
+                            render={(selectedIndex) => (
+                              <>
+                                {argumentTypeSelectOptions[selectedIndex]
+                                  ?.name ?? 'Select...'}
+                              </>
                             )}
-                          </Select.OptionGroup>
-                        </Select>
-                      </Flex>
-                      <TextField
-                        control={control}
-                        label="Help text"
-                        name={`arguments.${index}.helpText`}
-                      />
-                    </Flex>
-                    <Tooltip>
-                      <Tooltip.Trigger asChild>
-                        <IconButton
-                          onClick={() => remove(index)}
-                          icon={<CloseIcon size={16} cursor="pointer" />}
+                          >
+                            <Select.OptionGroup label="Options">
+                              {argumentTypeSelectOptions.map(
+                                ({ name, value }) => (
+                                  <Select.Option
+                                    key={`${field.id}-select-${name}`}
+                                    value={value}
+                                  >
+                                    {name}
+                                  </Select.Option>
+                                )
+                              )}
+                            </Select.OptionGroup>
+                          </Select>
+                        </Flex>
+                        <TextField
+                          control={control}
+                          label="Help text"
+                          name={`arguments.${index}.helpText`}
                         />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Remove argument</Tooltip.Content>
-                    </Tooltip>
-                  </ArgumentCard>
-                ))}
-              </ArgumentList>
-            )}
-            {!readOnly && fields.length < 5 && (
-              <Button
-                onClick={(_e) => {
-                  addField({
-                    name: '',
-                    helpText: '',
-                    type: '',
-                    position: fields.length + 1,
-                    commandId,
-                  });
-                }}
-                type="button"
-                fullWidth
-                text="New"
-                variant="outline"
-              ></Button>
-            )}
-          </ContentContainer>
-        </CollapseList.Item>
+                      </Flex>
+                      <Tooltip>
+                        <Tooltip.Trigger asChild>
+                          <IconButton
+                            onClick={() => remove(index)}
+                            icon={<CloseIcon size={16} cursor="pointer" />}
+                          />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Remove argument</Tooltip.Content>
+                      </Tooltip>
+                    </ArgumentCard>
+                  ))}
+                </ArgumentList>
+              )}
+              {!readOnly && fields.length < 5 && (
+                <Button
+                  onClick={(_e) => {
+                    addField({
+                      name: '',
+                      helpText: '',
+                      type: '',
+                      position: fields.length + 1,
+                      commandId,
+                    });
+                  }}
+                  type="button"
+                  fullWidth
+                  text="New"
+                  variant="outline"
+                ></Button>
+              )}
+            </ContentContainer>
+          </CollapseList.Item>
+        )}
         {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
       </form>
     </>
