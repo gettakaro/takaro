@@ -32,7 +32,7 @@ export const ModuleDefinitions: FC = () => {
 
   const navigate = useNavigate();
 
-  if (!isLoading) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -65,25 +65,23 @@ export const ModuleDefinitions: FC = () => {
             <FiPlus size={24} />
             <h3>new module</h3>
           </AddModuleCard>
-          {modules.pages.map((page) => (
-            <Fragment key={`mod-${page.meta.page}`}>
-              {page.data.map((mod) => (
-                <ModuleCardDefinition
-                  key={mod.id}
-                  mod={mod}
-                  onClick={() => navigate(PATHS.studio.module(mod.id))}
-                />
-              ))}
-            </Fragment>
-          ))}
-          <InfiniteScroll
-            isFetching={isFetching}
-            isFetchingNextPage={isFetchingNextPage}
-            hasNextPage={hasNextPage}
-            fetchNextPage={fetchNextPage}
-          />
+          {modules.pages
+            .flatMap((page) => page.data)
+            .map((mod) => (
+              <ModuleCardDefinition
+                key={mod.id}
+                mod={mod}
+                onClick={() => navigate(PATHS.studio.module(mod.id))}
+              />
+            ))}
           <Outlet />
         </ModuleCards>
+        <InfiniteScroll
+          isFetching={isFetching}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+        />
       </Page>
     </>
   );

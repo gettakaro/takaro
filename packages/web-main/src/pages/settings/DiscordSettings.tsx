@@ -20,16 +20,16 @@ const Flex = styled.div`
 `;
 
 export const DiscordSettings = () => {
-  const { data, isLoading } = useDiscordGuilds({
+  const { data: guilds, isLoading } = useDiscordGuilds({
     sortBy: 'takaroEnabled',
     sortDirection: 'desc',
   });
 
   if (isLoading) return <Loading />;
 
-  const cards = data?.map((guild) => (
-    <ServerCard key={guild.id} guild={guild} />
-  ));
+  if (!guilds) {
+    return <p>Something went wrong</p>;
+  }
 
   return (
     <Fragment>
@@ -41,7 +41,13 @@ export const DiscordSettings = () => {
         <InviteCard />
       </Flex>
       <h1> Guilds</h1>
-      <List>{cards}</List>
+      <List>
+        {guilds.pages
+          .flatMap((page) => page.data)
+          .map((guild) => (
+            <ServerCard key={guild.id} guild={guild} />
+          ))}
+      </List>
     </Fragment>
   );
 };
