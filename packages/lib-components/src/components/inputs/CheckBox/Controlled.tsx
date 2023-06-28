@@ -1,15 +1,15 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
 import { GenericCheckBox } from '.';
-import { Wrapper, Container, CheckboxContainer } from './style';
-import { Label, ErrorMessage } from '../../../components';
+import { Container, CheckboxContainer } from './style';
 
 import {
   defaultInputProps,
   defaultInputPropsFactory,
   ControlledInputProps,
 } from '../InputProps';
-import { Description } from '../layout';
+import { Label, ErrorMessage } from '../../../components';
+import { Wrapper, Description } from '../layout';
 
 export interface CheckBoxProps {
   labelPosition?: 'left' | 'right';

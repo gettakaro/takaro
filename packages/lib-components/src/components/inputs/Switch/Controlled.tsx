@@ -4,8 +4,8 @@ import { FC } from 'react';
 import { GenericSwitch } from '.';
 import { defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Skeleton, Label } from '../../../components';
-import { Wrapper, Container } from './style';
-import { Description } from '../layout';
+import { Container } from './style';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledSwitchProps = ControlledInputProps;
 

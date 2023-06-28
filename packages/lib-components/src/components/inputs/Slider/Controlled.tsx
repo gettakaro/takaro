@@ -8,7 +8,7 @@ import {
 import { SliderProps, GenericSlider } from '.';
 import { Skeleton, Label, ErrorMessage } from '../../../components';
 import { Container } from './style';
-import { Description } from '../layout';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledSliderProps = ControlledInputProps & SliderProps;
 
@@ -51,44 +51,46 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
   }
 
   return (
-    <Container>
-      {label && (
-        <Label
-          position="top"
-          size={size}
-          text={label}
-          required={required}
-          error={!!error}
-          htmlFor={name}
-          hint={hint}
+    <Wrapper>
+      <Container>
+        {label && (
+          <Label
+            position="top"
+            size={size}
+            text={label}
+            required={required}
+            error={!!error}
+            htmlFor={name}
+            hint={hint}
+            disabled={disabled}
+          />
+        )}
+        <GenericSlider
           disabled={disabled}
+          name={name}
+          id={name}
+          required={required}
+          min={min}
+          max={max}
+          size={size}
+          value={field.value}
+          marks={marks}
+          showDots={showDots}
+          hasError={!!error}
+          hasDescription={!!description}
+          step={step}
+          readOnly={readOnly}
+          showTooltip={showTooltip}
+          color={color}
+          onBlur={field.onBlur}
+          onChange={field.onChange}
+          ref={field.ref}
         />
-      )}
-      <GenericSlider
-        disabled={disabled}
-        name={name}
-        id={name}
-        required={required}
-        min={min}
-        max={max}
-        size={size}
-        value={field.value}
-        marks={marks}
-        showDots={showDots}
-        hasError={!!error}
-        hasDescription={!!description}
-        step={step}
-        readOnly={readOnly}
-        showTooltip={showTooltip}
-        color={color}
-        onBlur={field.onBlur}
-        onChange={field.onChange}
-        ref={field.ref}
-      />
+        {error && error.message && <ErrorMessage message={error.message} />}
+      </Container>
       {description && (
         <Description description={description} inputName={name} />
       )}
-      {error && error.message && <ErrorMessage message={error.message} />}
-    </Container>
+    </Wrapper>
   );
 };

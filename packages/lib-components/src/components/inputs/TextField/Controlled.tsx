@@ -6,9 +6,9 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 import { TextFieldProps, GenericTextField } from '.';
-import { Wrapper, Container, InputContainer } from './style';
+import { Container, InputContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
-import { Description } from '../layout';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 

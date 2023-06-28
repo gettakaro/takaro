@@ -7,9 +7,9 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 import { ErrorMessage, Label } from '../../../components';
-import { Wrapper, Container, FieldSet } from './style';
+import { Container, FieldSet } from './style';
 import { GenericRadio } from './Radio';
-import { Description } from '../layout';
+import { Wrapper, Description } from '../layout';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
   options: Option[];
