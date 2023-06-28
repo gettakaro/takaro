@@ -8,6 +8,7 @@ import {
 import { SliderProps, GenericSlider } from '.';
 import { Skeleton, Label, ErrorMessage } from '../../../components';
 import { Container } from './style';
+import { Description } from '../layout';
 
 export type ControlledSliderProps = ControlledInputProps & SliderProps;
 
@@ -75,6 +76,7 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
         marks={marks}
         showDots={showDots}
         hasError={!!error}
+        hasDescription={!!description}
         step={step}
         readOnly={readOnly}
         showTooltip={showTooltip}
@@ -83,7 +85,9 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
         onChange={field.onChange}
         ref={field.ref}
       />
-      <p>{description}</p>
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
       {error && error.message && <ErrorMessage message={error.message} />}
     </Container>
   );

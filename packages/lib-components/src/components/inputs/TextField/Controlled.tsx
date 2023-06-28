@@ -8,6 +8,7 @@ import {
 import { TextFieldProps, GenericTextField } from '.';
 import { Wrapper, Container, InputContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
+import { Description } from '../layout';
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 
@@ -114,12 +115,15 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           value={field.value}
           type={type}
           ref={field.ref}
+          hasDescription={!!description}
         />
         {fieldState.error && fieldState.error.message && showError && (
           <ErrorMessage message={fieldState.error.message} />
         )}
       </Container>
-      {description && <p>{description}</p>}
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Wrapper>
   );
 };

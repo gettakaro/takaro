@@ -11,6 +11,7 @@ import { ErrorMessage, Label } from '../../../components';
 import { SelectProps } from './Generic';
 import { Option } from './Generic/Option';
 import { OptionGroup } from './Generic/OptionGroup';
+import { Description } from '../layout';
 
 export type ControlledSelectProps = PropsWithChildren<
   ControlledInputProps & SelectProps
@@ -73,6 +74,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
         name={name}
         id={name}
         hasError={!!error}
+        hasDescription={!!description}
         readOnly={readOnly}
         disabled={disabled}
         required={required}
@@ -87,7 +89,9 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
       {error && error.message && showError && (
         <ErrorMessage message={error.message} />
       )}
-      <p>{description}</p>
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Container>
   );
 };

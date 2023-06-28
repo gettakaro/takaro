@@ -77,6 +77,7 @@ export function CheckBoxWidget<
           onFocus={_onFocus}
           required={required}
           hasError={!!rawErrors.length}
+          hasDescription={!!description}
         />
       </Container>
       {!hideLabel && !!description && (

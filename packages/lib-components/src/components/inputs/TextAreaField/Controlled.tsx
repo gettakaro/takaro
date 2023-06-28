@@ -8,6 +8,7 @@ import {
 import { Container, TextAreaContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
 import { useController } from 'react-hook-form';
+import { Description } from '../layout';
 
 export type ControlledTextAreaFieldProps = TextAreaFieldProps &
   ControlledInputProps;
@@ -97,12 +98,15 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
         onChange={field.onChange}
         onFocus={handleOnFocus}
         hasError={!!error}
+        hasDescription={!!description}
         ref={field.ref}
       />
       {error && error.message && showError && (
         <ErrorMessage message={error.message} />
       )}
-      {description && <p>{description}</p>}
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Container>
   );
 };

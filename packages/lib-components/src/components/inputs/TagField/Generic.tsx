@@ -3,6 +3,7 @@ import { GenericInputPropsFunctionHandlers } from '../InputProps';
 import { ZodType } from 'zod';
 import { TagsContainer, Tag } from './style';
 import { splitPaste, useDidUpdateEffect } from './util';
+import { setAriaDescribedBy } from '../layout';
 
 const defaultSeparators = ['Enter'];
 
@@ -42,6 +43,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       onBlur = () => {},
       onFocus = () => {},
       onChange,
+      hasDescription,
     },
     ref
   ) => {
@@ -128,6 +130,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
           onBlur={onBlur}
           onPaste={handleOnPaste}
           onFocus={onFocus}
+          aria-describedby={setAriaDescribedBy(name, hasDescription)}
         />
       </TagsContainer>
     );

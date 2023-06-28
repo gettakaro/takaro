@@ -7,6 +7,7 @@ import {
 import { GenericRadio } from './Radio';
 import { Container } from './style';
 import { Label } from '../../../components';
+import { setAriaDescribedBy } from '../layout';
 
 export interface Option {
   labelPosition: 'left' | 'right';
@@ -34,6 +35,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
     onChange,
     onBlur,
     hasError,
+    hasDescription,
     disabled,
     onFocus,
     id,
@@ -66,6 +68,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
             isSelected={value === selected}
             onClick={() => handleChange(value)}
             role="radiogroup"
+            aria-describedby={setAriaDescribedBy(name, hasDescription)}
           >
             {label && labelPosition === 'left' && (
               <Label
@@ -93,6 +96,7 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
               required={required}
               disabled={disabled}
               hasError={hasError}
+              hasDescription={hasDescription}
             />
             {label && labelPosition === 'right' && (
               <Label

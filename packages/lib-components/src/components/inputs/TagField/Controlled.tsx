@@ -8,6 +8,7 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
+import { Description } from '../layout';
 
 export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
 
@@ -91,9 +92,13 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
         onChange={(values) => field.onChange(values)}
         placeholder={placeholder}
         hasError={!!error}
+        hasDescription={!!description}
+        disabled={disabled}
         value={field.value as string[]}
       />
-      {description && <p>{description}</p>}
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
       {error && error.message && showError && (
         <ErrorMessage message={error.message} />
       )}

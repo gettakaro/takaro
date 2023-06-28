@@ -9,6 +9,7 @@ import {
 import { ErrorMessage, Label } from '../../../components';
 import { Wrapper, Container, FieldSet } from './style';
 import { GenericRadio } from './Radio';
+import { Description } from '../layout';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
   options: Option[];
@@ -105,6 +106,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 onBlur={handleOnBlur}
                 onFocus={handleOnFocus}
                 ref={field.ref}
+                hasDescription={!!description}
               />
 
               {label && labelPosition === 'right' && (
@@ -128,7 +130,9 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
           <ErrorMessage message={error.message} />
         )}
       </Wrapper>
-      <p>{description}</p>
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </FieldSet>
   );
 };
