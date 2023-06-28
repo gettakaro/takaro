@@ -143,6 +143,12 @@ jobs:
           name: playwright-report
           path: reports/playwright
           retention-days: 30
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-results
+          path: reports/playwright-results
+          retention-days: 30          
 
   build-vmm:
     runs-on: ubuntu-latest
