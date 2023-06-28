@@ -130,8 +130,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install dependencies
-        run: npm ci
+      - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - run: npx zx scripts/integration-tests.mjs

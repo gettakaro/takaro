@@ -102,7 +102,7 @@ async function main() {
     console.log('Running tests with config', composeOpts);
 
     if (process.env.IS_E2E) {
-      $`npx playwright test`;
+      $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
       await run('takaro', 'npm run test', composeOpts);
     }

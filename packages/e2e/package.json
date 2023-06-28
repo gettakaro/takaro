@@ -6,7 +6,7 @@
   "types": "",
   "type": "module",
   "scripts": {
-    "dev": "npx playwright test",
+    "test:e2e": "npx playwright test",
     "dev:ui": "npx playwright test --ui",
     "codegen": "npx playwright codegen takaro:13001",
     "build": "echo not really anything to build here :)"
