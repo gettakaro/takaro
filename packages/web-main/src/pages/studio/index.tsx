@@ -50,11 +50,26 @@ const Studio: FC = () => {
   function getConfigComponent(type: FunctionType) {
     switch (type) {
       case FunctionType.Hooks:
-        return <HookConfig moduleItem={activeModule} />;
+        return (
+          <HookConfig
+            moduleItem={activeModule}
+            readOnly={moduleData.isBuiltIn}
+          />
+        );
       case FunctionType.Commands:
-        return <CommandConfig moduleItem={activeModule} />;
+        return (
+          <CommandConfig
+            moduleItem={activeModule}
+            readOnly={moduleData.isBuiltIn}
+          />
+        );
       case FunctionType.CronJobs:
-        return <CronJobConfig moduleItem={activeModule} />;
+        return (
+          <CronJobConfig
+            moduleItem={activeModule}
+            readOnly={moduleData.isBuiltIn}
+          />
+        );
       default:
         return null;
     }

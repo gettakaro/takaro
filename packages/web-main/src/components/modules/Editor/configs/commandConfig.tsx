@@ -21,6 +21,7 @@ import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
 }
 
 interface IFormInputs {
@@ -58,7 +59,7 @@ const argumentTypeSelectOptions = [
   },
 ];
 
-export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
+export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCommand(moduleItem.itemId);
   const { data: settings } = useGameServerSettings();
   const { mutateAsync } = useCommandUpdate();
@@ -115,12 +116,14 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
           label="trigger"
           description="What users type ingame to trigger this command."
           prefix={settings?.commandPrefix}
+          readOnly={readOnly}
         />
         <TextAreaField
           control={control}
           name="helpText"
           label="Help text"
           description="Description of what the command does, this can be displayed to users in-game."
+          readOnly={readOnly}
         />
         <CollapseList.Item title="Arguments">
           <ContentContainer>
@@ -134,11 +137,13 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                           label="Name"
                           control={control}
                           name={`arguments.${index}.name`}
+                          readOnly={readOnly}
                         />
                         <Select
                           control={control}
                           name={`arguments.${index}.type`}
                           label="Type"
+                          readOnly={readOnly}
                           render={(selectedIndex) => (
                             <>
                               {argumentTypeSelectOptions[selectedIndex]?.name ??
@@ -179,7 +184,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                 ))}
               </ArgumentList>
             )}
-            {fields.length < 5 && (
+            {!readOnly && fields.length < 5 && (
               <Button
                 onClick={(_e) => {
                   addField({
@@ -198,7 +203,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
             )}
           </ContentContainer>
         </CollapseList.Item>
-        <StyledButton fullWidth type="submit" text="Save" />
+        {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
       </form>
     </>
   );

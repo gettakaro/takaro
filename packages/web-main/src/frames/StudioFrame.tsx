@@ -92,7 +92,7 @@ export const StudioFrame: FC = () => {
         id: mod.id,
         fileMap: nameToId,
         name: mod.name,
-        isBuiltIn: mod.builtin !== '' ? true : false,
+        isBuiltIn: mod.builtin !== null ? true : false,
       }));
     }
   }, [mod, isSuccess]);
