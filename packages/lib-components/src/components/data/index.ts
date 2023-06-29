@@ -13,4 +13,4 @@ export type { TableProps } from './Table';
 export { Console } from './Console';
 export type { ConsoleProps, Message } from './Console';
 
-export { Drawer } from './Drawer';
+export { Drawer, DrawerSkeleton } from './Drawer';

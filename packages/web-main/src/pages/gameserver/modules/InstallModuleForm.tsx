@@ -6,6 +6,7 @@ import {
   styled,
   JsonSchemaForm,
   Loading,
+  DrawerSkeleton,
 } from '@takaro/lib-components';
 import Form from '@rjsf/core';
 
@@ -84,7 +85,7 @@ const InstallModule: FC = () => {
   }, [userConfig, systemConfig, onSubmit]);
 
   if (moduleLoading) {
-    return <Loading />;
+    return <DrawerSkeleton />;
   }
 
   return (

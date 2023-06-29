@@ -26,3 +26,5 @@ Drawer.Content = DrawerContent;
 Drawer.Heading = DrawerHeading;
 Drawer.Body = DrawerBody;
 Drawer.Footer = DrawerFooter;
+
+export { DrawerSkeleton } from './DrawerSkeleton';
