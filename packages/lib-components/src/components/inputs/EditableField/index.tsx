@@ -13,6 +13,7 @@ export interface EditableFieldProps {
   isEditing?: boolean;
   editingChange?: (editing: boolean) => unknown;
   placeholder?: string;
+
   // fires when the input value is changed
   onEdited?: (value: string) => unknown;
 

@@ -78,6 +78,10 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
 const FileContainer = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
+  svg {
+    margin-right: ${({ theme }) => theme.spacing[1]};
+  }
 `;
 
 const NewFileContainer = styled.div<{ depth: number }>`
@@ -85,6 +89,10 @@ const NewFileContainer = styled.div<{ depth: number }>`
   align-items: center;
   justify-content: flex-start;
   padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
+
+  svg {
+    margin-right: ${({ theme }) => theme.spacing[1]};
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -377,15 +385,12 @@ export const File: FC<FileProps> = ({
 
       {showNewFileField && (
         <NewFileContainer depth={depth}>
-          <JsIcon width={12} />
+          <JsIcon size={12} fill={theme.colors.secondary} />
           <EditableField
             disabled={moduleData.isBuiltIn}
             name="new-file"
             isEditing={true}
-            required
-            editingChange={(e) => {
-              setShowNewFileField(e);
-            }}
+            editingChange={setShowNewFileField}
             onEdited={handleNewFile}
           />
         </NewFileContainer>
