@@ -32,24 +32,52 @@ const GameServerDashboard: FC = () => {
   }
 
   function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
-    const handler = (handleGameserverId: string, data) => {
+    // TODO: use typings from backend
+    const eventHandler = (
+      handleGameserverId: string,
+      type:
+        | 'player-disconnected'
+        | 'player-connected'
+        | 'chat-message'
+        | 'log-line'
+        | 'discord-message',
+      data: Record<string, unknown>
+    ) => {
       if (handleGameserverId !== gameServerId) return;
+
+      let msg = data?.msg as string;
+
+      const player = data?.player as Record<string, string> | undefined;
+
+      if (player !== undefined) {
+        if (type === 'player-connected') {
+          msg = `${player?.name}: connected`;
+        }
+
+        if (type === 'player-disconnected') {
+          msg = `${player?.name}: disconnected`;
+        }
+
+        if (type === 'chat-message') {
+          msg = `${player?.name}: ${data?.msg}`;
+        }
+      }
+
       setter((prev: Message[]) => [
         ...prev,
         {
           type: 'info',
-          timestamp: data.timestamp,
-          data: data.msg,
+          timestamp: data?.timestamp as string,
+          data: msg,
         },
       ]);
     };
-
     return {
       on: () => {
-        socket.on('gameEvent', handler);
+        socket.on('gameEvent', eventHandler);
       },
       off: () => {
-        socket.off('gameEvent', handler);
+        socket.off('gameEvent', eventHandler);
       },
     };
   }

@@ -12,7 +12,10 @@ import Form from '@rjsf/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
-import { useGameServerModuleInstall } from 'queries/gameservers';
+import {
+  useGameServerModuleInstall,
+  useGameServerModuleInstallation,
+} from 'queries/gameservers';
 import { useModule } from 'queries/modules';
 
 const ButtonContainer = styled.div`
@@ -27,6 +30,8 @@ const InstallModule: FC = () => {
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
+  const { data: modInstallation, isLoading: moduleInstallationLoading } =
+    useGameServerModuleInstallation(serverId!, moduleId!);
 
   const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
   const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
@@ -83,7 +88,7 @@ const InstallModule: FC = () => {
     }
   }, [userConfig, systemConfig, onSubmit]);
 
-  if (moduleLoading) {
+  if (moduleLoading || moduleInstallationLoading) {
     return <DrawerSkeleton />;
   }
 
@@ -97,7 +102,7 @@ const InstallModule: FC = () => {
               <JsonSchemaForm
                 schema={JSON.parse(mod?.configSchema as string)}
                 uiSchema={{}}
-                initialData={{}}
+                initialData={modInstallation?.userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
                 ref={userConfigFormRef}
@@ -107,7 +112,7 @@ const InstallModule: FC = () => {
               <JsonSchemaForm
                 schema={JSON.parse(mod?.systemConfigSchema as string)}
                 uiSchema={{}}
-                initialData={{}}
+                initialData={modInstallation?.systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 ref={systemConfigFormRef}

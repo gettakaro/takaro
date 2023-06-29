@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { ToggleButtonGroup, ToggleButton, ToggleButtonGroupProps } from '.';
+import { ToggleButtonGroup, ToggleButtonGroupProps } from '.';
 import {
   MdOutlineFormatAlignLeft,
   MdOutlineFormatAlignRight,
@@ -19,132 +19,70 @@ export default {
   title: 'Actions/ToggleButton',
   component: ToggleButtonGroup,
   decorators: [(story) => <WrapperDecorator>{story()}</WrapperDecorator>],
-  subcomponents: { ToggleButton },
+  args: {
+    exclusive: true,
+    orientation: 'horizontal',
+    fullWidth: false,
+  },
 } as Meta<ToggleButtonGroupProps>;
 
-export const Horizontal: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (value: string) => {
-    console.log('handleOnChange fired', value);
+export const Default: StoryFn<ToggleButtonGroupProps> = (args) => {
+  const [value, setValue] = useState<string>();
+
+  const handleOnChange = (newValue: string) => {
+    setValue(newValue);
   };
 
   return (
-    <ToggleButtonGroup
-      onChange={(val) => handleOnChange(val as string)}
-      exclusive
-    >
-      <ToggleButton value="left">
-        <MdOutlineFormatAlignLeft size={17} />
-      </ToggleButton>
-      <ToggleButton value="center">
-        <MdOutlineFormatAlignCenter size={17} />
-      </ToggleButton>
-      <ToggleButton value="right">
-        <MdOutlineFormatAlignRight size={17} />
-      </ToggleButton>
-      <ToggleButton disabled value="justify">
-        <MdOutlineFormatAlignJustify size={17} />
-      </ToggleButton>
-    </ToggleButtonGroup>
+    <>
+      <ToggleButtonGroup
+        onChange={(val) => handleOnChange(val as string)}
+        exclusive={args.exclusive}
+        orientation={args.orientation}
+        fullWidth={args.fullWidth}
+      >
+        <ToggleButtonGroup.Button value="left">
+          <MdOutlineFormatAlignLeft size={17} />
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="center">
+          <MdOutlineFormatAlignCenter size={17} />
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="right">
+          <MdOutlineFormatAlignRight size={17} />
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button disabled value="justify">
+          <MdOutlineFormatAlignJustify size={17} />
+        </ToggleButtonGroup.Button>
+      </ToggleButtonGroup>
+      <pre>{value}</pre>
+    </>
   );
 };
 
-export const Vertical: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (value: string) => {
-    console.log('handleOnChange fired', value);
+export const Text: StoryFn<ToggleButtonGroupProps> = (args) => {
+  const [value, setValue] = useState<string>();
+
+  const handleOnChange = (newValue: string) => {
+    setValue(newValue);
   };
-
   return (
-    <ToggleButtonGroup
-      onChange={(val) => handleOnChange(val as string)}
-      orientation="vertical"
-      exclusive
-    >
-      <ToggleButton value="left">
-        <MdOutlineFormatAlignLeft size={20} />
-      </ToggleButton>
-      <ToggleButton value="center">
-        <MdOutlineFormatAlignCenter size={20} />
-      </ToggleButton>
-      <ToggleButton value="right">
-        <MdOutlineFormatAlignRight size={20} />
-      </ToggleButton>
-      <ToggleButton value="justify">
-        <MdOutlineFormatAlignJustify size={20} />
-      </ToggleButton>
-    </ToggleButtonGroup>
-  );
-};
-
-export const FullWidth: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (value: string) => {
-    console.log('handleOnChange fired', value);
-  };
-
-  return (
-    <ToggleButtonGroup
-      onChange={(val) => handleOnChange(val as string)}
-      orientation="horizontal"
-      fullWidth
-      exclusive
-    >
-      <ToggleButton value="left">
-        <MdOutlineFormatAlignLeft size={20} />
-      </ToggleButton>
-      <ToggleButton value="center">
-        <MdOutlineFormatAlignCenter size={20} />
-      </ToggleButton>
-      <ToggleButton value="right">
-        <MdOutlineFormatAlignRight size={20} />
-      </ToggleButton>
-      <ToggleButton value="justify">
-        <MdOutlineFormatAlignJustify size={20} />
-      </ToggleButton>
-    </ToggleButtonGroup>
-  );
-};
-
-export const Text: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (value: string) => {
-    console.log('handleOnChange fired', value);
-  };
-
-  return (
-    <ToggleButtonGroup
-      onChange={(val) => handleOnChange(val as string)}
-      orientation="horizontal"
-      exclusive
-    >
-      <ToggleButton value="left">left</ToggleButton>
-      <ToggleButton value="center">center</ToggleButton>
-      <ToggleButton value="right">right</ToggleButton>
-      <ToggleButton value="justify">justify</ToggleButton>
-    </ToggleButtonGroup>
-  );
-};
-
-export const NonExclusive: StoryFn<ToggleButtonGroupProps> = () => {
-  const handleOnChange = (result: string | Map<string, boolean>) => {
-    console.log('handleOnChange fired', result);
-  };
-
-  return (
-    <ToggleButtonGroup
-      onChange={(val) => handleOnChange(val)}
-      orientation="horizontal"
-      exclusive={false}
-    >
-      <ToggleButton value="left">
-        <MdOutlineFormatAlignLeft size={20} />
-      </ToggleButton>
-      <ToggleButton value="center">
-        <MdOutlineFormatAlignCenter size={20} />
-      </ToggleButton>
-      <ToggleButton value="right">
-        <MdOutlineFormatAlignRight size={20} />
-      </ToggleButton>
-      <ToggleButton value="justify">
-        <MdOutlineFormatAlignJustify size={20} />
-      </ToggleButton>
-    </ToggleButtonGroup>
+    <>
+      <ToggleButtonGroup
+        onChange={(val) => handleOnChange(val as string)}
+        orientation={args.orientation}
+        exclusive={args.exclusive}
+        fullWidth={args.fullWidth}
+      >
+        <ToggleButtonGroup.Button value="left">left</ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="center">
+          center
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="right">right</ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="justify">
+          justify
+        </ToggleButtonGroup.Button>
+      </ToggleButtonGroup>
+      <pre>{value}</pre>
+    </>
   );
 };
