@@ -11,12 +11,14 @@ export class Gimme extends BuiltinModule {
         properties: {
           items: {
             type: 'array',
+            default: ['apple'],
             items: {
               type: 'string',
             },
           },
           commands: {
             type: 'array',
+            default: ['say hello from gimme'],
             items: {
               type: 'string',
             },
