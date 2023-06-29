@@ -101,7 +101,7 @@ function App() {
                 // React query devtools are only included in bundles with NODE_ENV === 'development'.
                 // No need to manually exclude them.
               }
-              <ReactQueryDevtools initialIsOpen={false} />
+              <ReactQueryDevtools initialIsOpen={false} position="top-left" />
             </QueryClientProvider>
           </SnackbarProvider>
         </ConfigContext.Provider>
