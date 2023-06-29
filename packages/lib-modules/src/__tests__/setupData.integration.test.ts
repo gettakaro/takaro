@@ -4,7 +4,7 @@ import {
   IntegrationTest,
   EventsAwaiter,
 } from '@takaro/test';
-import { GameEvents } from '@takaro/gameserver';
+import { GameEvents } from '../dto/index.js';
 
 export interface IDetectedEvent {
   event: GameEvents;

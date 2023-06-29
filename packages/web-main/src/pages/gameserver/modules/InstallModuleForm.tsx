@@ -5,7 +5,7 @@ import {
   CollapseList,
   styled,
   JsonSchemaForm,
-  Loading,
+  DrawerSkeleton,
 } from '@takaro/lib-components';
 import Form from '@rjsf/core';
 
@@ -63,8 +63,8 @@ const InstallModule: FC = () => {
         gameServerId: serverId,
         moduleId: moduleId,
         moduleInstall: {
-          systemConfig: JSON.stringify({}),
-          userConfig: JSON.stringify({}),
+          systemConfig: JSON.stringify(systemConfig),
+          userConfig: JSON.stringify(userConfig),
         },
       });
 
@@ -72,7 +72,7 @@ const InstallModule: FC = () => {
     } catch (error) {
       Sentry.captureException(error);
     }
-  }, [moduleId, mutateAsync, navigate, serverId]);
+  }, [moduleId, mutateAsync, navigate, serverId, systemConfig, userConfig]);
 
   useEffect(() => {
     if (
@@ -84,7 +84,7 @@ const InstallModule: FC = () => {
   }, [userConfig, systemConfig, onSubmit]);
 
   if (moduleLoading) {
-    return <Loading />;
+    return <DrawerSkeleton />;
   }
 
   return (

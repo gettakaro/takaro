@@ -15,7 +15,11 @@ import {
 import { HookService } from './HookService.js';
 import { GameServerService } from './GameServerService.js';
 
-import { HookEventDiscordMessage } from '@takaro/modules';
+import {
+  EventDiscordChannel,
+  EventDiscordUser,
+  HookEventDiscordMessage,
+} from '@takaro/modules';
 
 export class GuildOutputDTO extends TakaroDTO<GuildOutputDTO> {
   @IsUUID()
@@ -207,12 +211,21 @@ export class DiscordService extends TakaroService<
   }
 
   async handleMessage(message: Message<true>) {
-    const { channel, author } = message;
+    const { channel, author, member } = message;
 
     const messageDTO = await new HookEventDiscordMessage().construct({
-      channelDiscordId: channel.id,
-      senderDiscordId: author.id,
-      msg: message.content,
+      channel: await new EventDiscordChannel().construct({
+        id: channel.id,
+        name: channel.name,
+      }),
+      author: await new EventDiscordUser().construct({
+        id: author.id,
+        username: author.username,
+        displayName: member?.displayName,
+        isBot: author.bot,
+        isTakaroBot: author.id === discordBot.botUserId,
+      }),
+      msg: message.cleanContent,
     });
 
     const gameServerService = new GameServerService(this.domainId);

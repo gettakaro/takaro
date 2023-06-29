@@ -11,7 +11,7 @@ export {
   IHook,
 } from './BuiltinModule.js';
 
-export * from './dto.js';
+export * from './dto/index.js';
 
 import { Utils } from './modules/utils/index.js';
 

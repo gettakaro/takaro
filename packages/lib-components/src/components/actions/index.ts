@@ -1,8 +1,8 @@
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
 
-export { ToggleButtonGroup, ToggleButton } from './ToggleButton';
-export type { ToggleButtonGroupProps, ToggleButtonProps } from './ToggleButton';
+export { ToggleButtonGroup } from './ToggleButton';
+export type { ToggleButtonGroupProps } from './ToggleButton';
 
 export { IconButton } from './IconButton';
 export type { IconButtonProps } from './IconButton';

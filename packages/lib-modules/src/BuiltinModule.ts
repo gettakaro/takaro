@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import * as url from 'url';
-import { HookEventTypes } from './dto.js';
+import { HookEventTypes } from './dto/index.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 interface IModuleItem {
   name: string;

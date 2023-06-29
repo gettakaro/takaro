@@ -159,6 +159,8 @@ export const Generic: StoryFn = () => {
         required={false}
         name="name"
         value={value}
+        id="generic-text-field"
+        hasDescription={false}
       />
       <pre>{value}</pre>
     </>

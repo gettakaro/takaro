@@ -48,11 +48,7 @@ export const ModuleDefinitions: FC = () => {
             <h3>new module</h3>
           </AddModuleCard>
           {modules.map((mod) => (
-            <ModuleCardDefinition
-              key={mod.id}
-              mod={mod}
-              onClick={() => navigate(PATHS.studio.module(mod.id))}
-            />
+            <ModuleCardDefinition key={mod.id} mod={mod} />
           ))}
           <Outlet />
         </ModuleCards>

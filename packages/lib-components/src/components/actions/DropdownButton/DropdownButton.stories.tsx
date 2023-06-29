@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Action } from '../../../components';
@@ -49,7 +50,7 @@ export const Default: StoryFn<DropdownButtonProps> = () => {
   );
 };
 
-export const Description: Story<DropdownButtonProps> = () => {
+export const Description: StoryFn<DropdownButtonProps> = () => {
   return (
     <DropdownButton>
       <Action

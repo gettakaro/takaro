@@ -3,17 +3,20 @@ import { Redis } from '@takaro/db';
 
 import { getSocketServer } from '../socket/index.js';
 import {
+  IPosition,
+  IPlayerReferenceDTO,
+  IGameServer,
+  IMessageOptsDTO,
   CommandOutput,
+} from '@takaro/gameserver';
+import {
   EventLogLine,
   GameEvents,
   IGamePlayer,
-  IGameServer,
-  IMessageOptsDTO,
-  IPosition,
-  IPlayerReferenceDTO,
   EventChatMessage,
   EventPlayerConnected,
-} from '@takaro/gameserver';
+  EventTypes,
+} from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
 import { playScenario } from './scenario.js';
@@ -140,7 +143,7 @@ class MockGameserver implements IMockGameServer {
             msg: `${p.name} connected`,
             timestamp: new Date(),
           });
-          this.socketServer.io.emit(GameEvents.PLAYER_CONNECTED, event);
+          this.socketServer.io.emit(EventTypes.PLAYER_CONNECTED, event);
         })
       );
       output.rawResult = 'Connected all players';

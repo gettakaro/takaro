@@ -1,5 +1,5 @@
 import { logger } from '@takaro/util';
-import { IGamePlayer } from '../../interfaces/GamePlayer.js';
+import { IGamePlayer } from '@takaro/modules';
 import {
   CommandOutput,
   IGameServer,

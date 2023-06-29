@@ -6,8 +6,9 @@ import {
   defaultInputPropsFactory,
 } from '../InputProps';
 import { TextFieldProps, GenericTextField } from '.';
-import { Wrapper, Container, InputContainer } from './style';
+import { Container, InputContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 
@@ -51,20 +52,22 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
 
   if (loading) {
     return (
-      <Container>
-        {label && (
-          <Label
-            required={required}
-            htmlFor={name}
-            error={!!fieldState.error}
-            size={size}
-            disabled={disabled}
-            text={label}
-            position="top"
-          />
-        )}
-        <InputContainer className="placeholder" />
-      </Container>
+      <Wrapper>
+        <Container>
+          {label && (
+            <Label
+              required={required}
+              htmlFor={name}
+              error={!!fieldState.error}
+              size={size}
+              disabled={disabled}
+              text={label}
+              position="top"
+            />
+          )}
+          <InputContainer className="placeholder" />
+        </Container>
+      </Wrapper>
     );
   }
 
@@ -114,12 +117,15 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           value={field.value}
           type={type}
           ref={field.ref}
+          hasDescription={!!description}
         />
         {fieldState.error && fieldState.error.message && showError && (
           <ErrorMessage message={fieldState.error.message} />
         )}
       </Container>
-      {description && <p>{description}</p>}
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Wrapper>
   );
 };

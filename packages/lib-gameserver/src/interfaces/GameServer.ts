@@ -1,5 +1,5 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
-import { IGamePlayer } from './GamePlayer.js';
+import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
 import {
   IsBoolean,

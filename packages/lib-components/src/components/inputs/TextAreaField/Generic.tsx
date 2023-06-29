@@ -6,6 +6,7 @@ import {
   defaultInputProps,
   defaultInputPropsFactory,
 } from '../InputProps';
+import { setAriaDescribedBy } from '../layout';
 
 export interface TextAreaFieldProps {
   placeholder?: string;
@@ -33,6 +34,7 @@ export const GenericTextAreaField = forwardRef<
     name,
     rows = 4,
     hasError,
+    hasDescription,
     value,
     readOnly,
     id,
@@ -55,6 +57,7 @@ export const GenericTextAreaField = forwardRef<
         ref={ref}
         value={value as string}
         rows={rows}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
     </TextAreaContainer>
   );

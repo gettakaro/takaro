@@ -2,8 +2,7 @@ import { expect, sandbox } from '@takaro/test';
 import { SinonStub } from 'sinon';
 import { RustEmitter, RustEvent, RustEventType } from '../emitter.js';
 import { RustConnectionInfo } from '../connectionInfo.js';
-import { IGamePlayer } from '../../../interfaces/GamePlayer.js';
-import { GameEvents } from '../../../interfaces/events.js';
+import { IGamePlayer, GameEvents } from '@takaro/modules';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
 

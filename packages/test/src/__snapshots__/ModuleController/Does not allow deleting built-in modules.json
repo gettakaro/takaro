@@ -3,7 +3,7 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Cannot delete builtin module"
+        "message": "Cannot modify builtin modules"
       }
     },
     "data": {}

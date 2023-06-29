@@ -19,6 +19,7 @@ export function RadioWidget<
   value,
   required,
   readonly,
+  schema,
   id,
   onChange,
 }: WidgetProps<T, S, F>) {
@@ -45,6 +46,7 @@ export function RadioWidget<
       options={radioOptions}
       required={required}
       hasError={!!rawErrors.length}
+      hasDescription={!!schema.description}
     />
   );
 }

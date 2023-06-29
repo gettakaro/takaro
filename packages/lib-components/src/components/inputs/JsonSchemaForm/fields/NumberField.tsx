@@ -53,6 +53,7 @@ export const NumberField = ({
       required={required}
       readOnly={readonly}
       value={schema.default || 0}
+      hasDescription={!!schema.description}
       type="number"
     />
   );

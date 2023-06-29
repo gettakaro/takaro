@@ -10,7 +10,7 @@ import {
   VariableOutputDTO,
 } from '@takaro/apiclient';
 import { config } from '../../config.js';
-import { GameEvents } from '@takaro/gameserver';
+import { EventTypes } from '@takaro/modules';
 
 const group = 'VariableController';
 
@@ -53,7 +53,7 @@ const setupWithGameServersAndPlayers = async function (
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(
-    GameEvents.PLAYER_CONNECTED,
+    EventTypes.PLAYER_CONNECTED,
     10
   );
 

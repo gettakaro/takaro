@@ -1,6 +1,6 @@
 import { TakaroEmitter } from './TakaroEmitter.js';
 import { expect, sandbox } from '@takaro/test';
-import { EventLogLine, GameEvents } from './interfaces/events.js';
+import { EventLogLine, EventTypes, GameEvents } from '@takaro/modules';
 
 class ExtendedTakaroEmitter extends TakaroEmitter {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -18,7 +18,7 @@ describe('TakaroEmitter', () => {
     const emitter = new ExtendedTakaroEmitter();
     const spy = sandbox.spy();
 
-    emitter.on(GameEvents.LOG_LINE, spy);
+    emitter.on(EventTypes.LOG_LINE, spy);
 
     await emitter.emit(
       GameEvents.LOG_LINE,

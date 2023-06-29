@@ -1,6 +1,5 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
-import { DiscordEvents } from '../../dto.js';
-import { GameEvents } from '@takaro/gameserver';
+import { EventTypes } from '../../dto/index.js';
 
 export class ChatBridge extends BuiltinModule {
   constructor() {
@@ -11,12 +10,14 @@ export class ChatBridge extends BuiltinModule {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
-          allowBotMessage: {
+          sendPlayerConnected: {
             type: 'boolean',
-            default: false,
+            description: 'Send a message when a player connects.',
+            default: true,
           },
-          allowTakaroBot: {
+          sendPlayerDisconnected: {
             type: 'boolean',
+            description: 'Send a message when a player disconnects.',
             default: true,
           },
         },
@@ -26,13 +27,23 @@ export class ChatBridge extends BuiltinModule {
 
     this.hooks = [
       {
-        eventType: DiscordEvents.DISCORD_MESSAGE,
+        eventType: EventTypes.DISCORD_MESSAGE,
         name: 'DiscordToGame',
         function: '',
       },
       {
-        eventType: GameEvents.CHAT_MESSAGE,
+        eventType: EventTypes.CHAT_MESSAGE,
         name: 'GameToDiscord',
+        function: '',
+      },
+      {
+        eventType: EventTypes.PLAYER_CONNECTED,
+        name: 'PlayerConnected',
+        function: '',
+      },
+      {
+        eventType: EventTypes.PLAYER_DISCONNECTED,
+        name: 'PlayerDisconnected',
         function: '',
       },
     ];

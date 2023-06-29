@@ -4,7 +4,7 @@ import {
   EventPlayerConnected,
   EventPlayerDisconnected,
   GameEvents,
-} from './interfaces/events.js';
+} from '@takaro/modules';
 import { isTakaroDTO, errors, logger } from '@takaro/util';
 import { isPromise } from 'util/types';
 

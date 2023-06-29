@@ -15,11 +15,11 @@ import {
   FunctionService,
   FunctionUpdateDTO,
 } from './FunctionService.js';
-import { EventChatMessage, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
-import { ICommand, ICommandArgument } from '@takaro/modules';
+import { ICommand, ICommandArgument, EventChatMessage } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
@@ -208,9 +208,7 @@ export class CommandService extends TakaroService<
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(
-        await new FunctionCreateDTO()
-      );
+      const newFn = await functionsService.create(new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 

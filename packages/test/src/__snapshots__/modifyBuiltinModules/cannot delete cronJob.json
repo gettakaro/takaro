@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Cannot modify builtin modules"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "modifyBuiltinModules",
+    "snapshot": true,
+    "name": "cannot delete cronJob",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

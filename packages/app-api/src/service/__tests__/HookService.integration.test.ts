@@ -1,6 +1,6 @@
 import { HookService } from '../HookService.js';
 import { queueService } from '@takaro/queues';
-import { EventPlayerConnected, EventChatMessage } from '@takaro/gameserver';
+import { EventPlayerConnected, EventChatMessage } from '@takaro/modules';
 import {
   IntegrationTest,
   sandbox,

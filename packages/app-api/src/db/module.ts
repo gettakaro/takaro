@@ -185,4 +185,44 @@ export class ModuleRepo extends ITakaroRepo<
 
     return this.findOne(item.id);
   }
+
+  async findByCommand(commandId: string): Promise<ModuleOutputDTO> {
+    const { query } = await this.getModel();
+    const item = await query
+      .withGraphJoined('commands')
+      .findOne('commands.id', commandId);
+
+    return new ModuleOutputDTO().construct(item);
+  }
+
+  async findByHook(hookId: string): Promise<ModuleOutputDTO> {
+    const { query } = await this.getModel();
+    const item = await query
+      .withGraphJoined('hooks')
+      .findOne('hooks.id', hookId);
+
+    return new ModuleOutputDTO().construct(item);
+  }
+
+  async findByCronJob(cronJobId: string): Promise<ModuleOutputDTO> {
+    const { query } = await this.getModel();
+    const item = await query
+      .withGraphJoined('cronJobs')
+      .findOne('cronJobs.id', cronJobId);
+
+    return new ModuleOutputDTO().construct(item);
+  }
+
+  async findByFunction(functionId: string): Promise<ModuleOutputDTO> {
+    const { query } = await this.getModel();
+    const item = await query
+      .withGraphJoined('hooks')
+      .withGraphJoined('commands')
+      .withGraphJoined('cronJobs')
+      .findOne('hooks.functionId', functionId)
+      .orWhere('commands.functionId', functionId)
+      .orWhere('cronJobs.functionId', functionId);
+
+    return new ModuleOutputDTO().construct(item);
+  }
 }

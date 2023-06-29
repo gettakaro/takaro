@@ -2,7 +2,8 @@ import { TakaroService } from './Base.js';
 
 import { PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsOptional, IsString } from 'class-validator';
-import { IGamePlayer, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';

@@ -29,6 +29,7 @@ export interface ModuleItemProperties {
 export interface ModuleData {
   id: string;
   name: string;
+  isBuiltIn?: boolean;
   fileMap: Record<FilePath, ModuleItemProperties>;
 }
 

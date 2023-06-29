@@ -2,11 +2,9 @@ import { logger } from '@takaro/util';
 import fs from 'fs/promises';
 import { createReadStream } from 'fs';
 import readline from 'node:readline/promises';
-import {
-  EventLogLine,
-  GameEvents,
-  IPlayerReferenceDTO,
-} from '@takaro/gameserver';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
+
+import { EventLogLine, GameEvents } from '@takaro/modules';
 import { getMockServer } from './index.js';
 import { MockServerSocketServer } from '../socket/socketTypes.js';
 

@@ -1,5 +1,6 @@
 import { Label } from '../../../../components';
 import { styled } from '../../../../styled';
+import { Wrapper } from '../../layout';
 
 const Container = styled.div`
   width: 100%;
@@ -50,21 +51,23 @@ export function FieldTemplate<
   }
 
   return (
-    <Container>
-      {displayLabel && (
-        <Label
-          disabled={disabled}
-          position="top"
-          required={required ? required : false}
-          error={!!rawErrors.length}
-          text={label}
-          htmlFor={id}
-          size="medium"
-        />
-      )}
-      {children}
-      {errors}
+    <Wrapper>
+      <Container>
+        {displayLabel && (
+          <Label
+            disabled={disabled}
+            position="top"
+            required={required ? required : false}
+            error={!!rawErrors.length}
+            text={label}
+            htmlFor={id}
+            size="medium"
+          />
+        )}
+        {children}
+        {errors}
+      </Container>
       {displayLabel && rawDescription && description}
-    </Container>
+    </Wrapper>
   );
 }
