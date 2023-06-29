@@ -13,7 +13,7 @@ export const Container = styled.div`
     background-color: ${({ theme }) => theme.colors.primary};
     color: white;
     font-size: 110%;
-    height: 30px;
+    height: 40px;
     font-weight: 500;
     font-family: 'inconsolata';
     border-radius: 0;
