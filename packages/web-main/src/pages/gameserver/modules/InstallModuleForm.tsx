@@ -5,7 +5,6 @@ import {
   CollapseList,
   styled,
   JsonSchemaForm,
-  Loading,
   DrawerSkeleton,
 } from '@takaro/lib-components';
 import Form from '@rjsf/core';
