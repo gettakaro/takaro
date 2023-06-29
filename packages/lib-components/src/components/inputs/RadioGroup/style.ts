@@ -23,7 +23,3 @@ export const Container = styled.div<{ isSelected: boolean }>`
   }
   cursor: pointer;
 `;
-
-export const Wrapper = styled.div`
-  position: relative;
-`;

@@ -67,11 +67,21 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   svg {
     margin-right: 1rem;
   }
+
+  button {
+    svg {
+      margin-right: 0;
+    }
+  }
 `;
 
 const FileContainer = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
+  svg {
+    margin-right: ${({ theme }) => theme.spacing[1]};
+  }
 `;
 
 const NewFileContainer = styled.div<{ depth: number }>`
@@ -79,6 +89,10 @@ const NewFileContainer = styled.div<{ depth: number }>`
   align-items: center;
   justify-content: flex-start;
   padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
+
+  svg {
+    margin-right: ${({ theme }) => theme.spacing[1]};
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -344,10 +358,11 @@ export const File: FC<FileProps> = ({
           {isEditing || selectFile ? (
             <EditableField
               name="file"
-              allowEmpty={false}
               isEditing={isEditing}
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
+              disabled={moduleData.isBuiltIn}
+              required
               value={internalFileName}
             />
           ) : (
@@ -370,14 +385,12 @@ export const File: FC<FileProps> = ({
 
       {showNewFileField && (
         <NewFileContainer depth={depth}>
-          <JsIcon width={12} />
+          <JsIcon size={12} fill={theme.colors.secondary} />
           <EditableField
-            allowEmpty={false}
+            disabled={moduleData.isBuiltIn}
             name="new-file"
             isEditing={true}
-            editingChange={(e) => {
-              setShowNewFileField(e);
-            }}
+            editingChange={setShowNewFileField}
             onEdited={handleNewFile}
           />
         </NewFileContainer>

@@ -10,6 +10,7 @@ import {
   RadioGroup,
   Switch,
   Drawer,
+  DrawerSkeleton,
 } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -29,6 +30,10 @@ export default {
   title: 'data/Drawer',
   component: Drawer,
 } as Meta;
+
+export const Loading: StoryFn = () => {
+  return <DrawerSkeleton />;
+};
 
 interface FormFields {
   name: string;

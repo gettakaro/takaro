@@ -9,6 +9,7 @@ import { StyledButton } from './style';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
 }
 
 interface IFormInputs {
@@ -19,7 +20,7 @@ const validationSchema = z.object({
   temporalValue: z.string(),
 });
 
-export const CronJobConfig: FC<IProps> = ({ moduleItem }) => {
+export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCronJob(moduleItem.itemId);
   const { mutateAsync } = useCronJobUpdate();
 
@@ -48,8 +49,9 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem }) => {
         name="temporalValue"
         label="temporalValue"
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
+        readOnly={readOnly}
       />
-      <StyledButton fullWidth type="submit" text="Save" />
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
     </form>
   );
 };

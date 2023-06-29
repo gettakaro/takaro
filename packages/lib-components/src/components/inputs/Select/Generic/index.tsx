@@ -40,9 +40,11 @@ import {
 import { Option } from './Option';
 import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
+import { setAriaDescribedBy } from '../../layout';
 
 export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
+  minWidth?: string;
 }
 
 export type GenericSelectProps = PropsWithChildren<
@@ -57,8 +59,18 @@ const defaultsApplier =
 export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
   props
 ) => {
-  const { render, children, readOnly, value, onBlur, onChange, id, hasError } =
-    defaultsApplier(props);
+  const {
+    render,
+    children,
+    readOnly,
+    value,
+    onBlur,
+    onChange,
+    id,
+    hasError,
+    hasDescription,
+    name,
+  } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
@@ -192,6 +204,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
         isOpen={open}
         tabIndex={readOnly ? -1 : 0}
         hasError={hasError}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
         {render(selectedIndex - 1)}

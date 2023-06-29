@@ -1,10 +1,6 @@
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
 
-export const Wrapper = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing['1_5']};
-`;
-
 export const Container = styled.div`
   position: relative;
   display: flex;

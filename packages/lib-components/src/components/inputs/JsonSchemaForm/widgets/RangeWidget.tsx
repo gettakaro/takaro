@@ -48,6 +48,7 @@ export function RangeWidget<
         }}
         required={required}
         hasError={!!rawErrors.length}
+        hasDescription={!!schema.description}
       />
     </Container>
   );

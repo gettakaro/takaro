@@ -9,8 +9,9 @@ import {
   getTemplate,
 } from '@rjsf/utils';
 import { GenericCheckBox } from '../../CheckBox';
-import { Wrapper, Container } from '../../CheckBox/style';
+import { Container } from '../../CheckBox/style';
 import { Label } from '../../../../components';
+import { Wrapper } from '../../layout';
 
 export function CheckBoxWidget<
   T = unknown,
@@ -77,6 +78,7 @@ export function CheckBoxWidget<
           onFocus={_onFocus}
           required={required}
           hasError={!!rawErrors.length}
+          hasDescription={!!description}
         />
       </Container>
       {!hideLabel && !!description && (

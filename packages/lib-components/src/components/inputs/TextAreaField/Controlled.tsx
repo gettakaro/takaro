@@ -8,6 +8,7 @@ import {
 import { Container, TextAreaContainer } from './style';
 import { Label, ErrorMessage } from '../../../components';
 import { useController } from 'react-hook-form';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledTextAreaFieldProps = TextAreaFieldProps &
   ControlledInputProps;
@@ -71,38 +72,43 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
   }
 
   return (
-    <Container>
-      {label && (
-        <Label
+    <Wrapper>
+      <Container>
+        {label && (
+          <Label
+            required={required}
+            htmlFor={name}
+            error={!!error}
+            size={size}
+            disabled={disabled}
+            text={label}
+            hint={hint}
+            position="top"
+          />
+        )}
+        <GenericTextAreaField
+          name={name}
+          id={name}
           required={required}
-          htmlFor={name}
-          error={!!error}
-          size={size}
+          readOnly={readOnly}
           disabled={disabled}
-          text={label}
-          hint={hint}
-          position="top"
+          rows={rows}
+          placeholder={placeholder}
+          value={field.value}
+          onBlur={handleOnBlur}
+          onChange={field.onChange}
+          onFocus={handleOnFocus}
+          hasError={!!error}
+          hasDescription={!!description}
+          ref={field.ref}
         />
+        {error && error.message && showError && (
+          <ErrorMessage message={error.message} />
+        )}
+      </Container>
+      {description && (
+        <Description description={description} inputName={name} />
       )}
-      <GenericTextAreaField
-        name={name}
-        id={name}
-        required={required}
-        readOnly={readOnly}
-        disabled={disabled}
-        rows={rows}
-        placeholder={placeholder}
-        value={field.value}
-        onBlur={handleOnBlur}
-        onChange={field.onChange}
-        onFocus={handleOnFocus}
-        hasError={!!error}
-        ref={field.ref}
-      />
-      {error && error.message && showError && (
-        <ErrorMessage message={error.message} />
-      )}
-      {description && <p>{description}</p>}
-    </Container>
+    </Wrapper>
   );
 };

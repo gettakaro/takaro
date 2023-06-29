@@ -1,14 +1,15 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
 import { GenericCheckBox } from '.';
-import { Wrapper, Container, CheckboxContainer } from './style';
-import { Label, ErrorMessage } from '../../../components';
+import { Container, CheckboxContainer } from './style';
 
 import {
   defaultInputProps,
   defaultInputPropsFactory,
   ControlledInputProps,
 } from '../InputProps';
+import { Label, ErrorMessage } from '../../../components';
+import { Wrapper, Description } from '../layout';
 
 export interface CheckBoxProps {
   labelPosition?: 'left' | 'right';
@@ -79,7 +80,9 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
             />
           )}
         </Container>
-        {description && <p>{description}</p>}
+        {description && (
+          <Description description={description} inputName={name} />
+        )}
       </Wrapper>
     );
   }
@@ -107,6 +110,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
           onBlur={field.onBlur}
           readOnly={readOnly}
           hasError={!!error}
+          hasDescription={!!description}
           required={required}
           onChange={field.onChange}
           value={field.value}
@@ -127,7 +131,9 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
         )}
         {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
-      {description && <p>{description}</p>}
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Wrapper>
   );
 };

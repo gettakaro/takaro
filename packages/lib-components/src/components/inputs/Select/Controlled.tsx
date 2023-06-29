@@ -11,6 +11,7 @@ import { ErrorMessage, Label } from '../../../components';
 import { SelectProps } from './Generic';
 import { Option } from './Generic/Option';
 import { OptionGroup } from './Generic/OptionGroup';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledSelectProps = PropsWithChildren<
   ControlledInputProps & SelectProps
@@ -19,6 +20,7 @@ export type ControlledSelectProps = PropsWithChildren<
 const defaultsApplier =
   defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
 
+// TODO: handle select loading state
 export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   props
 ) => {
@@ -35,6 +37,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     name,
     control,
     loading,
+    minWidth,
   } = defaultsApplier(props);
 
   const {
@@ -57,38 +60,43 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   }
 
   return (
-    <Container>
-      {label && (
-        <Label
-          error={!!error}
-          text={label}
-          required={required}
-          position="top"
-          size={componentSize}
+    <Wrapper>
+      <Container minWidth={minWidth}>
+        {label && (
+          <Label
+            error={!!error}
+            text={label}
+            required={required}
+            position="top"
+            size={componentSize}
+            disabled={disabled}
+            hint={hint}
+          />
+        )}
+        <GenericSelect
+          name={name}
+          id={name}
+          hasError={!!error}
+          hasDescription={!!description}
+          readOnly={readOnly}
           disabled={disabled}
-          hint={hint}
-        />
+          required={required}
+          size={componentSize}
+          onChange={field.onChange}
+          onBlur={handleOnBlur}
+          render={render}
+          value={field.value}
+        >
+          {children}
+        </GenericSelect>
+        {error && error.message && showError && (
+          <ErrorMessage message={error.message} />
+        )}
+      </Container>
+      {description && (
+        <Description description={description} inputName={name} />
       )}
-      <GenericSelect
-        name={name}
-        id={name}
-        hasError={!!error}
-        readOnly={readOnly}
-        disabled={disabled}
-        required={required}
-        size={componentSize}
-        onChange={field.onChange}
-        onBlur={handleOnBlur}
-        render={render}
-        value={field.value}
-      >
-        {children}
-      </GenericSelect>
-      {error && error.message && showError && (
-        <ErrorMessage message={error.message} />
-      )}
-      <p>{description}</p>
-    </Container>
+    </Wrapper>
   );
 };
 
