@@ -12,6 +12,7 @@ export const Container = styled.div<{
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
 
   button {
+    padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
     flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
     border: 0.1rem solid ${({ theme }): string => theme.colors.backgroundAlt};
     border-bottom: ${({ orientation, theme }) =>
