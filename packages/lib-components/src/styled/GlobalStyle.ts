@@ -136,11 +136,9 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
   a.underline {
-    &:hover {
-      text-decoration: underline;
-      text-decoration-color: inherit;
-      text-decoration-thickness: 1px;
-    }
+    text-decoration: underline;
+    text-decoration-color: inherit;
+    text-decoration-thickness: 1px;
   }
 
   a, button {

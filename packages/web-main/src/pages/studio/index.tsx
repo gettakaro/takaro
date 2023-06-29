@@ -10,6 +10,7 @@ import { FunctionType } from 'context/moduleContext';
 import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
 import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
 import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
+import { Header } from 'components/studio/Header';
 
 const Wrapper = styled.div`
   padding: ${({ theme }) => `0 ${theme.spacing[2]}}`};
@@ -21,18 +22,6 @@ const Container = styled.div`
 
 const ConfigWrapper = styled.div`
   padding: ${({ theme }) => theme.spacing[1]};
-`;
-
-const Header = styled.header`
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: ${({ theme }) => theme.spacing[1]};
-
-  text-transform: capitalize;
 `;
 
 const StyledResizable = styled(Resizable)`
@@ -83,7 +72,7 @@ const Studio: FC = () => {
       <Helmet>
         <title>Takaro - Studio</title>
       </Helmet>
-      <Header>{moduleData.name}</Header>
+      <Header />
       <Container>
         <StyledResizable
           enable={{
