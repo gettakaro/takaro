@@ -350,11 +350,11 @@ export const File: FC<FileProps> = ({
           {isEditing || selectFile ? (
             <EditableField
               name="file"
-              allowEmpty={false}
               isEditing={isEditing}
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
               disabled={moduleData.isBuiltIn}
+              required
               value={internalFileName}
             />
           ) : (
@@ -379,10 +379,10 @@ export const File: FC<FileProps> = ({
         <NewFileContainer depth={depth}>
           <JsIcon width={12} />
           <EditableField
-            allowEmpty={false}
             disabled={moduleData.isBuiltIn}
             name="new-file"
             isEditing={true}
+            required
             editingChange={(e) => {
               setShowNewFileField(e);
             }}

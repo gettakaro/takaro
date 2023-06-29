@@ -17,7 +17,6 @@ export interface EditableFieldProps {
   onEdited?: (value: string) => unknown;
 
   disabled?: boolean;
-  allowEmpty: boolean;
   required?: boolean;
   name: string;
   loading?: boolean;

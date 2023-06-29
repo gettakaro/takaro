@@ -12,7 +12,6 @@ export default {
     value: 'I am the text, double click me',
     required: true,
     label: 'label',
-    allowEmpty: false,
   },
 } as Meta<EditableFieldProps>;
 
@@ -30,7 +29,6 @@ export const Default: StoryFn<EditableFieldProps> = (args) => {
     <Container>
       <EditableField
         name="editableField"
-        allowEmpty={args.allowEmpty}
         isEditing={args.isEditing}
         disabled={args.disabled}
         required={args.required}
@@ -52,7 +50,6 @@ export const RemoteEditEnable: StoryFn<EditableFieldProps> = (args) => {
       component
       <EditableField
         name="editableField"
-        allowEmpty={args.allowEmpty}
         isEditing={editing}
         disabled={args.disabled}
         required={args.required}
