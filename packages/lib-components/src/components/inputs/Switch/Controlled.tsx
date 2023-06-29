@@ -4,7 +4,8 @@ import { FC } from 'react';
 import { GenericSwitch } from '.';
 import { defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Skeleton, Label } from '../../../components';
-import { Wrapper, Container } from './style';
+import { Container } from './style';
+import { Wrapper, Description } from '../layout';
 
 export type ControlledSwitchProps = ControlledInputProps;
 
@@ -22,6 +23,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
     label,
     control,
     loading,
+    description,
   } = defaultsApplier(props);
 
   const {
@@ -68,9 +70,12 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           onBlur={field.onBlur}
           value={field.value}
           ref={field.ref}
+          hasDescription={!!description}
         />
       </Container>
-      <p>{props.description}</p>
+      {description && (
+        <Description description={description} inputName={name} />
+      )}
     </Wrapper>
   );
 };

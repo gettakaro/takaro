@@ -13,6 +13,7 @@ import {
   defaultInputProps,
   GenericInputPropsFunctionHandlers,
 } from '../InputProps';
+import { setAriaDescribedBy } from '../layout';
 
 const variants = {
   unchecked: { scale: 0, opacity: 0 },
@@ -30,8 +31,16 @@ const defaultsApplier =
 // TODO: write a test that checks if the value is being processed as a boolean.
 export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
   (props, ref) => {
-    const { readOnly, disabled, value, hasError, onChange, id } =
-      defaultsApplier(props);
+    const {
+      readOnly,
+      disabled,
+      value,
+      hasError,
+      onChange,
+      id,
+      name,
+      hasDescription,
+    } = defaultsApplier(props);
 
     const [isChecked, setChecked] = useState<boolean>(Boolean(value));
 
@@ -57,6 +66,7 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
         ref={ref}
         role="checkbox"
         aria-checked={isChecked}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
         tabIndex={readOnly || disabled ? -1 : 0}
       >
         <BackgroundContainer

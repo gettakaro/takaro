@@ -1,21 +1,8 @@
 import { styled } from '../../../styled';
 
-export const Wrapper = styled.div<{ marginBottom?: string }>`
-  width: 100%;
-  margin-bottom: ${({ theme, marginBottom }) =>
-    marginBottom ? marginBottom : theme.spacing[2]};
-`;
-
 export const Container = styled.div`
   width: 100%;
   position: relative;
-
-  p {
-    margin-top: ${({ theme }) => theme.spacing['1']};
-    color: ${({ theme }) => theme.colors.textAlt};
-    white-space: pre-wrap;
-    line-height: 1.5;
-  }
 `;
 
 export const InputContainer = styled.div`

@@ -23,6 +23,7 @@ import {
   defaultInputPropsFactory,
   GenericInputProps,
 } from '../InputProps';
+import { setAriaDescribedBy } from '../layout';
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number';
 
@@ -61,6 +62,7 @@ export const GenericTextField = forwardRef<
     suffix,
     value,
     id,
+    hasDescription,
   } = defaultsApplier(props);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -97,6 +99,7 @@ export const GenericTextField = forwardRef<
         type={getFieldType(type, showPassword)}
         ref={ref}
         value={value as string}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
       {type === 'password' &&
         (showPassword ? (
