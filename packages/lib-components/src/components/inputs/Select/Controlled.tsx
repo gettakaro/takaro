@@ -37,6 +37,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     name,
     control,
     loading,
+    minWidth,
   } = defaultsApplier(props);
 
   const {
@@ -60,7 +61,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
 
   return (
     <Wrapper>
-      <Container>
+      <Container minWidth={minWidth}>
         {label && (
           <Label
             error={!!error}

@@ -44,6 +44,7 @@ import { setAriaDescribedBy } from '../../layout';
 
 export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
+  minWidth?: string;
 }
 
 export type GenericSelectProps = PropsWithChildren<
