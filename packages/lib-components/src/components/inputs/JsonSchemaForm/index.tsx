@@ -49,7 +49,8 @@ export const JsonSchemaForm = forwardRef<
         fields={customFields}
         widgets={customWidgets}
         uiSchema={uiSchema}
-        liveValidate={true}
+        // Disable live validation to avoid showing empty field errors when a user is setting up initial module config
+        liveValidate={false}
         showErrorList={false}
         formData={initialData}
         validator={validator}
