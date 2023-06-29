@@ -15,6 +15,12 @@ export class Gimme extends BuiltinModule {
               type: 'string',
             },
           },
+          commands: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
         },
         required: ['items'],
         additionalProperties: false,
