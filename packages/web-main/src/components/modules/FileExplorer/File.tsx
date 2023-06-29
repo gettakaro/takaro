@@ -67,6 +67,12 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
   svg {
     margin-right: 1rem;
   }
+
+  button {
+    svg {
+      margin-right: 0;
+    }
+  }
 `;
 
 const FileContainer = styled.div`
