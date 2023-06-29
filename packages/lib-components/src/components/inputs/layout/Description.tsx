@@ -30,6 +30,7 @@ export const Description: FC<DescriptionProps> = ({
               href={part}
               target="_blank"
               rel="noopener noreferrer"
+              className="underline"
             >
               {part}
             </a>
