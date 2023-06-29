@@ -3,6 +3,7 @@ import { IGamePlayer } from '@takaro/modules';
 import {
   CommandOutput,
   IGameServer,
+  IItemDTO,
   IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
@@ -52,6 +53,11 @@ export class SevenDaysToDie implements IGameServer {
       y: playerLocation.position.y,
       z: playerLocation.position.z,
     };
+  }
+
+  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+    const command = `give ${player.gameId} ${item.name} ${item.amount}`;
+    await this.apiClient.executeConsoleCommand(command);
   }
 
   async testReachability(): Promise<TestReachabilityOutput> {
