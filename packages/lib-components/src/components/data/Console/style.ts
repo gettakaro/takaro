@@ -2,8 +2,12 @@ import { styled } from '../../../styled';
 
 export const Wrapper = styled.div`
   height: 100%;
+
+  font-weight: 500;
+
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   position: relative;
+
   border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
