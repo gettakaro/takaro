@@ -90,13 +90,13 @@ export interface BanInputDTO {
    * @type {string}
    * @memberof BanInputDTO
    */
-  reason: string;
+  reason?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof BanInputDTO
    */
-  expiresAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -1930,6 +1930,25 @@ export interface GetUserDTO {
 /**
  *
  * @export
+ * @interface GiveItemInputDTO
+ */
+export interface GiveItemInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GiveItemInputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof GiveItemInputDTO
+   */
+  amount: number;
+}
+/**
+ *
+ * @export
  * @interface GuildApiUpdateDTO
  */
 export interface GuildApiUpdateDTO {
@@ -2574,6 +2593,25 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   ip?: string;
+}
+/**
+ *
+ * @export
+ * @interface IItemDTO
+ */
+export interface IItemDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof IItemDTO
+   */
+  amount: number;
 }
 /**
  *
@@ -8886,6 +8924,74 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem: async (
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGiveItem',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerGiveItem', 'playerId', playerId);
+      const localVarPath =
+        `/gameserver/{gameserverId}/player/{playerId}/giveItem`
+          .replace(
+            `{${'gameserverId'}}`,
+            encodeURIComponent(String(gameserverId))
+          )
+          .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        giveItemInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9786,6 +9892,37 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGiveItem(
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGiveItem(
+          gameserverId,
+          playerId,
+          giveItemInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10265,6 +10402,30 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem(
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .gameServerControllerGiveItem(
+          gameserverId,
+          playerId,
+          giveItemInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10617,6 +10778,32 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetTypes(options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetTypes(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Give item
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGiveItem(
+    gameserverId: string,
+    playerId: string,
+    giveItemInputDTO?: GiveItemInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGiveItem(
+        gameserverId,
+        playerId,
+        giveItemInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

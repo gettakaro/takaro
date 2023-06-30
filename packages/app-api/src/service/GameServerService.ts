@@ -21,6 +21,7 @@ import {
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
+  IItemDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -417,5 +418,13 @@ export class GameServerService extends TakaroService<
   async listBans(gameServerId: string) {
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
+  }
+  async giveItem(gameServerId: string, playerId: string, item: IItemDTO) {
+    const playerService = new PlayerService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.giveItem(
+      await playerService.getRef(playerId, gameServerId),
+      item
+    );
   }
 }

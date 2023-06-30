@@ -4,6 +4,7 @@ import { TakaroDTO } from '@takaro/util';
 import {
   IsBoolean,
   IsISO8601,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -36,6 +37,13 @@ export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
 export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
   @IsString()
   gameId: string;
+}
+
+export class IItemDTO extends TakaroDTO<IItemDTO> {
+  @IsString()
+  name: string;
+  @IsNumber()
+  amount: number;
 }
 
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
@@ -71,6 +79,8 @@ export interface IGameServer {
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
+
+  giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
