@@ -15,6 +15,15 @@ export class PlayerOnboarding extends BuiltinModule {
             maxLength: 256,
             default: 'Welcome {player} to the server!',
           },
+          starterKitItems: {
+            type: 'array',
+            items: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 512,
+            },
+            default: [],
+          },
         },
         additionalProperties: false,
       })
@@ -25,6 +34,16 @@ export class PlayerOnboarding extends BuiltinModule {
         eventType: EventTypes.PLAYER_CONNECTED,
         name: 'playerConnected',
         function: '',
+      },
+    ];
+
+    this.commands = [
+      {
+        name: 'starterkit',
+        function: '',
+        trigger: 'starterkit',
+        helpText:
+          'Get a starter kit, you can only execute this once on a server!',
       },
     ];
   }

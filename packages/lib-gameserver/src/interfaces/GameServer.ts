@@ -3,6 +3,7 @@ import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
 import {
   IsBoolean,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -37,6 +38,13 @@ export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
   gameId: string;
 }
 
+export class IItemDTO extends TakaroDTO<IItemDTO> {
+  @IsString()
+  name: string;
+  @IsNumber()
+  amount: number;
+}
+
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
   @Type(() => IPlayerReferenceDTO)
   @ValidateNested()
@@ -57,6 +65,8 @@ export interface IGameServer {
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
+
+  giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;

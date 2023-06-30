@@ -20,11 +20,12 @@ export const Wrapper = styled.div<{
 export const Container = styled.div<{ isCollapsed: boolean }>`
   max-width: 100%;
   width: 100%;
+  height: fit-content;
+
   display: grid;
   align-content: start;
-  height: fit-content;
   grid-template-columns: 4rem 20rem 1fr;
-  text-align: left;
+
   margin: ${({ theme }) => theme.spacing[0]};
 `;
 
@@ -46,7 +47,7 @@ export const TimestampContainer = styled.div`
 
 export const TextContainer = styled.div`
   font-family: 'inconsolata';
-  font-size: ${({ theme }) => theme.fontSize.small};
+  font-size: ${({ theme }) => theme.fontSize.medium};
   color: ${({ theme }) => theme.colors.text};
 `;
 
@@ -64,7 +65,7 @@ export const Header = styled.div<{ isCollapsed: boolean; type: MessageType }>`
   }
 `;
 
-export const Body = styled.div<{ isCollapsed: boolean; type: MessageType }>`
+export const Body = styled.pre<{ isCollapsed: boolean; type: MessageType }>`
   display: ${({ isCollapsed }) => (isCollapsed ? 'none' : 'block')};
   font-family: 'inconsolata';
 `;

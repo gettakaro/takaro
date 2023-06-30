@@ -1,5 +1,6 @@
 import { BuiltinModule } from './BuiltinModule.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
+import { Gimme } from './modules/gimme/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
@@ -25,6 +26,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new PlayerOnboarding(),
       new ServerMessages(),
       new ChatBridge(),
+      new Gimme(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
