@@ -378,7 +378,6 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:gameserverId/player/:playerId/giveItem')
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   async giveItem(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndPlayerId,
