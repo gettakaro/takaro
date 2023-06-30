@@ -4,6 +4,11 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+if [[ "${FUNCTIONS_EXECUTION_MODE:-}" != "firecracker" ]]; then
+	echo "FUNCTIONS_EXECUTION_MODE is not set to 'firecracker'. Exiting..."
+	exit 0
+fi
+
 if [[ ! -e /dev/net/tun ]]; then
 	echo "creating /dev/net/tun..."
 	mkdir -p /dev/net

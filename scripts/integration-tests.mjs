@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down, run } from 'docker-compose';
+import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose';
 import { $ } from 'zx';
+import { writeFile, mkdir } from 'fs/promises';
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -53,6 +54,8 @@ async function cleanUp() {
 
 async function main() {
   await cleanUp();
+  await mkdir('./reports/integrationTests', { recursive: true });
+
   console.log('Bringing up datastores');
   await upMany(
     ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
@@ -60,12 +63,17 @@ async function main() {
   );
   await sleep(1000);
 
-  // Then, start supporting services
-  await upMany(['kratos-migrate', 'hydra-migrate'], composeOpts);
-  console.log('Waiting for SQL migrations to finish...');
-  await sleep(1000);
+  console.log('Running SQL migrations...');
+  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
+  await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
+
 
   await upMany(['kratos', 'hydra'], composeOpts);
+
+  await Promise.all([
+    waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60),
+    waitUntilHealthyHttp('http://127.0.0.1:4444/health/ready', 60),
+  ]);
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
@@ -73,7 +81,7 @@ async function main() {
     !composeOpts.env.ADMIN_CLIENT_ID ||
     !composeOpts.env.ADMIN_CLIENT_SECRET
   ) {
-    await sleep(5000);
+    console.log('No OAuth admin client configured, creating one...');
     const rawClientOutput = await exec(
       'hydra',
       'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json',
@@ -88,7 +96,10 @@ async function main() {
     composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
 
-  await upAll({ ...composeOpts, commandOptions: ['--build'] });
+  console.log('Pulling latest images...');
+  await pullAll({ ...composeOpts, log: false });
+  console.log('Starting all containers...');
+  await upAll(composeOpts);
 
   let failed = false;
 
@@ -107,7 +118,12 @@ async function main() {
     failed = true;
   }
 
-  await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], composeOpts);
+  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], { ...composeOpts, log: false });
+
+  await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
+  await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
+
+
   await cleanUp();
 
   if (failed) {
