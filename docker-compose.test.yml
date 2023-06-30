@@ -38,6 +38,13 @@ services:
       file: docker-compose.yml
       service: hydra
 
+  hydra-e2e:
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB}
+    extends:
+      file: docker-compose.yml
+      service: hydra-e2e
+
   hydra-migrate:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB}
