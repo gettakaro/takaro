@@ -36,7 +36,7 @@ jobs:
           cache: "npm"
 
       - uses: nick-fields/retry@v2
-        name: Integration tests
+        name: Init development environment
         with:
           timeout_minutes: 30
           max_attempts: 5
