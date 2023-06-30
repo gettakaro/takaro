@@ -33,6 +33,9 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
+  TAKARO_OAUTH_HOST: process.env.IS_E2E
+    ? 'http://127.0.0.1:14444'
+    : 'http://hydra:4444',
 };
 
 const composeOpts = {
