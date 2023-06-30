@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) { }
+  } catch (err) {}
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -74,11 +74,12 @@ async function main() {
     { ...composeOpts, log: false }
   );
 
-  await upMany(['kratos', 'hydra'], composeOpts);
+  await upMany(['kratos', 'hydra', 'hydra-e2e'], composeOpts);
 
   await Promise.all([
     waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60),
     waitUntilHealthyHttp('http://127.0.0.1:4444/health/ready', 60),
+    waitUntilHealthyHttp('http://127.0.0.1:14444/health/ready', 60),
   ]);
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
