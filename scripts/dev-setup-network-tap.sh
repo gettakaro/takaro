@@ -12,6 +12,11 @@ usage() {
 	exit 1
 }
 
+if [[ "${FUNCTIONS_EXECUTION_MODE:-}" != "firecracker" ]]; then
+	echo "FUNCTIONS_EXECUTION_MODE is not set to 'firecracker'. Exiting..."
+	exit 0
+fi
+
 while getopts ":h:t:" opt; do
 	case $opt in
 	h)
