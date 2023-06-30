@@ -3,6 +3,7 @@ import { IGamePlayer } from '@takaro/modules';
 import {
   CommandOutput,
   IGameServer,
+  IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
@@ -116,5 +117,10 @@ export class Mock implements IGameServer {
     const client = await this.getClient();
     const data = await client.emitWithAck('teleportPlayer', player, x, y, z);
     return data;
+  }
+
+  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+    const client = await this.getClient();
+    await client.emitWithAck('giveItem', player, item);
   }
 }

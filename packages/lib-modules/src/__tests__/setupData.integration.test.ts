@@ -16,6 +16,7 @@ export interface IModuleTestsSetupData {
   gameserver: GameServerOutputDTO;
   utilsModule: ModuleOutputDTO;
   teleportsModule: ModuleOutputDTO;
+  gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
 }
@@ -45,6 +46,9 @@ export const modulesTestSetup = async function (
 
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
+
+  const gimmeModule = modules.find((m) => m.name === 'gimme');
+  if (!gimmeModule) throw new Error('gimme module not found');
 
   const utilsModule = modules.find((m) => m.name === 'utils');
   if (!utilsModule) throw new Error('utils module not found');
@@ -78,6 +82,7 @@ export const modulesTestSetup = async function (
     teleportsModule,
     serverMessagesModule,
     onboardingModule,
+    gimmeModule,
     gameserver: gameserver.data.data,
   };
 };

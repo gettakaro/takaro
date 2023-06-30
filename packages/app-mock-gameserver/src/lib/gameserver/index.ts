@@ -8,6 +8,7 @@ import {
   IGameServer,
   IMessageOptsDTO,
   CommandOutput,
+  IItemDTO,
 } from '@takaro/gameserver';
 import {
   EventLogLine,
@@ -66,6 +67,10 @@ class MockGameserver implements IMockGameServer {
         return (await this.redis).hSet(getRedisKey(`player:${p.gameId}`), p);
       })
     );
+  }
+
+  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${item.name}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
