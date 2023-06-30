@@ -174,6 +174,19 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kratos
 
+  hydra-e2e:
+    image: oryd/hydra:v2.0.3
+    ports:
+      - '14444:4444' # Public port
+      - '14445:4445' # Admin port
+      - '15555:5555' # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    volumes:
+      - ./containers/ory/hydra:/etc/config/hydra
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+      - URLS_SELF_ISSUER=http://127.0.0.1:14444/
+
   hydra:
     image: oryd/hydra:v2.0.3
     ports:
@@ -185,7 +198,7 @@ services:
       - ./containers/ory/hydra:/etc/config/hydra
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
-      - URLS_SELF_ISSUER=http://127.0.0.1:4444/
+      - URLS_SELF_ISSUER=http://hydra:4444/
   hydra-migrate:
     image: oryd/hydra:v2.0.3
     environment:
@@ -193,6 +206,7 @@ services:
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
+
   postgresql_hydra:
     image: postgres:15
     ports:

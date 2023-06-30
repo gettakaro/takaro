@@ -2,6 +2,12 @@ import playwright from '@playwright/test';
 
 const { defineConfig, devices } = playwright;
 
+/* Playwright imports @takaro/test, because of this it loads all files in @takaro/test.
+ * @takaro/test uses sinon which defines a global afterEach function.
+ * Since we don't use sinon in our tests, we need to define a dummy afterEach function.
+ */
+global.afterEach = () => {};
+
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: 'src',
