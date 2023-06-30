@@ -135,6 +135,13 @@ jobs:
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
 
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integrationTests
+          path: reports
+          retention-days: 30          
+
   build-vmm:
     runs-on: ubuntu-latest
     strategy:
