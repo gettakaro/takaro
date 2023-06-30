@@ -57,38 +57,38 @@ export interface APIOutput {
 /**
  *
  * @export
- * @interface BaseEvent
+ * @interface BaseGameEvent
  */
-export interface BaseEvent {
+export interface BaseGameEvent {
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BaseEvent
+   * @memberof BaseGameEvent
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
-   * @memberof BaseEvent
+   * @memberof BaseGameEvent
    */
-  type: BaseEventTypeEnum;
+  type: BaseGameEventTypeEnum;
   /**
    *
    * @type {string}
-   * @memberof BaseEvent
+   * @memberof BaseGameEvent
    */
   msg: string;
 }
 
-export const BaseEventTypeEnum = {
+export const BaseGameEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
 } as const;
 
-export type BaseEventTypeEnum =
-  typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
+export type BaseGameEventTypeEnum =
+  typeof BaseGameEventTypeEnum[keyof typeof BaseGameEventTypeEnum];
 
 /**
  *
@@ -1163,6 +1163,62 @@ export type EventChatMessageTypeEnum =
 /**
  *
  * @export
+ * @interface EventDiscordChannel
+ */
+export interface EventDiscordChannel {
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordChannel
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordChannel
+   */
+  name: string;
+}
+/**
+ *
+ * @export
+ * @interface EventDiscordUser
+ */
+export interface EventDiscordUser {
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  username: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  displayName: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof EventDiscordUser
+   */
+  isBot: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof EventDiscordUser
+   */
+  isTakaroBot: boolean;
+}
+/**
+ *
+ * @export
  * @interface EventPlayerConnected
  */
 export interface EventPlayerConnected {
@@ -1811,6 +1867,25 @@ export interface GetUserDTO {
 /**
  *
  * @export
+ * @interface GiveItemInputDTO
+ */
+export interface GiveItemInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof GiveItemInputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof GiveItemInputDTO
+   */
+  amount: number;
+}
+/**
+ *
+ * @export
  * @interface GuildApiUpdateDTO
  */
 export interface GuildApiUpdateDTO {
@@ -2098,16 +2173,16 @@ export interface HookEventDiscordMessage {
   msg: string;
   /**
    *
-   * @type {string}
+   * @type {EventDiscordUser}
    * @memberof HookEventDiscordMessage
    */
-  senderDiscordId: string;
+  author: EventDiscordUser;
   /**
    *
-   * @type {string}
+   * @type {EventDiscordChannel}
    * @memberof HookEventDiscordMessage
    */
-  channelDiscordId: string;
+  channel: EventDiscordChannel;
 }
 /**
  *
@@ -2455,6 +2530,25 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   ip?: string;
+}
+/**
+ *
+ * @export
+ * @interface IItemDTO
+ */
+export interface IItemDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof IItemDTO
+   */
+  amount: number;
 }
 /**
  *
@@ -8687,6 +8781,74 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem: async (
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerGiveItem',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerGiveItem', 'playerId', playerId);
+      const localVarPath =
+        `/gameserver/{gameserverId}/player/{playerId}/giveItem`
+          .replace(
+            `{${'gameserverId'}}`,
+            encodeURIComponent(String(gameserverId))
+          )
+          .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        giveItemInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9379,6 +9541,37 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGiveItem(
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGiveItem(
+          gameserverId,
+          playerId,
+          giveItemInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9750,6 +9943,30 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Give item
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem(
+      gameserverId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerGiveItem(
+          gameserverId,
+          playerId,
+          giveItemInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10020,6 +10237,32 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetTypes(options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetTypes(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Give item
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGiveItem(
+    gameserverId: string,
+    playerId: string,
+    giveItemInputDTO?: GiveItemInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGiveItem(
+        gameserverId,
+        playerId,
+        giveItemInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

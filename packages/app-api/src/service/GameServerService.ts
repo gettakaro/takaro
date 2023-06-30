@@ -20,6 +20,7 @@ import {
   mockJsonSchema,
   GAME_SERVER_TYPE,
   getGame,
+  IItemDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -378,6 +379,15 @@ export class GameServerService extends TakaroService<
       position.x,
       position.y,
       position.z
+    );
+  }
+
+  async giveItem(gameServerId: string, playerId: string, item: IItemDTO) {
+    const playerService = new PlayerService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.giveItem(
+      await playerService.getRef(playerId, gameServerId),
+      item
     );
   }
 }
