@@ -114,7 +114,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: ./scripts/dev-init.sh
+
+      - uses: nick-fields/retry@v2
+        name: Integration tests
+        with:
+          timeout_minutes: 30
+          max_attempts: 5
+          shell: pwsh
+          command: ./scripts/dev-init.sh
+          
       - run: npm run test:style
 
       - uses: nick-fields/retry@v2
