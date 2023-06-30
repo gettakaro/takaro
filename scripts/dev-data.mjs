@@ -1,6 +1,6 @@
 #!/bin/node
 
-import { Client, AdminClient, isAxiosError } from '@takaro/apiclient';
+import { Client, AdminClient, isAxiosError, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,6 +13,22 @@ const config = {
   },
   OAuth2URL: process.env.TAKARO_OAUTH_HOST,
   log: false,
+  gameservers: {
+    rust: {
+      connectionInfo: {
+        host: process.env.TAKARO_DEV_RUST_HOST,
+        rconPort: process.env.TAKARO_DEV_RUST_PORT,
+        rconPassword: process.env.TAKARO_DEV_RUST_RCON_PASSWORD,
+      }
+    },
+    sdtd: {
+      connectionInfo: {
+        host: process.env.TAKARO_DEV_SDTD_HOST,
+        adminUser: process.env.TAKARO_DEV_SDTD_ADMIN_USER,
+        adminToken: process.env.TAKARO_DEV_SDTD_ADMIN_PASSWORD,
+      }
+    }
+  },
   moduleConfigs: {
     chatBridge: {
       enabled: process.env.TAKARO_DEV_CHAT_BRIDGE_ENABLED !== 'false',
@@ -23,8 +39,6 @@ const config = {
       },
       userConfig: {
         allowBotMessage: process.env.TAKARO_DEV_CHAT_BRIDGE_ALLOW_BOT_MESSAGE,
-        allowTakaroBot: process.env.TAKARO_DEV_CHAT_BRIDGE_ALLOW_TAKARO_BOT_MESSAGE !== 'false'
-
       },
     }
   }
@@ -112,7 +126,7 @@ async function main() {
   const gameserver = (
     await client.gameserver.gameServerControllerCreate({
       name: 'Test server',
-      type: 'MOCK',
+      type: GameServerCreateDTOTypeEnum.Mock,
       connectionInfo: JSON.stringify({
         eventInterval: 10000,
         host: 'http://127.0.0.1:3002',
@@ -141,6 +155,32 @@ async function main() {
       console.error(`🔴 Error installing module ${mod.builtin}`, { config: customConfig, response: JSON.stringify(error.response.data) });
     }
 
+  }
+
+  if (config.gameservers.rust.connectionInfo.host) {
+    try {
+      await client.gameserver.gameServerControllerCreate({
+        name: 'Rust',
+        type: GameServerCreateDTOTypeEnum.Rust,
+        connectionInfo: JSON.stringify(config.gameservers.rust.connectionInfo),
+      });
+      console.log('🎮 Added Rust server');
+    } catch (error) {
+      console.error('🔴 Error creating Rust gameserver', { config: config.gameservers.rust.connectionInfo, response: JSON.stringify(error.response.data) });
+    }
+  }
+
+  if (config.gameservers.sdtd.connectionInfo.host) {
+    try {
+      await client.gameserver.gameServerControllerCreate({
+        name: '7 Days to Die',
+        type: GameServerCreateDTOTypeEnum.Sevendaystodie,
+        connectionInfo: JSON.stringify(config.gameservers.sdtd.connectionInfo),
+      });
+      console.log('🎮 Added 7 days to die server');
+    } catch (error) {
+      console.error('🔴 Error creating 7 Days to Die gameserver', { config: config.gameservers.sdtd.connectionInfo, response: JSON.stringify(error.response.data) });
+    }
   }
 }
 

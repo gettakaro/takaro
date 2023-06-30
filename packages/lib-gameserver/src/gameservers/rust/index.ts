@@ -4,6 +4,7 @@ import { IGamePlayer } from '@takaro/modules';
 import {
   CommandOutput,
   IGameServer,
+  IItemDTO,
   IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
@@ -55,6 +56,12 @@ export class Rust implements IGameServer {
         name: player.DisplayName,
       });
     });
+  }
+
+  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+    await this.executeConsoleCommand(
+      `inventory.giveto ${player.gameId} ${item.name} ${item.amount}`
+    );
   }
 
   async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {

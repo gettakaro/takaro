@@ -146,6 +146,16 @@ class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
   opts!: IMessageOptsDTO;
 }
 
+class GiveItemInputDTO extends TakaroDTO<GiveItemInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  name: string;
+
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  amount: number;
+}
+
 class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
   @IsNumber({ allowNaN: false, allowInfinity: false })
   x: number;
@@ -361,6 +371,23 @@ export class GameServerController {
         y: data.y,
         z: data.z,
       }
+    );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:gameserverId/player/:playerId/giveItem')
+  async giveItem(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId,
+    @Body() data: GiveItemInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.giveItem(
+      params.gameserverId,
+      params.playerId,
+      data
     );
     return apiResponse(result);
   }
