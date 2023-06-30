@@ -3,6 +3,7 @@ import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
 import {
   IsBoolean,
+  IsISO8601,
   IsOptional,
   IsString,
   ValidateNested,
@@ -50,6 +51,19 @@ export interface IPosition {
   z: number;
 }
 
+export class BanDTO extends TakaroDTO<BanDTO> {
+  @Type(() => IPlayerReferenceDTO)
+  @ValidateNested()
+  player: IPlayerReferenceDTO;
+
+  @IsString()
+  reason: string;
+
+  @IsISO8601()
+  @IsOptional()
+  expiresAt: string | null;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
@@ -72,4 +86,10 @@ export interface IGameServer {
    * If anything goes wrong, this function will report a detailed reason
    */
   testReachability(): Promise<TestReachabilityOutput>;
+
+  kickPlayer(player: IPlayerReferenceDTO, reason: string): Promise<void>;
+
+  banPlayer(options: BanDTO): Promise<void>;
+  unbanPlayer(player: IPlayerReferenceDTO): Promise<void>;
+  listBans(): Promise<BanDTO[]>;
 }

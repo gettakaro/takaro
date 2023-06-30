@@ -57,38 +57,101 @@ export interface APIOutput {
 /**
  *
  * @export
- * @interface BaseEvent
+ * @interface BanDTO
  */
-export interface BaseEvent {
+export interface BanDTO {
+  /**
+   *
+   * @type {IPlayerReferenceDTO}
+   * @memberof BanDTO
+   */
+  player: IPlayerReferenceDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof BanDTO
+   */
+  reason: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BaseEvent
+   * @memberof BanDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface BanInputDTO
+ */
+export interface BanInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof BanInputDTO
+   */
+  reason: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BanInputDTO
+   */
+  expiresAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface BanOutputDTO
+ */
+export interface BanOutputDTO {
+  /**
+   *
+   * @type {Array<BanDTO>}
+   * @memberof BanOutputDTO
+   */
+  data: Array<BanDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof BanOutputDTO
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface BaseGameEvent
+ */
+export interface BaseGameEvent {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseGameEvent
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
-   * @memberof BaseEvent
+   * @memberof BaseGameEvent
    */
-  type: BaseEventTypeEnum;
+  type: BaseGameEventTypeEnum;
   /**
    *
    * @type {string}
-   * @memberof BaseEvent
+   * @memberof BaseGameEvent
    */
   msg: string;
 }
 
-export const BaseEventTypeEnum = {
+export const BaseGameEventTypeEnum = {
   Log: 'log',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
 } as const;
 
-export type BaseEventTypeEnum =
-  typeof BaseEventTypeEnum[keyof typeof BaseEventTypeEnum];
+export type BaseGameEventTypeEnum =
+  typeof BaseGameEventTypeEnum[keyof typeof BaseGameEventTypeEnum];
 
 /**
  *
@@ -1163,6 +1226,62 @@ export type EventChatMessageTypeEnum =
 /**
  *
  * @export
+ * @interface EventDiscordChannel
+ */
+export interface EventDiscordChannel {
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordChannel
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordChannel
+   */
+  name: string;
+}
+/**
+ *
+ * @export
+ * @interface EventDiscordUser
+ */
+export interface EventDiscordUser {
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  username: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventDiscordUser
+   */
+  displayName: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof EventDiscordUser
+   */
+  isBot: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof EventDiscordUser
+   */
+  isTakaroBot: boolean;
+}
+/**
+ *
+ * @export
  * @interface EventPlayerConnected
  */
 export interface EventPlayerConnected {
@@ -2098,16 +2217,16 @@ export interface HookEventDiscordMessage {
   msg: string;
   /**
    *
-   * @type {string}
+   * @type {EventDiscordUser}
    * @memberof HookEventDiscordMessage
    */
-  senderDiscordId: string;
+  author: EventDiscordUser;
   /**
    *
-   * @type {string}
+   * @type {EventDiscordChannel}
    * @memberof HookEventDiscordMessage
    */
-  channelDiscordId: string;
+  channel: EventDiscordChannel;
 }
 /**
  *
@@ -2590,6 +2709,19 @@ export interface InviteOutputDTO {
    * @memberof InviteOutputDTO
    */
   devServer: string;
+}
+/**
+ *
+ * @export
+ * @interface KickPlayerInputDTO
+ */
+export interface KickPlayerInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof KickPlayerInputDTO
+   */
+  reason: string;
 }
 /**
  *
@@ -8381,6 +8513,73 @@ export const GameServerApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @summary Ban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerBanPlayer: async (
+      gameserverId: string,
+      playerId: string,
+      banInputDTO?: BanInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerBanPlayer',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerBanPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameserverId}/player/{playerId}/ban`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        banInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -8758,6 +8957,121 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Kick player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerKickPlayer: async (
+      gameserverId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerKickPlayer',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerKickPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameserverId}/player/{playerId}/kick`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        kickPlayerInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerListBans: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerListBans', 'id', id);
+      const localVarPath = `/gameserver/{id}/bans`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9083,6 +9397,68 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Unban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUnbanPlayer: async (
+      gameserverId: string,
+      playerId: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUnbanPlayer',
+        'gameserverId',
+        gameserverId
+      );
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists(
+        'gameServerControllerUnbanPlayer',
+        'playerId',
+        playerId
+      );
+      const localVarPath = `/gameserver/{gameserverId}/player/{playerId}/unban`
+        .replace(
+          `{${'gameserverId'}}`,
+          encodeURIComponent(String(gameserverId))
+        )
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'POST',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9211,6 +9587,37 @@ export const GameServerApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator =
     GameServerApiAxiosParamCreator(configuration);
   return {
+    /**
+     *
+     * @summary Ban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerBanPlayer(
+      gameserverId: string,
+      playerId: string,
+      banInputDTO?: BanInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerBanPlayer(
+          gameserverId,
+          playerId,
+          banInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
     /**
      *
      * @summary Create
@@ -9413,6 +9820,62 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Kick player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerKickPlayer(
+      gameserverId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerKickPlayer(
+          gameserverId,
+          playerId,
+          kickPlayerInputDTO,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerListBans(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputDTO>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerListBans(
+          id,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9578,6 +10041,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Unban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUnbanPlayer(
+      gameserverId: string,
+      playerId: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerUnbanPlayer(
+          gameserverId,
+          playerId,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9652,6 +10143,30 @@ export const GameServerApiFactory = function (
 ) {
   const localVarFp = GameServerApiFp(configuration);
   return {
+    /**
+     *
+     * @summary Ban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerBanPlayer(
+      gameserverId: string,
+      playerId: string,
+      banInputDTO?: BanInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerBanPlayer(
+          gameserverId,
+          playerId,
+          banInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
     /**
      *
      * @summary Create
@@ -9774,6 +10289,45 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Kick player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerKickPlayer(
+      gameserverId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerKickPlayer(
+          gameserverId,
+          playerId,
+          kickPlayerInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerListBans(
+      id: string,
+      options?: any
+    ): AxiosPromise<BanOutputDTO> {
+      return localVarFp
+        .gameServerControllerListBans(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9878,6 +10432,23 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Unban player
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUnbanPlayer(
+      gameserverId: string,
+      playerId: string,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerUnbanPlayer(gameserverId, playerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -9920,6 +10491,32 @@ export const GameServerApiFactory = function (
  * @extends {BaseAPI}
  */
 export class GameServerApi extends BaseAPI {
+  /**
+   *
+   * @summary Ban player
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {BanInputDTO} [banInputDTO] BanInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerBanPlayer(
+    gameserverId: string,
+    playerId: string,
+    banInputDTO?: BanInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerBanPlayer(
+        gameserverId,
+        playerId,
+        banInputDTO,
+        options
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @summary Create
@@ -10051,6 +10648,49 @@ export class GameServerApi extends BaseAPI {
 
   /**
    *
+   * @summary Kick player
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerKickPlayer(
+    gameserverId: string,
+    playerId: string,
+    kickPlayerInputDTO?: KickPlayerInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerKickPlayer(
+        gameserverId,
+        playerId,
+        kickPlayerInputDTO,
+        options
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary List bans
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerListBans(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerListBans(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -10159,6 +10799,25 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerTestReachabilityForId(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Unban player
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUnbanPlayer(
+    gameserverId: string,
+    playerId: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUnbanPlayer(gameserverId, playerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

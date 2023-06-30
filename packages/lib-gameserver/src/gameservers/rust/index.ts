@@ -2,6 +2,7 @@ import { logger, errors } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer } from '@takaro/modules';
 import {
+  BanDTO,
   CommandOutput,
   IGameServer,
   IPlayerReferenceDTO,
@@ -143,5 +144,74 @@ export class Rust implements IGameServer {
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
     throw new errors.NotImplementedError();
     console.log(`say "${player}" was teleported to ${x}, ${y}, ${z}`);
+  }
+
+  async kickPlayer(player: IGamePlayer, reason: string) {
+    await this.executeConsoleCommand(`kick "${player.gameId}" "${reason}"`);
+  }
+
+  async banPlayer(options: BanDTO) {
+    // 'find banid'
+    // Variables: Commands: global.banid( ) banid <steamid> <username> <reason> [optional duration]
+    // This optional duration is an integer, seems to be hours.
+
+    if (!options.expiresAt) {
+      await this.executeConsoleCommand(
+        `banid ${options.player.gameId} "" "${options.reason}"`
+      );
+      return;
+    }
+
+    const timeDiff = new Date(options.expiresAt).valueOf() - Date.now();
+    const hours = Math.floor(timeDiff / 1000 / 60 / 60);
+
+    await this.executeConsoleCommand(
+      `banid ${options.player.gameId} "" "${options.reason}" ${hours}`
+    );
+  }
+
+  async unbanPlayer(player: IPlayerReferenceDTO) {
+    await this.executeConsoleCommand(`unban ${player.gameId}`);
+  }
+
+  async listBans(): Promise<BanDTO[]> {
+    const response = await this.executeConsoleCommand('banlistex');
+
+    if (!response.success || !response.rawResult) {
+      return [];
+    }
+
+    const lines = response.rawResult.split('\n');
+    const pattern =
+      /(?:'|^)(?<number>\d+)\s+(?<gameId>\d+)\s+"(?<username>.*?)"\s+"(?<reason>.*?)"\s+(?<expiration>-?\d+)\s*(?:'|\n|$)/g;
+    const bans = [];
+
+    for (const line of lines) {
+      let match;
+      while ((match = pattern.exec(line)) !== null) {
+        if (!match.groups) {
+          this.log.warn('listBans - line did not match regex', { match, line });
+          continue;
+        }
+        const { gameId, expiration } = match.groups;
+
+        let expiresAt = null;
+        if (expiration !== '-1') {
+          expiresAt = new Date(parseInt(expiration) * 1000).toISOString();
+        }
+
+        const ban = await new BanDTO().construct({
+          reason: match.groups.reason,
+          player: await new IPlayerReferenceDTO().construct({
+            gameId,
+          }),
+          expiresAt,
+        });
+
+        bans.push(ban);
+      }
+    }
+
+    return bans;
   }
 }

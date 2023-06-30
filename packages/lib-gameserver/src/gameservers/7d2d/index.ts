@@ -1,6 +1,7 @@
 import { logger } from '@takaro/util';
 import { IGamePlayer } from '@takaro/modules';
 import {
+  BanDTO,
   CommandOutput,
   IGameServer,
   IPlayerReferenceDTO,
@@ -107,5 +108,57 @@ export class SevenDaysToDie implements IGameServer {
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
     const command = `teleportplayer ${player.gameId} ${x} ${y} ${z}`;
     await this.apiClient.executeConsoleCommand(command);
+  }
+
+  async kickPlayer(player: IPlayerReferenceDTO, reason: string) {
+    const command = `kick "${player.gameId}" "${reason}"`;
+    await this.apiClient.executeConsoleCommand(command);
+  }
+
+  async banPlayer(options: BanDTO) {
+    const command = `ban add ${options.player.gameId} ${options.expiresAt} ${options.reason}`;
+    await this.apiClient.executeConsoleCommand(command);
+  }
+
+  async unbanPlayer(player: IPlayerReferenceDTO) {
+    const command = `ban remove ${player.gameId}`;
+    await this.apiClient.executeConsoleCommand(command);
+  }
+
+  async listBans(): Promise<BanDTO[]> {
+    // Execute the console command and get the raw result.
+    const bansRes = await this.executeConsoleCommand('ban list');
+
+    // Check if the command was successful and if there is a raw result.
+    if (!bansRes.success || !bansRes.rawResult) {
+      throw new Error('Failed to retrieve ban list.');
+    }
+
+    // Extract and parse the bans from the raw result.
+    const banEntries = bansRes.rawResult.split('\n').slice(1); // Skip the header line
+    const bans: BanDTO[] = [];
+
+    for (const entry of banEntries) {
+      const match = entry.match(
+        /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - (\S+) \(([^)]*)\) - (.*)/
+      );
+
+      // If the entry is valid, extract the details and push to the bans array.
+      if (match) {
+        const [, date, gameId, _displayName, reason] = match;
+        const expiresAt = date.replace(' ', 'T') + '.000Z'; // Keep the time in its original form
+        bans.push(
+          await new BanDTO().construct({
+            player: await new IPlayerReferenceDTO().construct({
+              gameId,
+            }),
+            reason,
+            expiresAt,
+          })
+        );
+      }
+    }
+
+    return bans;
   }
 }
