@@ -68,11 +68,7 @@ export const ModuleDefinitions: FC = () => {
           {modules.pages
             .flatMap((page) => page.data)
             .map((mod) => (
-              <ModuleCardDefinition
-                key={mod.id}
-                mod={mod}
-                onClick={() => navigate(PATHS.studio.module(mod.id))}
-              />
+              <ModuleCardDefinition key={mod.id} mod={mod} />
             ))}
           <Outlet />
         </ModuleCards>

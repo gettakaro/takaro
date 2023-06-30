@@ -14,6 +14,7 @@ import {
 } from '../InputProps';
 import { Label, ErrorMessage } from '../../../components';
 import { useController } from 'react-hook-form';
+import { Description, setAriaDescribedBy } from '../layout';
 
 export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
   name: string;
@@ -154,7 +155,10 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
           htmlFor={`${name}-0`}
         />
       )}
-      <InputContainer fields={fields}>
+      <InputContainer
+        fields={fields}
+        aria-describedby={setAriaDescribedBy(name, !!description)}
+      >
         {Array.from(Array(fields).keys()).map((_, i) => (
           <Input
             autoCapitalize="off"
@@ -181,7 +185,9 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
         {error && error.message && showError && (
           <ErrorMessage message={error.message} />
         )}
-        {description && <p>{description}</p>}
+        {description && (
+          <Description description={description} inputName={name} />
+        )}
       </InputContainer>
     </Container>
   );

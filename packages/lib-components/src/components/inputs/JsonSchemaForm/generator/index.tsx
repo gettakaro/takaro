@@ -79,7 +79,6 @@ export const SchemaGenerator = forwardRef<
   return (
     <>
       <Alert
-        title=""
         text="It is crucial that each and every config field names is unique!"
         variant="warning"
       />

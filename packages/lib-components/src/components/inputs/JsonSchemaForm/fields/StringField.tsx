@@ -86,6 +86,7 @@ export const StringField = ({
       disabled={disabled}
       placeholder={placeholder}
       hasError={!!rawErrors.length}
+      hasDescription={!!schema.description}
       required={required}
       readOnly={readonly}
       value={formData as string}

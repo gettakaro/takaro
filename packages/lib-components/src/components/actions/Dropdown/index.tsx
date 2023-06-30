@@ -5,6 +5,8 @@ import {
   useFloating,
   autoUpdate,
   offset,
+  FloatingPortal,
+  FloatingFocusManager,
 } from '@floating-ui/react';
 import { FC } from 'react';
 import { styled } from '../../../styled';
@@ -23,14 +25,14 @@ const ReferenceContainer = styled.div`
   justify-content: center;
 `;
 
-interface Dropdown {
+export interface DropdownProps {
   renderFloating: JSX.Element;
   renderReference: JSX.Element;
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-export const Dropdown: FC<Dropdown> = ({
+export const Dropdown: FC<DropdownProps> = ({
   renderFloating,
   renderReference,
   open,
@@ -62,18 +64,22 @@ export const Dropdown: FC<Dropdown> = ({
         {renderReference}
       </ReferenceContainer>
       {open && (
-        <FloatingContainer
-          ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-            zIndex: 1000,
-          }}
-          {...getFloatingProps()}
-        >
-          {renderFloating}
-        </FloatingContainer>
+        <FloatingPortal>
+          <FloatingFocusManager context={context}>
+            <FloatingContainer
+              ref={refs.setFloating}
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+                zIndex: 1000,
+              }}
+              {...getFloatingProps()}
+            >
+              {renderFloating}
+            </FloatingContainer>
+          </FloatingFocusManager>
+        </FloatingPortal>
       )}
     </>
   );

@@ -13,7 +13,7 @@ export type { TableProps } from './Table';
 export { Console } from './Console';
 export type { ConsoleProps, Message } from './Console';
 
-export { Drawer } from './Drawer';
-
 export { InfiniteScroll } from './InfiniteScroll';
 export type { InfiniteScrollProps } from './InfiniteScroll';
+
+export { Drawer, DrawerSkeleton } from './Drawer';

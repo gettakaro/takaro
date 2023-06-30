@@ -15,6 +15,7 @@ export function TextareaWidget<
   disabled,
   readonly,
   onChange,
+  schema,
   name,
   value,
   id,
@@ -35,6 +36,7 @@ export function TextareaWidget<
       disabled={disabled}
       readOnly={readonly}
       hasError={!!rawErrors.length}
+      hasDescription={!!schema.description}
     />
   );
 }

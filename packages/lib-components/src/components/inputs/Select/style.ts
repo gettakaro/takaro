@@ -25,12 +25,14 @@ export const SelectButton = styled.div<{
   position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid
-    ${({ theme, isOpen }) =>
-      isOpen ? theme.colors.primary : theme.colors.background};
+    ${({ theme, isOpen, hasError }) => {
+      console.log('haserror', hasError);
+      if (hasError) return theme.colors.error;
+      return isOpen ? theme.colors.primary : theme.colors.background;
+    }};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   font-weight: 500;
   text-transform: capitalize;
-  margin-bottom: ${({ theme }) => theme.spacing['0_75']};
 
   &:focus {
     border-color: ${({ theme, hasError }) =>

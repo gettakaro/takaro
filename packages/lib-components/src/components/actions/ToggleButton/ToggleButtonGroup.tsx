@@ -10,7 +10,11 @@ import {
   useEffect,
 } from 'react';
 import { Container } from './style';
-import { ToggleButtonProps } from './ToggleButton';
+import { ToggleButton, ToggleButtonProps } from './ToggleButton';
+
+interface SubComponents {
+  Button: typeof ToggleButton;
+}
 
 export type orientation = 'horizontal' | 'vertical';
 
@@ -25,7 +29,7 @@ export interface ToggleButtonGroupProps {
   fullWidth?: boolean;
 }
 
-export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
+export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
   children,
   defaultValue,
   exclusive,
@@ -93,3 +97,5 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> = ({
     </Container>
   );
 };
+
+ToggleButtonGroup.Button = ToggleButton;

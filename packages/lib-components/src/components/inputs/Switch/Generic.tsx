@@ -6,6 +6,7 @@ import {
   defaultInputPropsFactory,
   GenericInputPropsFunctionHandlers,
 } from '../InputProps';
+import { setAriaDescribedBy } from '../layout';
 
 export type GenericSwitchProps = GenericInputPropsFunctionHandlers<
   boolean,
@@ -17,7 +18,8 @@ const defaultsApplier =
 
 export const GenericSwitch = forwardRef<HTMLDivElement, GenericSwitchProps>(
   (props, ref) => {
-    const { readOnly, onChange, value, id } = defaultsApplier(props);
+    const { readOnly, onChange, value, id, hasDescription, name } =
+      defaultsApplier(props);
 
     const [isChecked, setChecked] = useState<boolean>(value as boolean);
 
@@ -30,7 +32,12 @@ export const GenericSwitch = forwardRef<HTMLDivElement, GenericSwitchProps>(
     }, [isChecked]);
 
     return (
-      <ContentContainer onClick={handleOnClick} ref={ref} id={id}>
+      <ContentContainer
+        onClick={handleOnClick}
+        ref={ref}
+        id={id}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
+      >
         <Line readOnly={readOnly} isChecked={isChecked}>
           <Dot
             animate={{ right: isChecked ? '-2px' : '15px' }}

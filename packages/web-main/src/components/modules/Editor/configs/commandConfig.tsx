@@ -9,7 +9,13 @@ import {
   Tooltip,
 } from '@takaro/lib-components';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
-import { ArgumentCard, ArgumentList, ContentContainer, Flex } from './style';
+import {
+  ArgumentCard,
+  ArgumentList,
+  ContentContainer,
+  Fields,
+  Flex,
+} from './style';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useGameServerSettings } from 'queries/gameservers';
 import { useCommand, useCommandUpdate } from 'queries/modules';
@@ -21,6 +27,7 @@ import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
 }
 
 interface IFormInputs {
@@ -58,7 +65,7 @@ const argumentTypeSelectOptions = [
   },
 ];
 
-export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
+export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCommand(moduleItem.itemId);
   const { data: settings } = useGameServerSettings();
   const { mutateAsync } = useCommandUpdate();
@@ -107,38 +114,43 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          control={control}
-          name="trigger"
-          label="trigger"
-          description="What users type ingame to trigger this command."
-          prefix={settings?.commandPrefix}
-        />
-        <TextAreaField
-          control={control}
-          name="helpText"
-          label="Help text"
-          description="Description of what the command does, this can be displayed to users in-game."
-        />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <TextField
+        control={control}
+        name="trigger"
+        label="trigger"
+        description="What users type ingame to trigger this command."
+        prefix={settings?.commandPrefix}
+        readOnly={readOnly}
+      />
+      <TextAreaField
+        control={control}
+        name="helpText"
+        label="Help text"
+        description="Description of what the command does, this can be displayed to users in-game."
+        readOnly={readOnly}
+      />
+      {fields.length > 0 && (
         <CollapseList.Item title="Arguments">
           <ContentContainer>
             {fields.length > 0 && (
               <ArgumentList>
                 {fields.map((field, index) => (
                   <ArgumentCard key={field.id}>
-                    <Flex direction="column">
-                      <Flex direction="row">
+                    <Fields>
+                      <Flex>
                         <TextField
                           label="Name"
                           control={control}
                           name={`arguments.${index}.name`}
+                          readOnly={readOnly}
                         />
                         <Select
                           control={control}
                           name={`arguments.${index}.type`}
                           label="Type"
+                          readOnly={readOnly}
+                          minWidth="120px"
                           render={(selectedIndex) => (
                             <>
                               {argumentTypeSelectOptions[selectedIndex]?.name ??
@@ -165,7 +177,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                         label="Help text"
                         name={`arguments.${index}.helpText`}
                       />
-                    </Flex>
+                    </Fields>
                     <Tooltip>
                       <Tooltip.Trigger asChild>
                         <IconButton
@@ -179,7 +191,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
                 ))}
               </ArgumentList>
             )}
-            {fields.length < 5 && (
+            {!readOnly && fields.length < 5 && (
               <Button
                 onClick={(_e) => {
                   addField({
@@ -198,8 +210,8 @@ export const CommandConfig: FC<IProps> = ({ moduleItem }) => {
             )}
           </ContentContainer>
         </CollapseList.Item>
-        <StyledButton fullWidth type="submit" text="Save" />
-      </form>
-    </>
+      )}
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
+    </form>
   );
 };

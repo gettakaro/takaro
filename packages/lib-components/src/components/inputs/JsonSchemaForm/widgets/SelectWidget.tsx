@@ -20,6 +20,7 @@ export function SelectWidget<
   required,
   id,
   readonly,
+  schema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
@@ -34,6 +35,7 @@ export function SelectWidget<
       required={required}
       readOnly={readonly}
       value={value}
+      hasDescription={!!schema.description}
       onChange={onChange}
       render={(selectedIndex) => (
         <div>
