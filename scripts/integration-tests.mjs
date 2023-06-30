@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down, run } from 'docker-compose';
+import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -37,7 +37,7 @@ process.env = {
 };
 
 const composeOpts = {
-  log: false,
+  log: true,
   composeOptions: ['-f', 'docker-compose.test.yml'],
   env: {
     ...process.env,
@@ -94,6 +94,8 @@ async function main() {
     composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
   }
 
+  console.log('Pulling latest images...');
+  await pullAll(composeOpts);
   console.log('Starting all containers...');
   await upAll(composeOpts);
 
@@ -114,7 +116,7 @@ async function main() {
     failed = true;
   }
 
-  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], composeOpts);
+  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], { ...composeOpts, log: false });
 
   await mkdir('./reports/integrationTests', { recursive: true });
   await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
