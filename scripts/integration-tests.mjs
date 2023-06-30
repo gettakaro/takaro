@@ -54,6 +54,8 @@ async function cleanUp() {
 
 async function main() {
   await cleanUp();
+  await mkdir('./reports/integrationTests', { recursive: true });
+
   console.log('Bringing up datastores');
   await upMany(
     ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
@@ -62,8 +64,8 @@ async function main() {
   await sleep(1000);
 
   console.log('Running SQL migrations...');
-  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', composeOpts);
-  await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', composeOpts);
+  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
+  await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
 
 
   await upMany(['kratos', 'hydra'], composeOpts);
@@ -95,7 +97,7 @@ async function main() {
   }
 
   console.log('Pulling latest images...');
-  await pullAll(composeOpts);
+  await pullAll({ ...composeOpts, log: false });
   console.log('Starting all containers...');
   await upAll(composeOpts);
 
@@ -118,7 +120,6 @@ async function main() {
 
   const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], { ...composeOpts, log: false });
 
-  await mkdir('./reports/integrationTests', { recursive: true });
   await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
   await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
 
