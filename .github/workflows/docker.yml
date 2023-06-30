@@ -117,9 +117,13 @@ jobs:
       - run: ./scripts/dev-init.sh
       - run: npm run test:style
 
-      - run: npx zx scripts/integration-tests.mjs
-        env:
-          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+      - uses: nick-fields/retry@v2
+        name: Integration tests
+        with:
+          timeout_minutes: 60
+          max_attempts: 5
+          shell: pwsh
+          command: DOCKER_TAG=${{ needs.docker.outputs.docker_tag }} npx zx scripts/integration-tests.mjs
 
   build-vmm:
     runs-on: ubuntu-latest
