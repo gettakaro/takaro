@@ -131,7 +131,9 @@ jobs:
           timeout_minutes: 60
           max_attempts: 5
           shell: pwsh
-          command: DOCKER_TAG=${{ needs.docker.outputs.docker_tag }} npx zx scripts/integration-tests.mjs
+          command: npx zx scripts/integration-tests.mjs
+        env:
+          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
 
   build-vmm:
     runs-on: ubuntu-latest
