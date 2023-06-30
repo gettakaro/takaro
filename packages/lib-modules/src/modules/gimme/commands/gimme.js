@@ -1,12 +1,20 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function gimme() {
+async function main() {
   const data = await getData();
 
   const takaro = await getTakaro(data);
 
   const items = data.module.userConfig.items;
   const commands = data.module.userConfig.commands;
+
+  if (items.length + commands.length === 0) {
+    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+      message:
+        'No items or commands configured, please ask your server administrator to configure this module.',
+    });
+    return;
+  }
 
   // pick a random item between 0 and the length of both the items and commands arrays
   const randomIndex = Math.floor(
@@ -31,4 +39,4 @@ async function gimme() {
   }
 }
 
-gimme();
+main();

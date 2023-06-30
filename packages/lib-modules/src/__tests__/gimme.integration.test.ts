@@ -81,6 +81,43 @@ const tests = [
       );
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'When no items or commands configured, displays an error',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.gimmeModule.id,
+        {
+          userConfig: JSON.stringify({
+            items: [],
+            commands: [],
+          }),
+        }
+      );
+
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/gimme',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.match(
+        /No items or commands configured/
+      );
+    },
+  }),
 ];
 
 describe(group, function () {
