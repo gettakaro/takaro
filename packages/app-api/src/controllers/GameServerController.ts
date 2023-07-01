@@ -1,5 +1,6 @@
 import {
   IsEnum,
+  IsISO8601,
   IsJSON,
   IsNumber,
   IsOptional,
@@ -16,6 +17,7 @@ import {
   CommandOutput,
   IMessageOptsDTO,
   GAME_SERVER_TYPE,
+  BanDTO,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -165,6 +167,31 @@ class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   z: number;
+}
+
+class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  reason!: string;
+}
+
+class BanInputDTO extends TakaroDTO<BanInputDTO> {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  @IsOptional()
+  reason!: string;
+
+  @IsISO8601()
+  @IsOptional()
+  expiresAt!: string;
+}
+
+class BanOutputDTO extends APIOutput<BanDTO[]> {
+  @Type(() => BanDTO)
+  @ValidateNested({ each: true })
+  declare data: BanDTO[];
 }
 
 @OpenAPI({
@@ -377,7 +404,65 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @Post('/gameserver/:gameserverId/player/:playerId/kick')
+  async kickPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId,
+    @Body() data: KickPlayerInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.kickPlayer(
+      params.gameserverId,
+      params.playerId,
+      data.reason
+    );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:gameserverId/player/:playerId/ban')
+  async banPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId,
+    @Body() data: BanInputDTO
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.banPlayer(
+      params.gameserverId,
+      params.playerId,
+      data.reason,
+      data.expiresAt
+    );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(APIOutput)
+  @Post('/gameserver/:gameserverId/player/:playerId/unban')
+  async unbanPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.unbanPlayer(
+      params.gameserverId,
+      params.playerId
+    );
+    return apiResponse(result);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(BanOutputDTO)
+  @Get('/gameserver/:id/bans')
+  async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.listBans(params.id);
+    return apiResponse(result);
+  }
+
   @Post('/gameserver/:gameserverId/player/:playerId/giveItem')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   async giveItem(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndPlayerId,
