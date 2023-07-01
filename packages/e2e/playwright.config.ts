@@ -26,18 +26,18 @@ export default defineConfig({
 
   // Reporter to use
   reporter: [
-    ['html', { outputFolder: '../../reports/playwright' }],
+    ['html', { outputFolder: '../../reports/playwright-html', open: 'never' }],
     [process.env.CI ? 'github' : 'list', {}],
   ],
 
-  outputDir: '../../reports/playwright-results',
+  outputDir: '../../reports/playwright-results/',
 
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
     baseURL: 'http://127.0.0.1:13001',
 
     // Collect trace when retrying the failed test.
-    trace: 'on-first-retry',
+    trace: 'on',
   },
   // Configure projects for major browsers.
   projects: [
