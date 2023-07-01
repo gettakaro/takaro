@@ -23,7 +23,6 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
   }
 }
 
-
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
 const POSTGRES_PASSWORD = randomUUID();
 const POSTGRES_ENCRYPTION_KEY = randomUUID();
@@ -34,6 +33,9 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
+  TAKARO_OAUTH_HOST: process.env.IS_E2E
+    ? 'http://127.0.0.1:14444'
+    : 'http://hydra:4444',
 };
 
 const composeOpts = {
@@ -64,15 +66,23 @@ async function main() {
   await sleep(1000);
 
   console.log('Running SQL migrations...');
-  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
-  await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
+  await run(
+    'hydra-migrate',
+    'migrate -c /etc/config/hydra/hydra.yml sql -e --yes',
+    { ...composeOpts, log: false }
+  );
+  await run(
+    'kratos-migrate',
+    '-c /etc/config/kratos/kratos.yml migrate sql -e --yes',
+    { ...composeOpts, log: false }
+  );
 
-
-  await upMany(['kratos', 'hydra'], composeOpts);
+  await upMany(['kratos', 'hydra', 'hydra-e2e'], composeOpts);
 
   await Promise.all([
     waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60),
     waitUntilHealthyHttp('http://127.0.0.1:4444/health/ready', 60),
+    waitUntilHealthyHttp('http://127.0.0.1:14444/health/ready', 60),
   ]);
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
@@ -106,23 +116,48 @@ async function main() {
   try {
     await Promise.all([
       waitUntilHealthyHttp('http://127.0.0.1:13000/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:13001', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
     ]);
 
     console.log('Running tests with config', composeOpts);
-    await run('takaro', 'npm run test', composeOpts);
+
+    if (process.env.IS_E2E) {
+      // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
+      // So we're hacking it like this instead :)
+      const testVars = {
+        TEST_HTTP_TARGET: 'http://127.0.0.1:13000',
+        TEST_FRONTEND_TARGET: 'http://127.0.0.1:13001',
+        ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
+        ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
+        TAKARO_OAUTH_HOST: 'http://127.0.0.1:14444 ',
+      };
+
+      for (const [key, value] of Object.entries(testVars)) {
+        $.prefix += `${key}=${value} `;
+      }
+
+      await $`npm run --workspace=./packages/e2e test:e2e`;
+    } else {
+      await run('takaro', 'npm run test', composeOpts);
+    }
   } catch (error) {
     console.error('Tests failed');
     failed = true;
   }
 
-  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'], { ...composeOpts, log: false });
+  const logsResult = await logs(
+    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'],
+    { ...composeOpts, log: false }
+  );
 
   await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
-  await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
-
+  await writeFile(
+    './reports/integrationTests/docker-logs-err.txt',
+    logsResult.err
+  );
 
   await cleanUp();
 
