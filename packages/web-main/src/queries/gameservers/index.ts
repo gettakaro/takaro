@@ -2,7 +2,7 @@ export {
   gameServerKeys,
   // gameserver
   useGameServers,
-  useRemoveGameServer,
+  useGameServerRemove,
   useGameServerReachabilityById,
   useGameServerCreate,
   useGameServerUpdate,

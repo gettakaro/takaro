@@ -5,6 +5,7 @@ export const ModuleCards = styled.ul`
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   grid-auto-rows: 160px;
   gap: ${({ theme }) => theme.spacing['1_5']};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const ModuleCardContainer = styled.a`

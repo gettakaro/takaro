@@ -74,7 +74,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
     }
 
     for (const extend of this.query.extend ?? []) {
-      qry.withGraphJoined(extend);
+      qry.withGraphFetched(extend);
     }
 
     return qry;
