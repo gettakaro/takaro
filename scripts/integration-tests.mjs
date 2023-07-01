@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) {}
+  } catch (err) { }
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -116,6 +116,7 @@ async function main() {
   try {
     await Promise.all([
       waitUntilHealthyHttp('http://127.0.0.1:13000/healthz', 60),
+      waitUntilHealthyHttp('http://127.0.0.1:13001', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
@@ -124,6 +125,20 @@ async function main() {
     console.log('Running tests with config', composeOpts);
 
     if (process.env.IS_E2E) {
+      // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
+      // So we're hacking it like this instead :)
+      const testVars = {
+        TEST_HTTP_TARGET: 'http://127.0.0.1:13000',
+        TEST_FRONTEND_TARGET: 'http://127.0.0.1:13001',
+        ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
+        ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
+        TAKARO_OAUTH_HOST: 'http://127.0.0.1:14444 ',
+      };
+
+      for (const [key, value] of Object.entries(testVars)) {
+        $.prefix += `${key}=${value} `;
+      }
+
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
       await run('takaro', 'npm run test', composeOpts);
