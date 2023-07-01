@@ -26,7 +26,7 @@ import {
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import {
-  useRemoveGameServer,
+  useGameServerRemove,
   useGameServerReachabilityById,
 } from 'queries/gameservers';
 
@@ -36,7 +36,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const navigate = useNavigate();
 
   const { isLoading, data } = useGameServerReachabilityById(id);
-  const { mutateAsync, isLoading: isDeleting } = useRemoveGameServer();
+  const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
