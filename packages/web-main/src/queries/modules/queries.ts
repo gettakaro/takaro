@@ -1,4 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,
@@ -15,9 +21,14 @@ import {
   HookUpdateDTO,
   IdUuidDTO,
   ModuleCreateDTO,
+  ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
+  ModuleSearchInputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
+import * as Sentry from '@sentry/react';
+
+import { hasNextPage } from '../util';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -49,14 +60,23 @@ export const functionKeys = {
   detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
-// TODO: this should include the pagination logic
-export const useModules = () => {
+export const useModules = ({
+  page = 0,
+  ...moduleSearchInputArgs
+}: ModuleSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useInfiniteQuery<ModuleOutputArrayDTOAPI>({
     queryKey: moduleKeys.list(),
-    queryFn: async () =>
-      (await apiClient.module.moduleControllerSearch()).data.data,
+    queryFn: async ({ pageParam = page }) =>
+      (
+        await apiClient.module.moduleControllerSearch({
+          page: pageParam,
+          ...moduleSearchInputArgs,
+        })
+      ).data,
+    getNextPageParam: (lastPage, pages) =>
+      hasNextPage(lastPage.meta, pages.length),
   });
 };
 
@@ -79,9 +99,37 @@ export const useModuleCreate = () => {
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data
         .data,
     onSuccess: (newModule: ModuleOutputDTO) => {
-      // update item in list of modules
-      queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
-        old ? [...old, newModule] : old!
+      queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(
+        moduleKeys.list(),
+        (prev) => {
+          // in case there are no modules yet
+          if (!prev) {
+            return {
+              pages: [
+                {
+                  data: [newModule],
+                  meta: {
+                    page: 0,
+                    total: 1,
+                    limit: 100,
+                    error: { code: '', message: '', details: '' },
+                    serverTime: '',
+                  },
+                },
+              ],
+              pageParams: [0],
+            };
+          }
+
+          const newData = {
+            ...prev,
+            pages: prev?.pages.map((page) => ({
+              ...page,
+              data: [...page.data, newModule],
+            })),
+          };
+          return newData;
+        }
       );
     },
   });
@@ -95,13 +143,32 @@ export const useModuleRemove = () => {
     mutationFn: async ({ id }: { id: string }) =>
       (await apiClient.module.moduleControllerRemove(id)).data.data,
     onSuccess: (removedModule: IdUuidDTO) => {
-      // Remove item from module list
-      queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
-        old ? old.filter((mod) => mod.id !== removedModule.id) : old!
-      );
+      try {
+        // Remove item from list of modules
+        queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(
+          moduleKeys.list(),
+          (prev) => {
+            if (!prev) {
+              throw new Error(
+                'Cannot remove module from list, because list does not exist'
+              );
+            }
 
-      // Invalidate query of specific module
-      queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.filter((mod) => mod.id !== removedModule.id),
+              })),
+            };
+          }
+        );
+
+        // Invalidate query of specific module
+        queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
+      } catch (e) {
+        Sentry.captureException(e);
+      }
     },
   });
 };
@@ -119,20 +186,41 @@ export const useModuleUpdate = () => {
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data
         .data,
     onSuccess: (updatedModule: ModuleOutputDTO) => {
-      // update item in module list
-      queryClient.setQueryData<ModuleOutputDTO[]>(moduleKeys.list(), (old) =>
-        old
-          ? old.map((mod) =>
-              mod.id === updatedModule.id ? updatedModule : mod
-            )
-          : old!
-      );
+      try {
+        // update module in list ofm modules
+        queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(
+          moduleKeys.list(),
+          (prev) => {
+            if (!prev) {
+              queryClient.invalidateQueries(moduleKeys.list());
+              throw new Error(
+                'Cannot update module list, because it does not exist'
+              );
+            }
 
-      // Cache the returned module as new data in case that specific module is queried.
-      queryClient.setQueryData(
-        moduleKeys.detail(updatedModule.id),
-        updatedModule
-      );
+            return {
+              ...prev,
+              pages: prev.pages.map((page) => ({
+                ...page,
+                data: page.data.map((gameServer) => {
+                  if (gameServer.id === updatedModule.id) {
+                    return updatedModule;
+                  }
+                  return gameServer;
+                }),
+              })),
+            };
+          }
+        );
+
+        // Cache the returned module as new data in case that specific module is queried.
+        queryClient.setQueryData(
+          moduleKeys.detail(updatedModule.id),
+          updatedModule
+        );
+      } catch (e) {
+        Sentry.captureException(e);
+      }
     },
   });
 };

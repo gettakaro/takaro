@@ -19,13 +19,14 @@ const GameServerModules: FC = () => {
   const { data: installations, isLoading } = useGameServerModuleInstallations(
     serverId!
   );
-  const { data: modules } = useModules();
+  const { data } = useModules();
 
   const mappedModules = useMemo(() => {
-    if (!installations || !modules) {
+    if (!installations || !data) {
       return;
     }
 
+    const modules = data.pages.flatMap((page) => page.data);
     return modules.map((mod) => {
       const installation = installations.find(
         (inst) => inst.moduleId === mod.id
@@ -36,7 +37,7 @@ const GameServerModules: FC = () => {
         installation: installation,
       };
     });
-  }, [installations, modules]);
+  }, [installations, data]);
 
   if (isLoading) {
     return (
@@ -48,7 +49,7 @@ const GameServerModules: FC = () => {
     );
   }
 
-  if (!installations || !modules || !mappedModules) {
+  if (!installations || !data || !mappedModules) {
     return <Loading />;
   }
 

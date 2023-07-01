@@ -15,10 +15,13 @@ export const GameServerSelectNav: FC = () => {
 
   const { gameServer } = watch();
 
-  const { data: gameServers } = useGameServers();
+  const { data, hasNextPage } = useGameServers();
+
+  // flatten pages into a single array
+  const gameServers = data?.pages.flatMap((page) => page.data);
 
   useEffect(() => {
-    if (gameServer && currentLocationServer) {
+    if (gameServer && currentLocationServer && gameServers) {
       const id = gameServers?.find(({ name }) => name === gameServer)?.id;
 
       if (id) {
@@ -35,7 +38,8 @@ export const GameServerSelectNav: FC = () => {
   ]);
 
   // if there is there is only 1 server, don't show the dropdown
-  if (!gameServers || gameServers.length === 1) return null;
+  if (!data || !gameServers || (gameServers && gameServers.length === 1))
+    return null;
 
   /* form tag is here to stretch width to 100% */
   return (

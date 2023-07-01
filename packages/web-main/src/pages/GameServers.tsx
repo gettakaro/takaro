@@ -4,6 +4,7 @@ import {
   Button,
   Empty,
   EmptyPage,
+  InfiniteScroll,
   Skeleton,
   styled,
 } from '@takaro/lib-components';
@@ -25,7 +26,15 @@ const List = styled.ul`
 const GameServers: FC = () => {
   const navigate = useNavigate();
 
-  const { data, isLoading, isError } = useGameServers();
+  const {
+    data: gameServers,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useGameServers();
 
   if (isLoading) {
     return (
@@ -42,7 +51,7 @@ const GameServers: FC = () => {
     throw new Error('Failed while loading the servers');
   }
 
-  if (data === undefined || data.length === 0) {
+  if (!gameServers || gameServers.pages.length === 0) {
     return (
       <EmptyPage>
         <Empty
@@ -66,13 +75,22 @@ const GameServers: FC = () => {
         <title>Gameservers - Takaro</title>
       </Helmet>
       <List>
-        {data.map((gameServer) => (
-          <GameServerCard key={gameServer.id} {...gameServer} />
-        ))}
+        {gameServers.pages
+          .flatMap((page) => page.data)
+          .map((gameServer) => (
+            <GameServerCard key={gameServer.id} {...gameServer} />
+          ))}
         <EmptyGameServerCard
           onClick={() => navigate(PATHS.gameServers.create())}
         />
       </List>
+      <InfiniteScroll
+        isFetchingNextPage={isFetchingNextPage}
+        isFetching={isFetching}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+      />
+      {/* show editGameServer and newGameServer drawers above this listView*/}
       <Outlet />
     </Fragment>
   );
