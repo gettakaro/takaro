@@ -23,6 +23,9 @@ mkdir -p _data/kratos-db
 mkdir -p _data/hydra-db
 ls -la _data
 
+printHeader "Setup playwright reports directory"
+mkdir -p reports
+
 # The prometheus container runs as a user with UID and GID 65534
 # so we need to make sure the data directory is writable by that user
 if [ ! -d "./_data/prometheus" ]; then

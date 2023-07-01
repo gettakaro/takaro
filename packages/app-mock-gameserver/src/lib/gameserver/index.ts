@@ -8,6 +8,7 @@ import {
   IGameServer,
   IMessageOptsDTO,
   CommandOutput,
+  BanDTO,
   IItemDTO,
 } from '@takaro/gameserver';
 import {
@@ -17,6 +18,7 @@ import {
   EventChatMessage,
   EventPlayerConnected,
   EventTypes,
+  EventPlayerDisconnected,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -219,6 +221,94 @@ class MockGameserver implements IMockGameServer {
     ).hSet(getRedisKey(`player:${playerRef.gameId}`), player);
 
     await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
+  }
+
+  async kickPlayer(
+    playerRef: IPlayerReferenceDTO,
+    reason: string
+  ): Promise<void> {
+    const player = await this.getPlayer(playerRef);
+
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    this.socketServer.io.emit(
+      GameEvents.PLAYER_DISCONNECTED,
+      await new EventPlayerDisconnected().construct({
+        player,
+        msg: `${player.name} disconnected: Kicked ${reason}`,
+      })
+    );
+  }
+
+  async banPlayer(options: BanDTO): Promise<void> {
+    const player = await this.getPlayer(options.player);
+
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    const banDto = await new BanDTO().construct({
+      player: options.player,
+      reason: options.reason,
+      expiresAt: options.expiresAt,
+    });
+
+    this.socketServer.io.emit(
+      GameEvents.PLAYER_DISCONNECTED,
+      await new EventPlayerDisconnected().construct({
+        player,
+        msg: `${player.name} disconnected: Banned ${options.reason} until ${options.expiresAt}`,
+      })
+    );
+
+    if (options.expiresAt) {
+      const expireTimestamp = new Date(options.expiresAt).valueOf();
+
+      (await this.redis).set(
+        getRedisKey(`ban:${options.player.gameId}`),
+        JSON.stringify(banDto),
+        { EXAT: expireTimestamp }
+      );
+    } else {
+      (await this.redis).set(
+        getRedisKey(`ban:${options.player.gameId}`),
+        JSON.stringify(banDto)
+      );
+    }
+  }
+
+  async unbanPlayer(playerRef: IPlayerReferenceDTO): Promise<void> {
+    const player = await this.getPlayer(playerRef);
+
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    await this.sendLog(`Unbanned ${player.name}`);
+
+    (await this.redis).del(getRedisKey(`ban:${playerRef.gameId}`));
+  }
+
+  async listBans(): Promise<BanDTO[]> {
+    const keys = await (await this.redis).keys(getRedisKey('ban:*'));
+    const banData = await (await this.redis).mGet(keys);
+
+    const banDataWithPlayer = await Promise.all(
+      banData.map(async (ban) => {
+        if (!ban) return null;
+        const banDto = JSON.parse(ban) as BanDTO;
+        const player = await this.getPlayer(banDto.player);
+        if (!player) return null;
+        return new BanDTO().construct({
+          ...banDto,
+          player,
+        });
+      })
+    );
+
+    return banDataWithPlayer.filter(Boolean) as BanDTO[];
   }
 
   private async sendLog(msg: string) {

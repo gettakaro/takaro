@@ -108,7 +108,7 @@ services:
       VITE_API: http://127.0.0.1:13000
       VITE_ORY_URL: http://127.0.0.1:4433
 
-      CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io
+      CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:13004,https://admin.socket.io,http://takaro:13000,http://takaro:13001
 
       TRACING_ENDPOINT: 'http://tempo:4317'
       TAKARO_SERVICE: 'dev-takaro'
@@ -128,6 +128,21 @@ services:
       - 12003:12003
       # Docs
       - 13005:13005
+
+  e2e:
+    build:
+      context: .
+      dockerfile: containers/playwright/dev.Dockerfile
+    depends_on:
+      - takaro
+    ipc: host
+    volumes:
+      - ./packages/e2e:/app/packages/e2e
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - 20000:20000
+    environment:
+      - DISPLAY=:0
 
   kratos-migrate:
     image: oryd/kratos:v0.11.1
@@ -159,6 +174,19 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kratos
 
+  hydra-e2e:
+    image: oryd/hydra:v2.0.3
+    ports:
+      - '14444:4444' # Public port
+      - '14445:4445' # Admin port
+      - '15555:5555' # Port for hydra token user
+    command: serve -c /etc/config/hydra/hydra.yml all --dev
+    volumes:
+      - ./containers/ory/hydra:/etc/config/hydra
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
+      - URLS_SELF_ISSUER=http://127.0.0.1:14444/
+
   hydra:
     image: oryd/hydra:v2.0.3
     ports:
@@ -178,6 +206,7 @@ services:
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
+
   postgresql_hydra:
     image: postgres:15
     ports:

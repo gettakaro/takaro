@@ -16,6 +16,10 @@ class SocketServer {
     'executeConsoleCommand',
     'sendMessage',
     'teleportPlayer',
+    'kickPlayer',
+    'banPlayer',
+    'unbanPlayer',
+    'listBans',
   ];
 
   constructor(app: HttpServer) {
