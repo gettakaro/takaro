@@ -9,13 +9,14 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "rimraf dist && tsc -p ./tsconfig.json && mocha --config ../../.mocharc.js dist/**/*.unit.test.js",
+    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
     "test:integration": "echo 'No tests (yet :))'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@takaro/modules": "0.0.1",
     "eventsource": "^2.0.2"
   },
   "devDependencies": {
