@@ -50,6 +50,10 @@ async function processJob(job: Job<IEventQueueData>) {
   }
 
   if (isChatMessageEvent(event)) {
+    if (event.player) {
+      const playerService = new PlayerService(domainId);
+      await playerService.sync(event.player, gameServerId);
+    }
     const commandService = new CommandService(domainId);
     await commandService.handleChatMessage(event, gameServerId);
   }
