@@ -49,6 +49,7 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   ip?: string;
 
   @IsNumber()
+  @IsOptional()
   ping?: number;
 }
 

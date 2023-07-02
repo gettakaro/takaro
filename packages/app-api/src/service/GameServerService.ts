@@ -266,7 +266,7 @@ export class GameServerService extends TakaroService<
       moduleId,
       installDto
     );
-    await cronjobService.installCronJobs(installation);
+    await cronjobService.syncModuleCronjobs(installation);
 
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,
