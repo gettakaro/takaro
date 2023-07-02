@@ -26,7 +26,6 @@ export const SelectButton = styled.div<{
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid
     ${({ theme, isOpen, hasError }) => {
-      console.log('haserror', hasError);
       if (hasError) return theme.colors.error;
       return isOpen ? theme.colors.primary : theme.colors.background;
     }};
