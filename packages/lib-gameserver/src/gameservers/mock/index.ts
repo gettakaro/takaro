@@ -1,6 +1,7 @@
 import { logger } from '@takaro/util';
 import { IGamePlayer } from '@takaro/modules';
 import {
+  BanDTO,
   CommandOutput,
   IGameServer,
   IItemDTO,
@@ -116,6 +117,30 @@ export class Mock implements IGameServer {
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
     const client = await this.getClient();
     const data = await client.emitWithAck('teleportPlayer', player, x, y, z);
+    return data;
+  }
+
+  async kickPlayer(player: IGamePlayer, reason: string) {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('kickPlayer', player, reason);
+    return data;
+  }
+
+  async banPlayer(options: BanDTO) {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('banPlayer', options);
+    return data;
+  }
+
+  async unbanPlayer(player: IGamePlayer) {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('unbanPlayer', player);
+    return data;
+  }
+
+  async listBans(): Promise<BanDTO[]> {
+    const client = await this.getClient();
+    const data = await client.emitWithAck('listBans');
     return data;
   }
 

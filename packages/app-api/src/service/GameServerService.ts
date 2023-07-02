@@ -20,6 +20,7 @@ import {
   mockJsonSchema,
   GAME_SERVER_TYPE,
   getGame,
+  BanDTO,
   IItemDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO } from '@takaro/util';
@@ -382,6 +383,42 @@ export class GameServerService extends TakaroService<
     );
   }
 
+  async banPlayer(
+    gameServerId: string,
+    playerId: string,
+    reason: string,
+    expiresAt: string
+  ) {
+    const playerService = new PlayerService(this.domainId);
+    const player = await playerService.getRef(playerId, gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.banPlayer(
+      await new BanDTO().construct({
+        player,
+        reason,
+        expiresAt,
+      })
+    );
+  }
+
+  async kickPlayer(gameServerId: string, playerId: string, reason: string) {
+    const playerService = new PlayerService(this.domainId);
+    const player = await playerService.getRef(playerId, gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.kickPlayer(player, reason);
+  }
+
+  async unbanPlayer(gameServerId: string, playerId: string) {
+    const playerService = new PlayerService(this.domainId);
+    const player = await playerService.getRef(playerId, gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.unbanPlayer(player);
+  }
+
+  async listBans(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.listBans();
+  }
   async giveItem(gameServerId: string, playerId: string, item: IItemDTO) {
     const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
