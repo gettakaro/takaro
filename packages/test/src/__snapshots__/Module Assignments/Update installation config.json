@@ -8,7 +8,8 @@
       "gameserverId": "4cc07453-41ee-4669-a509-67687e088d47",
       "moduleId": "a3b078a7-0bed-4a78-85b0-9098c4d11e50",
       "userConfig": {
-        "maxTeleports": 42
+        "maxTeleports": 42,
+        "timeout": 1337
       },
       "systemConfig": {}
     }
@@ -18,10 +19,7 @@
     "group": "Module Assignments",
     "snapshot": true,
     "name": "Update installation config",
-    "filteredFields": [
-      "gameserverId",
-      "moduleId"
-    ],
+    "filteredFields": ["gameserverId", "moduleId"],
     "expectedStatus": 200,
     "standardEnvironment": true
   }
