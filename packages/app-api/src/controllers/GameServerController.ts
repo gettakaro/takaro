@@ -476,4 +476,15 @@ export class GameServerController {
     );
     return apiResponse(result);
   }
+
+  @Get('/gameserver/:id/players')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  async getPlayers(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getPlayers(params.id);
+    return apiResponse(result);
+  }
 }
