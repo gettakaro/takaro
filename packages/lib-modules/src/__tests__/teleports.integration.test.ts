@@ -146,7 +146,7 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
-    name: 'Can teleport with /teleport',
+    name: 'Can teleport with /tp',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -173,7 +173,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
@@ -201,7 +201,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
@@ -349,6 +349,72 @@ const tests = [
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
         'Teleport test does not exist.'
+      );
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Times out when teleporting faster than set timeout',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            timeout: 5000,
+          }),
+        }
+      );
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/settp test',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      expect((await setTpEvent).length).to.be.eq(1);
+
+      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/tp test',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
+
+      const tpTimeoutEvent = eventAwaiter.waitForEvents(
+        GameEvents.CHAT_MESSAGE,
+        1
+      );
+
+      await this.client.command.commandControllerTrigger(
+        this.setupData.gameserver.id,
+        {
+          msg: '/tp test',
+          player: {
+            gameId: '1',
+          },
+        }
+      );
+
+      expect((await tpTimeoutEvent)[0].data.msg).to.be.eq(
+        'You cannot teleport yet. Please wait before trying again.'
       );
     },
   }),

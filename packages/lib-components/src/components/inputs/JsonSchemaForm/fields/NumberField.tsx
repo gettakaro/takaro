@@ -12,6 +12,7 @@ export const NumberField = ({
   required,
   readonly,
   idSchema,
+  formData,
   name,
   schema,
   uiSchema,
@@ -45,14 +46,20 @@ export const NumberField = ({
         if (e.target.value === '') {
           onChange(undefined);
         }
-        onChange(e.target.valueAsNumber);
+
+        const value = parseInt(e.target.value, 10);
+        if (isNaN(value)) {
+          onChange(undefined);
+        } else {
+          onChange(value);
+        }
       }}
       disabled={disabled}
       placeholder={placeholder}
       hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
-      value={schema.default || 0}
+      value={formData || 0}
       hasDescription={!!schema.description}
       type="number"
     />

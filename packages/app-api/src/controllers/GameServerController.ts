@@ -46,6 +46,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { IGamePlayer } from '@takaro/modules';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -192,6 +193,12 @@ class BanOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
+}
+
+class IGamePlayersOutputDTO extends APIOutput<IGamePlayer[]> {
+  @Type(() => IGamePlayer)
+  @ValidateNested({ each: true })
+  declare data: IGamePlayer[];
 }
 
 @OpenAPI({
@@ -474,6 +481,18 @@ export class GameServerController {
       params.playerId,
       data
     );
+    return apiResponse(result);
+  }
+
+  @Get('/gameserver/:id/players')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @ResponseSchema(IGamePlayersOutputDTO)
+  async getPlayers(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId
+  ) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getPlayers(params.id);
     return apiResponse(result);
   }
 }

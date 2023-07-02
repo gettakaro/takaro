@@ -5,6 +5,7 @@ import {
   CommandOutput,
   IGameServer,
   IItemDTO,
+  IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
@@ -31,12 +32,28 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
-    this.logger.debug('getPlayer', player);
-    return null;
+    const players = await this.getPlayers();
+    return players.find((p) => p.gameId === player.gameId) || null;
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    return [];
+    const onlinePlayersRes = await this.apiClient.getOnlinePlayers();
+
+    const players = await Promise.all(
+      onlinePlayersRes.data.map((p) => {
+        return new IGamePlayer().construct({
+          gameId: p.crossplatformid,
+          ip: p.ip,
+          name: p.name,
+          steamId: p.steamid.replace('Steam_', ''),
+          epicOnlineServicesId: p.crossplatformid,
+          platformId: p.steamid.replace('Steam_', ''),
+          ping: p.ping,
+        });
+      })
+    );
+
+    return players;
   }
 
   async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
@@ -106,8 +123,13 @@ export class SevenDaysToDie implements IGameServer {
     });
   }
 
-  async sendMessage(message: string) {
-    const command = `say "${message}"`;
+  async sendMessage(message: string, opts?: IMessageOptsDTO) {
+    let command = `say "${message}"`;
+
+    if (opts?.recipient?.gameId) {
+      command = `sayplayer "${opts.recipient.gameId}" "${message}"}`;
+    }
+
     await this.apiClient.executeConsoleCommand(command);
   }
 

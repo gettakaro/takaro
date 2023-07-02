@@ -19,7 +19,7 @@ export interface Position {
 
 export interface OnlinePlayerResponse {
   steamid: string;
-  userid: string;
+  crossplatformid: string;
   entityid: number;
   ip: string;
   name: string;

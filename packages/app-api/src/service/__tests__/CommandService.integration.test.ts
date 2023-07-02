@@ -15,6 +15,7 @@ import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, EventTypes } from '@takaro/modules';
+import Sinon from 'sinon';
 
 export async function getMockPlayer(
   extra: Partial<IGamePlayer> = {}
@@ -200,6 +201,46 @@ const tests = [
       );
 
       expect(addStub).to.have.been.calledOnce;
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Adds a delayed job when delay is configured',
+    setup,
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.mod.id,
+        {
+          systemConfig: JSON.stringify({
+            commands: {
+              [this.setupData.normalCommand.name]: {
+                delay: 5,
+              },
+            },
+          }),
+        }
+      );
+
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
+
+      await this.setupData.service.handleChatMessage(
+        await new EventChatMessage().construct({
+          msg: '/test',
+          player: await getMockPlayer(),
+        }),
+        this.setupData.gameserver.id
+      );
+
+      expect(addStub).to.have.been.calledOnceWith(Sinon.match.any, {
+        delay: 5 * 1000,
+      });
     },
   }),
 ];
