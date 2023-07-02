@@ -37,6 +37,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
+      ping: undefined,
       gameId: '171',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
@@ -60,6 +61,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
+      ping: undefined,
       gameId: '171',
       steamId: undefined,
       xboxLiveId: '123456abcdef',
@@ -83,6 +85,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Cata lysm',
+      ping: undefined,
       gameId: '171',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
@@ -107,6 +110,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
     ).to.deep.equal({
       name: 'Catalysm',
+      ping: undefined,
       gameId: '171',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
@@ -133,6 +137,7 @@ describe('7d2d event detection', () => {
       (emitStub.getCalls()[0].args[1] as EventChatMessage).player
     ).to.deep.equal({
       name: 'Catalysm',
+      ping: undefined,
       gameId: '549',
       steamId: '76561198028175941',
       xboxLiveId: undefined,

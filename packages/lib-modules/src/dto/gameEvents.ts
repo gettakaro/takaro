@@ -4,6 +4,7 @@ import {
   IsString,
   ValidateNested,
   IsOptional,
+  IsNumber,
 } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
@@ -46,6 +47,10 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   @IsString()
   @IsOptional()
   ip?: string;
+
+  @IsNumber()
+  @IsOptional()
+  ping?: number;
 }
 
 export class BaseGameEvent<T> extends TakaroDTO<T> {
