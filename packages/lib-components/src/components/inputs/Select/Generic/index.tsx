@@ -7,6 +7,9 @@ import {
   useState,
   useLayoutEffect,
   PropsWithChildren,
+  useEffect,
+  ReactNode,
+  useMemo,
 } from 'react';
 import { SelectContext } from './context';
 import {
@@ -138,6 +141,25 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
       }),
     ]
   );
+
+  const values = useMemo(() => {
+    return (
+      Children.map(children, (child) => {
+        if (!isValidElement(child)) return;
+        return Children.map(child.props.children, (child: ReactNode) => {
+          if (!isValidElement(child)) return;
+          return child.props.value as string;
+        });
+      })?.flat() ?? []
+    );
+  }, []);
+
+  useEffect(() => {
+    const index = values.indexOf(value as string);
+    if (index !== -1) {
+      setSelectedIndex(index + 1);
+    }
+  }, [value]);
 
   // Scroll the active or selected item into view when in `controlledScrolling`
   // mode (i.e. arrow key nav).
