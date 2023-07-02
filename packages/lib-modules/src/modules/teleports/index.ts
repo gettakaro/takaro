@@ -31,7 +31,7 @@ export class Teleports extends BuiltinModule {
       {
         function: '',
         name: 'teleport',
-        trigger: 'teleport',
+        trigger: 'tp',
         helpText: 'Teleports to one of your set locations',
         arguments: [
           {

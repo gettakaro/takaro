@@ -146,7 +146,7 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
-    name: 'Can teleport with /teleport',
+    name: 'Can teleport with /tp',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -173,7 +173,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
@@ -201,7 +201,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
@@ -389,7 +389,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
@@ -406,7 +406,7 @@ const tests = [
       await this.client.command.commandControllerTrigger(
         this.setupData.gameserver.id,
         {
-          msg: '/teleport test',
+          msg: '/tp test',
           player: {
             gameId: '1',
           },
