@@ -8,19 +8,26 @@ async function settp() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const player = data.player;
+  const { player, gameServerId, module: mod, arguments: args } = data;
+
+  const prefix = (
+    await takaro.settings.settingsControllerGetOne(
+      'commandPrefix',
+      gameServerId
+    )
+  ).data.data;
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: getVariableKey(data.arguments.tp),
-      gameServerId: data.gameServerId,
+      key: getVariableKey(args.tp),
+      gameServerId,
       playerId: player.id,
     },
   });
 
   if (existingVariable.data.data.length > 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `Teleport ${data.arguments.tp} already exists, use /deletetp ${data.arguments.tp} to delete it.`,
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: `Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`,
     });
     return;
   }
@@ -30,34 +37,32 @@ async function settp() {
       key: getVariableKey(''),
     },
     filters: {
-      gameServerId: data.gameServerId,
+      gameServerId,
       playerId: player.id,
     },
   });
 
-  if (
-    allPlayerTeleports.data.data.length >= data.module.userConfig.maxTeleports
-  ) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `You have reached the maximum number of teleports, maximum allowed is ${data.module.userConfig.maxTeleports}`,
+  if (allPlayerTeleports.data.data.length >= mod.userConfig.maxTeleports) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`,
     });
     return;
   }
 
   await takaro.variable.variableControllerCreate({
-    key: getVariableKey(data.arguments.tp),
+    key: getVariableKey(args.tp),
     value: JSON.stringify({
-      name: data.arguments.tp,
+      name: args.tp,
       x: data.player.location.x,
       y: data.player.location.y,
       z: data.player.location.z,
     }),
-    gameServerId: data.gameServerId,
+    gameServerId,
     playerId: player.id,
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: `Teleport ${data.arguments.tp} set.`,
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+    message: `Teleport ${args.tp} set.`,
   });
 }
 
