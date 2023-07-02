@@ -16,13 +16,13 @@ export async function login(page: Page, username: string, password: string) {
 }
 
 interface IFixtures {
-  takaroHelpers: TakaroHelpers;
-  createDomain: void;
+  adminPage: { client: Client; adminClient: AdminClient };
 }
 
 export const test = base.extend<IFixtures>({
-  createDomain: [
+  adminPage: [
     async ({ page }, use) => {
+      // fixture setup
       const adminClient = new AdminClient({
         url: integrationConfig.get('host'),
         auth: {
@@ -39,39 +39,20 @@ export const test = base.extend<IFixtures>({
       const data = createdDomainRes.data.data;
       await login(page, data.rootUser.email, data.password);
 
-      await use();
+      const client = new Client({
+        url: integrationConfig.get('host'),
+        auth: {
+          username: data.rootUser.email,
+          password: data.password,
+        },
+      });
+      await client.login();
 
+      await use({ client, adminClient });
+
+      // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);
     },
-    { auto: true, scope: 'test' },
-  ],
-  takaroHelpers: [
-    async ({ page }, use) => {
-      const takaroHelpers = new TakaroHelpers(page);
-      await use(takaroHelpers);
-    },
-    {},
+    { auto: true },
   ],
 });
-
-class TakaroHelpers {
-  constructor(public readonly page: Page) {}
-
-  get client() {
-    return new Client({
-      url: integrationConfig.get('host'),
-      auth: {},
-    });
-  }
-
-  get adminClient() {
-    return new AdminClient({
-      url: integrationConfig.get('host'),
-      auth: {
-        clientId: integrationConfig.get('auth.adminClientId'),
-        clientSecret: integrationConfig.get('auth.adminClientSecret'),
-      },
-      OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
-    });
-  }
-}
