@@ -48,15 +48,17 @@ export class Rust implements IGameServer {
   async getPlayers(): Promise<IGamePlayer[]> {
     const response = await this.executeConsoleCommand('playerlist');
     const rustPlayers = JSON.parse(response.rawResult);
-
-    return rustPlayers.map((player: any) => {
-      return new IGamePlayer().construct({
-        gameId: player.SteamID,
-        steamId: player.SteamID,
-        ip: player.Address,
-        name: player.DisplayName,
-      });
-    });
+    return Promise.all(
+      rustPlayers.map((player: any) => {
+        return new IGamePlayer().construct({
+          gameId: player.SteamID,
+          steamId: player.SteamID,
+          ip: player.Address,
+          name: player.DisplayName,
+          ping: player.Ping,
+        });
+      })
+    );
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
@@ -117,16 +119,7 @@ export class Rust implements IGameServer {
           return;
         }
 
-        let commandResult = '';
-
-        try {
-          commandResult = JSON.parse(parsed.Message);
-        } catch (error) {
-          // Silence the error, we can't parse the result with JSON
-          // But maybe we can parse it later with regex
-          commandResult = parsed.Message;
-        }
-
+        const commandResult = parsed.Message;
         clearTimeout(timeout);
         return resolve(
           new CommandOutput().construct({ rawResult: commandResult })
