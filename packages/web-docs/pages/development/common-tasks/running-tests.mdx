@@ -1,3 +1,5 @@
+import { Callout } from 'nextra-theme-docs';
+
 ## Running tests
 
 Running integration tests is easiest via the dev container.
@@ -38,6 +40,28 @@ If you wish to see logs when testing you can add the `LOGGING_LEVEL` env to your
 
 ```sh
 docker-compose exec -e LOGGING_LEVEL=debug takaro npm t
+```
+
+### Playwright e2e tests
+<Callout type="info" emoji="💡">
+Playwright tests are run locally, so make sure to set all required environment variables in shell. 
+</Callout>
+
+
+To run the tests:
+
+```sh
+  npm -w ./packages/e2e run test:e2e
+```
+
+To **write** tests Playwright has 2 more utilities/modes that can help you.
+
+- UI mode adds time-travel experience and watch mode
+- Codegen which can generate locators and interactions
+
+```sh
+  npm -w ./packages/e2e run dev:ui
+  npm -w ./packages/e2e run codegen
 ```
 
 ### Snapshots
