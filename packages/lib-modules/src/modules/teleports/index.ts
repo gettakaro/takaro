@@ -15,6 +15,12 @@ export class Teleports extends BuiltinModule {
             maximum: 50,
             default: 5,
           },
+          timeout: {
+            type: 'integer',
+            description: 'The time in milliseconds required between teleports',
+            minimum: 0,
+            default: 1000,
+          },
         },
         required: ['maxTeleports'],
         additionalProperties: false,
@@ -25,7 +31,7 @@ export class Teleports extends BuiltinModule {
       {
         function: '',
         name: 'teleport',
-        trigger: 'teleport',
+        trigger: 'tp',
         helpText: 'Teleports to one of your set locations',
         arguments: [
           {

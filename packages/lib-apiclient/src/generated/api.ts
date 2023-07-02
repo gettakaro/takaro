@@ -2593,6 +2593,31 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof IGamePlayer
+   */
+  ping: number;
+}
+/**
+ *
+ * @export
+ * @interface IGamePlayersOutputDTO
+ */
+export interface IGamePlayersOutputDTO {
+  /**
+   *
+   * @type {Array<IGamePlayer>}
+   * @memberof IGamePlayersOutputDTO
+   */
+  data: Array<IGamePlayer>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof IGamePlayersOutputDTO
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -8883,6 +8908,54 @@ export const GameServerApiAxiosParamCreator = function (
     },
     /**
      *
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetPlayers: async (
+      id: string,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetPlayers', 'id', id);
+      const localVarPath = `/gameserver/{id}/players`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9869,6 +9942,34 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetPlayers(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<IGamePlayersOutputDTO>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerGetPlayers(
+          id,
+          options
+        );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10389,6 +10490,21 @@ export const GameServerApiFactory = function (
     },
     /**
      *
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetPlayers(
+      id: string,
+      options?: any
+    ): AxiosPromise<IGamePlayersOutputDTO> {
+      return localVarFp
+        .gameServerControllerGetPlayers(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10765,6 +10881,23 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get players
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetPlayers(
+    id: string,
+    options?: AxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetPlayers(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
