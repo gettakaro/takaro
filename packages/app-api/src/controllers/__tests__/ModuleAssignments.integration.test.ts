@@ -98,7 +98,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
         {
-          userConfig: JSON.stringify({ maxTeleports: 42 }),
+          userConfig: JSON.stringify({ maxTeleports: 42, timeout: 1337 }),
         }
       );
 
@@ -108,7 +108,10 @@ const tests = [
           this.setupData.teleportsModule.id
         );
 
-      expect(res.data.data.userConfig).to.deep.equal({ maxTeleports: 42 });
+      expect(res.data.data.userConfig).to.deep.equal({
+        maxTeleports: 42,
+        timeout: 1337,
+      });
 
       return res;
     },
