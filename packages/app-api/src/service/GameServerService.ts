@@ -101,11 +101,11 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   moduleId: string;
 
   @IsObject()
-  userConfig: Record<string, never>;
+  userConfig: Record<string, any>;
 
   @JSONSchema(getEmptySystemConfigSchema())
   @IsObject()
-  systemConfig: Record<string, never>;
+  systemConfig: Record<string, any>;
 }
 
 export class GameServerService extends TakaroService<
@@ -266,7 +266,7 @@ export class GameServerService extends TakaroService<
       moduleId,
       installDto
     );
-    await cronjobService.installCronJobs(installation);
+    await cronjobService.syncModuleCronjobs(installation);
 
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,
@@ -424,5 +424,10 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     const playerRef = await playerService.getRef(playerId, gameServerId);
     return gameInstance.giveItem(playerRef, item);
+  }
+
+  async getPlayers(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getPlayers();
   }
 }

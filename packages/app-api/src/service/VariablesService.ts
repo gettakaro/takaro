@@ -39,6 +39,7 @@ export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
 
 export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
   @IsString()
+  @IsOptional()
   key: string;
 
   @IsString()

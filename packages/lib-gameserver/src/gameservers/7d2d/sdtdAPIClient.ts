@@ -3,6 +3,7 @@ import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import {
   CommandResponse,
+  OnlinePlayerResponse,
   PlayerLocation,
   StatsResponse,
 } from './apiResponses.js';
@@ -42,5 +43,11 @@ export class SdtdApiClient {
 
   async getPlayersLocation(): Promise<AxiosResponse<Array<PlayerLocation>>> {
     return this.client.get('/api/getplayerslocation');
+  }
+
+  async getOnlinePlayers(): Promise<
+    AxiosResponse<Array<OnlinePlayerResponse>>
+  > {
+    return this.client.get('/api/getplayersonline');
   }
 }

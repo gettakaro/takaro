@@ -4,11 +4,18 @@ async function tplist() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const player = data.player;
+  const { player, gameServerId } = data;
 
-  const teleportsRes = await takaro.variable.variableControllerFind({
+  const prefix = (
+    await takaro.settings.settingsControllerGetOne(
+      'commandPrefix',
+      gameServerId
+    )
+  ).data.data;
+
+  const teleportRes = await takaro.variable.variableControllerFind({
     filters: {
-      gameServerId: data.gameServerId,
+      gameServerId,
       playerId: player.id,
     },
     search: {
@@ -18,16 +25,16 @@ async function tplist() {
     sortDirection: 'asc',
   });
 
-  if (teleportsRes.data.data.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: 'You have no teleports set, use /settp <name> to set one.',
+  const teleports = teleportRes.data.data;
+
+  if (teleports.length === 0) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: `You have no teleports set, use ${prefix}settp <name> to set one.`,
     });
     return;
   }
 
-  const teleports = teleportsRes.data.data;
-
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `You have ${teleports.length} teleport${
       teleports.length === 1 ? '' : 's'
     } set`,
@@ -35,7 +42,7 @@ async function tplist() {
 
   for (const rawTeleport of teleports) {
     const teleport = JSON.parse(rawTeleport.value);
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: ` - ${teleport.name}: ${teleport.x}, ${teleport.y}, ${teleport.z}`,
     });
   }
