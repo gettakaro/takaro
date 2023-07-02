@@ -15,7 +15,7 @@ import {
   FunctionService,
   FunctionUpdateDTO,
 } from './FunctionService.js';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
@@ -340,13 +340,28 @@ export class CommandService extends TakaroService<
       );
 
       const promises = parsedCommands.map(async ({ data, db }) => {
-        return queueService.queues.commands.queue.add({
-          domainId: this.domainId,
-          functionId: db.function.id,
-          itemId: db.id,
-          data,
-          gameServerId,
-        });
+        const delay = data.module.systemConfig.commands[db.name].delay * 1000;
+
+        if (delay) {
+          await gameServerService.sendMessage(
+            gameServerId,
+            `Your command will be executed in ${delay / 1000} seconds.`,
+            await new IMessageOptsDTO().construct({
+              recipient: chatMessage.player,
+            })
+          );
+        }
+
+        return queueService.queues.commands.queue.add(
+          {
+            domainId: this.domainId,
+            functionId: db.function.id,
+            itemId: db.id,
+            data,
+            gameServerId,
+          },
+          { delay }
+        );
       });
 
       await Promise.all(promises);
