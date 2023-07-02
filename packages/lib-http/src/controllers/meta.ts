@@ -29,6 +29,9 @@ export class Meta {
   async getOpenApi() {
     const { getMetadataStorage } = await import('class-validator');
     const classTransformerStorage = await import(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore were doing an import of internal code and ts doesnt like that
+      // But this does work, trust me bro...
       'class-transformer/cjs/storage.js'
     );
 

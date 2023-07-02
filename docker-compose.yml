@@ -97,6 +97,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
+      NODE_OPTIONS: "--loader ts-node/esm"
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
 
