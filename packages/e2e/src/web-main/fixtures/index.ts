@@ -31,11 +31,11 @@ export const getAdminClient = () => {
 };
 
 interface IFixtures {
-  adminPage: { client: Client; adminClient: AdminClient };
+  takaro: { client: Client; adminClient: AdminClient };
 }
 
-export const minimalTest = base.extend<IFixtures>({
-  adminPage: [
+export const basicTest = base.extend<IFixtures>({
+  takaro: [
     async ({ page }, use) => {
       // fixture setup
       const adminClient = getAdminClient();
@@ -65,7 +65,7 @@ export const minimalTest = base.extend<IFixtures>({
 });
 
 export const test = base.extend<IFixtures>({
-  adminPage: [
+  takaro: [
     async ({ page }, use) => {
       const adminClient = getAdminClient();
       const createdDomainRes = await adminClient.domain.domainControllerCreate({
@@ -92,10 +92,39 @@ export const test = base.extend<IFixtures>({
         }),
       });
 
+      // empty module
       await client.module.moduleControllerCreate({
-        name: 'Test module',
+        name: 'Module without functions',
         configSchema: JSON.stringify({}),
-        description: 'Test module',
+        description: 'Empty module with no functions',
+      });
+
+      const mod = (
+        await client.module.moduleControllerCreate({
+          name: 'Module with functions',
+          configSchema: JSON.stringify({}),
+          description: 'Module with functions',
+        })
+      ).data.data;
+
+      await client.hook.hookControllerCreate({
+        name: 'test-hook',
+        eventType: 'player-connected',
+        regex: '.*',
+        moduleId: mod.id,
+      });
+
+      await client.command.commandControllerCreate({
+        moduleId: mod.id,
+        name: 'test-command',
+        trigger: 'test-command',
+        helpText: 'help text',
+      });
+
+      await client.cronjob.cronJobControllerCreate({
+        moduleId: mod.id,
+        name: 'test-cronjob',
+        temporalValue: '* * * * *',
       });
 
       /* TODO: should probably add more custom modules with complex config schemas

@@ -1,9 +1,9 @@
 import playwright from '@playwright/test';
-import { test } from './fixtures/index.js';
+import { basicTest } from '../fixtures/index.js';
 
 const { expect } = playwright;
 
-test('Can create gameserver', async ({ page }) => {
+basicTest('Can create gameserver', async ({ page }) => {
   await page.getByRole('link', { name: 'Servers' }).click();
   const serverName = 'My mock server';
 
@@ -38,10 +38,10 @@ test('Can create gameserver', async ({ page }) => {
   await expect(page.getByText(serverName)).toBeVisible();
 });
 
-test('Can edit gameserver', async ({ page, adminPage }) => {
+basicTest('Can edit gameserver', async ({ page, takaro }) => {
   const oldGameServerName = 'My old mock server';
 
-  await adminPage.client.gameserver.gameServerControllerCreate({
+  await takaro.client.gameserver.gameServerControllerCreate({
     name: oldGameServerName,
     type: 'MOCK',
     connectionInfo: JSON.stringify({ host: 'http://127.0.0.1:3002' }),
@@ -67,10 +67,10 @@ test('Can edit gameserver', async ({ page, adminPage }) => {
   await expect(page.getByText(newGameServerName)).toBeVisible();
 });
 
-test('Can delete gameserver', async ({ page, adminPage }) => {
+basicTest('Can delete gameserver', async ({ page, takaro }) => {
   const gameServerName = 'My gameserver';
 
-  await adminPage.client.gameserver.gameServerControllerCreate({
+  await takaro.client.gameserver.gameServerControllerCreate({
     name: gameServerName,
     type: 'MOCK',
     connectionInfo: JSON.stringify({ host: 'http://127.0.0.1:3002' }),
