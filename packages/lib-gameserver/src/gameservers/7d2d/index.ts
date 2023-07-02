@@ -5,6 +5,7 @@ import {
   CommandOutput,
   IGameServer,
   IItemDTO,
+  IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
   TestReachabilityOutput,
@@ -106,8 +107,13 @@ export class SevenDaysToDie implements IGameServer {
     });
   }
 
-  async sendMessage(message: string) {
-    const command = `say "${message}"`;
+  async sendMessage(message: string, opts?: IMessageOptsDTO) {
+    let command = `say "${message}"`;
+
+    if (opts?.recipient?.gameId) {
+      command = `sayplayer "${opts.recipient.gameId}" "${message}"}`;
+    }
+
     await this.apiClient.executeConsoleCommand(command);
   }
 
