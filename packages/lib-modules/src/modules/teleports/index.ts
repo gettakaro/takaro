@@ -15,6 +15,12 @@ export class Teleports extends BuiltinModule {
             maximum: 50,
             default: 5,
           },
+          timeout: {
+            type: 'integer',
+            description: 'The time in milliseconds required between teleports',
+            minimum: 0,
+            default: 1000,
+          },
         },
         required: ['maxTeleports'],
         additionalProperties: false,
