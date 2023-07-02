@@ -101,11 +101,11 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   moduleId: string;
 
   @IsObject()
-  userConfig: Record<string, never>;
+  userConfig: Record<string, any>;
 
   @JSONSchema(getEmptySystemConfigSchema())
   @IsObject()
-  systemConfig: Record<string, never>;
+  systemConfig: Record<string, any>;
 }
 
 export class GameServerService extends TakaroService<

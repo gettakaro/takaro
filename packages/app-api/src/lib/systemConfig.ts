@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import ms from 'ms';
 import { ModuleOutputDTO } from '../service/ModuleService.js';
 import { DiscordEvents } from '@takaro/modules';
 
@@ -52,6 +53,37 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
         };
         systemConfigSchema.properties.hooks.required.push(configKey);
       }
+    }
+  }
+
+  if (mod.commands.length) {
+    systemConfigSchema.properties.commands = {
+      type: 'object',
+      properties: {},
+      required: [],
+      default: {},
+    };
+
+    systemConfigSchema.required.push('commands');
+
+    for (const command of mod.commands) {
+      const configKey = command.name;
+
+      systemConfigSchema.properties.commands.properties[configKey] = {
+        type: 'object',
+        properties: {
+          delay: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            maximum: ms('1 day') / 1000,
+            description:
+              'How many seconds to wait before executing the command.',
+          },
+        },
+        required: [],
+        default: {},
+      };
     }
   }
 
