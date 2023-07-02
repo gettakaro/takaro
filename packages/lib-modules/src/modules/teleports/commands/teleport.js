@@ -4,29 +4,64 @@ async function teleport() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const player = data.player;
+  const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const teleportsRes = await takaro.variable.variableControllerFind({
+  const teleportRes = await takaro.variable.variableControllerFind({
     filters: {
-      key: `t_tp_${data.arguments.tp}`,
-      gameServerId: data.gameServerId,
+      key: `t_tp_${args.tp}`,
+      gameServerId,
       playerId: player.id,
     },
     sortBy: 'key',
     sortDirection: 'asc',
   });
 
-  if (teleportsRes.data.data.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `Teleport ${data.arguments.tp} does not exist.`,
+  const teleports = teleportRes.data.data;
+
+  if (teleports.length === 0) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: `Teleport ${args.tp} does not exist.`,
     });
     return;
   }
 
-  const teleport = JSON.parse(teleportsRes.data.data[0].value);
+  const timeout = mod.userConfig.timeout;
+
+  const lastExecuted = await takaro.variable.variableControllerFind({
+    filters: {
+      key: `t_tp_${args.tp}_lastExecuted`,
+      gameServerId,
+      playerId: player.id,
+    },
+    sortBy: 'key',
+    sortDirection: 'asc',
+  });
+
+  if (lastExecuted.data.data.length === 0) {
+    await takaro.variable.variableControllerCreate({
+      key: `t_tp_${args.tp}_lastExecuted`,
+      gameServerId,
+      playerId: player.id,
+      value: new Date().toISOString(),
+    });
+  } else {
+    const lastExecutedTime = new Date(lastExecuted.data.data[0].value);
+    const now = new Date();
+
+    const diff = now.getTime() - lastExecutedTime.getTime();
+
+    if (diff < timeout) {
+      await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+        message: 'You cannot teleport yet. Please wait before trying again.',
+      });
+      return;
+    }
+  }
+
+  const teleport = JSON.parse(teleports[0].value);
 
   await takaro.gameserver.gameServerControllerTeleportPlayer(
-    data.gameServerId,
+    gameServerId,
     player.id,
     {
       x: teleport.x,
@@ -35,7 +70,7 @@ async function teleport() {
     }
   );
 
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `Teleported to ${teleport.name}.`,
   });
 }

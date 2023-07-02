@@ -8,19 +8,19 @@ async function deletetp() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const player = data.player;
+  const { player, gameServerId, arguments: args } = data;
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: getVariableKey(data.arguments.tp),
-      gameServerId: data.gameServerId,
+      key: getVariableKey(args.tp),
+      gameServerId,
       playerId: player.id,
     },
   });
 
   if (existingVariable.data.data.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `Teleport ${data.arguments.tp} does not exist.`,
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: `Teleport ${args.tp} does not exist.`,
     });
     return;
   }
@@ -29,8 +29,8 @@ async function deletetp() {
     existingVariable.data.data[0].id
   );
 
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: `Teleport ${data.arguments.tp} deleted.`,
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+    message: `Teleport ${args.tp} deleted.`,
   });
 }
 
