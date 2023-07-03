@@ -1,4 +1,5 @@
 import playwright from '@playwright/test';
+import { integrationConfig } from '@takaro/test';
 import { basicTest } from '../fixtures/index.js';
 
 const { expect } = playwright;
@@ -10,7 +11,7 @@ basicTest('Can create gameserver', async ({ page }) => {
   // click create gameserver card
   await page.getByText('Gameserver').click();
 
-  expect(page.url()).toBe(`${process.env.TAKARO_FRONTEND_HOST}/servers/create`);
+  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
 
   // fill in gameserver name
   const serverNameInput = page.getByPlaceholder('My cool server');
@@ -19,10 +20,7 @@ basicTest('Can create gameserver', async ({ page }) => {
 
   // select gameserver type
   await page.getByText('Select...').click();
-  await page
-    .getByRole('option', { name: 'Mock (testing purposes)' })
-    .locator('div')
-    .click();
+  await page.getByRole('option', { name: 'Mock (testing purposes)' }).locator('div').click();
 
   const hostInput = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInput.click();

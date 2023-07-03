@@ -3,10 +3,7 @@ import { test } from '../fixtures/index.js';
 
 const { expect, test: pwTest } = playwright;
 
-test('should open onboarding when new module with no functions is created', async ({
-  page,
-  context,
-}) => {
+test('should open onboarding when new module with no functions is created', async ({ page, context }) => {
   // go to modules and select the module with name: Module without functions
   await page.getByRole('link', { name: 'Modules' }).click();
 
@@ -16,30 +13,24 @@ test('should open onboarding when new module with no functions is created', asyn
   ]);
 
   await onBoardingPage.waitForLoadState();
-  await expect(
-    onBoardingPage.locator('h1', { hasText: 'Choose one to get started' })
-  ).toBeVisible();
+  await expect(onBoardingPage.locator('h1', { hasText: 'Choose one to get started' })).toBeVisible();
 });
 
-test('should open studio when module with functions is created', async ({
-  page,
-  context,
-}) => {
+test('should open studio when module with functions is created', async ({ page, context }) => {
   await page.getByRole('link', { name: 'Modules' }).click();
 
   const [studioPage] = await Promise.all([
     context.waitForEvent('page'),
     page.locator('a').filter({ hasText: 'Module with functions' }).click(),
   ]);
+  await studioPage.waitForLoadState();
+
   await expect(studioPage.getByText('Module with functions')).toBeVisible();
 });
 
-test.fixme(
-  'should redirect when surfed to non existing module',
-  async ({ page }) => {
-    page.goto('studio/module-that-does-not-exist');
-  }
-);
+test.fixme('should redirect when surfed to non existing module', async ({ page }) => {
+  page.goto('studio/module-that-does-not-exist');
+});
 
 test('Can create hook', async ({ page, takaro }) => {
   const mod = (
@@ -72,7 +63,7 @@ test('Can delete hook', async ({ page, takaro }) => {
   await testHookFile.getByRole('button').nth(1).click();
   await page.getByRole('button', { name: 'Remove file' }).click();
 
-  expect(page.getByRole('button', { name: 'test-hook' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'test-hook' })).toHaveCount(0);
 });
 
 test('Can create command', async ({ page, takaro }) => {
@@ -89,9 +80,7 @@ test('Can create command', async ({ page, takaro }) => {
 
   await page.locator('input[name="new-file"]').fill('my-new-command');
   await page.locator('input[name="new-file"]').press('Enter');
-  await expect(
-    page.getByRole('button', { name: 'my-new-command' })
-  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'my-new-command' })).toBeVisible();
 });
 
 test('Can delete command', async ({ page, takaro }) => {
@@ -107,7 +96,7 @@ test('Can delete command', async ({ page, takaro }) => {
   await testHookFile.hover();
   await testHookFile.getByRole('button').nth(1).click();
   await page.getByRole('button', { name: 'Remove file' }).click();
-  expect(page.getByRole('button', { name: 'test-command' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'test-command' })).toHaveCount(0);
 });
 
 test.fixme('Can save command config', async ({}) => {});
@@ -126,9 +115,7 @@ test('Can create cronjob', async ({ page, takaro }) => {
 
   await page.locator('input[name="new-file"]').fill('my-new-cronjob');
   await page.locator('input[name="new-file"]').press('Enter');
-  await expect(
-    page.getByRole('button', { name: 'my-new-cronjob' })
-  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'my-new-cronjob' })).toBeVisible();
 });
 test('Can delete cronjob', async ({ page, takaro }) => {
   const mod = (
@@ -143,7 +130,7 @@ test('Can delete cronjob', async ({ page, takaro }) => {
   await testHookFile.hover();
   await testHookFile.getByRole('button').nth(1).click();
   await page.getByRole('button', { name: 'Remove file' }).click();
-  expect(page.getByRole('button', { name: 'test-cronjob' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'test-cronjob' })).toHaveCount(0);
 });
 
 pwTest.describe('Built-in modules', () => {

@@ -1,10 +1,11 @@
 import playwright from '@playwright/test';
+import { integrationConfig } from '@takaro/test';
 import { basicTest } from './fixtures/index.js';
 
 const { test, expect } = playwright;
 
 test('has title', async ({ page }) => {
-  await page.goto(`${process.env.TAKARO_FRONTEND_HOST}/`);
+  await page.goto(`${integrationConfig.get('frontendHost')}/`);
   await expect(page).toHaveTitle(/Takaro/);
 });
 
