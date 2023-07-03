@@ -1,11 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, styled } from '@takaro/lib-components';
-import {
-  useCommandCreate,
-  useCronJobCreate,
-  useHookCreate,
-} from 'queries/modules';
+import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/modules';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -49,9 +45,7 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
   const { mutateAsync: createCommand } = useCommandCreate();
   const { mutateAsync: createCronJob } = useCronJobCreate();
 
-  const createComponent = async (
-    componentType: 'hook' | 'cronjob' | 'command'
-  ) => {
+  const createComponent = async (componentType: 'hook' | 'cronjob' | 'command') => {
     try {
       switch (componentType) {
         case 'hook':
@@ -86,32 +80,20 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
     <Wrapper>
       <Title>Choose one to get started</Title>
       <Grid columns={3}>
-        <InfoCard
-          title="Commands"
-          onClick={async () => await createComponent('command')}
-        >
-          Commands are triggered by a user. They are triggered when a player
-          sends a chat message starting with the configured command prefix. Note
-          that this means that commands are a manual action, unlike Hooks and
-          Cronjobs which are triggered with any user-intervention.
+        <InfoCard title="Commands" onClick={async () => await createComponent('command')}>
+          Commands are triggered by a user. They are triggered when a player sends a chat message starting with the
+          configured command prefix. Note that this means that commands are a manual action, unlike Hooks and Cronjobs
+          which are triggered with any user-intervention.
         </InfoCard>
-        <InfoCard
-          title="Hooks"
-          onClick={async () => await createComponent('hook')}
-        >
-          Hooks are triggered when a certain event happens on a Gameserver.
-          Think of it as a callback function that is executed when a certain
-          event happens. For example, when a player joins a server, a Hook can
-          be triggered that will send a message to the player.
+        <InfoCard title="Hooks" onClick={async () => await createComponent('hook')}>
+          Hooks are triggered when a certain event happens on a Gameserver. Think of it as a callback function that is
+          executed when a certain event happens. For example, when a player joins a server, a Hook can be triggered that
+          will send a message to the player.
         </InfoCard>
-        <InfoCard
-          title="CronJobs"
-          onClick={async () => await createComponent('cronjob')}
-        >
-          Cronjobs are triggered based on time. This can be a simple repeating
-          pattern like "Every 5 minutes" or "Every day" or you can use raw Cron
-          (opens in a new tab) syntax to define more complex patterns like
-          "Every Monday, Wednesday and Friday at 2 PM";
+        <InfoCard title="CronJobs" onClick={async () => await createComponent('cronjob')}>
+          Cronjobs are triggered based on time. This can be a simple repeating pattern like "Every 5 minutes" or "Every
+          day" or you can use raw Cron (opens in a new tab) syntax to define more complex patterns like "Every Monday,
+          Wednesday and Friday at 2 PM";
         </InfoCard>
       </Grid>
     </Wrapper>
@@ -127,11 +109,7 @@ type InfoCardProps = {
   onClick?: (e: React.MouseEvent) => void;
 };
 
-export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
-  title,
-  onClick,
-  children,
-}) => {
+export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick, children }) => {
   const handleClick = (e: React.MouseEvent) => {
     // stops the parent onClick from firing
     e.stopPropagation();
@@ -144,7 +122,7 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({
         {children}
         <Link
           className="underline"
-          to={`https://docs.takaro.io/docs/application/modules#${title.toLowerCase()}`}
+          to={`https://docs.takaro.io/modules#${title.toLowerCase()}`}
           target="_blank"
           onClick={handleClick}
         >
