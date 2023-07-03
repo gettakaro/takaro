@@ -1,9 +1,5 @@
 import playwright, { Page } from '@playwright/test';
-import {
-  AdminClient,
-  Client,
-  GameServerCreateDTOTypeEnum,
-} from '@takaro/apiclient';
+import { AdminClient, Client, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import humanId from 'human-id/dist/index.js';
 

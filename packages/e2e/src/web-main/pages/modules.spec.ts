@@ -26,18 +26,14 @@ basicTest.fixme('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'My module';
   await takaro.client.module.moduleControllerCreate({
     name: oldModuleName,
-    description:
-      'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server. They consist of commands, c',
     configSchema: JSON.stringify({}),
   });
 
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
 
-  const editButton = page
-    .locator('a', { hasText: oldModuleName })
-    .getByRole('button')
-    .first();
+  const editButton = page.locator('a', { hasText: oldModuleName }).getByRole('button').first();
   await editButton.click();
 
   const newModuleName = 'My edited module';
@@ -53,18 +49,14 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'My module';
   await takaro.client.module.moduleControllerCreate({
     name: moduleName,
-    description:
-      'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server. They consist of commands, c',
     configSchema: JSON.stringify({}),
   });
 
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
 
-  const deleteButton = page
-    .locator('a', { hasText: moduleName })
-    .getByRole('button')
-    .nth(1);
+  const deleteButton = page.locator('a', { hasText: moduleName }).getByRole('button').nth(1);
   await deleteButton.click();
 
   // dialog
