@@ -6,7 +6,7 @@ async function teleport() {
 
   const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  const ownedTeleportRes = await takaro.variable.variableControllerFind({
     filters: {
       key: `t_tp_${args.tp}`,
       gameServerId,
@@ -16,7 +16,25 @@ async function teleport() {
     sortDirection: 'asc',
   });
 
-  const teleports = teleportRes.data.data;
+  let teleports = ownedTeleportRes.data.data;
+
+  if (mod.userConfig.allowPublicTeleports) {
+    const maybePublicTeleportRes = await takaro.variable.variableControllerFind({
+      filters: {
+        key: `t_tp_${args.tp}`,
+        gameServerId,
+      },
+      sortBy: 'key',
+      sortDirection: 'asc',
+    });
+
+    const publicTeleports = maybePublicTeleportRes.data.data.filter((tele) => {
+      const teleport = JSON.parse(tele.value);
+      return teleport.public;
+    });
+
+    teleports = teleports.concat(publicTeleports);
+  }
 
   if (teleports.length === 0) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
@@ -60,15 +78,11 @@ async function teleport() {
 
   const teleport = JSON.parse(teleports[0].value);
 
-  await takaro.gameserver.gameServerControllerTeleportPlayer(
-    gameServerId,
-    player.id,
-    {
-      x: teleport.x,
-      y: teleport.y,
-      z: teleport.z,
-    }
-  );
+  await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, player.id, {
+    x: teleport.x,
+    y: teleport.y,
+    z: teleport.z,
+  });
 
   await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `Teleported to ${teleport.name}.`,
