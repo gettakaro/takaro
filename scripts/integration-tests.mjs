@@ -149,7 +149,7 @@ async function main() {
   }
 
   const logsResult = await logs(
-    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'],
+    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm', 'kratos', 'hydra', 'hydra-e2e'],
     { ...composeOpts, log: false }
   );
 
