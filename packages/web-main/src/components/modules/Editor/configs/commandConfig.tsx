@@ -1,21 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Button,
-  CollapseList,
-  IconButton,
-  Select,
-  TextAreaField,
-  TextField,
-  Tooltip,
-} from '@takaro/lib-components';
+import { Button, CollapseList, IconButton, Select, TextAreaField, TextField, Tooltip } from '@takaro/lib-components';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
-import {
-  ArgumentCard,
-  ArgumentList,
-  ContentContainer,
-  Fields,
-  Flex,
-} from './style';
+import { ArgumentCard, ArgumentList, ContentContainer, Fields, Flex } from './style';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useGameServerSettings } from 'queries/gameservers';
 import { useCommand, useCommandUpdate } from 'queries/modules';
@@ -152,37 +138,26 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           readOnly={readOnly}
                           minWidth="120px"
                           render={(selectedIndex) => (
-                            <>
-                              {argumentTypeSelectOptions[selectedIndex]?.name ??
-                                'Select...'}
-                            </>
+                            <>{argumentTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</>
                           )}
                         >
                           <Select.OptionGroup label="Options">
-                            {argumentTypeSelectOptions.map(
-                              ({ name, value }) => (
-                                <Select.Option
-                                  key={`${field.id}-select-${name}`}
-                                  value={value}
-                                >
-                                  {name}
-                                </Select.Option>
-                              )
-                            )}
+                            {argumentTypeSelectOptions.map(({ name, value }) => (
+                              <Select.Option key={`${field.id}-select-${name}`} value={value}>
+                                {name}
+                              </Select.Option>
+                            ))}
                           </Select.OptionGroup>
                         </Select>
                       </Flex>
-                      <TextField
-                        control={control}
-                        label="Help text"
-                        name={`arguments.${index}.helpText`}
-                      />
+                      <TextField control={control} label="Help text" name={`arguments.${index}.helpText`} />
                     </Fields>
                     <Tooltip>
                       <Tooltip.Trigger asChild>
                         <IconButton
                           onClick={() => remove(index)}
                           icon={<CloseIcon size={16} cursor="pointer" />}
+                          ariaLabel="Remove argument"
                         />
                       </Tooltip.Trigger>
                       <Tooltip.Content>Remove argument</Tooltip.Content>

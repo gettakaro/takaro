@@ -28,10 +28,11 @@ export default {
   },
 } as Meta<IconButtonProps & ExtraIconButtonStoryProps>;
 
-export const Default: StoryFn<IconButtonProps & ExtraIconButtonStoryProps> = (
-  args
-) => (
-  <Tooltip label={args.tooltipLabel} placement="bottom">
-    <IconButton size={args.size} color={args.color} icon={args.icon} />
+export const Default: StoryFn<IconButtonProps & ExtraIconButtonStoryProps> = (args) => (
+  <Tooltip>
+    <Tooltip.Trigger asChild>
+      <IconButton size={args.size} color={args.color} icon={args.icon} ariaLabel={args.tooltipLabel} />
+    </Tooltip.Trigger>
+    <Tooltip.Content>{args.tooltipLabel}</Tooltip.Content>
   </Tooltip>
 );

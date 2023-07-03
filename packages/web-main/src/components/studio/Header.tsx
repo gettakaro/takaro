@@ -1,20 +1,10 @@
-import {
-  styled,
-  Popover,
-  IconButton,
-  Button,
-  TextField,
-  Chip,
-} from '@takaro/lib-components';
+import { styled, Popover, IconButton, Button, TextField, Chip } from '@takaro/lib-components';
 import { useModule } from 'hooks/useModule';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import {
-  AiOutlineLock as ReadOnlyIcon,
-  AiOutlineCopy as CopyIcon,
-} from 'react-icons/ai';
+import { AiOutlineLock as ReadOnlyIcon, AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
 const Flex = styled.div`
   display: flex;
@@ -82,17 +72,13 @@ export const Header = () => {
         {moduleData.isBuiltIn && (
           <Popover placement="bottom">
             <Popover.Trigger asChild>
-              <IconButton icon={<ReadOnlyIcon />} />
+              <IconButton icon={<ReadOnlyIcon />} ariaLabel="Read only" />
             </Popover.Trigger>
             <Popover.Content>
               <PopoverBody>
                 <PopoverHeading>
                   <h2>Built-in module</h2>
-                  <Chip
-                    color="primary"
-                    variant="default"
-                    label="feature is coming soon."
-                  />
+                  <Chip color="primary" variant="default" label="feature is coming soon." />
                 </PopoverHeading>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <TextField
@@ -102,12 +88,7 @@ export const Header = () => {
                     label="New Module Name"
                     description="This module is built-in and cannot be modified. You can copy it and make changes to the copy."
                   />
-                  <Button
-                    type="submit"
-                    icon={<CopyIcon />}
-                    text="Copy Module"
-                    fullWidth
-                  />
+                  <Button type="submit" icon={<CopyIcon />} text="Copy Module" fullWidth />
                 </form>
               </PopoverBody>
             </Popover.Content>
