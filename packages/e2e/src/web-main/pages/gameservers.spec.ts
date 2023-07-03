@@ -24,7 +24,7 @@ basicTest('Can create gameserver', async ({ page }) => {
 
   const hostInput = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInput.click();
-  await hostInput.fill('http://127.0.0.1:3002');
+  await hostInput.fill(integrationConfig.get('mockGameserver.host'));
 
   // test connection
   await page.getByRole('button', { name: 'Test connection' }).click();
@@ -42,7 +42,7 @@ basicTest('Can edit gameserver', async ({ page, takaro }) => {
   await takaro.client.gameserver.gameServerControllerCreate({
     name: oldGameServerName,
     type: 'MOCK',
-    connectionInfo: JSON.stringify({ host: 'http://127.0.0.1:3002' }),
+    connectionInfo: JSON.stringify({ host: integrationConfig.get('mockGameserver.host') }),
   });
 
   await page.getByRole('link', { name: 'Servers' }).click();
@@ -71,7 +71,7 @@ basicTest('Can delete gameserver', async ({ page, takaro }) => {
   await takaro.client.gameserver.gameServerControllerCreate({
     name: gameServerName,
     type: 'MOCK',
-    connectionInfo: JSON.stringify({ host: 'http://127.0.0.1:3002' }),
+    connectionInfo: JSON.stringify({ host: integrationConfig.get('mockGameserver.host') }),
   });
 
   await page.getByRole('link', { name: 'Servers' }).click();

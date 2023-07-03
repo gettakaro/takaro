@@ -84,7 +84,7 @@ export const test = base.extend<IFixtures>({
         name: 'Test server',
         type: GameServerCreateDTOTypeEnum.Mock,
         connectionInfo: JSON.stringify({
-          host: 'http://127.0.0.1:3002',
+          host: integrationConfig.get('mockGameserver.host'),
         }),
       });
 
