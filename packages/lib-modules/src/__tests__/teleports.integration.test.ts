@@ -221,7 +221,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(4);
-      expect((await events)[0].data.msg).to.be.eq('You have 3 teleports set');
+      expect((await events)[0].data.msg).to.be.eq('You have 3 teleports available');
       //  - test0: 61, -262, -52
       expect((await events)[1].data.msg).to.match(/ - test0: [-\d]+, [-\d]+, [-\d]+/);
       expect((await events)[2].data.msg).to.match(/ - test1: [-\d]+, [-\d]+, [-\d]+/);
@@ -344,6 +344,319 @@ const tests = [
       });
 
       expect((await tpTimeoutEvent)[0].data.msg).to.be.eq('You cannot teleport yet. Please wait before trying again.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Can set teleports as public, allowing other players to use it',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: true,
+          }),
+        }
+      );
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setPublicEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPublicEvent).length).to.be.eq(1);
+      expect((await setPublicEvent)[0].data.msg).to.be.eq('Teleport test is now public.');
+
+      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        player: {
+          gameId: '2',
+        },
+      });
+
+      expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Can set public teleports as private again',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: true,
+          }),
+        }
+      );
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setPublicEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPublicEvent).length).to.be.eq(1);
+      expect((await setPublicEvent)[0].data.msg).to.be.eq('Teleport test is now public.');
+
+      const setPrivateEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setprivate test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPrivateEvent).length).to.be.eq(1);
+      expect((await setPrivateEvent)[0].data.msg).to.be.eq('Teleport test is now private.');
+
+      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        player: {
+          gameId: '2',
+        },
+      });
+
+      expect((await tpEvent)[0].data.msg).to.be.eq('Teleport test does not exist.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Public teleports show up in /tplist',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: true,
+          }),
+        }
+      );
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setPublicEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPublicEvent).length).to.be.eq(1);
+      expect((await setPublicEvent)[0].data.msg).to.be.eq('Teleport test is now public.');
+
+      const setTpEvent2 = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test2',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent2).length).to.be.eq(1);
+      expect((await setTpEvent2)[0].data.msg).to.be.eq('Teleport test2 set.');
+
+      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tplist',
+        player: {
+          gameId: '2',
+        },
+      });
+
+      expect((await tpEvent).length).to.be.eq(2);
+      expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent)[1].data.msg).to.match(/ - test: [-\d]+, [-\d]+, [-\d]+ \(public\)/);
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'When configured to not allow public teleports, creating public teleports is not allowed',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: false,
+            timeout: 0,
+          }),
+        }
+      );
+
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setPublicEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPublicEvent).length).to.be.eq(1);
+      expect((await setPublicEvent)[0].data.msg).to.be.eq('Public teleports are disabled.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'When configured to not allow public teleports, players cannot teleport to public teleports',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: true,
+            timeout: 0,
+          }),
+        }
+      );
+
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(this.client);
+
+      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setPublicEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test',
+        player: {
+          gameId: '1',
+        },
+      });
+
+      expect((await setPublicEvent).length).to.be.eq(1);
+      expect((await setPublicEvent)[0].data.msg).to.be.eq('Teleport test is now public.');
+
+      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        player: {
+          gameId: '2',
+        },
+      });
+
+      expect((await tpEvent).length).to.be.eq(1);
+      expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
+
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: false,
+            timeout: 0,
+          }),
+        }
+      );
+
+      const tpEvent2 = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        player: {
+          gameId: '2',
+        },
+      });
+
+      expect((await tpEvent2).length).to.be.eq(1);
+      expect((await tpEvent2)[0].data.msg).to.be.eq('Teleport test does not exist.');
     },
   }),
 ];

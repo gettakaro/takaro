@@ -21,6 +21,10 @@ export class Teleports extends BuiltinModule {
             minimum: 0,
             default: 1000,
           },
+          allowPublicTeleports: {
+            type: 'boolean',
+            default: false,
+          },
         },
         required: ['maxTeleports'],
         additionalProperties: false,
@@ -69,6 +73,36 @@ export class Teleports extends BuiltinModule {
         name: 'deletetp',
         trigger: 'deletetp',
         helpText: 'Deletes a location',
+        arguments: [
+          {
+            name: 'tp',
+            type: 'string',
+            defaultValue: undefined,
+            helpText: 'The location name',
+            position: 0,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'setpublic',
+        trigger: 'setpublic',
+        helpText: 'Sets a teleport to be public, allowing other players to teleport to it',
+        arguments: [
+          {
+            name: 'tp',
+            type: 'string',
+            defaultValue: undefined,
+            helpText: 'The location name',
+            position: 0,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'setprivate',
+        trigger: 'setprivate',
+        helpText: 'Sets a teleport to be private, only the teleport owner can teleport to it',
         arguments: [
           {
             name: 'tp',

@@ -102,6 +102,7 @@ const tests = [
       );
 
       expect(res.data.data.userConfig).to.deep.equal({
+        allowPublicTeleports: false,
         maxTeleports: 42,
         timeout: 1337,
       });
