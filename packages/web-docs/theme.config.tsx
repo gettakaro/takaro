@@ -9,7 +9,8 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://aka.candaele.dev/discord',
   },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  docsRepositoryBase:
+    'https://github.com/gettakaro/takaro/tree/main/packages/web-docs',
   footer: {
     text: 'Takaro Documentation',
   },
