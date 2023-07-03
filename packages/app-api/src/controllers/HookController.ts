@@ -1,32 +1,9 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import {
-  HookCreateDTO,
-  HookOutputDTO,
-  HookService,
-  HookTriggerDTO,
-  HookUpdateDTO,
-} from '../service/HookService.js';
+import { HookCreateDTO, HookOutputDTO, HookService, HookTriggerDTO, HookUpdateDTO } from '../service/HookService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -79,11 +56,7 @@ export class HookController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_HOOKS]))
   @ResponseSchema(HookOutputArrayDTOAPI)
   @Post('/hook/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: HookSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: HookSearchInputDTO) {
     const service = new HookService(req.domainId);
     const result = await service.find({
       ...query,
@@ -105,10 +78,7 @@ export class HookController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Post('/hook')
   async create(@Req() req: AuthenticatedRequest, @Body() data: HookCreateDTO) {
@@ -116,25 +86,15 @@ export class HookController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Put('/hook/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: HookUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: HookUpdateDTO) {
     const service = new HookService(req.domainId);
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -145,10 +105,7 @@ export class HookController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
   @Post('/hook/trigger')
-  async trigger(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: HookTriggerDTO
-  ) {
+  async trigger(@Req() req: AuthenticatedRequest, @Body() data: HookTriggerDTO) {
     const service = new HookService(req.domainId);
     await service.trigger(data);
     return apiResponse();

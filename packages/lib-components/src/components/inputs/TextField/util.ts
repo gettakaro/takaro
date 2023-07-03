@@ -10,15 +10,7 @@ export const getFieldType = (type: TextFieldType, passwordVisible: boolean) => {
   return type;
 };
 
-type InputModes =
-  | 'text'
-  | 'email'
-  | 'search'
-  | 'tel'
-  | 'url'
-  | 'none'
-  | 'numeric'
-  | 'decimal';
+type InputModes = 'text' | 'email' | 'search' | 'tel' | 'url' | 'none' | 'numeric' | 'decimal';
 
 export const getInputMode = (type: TextFieldType): InputModes => {
   if (type === 'password') return 'text';

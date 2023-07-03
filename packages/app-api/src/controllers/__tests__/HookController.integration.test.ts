@@ -1,8 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import {
-  HookOutputDTOAPI,
-  HookCreateDTOEventTypeEnum,
-} from '@takaro/apiclient';
+import { HookOutputDTOAPI, HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const group = 'HookController';
 
@@ -24,8 +21,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id)))
-        .data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerGetOne(this.setupData.data.id);
@@ -56,8 +52,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id)))
-        .data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerUpdate(this.setupData.data.id, {
@@ -77,8 +72,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id)))
-        .data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerRemove(this.setupData.data.id);

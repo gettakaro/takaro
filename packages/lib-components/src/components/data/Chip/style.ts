@@ -37,8 +37,7 @@ export const Container = styled.div<{
     display: block;
     white-space: normal;
     overflow-wrap: anywhere;
-    margin-left: ${({ hasAvatar, theme }) =>
-      hasAvatar ? theme.spacing['0_5'] : 0};
+    margin-left: ${({ hasAvatar, theme }) => (hasAvatar ? theme.spacing['0_5'] : 0)};
     font-size: ${({ theme }) => theme.fontSize.tiny};
 
     ${({ theme, color, outline }) => {
@@ -62,6 +61,5 @@ export const Dot = styled.div<{ color: ChipColor; outline: boolean }>`
   height: 0.6rem;
   border-radius: 50%;
   margin-right: ${({ theme }) => theme.spacing['0_5']};
-  background-color: ${({ outline, theme, color }) =>
-    outline ? theme.colors[color] : 'white'};
+  background-color: ${({ outline, theme, color }) => (outline ? theme.colors[color] : 'white')};
 `;

@@ -70,21 +70,15 @@ describe('JsonSchemaGenerator#data', () => {
         validator = new Ajv({ useDefaults: true }).compile(schema);
       });
 
-      it.each(positiveTest.validInputs)(
-        'Validates valid input: %s',
-        async (validInput) => {
-          const result = validator(validInput);
-          expect(result).toEqual(true);
-        }
-      );
+      it.each(positiveTest.validInputs)('Validates valid input: %s', async (validInput) => {
+        const result = validator(validInput);
+        expect(result).toEqual(true);
+      });
 
-      it.each(positiveTest.invalidInputs)(
-        'Detects invalid input: %s',
-        async (validInput) => {
-          const result = validator(validInput);
-          expect(result).toEqual(false);
-        }
-      );
+      it.each(positiveTest.invalidInputs)('Detects invalid input: %s', async (validInput) => {
+        const result = validator(validInput);
+        expect(result).toEqual(false);
+      });
     });
   }
 });

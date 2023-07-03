@@ -1,14 +1,7 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
 import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
-import {
-  IsBoolean,
-  IsISO8601,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CommandOutput extends TakaroDTO<CommandOutput> {
@@ -84,12 +77,7 @@ export interface IGameServer {
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
-  teleportPlayer(
-    player: IPlayerReferenceDTO,
-    x: number,
-    y: number,
-    z: number
-  ): Promise<void>;
+  teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void>;
 
   /**
    * Try and connect to the gameserver

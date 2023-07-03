@@ -1,8 +1,4 @@
-import {
-  PaginationState,
-  ColumnFiltersState,
-  SortingState,
-} from '@tanstack/react-table';
+import { PaginationState, ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import { APIOutput } from '@takaro/apiclient';
@@ -22,13 +18,10 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
     pageIndex,
     pageSize,
   });
-  const [columnFiltersState, setColumnFiltersState] =
-    useState<ColumnFiltersState>([]);
+  const [columnFiltersState, setColumnFiltersState] = useState<ColumnFiltersState>([]);
   const [sortingState, setSortingState] = useState<SortingState>([]);
 
-  function paginate(
-    response: AxiosResponse<ExtendedAPIOutput<T>>
-  ): Paginated<T> {
+  function paginate(response: AxiosResponse<ExtendedAPIOutput<T>>): Paginated<T> {
     setPaginationState({
       pageIndex: paginationState.pageIndex++,
       pageSize: paginationState.pageSize,

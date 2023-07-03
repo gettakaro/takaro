@@ -32,9 +32,7 @@ describe('adminAuth', () => {
   });
 
   it('Rejects requests with invalid credentials', async () => {
-    const response = await supertest(http.expressInstance)
-      .get('/test')
-      .set('Authorization', 'Bearer foobar');
+    const response = await supertest(http.expressInstance).get('/test').set('Authorization', 'Bearer foobar');
     expect(response.status).to.be.equal(403);
   });
 

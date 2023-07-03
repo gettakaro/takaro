@@ -1,8 +1,5 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import {
-  IModuleTestsSetupData,
-  modulesTestSetup,
-} from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Onboarding';
@@ -52,20 +49,15 @@ const tests = [
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/starterkit',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/starterkit',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.match(
-        /You are about to receive your starter kit/
-      );
+      expect((await events)[0].data.msg).to.match(/You are about to receive your starter kit/);
       expect((await events)[1].data.msg).to.match(/Gave \d items, enjoy!/);
     },
   }),
@@ -86,44 +78,28 @@ const tests = [
       );
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
-      const firstEvents = eventAwaiter.waitForEvents(
-        GameEvents.CHAT_MESSAGE,
-        2
-      );
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/starterkit',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      const firstEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/starterkit',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await firstEvents).length).to.be.eq(2);
-      expect((await firstEvents)[0].data.msg).to.match(
-        /You are about to receive your starter kit/
-      );
+      expect((await firstEvents)[0].data.msg).to.match(/You are about to receive your starter kit/);
       expect((await firstEvents)[1].data.msg).to.match(/Gave \d items, enjoy!/);
 
-      const secondEvents = eventAwaiter.waitForEvents(
-        GameEvents.CHAT_MESSAGE,
-        1
-      );
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/starterkit',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      const secondEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/starterkit',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.msg).to.match(
-        /ou already used starterkit on this server/
-      );
+      expect((await secondEvents)[0].data.msg).to.match(/ou already used starterkit on this server/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -139,20 +115,15 @@ const tests = [
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/starterkit',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/starterkit',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(
-        /No starter kit items configured/
-      );
+      expect((await events)[0].data.msg).to.match(/No starter kit items configured/);
     },
   }),
 ];

@@ -1,20 +1,8 @@
 import { TakaroService } from './Base.js';
 
 import { CommandModel, CommandRepo } from '../db/command.js';
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
-import {
-  FunctionCreateDTO,
-  FunctionOutputDTO,
-  FunctionService,
-  FunctionUpdateDTO,
-} from './FunctionService.js';
+import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
@@ -70,10 +58,7 @@ export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutp
   position: number;
 }
 
-export class CommandCreateDTO
-  extends TakaroDTO<CommandCreateDTO>
-  implements ICommand
-{
+export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICommand {
   @IsString()
   @Length(3, 50)
   name: string;
@@ -98,10 +83,7 @@ export class CommandCreateDTO
   arguments?: ICommandArgument[];
 }
 
-export class CommandArgumentCreateDTO
-  extends TakaroDTO<CommandArgumentCreateDTO>
-  implements ICommandArgument
-{
+export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
   @Length(3, 50)
   name: string;
@@ -176,19 +158,12 @@ export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
   msg: string;
 }
 
-export class CommandService extends TakaroService<
-  CommandModel,
-  CommandOutputDTO,
-  CommandCreateDTO,
-  CommandUpdateDTO
-> {
+export class CommandService extends TakaroService<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
   get repo() {
     return new CommandRepo(this.domainId);
   }
 
-  async find(
-    filters: ITakaroQuery<CommandOutputDTO>
-  ): Promise<PaginatedOutput<CommandOutputDTO>> {
+  async find(filters: ITakaroQuery<CommandOutputDTO>): Promise<PaginatedOutput<CommandOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -212,17 +187,12 @@ export class CommandService extends TakaroService<
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(
-      await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd })
-    );
+    const created = await this.repo.create(await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd }));
 
     if (item.arguments) {
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(
-            created.id,
-            await new CommandArgumentCreateDTO().construct(a)
-          );
+          return this.createArgument(created.id, await new CommandArgumentCreateDTO().construct(a));
         })
       );
     }
@@ -264,10 +234,7 @@ export class CommandService extends TakaroService<
       // Create new args
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(
-            id,
-            await new CommandArgumentCreateDTO().construct(a)
-          );
+          return this.createArgument(id, await new CommandArgumentCreateDTO().construct(a));
         })
       );
     }
@@ -282,9 +249,7 @@ export class CommandService extends TakaroService<
   }
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
-    const prefix = await new SettingsService(this.domainId, gameServerId).get(
-      SETTINGS_KEYS.commandPrefix
-    );
+    const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
     if (!chatMessage.msg.startsWith(prefix)) {
       // Message doesn't start with configured prefix
       // Ignore it
@@ -293,15 +258,10 @@ export class CommandService extends TakaroService<
 
     const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
 
-    const triggeredCommands = await this.repo.getTriggeredCommands(
-      commandName,
-      gameServerId
-    );
+    const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
 
     if (triggeredCommands.length) {
-      this.log.debug(
-        `Found ${triggeredCommands.length} commands that match the event`
-      );
+      this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
 
       if (!chatMessage.player) {
         this.log.error('Chat message does not have a player attached to it');
@@ -311,10 +271,7 @@ export class CommandService extends TakaroService<
       const gameServerService = new GameServerService(this.domainId);
       const playerService = new PlayerService(this.domainId);
 
-      const resolvedPlayer = await playerService.resolveRef(
-        chatMessage.player,
-        gameServerId
-      );
+      const resolvedPlayer = await playerService.resolveRef(chatMessage.player, gameServerId);
 
       const playerLocation = await (
         await gameServerService.getGame(gameServerId)
@@ -331,10 +288,7 @@ export class CommandService extends TakaroService<
               ...chatMessage.player,
               location: playerLocation,
             },
-            module: await gameServerService.getModuleInstallation(
-              gameServerId,
-              c.moduleId
-            ),
+            module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
           },
         }))
       );
@@ -370,10 +324,7 @@ export class CommandService extends TakaroService<
 
   async trigger(gameServerId: string, triggered: CommandTriggerDTO) {
     const gameServerService = new GameServerService(this.domainId);
-    const player = await gameServerService.getPlayer(
-      gameServerId,
-      triggered.player
-    );
+    const player = await gameServerService.getPlayer(gameServerId, triggered.player);
 
     if (!player) throw new errors.NotFoundError('Player not found');
 

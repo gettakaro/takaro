@@ -1,9 +1,5 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import {
-  IModuleTestsSetupData,
-  modulesTestSetup,
-  sorter,
-} from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Help command';
@@ -22,15 +18,12 @@ const tests = [
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/help',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/help',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(3);
       const sortedEvents = (await events).sort(sorter);
@@ -39,9 +32,7 @@ const tests = [
       expect(sortedEvents[1].data.msg).to.be.eq(
         'help: The text you are reading right now, displays information about commands'
       );
-      expect(sortedEvents[2].data.msg).to.be.eq(
-        'ping: Replies with pong, useful for testing if the connection works'
-      );
+      expect(sortedEvents[2].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -61,15 +52,12 @@ const tests = [
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 7);
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/help',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/help',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(7);
       const sortedEvents = (await events).sort(sorter);
@@ -79,18 +67,10 @@ const tests = [
       expect(sortedEvents[2].data.msg).to.be.eq(
         'help: The text you are reading right now, displays information about commands'
       );
-      expect(sortedEvents[3].data.msg).to.be.eq(
-        'ping: Replies with pong, useful for testing if the connection works'
-      );
-      expect(sortedEvents[4].data.msg).to.be.eq(
-        'settp: Sets a location to teleport to'
-      );
-      expect(sortedEvents[5].data.msg).to.be.eq(
-        'teleport: Teleports to one of your set locations'
-      );
-      expect(sortedEvents[6].data.msg).to.be.eq(
-        'tplist: Lists all your set locations'
-      );
+      expect(sortedEvents[3].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
+      expect(sortedEvents[4].data.msg).to.be.eq('settp: Sets a location to teleport to');
+      expect(sortedEvents[5].data.msg).to.be.eq('teleport: Teleports to one of your set locations');
+      expect(sortedEvents[6].data.msg).to.be.eq('tplist: Lists all your set locations');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -108,22 +88,17 @@ const tests = [
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/help ping',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/help ping',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
       const sortedEvents = (await events).sort(sorter);
 
-      expect(sortedEvents[0].data.msg).to.be.eq(
-        'ping: Replies with pong, useful for testing if the connection works'
-      );
+      expect(sortedEvents[0].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -141,15 +116,12 @@ const tests = [
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/help foobar',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/help foobar',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(

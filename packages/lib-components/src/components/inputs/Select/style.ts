@@ -34,8 +34,7 @@ export const SelectButton = styled.div<{
   text-transform: capitalize;
 
   &:focus {
-    border-color: ${({ theme, hasError }) =>
-      hasError ? theme.colors.error : theme.colors.primary};
+    border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   }
 
   & > div {

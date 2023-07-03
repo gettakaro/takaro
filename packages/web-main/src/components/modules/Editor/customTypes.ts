@@ -16,8 +16,7 @@ export function handleCustomTypes(monaco: Monaco) {
   var libUri = 'file:///node_modules/@takaro/helpers';
 
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-  const compilerOptions =
-    monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
+  const compilerOptions = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
 
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     ...compilerOptions,
@@ -48,11 +47,5 @@ export function handleCustomTypes(monaco: Monaco) {
 
   monaco.languages.typescript.typescriptDefaults.setExtraLibs(extraLibs);
 
-  extraLibs.forEach((lib) =>
-    monaco.editor.createModel(
-      lib.content,
-      'typescript',
-      monaco.Uri.parse(lib.libUri)
-    )
-  );
+  extraLibs.forEach((lib) => monaco.editor.createModel(lib.content, 'typescript', monaco.Uri.parse(lib.libUri)));
 }

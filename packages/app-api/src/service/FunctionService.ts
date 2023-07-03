@@ -41,9 +41,7 @@ export class FunctionService extends TakaroService<
     return new FunctionRepo(this.domainId);
   }
 
-  find(
-    filters: ITakaroQuery<FunctionOutputDTO>
-  ): Promise<PaginatedOutput<FunctionOutputDTO>> {
+  find(filters: ITakaroQuery<FunctionOutputDTO>): Promise<PaginatedOutput<FunctionOutputDTO>> {
     return this.repo.find(filters);
   }
 

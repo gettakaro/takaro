@@ -60,18 +60,11 @@ export class VariablesService extends TakaroService<
   VariableCreateDTO,
   VariableUpdateDTO
 > {
-  get repo(): ITakaroRepo<
-    VariablesModel,
-    VariableOutputDTO,
-    VariableCreateDTO,
-    VariableUpdateDTO
-  > {
+  get repo(): ITakaroRepo<VariablesModel, VariableOutputDTO, VariableCreateDTO, VariableUpdateDTO> {
     return new VariableRepo(this.domainId);
   }
 
-  async find(
-    filters: ITakaroQuery<VariableOutputDTO>
-  ): Promise<PaginatedOutput<VariableOutputDTO>> {
+  async find(filters: ITakaroQuery<VariableOutputDTO>): Promise<PaginatedOutput<VariableOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -83,10 +76,7 @@ export class VariablesService extends TakaroService<
     return this.repo.create(item);
   }
 
-  async update(
-    id: string,
-    item: VariableUpdateDTO
-  ): Promise<VariableOutputDTO> {
+  async update(id: string, item: VariableUpdateDTO): Promise<VariableOutputDTO> {
     return this.repo.update(id, item);
   }
 

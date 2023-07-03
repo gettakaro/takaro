@@ -28,8 +28,7 @@ export const Default = styled.button<{
   }
   &:hover {
     background-position: right center;
-    background-color: ${({ theme, color }) =>
-      lighten(0.1, theme.colors[color])};
+    background-color: ${({ theme, color }) => lighten(0.1, theme.colors[color])};
   }
 
   span {
@@ -58,8 +57,7 @@ export const Default = styled.button<{
   }
 
   svg {
-    display: ${({ icon, isLoading }): string =>
-      icon || isLoading ? 'block' : 'none'};
+    display: ${({ icon, isLoading }): string => (icon || isLoading ? 'block' : 'none')};
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     fill: ${({ theme, color }) => {
       switch (color) {
@@ -113,8 +111,7 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
   &:hover {
     background-position: right center;
     background-color: ${({ theme, color }) => shade(0.65, theme.colors[color])};
-    border-color: ${({ theme, color }): string =>
-      lighten(0.1, theme.colors[color])};
+    border-color: ${({ theme, color }): string => lighten(0.1, theme.colors[color])};
   }
 
   &:disabled {

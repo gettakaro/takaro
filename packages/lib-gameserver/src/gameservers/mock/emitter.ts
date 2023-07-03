@@ -19,10 +19,7 @@ export class MockEmitter extends TakaroEmitter {
     this.io.offAny(this.scopedListener);
   }
 
-  private listener(
-    event: keyof IEventMap,
-    args: Parameters<IEventMap[keyof IEventMap]>[0]
-  ) {
+  private listener(event: keyof IEventMap, args: Parameters<IEventMap[keyof IEventMap]>[0]) {
     log.debug(`Transmitting event ${event}`);
     this.emit(event, args);
   }

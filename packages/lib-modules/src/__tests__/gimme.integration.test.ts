@@ -1,8 +1,5 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import {
-  IModuleTestsSetupData,
-  modulesTestSetup,
-} from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'gimme suite';
@@ -28,20 +25,15 @@ const tests = [
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/gimme',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/gimme',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(
-        /You received (apple|banana|orange)/
-      );
+      expect((await events)[0].data.msg).to.match(/You received (apple|banana|orange)/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -65,20 +57,15 @@ const tests = [
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.LOG_LINE);
 
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/gimme',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/gimme',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(
-        /\[🗨️ Chat\] Server:  hello from test/
-      );
+      expect((await events)[0].data.msg).to.match(/\[🗨️ Chat\] Server:  hello from test/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -102,20 +89,15 @@ const tests = [
       await eventAwaiter.connect(this.client);
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
-      await this.client.command.commandControllerTrigger(
-        this.setupData.gameserver.id,
-        {
-          msg: '/gimme',
-          player: {
-            gameId: '1',
-          },
-        }
-      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/gimme',
+        player: {
+          gameId: '1',
+        },
+      });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(
-        /No items or commands configured/
-      );
+      expect((await events)[0].data.msg).to.match(/No items or commands configured/);
     },
   }),
 ];

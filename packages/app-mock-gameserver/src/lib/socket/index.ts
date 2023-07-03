@@ -75,9 +75,7 @@ let cachedSocketServer: SocketServer | null = null;
 export const getSocketServer = (app?: HttpServer) => {
   if (!cachedSocketServer) {
     if (!app) {
-      logger('getSocketServer').error(
-        'Socket server not initialized, must provide HttpServer instance'
-      );
+      logger('getSocketServer').error('Socket server not initialized, must provide HttpServer instance');
       throw new errors.InternalServerError();
     }
     cachedSocketServer = new SocketServer(app);

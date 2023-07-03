@@ -31,18 +31,13 @@ async function getDomainClient(domainId: string) {
 
 async function getGameServer(domainId: string, gameServerId: string) {
   const client = await getDomainClient(domainId);
-  const gameServerRes = await client.gameserver.gameServerControllerGetOne(
-    gameServerId
-  );
+  const gameServerRes = await client.gameserver.gameServerControllerGetOne(gameServerId);
   return gameServerRes.data.data;
 }
 
 class GameServerManager {
   private log = logger('GameServerManager');
-  private emitterMap = new Map<
-    string,
-    { domainId: string; emitter: TakaroEmitter }
-  >();
+  private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter }>();
   private eventsQueue = queueService.queues.events.queue;
 
   async init() {
@@ -50,8 +45,7 @@ class GameServerManager {
     const domains = await takaro.domain.domainControllerSearch();
     for (const domain of domains.data.data) {
       const client = await getDomainClient(domain.id);
-      const gameServersRes =
-        await client.gameserver.gameServerControllerSearch();
+      const gameServersRes = await client.gameserver.gameServerControllerSearch();
 
       try {
         await Promise.allSettled(
@@ -72,10 +66,7 @@ class GameServerManager {
     const gameServer = await getGameServer(domainId, gameServerId);
 
     const emitter = (
-      await getGame(
-        gameServer.type,
-        gameServer.connectionInfo as Record<string, unknown>
-      )
+      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>)
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
@@ -92,9 +83,7 @@ class GameServerManager {
       this.emitterMap.delete(id);
       this.log.info(`Removed game server ${id}`);
     } else {
-      this.log.warn(
-        'Tried to remove a GameServer from manager which does not exist'
-      );
+      this.log.warn('Tried to remove a GameServer from manager which does not exist');
     }
   }
 
@@ -103,11 +92,7 @@ class GameServerManager {
     await this.add(domainId, gameServerId);
   }
 
-  private attachListeners(
-    domainId: string,
-    gameServerId: string,
-    emitter: TakaroEmitter
-  ) {
+  private attachListeners(domainId: string, gameServerId: string, emitter: TakaroEmitter) {
     emitter.on('error', (error) => {
       this.log.error('Error from game server', error);
     });
@@ -132,21 +117,15 @@ class GameServerManager {
       });
     });
 
-    emitter.on(
-      GameEvents.PLAYER_DISCONNECTED,
-      async (playerDisconnectedEvent) => {
-        this.log.debug(
-          'Received a player disconnected event',
-          playerDisconnectedEvent
-        );
-        await this.eventsQueue.add({
-          type: GameEvents.PLAYER_DISCONNECTED,
-          event: playerDisconnectedEvent,
-          domainId,
-          gameServerId,
-        });
-      }
-    );
+    emitter.on(GameEvents.PLAYER_DISCONNECTED, async (playerDisconnectedEvent) => {
+      this.log.debug('Received a player disconnected event', playerDisconnectedEvent);
+      await this.eventsQueue.add({
+        type: GameEvents.PLAYER_DISCONNECTED,
+        event: playerDisconnectedEvent,
+        domainId,
+        gameServerId,
+      });
+    });
 
     emitter.on(GameEvents.CHAT_MESSAGE, async (chatMessage) => {
       this.log.debug('Received a chatMessage event', chatMessage);

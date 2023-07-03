@@ -12,6 +12,4 @@ interface SelectContextValue {
   dataRef: ContextData;
 }
 
-export const SelectContext = createContext<SelectContextValue>(
-  {} as SelectContextValue
-);
+export const SelectContext = createContext<SelectContextValue>({} as SelectContextValue);

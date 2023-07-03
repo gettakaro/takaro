@@ -36,13 +36,7 @@ export class Config<T extends IBaseConfig> {
 
   // Thanks Diego :)
   // https://twitter.com/diegohaz/status/1309489079378219009
-  get<K extends Path<T>>(
-    arg: K
-  ): K extends null | undefined
-    ? T
-    : K extends Path<T>
-    ? PathValue<T, K>
-    : never {
+  get<K extends Path<T>>(arg: K): K extends null | undefined ? T : K extends Path<T> ? PathValue<T, K> : never {
     return this._config.get(arg);
   }
 

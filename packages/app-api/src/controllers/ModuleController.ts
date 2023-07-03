@@ -1,25 +1,9 @@
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import {
-  ModuleCreateDTO,
-  ModuleOutputDTO,
-  ModuleService,
-  ModuleUpdateDTO,
-} from '../service/ModuleService.js';
+import { ModuleCreateDTO, ModuleOutputDTO, ModuleService, ModuleUpdateDTO } from '../service/ModuleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -64,11 +48,7 @@ export class ModuleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(ModuleOutputArrayDTOAPI)
   @Post('/module/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: ModuleSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ModuleSearchInputDTO) {
     const service = new ModuleService(req.domainId);
     const result = await service.find({
       ...query,
@@ -93,35 +73,22 @@ export class ModuleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(ModuleOutputDTOAPI)
   @Post('/module')
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: ModuleCreateDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() data: ModuleCreateDTO) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(ModuleOutputDTOAPI)
   @Put('/module/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: ModuleUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: ModuleUpdateDTO) {
     const service = new ModuleService(req.domainId);
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/module/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

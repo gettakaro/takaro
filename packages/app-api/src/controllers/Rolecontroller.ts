@@ -8,18 +8,7 @@ import {
   RoleOutputDTO,
 } from '../service/RoleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -58,11 +47,7 @@ export class RoleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES]))
   @Post('/role/search')
   @ResponseSchema(RoleOutputArrayDTOAPI)
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: RoleSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: RoleSearchInputDTO) {
     const service = new RoleService(req.domainId);
     const result = await service.find({
       ...query,
@@ -87,24 +72,15 @@ export class RoleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
   @Post('/role')
   @ResponseSchema(RoleOutputDTOAPI)
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: RoleCreateInputDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() data: RoleCreateInputDTO) {
     const service = new RoleService(req.domainId);
-    return apiResponse(
-      await service.createWithPermissions(data, data.permissions)
-    );
+    return apiResponse(await service.createWithPermissions(data, data.permissions));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ROLES]))
   @ResponseSchema(RoleOutputDTOAPI)
   @Put('/role/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: RoleUpdateInputDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: RoleUpdateInputDTO) {
     const service = new RoleService(req.domainId);
     await service.setPermissions(params.id, data.permissions);
     return apiResponse(await service.update(params.id, data));

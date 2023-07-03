@@ -115,9 +115,7 @@ describe('TakaroEmitter', () => {
     const emitter = new ExtendedTakaroEmitter();
     const errorSpy = sandbox.spy();
 
-    await expect(emitter.foo()).to.eventually.be.rejectedWith(
-      'Unhandled error in TakaroEmitter'
-    );
+    await expect(emitter.foo()).to.eventually.be.rejectedWith('Unhandled error in TakaroEmitter');
 
     emitter.on('error', errorSpy);
 

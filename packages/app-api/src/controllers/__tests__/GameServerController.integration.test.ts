@@ -1,8 +1,5 @@
 import { integrationConfig, IntegrationTest } from '@takaro/test';
-import {
-  GameServerCreateDTOTypeEnum,
-  GameServerOutputDTO,
-} from '@takaro/apiclient';
+import { GameServerCreateDTOTypeEnum, GameServerOutputDTO } from '@takaro/apiclient';
 
 const group = 'GameServerController';
 
@@ -20,14 +17,10 @@ const tests = [
     snapshot: true,
     name: 'Get by ID',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
-      return this.client.gameserver.gameServerControllerGetOne(
-        this.setupData.id
-      );
+      return this.client.gameserver.gameServerControllerGetOne(this.setupData.id);
     },
     filteredFields: ['connectionInfo'],
   }),
@@ -45,22 +38,17 @@ const tests = [
     snapshot: true,
     name: 'Update',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
-      return this.client.gameserver.gameServerControllerUpdate(
-        this.setupData.id,
-        {
-          name: 'Test gameserver 2',
-          connectionInfo: JSON.stringify({
-            host: 'somewhere.else',
-            port: 9876,
-          }),
-          type: GameServerCreateDTOTypeEnum.Mock,
-        }
-      );
+      return this.client.gameserver.gameServerControllerUpdate(this.setupData.id, {
+        name: 'Test gameserver 2',
+        connectionInfo: JSON.stringify({
+          host: 'somewhere.else',
+          port: 9876,
+        }),
+        type: GameServerCreateDTOTypeEnum.Mock,
+      });
     },
   }),
   new IntegrationTest<GameServerOutputDTO>({
@@ -68,14 +56,10 @@ const tests = [
     snapshot: true,
     name: 'Delete',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
-      return this.client.gameserver.gameServerControllerRemove(
-        this.setupData.id
-      );
+      return this.client.gameserver.gameServerControllerRemove(this.setupData.id);
     },
   }),
   new IntegrationTest<GameServerOutputDTO>({
@@ -83,27 +67,19 @@ const tests = [
     snapshot: true,
     name: 'Get list of installed modules',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
-      const modules = (await this.client.module.moduleControllerSearch()).data
-        .data;
+      const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
       const utilsModule = modules.find((m) => m.name === 'utils');
       if (!utilsModule) {
         throw new Error('Utils module not found');
       }
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.id,
-        utilsModule.id
-      );
+      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.id, utilsModule.id);
 
-      return this.client.gameserver.gameServerControllerGetInstalledModules(
-        this.setupData.id
-      );
+      return this.client.gameserver.gameServerControllerGetInstalledModules(this.setupData.id);
     },
     filteredFields: ['gameserverId', 'moduleId'],
   }),

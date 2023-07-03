@@ -4,11 +4,7 @@ import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { HookEventTypes } from '@takaro/modules';
-import {
-  HookCreateDTO,
-  HookOutputDTO,
-  HookUpdateDTO,
-} from '../service/HookService.js';
+import { HookCreateDTO, HookOutputDTO, HookUpdateDTO } from '../service/HookService.js';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -34,12 +30,7 @@ export class HookModel extends TakaroModel {
   }
 }
 
-export class HookRepo extends ITakaroRepo<
-  HookModel,
-  HookOutputDTO,
-  HookCreateDTO,
-  HookUpdateDTO
-> {
+export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDTO, HookUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -61,9 +52,7 @@ export class HookRepo extends ITakaroRepo<
     }).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new HookOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new HookOutputDTO().construct(item))),
     };
   }
 
@@ -101,9 +90,7 @@ export class HookRepo extends ITakaroRepo<
 
   async update(id: string, data: HookUpdateDTO): Promise<HookOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('function');
+    const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
     return new HookOutputDTO().construct(item);
   }
@@ -113,11 +100,7 @@ export class HookRepo extends ITakaroRepo<
     await query.updateAndFetchById(id, { functionId });
   }
 
-  async getTriggeredHooks(
-    eventType: HookEventTypes,
-    msg: string,
-    gameServerId: string
-  ): Promise<HookOutputDTO[]> {
+  async getTriggeredHooks(eventType: HookEventTypes, msg: string, gameServerId: string): Promise<HookOutputDTO[]> {
     const { query } = await this.getModel();
 
     const hookIds: string[] = (
@@ -125,16 +108,8 @@ export class HookRepo extends ITakaroRepo<
         .select('hooks.id as hookId')
         .innerJoin('functions', 'hooks.functionId', 'functions.id')
         .innerJoin('modules', 'hooks.moduleId', 'modules.id')
-        .innerJoin(
-          'moduleAssignments',
-          'moduleAssignments.moduleId',
-          'modules.id'
-        )
-        .innerJoin(
-          'gameservers',
-          'moduleAssignments.gameserverId',
-          'gameservers.id'
-        )
+        .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
+        .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
         .where({
           'hooks.eventType': eventType,
           'gameservers.id': gameServerId,
@@ -144,9 +119,7 @@ export class HookRepo extends ITakaroRepo<
       // but we create a query that does NOT produce a Model
       .map((x) => x.hookId);
 
-    const hooksMatchingEvent = await Promise.all(
-      hookIds.map((id) => this.findOne(id))
-    );
+    const hooksMatchingEvent = await Promise.all(hookIds.map((id) => this.findOne(id)));
 
     return hooksMatchingEvent.filter((hook) => {
       if (!hook.regex) return true;

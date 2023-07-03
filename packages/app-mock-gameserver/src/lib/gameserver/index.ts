@@ -25,10 +25,7 @@ import { config } from '../../config.js';
 import { playScenario } from './scenario.js';
 
 // Welcome to omit-hell 😇
-export type IMockGameServer = Omit<
-  Omit<Omit<IGameServer, 'getEventEmitter'>, 'connectionInfo'>,
-  'testReachability'
->;
+export type IMockGameServer = Omit<Omit<Omit<IGameServer, 'getEventEmitter'>, 'connectionInfo'>, 'testReachability'>;
 
 const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
 
@@ -45,9 +42,7 @@ class MockGameserver implements IMockGameServer {
   }, config.get('mockserver.scenarioInterval'));
 
   async ensurePlayersPersisted() {
-    const existingPlayers = await (
-      await this.redis
-    ).keys(getRedisKey('player:*'));
+    const existingPlayers = await (await this.redis).keys(getRedisKey('player:*'));
 
     if (existingPlayers.length > 0) {
       return;
@@ -76,9 +71,7 @@ class MockGameserver implements IMockGameServer {
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
-    const player = await (
-      await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+    const player = await (await this.redis).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
       return null;
@@ -112,12 +105,8 @@ class MockGameserver implements IMockGameServer {
     );
   }
 
-  async getPlayerLocation(
-    playerRef: IPlayerReferenceDTO
-  ): Promise<IPosition | null> {
-    const player = await (
-      await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+  async getPlayerLocation(playerRef: IPlayerReferenceDTO): Promise<IPosition | null> {
+    const player = await (await this.redis).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
     if (!player) {
       return null;
     }
@@ -131,8 +120,7 @@ class MockGameserver implements IMockGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const output = await new CommandOutput().construct({
-      rawResult:
-        'Unknown command (Command not implemented yet in mock game server 👼)',
+      rawResult: 'Unknown command (Command not implemented yet in mock game server 👼)',
       success: false,
     });
 
@@ -168,26 +156,19 @@ class MockGameserver implements IMockGameServer {
 
     if (rawCommand.startsWith('say')) {
       const message = rawCommand.replace('say ', '');
-      await this.sendMessage(
-        message,
-        await new IMessageOptsDTO().construct({})
-      );
+      await this.sendMessage(message, await new IMessageOptsDTO().construct({}));
       output.rawResult = `Sent message: ${message}`;
       output.success = true;
     }
 
-    await this.sendLog(
-      `${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`
-    );
+    await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
 
     return output;
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
     const options = { ...opts };
-    const fullMessage = `[🗨️ Chat] Server: ${
-      options.recipient ? '[DM]' : ''
-    } ${message}`;
+    const fullMessage = `[🗨️ Chat] Server: ${options.recipient ? '[DM]' : ''} ${message}`;
 
     this.socketServer.io.emit(
       GameEvents.CHAT_MESSAGE,
@@ -198,15 +179,8 @@ class MockGameserver implements IMockGameServer {
     await this.sendLog(fullMessage);
   }
 
-  async teleportPlayer(
-    playerRef: IPlayerReferenceDTO,
-    x: number,
-    y: number,
-    z: number
-  ) {
-    const player = await (
-      await this.redis
-    ).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
+  async teleportPlayer(playerRef: IPlayerReferenceDTO, x: number, y: number, z: number) {
+    const player = await (await this.redis).hGetAll(getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
       throw new errors.NotFoundError('Player not found');
@@ -216,17 +190,12 @@ class MockGameserver implements IMockGameServer {
     player.positionY = y.toString();
     player.positionZ = z.toString();
 
-    await (
-      await this.redis
-    ).hSet(getRedisKey(`player:${playerRef.gameId}`), player);
+    await (await this.redis).hSet(getRedisKey(`player:${playerRef.gameId}`), player);
 
     await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
   }
 
-  async kickPlayer(
-    playerRef: IPlayerReferenceDTO,
-    reason: string
-  ): Promise<void> {
+  async kickPlayer(playerRef: IPlayerReferenceDTO, reason: string): Promise<void> {
     const player = await this.getPlayer(playerRef);
 
     if (!player) {
@@ -266,16 +235,11 @@ class MockGameserver implements IMockGameServer {
     if (options.expiresAt) {
       const expireTimestamp = new Date(options.expiresAt).valueOf();
 
-      (await this.redis).set(
-        getRedisKey(`ban:${options.player.gameId}`),
-        JSON.stringify(banDto),
-        { EXAT: expireTimestamp }
-      );
+      (await this.redis).set(getRedisKey(`ban:${options.player.gameId}`), JSON.stringify(banDto), {
+        EXAT: expireTimestamp,
+      });
     } else {
-      (await this.redis).set(
-        getRedisKey(`ban:${options.player.gameId}`),
-        JSON.stringify(banDto)
-      );
+      (await this.redis).set(getRedisKey(`ban:${options.player.gameId}`), JSON.stringify(banDto));
     }
   }
 

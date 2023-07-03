@@ -34,9 +34,7 @@ describe('API client', () => {
       expect(domainsRes.data.data).to.have.lengthOf(1);
       expect(domainsRes.data.data[0].name).to.equal(TEST_DOMAIN_NAME);
 
-      await adminClient.domain.domainControllerRemove(
-        domain.data.data.createdDomain.id
-      );
+      await adminClient.domain.domainControllerRemove(domain.data.data.createdDomain.id);
     });
   });
 });

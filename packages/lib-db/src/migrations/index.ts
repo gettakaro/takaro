@@ -21,15 +21,13 @@ class TakaroMigrationSource {
     const migrations = files
       .filter((file) => file.endsWith('.js'))
       .map((file) => {
-        return this.dynamicImport(`${folderPath}/${file}`).then(
-          (migration: IMigration) => {
-            return {
-              name: file,
-              up: migration.up,
-              down: migration.down,
-            };
-          }
-        );
+        return this.dynamicImport(`${folderPath}/${file}`).then((migration: IMigration) => {
+          return {
+            name: file,
+            up: migration.up,
+            down: migration.down,
+          };
+        });
       });
     return Promise.all(migrations);
   }

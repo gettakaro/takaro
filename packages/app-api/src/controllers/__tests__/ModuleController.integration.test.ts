@@ -84,13 +84,10 @@ const tests = [
     test: async function () {
       let res;
       try {
-        res = await this.client.module.moduleControllerUpdate(
-          this.setupData.id,
-          {
-            name: 'Updated module',
-            description: 'Updated description',
-          }
-        );
+        res = await this.client.module.moduleControllerUpdate(this.setupData.id, {
+          name: 'Updated module',
+          description: 'Updated description',
+        });
         throw new Error('Should have errored');
       } catch (error) {
         if (!isAxiosError(error)) {
@@ -98,12 +95,8 @@ const tests = [
         } else {
           res = error.response;
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.code).to.equal(
-            'BadRequestError'
-          );
-          expect(error.response?.data.meta.error.message).to.equal(
-            'Cannot modify builtin modules'
-          );
+          expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+          expect(error.response?.data.meta.error.message).to.equal('Cannot modify builtin modules');
         }
       }
 
@@ -132,9 +125,7 @@ const tests = [
     test: async function () {
       let res;
       try {
-        res = await this.client.module.moduleControllerRemove(
-          this.setupData.id
-        );
+        res = await this.client.module.moduleControllerRemove(this.setupData.id);
         throw new Error('Should have errored');
       } catch (error) {
         if (!isAxiosError(error)) {
@@ -142,12 +133,8 @@ const tests = [
         } else {
           res = error.response;
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.code).to.equal(
-            'BadRequestError'
-          );
-          expect(error.response?.data.meta.error.message).to.equal(
-            'Cannot modify builtin modules'
-          );
+          expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+          expect(error.response?.data.meta.error.message).to.equal('Cannot modify builtin modules');
         }
       }
 
@@ -174,13 +161,10 @@ const tests = [
         } else {
           res = error.response;
           expect(error.response?.status).to.equal(400);
-          expect(error.response?.data.meta.error.code).to.equal(
-            'ValidationError'
+          expect(error.response?.data.meta.error.code).to.equal('ValidationError');
+          expect(error.response?.data.meta.error.details[0].constraints.whitelistValidation).to.equal(
+            'property builtin should not exist'
           );
-          expect(
-            error.response?.data.meta.error.details[0].constraints
-              .whitelistValidation
-          ).to.equal('property builtin should not exist');
         }
       }
 

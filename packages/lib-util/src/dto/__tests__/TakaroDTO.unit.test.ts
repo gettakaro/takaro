@@ -34,18 +34,14 @@ describe('TakaroDTO', () => {
     expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
       new TestDTO().construct({ foo: ['a', 'b'], bar: 2 })
-    ).to.eventually.throw(
-      'property foo has failed the following constraints: isString'
-    );
+    ).to.eventually.throw('property foo has failed the following constraints: isString');
   });
 
   it('Does not allow extra properties', async () => {
     expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
       new TestDTO().construct({ foo: 'foo', bar: 11, baz: 'baz' })
-    ).to.eventually.throw(
-      'property baz has failed the following constraints: whitelistValidation'
-    );
+    ).to.eventually.throw('property baz has failed the following constraints: whitelistValidation');
   });
 
   it('.toJSON omits properties marked with exclude', async () => {

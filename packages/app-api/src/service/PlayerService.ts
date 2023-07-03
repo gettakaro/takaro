@@ -43,19 +43,12 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   name!: string;
 }
 
-export class PlayerService extends TakaroService<
-  PlayerModel,
-  PlayerOutputDTO,
-  PlayerCreateDTO,
-  PlayerUpdateDTO
-> {
+export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {
   get repo() {
     return new PlayerRepo(this.domainId);
   }
 
-  find(
-    filters: ITakaroQuery<PlayerOutputDTO>
-  ): Promise<PaginatedOutput<PlayerOutputDTO>> {
+  find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -82,11 +75,7 @@ export class PlayerService extends TakaroService<
     return this.repo.findGameAssociations(gameId);
   }
 
-  async insertAssociation(
-    gameId: string,
-    playerId: string,
-    gameServerId: string
-  ) {
+  async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
     return this.repo.insertAssociation(gameId, playerId, gameServerId);
   }
 
@@ -120,10 +109,7 @@ export class PlayerService extends TakaroService<
     }
   }
 
-  async resolveRef(
-    ref: IPlayerReferenceDTO,
-    gameserverId: string
-  ): Promise<PlayerOutputDTO> {
+  async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOutputDTO> {
     return this.repo.resolveRef(ref, gameserverId);
   }
 

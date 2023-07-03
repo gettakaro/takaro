@@ -5,8 +5,7 @@ export const QueryKeys = {
     reachability: (serverId: string) => `gameserver.${serverId}.reachability`,
     modules: {
       list: (serverId: string) => `gameserver.${serverId}.modules.list`,
-      id: (serverId: string, moduleId: string) =>
-        `gameserver.${serverId}.modules.${moduleId}`,
+      id: (serverId: string, moduleId: string) => `gameserver.${serverId}.modules.${moduleId}`,
     },
   },
   modules: {

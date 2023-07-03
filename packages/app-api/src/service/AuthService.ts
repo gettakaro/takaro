@@ -1,10 +1,6 @@
 import { DomainScoped } from '../lib/DomainScoped.js';
 import { ctx, errors, logger } from '@takaro/util';
-import {
-  UserOutputWithRolesDTO,
-  UserService,
-  UserUpdateAuthDTO,
-} from '../service/UserService.js';
+import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
@@ -14,10 +10,7 @@ import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import passport from 'passport';
 import { REST } from '@discordjs/rest';
-import {
-  Routes,
-  RESTGetAPICurrentUserGuildsResult,
-} from 'discord-api-types/v10';
+import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
 
@@ -120,24 +113,17 @@ export class AuthService extends DomainScoped {
         exp: Math.floor(Date.now() / 1000) + ms('5 days') / 1000,
       };
 
-      jwt.sign(
-        toSign,
-        config.get('auth.jwtSecret'),
-        { algorithm: 'HS256', issuer: 'takaro' },
-        (err, token) => {
-          if (err) {
-            reject(err);
-          }
-
-          if (!token) {
-            this.log.error(
-              'Token requested but no token came out of the sign method...'
-            );
-            return reject(new errors.UnauthorizedError());
-          }
-          resolve(token);
+      jwt.sign(toSign, config.get('auth.jwtSecret'), { algorithm: 'HS256', issuer: 'takaro' }, (err, token) => {
+        if (err) {
+          reject(err);
         }
-      );
+
+        if (!token) {
+          this.log.error('Token requested but no token came out of the sign method...');
+          return reject(new errors.UnauthorizedError());
+        }
+        resolve(token);
+      });
     });
   }
 
@@ -148,25 +134,18 @@ export class AuthService extends DomainScoped {
         return reject(new errors.UnauthorizedError());
       }
 
-      jwt.verify(
-        token,
-        config.get('auth.jwtSecret'),
-        { issuer: 'takaro' },
-        (err, decoded) => {
-          if (err) {
-            log.warn(err);
-            reject(new errors.UnauthorizedError());
-          } else {
-            resolve(decoded as IJWTPayload);
-          }
+      jwt.verify(token, config.get('auth.jwtSecret'), { issuer: 'takaro' }, (err, decoded) => {
+        if (err) {
+          log.warn(err);
+          reject(new errors.UnauthorizedError());
+        } else {
+          resolve(decoded as IJWTPayload);
         }
-      );
+      });
     });
   }
 
-  static async getUserFromReq(
-    req: AuthenticatedRequest
-  ): Promise<UserOutputWithRolesDTO | null> {
+  static async getUserFromReq(req: AuthenticatedRequest): Promise<UserOutputWithRolesDTO | null> {
     let user: UserOutputWithRolesDTO | null = null;
 
     // Either the user is authenticated via the IDP or via a JWT (api client)
@@ -206,11 +185,7 @@ export class AuthService extends DomainScoped {
   }
 
   static getAuthMiddleware(permissions: PERMISSIONS[]) {
-    return async (
-      req: AuthenticatedRequest,
-      _res: Response,
-      next: NextFunction
-    ) => {
+    return async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       try {
         const user = await this.getUserFromReq(req);
 
@@ -224,13 +199,9 @@ export class AuthService extends DomainScoped {
           return [...acc, ...role.permissions.map((c) => c.permission)];
         }, [] as PERMISSIONS[]);
 
-        const hasAllPermissions = permissions.every((permission) =>
-          allUserPermissions.includes(permission)
-        );
+        const hasAllPermissions = permissions.every((permission) => allUserPermissions.includes(permission));
 
-        const userHasRootPermission = allUserPermissions.includes(
-          PERMISSIONS.ROOT
-        );
+        const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
 
         if (!hasAllPermissions && !userHasRootPermission) {
           log.warn(`User ${user.id} does not have all permissions`);
@@ -278,15 +249,11 @@ export class AuthService extends DomainScoped {
                 authPrefix: 'Bearer',
               }).setToken(accessToken);
 
-              const userInfo = (await rest.get(
-                Routes.user('@me')
-              )) as DiscordUserInfo;
+              const userInfo = (await rest.get(Routes.user('@me'))) as DiscordUserInfo;
 
               if (!userInfo.verified) {
                 return cb(
-                  new errors.BadRequestError(
-                    'You must verify your Discord account before you can use it to log in.'
-                  )
+                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.')
                 );
               }
 
@@ -304,14 +271,8 @@ export class AuthService extends DomainScoped {
                 })
               );
 
-              if (
-                user.roles.find((r) =>
-                  r.permissions.find((p) => p.permission === PERMISSIONS.ROOT)
-                )
-              ) {
-                const guilds = (await rest.get(
-                  Routes.userGuilds()
-                )) as RESTGetAPICurrentUserGuildsResult;
+              if (user.roles.find((r) => r.permissions.find((p) => p.permission === PERMISSIONS.ROOT))) {
+                const guilds = (await rest.get(Routes.userGuilds())) as RESTGetAPICurrentUserGuildsResult;
                 const discordService = new DiscordService(req.domainId);
                 await discordService.syncGuilds(guilds);
               }

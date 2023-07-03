@@ -1,9 +1,4 @@
-import {
-  CommandOutputDTO,
-  CronJobOutputDTO,
-  FunctionOutputDTO,
-  HookOutputDTO,
-} from '@takaro/apiclient';
+import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { Dispatch, createContext } from 'react';
 
 export interface IModuleContext {

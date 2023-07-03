@@ -10,11 +10,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from '@takaro/db';
 
 interface ServerToClientEvents {
-  gameEvent: (
-    gameserverId: string,
-    type: HookEventTypes,
-    data: EventMapping[HookEventTypes]
-  ) => void;
+  gameEvent: (gameserverId: string, type: HookEventTypes, data: EventMapping[HookEventTypes]) => void;
   pong: () => void;
 }
 
@@ -32,20 +28,10 @@ interface SocketData {
 }
 
 class SocketServer {
-  public io: Server<
-    ClientToServerEvents,
-    ServerToClientEvents,
-    InterServerEvents,
-    SocketData
-  >;
+  public io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
   private log = logger('io');
   constructor(app: HttpServer) {
-    this.io = new Server<
-      ClientToServerEvents,
-      ServerToClientEvents,
-      InterServerEvents,
-      SocketData
-    >(app, {
+    this.io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(app, {
       cors: {
         credentials: true,
         origin: (origin: string | undefined, callback: CallableFunction) => {
@@ -65,42 +51,19 @@ class SocketServer {
 
     this.io.use(
       (
-        socket: Socket<
-          ClientToServerEvents,
-          ServerToClientEvents,
-          InterServerEvents,
-          SocketData
-        >,
+        socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
         next: (err?: Error | undefined) => void
       ) => this.logMiddleware(socket, next)
     );
 
-    const authMiddleware = ctx.wrap(
-      'socket:auth',
-      AuthService.getAuthMiddleware([])
-    );
-    this.io.engine.use(
-      (
-        req: IncomingMessage,
-        res: ServerResponse<IncomingMessage>,
-        next: NextFunction
-      ) => {
-        return authMiddleware(
-          req as AuthenticatedRequest,
-          res as Response,
-          next
-        );
-      }
-    );
+    const authMiddleware = ctx.wrap('socket:auth', AuthService.getAuthMiddleware([]));
+    this.io.engine.use((req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: NextFunction) => {
+      return authMiddleware(req as AuthenticatedRequest, res as Response, next);
+    });
 
     this.io.use(
       (
-        socket: Socket<
-          ClientToServerEvents,
-          ServerToClientEvents,
-          InterServerEvents,
-          SocketData
-        >,
+        socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
         next: (err?: Error | undefined) => void
       ) => this.routerMiddleware(socket, next)
     );
@@ -130,12 +93,7 @@ class SocketServer {
   }
 
   private async routerMiddleware(
-    socket: Socket<
-      ClientToServerEvents,
-      ServerToClientEvents,
-      InterServerEvents,
-      SocketData
-    >,
+    socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
     next: (err?: Error | undefined) => void
   ) {
     try {
@@ -153,12 +111,7 @@ class SocketServer {
   }
 
   private logMiddleware(
-    socket: Socket<
-      ClientToServerEvents,
-      ServerToClientEvents,
-      InterServerEvents,
-      SocketData
-    >,
+    socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
     next: (err?: Error | undefined) => void
   ) {
     this.log.info('socket connected', {
@@ -176,9 +129,7 @@ let cachedSocketServer: SocketServer | null = null;
 export const getSocketServer = async (app?: HttpServer) => {
   if (!cachedSocketServer) {
     if (!app) {
-      logger('getSocketServer').error(
-        'Socket server not initialized, must provide HttpServer instance'
-      );
+      logger('getSocketServer').error('Socket server not initialized, must provide HttpServer instance');
       throw new errors.InternalServerError();
     }
     cachedSocketServer = new SocketServer(app);

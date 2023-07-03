@@ -14,12 +14,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import {
-  FunctionCreateDTO,
-  FunctionOutputDTO,
-  FunctionService,
-  FunctionUpdateDTO,
-} from './FunctionService.js';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
@@ -132,19 +127,12 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   msg: string;
 }
 
-export class HookService extends TakaroService<
-  HookModel,
-  HookOutputDTO,
-  HookCreateDTO,
-  HookUpdateDTO
-> {
+export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCreateDTO, HookUpdateDTO> {
   get repo() {
     return new HookRepo(this.domainId);
   }
 
-  async find(
-    filters: ITakaroQuery<HookOutputDTO>
-  ): Promise<PaginatedOutput<HookOutputDTO>> {
+  async find(filters: ITakaroQuery<HookOutputDTO>): Promise<PaginatedOutput<HookOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -164,15 +152,11 @@ export class HookService extends TakaroService<
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(
-        await new FunctionCreateDTO()
-      );
+      const newFn = await functionsService.create(await new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(
-      await new HookCreateDTO().construct({ ...item, function: fnIdToAdd })
-    );
+    const created = await this.repo.create(await new HookCreateDTO().construct({ ...item, function: fnIdToAdd }));
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -210,16 +194,10 @@ export class HookService extends TakaroService<
     this.log.debug('Handling hooks', { eventData });
     const gameServerService = new GameServerService(this.domainId);
 
-    const triggeredHooks = await this.repo.getTriggeredHooks(
-      eventData.type,
-      eventData.msg,
-      gameServerId
-    );
+    const triggeredHooks = await this.repo.getTriggeredHooks(eventData.type, eventData.msg, gameServerId);
 
     if (triggeredHooks.length) {
-      this.log.debug(
-        `Found ${triggeredHooks.length} hooks that match the event`
-      );
+      this.log.debug(`Found ${triggeredHooks.length} hooks that match the event`);
 
       await Promise.all(
         triggeredHooks.map(async (hook) => {
@@ -227,10 +205,7 @@ export class HookService extends TakaroService<
             itemId: hook.id,
             data: {
               ...eventData,
-              module: await gameServerService.getModuleInstallation(
-                gameServerId,
-                hook.moduleId
-              ),
+              module: await gameServerService.getModuleInstallation(gameServerId, hook.moduleId),
             },
             domainId: this.domainId,
             functionId: hook.function.id,
@@ -245,10 +220,7 @@ export class HookService extends TakaroService<
     let eventData: EventMapping[keyof EventMapping] | null = null;
     const gameServerService = new GameServerService(this.domainId);
 
-    const player = await gameServerService.getPlayer(
-      data.gameServerId,
-      data.player
-    );
+    const player = await gameServerService.getPlayer(data.gameServerId, data.player);
 
     if (!player) throw new errors.NotFoundError('Player not found');
 

@@ -21,10 +21,7 @@ export const validationSchema = z
       connectionInfo: z.object({
         host: z
           .string()
-          .regex(
-            IPV4_AND_PORT_REGEX,
-            'The provided value is not of the format ipv4:port'
-          )
+          .regex(IPV4_AND_PORT_REGEX, 'The provided value is not of the format ipv4:port')
           .nonempty('Host cannot not be empty'),
         adminUser: z.string().nonempty('Admin user cannot be empty'),
         adminToken: z.string().nonempty('Admin token cannot be empty'),
@@ -50,10 +47,7 @@ export const validationSchema = z
       connectionInfo: z.object({
         host: z.string().nonempty('Host cannot be empty'),
         eventInterval: z.number().min(500),
-        playerPoolSize: z
-          .number()
-          .max(200)
-          .nonnegative('Player pool size cannot be negative'),
+        playerPoolSize: z.number().max(200).nonnegative('Player pool size cannot be negative'),
       }),
     }),
   ])

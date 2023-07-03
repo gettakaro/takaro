@@ -68,10 +68,7 @@ export class VmClient {
     this.customAgent = new HttpAgent(socketPath, port);
 
     // TODO: find a better solution than a hardcoded IP
-    this.takaroURL =
-      config.get('mode') === 'development'
-        ? 'http://172.16.238.253:3000'
-        : config.get('takaro.url');
+    this.takaroURL = config.get('mode') === 'development' ? 'http://172.16.238.253:3000' : config.get('takaro.url');
   }
 
   private getHostAddress() {
@@ -152,9 +149,7 @@ export class VmClient {
 
     if (output.exit_code === 1) {
       this.log.error('Function returned an error', {
-        ...(this.log.isDebugEnabled()
-          ? { stderr: output.stderr, stdout: output.stdout }
-          : {}),
+        ...(this.log.isDebugEnabled() ? { stderr: output.stderr, stdout: output.stdout } : {}),
       });
     }
   }

@@ -21,18 +21,13 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  getPlayer: (
-    id: string,
-    callback: (e: Awaited<ReturnType<IMockGameServer['getPlayer']>>) => void
-  ) => Promise<void>;
+  getPlayer: (id: string, callback: (e: Awaited<ReturnType<IMockGameServer['getPlayer']>>) => void) => Promise<void>;
   teleportPlayer: (
     player: IPlayerReferenceDTO,
     x: number,
     y: number,
     z: number,
-    callback: (
-      e: Awaited<ReturnType<IMockGameServer['teleportPlayer']>>
-    ) => void
+    callback: (e: Awaited<ReturnType<IMockGameServer['teleportPlayer']>>) => void
   ) => Promise<void>;
   ping: (callback: (e: string) => void) => void;
 }
@@ -41,14 +36,6 @@ export interface InterServerEvents {
   ping: () => void;
 }
 
-export type MockServerSocket = Socket<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents
->;
+export type MockServerSocket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents>;
 
-export type MockServerSocketServer = Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents
->;
+export type MockServerSocketServer = Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents>;

@@ -1,10 +1,6 @@
 /* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
-import {
-  EventChatMessage,
-  EventPlayerConnected,
-  GameEvents,
-} from '@takaro/modules';
+import { EventChatMessage, EventPlayerConnected, GameEvents } from '@takaro/modules';
 import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
 
@@ -30,12 +26,8 @@ describe('7d2d event detection', () => {
     });
     expect(emitStub).to.have.been.calledTwice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(
-      GameEvents.PLAYER_CONNECTED
-    );
-    expect(
-      (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
-    ).to.deep.equal({
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '171',
@@ -54,12 +46,8 @@ describe('7d2d event detection', () => {
     });
     expect(emitStub).to.have.been.calledTwice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(
-      GameEvents.PLAYER_CONNECTED
-    );
-    expect(
-      (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
-    ).to.deep.equal({
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '171',
@@ -78,12 +66,8 @@ describe('7d2d event detection', () => {
     });
     expect(emitStub).to.have.been.calledTwice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(
-      GameEvents.PLAYER_CONNECTED
-    );
-    expect(
-      (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
-    ).to.deep.equal({
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Cata lysm',
       ping: undefined,
       gameId: '171',
@@ -103,12 +87,8 @@ describe('7d2d event detection', () => {
     });
     expect(emitStub).to.have.been.calledTwice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(
-      GameEvents.PLAYER_DISCONNECTED
-    );
-    expect(
-      (emitStub.getCalls()[0].args[1] as EventPlayerConnected).player
-    ).to.deep.equal({
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DISCONNECTED);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '171',
@@ -133,9 +113,7 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
 
-    expect(
-      (emitStub.getCalls()[0].args[1] as EventChatMessage).player
-    ).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventChatMessage).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '549',

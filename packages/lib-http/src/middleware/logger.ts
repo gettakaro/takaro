@@ -11,16 +11,10 @@ const log = logger('http');
  */
 export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware);
 
-async function loggingMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+async function loggingMiddleware(req: Request, res: Response, next: NextFunction) {
   const requestStartMs = Date.now();
 
-  const hideData = SUPPRESS_BODY_KEYWORDS.some((keyword) =>
-    (JSON.stringify(req.body) || '').includes(keyword)
-  );
+  const hideData = SUPPRESS_BODY_KEYWORDS.some((keyword) => (JSON.stringify(req.body) || '').includes(keyword));
 
   log.debug(`⬇️ ${req.method} ${req.originalUrl}`, {
     ip: req.ip,

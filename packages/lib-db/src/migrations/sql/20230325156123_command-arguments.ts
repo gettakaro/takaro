@@ -10,17 +10,9 @@ export async function up(knex: Knex): Promise<void> {
     table.string('defaultValue');
     table.smallint('position').notNullable();
 
-    table
-      .uuid('commandId')
-      .references('commands.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('commandId').references('commands.id').onDelete('CASCADE').notNullable();
 
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'commandId', 'domain']);
     table.unique(['position', 'commandId', 'domain']);

@@ -1,9 +1,5 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import {
-  ModuleOutputDTO,
-  GameServerOutputDTO,
-  HookCreateDTOEventTypeEnum,
-} from '@takaro/apiclient';
+import { ModuleOutputDTO, GameServerOutputDTO, HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const group = 'Module Assignments';
 
@@ -21,9 +17,7 @@ interface ISetupData {
   teleportsModule: ModuleOutputDTO;
 }
 
-const defaultSetup = async function (
-  this: IntegrationTest<ISetupData>
-): Promise<ISetupData> {
+const defaultSetup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
   const gameserver = await this.client.gameserver.gameServerControllerCreate({
@@ -102,11 +96,10 @@ const tests = [
         }
       );
 
-      const res =
-        await this.client.gameserver.gameServerControllerGetModuleInstallation(
-          this.setupData.gameserver.id,
-          this.setupData.teleportsModule.id
-        );
+      const res = await this.client.gameserver.gameServerControllerGetModuleInstallation(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
 
       expect(res.data.data.userConfig).to.deep.equal({
         maxTeleports: 42,
@@ -133,13 +126,9 @@ const tests = [
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
       });
 
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        mod.id,
-        {
-          userConfig: JSON.stringify({}),
-        }
-      );
+      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+        userConfig: JSON.stringify({}),
+      });
     },
     expectedStatus: 400,
     filteredFields: ['moduleId'],
@@ -163,18 +152,14 @@ const tests = [
 
       const hookName = createdHookRes.data.data.name;
 
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        mod.id,
-        {
-          userConfig: JSON.stringify({}),
-          systemConfig: JSON.stringify({
-            hooks: {
-              [`${hookName} Discord channel ID`]: '1234567890',
-            },
-          }),
-        }
-      );
+      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+        userConfig: JSON.stringify({}),
+        systemConfig: JSON.stringify({
+          hooks: {
+            [`${hookName} Discord channel ID`]: '1234567890',
+          },
+        }),
+      });
     },
     filteredFields: ['moduleId', 'gameserverId'],
   }),

@@ -2,12 +2,7 @@ import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
-import {
-  GameEvents,
-  EventPlayerConnected,
-  BaseGameEvent,
-  EventChatMessage,
-} from '@takaro/modules';
+import { GameEvents, EventPlayerConnected, BaseGameEvent, EventChatMessage } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
@@ -17,17 +12,11 @@ const log = logger('worker:events');
 
 export class EventsWorker extends TakaroWorker<IEventQueueData> {
   constructor() {
-    super(
-      config.get('queues.events.name'),
-      config.get('queues.events.concurrency'),
-      processJob
-    );
+    super(config.get('queues.events.name'), config.get('queues.events.concurrency'), processJob);
   }
 }
 
-function isConnectedEvent(
-  a: BaseGameEvent<unknown>
-): a is EventPlayerConnected {
+function isConnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerConnected {
   return a.type === GameEvents.PLAYER_CONNECTED;
 }
 

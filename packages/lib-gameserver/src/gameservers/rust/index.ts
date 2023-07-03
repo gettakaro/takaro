@@ -62,9 +62,7 @@ export class Rust implements IGameServer {
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    await this.executeConsoleCommand(
-      `inventory.giveto ${player.gameId} ${item.name} ${item.amount}`
-    );
+    await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item.name} ${item.amount}`);
   }
 
   async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
@@ -72,8 +70,7 @@ export class Rust implements IGameServer {
     const lines = rawResponse.rawResult.split('\n');
 
     for (const line of lines) {
-      const matches =
-        /(\d{17}) \w+\s{4}\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
+      const matches = /(\d{17}) \w+\s{4}\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
 
       if (matches) {
         const steamId = matches[1];
@@ -121,9 +118,7 @@ export class Rust implements IGameServer {
 
         const commandResult = parsed.Message;
         clearTimeout(timeout);
-        return resolve(
-          new CommandOutput().construct({ rawResult: commandResult })
-        );
+        return resolve(new CommandOutput().construct({ rawResult: commandResult }));
       });
 
       this.log.debug('executeConsoleCommand - sending command', { command });
@@ -156,18 +151,14 @@ export class Rust implements IGameServer {
     // This optional duration is an integer, seems to be hours.
 
     if (!options.expiresAt) {
-      await this.executeConsoleCommand(
-        `banid ${options.player.gameId} "" "${options.reason}"`
-      );
+      await this.executeConsoleCommand(`banid ${options.player.gameId} "" "${options.reason}"`);
       return;
     }
 
     const timeDiff = new Date(options.expiresAt).valueOf() - Date.now();
     const hours = Math.floor(timeDiff / 1000 / 60 / 60);
 
-    await this.executeConsoleCommand(
-      `banid ${options.player.gameId} "" "${options.reason}" ${hours}`
-    );
+    await this.executeConsoleCommand(`banid ${options.player.gameId} "" "${options.reason}" ${hours}`);
   }
 
   async unbanPlayer(player: IPlayerReferenceDTO) {

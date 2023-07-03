@@ -1,9 +1,4 @@
-import {
-  Configuration,
-  FrontendApi,
-  IdentityApi,
-  OAuth2Api,
-} from '@ory/client';
+import { Configuration, FrontendApi, IdentityApi, OAuth2Api } from '@ory/client';
 import { config } from '../config.js';
 import { errors, logger, TakaroDTO } from '@takaro/util';
 import { AdminClient as TakaroClient } from '@takaro/apiclient';
@@ -44,12 +39,8 @@ export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
   aud: string[];
 }
 
-function metadataTypeguard(
-  metadata: unknown
-): metadata is { domainId: string } {
-  return (
-    typeof metadata === 'object' && metadata !== null && 'domainId' in metadata
-  );
+function metadataTypeguard(metadata: unknown): metadata is { domainId: string } {
+  return typeof metadata === 'object' && metadata !== null && 'domainId' in metadata;
 }
 
 class Ory {
@@ -117,10 +108,7 @@ class Ory {
     }
 
     if (!metadataTypeguard(res.data.metadata_public)) {
-      this.log.warn(
-        'Identity metadata_public is not of type {domainId: string}',
-        { identity: res.data.id }
-      );
+      this.log.warn('Identity metadata_public is not of type {domainId: string}', { identity: res.data.id });
       throw new errors.ForbiddenError();
     }
 
@@ -131,11 +119,7 @@ class Ory {
     };
   }
 
-  async createIdentity(
-    email: string,
-    password: string,
-    domainId: string
-  ): Promise<ITakaroIdentity> {
+  async createIdentity(email: string, password: string, domainId: string): Promise<ITakaroIdentity> {
     const res = await this.identityClient.createIdentity({
       createIdentityBody: {
         schema_id: IDENTITY_SCHEMA.USER,
@@ -169,10 +153,7 @@ class Ory {
   }
 
   async getIdentityFromReq(req: Request): Promise<ITakaroIdentity> {
-    const tokenFromAuthHeader = req.headers['authorization']?.replace(
-      'Bearer ',
-      ''
-    );
+    const tokenFromAuthHeader = req.headers['authorization']?.replace('Bearer ', '');
 
     const sessionRes = await this.frontendClient.toSession({
       cookie: req.headers.cookie,
@@ -187,10 +168,9 @@ class Ory {
     }
 
     if (!metadataTypeguard(sessionRes.data.identity.metadata_public)) {
-      this.log.warn(
-        'Identity metadata_public is not of type {domainId: string}',
-        { identity: sessionRes.data.identity.id }
-      );
+      this.log.warn('Identity metadata_public is not of type {domainId: string}', {
+        identity: sessionRes.data.identity.id,
+      });
       throw new errors.ForbiddenError();
     }
 
@@ -216,10 +196,7 @@ class Ory {
   }
 
   async apiLogout(req: Request) {
-    const tokenFromAuthHeader = req.headers['authorization']?.replace(
-      'Bearer ',
-      ''
-    );
+    const tokenFromAuthHeader = req.headers['authorization']?.replace('Bearer ', '');
 
     if (!tokenFromAuthHeader) return true;
 

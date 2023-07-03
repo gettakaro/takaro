@@ -67,12 +67,7 @@ export class CommandArgumentModel extends TakaroModel {
   }
 }
 
-export class CommandRepo extends ITakaroRepo<
-  CommandModel,
-  CommandOutputDTO,
-  CommandCreateDTO,
-  CommandUpdateDTO
-> {
+export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -85,9 +80,7 @@ export class CommandRepo extends ITakaroRepo<
       model,
       query: model.query().modify('domainScoped', this.domainId),
       argumentModel,
-      argumentQuery: argumentModel
-        .query()
-        .modify('domainScoped', this.domainId),
+      argumentQuery: argumentModel.query().modify('domainScoped', this.domainId),
     };
   }
 
@@ -99,18 +92,13 @@ export class CommandRepo extends ITakaroRepo<
     }).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new CommandOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new CommandOutputDTO().construct(item))),
     };
   }
 
   async findOne(id: string): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query
-      .findById(id)
-      .withGraphJoined('function')
-      .withGraphJoined('arguments');
+    const data = await query.findById(id).withGraphJoined('function').withGraphJoined('arguments');
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -141,9 +129,7 @@ export class CommandRepo extends ITakaroRepo<
 
   async update(id: string, data: CommandUpdateDTO): Promise<CommandOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('function');
+    const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
     return new CommandOutputDTO().construct(item);
   }
@@ -161,16 +147,8 @@ export class CommandRepo extends ITakaroRepo<
         .select('commands.id as commandId')
         .innerJoin('functions', 'commands.functionId', 'functions.id')
         .innerJoin('modules', 'commands.moduleId', 'modules.id')
-        .innerJoin(
-          'moduleAssignments',
-          'moduleAssignments.moduleId',
-          'modules.id'
-        )
-        .innerJoin(
-          'gameservers',
-          'moduleAssignments.gameserverId',
-          'gameservers.id'
-        )
+        .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
+        .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
         .where({
           'commands.trigger': input,
           'gameservers.id': gameServerId,
@@ -201,10 +179,7 @@ export class CommandRepo extends ITakaroRepo<
 
   async updateArgument(argumentId: string, data: CommandArgumentUpdateDTO) {
     const { argumentQuery } = await this.getModel();
-    const item = await argumentQuery.updateAndFetchById(
-      argumentId,
-      data.toJSON()
-    );
+    const item = await argumentQuery.updateAndFetchById(argumentId, data.toJSON());
     return this.getArgument(item.id);
   }
 

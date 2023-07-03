@@ -21,8 +21,7 @@ export const Container = styled(motion.div)<{
     justify-content: flex-start;
   }
   p {
-    margin-top: ${({ theme, hasTitle }) =>
-      hasTitle ? theme.spacing['1_5'] : theme.spacing[0]};
+    margin-top: ${({ theme, hasTitle }) => (hasTitle ? theme.spacing['1_5'] : theme.spacing[0])};
   }
   p,
   li {
@@ -77,16 +76,13 @@ export const ButtonContainer = styled.div<{
   button {
     margin-top: ${({ theme }) => theme.spacing[2]};
     margin-right: ${({ theme }) => theme.spacing[2]};
-    padding: ${({ theme }) =>
-      `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
+    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    background-color: ${({ theme, variant }): string =>
-      lighten('0.2', theme.colors[variant])};
+    background-color: ${({ theme, variant }): string => lighten('0.2', theme.colors[variant])};
     font-size: 1.3rem;
     border: none;
     cursor: pointer;
     font-weight: 700;
-    color: ${({ theme, variant }): string =>
-      darken('0.2', theme.colors[variant])};
+    color: ${({ theme, variant }): string => darken('0.2', theme.colors[variant])};
   }
 `;
