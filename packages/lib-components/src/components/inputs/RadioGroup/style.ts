@@ -14,8 +14,7 @@ export const Container = styled.div<{ isSelected: boolean }>`
   align-items: center;
   border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  background-color: ${({ isSelected, theme }) =>
-    isSelected ? theme.colors.backgroundAlt : theme.colors.background};
+  background-color: ${({ isSelected, theme }) => (isSelected ? theme.colors.backgroundAlt : theme.colors.background)};
   padding: ${({ theme }) => theme.spacing[2]};
 
   &:hover {

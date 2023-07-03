@@ -27,11 +27,7 @@ export const DUMMY_BASE_URL = 'https://example.com';
  * @throws {RequiredError}
  * @export
  */
-export const assertParamExists = function (
-  functionName: string,
-  paramName: string,
-  paramValue: unknown
-) {
+export const assertParamExists = function (functionName: string, paramName: string, paramValue: unknown) {
   if (paramValue === null || paramValue === undefined) {
     throw new RequiredError(
       paramName,
@@ -44,11 +40,7 @@ export const assertParamExists = function (
  *
  * @export
  */
-export const setApiKeyToObject = async function (
-  object: any,
-  keyParamName: string,
-  configuration?: Configuration
-) {
+export const setApiKeyToObject = async function (object: any, keyParamName: string, configuration?: Configuration) {
   if (configuration && configuration.apiKey) {
     const localVarApiKeyValue =
       typeof configuration.apiKey === 'function'
@@ -62,10 +54,7 @@ export const setApiKeyToObject = async function (
  *
  * @export
  */
-export const setBasicAuthToObject = function (
-  object: any,
-  configuration?: Configuration
-) {
+export const setBasicAuthToObject = function (object: any, configuration?: Configuration) {
   if (configuration && (configuration.username || configuration.password)) {
     object['auth'] = {
       username: configuration.username,
@@ -78,10 +67,7 @@ export const setBasicAuthToObject = function (
  *
  * @export
  */
-export const setBearerAuthToObject = async function (
-  object: any,
-  configuration?: Configuration
-) {
+export const setBearerAuthToObject = async function (object: any, configuration?: Configuration) {
   if (configuration && configuration.accessToken) {
     const accessToken =
       typeof configuration.accessToken === 'function'
@@ -135,19 +121,13 @@ export const setSearchParams = function (url: URL, ...objects: any[]) {
  *
  * @export
  */
-export const serializeDataIfNeeded = function (
-  value: any,
-  requestOptions: any,
-  configuration?: Configuration
-) {
+export const serializeDataIfNeeded = function (value: any, requestOptions: any, configuration?: Configuration) {
   const nonString = typeof value !== 'string';
   const needsSerialization =
     nonString && configuration && configuration.isJsonMime
       ? configuration.isJsonMime(requestOptions.headers['Content-Type'])
       : nonString;
-  return needsSerialization
-    ? JSON.stringify(value !== undefined ? value : {})
-    : value || '';
+  return needsSerialization ? JSON.stringify(value !== undefined ? value : {}) : value || '';
 };
 
 /**
@@ -168,10 +148,7 @@ export const createRequestFunction = function (
   BASE_PATH: string,
   configuration?: Configuration
 ) {
-  return <T = unknown, R = AxiosResponse<T>>(
-    axios: AxiosInstance = globalAxios,
-    basePath: string = BASE_PATH
-  ) => {
+  return <T = unknown, R = AxiosResponse<T>>(axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
     const axiosRequestArgs = {
       ...axiosArgs.options,
       url: (configuration?.basePath || basePath) + axiosArgs.url,

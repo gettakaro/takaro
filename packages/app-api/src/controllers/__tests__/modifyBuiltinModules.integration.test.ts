@@ -10,9 +10,7 @@ async function getBuiltinModule(client: Client, type?: keyof ModuleOutputDTO) {
     condition = (m: ModuleOutputDTO) => (m?.[type] ?? []).length > 0;
   }
 
-  const builtinModule = (
-    await client.module.moduleControllerSearch()
-  ).data.data.find((m) => m.builtin && condition(m));
+  const builtinModule = (await client.module.moduleControllerSearch()).data.data.find((m) => m.builtin && condition(m));
 
   if (!builtinModule) {
     throw new Error('No builtin modules found');
@@ -30,9 +28,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerRemove(
-        this.setupData.commands[0].id
-      );
+      return this.client.command.commandControllerRemove(this.setupData.commands[0].id);
     },
     expectedStatus: 400,
   }),
@@ -44,12 +40,9 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerUpdate(
-        this.setupData.commands[0].id,
-        {
-          name: 'Updated command',
-        }
-      );
+      return this.client.command.commandControllerUpdate(this.setupData.commands[0].id, {
+        name: 'Updated command',
+      });
     },
     expectedStatus: 400,
   }),
@@ -61,12 +54,9 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerUpdateArgument(
-        this.setupData.commands[0].id,
-        {
-          name: 'Updated argument',
-        }
-      );
+      return this.client.command.commandControllerUpdateArgument(this.setupData.commands[0].id, {
+        name: 'Updated argument',
+      });
     },
     expectedStatus: 400,
   }),
@@ -78,9 +68,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerRemoveArgument(
-        this.setupData.commands[0].id
-      );
+      return this.client.command.commandControllerRemoveArgument(this.setupData.commands[0].id);
     },
     expectedStatus: 400,
   }),
@@ -118,12 +106,9 @@ const tests = [
       return getBuiltinModule(this.client, 'cronJobs');
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerUpdate(
-        this.setupData.cronJobs[0].id,
-        {
-          name: 'Updated cronJob',
-        }
-      );
+      return this.client.cronjob.cronJobControllerUpdate(this.setupData.cronJobs[0].id, {
+        name: 'Updated cronJob',
+      });
     },
     expectedStatus: 400,
   }),
@@ -135,9 +120,7 @@ const tests = [
       return getBuiltinModule(this.client, 'cronJobs');
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerRemove(
-        this.setupData.cronJobs[0].id
-      );
+      return this.client.cronjob.cronJobControllerRemove(this.setupData.cronJobs[0].id);
     },
     expectedStatus: 400,
   }),
@@ -149,9 +132,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.function.functionControllerRemove(
-        this.setupData.commands[0].functionId
-      );
+      return this.client.function.functionControllerRemove(this.setupData.commands[0].functionId);
     },
     expectedStatus: 400,
   }),
@@ -163,10 +144,9 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.function.functionControllerUpdate(
-        this.setupData.commands[0].functionId,
-        { code: 'updated code' }
-      );
+      return this.client.function.functionControllerUpdate(this.setupData.commands[0].functionId, {
+        code: 'updated code',
+      });
     },
     expectedStatus: 400,
   }),

@@ -79,22 +79,15 @@ export const StepCounter = styled.div<{
   padding: 0.8rem;
   border-radius: 50%;
   border: 0.1rem solid
-    ${({ theme, stepState }) =>
-      stepState !== StepStates.OTHER
-        ? theme.colors.primary
-        : theme.colors.backgroundAlt};
+    ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.primary : theme.colors.backgroundAlt)};
   background-color: ${({ stepState, theme }) =>
-    stepState === StepStates.CURRENT
-      ? theme.colors.primary
-      : theme.colors.background};
+    stepState === StepStates.CURRENT ? theme.colors.primary : theme.colors.background};
   transition: all 0.2s ease-in-out;
   margin-bottom: ${({ theme }) => theme.spacing[1]};
-  color: ${({ theme, stepState }) =>
-    stepState !== StepStates.OTHER ? theme.colors.white : theme.colors.text};
+  color: ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.white : theme.colors.text)};
   font-size: ${({ theme }) => theme.fontSize.small};
   font-weight: 500;
-  cursor: ${({ stepState, canStepBack }) =>
-    stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit'};
+  cursor: ${({ stepState, canStepBack }) => (stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit')};
 
   svg {
     fill: ${({ theme, stepState }) => {

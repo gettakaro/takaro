@@ -12,13 +12,7 @@ import {
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import {
-  TestReachabilityOutput,
-  CommandOutput,
-  IMessageOptsDTO,
-  GAME_SERVER_TYPE,
-  BanDTO,
-} from '@takaro/gameserver';
+import { TestReachabilityOutput, CommandOutput, IMessageOptsDTO, GAME_SERVER_TYPE, BanDTO } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -29,18 +23,7 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -118,9 +101,7 @@ class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputD
   declare data: ModuleInstallationOutputDTO;
 }
 
-class ModuleInstallationOutputArrayDTOAPI extends APIOutput<
-  ModuleInstallationOutputDTO[]
-> {
+class ModuleInstallationOutputArrayDTOAPI extends APIOutput<ModuleInstallationOutputDTO[]> {
   @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested({ each: true })
   declare data: ModuleInstallationOutputDTO[];
@@ -209,11 +190,7 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @Post('/gameserver/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: GameServerSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: GameServerSearchInputDTO) {
     const service = new GameServerService(req.domainId);
     const result = await service.find({
       ...query,
@@ -246,10 +223,7 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Post('/gameserver')
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: GameServerCreateDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() data: GameServerCreateDTO) {
     const service = new GameServerService(req.domainId);
     return apiResponse(await service.create(data));
   }
@@ -257,11 +231,7 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @Put('/gameserver/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: GameServerUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: GameServerUpdateDTO) {
     const service = new GameServerService(req.domainId);
     return apiResponse(await service.update(params.id, data));
   }
@@ -278,10 +248,7 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @Get('/gameserver/:id/reachability')
-  async testReachabilityForId(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId
-  ) {
+  async testReachabilityForId(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const res = await service.testReachability(params.id);
     return apiResponse(res);
@@ -290,41 +257,25 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @Post('/gameserver/reachability')
-  async testReachability(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: GameServerTestReachabilityInputDTO
-  ) {
+  async testReachability(@Req() req: AuthenticatedRequest, @Body() data: GameServerTestReachabilityInputDTO) {
     const service = new GameServerService(req.domainId);
-    const res = await service.testReachability(
-      undefined,
-      JSON.parse(data.connectionInfo),
-      data.type
-    );
+    const res = await service.testReachability(undefined, JSON.parse(data.connectionInfo), data.type);
     return apiResponse(res);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Get('/gameserver/:gameserverId/module/:moduleId')
-  async getModuleInstallation(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndModuleId
-  ) {
+  async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
-    const res = await service.getModuleInstallation(
-      params.gameserverId,
-      params.moduleId
-    );
+    const res = await service.getModuleInstallation(params.gameserverId, params.moduleId);
     return apiResponse(res);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
   @Get('/gameserver/:id/modules')
-  async getInstalledModules(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId
-  ) {
+  async getInstalledModules(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const res = await service.getInstalledModules({ gameserverId: params.id });
     return apiResponse(res);
@@ -340,22 +291,15 @@ export class GameServerController {
   ) {
     const service = new GameServerService(req.domainId);
 
-    return apiResponse(
-      await service.installModule(params.gameserverId, params.moduleId, data)
-    );
+    return apiResponse(await service.installModule(params.gameserverId, params.moduleId, data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @Delete('/gameserver/:gameserverId/modules/:moduleId')
-  async uninstallModule(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndModuleId
-  ) {
+  async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(
-      await service.uninstallModule(params.gameserverId, params.moduleId)
-    );
+    return apiResponse(await service.uninstallModule(params.gameserverId, params.moduleId));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -374,17 +318,9 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:id/message')
-  async sendMessage(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: MessageSendInputDTO
-  ) {
+  async sendMessage(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: MessageSendInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.sendMessage(
-      params.id,
-      data.message,
-      data.opts
-    );
+    const result = await service.sendMessage(params.id, data.message, data.opts);
     return apiResponse(result);
   }
 
@@ -397,15 +333,11 @@ export class GameServerController {
     @Body() data: TeleportPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(
-      params.gameserverId,
-      params.playerId,
-      {
-        x: data.x,
-        y: data.y,
-        z: data.z,
-      }
-    );
+    const result = await service.teleportPlayer(params.gameserverId, params.playerId, {
+      x: data.x,
+      y: data.y,
+      z: data.z,
+    });
     return apiResponse(result);
   }
 
@@ -418,44 +350,25 @@ export class GameServerController {
     @Body() data: KickPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.kickPlayer(
-      params.gameserverId,
-      params.playerId,
-      data.reason
-    );
+    const result = await service.kickPlayer(params.gameserverId, params.playerId, data.reason);
     return apiResponse(result);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:gameserverId/player/:playerId/ban')
-  async banPlayer(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndPlayerId,
-    @Body() data: BanInputDTO
-  ) {
+  async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId, @Body() data: BanInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.banPlayer(
-      params.gameserverId,
-      params.playerId,
-      data.reason,
-      data.expiresAt
-    );
+    const result = await service.banPlayer(params.gameserverId, params.playerId, data.reason, data.expiresAt);
     return apiResponse(result);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:gameserverId/player/:playerId/unban')
-  async unbanPlayer(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndPlayerId
-  ) {
+  async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId) {
     const service = new GameServerService(req.domainId);
-    const result = await service.unbanPlayer(
-      params.gameserverId,
-      params.playerId
-    );
+    const result = await service.unbanPlayer(params.gameserverId, params.playerId);
     return apiResponse(result);
   }
 
@@ -476,21 +389,14 @@ export class GameServerController {
     @Body() data: GiveItemInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.giveItem(
-      params.gameserverId,
-      params.playerId,
-      data
-    );
+    const result = await service.giveItem(params.gameserverId, params.playerId, data);
     return apiResponse(result);
   }
 
   @Get('/gameserver/:id/players')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(IGamePlayersOutputDTO)
-  async getPlayers(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId
-  ) {
+  async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const result = await service.getPlayers(params.id);
     return apiResponse(result);

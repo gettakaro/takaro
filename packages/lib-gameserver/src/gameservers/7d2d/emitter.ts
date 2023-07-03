@@ -34,11 +34,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
-    return `${this.config.useTls ? 'https' : 'http'}://${
-      this.config.host
-    }/sse/log?adminuser=${this.config.adminUser}&admintoken=${
-      this.config.adminToken
-    }`;
+    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log?adminuser=${
+      this.config.adminUser
+    }&admintoken=${this.config.adminToken}`;
   }
 
   async start(): Promise<void> {
@@ -47,9 +45,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         this.logger.debug(`Connecting to ${this.config.host}`);
         this.eventSource = new EventSource(this.url);
 
-        this.eventSource.addEventListener('logLine', (data) =>
-          this.listener(data)
-        );
+        this.eventSource.addEventListener('logLine', (data) => this.listener(data));
 
         this.eventSource.onerror = (e) => {
           this.logger.error('Event source error', e);
@@ -114,18 +110,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const name = nameMatches ? nameMatches[1] : 'Unknown name';
     const gameId = gameIdMatches ? gameIdMatches[1] : null;
     const platformId = platformIdMatches ? platformIdMatches[1] : null;
-    const epicOnlineServicesId = crossIdMatches
-      ? crossIdMatches[1].replace('EOS_', '')
-      : undefined;
+    const epicOnlineServicesId = crossIdMatches ? crossIdMatches[1].replace('EOS_', '') : undefined;
 
-    const steamId =
-      platformId && platformId.startsWith('Steam_')
-        ? platformId.replace('Steam_', '')
-        : undefined;
-    const xboxLiveId =
-      platformId && platformId.startsWith('XBL_')
-        ? platformId.replace('XBL_', '')
-        : undefined;
+    const steamId = platformId && platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
+    const xboxLiveId = platformId && platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
 
     if (!gameId) throw new Error('Could not find gameId');
 
@@ -149,14 +137,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const gameId = entityIDMatch ? entityIDMatch[1] : null;
     const platformId = platformIdMatches ? platformIdMatches[1] : null;
 
-    const steamId =
-      platformId && platformId.startsWith('Steam_')
-        ? platformId.replace('Steam_', '')
-        : undefined;
-    const xboxLiveId =
-      platformId && platformId.startsWith('XBL_')
-        ? platformId.replace('XBL_', '')
-        : undefined;
+    const steamId = platformId && platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
+    const xboxLiveId = platformId && platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
 
     if (!gameId) throw new Error('Could not find gameId');
 
@@ -180,17 +162,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     const { platformId, entityId, name, message } = groups;
 
-    const xboxLiveId = platformId.startsWith('XBL_')
-      ? platformId.replace('XBL_', '')
-      : undefined;
-    const steamId = platformId.startsWith('Steam_')
-      ? platformId.replace('Steam_', '')
-      : undefined;
+    const xboxLiveId = platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
+    const steamId = platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
 
-    if (
-      (platformId === '-non-player-' && name !== 'Server') ||
-      entityId === '-1'
-    ) {
+    if ((platformId === '-non-player-' && name !== 'Server') || entityId === '-1') {
       return;
     }
 

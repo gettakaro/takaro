@@ -1,5 +1,1 @@
-export {
-  useDiscordGuilds,
-  useDiscordInvite,
-  useDiscordGuildUpdate,
-} from './queries';
+export { useDiscordGuilds, useDiscordInvite, useDiscordGuildUpdate } from './queries';

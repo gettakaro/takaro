@@ -1,15 +1,7 @@
-import {
-  NOT_DOMAIN_SCOPED_TakaroModel,
-  ITakaroQuery,
-  QueryBuilder,
-} from '@takaro/db';
+import { NOT_DOMAIN_SCOPED_TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base.js';
 import { errors } from '@takaro/util';
-import {
-  DomainOutputDTO,
-  DomainCreateInputDTO,
-  DomainUpdateInputDTO,
-} from '../service/DomainService.js';
+import { DomainOutputDTO, DomainCreateInputDTO, DomainUpdateInputDTO } from '../service/DomainService.js';
 import { UserRepo } from './user.js';
 
 const TABLE_NAME = 'domains';
@@ -32,14 +24,10 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
   }
   async find(filters: ITakaroQuery<DomainOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<DomainModel, DomainOutputDTO>(
-      filters
-    ).build(query);
+    const result = await new QueryBuilder<DomainModel, DomainOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new DomainOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new DomainOutputDTO().construct(item))),
     };
   }
 
@@ -68,25 +56,18 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: DomainUpdateInputDTO
-  ): Promise<DomainOutputDTO> {
+  async update(id: string, data: DomainUpdateInputDTO): Promise<DomainOutputDTO> {
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query
-      .updateAndFetchById(id, data.toJSON())
-      .returning('*');
+    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return new DomainOutputDTO().construct(res);
   }
 
   async resolveDomain(email: string): Promise<string | null> {
     const userRepo = new UserRepo('fake_domain_id');
-    const domainId = await userRepo.NOT_DOMAIN_SCOPED_resolveDomainByEmail(
-      email
-    );
+    const domainId = await userRepo.NOT_DOMAIN_SCOPED_resolveDomainByEmail(email);
     return domainId;
   }
 }

@@ -32,10 +32,7 @@ export class NotImplementedError extends TakaroError {
 }
 
 export class ValidationError extends TakaroError {
-  constructor(
-    message: string,
-    public details?: CValidationError[] | YValidationError[]
-  ) {
+  constructor(message: string, public details?: CValidationError[] | YValidationError[]) {
     super(message);
 
     if (details?.length) {

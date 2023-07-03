@@ -7,10 +7,7 @@ const counters = new Map<string, Counter<string>>();
  * Wraps a function and creates a metric that counts how many times it was called
  * @param fn Any callable function
  */
-export function addCounter(
-  fn: CallableFunction,
-  counterConfiguration: CounterConfiguration<string>
-) {
+export function addCounter(fn: CallableFunction, counterConfiguration: CounterConfiguration<string>) {
   if (!counters.has(counterConfiguration.name)) {
     counters.set(
       counterConfiguration.name,

@@ -3,11 +3,7 @@ import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
-import {
-  CronJobCreateDTO,
-  CronJobOutputDTO,
-  CronJobUpdateDTO,
-} from '../service/CronJobService.js';
+import { CronJobCreateDTO, CronJobOutputDTO, CronJobUpdateDTO } from '../service/CronJobService.js';
 
 export const CRONJOB_TABLE_NAME = 'cronJobs';
 
@@ -32,12 +28,7 @@ export class CronJobModel extends TakaroModel {
   }
 }
 
-export class CronJobRepo extends ITakaroRepo<
-  CronJobModel,
-  CronJobOutputDTO,
-  CronJobCreateDTO,
-  CronJobUpdateDTO
-> {
+export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, CronJobCreateDTO, CronJobUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -60,9 +51,7 @@ export class CronJobRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new CronJobOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new CronJobOutputDTO().construct(item))),
     };
   }
 
@@ -101,9 +90,7 @@ export class CronJobRepo extends ITakaroRepo<
 
   async update(id: string, data: CronJobUpdateDTO): Promise<CronJobOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .updateAndFetchById(id, data.toJSON())
-      .withGraphFetched('function');
+    const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
     return new CronJobOutputDTO().construct(item);
   }

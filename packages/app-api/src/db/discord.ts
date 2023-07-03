@@ -2,11 +2,7 @@ import { ITakaroQuery, QueryBuilder, TakaroModel, getKnex } from '@takaro/db';
 import { Model } from 'objection';
 import { USER_TABLE_NAME, UserModel } from './user.js';
 import { ITakaroRepo } from './base.js';
-import {
-  GuildCreateInputDTO,
-  GuildOutputDTO,
-  GuildUpdateDTO,
-} from '../service/DiscordService.js';
+import { GuildCreateInputDTO, GuildOutputDTO, GuildUpdateDTO } from '../service/DiscordService.js';
 import { errors, logger } from '@takaro/util';
 
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
@@ -53,15 +49,8 @@ export class DiscordGuildModel extends TakaroModel {
   };
 }
 
-export class DiscordRepo extends ITakaroRepo<
-  DiscordGuildModel,
-  GuildOutputDTO,
-  GuildCreateInputDTO,
-  GuildUpdateDTO
-> {
-  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
-    guildId: string
-  ): Promise<string | null> {
+export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, GuildCreateInputDTO, GuildUpdateDTO> {
+  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
     const knex = await getKnex();
     const model = DiscordGuildModel.bindKnex(knex);
     const result = (await model
@@ -74,13 +63,8 @@ export class DiscordRepo extends ITakaroRepo<
 
     // Check if all domain IDs are the same
     // Otherwise, it means that the guild is associated with multiple domains
-    if (
-      result.length > 1 &&
-      !result.every((r) => r.domain === result[0].domain)
-    ) {
-      logger('discord').warn(
-        `POTENTIAL DOMAIN SCOPING ISSUE: ${guildId} has multiple domains associated with it. `
-      );
+    if (result.length > 1 && !result.every((r) => r.domain === result[0].domain)) {
+      logger('discord').warn(`POTENTIAL DOMAIN SCOPING ISSUE: ${guildId} has multiple domains associated with it. `);
       throw new errors.BadRequestError(
         'Could not resolve Takaro domain from guild ID, have you associated your guild with multiple Takaro domains?'
       );
@@ -109,11 +93,7 @@ export class DiscordRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map(async (guild) =>
-          new GuildOutputDTO().construct(guild)
-        )
-      ),
+      results: await Promise.all(result.results.map(async (guild) => new GuildOutputDTO().construct(guild))),
     };
   }
 
@@ -160,11 +140,7 @@ export class DiscordRepo extends ITakaroRepo<
     return true;
   }
 
-  async setUserRelation(
-    userId: string,
-    guildId: string,
-    hasManageServer: boolean
-  ) {
+  async setUserRelation(userId: string, guildId: string, hasManageServer: boolean) {
     const { userQuery } = await this.getModel();
 
     // Insert or update

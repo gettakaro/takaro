@@ -1,10 +1,5 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import {
-  GameServerCreateDTOTypeEnum,
-  GameServerOutputDTO,
-  isAxiosError,
-  ModuleOutputDTO,
-} from '@takaro/apiclient';
+import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 
 const group = 'ModuleConfig';
 
@@ -14,18 +9,14 @@ interface ISetupData {
   cronJobsModule: ModuleOutputDTO;
 }
 
-const setup = async function (
-  this: IntegrationTest<ISetupData>
-): Promise<ISetupData> {
-  const gameserverRes = await this.client.gameserver.gameServerControllerCreate(
-    {
-      name: 'Test gameserver',
-      connectionInfo: JSON.stringify({
-        host: integrationConfig.get('mockGameserver.host'),
-      }),
-      type: GameServerCreateDTOTypeEnum.Mock,
-    }
-  );
+const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
+  const gameserverRes = await this.client.gameserver.gameServerControllerCreate({
+    name: 'Test gameserver',
+    connectionInfo: JSON.stringify({
+      host: integrationConfig.get('mockGameserver.host'),
+    }),
+    type: GameServerCreateDTOTypeEnum.Mock,
+  });
 
   const moduleRes = await this.client.module.moduleControllerCreate({
     name: 'Test module',
@@ -45,18 +36,17 @@ const setup = async function (
     }),
   });
 
-  const cronjobModuleCreateRes =
-    await this.client.module.moduleControllerCreate({
-      name: 'Test module cronjobs',
-      description: 'Test description',
-      configSchema: JSON.stringify({
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {},
-        required: [],
-        additionalProperties: false,
-      }),
-    });
+  const cronjobModuleCreateRes = await this.client.module.moduleControllerCreate({
+    name: 'Test module cronjobs',
+    description: 'Test description',
+    configSchema: JSON.stringify({
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {},
+      required: [],
+      additionalProperties: false,
+    }),
+  });
 
   await this.client.cronjob.cronJobControllerCreate({
     moduleId: cronjobModuleCreateRes.data.data.id,
@@ -65,9 +55,7 @@ const setup = async function (
     function: 'test',
   });
 
-  const cronjobModuleRes = await this.client.module.moduleControllerGetOne(
-    cronjobModuleCreateRes.data.data.id
-  );
+  const cronjobModuleRes = await this.client.module.moduleControllerGetOne(cronjobModuleCreateRes.data.data.id);
 
   return {
     gameserver: gameserverRes.data.data,
@@ -187,18 +175,14 @@ const tests = [
             systemConfig: JSON.stringify({ foo: 'bar' }),
           }
         );
-        throw new Error(
-          'Should not be able to install module with invalid system config'
-        );
+        throw new Error('Should not be able to install module with invalid system config');
       } catch (error) {
         if (!isAxiosError(error)) {
           throw error;
         }
 
         expect(error.response?.status).to.equal(400);
-        expect(error.response?.data.meta.error.message).to.match(
-          /Invalid config: must NOT have additional /
-        );
+        expect(error.response?.data.meta.error.message).to.match(/Invalid config: must NOT have additional /);
       }
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -237,9 +221,7 @@ const tests = [
         function: 'test',
       });
 
-      const updatedModuleRes = await this.client.module.moduleControllerGetOne(
-        this.setupData.cronJobsModule.id
-      );
+      const updatedModuleRes = await this.client.module.moduleControllerGetOne(this.setupData.cronJobsModule.id);
 
       return await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -262,16 +244,14 @@ const tests = [
     name: 'Installing with correct system config - should default cronjob values',
     setup,
     test: async function () {
-      const installRes =
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.cronJobsModule.id
-        );
+      const installRes = await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.cronJobsModule.id
+      );
 
       expect(installRes.data.data.systemConfig).to.deep.equal({
         cronJobs: {
-          [this.setupData.cronJobsModule.cronJobs[0].name]:
-            this.setupData.cronJobsModule.cronJobs[0].temporalValue,
+          [this.setupData.cronJobsModule.cronJobs[0].name]: this.setupData.cronJobsModule.cronJobs[0].temporalValue,
         },
       });
 

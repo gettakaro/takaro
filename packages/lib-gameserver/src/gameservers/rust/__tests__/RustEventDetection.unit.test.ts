@@ -7,8 +7,7 @@ import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
 
 const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
-  Message:
-    '169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]',
+  Message: '169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]',
   Identifier: 0,
   Type: RustEventType.DEFAULT,
   Stacktrace: '',
@@ -36,19 +35,13 @@ describe('rust event detection', () => {
   });
 
   it('[PlayerConnected]: Can detect simple player connected', async () => {
-    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(
-      MOCK_RUST_PLAYER_CONNECTED
-    );
+    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(MOCK_RUST_PLAYER_CONNECTED);
 
     expect(emitStub).to.have.been.calledTwice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(
-      GameEvents.PLAYER_CONNECTED
-    );
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
 
-    expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(
-      await MOCK_PLAYER
-    );
+    expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(await MOCK_PLAYER);
   });
 
   describe('[getPlayerLocation]', () => {

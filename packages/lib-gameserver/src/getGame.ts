@@ -20,9 +20,7 @@ export async function getGame(
 ): Promise<IGameServer> {
   switch (type) {
     case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-      return new SevenDaysToDie(
-        await new SdtdConnectionInfo().construct(connectionInfo)
-      );
+      return new SevenDaysToDie(await new SdtdConnectionInfo().construct(connectionInfo));
     case GAME_SERVER_TYPE.RUST:
       return new Rust(await new RustConnectionInfo().construct(connectionInfo));
     case GAME_SERVER_TYPE.MOCK:

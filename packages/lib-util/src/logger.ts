@@ -15,24 +15,12 @@ const addCtx = winston.format((info: winston.Logform.TransformableInfo) => {
 const myFormat = printf((info) => {
   const { level, message, namespace, timestamp } = info;
 
-  const cleanMeta = omit(
-    info,
-    'level',
-    'message',
-    'namespace',
-    'timestamp',
-    'service',
-    'labels',
-    'txId'
-  );
+  const cleanMeta = omit(info, 'level', 'message', 'namespace', 'timestamp', 'service', 'labels', 'txId');
 
   let metaString = '';
   if (Object.getOwnPropertyNames(cleanMeta).length) {
     try {
-      metaString = `| ${JSON.stringify(
-        cleanMeta,
-        Object.getOwnPropertyNames(cleanMeta)
-      )}`;
+      metaString = `| ${JSON.stringify(cleanMeta, Object.getOwnPropertyNames(cleanMeta))}`;
     } catch (e) {
       metaString = '| Invalid Meta Information';
     }
@@ -44,9 +32,7 @@ const myFormat = printf((info) => {
     return `${paddedNamespace} ${level} ${message}`;
   }
 
-  return `${timestamp} ${paddedNamespace} ${level}: ${message} ${
-    metaString ? metaString : ''
-  }`;
+  return `${timestamp} ${paddedNamespace} ${level}: ${message} ${metaString ? metaString : ''}`;
 });
 
 const simpleFormat = combine(

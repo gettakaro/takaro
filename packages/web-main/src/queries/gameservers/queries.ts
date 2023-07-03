@@ -11,13 +11,7 @@ import {
   ModuleInstallDTO,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  useInfiniteQuery,
-  InfiniteData,
-} from 'react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
@@ -29,22 +23,17 @@ export const gameServerKeys = {
   detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
 
   settings: (id?: string) => [...gameServerKeys.all, 'settings', id] as const,
-  reachability: (id: string) =>
-    [...gameServerKeys.all, 'reachable', id] as const,
+  reachability: (id: string) => [...gameServerKeys.all, 'reachable', id] as const,
 };
 
 export const installedModuleKeys = {
   all: ['installed modules'] as const,
-  list: (gameServerId: string) =>
-    [...installedModuleKeys.all, 'list', gameServerId] as const,
+  list: (gameServerId: string) => [...installedModuleKeys.all, 'list', gameServerId] as const,
   detail: (gameServerId: string, moduleId: string) =>
     [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
 };
 
-export const useGameServers = ({
-  page = 0,
-  ...gameServerSearchInputArgs
-}: GameServerSearchInputDTO = {}) => {
+export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameServerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
@@ -56,8 +45,7 @@ export const useGameServers = ({
           ...gameServerSearchInputArgs,
         })
       ).data,
-    getNextPageParam: (lastPage, pages) =>
-      hasNextPage(lastPage.meta, pages.length),
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
 };
 
@@ -67,8 +55,7 @@ export const useGameServer = (id: string) => {
   return useQuery<GameServerOutputDTO>({
     queryKey: gameServerKeys.detail(id),
     queryFn: async () => {
-      const resp = (await apiClient.gameserver.gameServerControllerGetOne(id))
-        .data.data;
+      const resp = (await apiClient.gameserver.gameServerControllerGetOne(id)).data.data;
       return resp;
     },
     enabled: Boolean(id),
@@ -82,41 +69,37 @@ export const useGameServerCreate = () => {
 
   return useMutation({
     mutationFn: async (gameServer: GameServerCreateDTO) =>
-      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data
-        .data,
+      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
     onSuccess: async (newGameServer: GameServerOutputDTO) => {
-      queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
-        gameServerKeys.list(),
-        (prev) => {
-          // in case there are no game servers yet
-          if (!prev) {
-            return {
-              pages: [
-                {
-                  data: [newGameServer],
-                  meta: {
-                    page: 0,
-                    total: 1,
-                    limit: 100,
-                    error: { code: '', message: '', details: '' },
-                    serverTime: '',
-                  },
+      queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(gameServerKeys.list(), (prev) => {
+        // in case there are no game servers yet
+        if (!prev) {
+          return {
+            pages: [
+              {
+                data: [newGameServer],
+                meta: {
+                  page: 0,
+                  total: 1,
+                  limit: 100,
+                  error: { code: '', message: '', details: '' },
+                  serverTime: '',
                 },
-              ],
-              pageParams: [0],
-            };
-          }
-
-          const newData = {
-            ...prev,
-            pages: prev?.pages.map((page) => ({
-              ...page,
-              data: [...page.data, newGameServer],
-            })),
+              },
+            ],
+            pageParams: [0],
           };
-          return newData;
         }
-      );
+
+        const newData = {
+          ...prev,
+          pages: prev?.pages.map((page) => ({
+            ...page,
+            data: [...page.data, newGameServer],
+          })),
+        };
+        return newData;
+      });
 
       enqueueSnackbar('Game server has been created', { variant: 'default' });
     },
@@ -128,8 +111,7 @@ export const useGameServerSendMessage = () => {
 
   return useMutation({
     mutationFn: async ({ gameServerId }: { gameServerId: string }) =>
-      (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId))
-        .data,
+      (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId)).data,
   });
 };
 
@@ -138,30 +120,17 @@ export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
   return useQuery<ModuleInstallationOutputDTO[]>({
     queryKey: installedModuleKeys.list(gameServerId),
-    queryFn: async () =>
-      (
-        await apiClient.gameserver.gameServerControllerGetInstalledModules(
-          gameServerId
-        )
-      ).data.data,
+    queryFn: async () => (await apiClient.gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data,
   });
 };
 
-export const useGameServerModuleInstallation = (
-  gameServerId: string,
-  moduleId: string
-) => {
+export const useGameServerModuleInstallation = (gameServerId: string, moduleId: string) => {
   const apiClient = useApiClient();
 
   return useQuery<ModuleInstallationOutputDTO>({
     queryKey: installedModuleKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
-      (
-        await apiClient.gameserver.gameServerControllerGetModuleInstallation(
-          gameServerId,
-          moduleId
-        )
-      ).data.data,
+      (await apiClient.gameserver.gameServerControllerGetModuleInstallation(gameServerId, moduleId)).data.data,
   });
 };
 
@@ -176,29 +145,14 @@ export const useGameServerModuleInstall = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      gameServerId,
-      moduleId,
-      moduleInstall,
-    }: GameServerModuleInstall) =>
-      (
-        await apiClient.gameserver.gameServerControllerInstallModule(
-          gameServerId,
-          moduleId,
-          moduleInstall
-        )
-      ).data.data,
+    mutationFn: async ({ gameServerId, moduleId, moduleInstall }: GameServerModuleInstall) =>
+      (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
     onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
       // invalidate list of installed modules
-      queryClient.invalidateQueries(
-        installedModuleKeys.list(moduleInstallation.gameserverId)
-      );
+      queryClient.invalidateQueries(installedModuleKeys.list(moduleInstallation.gameserverId));
 
       queryClient.invalidateQueries(
-        installedModuleKeys.detail(
-          moduleInstallation.gameserverId,
-          moduleInstallation.moduleId
-        )
+        installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId)
       );
     },
   });
@@ -209,19 +163,8 @@ export const useGameServerModuleUninstall = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      gameServerId,
-      moduleId,
-    }: {
-      gameServerId: string;
-      moduleId: string;
-    }) =>
-      (
-        await apiClient.gameserver.gameServerControllerUninstallModule(
-          gameServerId,
-          moduleId
-        )
-      ).data.data,
+    mutationFn: async ({ gameServerId, moduleId }: { gameServerId: string; moduleId: string }) =>
+      (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
 
@@ -236,12 +179,7 @@ export const useGameServerModuleUninstall = () => {
         }
       );
 
-      queryClient.invalidateQueries(
-        installedModuleKeys.detail(
-          deletedModule.gameserverId,
-          deletedModule.moduleId
-        )
-      );
+      queryClient.invalidateQueries(installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId));
     },
   });
 };
@@ -252,8 +190,7 @@ export const useGameServerSettings = (id?: string) => {
 
   return useQuery<SettingsOutputObjectDTOAPI['data']>({
     queryKey: gameServerKeys.settings(id),
-    queryFn: async () =>
-      (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
+    queryFn: async () => (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
   });
 };
 
@@ -267,49 +204,34 @@ export const useGameServerUpdate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      gameServerId,
-      gameServerDetails,
-    }: GameServerUpdate) => {
-      return (
-        await apiClient.gameserver.gameServerControllerUpdate(
-          gameServerId,
-          gameServerDetails
-        )
-      ).data.data;
+    mutationFn: async ({ gameServerId, gameServerDetails }: GameServerUpdate) => {
+      return (await apiClient.gameserver.gameServerControllerUpdate(gameServerId, gameServerDetails)).data.data;
     },
     onSuccess: async (updatedGameServer) => {
       try {
         // update gameServer in list of gameservers
-        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
-          gameServerKeys.list(),
-          (prev) => {
-            if (!prev) {
-              queryClient.invalidateQueries(gameServerKeys.list());
-              throw new Error(
-                'Cannot update gameserver list, because it does not exist'
-              );
-            }
-
-            return {
-              ...prev,
-              pages: prev.pages.map((page) => ({
-                ...page,
-                data: page.data.map((gameServer) => {
-                  if (gameServer.id === updatedGameServer.id) {
-                    return updatedGameServer;
-                  }
-                  return gameServer;
-                }),
-              })),
-            };
+        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(gameServerKeys.list(), (prev) => {
+          if (!prev) {
+            queryClient.invalidateQueries(gameServerKeys.list());
+            throw new Error('Cannot update gameserver list, because it does not exist');
           }
-        );
+
+          return {
+            ...prev,
+            pages: prev.pages.map((page) => ({
+              ...page,
+              data: page.data.map((gameServer) => {
+                if (gameServer.id === updatedGameServer.id) {
+                  return updatedGameServer;
+                }
+                return gameServer;
+              }),
+            })),
+          };
+        });
 
         // TODO: I think we can just update the detail query instead of invalidating it
-        queryClient.invalidateQueries(
-          gameServerKeys.detail(updatedGameServer.id)
-        );
+        queryClient.invalidateQueries(gameServerKeys.detail(updatedGameServer.id));
       } catch (e) {
         // TODO: pass extra context to the error
         Sentry.captureException(e);
@@ -323,31 +245,23 @@ export const useGameServerRemove = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id }: { id: string }) =>
-      (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
+    mutationFn: async ({ id }: { id: string }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: (removedGameServer: IdUuidDTO) => {
       try {
         // update list that contain this gameserver
-        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(
-          gameServerKeys.list(),
-          (prev) => {
-            if (!prev) {
-              throw new Error(
-                'Cannot remove gameserver from list, because list does not exist'
-              );
-            }
-
-            return {
-              ...prev,
-              pages: prev.pages.map((page) => ({
-                ...page,
-                data: page.data.filter(
-                  (gameServer) => gameServer.id !== removedGameServer.id
-                ),
-              })),
-            };
+        queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(gameServerKeys.list(), (prev) => {
+          if (!prev) {
+            throw new Error('Cannot remove gameserver from list, because list does not exist');
           }
-        );
+
+          return {
+            ...prev,
+            pages: prev.pages.map((page) => ({
+              ...page,
+              data: page.data.filter((gameServer) => gameServer.id !== removedGameServer.id),
+            })),
+          };
+        });
 
         // remove all cached information about specific game server.
         queryClient.invalidateQueries({
@@ -369,9 +283,7 @@ export const useGameServerReachabilityById = (id: string) => {
 
   return useQuery<GameServerTestReachabilityDTOAPI>(
     gameServerKeys.reachability(id),
-    async () =>
-      (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id))
-        .data
+    async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data
   );
 };
 

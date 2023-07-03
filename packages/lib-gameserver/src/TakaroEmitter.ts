@@ -16,19 +16,14 @@ const log = logger('TakaroEmitter');
  */
 export interface IEventMap {
   [GameEvents.LOG_LINE]: (log: EventLogLine) => Promise<void>;
-  [GameEvents.PLAYER_CONNECTED]: (
-    player: EventPlayerConnected
-  ) => Promise<void>;
-  [GameEvents.PLAYER_DISCONNECTED]: (
-    player: EventPlayerDisconnected
-  ) => Promise<void>;
+  [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => Promise<void>;
+  [GameEvents.PLAYER_DISCONNECTED]: (player: EventPlayerDisconnected) => Promise<void>;
   [GameEvents.CHAT_MESSAGE]: (chatMessage: EventChatMessage) => Promise<void>;
   error: (error: errors.TakaroError | Error) => Promise<void> | void;
 }
 
 export abstract class TakaroEmitter {
-  private listenerMap: Map<keyof IEventMap, IEventMap[keyof IEventMap][]> =
-    new Map();
+  private listenerMap: Map<keyof IEventMap, IEventMap[keyof IEventMap][]> = new Map();
 
   abstract stop(): Promise<void>;
   abstract start(): Promise<void>;
@@ -37,10 +32,7 @@ export abstract class TakaroEmitter {
     return getErrorProxyHandler(this);
   }
 
-  async emit<E extends keyof IEventMap>(
-    event: E,
-    data: Parameters<IEventMap[E]>[0]
-  ) {
+  async emit<E extends keyof IEventMap>(event: E, data: Parameters<IEventMap[E]>[0]) {
     try {
       // No listeners are attached, return early
       if (!this.listenerMap.has(event)) return;

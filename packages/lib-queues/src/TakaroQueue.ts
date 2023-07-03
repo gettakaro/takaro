@@ -18,9 +18,7 @@ export class TakaroQueue<T extends Record<string, unknown>> {
    * @returns
    */
   private getJobId(data: T) {
-    const hash = createHash('sha1')
-      .update(JSON.stringify(data))
-      .digest('base64');
+    const hash = createHash('sha1').update(JSON.stringify(data)).digest('base64');
     return hash;
   }
 

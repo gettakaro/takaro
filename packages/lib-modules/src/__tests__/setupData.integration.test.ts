@@ -1,9 +1,5 @@
 import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
-import {
-  integrationConfig,
-  IntegrationTest,
-  EventsAwaiter,
-} from '@takaro/test';
+import { integrationConfig, IntegrationTest, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 export interface IDetectedEvent {
@@ -62,17 +58,11 @@ export const modulesTestSetup = async function (
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
 
-  const connectedEvents = eventAwaiter.waitForEvents(
-    GameEvents.PLAYER_CONNECTED,
-    5
-  );
+  const connectedEvents = eventAwaiter.waitForEvents(GameEvents.PLAYER_CONNECTED, 5);
 
-  await this.client.gameserver.gameServerControllerExecuteCommand(
-    gameserver.data.data.id,
-    {
-      command: 'connectAll',
-    }
-  );
+  await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.data.data.id, {
+    command: 'connectAll',
+  });
 
   await connectedEvents;
 

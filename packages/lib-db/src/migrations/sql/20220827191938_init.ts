@@ -14,11 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('email').unique();
     table.string('password').notNullable();
 
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('roles', (table) => {
@@ -26,11 +22,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name');
 
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'domain']);
   });
@@ -62,25 +54,13 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable();
 
     table.primary(['roleId', 'capability']);
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('roleOnUser', (table) => {
     table.timestamps(true, true, true);
-    table
-      .uuid('userId')
-      .references('users.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .uuid('roleId')
-      .references('roles.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('userId').references('users.id').onDelete('CASCADE').notNullable();
+    table.uuid('roleId').references('roles.id').onDelete('CASCADE').notNullable();
 
     table.primary(['userId', 'roleId']);
   });
@@ -91,11 +71,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name');
     table.enu('type', ['MOCK', 'SEVENDAYSTODIE', 'RUST']).notNullable();
     table.binary('connectionInfo').notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'domain']);
   });
@@ -107,46 +83,26 @@ export async function up(knex: Knex): Promise<void> {
     table.string('steamId');
     table.string('xboxLiveId');
     table.string('epicOnlineServicesId');
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('playerOnGameServer', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table
-      .uuid('playerId')
-      .references('players.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .uuid('gameServerId')
-      .references('gameservers.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('playerId').references('players.id').onDelete('CASCADE').notNullable();
+    table.uuid('gameServerId').references('gameservers.id').onDelete('CASCADE').notNullable();
 
     table.string('gameId').notNullable();
 
     table.primary(['playerId', 'gameServerId']);
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('functions', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.text('code').notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('modules', (table) => {
@@ -155,11 +111,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name');
     table.boolean('enabled').notNullable().defaultTo(true);
     table.json('config').defaultTo('{}');
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'domain']);
   });
@@ -170,16 +122,8 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name');
     table.boolean('enabled').notNullable().defaultTo(true);
     table.string('temporalValue').notNullable();
-    table
-      .uuid('moduleId')
-      .references('modules.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('moduleId').references('modules.id').onDelete('CASCADE').notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'moduleId']);
   });
@@ -189,20 +133,10 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name');
     table.boolean('enabled').notNullable().defaultTo(true);
-    table
-      .enu('eventType', ['log', 'player-connected', 'player-disconnected'])
-      .notNullable();
+    table.enu('eventType', ['log', 'player-connected', 'player-disconnected']).notNullable();
     table.string('regex').notNullable();
-    table
-      .uuid('moduleId')
-      .references('modules.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('moduleId').references('modules.id').onDelete('CASCADE').notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'moduleId']);
   });
@@ -212,16 +146,8 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('name');
     table.boolean('enabled').notNullable().defaultTo(true);
-    table
-      .uuid('moduleId')
-      .references('modules.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('moduleId').references('modules.id').onDelete('CASCADE').notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['name', 'moduleId']);
   });
@@ -229,25 +155,12 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('functionAssignments', (table) => {
     table.timestamps(true, true, true);
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table
-      .uuid('function')
-      .references('functions.id')
-      .onDelete('CASCADE')
-      .notNullable()
-      .unique();
+    table.uuid('function').references('functions.id').onDelete('CASCADE').notNullable().unique();
     table.uuid('cronJob').references('cronJobs.id').onDelete('CASCADE');
     table.uuid('hook').references('hooks.id').onDelete('CASCADE');
     table.uuid('command').references('commands.id').onDelete('CASCADE');
-    table.check('(?? IS NOT NULL) OR (?? IS NOT NULL) OR (?? IS NOT NULL)', [
-      'cronJob',
-      'hook',
-      'command',
-    ]);
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.check('(?? IS NOT NULL) OR (?? IS NOT NULL) OR (?? IS NOT NULL)', ['cronJob', 'hook', 'command']);
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto');

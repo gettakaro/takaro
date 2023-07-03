@@ -27,8 +27,7 @@ export async function playScenario(socketServer: MockServerSocketServer) {
   const scenarios = await fs.readdir('./src/scenarios');
   const gameInstance = await getMockServer();
 
-  const randomScenario =
-    scenarios[Math.floor(Math.random() * scenarios.length)];
+  const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   log.info(`Playing scenario ${randomScenario}`);
 
   isScenarioPlaying = true;
@@ -59,11 +58,7 @@ export async function playScenario(socketServer: MockServerSocketServer) {
           eventData.type = event.event;
           eventData.timestamp = new Date().toISOString();
 
-          log.info(
-            `Emitting event ${event.event} with data ${JSON.stringify(
-              eventData
-            )}`
-          );
+          log.info(`Emitting event ${event.event} with data ${JSON.stringify(eventData)}`);
           socketServer.emit(event.event, eventData as unknown as EventLogLine);
 
           resolve();

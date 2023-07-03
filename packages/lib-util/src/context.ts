@@ -11,11 +11,7 @@ interface TransactionStore {
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
-  return (
-    typeof store === 'object' &&
-    store !== null &&
-    Object.values(store).every((val) => typeof val === 'string')
-  );
+  return typeof store === 'object' && store !== null && Object.values(store).every((val) => typeof val === 'string');
 }
 
 class Context {
@@ -43,11 +39,7 @@ class Context {
 
   wrapContext(fn: any, metadata: TransactionStore = {}) {
     return (...args: any[]) => {
-      return this.asyncLocalStorage.run(
-        metadata,
-        fn,
-        ...args
-      ) as Promise<unknown>;
+      return this.asyncLocalStorage.run(metadata, fn, ...args) as Promise<unknown>;
     };
   }
 

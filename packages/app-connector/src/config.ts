@@ -45,6 +45,8 @@ const configSchema = {
   },
 };
 
-export const config = new Config<
-  IConnectorConfig & IQueuesConfig & IAuthConfig
->([configSchema, queuesConfigSchema, authConfigSchema]);
+export const config = new Config<IConnectorConfig & IQueuesConfig & IAuthConfig>([
+  configSchema,
+  queuesConfigSchema,
+  authConfigSchema,
+]);

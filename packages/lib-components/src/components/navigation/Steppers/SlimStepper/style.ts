@@ -33,8 +33,7 @@ export const StepperHeaderItem = styled.div<{
     }
   }};
 
-  cursor: ${({ stepState, canStepBack }) =>
-    stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit'};
+  cursor: ${({ stepState, canStepBack }) => (stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit')};
 
   &:first-child {
     border-top-left-radius: 1rem;

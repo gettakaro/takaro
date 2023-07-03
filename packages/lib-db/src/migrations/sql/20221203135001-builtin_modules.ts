@@ -6,16 +6,8 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.json('config').defaultTo('{}');
     table.uuid('moduleId').references('modules.id').onDelete('CASCADE');
-    table
-      .uuid('gameserverId')
-      .references('gameservers.id')
-      .onDelete('CASCADE')
-      .notNullable();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('gameserverId').references('gameservers.id').onDelete('CASCADE').notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['gameserverId', 'moduleId', 'domain']);
   });

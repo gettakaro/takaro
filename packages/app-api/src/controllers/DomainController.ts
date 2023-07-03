@@ -10,28 +10,13 @@ import {
 import { apiResponse, APIOutput } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
 
-import {
-  Param,
-  Body,
-  Get,
-  Post,
-  Put,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Res,
-} from 'routing-controllers';
+import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
-import {
-  TokenOutputDTO,
-  TokenInputDTO,
-  AuthService,
-} from '../service/AuthService.js';
+import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
 import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
@@ -77,11 +62,7 @@ export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
 export class DomainController {
   @Post('/domain/search')
   @ResponseSchema(DomainOutputArrayDTOAPI)
-  async search(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() query: DomainSearchInputDTO
-  ) {
+  async search(@Req() req: Request, @Res() res: Response, @Body() query: DomainSearchInputDTO) {
     const service = new DomainService();
     const result = await service.find({
       ...query,

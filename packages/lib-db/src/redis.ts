@@ -16,10 +16,7 @@ class RedisClass {
    * @param extra Any extra Redis options to pass to the client.
    * @returns
    */
-  async getClient(
-    name: string,
-    extra: RedisClientOptions = {}
-  ): Promise<RedisClient> {
+  async getClient(name: string, extra: RedisClientOptions = {}): Promise<RedisClient> {
     const cachedClient = this.clients.get(name);
 
     if (cachedClient) return cachedClient;

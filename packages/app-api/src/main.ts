@@ -67,9 +67,7 @@ async function main() {
   log.info('🦾 Database up to date');
 
   const initProviders = await AuthService.initPassport();
-  log.info(
-    `🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`
-  );
+  log.info(`🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`);
 
   new EventsWorker();
   log.info('👷 Event worker started');

@@ -38,8 +38,7 @@ export class Meta {
     const storage = getMetadataArgsStorage();
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: '#/components/schemas/',
-      classTransformerMetadataStorage:
-        classTransformerStorage.defaultMetadataStorage,
+      classTransformerMetadataStorage: classTransformerStorage.defaultMetadataStorage,
       classValidatorMetadataStorage: getMetadataStorage(),
       forbidNonWhitelisted: true,
     });
@@ -52,15 +51,13 @@ export class Meta {
           schemas,
           securitySchemes: {
             adminAuth: {
-              description:
-                'Used for system administration, like creating or deleting domains',
+              description: 'Used for system administration, like creating or deleting domains',
               type: 'http',
               scheme: 'bearer',
               bearerFormat: 'JWT',
             },
             domainAuth: {
-              description:
-                'Used for anything inside a domain. Players, GameServers, etc.',
+              description: 'Used for anything inside a domain. Players, GameServers, etc.',
               type: 'apiKey',
               in: 'cookie',
               name: 'takaro-token',

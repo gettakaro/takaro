@@ -6,11 +6,7 @@ import { config } from '../../config.js';
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
  */
 
-export async function executeFunctionLocal(
-  fn: string,
-  data: Record<string, unknown>,
-  token: string
-) {
+export async function executeFunctionLocal(fn: string, data: Record<string, unknown>, token: string) {
   data.token = token;
   data.url = config.get('takaro.url');
 

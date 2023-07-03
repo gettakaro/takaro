@@ -2,16 +2,8 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.alterTable('variables', (table) => {
-    table
-      .uuid('gameServerId')
-      .references('gameservers.id')
-      .onDelete('CASCADE')
-      .nullable();
-    table
-      .uuid('playerId')
-      .references('players.id')
-      .onDelete('CASCADE')
-      .nullable();
+    table.uuid('gameServerId').references('gameservers.id').onDelete('CASCADE').nullable();
+    table.uuid('playerId').references('players.id').onDelete('CASCADE').nullable();
     // drop the old key, domain constraint
     table.dropUnique(['key', 'domain']);
   });

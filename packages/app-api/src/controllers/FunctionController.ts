@@ -8,18 +8,7 @@ import {
   FunctionUpdateDTO,
 } from '../service/FunctionService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -61,11 +50,7 @@ export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_FUNCTIONS]))
   @ResponseSchema(FunctionOutputArrayDTOAPI)
   @Post('/function/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: FunctionSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: FunctionSearchInputDTO) {
     const service = new FunctionService(req.domainId);
     const result = await service.find({
       ...query,
@@ -87,39 +72,23 @@ export class FunctionController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]), builtinModuleModificationMiddleware)
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: FunctionCreateDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() data: FunctionCreateDTO) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]), builtinModuleModificationMiddleware)
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: FunctionUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: FunctionUpdateDTO) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_FUNCTIONS]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

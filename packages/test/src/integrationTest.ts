@@ -4,13 +4,7 @@ import 'reflect-metadata';
 import { matchSnapshot } from './snapshots.js';
 import { integrationConfig } from './main.js';
 import { expect } from './test/expect.js';
-import {
-  AdminClient,
-  Client,
-  AxiosResponse,
-  RoleCreateInputDTOPermissionsEnum,
-  isAxiosError,
-} from '@takaro/apiclient';
+import { AdminClient, Client, AxiosResponse, RoleCreateInputDTOPermissionsEnum, isAxiosError } from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -99,9 +93,7 @@ export class IntegrationTest<SetupData> {
             }
 
             console.error(error.response?.data);
-            throw new Error(
-              `Setup failed: ${JSON.stringify(error.response?.data)}}`
-            );
+            throw new Error(`Setup failed: ${JSON.stringify(error.response?.data)}}`);
           }
         }
       });
@@ -113,9 +105,7 @@ export class IntegrationTest<SetupData> {
 
         if (this.standardDomainId) {
           try {
-            await this.adminClient.domain.domainControllerRemove(
-              this.standardDomainId
-            );
+            await this.adminClient.domain.domainControllerRemove(this.standardDomainId);
           } catch (error) {
             if (!isAxiosError(error)) {
               throw error;
@@ -142,9 +132,7 @@ export class IntegrationTest<SetupData> {
           } else {
             if (error.response?.data) {
               console.error(error.response?.data);
-              throw new Error(
-                `Test failed: ${JSON.stringify(error.response?.data)}}`
-              );
+              throw new Error(`Test failed: ${JSON.stringify(error.response?.data)}}`);
             }
           }
         }
@@ -175,10 +163,7 @@ export async function logInWithPermissions(
     name: 'Test User',
   });
 
-  await client.user.userControllerAssignRole(
-    user.data.data.id,
-    role.data.data.id
-  );
+  await client.user.userControllerAssignRole(user.data.data.id, role.data.data.id);
 
   client.username = user.data.data.email;
   client.password = integrationConfig.get('auth.password');

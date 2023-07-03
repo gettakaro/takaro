@@ -4,11 +4,7 @@ import { ory, AUDIENCES } from '@takaro/auth';
 
 const log = logger('http:middleware:adminAuth');
 
-export async function adminAuthMiddleware(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
+export async function adminAuthMiddleware(request: Request, response: Response, next: NextFunction) {
   try {
     const rawToken = request.headers['authorization']?.replace('Bearer ', '');
 

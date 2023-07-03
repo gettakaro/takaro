@@ -42,8 +42,7 @@ export class PlayerOnboarding extends BuiltinModule {
         name: 'starterkit',
         function: '',
         trigger: 'starterkit',
-        helpText:
-          'Get a starter kit, you can only execute this once on a server!',
+        helpText: 'Get a starter kit, you can only execute this once on a server!',
       },
     ];
   }

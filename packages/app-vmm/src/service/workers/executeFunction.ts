@@ -24,11 +24,7 @@ async function getJobToken(domainId: string) {
   return tokenRes.data.data.token;
 }
 
-export async function executeFunction(
-  functionId: string,
-  data: Record<string, unknown>,
-  domainId: string
-) {
+export async function executeFunction(functionId: string, data: Record<string, unknown>, domainId: string) {
   const token = await getJobToken(domainId);
 
   const client = new Client({
@@ -39,9 +35,7 @@ export async function executeFunction(
     log: logger('domainClient'),
   });
 
-  const functionRes = await client.function.functionControllerGetOne(
-    functionId
-  );
+  const functionRes = await client.function.functionControllerGetOne(functionId);
 
   try {
     if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {

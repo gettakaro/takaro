@@ -14,18 +14,11 @@ const histogram = new Histogram({
   buckets: [0.1, 0.5, 1, 2, 5, 10],
 });
 
-export async function metricsMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
   const rawPath = req.path;
   const method = req.method;
   // Filter out anything that looks like a UUID from path
-  const path = rawPath.replace(
-    /\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/g,
-    '/:id'
-  );
+  const path = rawPath.replace(/\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/g, '/:id');
 
   const start = Date.now();
 

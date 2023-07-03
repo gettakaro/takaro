@@ -4,11 +4,7 @@ import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
 import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
-import {
-  ModuleCreateDTO,
-  ModuleOutputDTO,
-  ModuleUpdateDTO,
-} from '../service/ModuleService.js';
+import { ModuleCreateDTO, ModuleOutputDTO, ModuleUpdateDTO } from '../service/ModuleService.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 import { CronJobOutputDTO } from '../service/CronJobService.js';
 import { HookOutputDTO } from '../service/HookService.js';
@@ -60,12 +56,7 @@ export class ModuleModel extends TakaroModel {
   }
 }
 
-export class ModuleRepo extends ITakaroRepo<
-  ModuleModel,
-  ModuleOutputDTO,
-  ModuleCreateDTO,
-  ModuleUpdateDTO
-> {
+export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, ModuleCreateDTO, ModuleUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -103,9 +94,7 @@ export class ModuleRepo extends ITakaroRepo<
             item.cronJobs.map(async (cronJob) =>
               new CronJobOutputDTO().construct({
                 ...cronJob,
-                function: await new FunctionOutputDTO().construct(
-                  cronJob.function
-                ),
+                function: await new FunctionOutputDTO().construct(cronJob.function),
               })
             )
           ),
@@ -113,9 +102,7 @@ export class ModuleRepo extends ITakaroRepo<
             item.hooks.map(async (hook) =>
               new HookOutputDTO().construct({
                 ...hook,
-                function: await new FunctionOutputDTO().construct(
-                  hook.function
-                ),
+                function: await new FunctionOutputDTO().construct(hook.function),
               })
             )
           ),
@@ -123,9 +110,7 @@ export class ModuleRepo extends ITakaroRepo<
             item.commands.map(async (command) =>
               new CommandOutputDTO().construct({
                 ...command,
-                function: await new FunctionOutputDTO().construct(
-                  command.function
-                ),
+                function: await new FunctionOutputDTO().construct(command.function),
               })
             )
           ),
@@ -188,27 +173,21 @@ export class ModuleRepo extends ITakaroRepo<
 
   async findByCommand(commandId: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .withGraphJoined('commands')
-      .findOne('commands.id', commandId);
+    const item = await query.withGraphJoined('commands').findOne('commands.id', commandId);
 
     return new ModuleOutputDTO().construct(item);
   }
 
   async findByHook(hookId: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .withGraphJoined('hooks')
-      .findOne('hooks.id', hookId);
+    const item = await query.withGraphJoined('hooks').findOne('hooks.id', hookId);
 
     return new ModuleOutputDTO().construct(item);
   }
 
   async findByCronJob(cronJobId: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .withGraphJoined('cronJobs')
-      .findOne('cronJobs.id', cronJobId);
+    const item = await query.withGraphJoined('cronJobs').findOne('cronJobs.id', cronJobId);
 
     return new ModuleOutputDTO().construct(item);
   }

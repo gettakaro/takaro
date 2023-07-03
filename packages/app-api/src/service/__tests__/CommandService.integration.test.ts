@@ -1,25 +1,12 @@
-import {
-  IntegrationTest,
-  sandbox,
-  expect,
-  integrationConfig,
-  EventsAwaiter,
-} from '@takaro/test';
-import {
-  CommandOutputDTO,
-  GameServerOutputDTO,
-  ModuleOutputDTO,
-  ModuleInstallationOutputDTO,
-} from '@takaro/apiclient';
+import { IntegrationTest, sandbox, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, EventTypes } from '@takaro/modules';
 import Sinon from 'sinon';
 
-export async function getMockPlayer(
-  extra: Partial<IGamePlayer> = {}
-): Promise<IGamePlayer> {
+export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
     gameId: '1',
     name: 'mock-player',
@@ -39,9 +26,7 @@ interface IStandardSetupData {
   assignment: ModuleInstallationOutputDTO;
 }
 
-async function setup(
-  this: IntegrationTest<IStandardSetupData>
-): Promise<IStandardSetupData> {
+async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
   const mod = (
     await this.client.module.moduleControllerCreate({
       name: 'Test module',
@@ -67,26 +52,15 @@ async function setup(
 
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(
-    EventTypes.PLAYER_CONNECTED,
-    5
-  );
+  const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 5);
 
-  await this.client.gameserver.gameServerControllerExecuteCommand(
-    gameserver.id,
-    {
-      command: 'connectAll',
-    }
-  );
+  await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
+    command: 'connectAll',
+  });
 
   await connectedEvents;
 
-  const assignment = (
-    await this.client.gameserver.gameServerControllerInstallModule(
-      gameserver.id,
-      mod.id
-    )
-  ).data.data;
+  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 

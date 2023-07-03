@@ -5,8 +5,7 @@ export const Container = styled.div``;
 
 export const TagsContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: ${({ theme }) =>
-    `${theme.spacing['0_75']} ${theme.spacing['0_5']} 0 ${theme.spacing['0_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_5']} 0 ${theme.spacing['0_5']}`};
   width: 100%;
   display: flex;
   flex-wrap: wrap;

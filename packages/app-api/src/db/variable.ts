@@ -1,11 +1,7 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import {
-  VariableCreateDTO,
-  VariableOutputDTO,
-  VariableUpdateDTO,
-} from '../service/VariablesService.js';
+import { VariableCreateDTO, VariableOutputDTO, VariableUpdateDTO } from '../service/VariablesService.js';
 import { config } from '../config.js';
 
 export const VARIABLES_TABLE_NAME = 'variables';
@@ -19,12 +15,7 @@ export class VariablesModel extends TakaroModel {
   playerId?: string;
 }
 
-export class VariableRepo extends ITakaroRepo<
-  VariablesModel,
-  VariableOutputDTO,
-  VariableCreateDTO,
-  VariableUpdateDTO
-> {
+export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO, VariableCreateDTO, VariableUpdateDTO> {
   async getModel() {
     const knex = await this.getKnex();
     const model = VariablesModel.bindKnex(knex);
@@ -35,14 +26,10 @@ export class VariableRepo extends ITakaroRepo<
   }
   async find(filters: ITakaroQuery<VariableOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(
-      filters
-    ).build(query);
+    const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new VariableOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new VariableOutputDTO().construct(item))),
     };
   }
 
@@ -85,17 +72,12 @@ export class VariableRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: VariableUpdateDTO
-  ): Promise<VariableOutputDTO> {
+  async update(id: string, data: VariableUpdateDTO): Promise<VariableOutputDTO> {
     const existing = await this.findOne(id);
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query
-      .updateAndFetchById(id, data.toJSON())
-      .returning('*');
+    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return new VariableOutputDTO().construct(res);
   }
 }

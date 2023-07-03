@@ -1,9 +1,6 @@
 import { expect } from '@takaro/test';
 import { randomUUID } from 'crypto';
-import {
-  CommandArgumentOutputDTO,
-  CommandOutputDTO,
-} from '../../service/CommandService.js';
+import { CommandArgumentOutputDTO, CommandOutputDTO } from '../../service/CommandService.js';
 import { parseCommand } from '../commandParser.js';
 
 const MockArgument_name = await new CommandArgumentOutputDTO().construct({
@@ -82,33 +79,28 @@ describe('commandParser', () => {
   });
 
   it('Can handle arguments with spaces', () => {
-    const parsed = parseCommand(
-      '/settele "test command" true',
-      MockTeleportCommand
-    );
+    const parsed = parseCommand('/settele "test command" true', MockTeleportCommand);
     expect(parsed.command).to.equal('settele');
     expect(parsed.arguments.name).to.equal('test command');
     expect(parsed.arguments.public).to.equal(true);
   });
 
   it('Throws an error when invalid boolean types are provided', () => {
-    expect(() =>
-      parseCommand('/settele test 42', MockTeleportCommand)
-    ).to.throw('Invalid boolean value for argument "public"');
-    expect(() =>
-      parseCommand('/settele test foobar', MockTeleportCommand)
-    ).to.throw('Invalid boolean value for argument "public"');
+    expect(() => parseCommand('/settele test 42', MockTeleportCommand)).to.throw(
+      'Invalid boolean value for argument "public"'
+    );
+    expect(() => parseCommand('/settele test foobar', MockTeleportCommand)).to.throw(
+      'Invalid boolean value for argument "public"'
+    );
   });
 
   it('Throws an error when invalid number types are provided', () => {
-    expect(() =>
-      parseCommand('/settele test true foobar', MockTeleportCommand)
-    ).to.throw('Invalid number value for argument "number"');
+    expect(() => parseCommand('/settele test true foobar', MockTeleportCommand)).to.throw(
+      'Invalid number value for argument "number"'
+    );
   });
 
   it('Throws when required arguments are missing', () => {
-    expect(() => parseCommand('/settele', MockTeleportCommand)).to.throw(
-      'Missing argument "name"'
-    );
+    expect(() => parseCommand('/settele', MockTeleportCommand)).to.throw('Missing argument "name"');
   });
 });

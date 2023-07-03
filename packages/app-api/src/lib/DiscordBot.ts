@@ -1,10 +1,4 @@
-import {
-  Client,
-  GatewayIntentBits,
-  GuildBasedChannel,
-  Message,
-  TextChannel,
-} from 'discord.js';
+import { Client, GatewayIntentBits, GuildBasedChannel, Message, TextChannel } from 'discord.js';
 import { errors, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { DiscordService } from '../service/DiscordService.js';
@@ -15,11 +9,7 @@ class DiscordBot {
 
   constructor() {
     this.client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-      ],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
     });
   }
 
@@ -33,9 +23,7 @@ class DiscordBot {
 
   async start() {
     if (!config.get('discord.botToken')) {
-      this.log.warn(
-        'No discord bot token provided, skipping discord bot startup'
-      );
+      this.log.warn('No discord bot token provided, skipping discord bot startup');
       return;
     }
 
@@ -46,9 +34,7 @@ class DiscordBot {
         resolve();
       });
 
-      this.client.on('messageCreate', (message) =>
-        this.messageHandler(message)
-      );
+      this.client.on('messageCreate', (message) => this.messageHandler(message));
 
       try {
         await this.client.login(config.get('discord.botToken'));
@@ -84,10 +70,7 @@ class DiscordBot {
       return;
     }
 
-    const domainId =
-      await DiscordService.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
-        message.guild.id
-      );
+    const domainId = await DiscordService.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(message.guild.id);
 
     if (!domainId) {
       // Ignore messages from guilds that are not linked to a domain

@@ -1,19 +1,7 @@
-import {
-  errors,
-  TakaroDTO,
-  NOT_DOMAIN_SCOPED_TakaroModelDTO,
-} from '@takaro/util';
-import {
-  UserCreateInputDTO,
-  UserOutputDTO,
-  UserService,
-} from './UserService.js';
+import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO } from '@takaro/util';
+import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
 import { randomBytes } from 'crypto';
-import {
-  RoleCreateInputDTO,
-  RoleOutputDTO,
-  RoleService,
-} from './RoleService.js';
+import { RoleCreateInputDTO, RoleOutputDTO, RoleService } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
 import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain.js';
@@ -72,9 +60,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     return new DomainRepo();
   }
 
-  find(
-    filters: ITakaroQuery<DomainOutputDTO>
-  ): Promise<PaginatedOutput<DomainOutputDTO>> {
+  find(filters: ITakaroQuery<DomainOutputDTO>): Promise<PaginatedOutput<DomainOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -110,17 +96,13 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     return id;
   }
 
-  async initDomain(
-    input: DomainCreateInputDTO
-  ): Promise<DomainCreateOutputDTO> {
+  async initDomain(input: DomainCreateInputDTO): Promise<DomainCreateOutputDTO> {
     const id = humanId({
       separator: '-',
       capitalize: false,
     });
 
-    const domain = await this.repo.create(
-      await new DomainCreateInputDTO().construct({ id, name: input.name })
-    );
+    const domain = await this.repo.create(await new DomainCreateInputDTO().construct({ id, name: input.name }));
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
@@ -158,9 +140,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   async resolveDomain(email: string): Promise<string> {
     const domain = await this.repo.resolveDomain(email);
     if (!domain) {
-      this.log.warn(
-        `Tried to lookup an email that is not in any domain: ${email}`
-      );
+      this.log.warn(`Tried to lookup an email that is not in any domain: ${email}`);
       throw new errors.UnauthorizedError();
     }
     return domain;

@@ -8,11 +8,7 @@ import { UserOutputDTO } from '@takaro/apiclient';
 let cachedClient: FrontendApi | null = null;
 
 export interface IAuthContext {
-  logIn: (
-    email: string,
-    password: string,
-    redirect?: string
-  ) => Promise<UserOutputDTO>;
+  logIn: (email: string, password: string, redirect?: string) => Promise<UserOutputDTO>;
   logOut: () => Promise<boolean>;
   getSession: () => Promise<UserOutputDTO>;
 }
@@ -53,12 +49,7 @@ export function useAuth() {
     return res.data;
   }
 
-  async function logIn(
-    flow: string,
-    email: string,
-    password: string,
-    csrf_token: string
-  ): Promise<void> {
+  async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
     await cachedClient!.updateLoginFlow({
       flow,
       updateLoginFlowBody: {

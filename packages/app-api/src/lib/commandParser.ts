@@ -9,10 +9,7 @@ interface IParsedCommand {
 
 const log = logger('lib:commandParser');
 
-export function parseCommand(
-  rawMessage: string,
-  command: CommandOutputDTO
-): IParsedCommand {
+export function parseCommand(rawMessage: string, command: CommandOutputDTO): IParsedCommand {
   // Split, allowing for quotes
   const split = rawMessage.match(/(?:[^\s"]+|"[^"]*")+/g);
 
@@ -23,9 +20,7 @@ export function parseCommand(
 
   const parsedArgs: Record<string, string | number | boolean> = {};
 
-  const sortedArguments = command.arguments.sort(
-    (a, b) => a.position - b.position
-  );
+  const sortedArguments = command.arguments.sort((a, b) => a.position - b.position);
 
   for (const [index, argument] of sortedArguments.entries()) {
     const rawValue = split[index + 1];
@@ -54,9 +49,7 @@ export function parseCommand(
             argument,
             value,
           });
-          throw new errors.BadRequestError(
-            `Invalid number value for argument "${argument.name}"`
-          );
+          throw new errors.BadRequestError(`Invalid number value for argument "${argument.name}"`);
         }
 
         parsedArgs[argument.name] = parseInt(value, 10);
@@ -69,9 +62,7 @@ export function parseCommand(
             argument,
             value,
           });
-          throw new errors.BadRequestError(
-            `Invalid boolean value for argument "${argument.name}"`
-          );
+          throw new errors.BadRequestError(`Invalid boolean value for argument "${argument.name}"`);
         }
 
         parsedArgs[argument.name] = value === 'true';

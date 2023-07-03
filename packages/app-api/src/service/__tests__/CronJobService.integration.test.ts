@@ -1,15 +1,7 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import {
-  GameServerOutputDTO,
-  ModuleOutputDTO,
-  CronJobOutputDTO,
-  ModuleInstallationOutputDTO,
-} from '@takaro/apiclient';
+import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
-import {
-  CronJobService,
-  CronJobOutputDTO as ServiceCronJobOutputDTO,
-} from '../CronJobService.js';
+import { CronJobService, CronJobOutputDTO as ServiceCronJobOutputDTO } from '../CronJobService.js';
 import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../GameServerService.js';
 
 const group = 'CronJobService';
@@ -22,9 +14,7 @@ interface IStandardSetupData {
   cronjob: CronJobOutputDTO;
 }
 
-async function setup(
-  this: IntegrationTest<IStandardSetupData>
-): Promise<IStandardSetupData> {
+async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
   const modCreate = (
     await this.client.module.moduleControllerCreate({
       name: 'Test module',
@@ -39,8 +29,7 @@ async function setup(
     })
   ).data.data;
 
-  const mod = (await this.client.module.moduleControllerGetOne(modCreate.id))
-    .data.data;
+  const mod = (await this.client.module.moduleControllerGetOne(modCreate.id)).data.data;
 
   const gameserver = (
     await this.client.gameserver.gameServerControllerCreate({
@@ -52,12 +41,7 @@ async function setup(
     })
   ).data.data;
 
-  const assignment = (
-    await this.client.gameserver.gameServerControllerInstallModule(
-      gameserver.id,
-      mod.id
-    )
-  ).data.data;
+  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -79,20 +63,14 @@ const tests = [
     test: async function (this: IntegrationTest<IStandardSetupData>) {
       const { service, gameserver, mod, assignment, cronjob } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        gameserver.id,
-        mod.id
-      );
+      await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.id ===
-          service.getJobId(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO
-          )
+          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
         );
       });
 
@@ -111,20 +89,14 @@ const tests = [
     test: async function (this: IntegrationTest<IStandardSetupData>) {
       const { service, gameserver, mod, assignment } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerUninstallModule(
-        gameserver.id,
-        mod.id
-      );
+      await this.client.gameserver.gameServerControllerUninstallModule(gameserver.id, mod.id);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.id ===
-          service.getJobId(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO
-          )
+          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
         );
       });
 
@@ -139,19 +111,14 @@ const tests = [
     test: async function (this: IntegrationTest<IStandardSetupData>) {
       const { service, mod, assignment } = this.setupData;
 
-      await this.adminClient.domain.domainControllerRemove(
-        this.standardDomainId as string
-      );
+      await this.adminClient.domain.domainControllerRemove(this.standardDomainId as string);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.id ===
-          service.getJobId(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO
-          )
+          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
         );
       });
 
@@ -173,10 +140,7 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.id ===
-          service.getJobId(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO
-          )
+          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
         );
       });
 
@@ -198,10 +162,7 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.id ===
-          service.getJobId(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO
-          )
+          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
         );
       });
 

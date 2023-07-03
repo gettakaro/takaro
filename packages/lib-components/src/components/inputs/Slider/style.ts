@@ -8,9 +8,7 @@ export const Container = styled.div`
   width: 100%;
 `;
 
-export const StyledSlider = styled<any | { color: Color; size: Size }>(
-  SliderComp
-)`
+export const StyledSlider = styled<any | { color: Color; size: Size }>(SliderComp)`
 
   .rc-slider-track {
     background-color: ${({ theme, color }): string => theme.colors[color]};

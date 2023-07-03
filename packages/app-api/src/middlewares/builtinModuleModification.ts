@@ -19,10 +19,7 @@ export async function builtinModuleModificationMiddleware(
   } else if (type === 'module') {
     mod = await moduleService.findOne(req.params.id);
   } else {
-    mod = await moduleService.findOneBy(
-      type,
-      req.body.commandId || req.params.id
-    );
+    mod = await moduleService.findOneBy(type, req.body.commandId || req.params.id);
   }
 
   if (mod?.builtin) {

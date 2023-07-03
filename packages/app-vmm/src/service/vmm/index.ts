@@ -88,11 +88,7 @@ export class VMM {
   }
 
   // Pops a VM from the pool, executes the function, then pushes the VM back
-  async executeFunction(
-    fn: string,
-    data: Record<string, unknown>,
-    token: string
-  ) {
+  async executeFunction(fn: string, data: Record<string, unknown>, token: string) {
     let vm;
 
     try {

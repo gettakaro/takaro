@@ -37,11 +37,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('key').notNullable();
     table.string('value').notNullable();
 
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
 
     table.unique(['key', 'domain']);
   });

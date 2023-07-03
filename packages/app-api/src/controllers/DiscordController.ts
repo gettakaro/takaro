@@ -1,31 +1,11 @@
-import {
-  UseBefore,
-  JsonController,
-  Body,
-  Req,
-  Res,
-  Post,
-  Params,
-  Put,
-  Get,
-} from 'routing-controllers';
+import { UseBefore, JsonController, Body, Req, Res, Post, Params, Put, Get } from 'routing-controllers';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
-import {
-  DiscordService,
-  GuildOutputDTO,
-  SendMessageInputDTO,
-} from '../service/DiscordService.js';
+import { DiscordService, GuildOutputDTO, SendMessageInputDTO } from '../service/DiscordService.js';
 import { Response } from 'express';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ITakaroQuery } from '@takaro/db';
 import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
 import { ParamId } from '../lib/validators.js';
@@ -86,11 +66,7 @@ class DiscordInviteOutputDTO extends APIOutput<InviteOutputDTO> {
 export class DiscordController {
   @Post('/discord/guilds/search')
   @ResponseSchema(GuildOutputDTOAPI)
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: GuildSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: GuildSearchInputDTO) {
     const service = new DiscordService(req.domainId);
     const result = await service.find({
       ...query,

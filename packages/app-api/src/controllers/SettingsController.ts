@@ -1,28 +1,9 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { errors, TakaroDTO } from '@takaro/util';
-import {
-  Settings,
-  SettingsService,
-  SETTINGS_KEYS,
-} from '../service/SettingsService.js';
+import { Settings, SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  JsonController,
-  UseBefore,
-  Req,
-  Params,
-  QueryParams,
-} from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, QueryParams } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
@@ -54,9 +35,7 @@ export class SettingsOutputDTOAPI extends APIOutput<Settings[SETTINGS_KEYS]> {
   declare data: Settings[SETTINGS_KEYS];
 }
 
-export class SettingsOutputObjectDTOAPI extends APIOutput<
-  Record<SETTINGS_KEYS, string>
-> {
+export class SettingsOutputObjectDTOAPI extends APIOutput<Record<SETTINGS_KEYS, string>> {
   @Type(() => Settings)
   @ValidateNested()
   declare data: Record<SETTINGS_KEYS, string>;
@@ -106,18 +85,13 @@ export class SettingsController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
   @ResponseSchema(SettingsOutputObjectDTOAPI)
   @Get('/settings')
-  async get(
-    @Req() req: AuthenticatedRequest,
-    @QueryParams() query: GetSettingsInput
-  ) {
+  async get(@Req() req: AuthenticatedRequest, @QueryParams() query: GetSettingsInput) {
     const service = new SettingsService(req.domainId, query.gameServerId);
 
     if (query.keys) {
       // if only one value is passed in, the type will be a string. convert to an array for consistency in handling.
       // See: https://github.com/typestack/routing-controllers/issues/389
-      const keys: SETTINGS_KEYS[] = Array.isArray(query.keys)
-        ? query.keys
-        : [query.keys] || undefined;
+      const keys: SETTINGS_KEYS[] = Array.isArray(query.keys) ? query.keys : [query.keys] || undefined;
       return apiResponse(await service.getMany(keys));
     } else {
       return apiResponse(await service.getAll());
@@ -127,11 +101,7 @@ export class SettingsController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Post('/settings/:key')
-  async set(
-    @Req() req: AuthenticatedRequest,
-    @Body() body: SettingsSetDTO,
-    @Params() params: ParamKey
-  ) {
+  async set(@Req() req: AuthenticatedRequest, @Body() body: SettingsSetDTO, @Params() params: ParamKey) {
     const service = new SettingsService(req.domainId, body.gameServerId);
     return apiResponse(await service.set(params.key, body.value));
   }

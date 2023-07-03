@@ -8,18 +8,7 @@ import {
   VariablesService,
   VariableUpdateDTO,
 } from '../service/VariablesService.js';
-import {
-  Body,
-  Delete,
-  Get,
-  JsonController,
-  Params,
-  Post,
-  Put,
-  Req,
-  Res,
-  UseBefore,
-} from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Params, Post, Put, Req, Res, UseBefore } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
@@ -74,11 +63,7 @@ export class VariableController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @Post('/variables/search')
-  async find(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: VariableSearchInputDTO
-  ) {
+  async find(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
     const service = new VariablesService(req.domainId);
     const result = await service.find({
       ...query,
@@ -104,11 +89,7 @@ export class VariableController {
   @Put('/variables/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() body: VariableUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() body: VariableUpdateDTO) {
     const service = new VariablesService(req.domainId);
     const variable = await service.update(params.id, body);
     return apiResponse(variable);
@@ -117,10 +98,7 @@ export class VariableController {
   @Post('/variables')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_VARIABLES]))
   @ResponseSchema(VariableOutputDTOAPI)
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() body: VariableCreateDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() body: VariableCreateDTO) {
     const service = new VariablesService(req.domainId);
     const variable = await service.create(body);
     return apiResponse(variable);

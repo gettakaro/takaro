@@ -21,8 +21,6 @@ describe('Ory', () => {
     await ory.deleteIdentitiesForDomain('domainId');
 
     // Make sure they're gone
-    expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith(
-      'Not Found'
-    );
+    expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith('Not Found');
   });
 });
