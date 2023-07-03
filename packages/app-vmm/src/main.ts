@@ -1,5 +1,5 @@
 import { HTTP } from '@takaro/http';
-import { logger } from '@takaro/util';
+import { logger, errors } from '@takaro/util';
 import { config } from './config.js';
 import { CronJobWorker } from './service/workers/cronjobWorker.js';
 import { CommandWorker } from './service/workers/commandWorker.js';
@@ -19,8 +19,16 @@ export const server = new HTTP(
 async function main() {
   log.info('Starting...');
 
-  config.validate();
-  log.info('✅ Config validated');
+  try {
+    config.validate();
+    log.info('✅ Config validated');
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new errors.ConfigError(`Config validation failed: ${error.message}`);
+    } else {
+      throw error;
+    }
+  }
 
   if (config.get('functions.executionMode') === 'firecracker') {
     const vmm = await getVMM();

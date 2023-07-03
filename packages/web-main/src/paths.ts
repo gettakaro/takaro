@@ -5,6 +5,7 @@ export const PATHS = {
   profile: () => '/profile',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
+  notFound: () => '/404',
 
   settings: {
     GameServerSettings: () => '/settings/gameservers',
