@@ -15,13 +15,10 @@ interface IFormInputs {
   serverChatName: string;
 }
 
-function mapSettings<T extends Promise<unknown>>(
-  data: Settings,
-  fn: (key: keyof Settings, value?: string) => T
-) {
+function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
-    const settingsKey = key as keyof Settings;
+    const settingsKey = key as keyof IFormInputs;
     if (Object.prototype.hasOwnProperty.call(data, key)) {
       const element = data[key];
       promises.push(fn(settingsKey, element));
@@ -44,7 +41,7 @@ export const GlobalGameServerSettings: FC = () => {
     return z.object(schema);
   }, [data]);
 
-  const { control, handleSubmit, getValues } = useForm<IFormInputs>({
+  const { control, handleSubmit, getValues, setValue } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
@@ -64,11 +61,11 @@ export const GlobalGameServerSettings: FC = () => {
 
   // TODO: this should be mapped using the new config generator
   if (data) {
-    mapSettings(data, async (key, value) =>
-      settingsComponents.push(
-        <TextField control={control} label={key} name={key} key={key} />
-      )
-    );
+    mapSettings(data, async (key, value) => {
+      if (value) setValue(key, value);
+
+      settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+    });
   }
 
   return (
@@ -78,13 +75,7 @@ export const GlobalGameServerSettings: FC = () => {
       </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         {settingsComponents}
-        <Button
-          icon={<AiFillSave />}
-          isLoading={isLoading}
-          text="Save"
-          type="submit"
-          variant="default"
-        />
+        <Button icon={<AiFillSave />} isLoading={isLoading} text="Save" type="submit" variant="default" />
       </form>
     </Fragment>
   );
