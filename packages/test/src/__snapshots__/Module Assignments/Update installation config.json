@@ -2,14 +2,15 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "5d3a6063-031f-48ba-b00f-5256537b41d8",
-      "createdAt": "2023-07-02T19:56:24.616Z",
-      "updatedAt": "2023-07-02T19:56:24.648Z",
-      "gameserverId": "f3767bd0-6069-46b3-ad0e-6f2a78fd65c5",
-      "moduleId": "64a599ea-6988-4f60-a341-ff5538ea0df4",
+      "id": "85af190d-e5d6-4ac5-80c6-4583cb04d843",
+      "createdAt": "2023-07-03T10:39:31.693Z",
+      "updatedAt": "2023-07-03T10:39:31.710Z",
+      "gameserverId": "1225343a-ca6a-4d64-b2a9-c7d2d3cd8270",
+      "moduleId": "eacf283f-760b-4ed0-b55f-3e33db83c4b5",
       "userConfig": {
         "maxTeleports": 42,
-        "timeout": 1337
+        "timeout": 1337,
+        "allowPublicTeleports": false
       },
       "systemConfig": {
         "commands": {
@@ -20,6 +21,12 @@
             "delay": 0
           },
           "settp": {
+            "delay": 0
+          },
+          "setpublic": {
+            "delay": 0
+          },
+          "setprivate": {
             "delay": 0
           },
           "deletetp": {
