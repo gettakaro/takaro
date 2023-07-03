@@ -60,8 +60,7 @@ const Button = styled.button<{ isActive: boolean; depth: number }>`
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    color: ${({ isActive, theme }) =>
-      isActive ? theme.colors.text : theme.colors.textAlt};
+    color: ${({ isActive, theme }) => (isActive ? theme.colors.text : theme.colors.textAlt)};
   }
 
   svg {
@@ -89,6 +88,7 @@ const NewFileContainer = styled.div<{ depth: number }>`
   align-items: center;
   justify-content: flex-start;
   padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
+  margin-top: ${({ theme }) => theme.spacing['0_5']};
 
   svg {
     margin-right: ${({ theme }) => theme.spacing[1]};
@@ -114,14 +114,7 @@ export interface FileProps {
   isDirOpen?: boolean;
 }
 
-export const File: FC<FileProps> = ({
-  filePath,
-  selectFile,
-  isDirOpen,
-  active,
-  onClick,
-  depth,
-}) => {
+export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, onClick, depth }) => {
   // TODO: create prop: IsDir() based on selectFile.
 
   const fileName = filePath.split('/').filter(Boolean).pop()!;
@@ -154,9 +147,7 @@ export const File: FC<FileProps> = ({
   const { mutateAsync: createCronJob } = useCronJobCreate();
 
   // item is clicked in explorer
-  const handleOnFileClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ): void => {
+  const handleOnFileClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     if (selectFile) {
       selectFile(filePath);
     }
@@ -312,10 +303,7 @@ export const File: FC<FileProps> = ({
         <>
           <Tooltip placement="top">
             <Tooltip.Trigger asChild>
-              <IconButton
-                onClick={handleOnRenameClick}
-                icon={<RenameIcon size={18} />}
-              />
+              <IconButton onClick={handleOnRenameClick} icon={<RenameIcon size={18} />} />
             </Tooltip.Trigger>
             <Tooltip.Content>Rename file</Tooltip.Content>
           </Tooltip>
@@ -331,10 +319,7 @@ export const File: FC<FileProps> = ({
       return (
         <Tooltip placement="top">
           <Tooltip.Trigger asChild>
-            <IconButton
-              onClick={handleOnNewFileClick}
-              icon={<AddFileIcon size={18} />}
-            />
+            <IconButton onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
           </Tooltip.Trigger>
           <Tooltip.Content>New file</Tooltip.Content>
         </Tooltip>
@@ -372,11 +357,7 @@ export const File: FC<FileProps> = ({
 
         <AnimatePresence>
           {hover && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
               {getActions()}
             </motion.div>
           )}
@@ -400,16 +381,10 @@ export const File: FC<FileProps> = ({
           <Dialog.Heading>Remove file</Dialog.Heading>
           <Dialog.Body>
             <p>
-              Are you sure you want to <strong>{fileName}</strong>? The file
-              will be permanently removed.
+              Are you sure you want to <strong>{fileName}</strong>? The file will be permanently removed.
             </p>
             <ButtonContainer>
-              <TakaroButton
-                fullWidth
-                onClick={handleDelete}
-                text="Remove file"
-                color="error"
-              />
+              <TakaroButton fullWidth onClick={handleDelete} text="Remove file" color="error" />
             </ButtonContainer>
           </Dialog.Body>
         </Dialog.Content>
