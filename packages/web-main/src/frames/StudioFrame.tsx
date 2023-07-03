@@ -1,21 +1,13 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
-import { useParams } from 'react-router-dom';
-import {
-  CommandOutputDTO,
-  CronJobOutputDTO,
-  HookOutputDTO,
-} from '@takaro/apiclient';
-import {
-  FunctionType,
-  ModuleContext,
-  ModuleData,
-  ModuleItemProperties,
-} from '../context/moduleContext';
+import { useParams, useNavigate } from 'react-router-dom';
+import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
+import { FunctionType, ModuleContext, ModuleData, ModuleItemProperties } from '../context/moduleContext';
 import { useModule } from 'queries/modules';
-import { styled } from '@takaro/lib-components';
+import { Loading, styled } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
+import { PATHS } from 'paths';
 
 const Flex = styled.div`
   display: flex;
@@ -35,15 +27,9 @@ const Wrapper = styled.div`
  */
 
 export const StudioFrame: FC = () => {
-  // TODO: catch 404 module id does not exist errors
   const { moduleId } = useParams();
-  const {
-    data: mod,
-    isSuccess,
-    isError,
-    isLoading,
-    isRefetching,
-  } = useModule(moduleId!);
+  const navigate = useNavigate();
+  const { data: mod, isSuccess, isError, isLoading, isRefetching } = useModule(moduleId!);
 
   const [moduleData, setModuleData] = useState<ModuleData>({
     fileMap: {},
@@ -52,17 +38,11 @@ export const StudioFrame: FC = () => {
     isBuiltIn: false,
   });
 
-  const providerModuleData = useMemo(
-    () => ({ moduleData, setModuleData }),
-    [moduleData, setModuleData]
-  );
+  const providerModuleData = useMemo(() => ({ moduleData, setModuleData }), [moduleData, setModuleData]);
 
   const moduleItemPropertiesReducer =
     (functionType: FunctionType) =>
-    (
-      prev: Record<string, ModuleItemProperties>,
-      item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO
-    ) => {
+    (prev: Record<string, ModuleItemProperties>, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
       prev[`/${functionType}/${item.name}`] = {
         functionId: item.function.id,
         type: functionType,
@@ -74,18 +54,9 @@ export const StudioFrame: FC = () => {
 
   useEffect(() => {
     if (isSuccess && mod) {
-      const nameToId = mod.hooks.reduce(
-        moduleItemPropertiesReducer(FunctionType.Hooks),
-        {}
-      );
-      mod.cronJobs.reduce(
-        moduleItemPropertiesReducer(FunctionType.CronJobs),
-        nameToId
-      );
-      mod.commands.reduce(
-        moduleItemPropertiesReducer(FunctionType.Commands),
-        nameToId
-      );
+      const nameToId = mod.hooks.reduce(moduleItemPropertiesReducer(FunctionType.Hooks), {});
+      mod.cronJobs.reduce(moduleItemPropertiesReducer(FunctionType.CronJobs), nameToId);
+      mod.commands.reduce(moduleItemPropertiesReducer(FunctionType.Commands), nameToId);
 
       setModuleData((moduleData) => ({
         ...moduleData,
@@ -111,19 +82,15 @@ export const StudioFrame: FC = () => {
   })();
 
   if (isLoading || isRefetching) {
-    return <></>;
+    return <Loading />;
   }
 
   if (isError) {
-    return <>error</>;
+    navigate(PATHS.notFound());
+    return <></>;
   }
 
-  if (
-    isSuccess &&
-    !mod.hooks.length &&
-    !mod.cronJobs.length &&
-    !mod.commands.length
-  ) {
+  if (isSuccess && !mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
     return <ModuleOnboarding moduleId={moduleId!} />;
   }
 
