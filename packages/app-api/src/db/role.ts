@@ -2,12 +2,7 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors } from '@takaro/util';
 import { omit } from 'lodash-es';
 import { Model } from 'objection';
-import {
-  RoleCreateInputDTO,
-  RoleOutputDTO,
-  RoleUpdateInputDTO,
-  PermissionOutputDTO,
-} from '../service/RoleService.js';
+import { RoleCreateInputDTO, RoleOutputDTO, RoleUpdateInputDTO, PermissionOutputDTO } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
 import { PERMISSIONS } from '@takaro/auth';
 
@@ -38,12 +33,7 @@ export class RoleModel extends TakaroModel {
   };
 }
 
-export class RoleRepo extends ITakaroRepo<
-  RoleModel,
-  RoleOutputDTO,
-  RoleCreateInputDTO,
-  RoleUpdateInputDTO
-> {
+export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -59,9 +49,7 @@ export class RoleRepo extends ITakaroRepo<
 
   private transformToDTO(data: RoleModel): Promise<RoleOutputDTO>;
   private transformToDTO(data: RoleModel[]): Promise<RoleOutputDTO[]>;
-  private async transformToDTO(
-    data: RoleModel[] | RoleModel
-  ): Promise<RoleOutputDTO | RoleOutputDTO[]> {
+  private async transformToDTO(data: RoleModel[] | RoleModel): Promise<RoleOutputDTO | RoleOutputDTO[]> {
     if (Array.isArray(data)) {
       return Promise.all(data.map(async (item) => this.transformToDTO(item)));
     }
@@ -70,9 +58,7 @@ export class RoleRepo extends ITakaroRepo<
 
     return new RoleOutputDTO().construct({
       ...data,
-      permissions: await Promise.all(
-        data.permissions?.map((c) => new PermissionOutputDTO().construct(c))
-      ),
+      permissions: await Promise.all(data.permissions?.map((c) => new PermissionOutputDTO().construct(c))),
     });
   }
 
@@ -129,9 +115,7 @@ export class RoleRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    await query
-      .updateAndFetchById(id, omit(data.toJSON(), 'permissions'))
-      .returning('*');
+    await query.updateAndFetchById(id, omit(data.toJSON(), 'permissions')).returning('*');
     const item = await this.findOne(id);
     return item;
   }

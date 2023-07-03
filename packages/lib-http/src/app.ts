@@ -3,10 +3,7 @@ import express, { Application } from 'express';
 import { logger, errors, Sentry } from '@takaro/util';
 import { getBullBoard } from '@takaro/queues';
 import { Server, createServer } from 'http';
-import {
-  RoutingControllersOptions,
-  useExpressServer,
-} from 'routing-controllers';
+import { RoutingControllersOptions, useExpressServer } from 'routing-controllers';
 import { Meta } from './controllers/meta.js';
 import { LoggingMiddleware } from './middleware/logger.js';
 import { ErrorHandler } from './middleware/errorHandler.js';
@@ -26,10 +23,7 @@ export class HTTP {
   private httpServer: Server;
   private logger;
 
-  constructor(
-    options: RoutingControllersOptions = {},
-    private httpOptions: IHTTPOptions = {}
-  ) {
+  constructor(options: RoutingControllersOptions = {}, private httpOptions: IHTTPOptions = {}) {
     this.logger = logger('http');
     this.app = express();
     this.httpServer = createServer(this.app);
@@ -89,9 +83,7 @@ export class HTTP {
 
   async start() {
     this.httpServer = this.httpServer.listen(this.httpOptions.port, () => {
-      this.logger.info(
-        `HTTP server listening on port ${this.httpOptions.port}`
-      );
+      this.logger.info(`HTTP server listening on port ${this.httpOptions.port}`);
     });
   }
 

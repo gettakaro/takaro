@@ -23,9 +23,9 @@ export function createAxiosClient(baseURL: string) {
   client.interceptors.response.use(
     (response) => {
       log.info(
-        `⬅️ ${response.request.method?.toUpperCase()} ${
-          response.request.path
-        } ${response.status} ${response.statusText}`,
+        `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
+          response.statusText
+        }`,
         {
           status: response.status,
           method: response.request.method,

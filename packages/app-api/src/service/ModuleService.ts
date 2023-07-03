@@ -1,37 +1,16 @@
 import { TakaroService } from './Base.js';
 
 import { ModuleModel, ModuleRepo } from '../db/module.js';
-import {
-  IsJSON,
-  IsOptional,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsJSON, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 
 import { Type } from 'class-transformer';
-import {
-  CronJobCreateDTO,
-  CronJobOutputDTO,
-  CronJobService,
-  CronJobUpdateDTO,
-} from './CronJobService.js';
-import {
-  HookCreateDTO,
-  HookOutputDTO,
-  HookService,
-  HookUpdateDTO,
-} from './HookService.js';
+import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
+import { HookCreateDTO, HookOutputDTO, HookService, HookUpdateDTO } from './HookService.js';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import {
-  CommandCreateDTO,
-  CommandOutputDTO,
-  CommandService,
-  CommandUpdateDTO,
-} from './CommandService.js';
+import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
 
@@ -111,19 +90,12 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   configSchema: string;
 }
 
-export class ModuleService extends TakaroService<
-  ModuleModel,
-  ModuleOutputDTO,
-  ModuleCreateDTO,
-  ModuleUpdateDTO
-> {
+export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, ModuleCreateDTO, ModuleUpdateDTO> {
   get repo() {
     return new ModuleRepo(this.domainId);
   }
 
-  async find(
-    filters: ITakaroQuery<ModuleOutputDTO>
-  ): Promise<PaginatedOutput<ModuleOutputDTO>> {
+  async find(filters: ITakaroQuery<ModuleOutputDTO>): Promise<PaginatedOutput<ModuleOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -145,11 +117,7 @@ export class ModuleService extends TakaroService<
     const installations = await gameServerService.getInstalledModules({
       moduleId: id,
     });
-    await Promise.all(
-      installations.map((i) =>
-        gameServerService.uninstallModule(i.gameserverId, i.moduleId)
-      )
-    );
+    await Promise.all(installations.map((i) => gameServerService.uninstallModule(i.gameserverId, i.moduleId)));
     await this.repo.delete(id);
     return id;
   }
@@ -245,10 +213,7 @@ export class ModuleService extends TakaroService<
     return Promise.all([commands, hooks, cronjobs]);
   }
 
-  async findOneBy(
-    itemType: string,
-    itemId: string | undefined
-  ): Promise<ModuleOutputDTO | undefined> {
+  async findOneBy(itemType: string, itemId: string | undefined): Promise<ModuleOutputDTO | undefined> {
     if (!itemId) {
       return;
     }

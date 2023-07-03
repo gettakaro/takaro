@@ -28,9 +28,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
     super(config);
 
     if (this.config.auth.token) {
-      this.axios.defaults.headers.common[
-        'x-takaro-token'
-      ] = `${this.config.auth.token}`;
+      this.axios.defaults.headers.common['x-takaro-token'] = `${this.config.auth.token}`;
     }
   }
 
@@ -55,9 +53,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
     this.config.auth.token = loginRes.data.data.token;
     this.token = loginRes.data.data.token;
 
-    this.axios.defaults.headers.common[
-      'Authorization'
-    ] = `Bearer ${loginRes.data.data.token}`;
+    this.axios.defaults.headers.common['Authorization'] = `Bearer ${loginRes.data.data.token}`;
 
     return loginRes.data.data.token;
   }

@@ -57,9 +57,9 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     axios.interceptors.response.use(
       (response) => {
         this.log.info(
-          `⬅️ ${response.request.method?.toUpperCase()} ${
-            response.request.path
-          } ${response.status} ${response.statusText}`,
+          `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
+            response.statusText
+          }`,
           {
             status: response.status,
             statusText: response.statusText,

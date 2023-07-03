@@ -1,18 +1,8 @@
 import { HookService } from '../HookService.js';
 import { queueService } from '@takaro/queues';
 import { EventPlayerConnected, EventChatMessage } from '@takaro/modules';
-import {
-  IntegrationTest,
-  sandbox,
-  expect,
-  integrationConfig,
-} from '@takaro/test';
-import {
-  HookOutputDTO,
-  GameServerOutputDTO,
-  ModuleOutputDTO,
-  ModuleInstallationOutputDTO,
-} from '@takaro/apiclient';
+import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
+import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
 const group = 'HookService';
 
@@ -25,9 +15,7 @@ interface IStandardSetupData {
   queueAddStub: SinonStub;
 }
 
-async function setup(
-  this: IntegrationTest<IStandardSetupData>
-): Promise<IStandardSetupData> {
+async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
   const mod = (
     await this.client.module.moduleControllerCreate({
       name: 'Test module',
@@ -52,12 +40,7 @@ async function setup(
     })
   ).data.data;
 
-  const assignment = (
-    await this.client.gameserver.gameServerControllerInstallModule(
-      gameserver.id,
-      mod.id
-    )
-  ).data.data;
+  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
 
   const queueAddStub = sandbox.stub(queueService.queues.hooks.queue, 'add');
 

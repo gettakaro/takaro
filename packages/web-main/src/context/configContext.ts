@@ -26,6 +26,4 @@ export function getConfigVar(name: EnvVars) {
   }
 }
 
-export const ConfigContext = createContext<TakaroConfig>(
-  null as unknown as TakaroConfig
-);
+export const ConfigContext = createContext<TakaroConfig>(null as unknown as TakaroConfig);

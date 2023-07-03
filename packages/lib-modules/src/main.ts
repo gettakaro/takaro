@@ -5,13 +5,7 @@ import { HighPingKicker } from './modules/highPingKicker/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
-export {
-  BuiltinModule,
-  ICommand,
-  ICommandArgument,
-  ICronJob,
-  IHook,
-} from './BuiltinModule.js';
+export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook } from './BuiltinModule.js';
 
 export * from './dto/index.js';
 

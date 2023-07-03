@@ -43,8 +43,7 @@ export const InputContainer = styled.div`
 `;
 
 export const PrefixContainer = styled.div<{ hasError: boolean }>`
-  background-color: ${({ theme, hasError }): string =>
-    hasError ? theme.colors.error : theme.colors.primary};
+  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,8 +53,7 @@ export const PrefixContainer = styled.div<{ hasError: boolean }>`
 `;
 
 export const SuffixContainer = styled.div<{ hasError: boolean }>`
-  background-color: ${({ theme, hasError }): string =>
-    hasError ? theme.colors.error : theme.colors.primary};
+  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,14 +70,10 @@ export const Input = styled.input<{
   isPassword: boolean;
 }>`
   width: 100%;
-  padding-left: ${({ hasIcon, theme }): string =>
-    hasIcon ? theme.spacing[7] : theme.spacing['1_5']};
+  padding-left: ${({ hasIcon, theme }): string => (hasIcon ? theme.spacing[7] : theme.spacing['1_5'])};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding-right: ${({ theme, isPassword }) =>
-    isPassword ? theme.spacing[6] : 0};
-  border: 1px solid
-    ${({ theme, hasError }): string =>
-      hasError ? theme.colors.error : theme.colors.backgroundAlt};
+  padding-right: ${({ theme, isPassword }) => (isPassword ? theme.spacing[6] : 0)};
+  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
   color: ${({ theme }) => theme.colors.text};
 
   ::selection {
@@ -87,17 +81,11 @@ export const Input = styled.input<{
     color: white;
   }
 
-  ${({ hasPrefix }) =>
-    hasPrefix &&
-    'border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none;'}
-  ${({ hasSuffix }) =>
-    hasSuffix &&
-    'border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;'}
+  ${({ hasPrefix }) => hasPrefix && 'border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none;'}
+  ${({ hasSuffix }) => hasSuffix && 'border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;'}
 
   &:focus {
-    border: 1px solid
-      ${({ theme, hasError }): string =>
-        hasError ? theme.colors.error : theme.colors.primary};
+    border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
 
     ${({ hasPrefix }) => hasPrefix && 'border-left: none;'}
     ${({ hasSuffix }) => hasSuffix && 'border-right: none;'}

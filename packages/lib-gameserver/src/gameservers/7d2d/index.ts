@@ -58,9 +58,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
     const locations = await this.apiClient.getPlayersLocation();
-    const playerLocation = locations.data.find(
-      (location) => location.steamid === `Steam_${player.steamId}`
-    );
+    const playerLocation = locations.data.find((location) => location.steamid === `Steam_${player.steamId}`);
 
     if (!playerLocation) {
       return null;
@@ -93,12 +91,8 @@ export class SevenDaysToDie implements IGameServer {
           reason =
             'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
         } else {
-          if (
-            error.response?.status === 403 ||
-            error.response?.status === 401
-          ) {
-            reason =
-              'Unauthorized, please check that the admin user and token are correct';
+          if (error.response?.status === 403 || error.response?.status === 401) {
+            reason = 'Unauthorized, please check that the admin user and token are correct';
           }
         }
       }
@@ -167,9 +161,7 @@ export class SevenDaysToDie implements IGameServer {
     const bans: BanDTO[] = [];
 
     for (const entry of banEntries) {
-      const match = entry.match(
-        /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - (\S+) \(([^)]*)\) - (.*)/
-      );
+      const match = entry.match(/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - (\S+) \(([^)]*)\) - (.*)/);
 
       // If the entry is valid, extract the details and push to the bans array.
       if (match) {

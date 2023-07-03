@@ -11,9 +11,7 @@ class Health {
 
   public async check() {
     try {
-      const results = await Promise.all(
-        Array.from(this.hooks.values()).map((hook) => hook())
-      );
+      const results = await Promise.all(Array.from(this.hooks.values()).map((hook) => hook()));
 
       return results.every((result) => result);
     } catch (error) {

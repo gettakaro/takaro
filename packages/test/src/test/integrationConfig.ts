@@ -77,6 +77,4 @@ const configSchema = {
   },
 };
 
-export const integrationConfig = new Config<IIntegrationTestConfig>([
-  configSchema,
-]);
+export const integrationConfig = new Config<IIntegrationTestConfig>([configSchema]);

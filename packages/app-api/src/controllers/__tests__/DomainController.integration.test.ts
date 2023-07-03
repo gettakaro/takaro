@@ -9,9 +9,7 @@ const tests = [
     name: 'Get by ID',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
-      return this.adminClient.domain.domainControllerGetOne(
-        this.standardDomainId
-      );
+      return this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
     },
   }),
   new IntegrationTest<void>({
@@ -29,12 +27,9 @@ const tests = [
     name: 'Update by ID',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
-      return this.adminClient.domain.domainControllerUpdate(
-        this.standardDomainId,
-        {
-          name: 'New name',
-        }
-      );
+      return this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        name: 'New name',
+      });
     },
   }),
   new IntegrationTest<void>({
@@ -55,9 +50,7 @@ const tests = [
     name: 'Delete',
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
-      return this.adminClient.domain.domainControllerRemove(
-        this.standardDomainId
-      );
+      return this.adminClient.domain.domainControllerRemove(this.standardDomainId);
     },
   }),
 

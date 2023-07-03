@@ -39,8 +39,7 @@ export const IconContainer = styled.div<{
   height: 2.75rem;
   border-radius: 50%;
   margin-right: ${({ theme }) => theme.spacing[1]};
-  background-color: ${({ variant, theme }): string =>
-    lighten(0.3, theme.colors[variant])};
+  background-color: ${({ variant, theme }): string => lighten(0.3, theme.colors[variant])};
 `;
 
 export const ButtonContainer = styled.div`

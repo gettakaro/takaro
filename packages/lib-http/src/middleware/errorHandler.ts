@@ -20,10 +20,7 @@ export async function ErrorHandler(
     if (originalError.hasOwnProperty('errors')) {
       // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
       const validationErrors = originalError['errors'] as ValidationError[];
-      parsedError = new errors.ValidationError(
-        'Validation error',
-        validationErrors
-      );
+      parsedError = new errors.ValidationError('Validation error', validationErrors);
     }
   }
 

@@ -1,15 +1,7 @@
 import { errors, isTakaroDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
-import {
-  IsISO8601,
-  IsNumber,
-  IsOptional,
-  ValidateNested,
-} from 'class-validator';
-import {
-  IsString,
-  ValidationError as ClassValidatorError,
-} from 'class-validator';
+import { IsISO8601, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsString, ValidationError as ClassValidatorError } from 'class-validator';
 import { Request, Response } from 'express';
 
 class ErrorOutput {
@@ -68,10 +60,7 @@ interface IApiResponseOptions {
   res: Response;
 }
 
-export function apiResponse(
-  data: unknown = {},
-  opts?: IApiResponseOptions
-): APIOutput<unknown> {
+export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions): APIOutput<unknown> {
   const returnVal = new APIOutput<unknown>();
 
   returnVal.meta = new MetadataOutput();
@@ -84,8 +73,7 @@ export function apiResponse(
 
     if ('details' in opts.error) {
       if (opts.error instanceof errors.ValidationError) {
-        returnVal.meta.error.details = opts.error
-          .details as ClassValidatorError[];
+        returnVal.meta.error.details = opts.error.details as ClassValidatorError[];
       } else {
         returnVal.meta.error.details = String(opts.error.details);
       }

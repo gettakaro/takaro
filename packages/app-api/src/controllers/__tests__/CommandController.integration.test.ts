@@ -1,25 +1,15 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import {
-  CommandOutputDTOAPI,
-  CommandCreateDTO,
-  CommandArgumentCreateDTO,
-} from '@takaro/apiclient';
+import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
 
 const group = 'CommandController';
 
-const mockCommand = (
-  moduleId: string,
-  name = 'Test command'
-): CommandCreateDTO => ({
+const mockCommand = (moduleId: string, name = 'Test command'): CommandCreateDTO => ({
   name,
   trigger: 'test',
   moduleId,
 });
 
-const mockArgument = (
-  commandId: string,
-  name = 'Test argument'
-): CommandArgumentCreateDTO => ({
+const mockArgument = (commandId: string, name = 'Test argument'): CommandArgumentCreateDTO => ({
   name,
   type: 'string',
   commandId,
@@ -32,9 +22,7 @@ async function setupModuleAndCommand(): Promise<CommandOutputDTOAPI> {
       name: 'Test module',
     })
   ).data.data;
-  return (
-    await this.client.command.commandControllerCreate(mockCommand(mod.id))
-  ).data;
+  return (await this.client.command.commandControllerCreate(mockCommand(mod.id))).data;
 }
 
 const tests = [
@@ -44,9 +32,7 @@ const tests = [
     name: 'Get by ID',
     setup: setupModuleAndCommand,
     test: async function () {
-      return this.client.command.commandControllerGetOne(
-        this.setupData.data.id
-      );
+      return this.client.command.commandControllerGetOne(this.setupData.data.id);
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -60,9 +46,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.command.commandControllerCreate(
-        mockCommand(module.id)
-      );
+      return this.client.command.commandControllerCreate(mockCommand(module.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -72,12 +56,9 @@ const tests = [
     name: 'Update',
     setup: setupModuleAndCommand,
     test: async function () {
-      return this.client.command.commandControllerUpdate(
-        this.setupData.data.id,
-        {
-          name: 'Updated command',
-        }
-      );
+      return this.client.command.commandControllerUpdate(this.setupData.data.id, {
+        name: 'Updated command',
+      });
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -87,9 +68,7 @@ const tests = [
     name: 'Delete',
     setup: setupModuleAndCommand,
     test: async function () {
-      return this.client.command.commandControllerRemove(
-        this.setupData.data.id
-      );
+      return this.client.command.commandControllerRemove(this.setupData.data.id);
     },
   }),
   new IntegrationTest<CommandOutputDTOAPI>({
@@ -98,9 +77,7 @@ const tests = [
     name: 'Create command argument',
     setup: setupModuleAndCommand,
     test: async function () {
-      return this.client.command.commandControllerCreateArgument(
-        mockArgument(this.setupData.data.id)
-      );
+      return this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id));
     },
     filteredFields: ['moduleId', 'functionId', 'commandId'],
   }),
@@ -110,11 +87,8 @@ const tests = [
     name: 'Update command argument',
     setup: setupModuleAndCommand,
     test: async function () {
-      const arg = (
-        await this.client.command.commandControllerCreateArgument(
-          mockArgument(this.setupData.data.id)
-        )
-      ).data.data;
+      const arg = (await this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id))).data
+        .data;
       return this.client.command.commandControllerUpdateArgument(arg.id, {
         name: 'Updated argument',
       });
@@ -127,11 +101,8 @@ const tests = [
     name: 'Delete command argument',
     setup: setupModuleAndCommand,
     test: async function () {
-      const arg = (
-        await this.client.command.commandControllerCreateArgument(
-          mockArgument(this.setupData.data.id)
-        )
-      ).data.data;
+      const arg = (await this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id))).data
+        .data;
       return this.client.command.commandControllerRemoveArgument(arg.id);
     },
   }),
@@ -142,9 +113,7 @@ const tests = [
     setup: setupModuleAndCommand,
     test: async function () {
       const ARG_NAME = 'Test argument';
-      await this.client.command.commandControllerCreateArgument(
-        mockArgument(this.setupData.data.id, ARG_NAME)
-      );
+      await this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id, ARG_NAME));
 
       // Creating an argument with the same name in a different command should work
       const newCommand = await this.client.command.commandControllerCreate(
@@ -158,9 +127,7 @@ const tests = [
       expect(arg2res.data.data.name).to.be.eq(ARG_NAME);
 
       // Creating an argument with the same name in the same command should fail
-      return this.client.command.commandControllerCreateArgument(
-        mockArgument(this.setupData.data.id, ARG_NAME)
-      );
+      return this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id, ARG_NAME));
     },
     filteredFields: ['moduleId', 'functionId', 'commandId'],
     expectedStatus: 409,

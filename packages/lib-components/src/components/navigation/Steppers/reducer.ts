@@ -38,16 +38,12 @@ export const reducer = (state: StepperState, action: ReducerAction) => {
     case stepTypes.INCREMENT_CURRENT_STEP:
       return {
         ...state,
-        currentStep:
-          state.currentStep < state.steps.length - 1
-            ? state.currentStep + 1
-            : state.currentStep,
+        currentStep: state.currentStep < state.steps.length - 1 ? state.currentStep + 1 : state.currentStep,
       };
     case stepTypes.DECREMENT_CURRENT_STEP:
       return {
         ...state,
-        currentStep:
-          state.currentStep > 0 ? state.currentStep - 1 : state.currentStep,
+        currentStep: state.currentStep > 0 ? state.currentStep - 1 : state.currentStep,
       };
     default:
       return state;

@@ -3,14 +3,7 @@
  Recommended: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Understanding_z-index/Stacking_context
 */
 
-type ComponentType =
-  | 'tooltip'
-  | 'dialog'
-  | 'drawer'
-  | 'dropdown'
-  | 'overlay'
-  | 'notificationBanner'
-  | 'errorMessage';
+type ComponentType = 'tooltip' | 'dialog' | 'drawer' | 'dropdown' | 'overlay' | 'notificationBanner' | 'errorMessage';
 
 // IMPORTANT: types, in order of their desired z-index
 // Overlay is the backdrop for drawer and dialog

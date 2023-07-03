@@ -44,11 +44,7 @@ export interface ArrayInput extends BaseObject {
   default?: string[];
 }
 
-export type AnyInputExceptArray =
-  | EnumInput
-  | NumberInput
-  | StringInput
-  | BooleanInput;
+export type AnyInputExceptArray = EnumInput | NumberInput | StringInput | BooleanInput;
 export type AnyInput = AnyInputExceptArray | ArrayInput;
 
 export type Input = AnyInput & { name: string };

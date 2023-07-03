@@ -13,11 +13,10 @@ export const Container = styled.div<{
   align-items: center;
   justify-content: center;
   margin: 0 0 25px 50px;
-  background-color: ${({ bgColor, $loading, theme }) =>
-    $loading ? '#fff' : theme.colors[bgColor]};
+  background-color: ${({ bgColor, $loading, theme }) => ($loading ? '#fff' : theme.colors[bgColor])};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'default')};
-  animation: ${({ clickable }) => (clickable ? shakeAnimation : null)} 4s
-    cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite both;
+  animation: ${({ clickable }) => (clickable ? shakeAnimation : null)} 4s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite
+    both;
   transform: translate3d(0, 0, 0);
   position: relative;
 `;

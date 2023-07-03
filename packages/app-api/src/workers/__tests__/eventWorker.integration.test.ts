@@ -36,9 +36,7 @@ const tests = [
 
       const players = await this.client.player.playerControllerSearch();
 
-      const player = players.data.data.find(
-        (player) => player.steamId === MOCK_PLAYER.steamId
-      );
+      const player = players.data.data.find((player) => player.steamId === MOCK_PLAYER.steamId);
 
       expect(player).to.not.be.null;
       expect(player?.steamId).to.eq(MOCK_PLAYER.steamId);

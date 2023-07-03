@@ -69,8 +69,7 @@ export const ActionContainer = styled.div<{ active: boolean }>`
 export const CookieTypeContainer = styled.div<{ active: boolean }>`
   border: 0.1rem solid ${({ theme }) => theme.colors.primary};
   margin: ${({ theme }) => `${theme.spacing[1]} 0`};
-  padding: ${({ theme }) =>
-    `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing[1]}`};
   border-radius: ${({ theme }) => theme.borderRadius.large};
   display: flex;
   flex-direction: row;

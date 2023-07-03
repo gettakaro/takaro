@@ -48,9 +48,7 @@ const tests = [
     },
     teardown: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
-      await this.adminClient.domain.domainControllerRemove(
-        this.setupData.data.createdDomain.id
-      );
+      await this.adminClient.domain.domainControllerRemove(this.setupData.data.createdDomain.id);
     },
   }),
 ];

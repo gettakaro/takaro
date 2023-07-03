@@ -6,8 +6,7 @@ export const Container = styled.div<{ textVisible?: boolean; size: Size }>`
   justify-content: center;
   flex-direction: row;
 
-  gap: ${({ theme, textVisible }) =>
-    textVisible ? theme.spacing['1'] : theme.spacing[0]};
+  gap: ${({ theme, textVisible }) => (textVisible ? theme.spacing['1'] : theme.spacing[0])};
 
   a {
     display: flex;

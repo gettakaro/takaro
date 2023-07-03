@@ -1,11 +1,7 @@
 import { TakaroModel } from '@takaro/db';
 import { errors } from '@takaro/util';
 import { ITakaroRepo, PaginatedOutput } from './base.js';
-import {
-  DEFAULT_SETTINGS,
-  Settings,
-  SETTINGS_KEYS,
-} from '../service/SettingsService.js';
+import { DEFAULT_SETTINGS, Settings, SETTINGS_KEYS } from '../service/SettingsService.js';
 
 export const SETTINGS_TABLE_NAME = 'settings';
 
@@ -21,16 +17,8 @@ export class GameServerSettingsModel extends SettingsModel {
   gameServerId!: string;
 }
 
-export class SettingsRepo extends ITakaroRepo<
-  SettingsModel,
-  Settings,
-  never,
-  never
-> {
-  constructor(
-    public readonly domainId: string,
-    public readonly gameServerId?: string
-  ) {
+export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, never> {
+  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
     super(domainId);
   }
 
@@ -136,9 +124,7 @@ export class SettingsRepo extends ITakaroRepo<
   async set(key: SETTINGS_KEYS, value: string): Promise<void> {
     if (this.gameServerId) {
       const { query } = await this.getGameServerModel();
-      await query
-        .where({ gameServerId: this.gameServerId })
-        .update({ [key]: value });
+      await query.where({ gameServerId: this.gameServerId }).update({ [key]: value });
       return;
     }
 

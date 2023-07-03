@@ -2,14 +2,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
-import {
-  Length,
-  IsArray,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-  IsString,
-  IsEnum,
-} from 'class-validator';
+import { Length, IsArray, ValidatorConstraint, ValidatorConstraintInterface, IsString, IsEnum } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
@@ -18,10 +11,7 @@ import { TakaroService } from './Base.js';
 export class IsPermissionArray implements ValidatorConstraintInterface {
   public async validate(permissions: PERMISSIONS[]) {
     return (
-      Array.isArray(permissions) &&
-      permissions.every((permission) =>
-        Object.values(PERMISSIONS).includes(permission)
-      )
+      Array.isArray(permissions) && permissions.every((permission) => Object.values(PERMISSIONS).includes(permission))
     );
   }
 }
@@ -61,19 +51,12 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   permissions: PermissionOutputDTO[];
 }
 
-export class RoleService extends TakaroService<
-  RoleModel,
-  RoleOutputDTO,
-  RoleCreateInputDTO,
-  RoleUpdateInputDTO
-> {
+export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
   get repo() {
     return new RoleRepo(this.domainId);
   }
 
-  async find(
-    filters: ITakaroQuery<RoleOutputDTO>
-  ): Promise<PaginatedOutput<RoleOutputDTO>> {
+  async find(filters: ITakaroQuery<RoleOutputDTO>): Promise<PaginatedOutput<RoleOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -94,10 +77,7 @@ export class RoleService extends TakaroService<
     return id;
   }
 
-  async createWithPermissions(
-    role: RoleCreateInputDTO,
-    permissions: PERMISSIONS[]
-  ): Promise<RoleOutputDTO> {
+  async createWithPermissions(role: RoleCreateInputDTO, permissions: PERMISSIONS[]): Promise<RoleOutputDTO> {
     const createdRole = await this.repo.create(role);
     await Promise.all(
       permissions.map((permission) => {
@@ -111,12 +91,9 @@ export class RoleService extends TakaroService<
   async setPermissions(roleId: string, permissions: PERMISSIONS[]) {
     const role = await this.repo.findOne(roleId);
 
-    const toRemove = role.permissions.filter(
-      (permission) => !permissions.includes(permission.permission)
-    );
+    const toRemove = role.permissions.filter((permission) => !permissions.includes(permission.permission));
     const toAdd = permissions.filter(
-      (permission) =>
-        !role.permissions.map((cap) => cap.permission).includes(permission)
+      (permission) => !role.permissions.map((cap) => cap.permission).includes(permission)
     );
 
     const removePromises = toRemove.map((permission) => {

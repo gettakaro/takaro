@@ -1,9 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import {
-  QueryBuilder as ObjectionQueryBuilder,
-  Model as ObjectionModel,
-  Page,
-} from 'objection';
+import { QueryBuilder as ObjectionQueryBuilder, Model as ObjectionModel, Page } from 'objection';
 
 export class ITakaroQuery<T> {
   @IsOptional()
@@ -44,13 +40,9 @@ export enum SortDirection {
 }
 
 export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
-  constructor(
-    private readonly query: ITakaroQuery<OutputDTO> = new ITakaroQuery()
-  ) {}
+  constructor(private readonly query: ITakaroQuery<OutputDTO> = new ITakaroQuery()) {}
 
-  build(
-    query: ObjectionQueryBuilder<Model, Model[]>
-  ): ObjectionQueryBuilder<Model, Page<Model>> {
+  build(query: ObjectionQueryBuilder<Model, Model[]>): ObjectionQueryBuilder<Model, Page<Model>> {
     const tableName = query.modelClass().tableName;
 
     const filters = this.filters(tableName);

@@ -14,10 +14,7 @@ interface RoleInput {
   roleId: string;
 }
 
-export const useUsers = ({
-  page = 0,
-  ...userSearchInputArgs
-}: UserSearchInputDTO = {}) => {
+export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useInfiniteQuery({
@@ -29,8 +26,7 @@ export const useUsers = ({
           page: pageParam,
         })
       ).data,
-    getNextPageParam: (lastPage, pages) =>
-      hasNextPage(lastPage.meta, pages.length),
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
 };
 

@@ -42,9 +42,7 @@ export class RustEmitter extends TakaroEmitter {
     const log = logger('rust:ws');
 
     const protocol = config.useTls ? 'wss' : 'ws';
-    const client = new WebSocket(
-      `${protocol}://${config.host}:${config.rconPort}/${config.rconPassword}`
-    );
+    const client = new WebSocket(`${protocol}://${config.host}:${config.rconPort}/${config.rconPassword}`);
 
     log.debug('getClient', {
       host: config.host,
@@ -123,9 +121,7 @@ export class RustEmitter extends TakaroEmitter {
     // "msg": "169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]"
     const msg = e.Message;
     const expSearch =
-      /(?<ip>[0-9\.]+):(?<port>\d{5})\/(?<steamId>\d{17})\/(?<name>.+) joined \[(?<device>.+)\/\d{17}\]/.exec(
-        msg
-      );
+      /(?<ip>[0-9\.]+):(?<port>\d{5})\/(?<steamId>\d{17})\/(?<name>.+) joined \[(?<device>.+)\/\d{17}\]/.exec(msg);
 
     if (
       expSearch &&
@@ -152,11 +148,7 @@ export class RustEmitter extends TakaroEmitter {
       });
     }
 
-    this.log.error(
-      'Could not parse `PlayerConnected` event correctly.',
-      msg,
-      expSearch
-    );
+    this.log.error('Could not parse `PlayerConnected` event correctly.', msg, expSearch);
 
     throw new errors.GameServerError();
   }
@@ -164,17 +156,11 @@ export class RustEmitter extends TakaroEmitter {
   private async handlePlayerDisconnected(e: RustEvent) {
     // Example: 178.118.188.46:52210/76561198035925898/Emiel disconnecting: disconnect
     const msg = e.Message;
-    const expSearch =
-      /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(
-        msg
-      );
+    const expSearch = /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(
+      msg
+    );
 
-    if (
-      expSearch &&
-      expSearch.groups &&
-      expSearch.groups.platformId &&
-      expSearch.groups.name
-    ) {
+    if (expSearch && expSearch.groups && expSearch.groups.platformId && expSearch.groups.name) {
       const player = await new IGamePlayer().construct({
         name: expSearch.groups.name,
         steamId: expSearch.groups.platformId,
@@ -188,11 +174,7 @@ export class RustEmitter extends TakaroEmitter {
       });
     }
 
-    this.log.error(
-      'Could not parse `playerDisconnected` event correctly.',
-      msg,
-      expSearch
-    );
+    this.log.error('Could not parse `playerDisconnected` event correctly.', msg, expSearch);
 
     throw new errors.GameServerError();
   }

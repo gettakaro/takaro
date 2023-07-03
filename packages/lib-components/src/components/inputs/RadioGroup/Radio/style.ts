@@ -24,8 +24,7 @@ export const RadioContainer = styled.div<{
       return theme.colors.gray;
     }};
 
-  background-color: ${({ theme, readOnly }) =>
-    readOnly ? theme.colors.gray : theme.colors.backgroundAlt};
+  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.gray : theme.colors.backgroundAlt)};
   border-radius: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   overflow: visible;

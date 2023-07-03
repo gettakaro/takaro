@@ -3,11 +3,7 @@ import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { Model } from 'objection';
 import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob.js';
-import {
-  FunctionCreateDTO,
-  FunctionOutputDTO,
-  FunctionUpdateDTO,
-} from '../service/FunctionService.js';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionUpdateDTO } from '../service/FunctionService.js';
 import { HOOKS_TABLE_NAME, HookModel } from './hook.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 
@@ -47,12 +43,7 @@ export class FunctionModel extends TakaroModel {
   }
 }
 
-export class FunctionRepo extends ITakaroRepo<
-  FunctionModel,
-  FunctionOutputDTO,
-  FunctionCreateDTO,
-  FunctionUpdateDTO
-> {
+export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, FunctionCreateDTO, FunctionUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -68,14 +59,10 @@ export class FunctionRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<FunctionOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(
-      filters
-    ).build(query);
+    const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new FunctionOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new FunctionOutputDTO().construct(item))),
     };
   }
 
@@ -107,14 +94,9 @@ export class FunctionRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: FunctionUpdateDTO
-  ): Promise<FunctionOutputDTO> {
+  async update(id: string, data: FunctionUpdateDTO): Promise<FunctionOutputDTO> {
     const { query } = await this.getModel();
-    const result = await query
-      .updateAndFetchById(id, data.toJSON())
-      .returning('*');
+    const result = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return new FunctionOutputDTO().construct(result);
   }
 }

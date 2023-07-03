@@ -17,16 +17,14 @@ export class Utils extends BuiltinModule {
         function: '',
         name: 'ping',
         trigger: 'ping',
-        helpText:
-          'Replies with pong, useful for testing if the connection works',
+        helpText: 'Replies with pong, useful for testing if the connection works',
         arguments: [],
       },
       {
         function: '',
         name: 'help',
         trigger: 'help',
-        helpText:
-          'The text you are reading right now, displays information about commands',
+        helpText: 'The text you are reading right now, displays information about commands',
         arguments: [
           {
             name: 'command',

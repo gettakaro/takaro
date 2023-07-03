@@ -1,10 +1,6 @@
 import { IdentityApi } from '@ory/client';
 
-export async function* paginateIdentities(
-  adminClient: IdentityApi,
-  page = 1,
-  perPage = 100
-) {
+export async function* paginateIdentities(adminClient: IdentityApi, page = 1, perPage = 100) {
   let currentPage = page;
 
   while (true) {

@@ -54,9 +54,6 @@ export const defaultInputProps: Required<DefaultInputProps> = {
   size: 'medium',
 };
 
-export function defaultInputPropsFactory<T extends InputProps>(
-  defaultValues: Required<DefaultInputProps>
-) {
-  return (values: T) =>
-    Object.assign({} as Required<DefaultInputProps> & T, defaultValues, values);
+export function defaultInputPropsFactory<T extends InputProps>(defaultValues: Required<DefaultInputProps>) {
+  return (values: T) => Object.assign({} as Required<DefaultInputProps> & T, defaultValues, values);
 }

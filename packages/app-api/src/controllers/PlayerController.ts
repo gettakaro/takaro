@@ -3,16 +3,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  JsonController,
-  UseBefore,
-  Req,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
@@ -67,11 +58,7 @@ export class PlayerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(PlayerOutputArrayDTOAPI)
   @Post('/player/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: PlayerSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: PlayerSearchInputDTO) {
     const service = new PlayerService(req.domainId);
     const result = await service.find({
       ...query,

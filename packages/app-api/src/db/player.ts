@@ -3,11 +3,7 @@ import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
-import {
-  PlayerCreateDTO,
-  PlayerOutputDTO,
-  PlayerUpdateDTO,
-} from '../service/PlayerService.js';
+import { PlayerCreateDTO, PlayerOutputDTO, PlayerUpdateDTO } from '../service/PlayerService.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
@@ -48,12 +44,7 @@ export class PlayerModel extends TakaroModel {
   }
 }
 
-export class PlayerRepo extends ITakaroRepo<
-  PlayerModel,
-  PlayerOutputDTO,
-  PlayerCreateDTO,
-  PlayerUpdateDTO
-> {
+export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {
   async getModel() {
     const knex = await this.getKnex();
     const model = PlayerModel.bindKnex(knex);
@@ -64,14 +55,10 @@ export class PlayerRepo extends ITakaroRepo<
   }
   async find(filters: ITakaroQuery<PlayerOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<PlayerModel, PlayerOutputDTO>(
-      filters
-    ).build(query);
+    const result = await new QueryBuilder<PlayerModel, PlayerOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new PlayerOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new PlayerOutputDTO().construct(item))),
     };
   }
 
@@ -111,27 +98,18 @@ export class PlayerRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query
-      .updateAndFetchById(id, data.toJSON())
-      .returning('*');
+    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return new PlayerOutputDTO().construct(res);
   }
 
   async findGameAssociations(gameId: string) {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
-    const foundProfiles = await model
-      .query()
-      .modify('domainScoped', this.domainId)
-      .where({ gameId });
+    const foundProfiles = await model.query().modify('domainScoped', this.domainId).where({ gameId });
     return foundProfiles;
   }
 
-  async insertAssociation(
-    gameId: string,
-    playerId: string,
-    gameServerId: string
-  ) {
+  async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
     const foundProfiles = await model.query().insert({
@@ -143,10 +121,7 @@ export class PlayerRepo extends ITakaroRepo<
     return foundProfiles;
   }
 
-  async resolveRef(
-    ref: IPlayerReferenceDTO,
-    gameServerId: string
-  ): Promise<PlayerOutputDTO> {
+  async resolveRef(ref: IPlayerReferenceDTO, gameServerId: string): Promise<PlayerOutputDTO> {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
 
@@ -167,10 +142,7 @@ export class PlayerRepo extends ITakaroRepo<
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
 
-    const foundProfiles = await model
-      .query()
-      .modify('domainScoped', this.domainId)
-      .where({ playerId, gameServerId });
+    const foundProfiles = await model.query().modify('domainScoped', this.domainId).where({ playerId, gameServerId });
 
     if (foundProfiles.length === 0) {
       throw new errors.NotFoundError();

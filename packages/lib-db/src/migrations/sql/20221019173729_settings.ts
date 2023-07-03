@@ -7,27 +7,14 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
     table.string('commandPrefix');
     table.string('serverChatName');
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.schema.createTable('gameServerSettings', (table) => {
     table.inherits('settings');
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid ()'));
-    table
-      .uuid('gameServerId')
-      .references('gameservers.id')
-      .onDelete('CASCADE')
-      .notNullable()
-      .unique();
-    table
-      .string('domain')
-      .references('domains.id')
-      .onDelete('CASCADE')
-      .notNullable();
+    table.uuid('gameServerId').references('gameservers.id').onDelete('CASCADE').notNullable().unique();
+    table.string('domain').references('domains.id').onDelete('CASCADE').notNullable();
   });
 
   await knex.raw(

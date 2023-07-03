@@ -1,9 +1,4 @@
-import {
-  getKnex,
-  ITakaroQuery,
-  TakaroModel,
-  NOT_DOMAIN_SCOPED_TakaroModel,
-} from '@takaro/db';
+import { getKnex, ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
@@ -29,9 +24,7 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
     query: QueryBuilder<Model>;
   }>;
 
-  abstract find(
-    filters: ITakaroQuery<OutputDTO>
-  ): Promise<PaginatedOutput<OutputDTO>>;
+  abstract find(filters: ITakaroQuery<OutputDTO>): Promise<PaginatedOutput<OutputDTO>>;
   abstract findOne(id: string | number): Promise<OutputDTO>;
   abstract create(item: CreateInputDTO): Promise<OutputDTO>;
   abstract update(id: string, item: UpdateDTO): Promise<OutputDTO>;
@@ -43,12 +36,7 @@ export abstract class ITakaroRepo<
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
   UpdateDTO extends TakaroDTO<UpdateDTO>
-> extends NOT_DOMAIN_SCOPED_ITakaroRepo<
-  Model,
-  OutputDTO,
-  CreateInputDTO,
-  UpdateDTO
-> {
+> extends NOT_DOMAIN_SCOPED_ITakaroRepo<Model, OutputDTO, CreateInputDTO, UpdateDTO> {
   constructor(public readonly domainId: string) {
     super();
   }

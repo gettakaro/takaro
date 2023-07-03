@@ -29,26 +29,20 @@ describe('pagination middleware', () => {
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
     expect(callArg).to.be.an.instanceOf(Error);
-    expect(callArg.message).to.equal(
-      'Invalid pagination: limit must be greater than or equal to 1'
-    );
+    expect(callArg.message).to.equal('Invalid pagination: limit must be greater than or equal to 1');
   });
   it('Handles negative page', async () => {
     const { next } = await runPagination(-1, 5);
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
     expect(callArg).to.be.an.instanceOf(Error);
-    expect(callArg.message).to.equal(
-      'Invalid pagination: page must be greater than or equal to 0'
-    );
+    expect(callArg.message).to.equal('Invalid pagination: page must be greater than or equal to 0');
   });
   it('Handles limit too high', async () => {
     const { next } = await runPagination(1, 1001);
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
     expect(callArg).to.be.an.instanceOf(Error);
-    expect(callArg.message).to.equal(
-      'Invalid pagination: limit must be less than or equal to 1000'
-    );
+    expect(callArg.message).to.equal('Invalid pagination: limit must be less than or equal to 1000');
   });
 });

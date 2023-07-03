@@ -7,8 +7,7 @@ import { Rust } from '../index.js';
 const testData = {
   oneBan: '\'1 76561198028175941 "" "no reason" -1\n\'',
   oneBanWithTime: '\'1 76561198028175941 "cata" "naughty" 1688173252\n\'',
-  twoBans:
-    '1 76561198028175941 "" "stout" 1688173252\n2 76561198035925898 "Emiel" "filthy hacker >:(" -1\n',
+  twoBans: '1 76561198028175941 "" "stout" 1688173252\n2 76561198035925898 "Emiel" "filthy hacker >:(" -1\n',
   noBans: '',
 };
 

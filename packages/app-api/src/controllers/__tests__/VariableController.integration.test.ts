@@ -1,22 +1,11 @@
-import {
-  IntegrationTest,
-  expect,
-  integrationConfig,
-  EventsAwaiter,
-} from '@takaro/test';
-import {
-  GameServerOutputDTO,
-  PlayerOutputDTO,
-  VariableOutputDTO,
-} from '@takaro/apiclient';
+import { IntegrationTest, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { GameServerOutputDTO, PlayerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
 import { config } from '../../config.js';
 import { EventTypes } from '@takaro/modules';
 
 const group = 'VariableController';
 
-const setup = async function (
-  this: IntegrationTest<VariableOutputDTO>
-): Promise<VariableOutputDTO> {
+const setup = async function (this: IntegrationTest<VariableOutputDTO>): Promise<VariableOutputDTO> {
   return (
     await this.client.variable.variableControllerCreate({
       key: 'Test variable',
@@ -52,20 +41,11 @@ const setupWithGameServersAndPlayers = async function (
 
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(
-    EventTypes.PLAYER_CONNECTED,
-    10
-  );
+  const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 10);
 
   await Promise.all([
-    this.client.gameserver.gameServerControllerExecuteCommand(
-      gameServer1.data.data.id,
-      { command: 'connectAll' }
-    ),
-    this.client.gameserver.gameServerControllerExecuteCommand(
-      gameServer2.data.data.id,
-      { command: 'connectAll' }
-    ),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
   ]);
 
   await connectedEvents;
@@ -118,14 +98,10 @@ const tests = [
     name: 'Delete',
     setup,
     test: async function () {
-      const res = await this.client.variable.variableControllerDelete(
-        this.setupData.id
-      );
+      const res = await this.client.variable.variableControllerDelete(this.setupData.id);
 
       // Check that the variable is deleted
-      await expect(
-        this.client.variable.variableControllerFindOne(this.setupData.id)
-      ).to.be.rejectedWith('404');
+      await expect(this.client.variable.variableControllerFindOne(this.setupData.id)).to.be.rejectedWith('404');
 
       return res;
     },
@@ -306,9 +282,7 @@ const tests = [
       });
 
       expect(res.data.data.length).to.equal(1);
-      expect(res.data.data[0].gameServerId).to.equal(
-        this.setupData.gameServer1.id
-      );
+      expect(res.data.data[0].gameServerId).to.equal(this.setupData.gameServer1.id);
 
       return res;
     },

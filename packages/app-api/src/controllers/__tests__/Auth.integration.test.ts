@@ -1,9 +1,4 @@
-import {
-  integrationConfig,
-  IntegrationTest,
-  logInWithPermissions,
-  expect,
-} from '@takaro/test';
+import { integrationConfig, IntegrationTest, logInWithPermissions, expect } from '@takaro/test';
 import { Client, RoleSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 

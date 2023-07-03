@@ -14,20 +14,9 @@ function normalizePath(path: string) {
 }
 
 // These are fields that are allowed to be different in snapshots
-const DEFAULT_FILTERED_FIELDS = [
-  'createdAt',
-  'updatedAt',
-  'id',
-  'serverTime',
-  'domainId',
-  'url',
-  'snapshot',
-];
+const DEFAULT_FILTERED_FIELDS = ['createdAt', 'updatedAt', 'id', 'serverTime', 'domainId', 'url', 'snapshot'];
 
-function filterFields(
-  data: unknown,
-  filteredFields = DEFAULT_FILTERED_FIELDS
-): unknown {
+function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): unknown {
   if (Array.isArray(data)) {
     return data.map((item) => filterFields(item, filteredFields));
   }
@@ -45,12 +34,7 @@ export async function matchSnapshot<SetupData>(
   test: IIntegrationTest<SetupData>,
   response: ITakaroAPIAxiosResponse<unknown>
 ) {
-  const snapshotPath = path.resolve(
-    __dirname,
-    '../src/__snapshots__',
-    test.group,
-    normalizePath(`${test.name}.json`)
-  );
+  const snapshotPath = path.resolve(__dirname, '../src/__snapshots__', test.group, normalizePath(`${test.name}.json`));
   let file = '';
 
   const fullData = {
@@ -67,10 +51,7 @@ export async function matchSnapshot<SetupData>(
     throw new Error(`No snapshot exists, created a new one: ${snapshotPath}`);
   }
 
-  const filteredFields = [
-    ...DEFAULT_FILTERED_FIELDS,
-    ...(test.filteredFields ?? []),
-  ];
+  const filteredFields = [...DEFAULT_FILTERED_FIELDS, ...(test.filteredFields ?? [])];
   const snapshotData = filterFields(JSON.parse(file), filteredFields);
 
   try {

@@ -3,12 +3,7 @@ import { FieldTemplate } from './FieldTemplate';
 import { FieldErrorTemplate } from './FieldErrorTemplate';
 import { SubmitButton } from './SubmitButton';
 import { AddButton } from './AddButton';
-import {
-  CopyButton,
-  MoveUpButton,
-  RemoveButton,
-  MoveDownButton,
-} from './IconButton';
+import { CopyButton, MoveUpButton, RemoveButton, MoveDownButton } from './IconButton';
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { ArrayFieldTemplate } from './ArrayFieldTemplate';
 import { ArrayFieldItemTemplate } from './ArrayFieldItemTemplate';

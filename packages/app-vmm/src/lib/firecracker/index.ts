@@ -37,9 +37,7 @@ export default class FirecrackerClient {
   private readonly httpSock: Got;
 
   constructor(args: { id: number; logLevel?: FcLogLevel }) {
-    this.totalVMsGauge = promClient.register.getSingleMetric(
-      'vm_total'
-    ) as promClient.Gauge;
+    this.totalVMsGauge = promClient.register.getSingleMetric('vm_total') as promClient.Gauge;
 
     this.id = args.id;
     this.log = logger(`firecracker(${this.id})`);
@@ -124,9 +122,7 @@ export default class FirecrackerClient {
   private async ensureResources() {
     const tasks = [];
 
-    tasks.push(
-      fs.mkdir(config.get('firecracker.sockets'), { recursive: true })
-    );
+    tasks.push(fs.mkdir(config.get('firecracker.sockets'), { recursive: true }));
     tasks.push(fs.writeFile(this.options.logPath, ''));
 
     await Promise.all(tasks);
@@ -153,18 +149,9 @@ export default class FirecrackerClient {
   private setupNetwork() {
     spawn('ip', ['tuntap', 'add', 'dev', this.tapDeviceName, 'mode', 'tap']);
     spawn('sysctl', ['-w', `net.ipv4.conf.${this.tapDeviceName}.proxy_arp=1`]);
-    spawn('sysctl', [
-      '-w',
-      `net.ipv6.conf.${this.tapDeviceName}.disable_ipv6=1`,
-    ]);
+    spawn('sysctl', ['-w', `net.ipv6.conf.${this.tapDeviceName}.disable_ipv6=1`]);
 
-    spawn('ip', [
-      'addr',
-      'add',
-      `${this.tapDeviceIp}/${TAP_DEVICE_CIDR}`,
-      'dev',
-      this.tapDeviceName,
-    ]);
+    spawn('ip', ['addr', 'add', `${this.tapDeviceIp}/${TAP_DEVICE_CIDR}`, 'dev', this.tapDeviceName]);
     spawn('ip', ['link', 'set', 'dev', this.tapDeviceName, 'up']);
   }
 
@@ -190,12 +177,8 @@ export default class FirecrackerClient {
     this.childProcess = spawn(cmd, args);
 
     return new Promise((resolve, reject) => {
-      const stderrFileStream = fsSync.createWriteStream(
-        `/app/firecracker/${this.id}-stderr.log`
-      );
-      const stdoutFileStream = fsSync.createWriteStream(
-        `/app/firecracker/${this.id}-stdout.log`
-      );
+      const stderrFileStream = fsSync.createWriteStream(`/app/firecracker/${this.id}-stderr.log`);
+      const stdoutFileStream = fsSync.createWriteStream(`/app/firecracker/${this.id}-stdout.log`);
 
       // Redirect stderr output to the file
       this.childProcess.stderr?.pipe(stderrFileStream);

@@ -31,8 +31,4 @@ export type { EditableFieldProps } from './EditableField';
 export { Label } from './Label';
 export type { LabelProps } from './Label';
 
-export {
-  JsonSchemaForm,
-  SchemaGenerator,
-  generateJsonSchema,
-} from './JsonSchemaForm';
+export { JsonSchemaForm, SchemaGenerator, generateJsonSchema } from './JsonSchemaForm';

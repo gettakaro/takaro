@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -18,18 +12,7 @@ import {
   CommandUpdateDTO,
 } from '../service/CommandService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -87,11 +70,7 @@ export class CommandController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_COMMANDS]))
   @ResponseSchema(CommandOutputArrayDTOAPI)
   @Post('/command/search')
-  async search(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: CommandSearchInputDTO
-  ) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: CommandSearchInputDTO) {
     const service = new CommandService(req.domainId);
     const result = await service.find({
       ...query,
@@ -113,39 +92,23 @@ export class CommandController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(CommandOutputDTOAPI)
   @Post('/command')
-  async create(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: CommandCreateDTO
-  ) {
+  async create(@Req() req: AuthenticatedRequest, @Body() data: CommandCreateDTO) {
     const service = new CommandService(req.domainId);
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(CommandOutputDTOAPI)
   @Put('/command/:id')
-  async update(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: CommandUpdateDTO
-  ) {
+  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: CommandUpdateDTO) {
     const service = new CommandService(req.domainId);
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -154,24 +117,15 @@ export class CommandController {
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(CommandArgumentDTOAPI)
   @Post('/command/argument')
-  async createArgument(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: CommandArgumentCreateDTO
-  ) {
+  async createArgument(@Req() req: AuthenticatedRequest, @Body() data: CommandArgumentCreateDTO) {
     const service = new CommandService(req.domainId);
     return apiResponse(await service.createArgument(data.commandId, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(CommandArgumentDTOAPI)
   @Put('/command/argument/:id')
   async updateArgument(
@@ -183,16 +137,10 @@ export class CommandController {
     return apiResponse(await service.updateArgument(params.id, data));
   }
 
-  @UseBefore(
-    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]),
-    builtinModuleModificationMiddleware
-  )
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/command/argument/:id')
-  async removeArgument(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId
-  ) {
+  async removeArgument(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
     await service.deleteArgument(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
@@ -200,11 +148,7 @@ export class CommandController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_COMMANDS]))
   @Post('/command/:id/trigger')
-  async trigger(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: CommandTriggerDTO
-  ) {
+  async trigger(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: CommandTriggerDTO) {
     const service = new CommandService(req.domainId);
     await service.trigger(params.id, data);
     return apiResponse();

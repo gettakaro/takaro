@@ -6,8 +6,7 @@ export const Container = styled.div<{
   fullWidth: boolean;
 }>`
   display: flex;
-  flex-direction: ${({ orientation }) =>
-    orientation === 'horizontal' ? 'row' : 'column'};
+  flex-direction: ${({ orientation }) => (orientation === 'horizontal' ? 'row' : 'column')};
   align-items: center;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
 
@@ -16,13 +15,9 @@ export const Container = styled.div<{
     flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
     border: 0.1rem solid ${({ theme }): string => theme.colors.backgroundAlt};
     border-bottom: ${({ orientation, theme }) =>
-      orientation === 'horizontal'
-        ? `0.1rem solid ${theme.colors.backgroundAlt}`
-        : 'none'};
+      orientation === 'horizontal' ? `0.1rem solid ${theme.colors.backgroundAlt}` : 'none'};
     border-right: ${({ orientation, theme }) =>
-      orientation === 'vertical'
-        ? `0.1rem solid ${theme.colors.backgroundAlt}`
-        : 'none'};
+      orientation === 'vertical' ? `0.1rem solid ${theme.colors.backgroundAlt}` : 'none'};
 
     &:first-child {
       ${({ orientation, theme }) => {
@@ -71,15 +66,10 @@ export const Item = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
   font-weight: 400;
   border-left: none;
   background-color: ${({ theme, isSelected, isDisabled }) =>
-    isSelected
-      ? theme.colors.primary
-      : isDisabled
-      ? theme.colors.disabled
-      : theme.colors.background};
+    isSelected ? theme.colors.primary : isDisabled ? theme.colors.disabled : theme.colors.background};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'pointer')};
 
   svg {
-    fill: ${({ theme, isSelected }) =>
-      isSelected ? theme.colors.white : theme.colors.text};
+    fill: ${({ theme, isSelected }) => (isSelected ? theme.colors.white : theme.colors.text)};
   }
 `;

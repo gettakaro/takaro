@@ -22,16 +22,8 @@ export const DEFAULT_SETTINGS: Partial<Settings> = {
   serverChatName: 'Takaro',
 };
 
-export class SettingsService extends TakaroService<
-  SettingsModel,
-  Settings,
-  never,
-  never
-> {
-  constructor(
-    public readonly domainId: string,
-    public readonly gameServerId?: string
-  ) {
+export class SettingsService extends TakaroService<SettingsModel, Settings, never, never> {
+  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
     super(domainId);
   }
 
@@ -73,10 +65,7 @@ export class SettingsService extends TakaroService<
     return value;
   }
 
-  async set(
-    key: SETTINGS_KEYS,
-    value: Settings[SETTINGS_KEYS]
-  ): Promise<Settings[SETTINGS_KEYS]> {
+  async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS]): Promise<Settings[SETTINGS_KEYS]> {
     await this.repo.set(key, value);
     return value;
   }

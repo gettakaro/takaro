@@ -5,21 +5,11 @@ import { ITakaroQuery } from '@takaro/db';
 import { RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
 import { Message, PermissionsBitField } from 'discord.js';
 import { discordBot } from '../lib/DiscordBot.js';
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { HookService } from './HookService.js';
 import { GameServerService } from './GameServerService.js';
 
-import {
-  EventDiscordChannel,
-  EventDiscordUser,
-  HookEventDiscordMessage,
-} from '@takaro/modules';
+import { EventDiscordChannel, EventDiscordUser, HookEventDiscordMessage } from '@takaro/modules';
 
 export class GuildOutputDTO extends TakaroDTO<GuildOutputDTO> {
   @IsUUID()
@@ -86,13 +76,10 @@ export class DiscordService extends TakaroService<
     if (input.takaroEnabled !== undefined) {
       const userId = ctx.data.user;
       if (!userId) throw new errors.ForbiddenError();
-      const serversWithPermission =
-        await this.repo.getServersWithManagePermission(userId);
+      const serversWithPermission = await this.repo.getServersWithManagePermission(userId);
 
       if (!serversWithPermission.find((server) => server.id === id)) {
-        this.log.warn(
-          `User ${userId} tried to update guild ${id} without permission`
-        );
+        this.log.warn(`User ${userId} tried to update guild ${id} without permission`);
         throw new errors.ForbiddenError();
       }
     }
@@ -125,14 +112,10 @@ export class DiscordService extends TakaroService<
     });
 
     const addedGuilds = guilds.filter((guild) => {
-      return !existingDbGuilds.results.find(
-        (dbGuild) => dbGuild.discordId === guild.id
-      );
+      return !existingDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
     });
     const toUpdate = guilds.filter((guild) => {
-      return existingDbGuilds.results.find(
-        (dbGuild) => dbGuild.discordId === guild.id
-      );
+      return existingDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
     });
 
     this.log.info(`Syncing guilds: ${addedGuilds.length} added`);
@@ -150,9 +133,7 @@ export class DiscordService extends TakaroService<
     );
     await Promise.all(
       toUpdate.map(async (guild) => {
-        const dbGuild = existingDbGuilds.results.find(
-          (dbGuild) => dbGuild.discordId === guild.id
-        );
+        const dbGuild = existingDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
         if (!dbGuild) return;
         return this.update(
           dbGuild.id,
@@ -173,18 +154,10 @@ export class DiscordService extends TakaroService<
     if (userId) {
       await Promise.all(
         guilds.map((guild) => {
-          const permissions = new PermissionsBitField(
-            BigInt(guild.permissions)
-          );
-          const dbGuild = newDbGuilds.results.find(
-            (dbGuild) => dbGuild.discordId === guild.id
-          );
+          const permissions = new PermissionsBitField(BigInt(guild.permissions));
+          const dbGuild = newDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
           if (!dbGuild) return;
-          return this.repo.setUserRelation(
-            userId,
-            dbGuild.id,
-            permissions.has(PermissionsBitField.Flags.ManageGuild)
-          );
+          return this.repo.setUserRelation(userId, dbGuild.id, permissions.has(PermissionsBitField.Flags.ManageGuild));
         })
       );
     }
@@ -196,15 +169,11 @@ export class DiscordService extends TakaroService<
     const guild = await this.find({ filters: { discordId: channel.guildId } });
 
     if (!guild.results.length) {
-      throw new errors.BadRequestError(
-        `Guild not found for channel ${channelId}`
-      );
+      throw new errors.BadRequestError(`Guild not found for channel ${channelId}`);
     }
 
     if (!guild.results[0].takaroEnabled) {
-      throw new errors.BadRequestError(
-        `Takaro not enabled for guild ${guild.results[0].id}`
-      );
+      throw new errors.BadRequestError(`Takaro not enabled for guild ${guild.results[0].id}`);
     }
 
     await discordBot.sendMessage(channelId, message.message);
@@ -239,9 +208,7 @@ export class DiscordService extends TakaroService<
     );
   }
 
-  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(
-    guildId: string
-  ): Promise<string | null> {
+  static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
     return DiscordRepo.NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId);
   }
 }

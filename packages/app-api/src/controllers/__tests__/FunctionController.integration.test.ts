@@ -13,8 +13,7 @@ const tests = [
     snapshot: true,
     name: 'Get by ID',
     setup: async function () {
-      return (await this.client.function.functionControllerCreate(mockFunction))
-        .data.data;
+      return (await this.client.function.functionControllerCreate(mockFunction)).data.data;
     },
     test: async function () {
       return this.client.function.functionControllerGetOne(this.setupData.id);
@@ -33,8 +32,7 @@ const tests = [
     snapshot: true,
     name: 'Update',
     setup: async function () {
-      return (await this.client.function.functionControllerCreate(mockFunction))
-        .data.data;
+      return (await this.client.function.functionControllerCreate(mockFunction)).data.data;
     },
     test: async function () {
       return this.client.function.functionControllerUpdate(this.setupData.id, {
@@ -47,8 +45,7 @@ const tests = [
     snapshot: true,
     name: 'Delete',
     setup: async function () {
-      return (await this.client.function.functionControllerCreate(mockFunction))
-        .data.data;
+      return (await this.client.function.functionControllerCreate(mockFunction)).data.data;
     },
     test: async function () {
       return this.client.function.functionControllerRemove(this.setupData.id);

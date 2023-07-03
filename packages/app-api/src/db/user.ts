@@ -3,12 +3,7 @@ import { Model } from 'objection';
 import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
 import { errors } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import {
-  UserOutputDTO,
-  UserCreateInputDTO,
-  UserUpdateDTO,
-  UserOutputWithRolesDTO,
-} from '../service/UserService.js';
+import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
 
 export const USER_TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
@@ -40,12 +35,7 @@ export interface IUserFindOneOutput extends UserModel {
   roles: Array<RoleModel & { permissions: PermissionModel[] }>;
 }
 
-export class UserRepo extends ITakaroRepo<
-  UserModel,
-  UserOutputDTO,
-  UserCreateInputDTO,
-  UserUpdateDTO
-> {
+export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateInputDTO, UserUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -68,11 +58,7 @@ export class UserRepo extends ITakaroRepo<
 
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) =>
-          new UserOutputWithRolesDTO().construct(item)
-        )
-      ),
+      results: await Promise.all(result.results.map((item) => new UserOutputWithRolesDTO().construct(item))),
     };
   }
 
@@ -105,14 +91,9 @@ export class UserRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(
-    id: string,
-    data: UserUpdateDTO
-  ): Promise<UserOutputWithRolesDTO> {
+  async update(id: string, data: UserUpdateDTO): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const item = await query
-      .updateAndFetchById(id, data.toJSON())
-      .returning('*');
+    const item = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return this.findOne(item.id);
   }
 
@@ -123,21 +104,13 @@ export class UserRepo extends ITakaroRepo<
 
   async removeRole(userId: string, roleId: string): Promise<void> {
     const { model } = await this.getModel();
-    await model
-      .relatedQuery('roles')
-      .for(userId)
-      .unrelate()
-      .where('roleId', roleId);
+    await model.relatedQuery('roles').for(userId).unrelate().where('roleId', roleId);
   }
 
   async NOT_DOMAIN_SCOPED_resolveDomainByEmail(email: string): Promise<string> {
     const { model } = await this.getModel();
 
-    const data = await model
-      .query()
-      .select('domain')
-      .where('email', email)
-      .first();
+    const data = await model.query().select('domain').where('email', email).first();
 
     if (!data) {
       throw new errors.NotFoundError(`User with email ${email} not found`);

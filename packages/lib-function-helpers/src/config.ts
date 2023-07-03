@@ -31,7 +31,4 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHelpersConfig>([
-  configSchema,
-  baseConfigConvict,
-]);
+export const config = new Config<IHelpersConfig>([configSchema, baseConfigConvict]);

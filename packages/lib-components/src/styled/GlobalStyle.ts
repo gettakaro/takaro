@@ -125,8 +125,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   button {
     display: block;
-    padding: ${({ theme }) =>
-      `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
+    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['2_5']}`};
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     border: none;
 
@@ -166,11 +165,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       bottom: 0;
       left: 0;
       transform: translateX(-100%);
-      background-image: linear-gradient( 90deg, ${({ theme }): string =>
-        theme.colors.placeholderHighlight}d3 0, ${({ theme }): string =>
-  theme.colors.placeholderHighlight}4d 20%, ${({ theme }): string =>
-  theme.colors.placeholderHighlight}66 60%, ${({ theme }): string =>
-  theme.colors.placeholderHighlight}d3);
+      background-image: linear-gradient( 90deg, ${({ theme }): string => theme.colors.placeholderHighlight}d3 0, ${({
+  theme,
+}): string => theme.colors.placeholderHighlight}4d 20%, ${({ theme }): string =>
+  theme.colors.placeholderHighlight}66 60%, ${({ theme }): string => theme.colors.placeholderHighlight}d3);
       animation: ${skeletonLoading} 2.5s infinite ease-in-out;
     }
   }

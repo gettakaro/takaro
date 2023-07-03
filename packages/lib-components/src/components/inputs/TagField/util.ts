@@ -16,14 +16,11 @@ type splitPasteParamType = {
 };
 
 export function splitPaste({ tags, text, separators }: splitPasteParamType) {
-  const dirtyTags: string[] = separators.reduce(
-    (accumulator: string[], separator) => {
-      const splitText = text.split(separator);
-      if (splitText.length > accumulator.length) accumulator = splitText;
-      return accumulator;
-    },
-    []
-  );
+  const dirtyTags: string[] = separators.reduce((accumulator: string[], separator) => {
+    const splitText = text.split(separator);
+    if (splitText.length > accumulator.length) accumulator = splitText;
+    return accumulator;
+  }, []);
   const cleanTags = dirtyTags.map((tag) => tag.trim());
 
   const cleanDuplicateTags = cleanTags.reduce((accumulator: string[], tag) => {

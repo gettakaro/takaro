@@ -9,10 +9,7 @@ export const playerKeys = {
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
 };
 
-export const usePlayers = ({
-  page = 0,
-  ...playerSearchInputArgs
-}: PlayerSearchInputDTO = {}) => {
+export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useInfiniteQuery({
@@ -24,8 +21,7 @@ export const usePlayers = ({
           page: pageParam,
         })
       ).data,
-    getNextPageParam: (lastPage, pages) =>
-      hasNextPage(lastPage.meta, pages.length),
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
 };
 
@@ -34,7 +30,6 @@ export const usePlayer = (id: string) => {
 
   return useQuery<PlayerOutputDTO>({
     queryKey: playerKeys.detail(id),
-    queryFn: async () =>
-      (await apiClient.player.playerControllerGetOne(id)).data.data,
+    queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
   });
 };

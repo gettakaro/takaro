@@ -9,11 +9,7 @@ const paginationSchema = yup.object({
   limit: yup.number().default(100).min(1).max(1000),
 });
 
-export async function paginationMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export async function paginationMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
   const merged = { ...req.query, ...req.body };
   try {
     const result = await paginationSchema.validate(merged);

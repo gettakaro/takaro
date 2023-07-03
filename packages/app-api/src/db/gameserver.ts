@@ -1,18 +1,9 @@
-import {
-  TakaroModel,
-  ITakaroQuery,
-  QueryBuilder,
-  encrypt,
-  decrypt,
-} from '@takaro/db';
+import { TakaroModel, ITakaroQuery, QueryBuilder, encrypt, decrypt } from '@takaro/db';
 import { Model } from 'objection';
 import { errors } from '@takaro/util';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
-import {
-  PLAYER_ON_GAMESERVER_TABLE_NAME,
-  PlayerOnGameServerModel,
-} from './player.js';
+import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './player.js';
 import {
   GameServerOutputDTO,
   GameServerCreateDTO,
@@ -106,14 +97,10 @@ export class GameServerRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<GameServerOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(
-      filters
-    ).build(query);
+    const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(
-        result.results.map((item) => new GameServerOutputDTO().construct(item))
-      ),
+      results: await Promise.all(result.results.map((item) => new GameServerOutputDTO().construct(item))),
     };
   }
 
@@ -125,9 +112,7 @@ export class GameServerRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    const connectionInfo = JSON.parse(
-      await decrypt(data.connectionInfo as unknown as string)
-    );
+    const connectionInfo = JSON.parse(await decrypt(data.connectionInfo as unknown as string));
 
     return new GameServerOutputDTO().construct({ ...data, connectionInfo });
   }
@@ -153,10 +138,7 @@ export class GameServerRepo extends ITakaroRepo<
     return !!data;
   }
 
-  async update(
-    id: string,
-    item: GameServerUpdateDTO
-  ): Promise<GameServerOutputDTO> {
+  async update(id: string, item: GameServerUpdateDTO): Promise<GameServerOutputDTO> {
     const { query } = await this.getModel();
     const encryptedConnectionInfo = await encrypt(item.connectionInfo);
     const data = {
@@ -172,21 +154,11 @@ export class GameServerRepo extends ITakaroRepo<
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {
     const { query } = await this.getAssignmentsModel();
-    const res = await query
-      .modify('domainScoped', this.domainId)
-      .where({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(
-      res[0] as unknown as ModuleInstallationOutputDTO
-    );
+    const res = await query.modify('domainScoped', this.domainId).where({ gameserverId, moduleId });
+    return new ModuleInstallationOutputDTO().construct(res[0] as unknown as ModuleInstallationOutputDTO);
   }
 
-  async getInstalledModules({
-    gameserverId,
-    moduleId,
-  }: {
-    gameserverId?: string;
-    moduleId?: string;
-  }) {
+  async getInstalledModules({ gameserverId, moduleId }: { gameserverId?: string; moduleId?: string }) {
     const { query } = await this.getAssignmentsModel();
     const qry = query.modify('domainScoped', this.domainId);
 
@@ -201,19 +173,11 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await qry;
 
     return Promise.all(
-      res.map((item) =>
-        new ModuleInstallationOutputDTO().construct(
-          item as unknown as ModuleInstallationOutputDTO
-        )
-      )
+      res.map((item) => new ModuleInstallationOutputDTO().construct(item as unknown as ModuleInstallationOutputDTO))
     );
   }
 
-  async installModule(
-    gameserverId: string,
-    moduleId: string,
-    installDto: ModuleInstallDTO
-  ) {
+  async installModule(gameserverId: string, moduleId: string, installDto: ModuleInstallDTO) {
     const { query, model } = await this.getAssignmentsModel();
     const data: Partial<ModuleAssignmentModel> = {
       gameserverId,
@@ -232,9 +196,7 @@ export class GameServerRepo extends ITakaroRepo<
     }
 
     const res = await query.findOne({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(
-      res as unknown as ModuleInstallationOutputDTO
-    );
+    return new ModuleInstallationOutputDTO().construct(res as unknown as ModuleInstallationOutputDTO);
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {

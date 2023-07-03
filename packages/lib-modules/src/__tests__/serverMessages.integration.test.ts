@@ -1,8 +1,5 @@
 import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
-import {
-  IModuleTestsSetupData,
-  modulesTestSetup,
-} from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Server messages';
@@ -87,10 +84,7 @@ const tests = [
       await eventAwaiter.connect(this.client);
 
       const numberOfEvents = 5;
-      const events = eventAwaiter.waitForEvents(
-        GameEvents.CHAT_MESSAGE,
-        numberOfEvents
-      );
+      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
 
       // Trigger it multiple times
       await Promise.all(

@@ -1,8 +1,5 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import {
-  GameServerOutputDTO,
-  GameServerCreateDTOTypeEnum,
-} from '@takaro/apiclient';
+import { GameServerOutputDTO, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 const group = 'SettingsController';
 
 const mockGameServer = {
@@ -19,9 +16,7 @@ const tests = [
     snapshot: true,
     name: 'Get a value',
     test: async function () {
-      const res = await this.client.settings.settingsControllerGetOne(
-        'commandPrefix'
-      );
+      const res = await this.client.settings.settingsControllerGetOne('commandPrefix');
       expect(res.data.data).to.be.eq('/');
       return res;
     },
@@ -34,9 +29,7 @@ const tests = [
       await this.client.settings.settingsControllerSet('commandPrefix', {
         value: '!',
       });
-      const res = await this.client.settings.settingsControllerGetOne(
-        'commandPrefix'
-      );
+      const res = await this.client.settings.settingsControllerGetOne('commandPrefix');
       expect(res.data.data).to.be.eq('!');
       return res;
     },
@@ -46,9 +39,7 @@ const tests = [
     snapshot: true,
     name: 'Get a value with invalid key',
     test: async function () {
-      const res = await this.client.settings.settingsControllerGetOne(
-        'invalidKey'
-      );
+      const res = await this.client.settings.settingsControllerGetOne('invalidKey');
       expect(res.data.data).to.be.eq(undefined);
       return res;
     },
@@ -59,12 +50,9 @@ const tests = [
     snapshot: true,
     name: 'Set a value with invalid key',
     test: async function () {
-      const res = await this.client.settings.settingsControllerSet(
-        'invalidKey',
-        {
-          value: '!',
-        }
-      );
+      const res = await this.client.settings.settingsControllerSet('invalidKey', {
+        value: '!',
+      });
       return res;
     },
     expectedStatus: 400,
@@ -83,9 +71,7 @@ const tests = [
     snapshot: true,
     name: 'Can get all settings with a filter',
     test: async function () {
-      const res = await this.client.settings.settingsControllerGet([
-        'commandPrefix',
-      ]);
+      const res = await this.client.settings.settingsControllerGet(['commandPrefix']);
       return res;
     },
   }),
@@ -94,24 +80,17 @@ const tests = [
     snapshot: true,
     name: 'Gameservers can overwrite global settings',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
       await this.client.settings.settingsControllerSet('commandPrefix', {
         value: '!',
         gameServerId: this.setupData.id,
       });
-      const resGlobal = await this.client.settings.settingsControllerGetOne(
-        'commandPrefix'
-      );
+      const resGlobal = await this.client.settings.settingsControllerGetOne('commandPrefix');
       expect(resGlobal.data.data).to.be.eq('/');
 
-      const resGameServer = await this.client.settings.settingsControllerGetOne(
-        'commandPrefix',
-        this.setupData.id
-      );
+      const resGameServer = await this.client.settings.settingsControllerGetOne('commandPrefix', this.setupData.id);
       expect(resGameServer.data.data).to.be.eq('!');
 
       return resGameServer;
@@ -122,19 +101,14 @@ const tests = [
     snapshot: true,
     name: 'Requesting game server settings merges with global settings',
     setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate(mockGameServer)
-      ).data.data;
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
     test: async function () {
       await this.client.settings.settingsControllerSet('commandPrefix', {
         value: '!',
         gameServerId: this.setupData.id,
       });
-      const res = await this.client.settings.settingsControllerGet(
-        undefined,
-        this.setupData.id
-      );
+      const res = await this.client.settings.settingsControllerGet(undefined, this.setupData.id);
       expect(res.data.data.commandPrefix).to.be.eq('!');
       expect(res.data.data.serverChatName).to.be.eq('Takaro');
 
@@ -154,9 +128,7 @@ const tests = [
         // @ts-expect-error TS correctly throws an error, but we want to test runtime here
         value: 123,
       });
-      const res = await this.client.settings.settingsControllerGetOne(
-        'commandPrefix'
-      );
+      const res = await this.client.settings.settingsControllerGetOne('commandPrefix');
 
       expect(res.data.data).to.be.eq('123');
       return res;

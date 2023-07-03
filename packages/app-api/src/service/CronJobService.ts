@@ -2,28 +2,14 @@ import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
 
 import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
-import {
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
-import {
-  FunctionCreateDTO,
-  FunctionOutputDTO,
-  FunctionService,
-  FunctionUpdateDTO,
-} from './FunctionService.js';
+import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from './ModuleService.js';
-import {
-  GameServerService,
-  ModuleInstallationOutputDTO,
-} from './GameServerService.js';
+import { GameServerService, ModuleInstallationOutputDTO } from './GameServerService.js';
 import { randomUUID } from 'crypto';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
@@ -83,19 +69,12 @@ export class CronJobTriggerDTO extends TakaroDTO<CronJobTriggerDTO> {
   moduleId: string;
 }
 
-export class CronJobService extends TakaroService<
-  CronJobModel,
-  CronJobOutputDTO,
-  CronJobCreateDTO,
-  CronJobUpdateDTO
-> {
+export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO, CronJobCreateDTO, CronJobUpdateDTO> {
   get repo() {
     return new CronJobRepo(this.domainId);
   }
 
-  find(
-    filters: ITakaroQuery<CronJobOutputDTO>
-  ): Promise<PaginatedOutput<CronJobOutputDTO>> {
+  find(filters: ITakaroQuery<CronJobOutputDTO>): Promise<PaginatedOutput<CronJobOutputDTO>> {
     return this.repo.find(filters);
   }
 
@@ -115,15 +94,11 @@ export class CronJobService extends TakaroService<
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(
-        await new FunctionCreateDTO()
-      );
+      const newFn = await functionsService.create(await new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(
-      await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd })
-    );
+    const created = await this.repo.create(await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd }));
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
@@ -157,17 +132,12 @@ export class CronJobService extends TakaroService<
     return id;
   }
 
-  public getJobId(
-    modInstallation: ModuleInstallationOutputDTO,
-    cronJob: CronJobOutputDTO
-  ) {
+  public getJobId(modInstallation: ModuleInstallationOutputDTO, cronJob: CronJobOutputDTO) {
     return `${modInstallation.gameserverId}-${cronJob.id}`;
   }
 
   async syncModuleCronjobs(modInstallation: ModuleInstallationOutputDTO) {
-    const mod = await new ModuleService(this.domainId).findOne(
-      modInstallation.moduleId
-    );
+    const mod = await new ModuleService(this.domainId).findOne(modInstallation.moduleId);
     if (!mod) throw new errors.NotFoundError('Module not found');
 
     await Promise.all(
@@ -179,9 +149,7 @@ export class CronJobService extends TakaroService<
   }
 
   async installCronJobs(modInstallation: ModuleInstallationOutputDTO) {
-    const mod = await new ModuleService(this.domainId).findOne(
-      modInstallation.moduleId
-    );
+    const mod = await new ModuleService(this.domainId).findOne(modInstallation.moduleId);
     if (!mod) throw new errors.NotFoundError('Module not found');
 
     await Promise.all(
@@ -192,9 +160,7 @@ export class CronJobService extends TakaroService<
   }
 
   async uninstallCronJobs(modInstallation: ModuleInstallationOutputDTO) {
-    const mod = await new ModuleService(this.domainId).findOne(
-      modInstallation.moduleId
-    );
+    const mod = await new ModuleService(this.domainId).findOne(modInstallation.moduleId);
     if (!mod) throw new errors.NotFoundError('Module not found');
 
     await Promise.all(
@@ -204,10 +170,7 @@ export class CronJobService extends TakaroService<
     );
   }
 
-  private async addCronjobToQueue(
-    cronJob: CronJobOutputDTO,
-    modInstallation: ModuleInstallationOutputDTO
-  ) {
+  private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
     const jobId = this.getJobId(modInstallation, cronJob);
     await queueService.queues.cronjobs.queue.add(
       {
@@ -228,19 +191,13 @@ export class CronJobService extends TakaroService<
     this.log.debug(`Added repeatable job ${jobId}`);
   }
 
-  private async removeCronjobFromQueue(
-    cronJob: CronJobOutputDTO,
-    modInstallation: ModuleInstallationOutputDTO
-  ) {
-    const repeatables =
-      await queueService.queues.cronjobs.queue.getRepeatableJobs();
+  private async removeCronjobFromQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
+    const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
     const jobId = this.getJobId(modInstallation, cronJob);
 
     const repeatable = repeatables.find((r) => r.id === jobId);
     if (repeatable) {
-      await queueService.queues.cronjobs.queue.removeRepeatableByKey(
-        repeatable.key
-      );
+      await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
       this.log.debug(`Removed repeatable job ${jobId}`);
     }
   }
@@ -250,10 +207,7 @@ export class CronJobService extends TakaroService<
     if (!cronJob) throw new errors.NotFoundError('Cronjob not found');
 
     const gameServerService = new GameServerService(this.domainId);
-    const modInstallation = await gameServerService.getModuleInstallation(
-      data.gameServerId,
-      data.moduleId
-    );
+    const modInstallation = await gameServerService.getModuleInstallation(data.gameServerId, data.moduleId);
 
     await queueService.queues.cronjobs.queue.add({
       functionId: cronJob.function.id,

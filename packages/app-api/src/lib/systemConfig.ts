@@ -48,8 +48,7 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
 
         systemConfigSchema.properties.hooks.properties[configKey] = {
           type: 'string',
-          description:
-            'Discord channel ID where Takaro will listen for messages.',
+          description: 'Discord channel ID where Takaro will listen for messages.',
         };
         systemConfigSchema.properties.hooks.required.push(configKey);
       }
@@ -77,8 +76,7 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
             default: 0,
             minimum: 0,
             maximum: ms('1 day') / 1000,
-            description:
-              'How many seconds to wait before executing the command.',
+            description: 'How many seconds to wait before executing the command.',
           },
         },
         required: [],
