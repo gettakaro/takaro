@@ -1,6 +1,6 @@
 import FirecrackerClient from '../../lib/firecracker/index.js';
 import { VmClient } from '../../lib/vmClient.js';
-import { logger } from '@takaro/util';
+import { logger, traceableClass } from '@takaro/util';
 import promClient from 'prom-client';
 import fs from 'node:fs/promises';
 import { config } from '../../config.js';
@@ -9,6 +9,7 @@ import { config } from '../../config.js';
  * Virtual Machine Manager
  * Responsible for managing firecracker microVMs
  */
+@traceableClass('VMM')
 export class VMM {
   log = logger('VMM');
 
