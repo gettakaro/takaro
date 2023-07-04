@@ -120,6 +120,13 @@ export const useModuleCreate = () => {
   });
 };
 
+/*
+ *    mutationFn: async (moduleCreateDTO) => (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
+
+    
+ *
+ * */
+
 export const useModuleRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();

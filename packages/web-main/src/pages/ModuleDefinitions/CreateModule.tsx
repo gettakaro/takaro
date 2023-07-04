@@ -5,9 +5,10 @@ import {
   TextField,
   Drawer,
   CollapseList,
-  ErrorMessage,
   styled,
   SchemaGenerator,
+  errors,
+  Alert,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -31,10 +32,10 @@ const ButtonContainer = styled.div`
 
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [schema, setSchema] = useState({});
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useModuleCreate();
+  const { mutateAsync, isLoading, error: createModuleError } = useModuleCreate();
 
   useEffect(() => {
     if (!open) {
@@ -47,14 +48,10 @@ const CreateModule: FC = () => {
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({
-    name,
-    description,
-  }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
     try {
-      setError('');
-
-      mutateAsync({
+      setErrorMessage(undefined);
+      await mutateAsync({
         name,
         description,
         configSchema: JSON.stringify(schema),
@@ -62,9 +59,17 @@ const CreateModule: FC = () => {
 
       navigate(PATHS.moduleDefinitions());
     } catch (error) {
+      console.log(error);
       Sentry.captureException(error);
     }
   };
+
+  if (!errorMessage && createModuleError) {
+    const errorType = errors.defineErrorType(createModuleError);
+    if (errorType instanceof errors.UniqueConstraintError) {
+      setErrorMessage('A module with that name already exists');
+    }
+  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -72,8 +77,8 @@ const CreateModule: FC = () => {
         <Drawer.Heading>Create Module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
-              <CollapseList.Item title="General">
+            <CollapseList.Item title="General">
+              <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
                 <TextField
                   control={control}
                   label="Name"
@@ -89,27 +94,18 @@ const CreateModule: FC = () => {
                   name="description"
                   placeholder="This module does cool stuff"
                 />
-              </CollapseList.Item>
-              <CollapseList.Item title="Config">
-                <SchemaGenerator onSchemaChange={setSchema} />
-              </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
-            </form>
+              </form>
+            </CollapseList.Item>
+            <CollapseList.Item title="Config">
+              <SchemaGenerator onSchemaChange={setSchema} />
+            </CollapseList.Item>
           </CollapseList>
+          {errorMessage && <Alert text={errorMessage} variant="error" />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-            />
-            <Button
-              fullWidth
-              text="Save changes"
-              type="submit"
-              form="create-module-form"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+            <Button fullWidth text="Save changes" type="submit" form="create-module-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

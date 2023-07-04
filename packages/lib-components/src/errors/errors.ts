@@ -1,18 +1,29 @@
-import { DomainError } from './base';
-import { ValidationError } from 'yup';
+import { BaseError } from './base';
 
-export class ResponseValidationError extends DomainError {
-  constructor(message: string, public validationErrors: ValidationError[]) {
+export function defineErrorType(error: unknown) {
+  console.log(error, typeof error);
+
+  return new UniqueConstraintError('Unique constraint error');
+}
+
+export class ResponseValidationError extends BaseError {
+  constructor(message: string, public validationErrors: string[]) {
     super(message, { meta: { validationErrors } });
   }
 }
 
-export class InternalServerError extends DomainError {
+export class InternalServerError extends BaseError {
   constructor() {
     super('Internal server error');
   }
 }
 
-export class ResponseClientError extends DomainError {}
-export class FailedLogOutError extends DomainError {}
-export class NotAuthorizedError extends DomainError {}
+export class UniqueConstraintError extends BaseError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+export class ResponseClientError extends BaseError {}
+export class FailedLogOutError extends BaseError {}
+export class NotAuthorizedError extends BaseError {}
