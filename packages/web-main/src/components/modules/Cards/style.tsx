@@ -8,7 +8,7 @@ export const ModuleCards = styled.ul`
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
-export const ModuleCardContainer = styled.a`
+export const ModuleCardContainer = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
   cursor: pointer;
   display: flex;

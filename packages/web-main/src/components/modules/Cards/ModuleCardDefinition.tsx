@@ -4,7 +4,7 @@ import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlinePlus as AddIcon, AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ModuleCardContainer, SpacedRow, ActionIconsContainer, DeleteDialogContainer, AddModuleCard } from './style';
 
 interface IModuleCardProps {
@@ -23,7 +23,7 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({ mod }) => {
   };
 
   return (
-    <ModuleCardContainer target="_blank" href={PATHS.studio.module(mod.id)}>
+    <ModuleCardContainer onClick={() => window.open(PATHS.studio.module(mod.id))} role="link" tabIndex={0}>
       <SpacedRow>
         <h2>{mod.name}</h2>
         <ActionIconsContainer>
@@ -97,15 +97,13 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({ mod }) => {
   );
 };
 
-interface EmptyModuleCardDefinitionProps {
-  onClick: () => void;
-}
-
-export const EmptyModuleCardDefinition: FC<EmptyModuleCardDefinitionProps> = ({ onClick }) => {
+export const EmptyModuleCardDefinition: FC = () => {
   return (
-    <AddModuleCard onClick={onClick}>
-      <AddIcon size={24} />
-      <h3>Module</h3>
+    <AddModuleCard>
+      <Link to={PATHS.modules.create()}>
+        <AddIcon size={24} />
+        <h3>Module</h3>
+      </Link>
     </AddModuleCard>
   );
 };
