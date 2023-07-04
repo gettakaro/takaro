@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { HookEventTypes } from '@takaro/modules';
@@ -30,6 +30,7 @@ export class HookModel extends TakaroModel {
   }
 }
 
+@traceableClass('repo:hook')
 export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDTO, HookUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);

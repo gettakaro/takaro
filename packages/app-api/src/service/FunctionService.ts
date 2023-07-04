@@ -2,7 +2,7 @@ import { TakaroService } from './Base.js';
 
 import { IsOptional, IsString } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 
@@ -31,6 +31,7 @@ async function main() {
 }
 main();`;
 
+@traceableClass('service:function')
 export class FunctionService extends TakaroService<
   FunctionModel,
   FunctionOutputDTO,

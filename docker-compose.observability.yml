@@ -67,7 +67,6 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     volumes:
-      - ./containers/grafana/grafana-provisioning:/etc/grafana/provisioning/
       - ./_data/grafana:/var/lib/grafana
     ports:
       - '13007:3000'

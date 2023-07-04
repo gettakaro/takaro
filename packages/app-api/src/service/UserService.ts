@@ -3,7 +3,7 @@ import { ITakaroQuery } from '@takaro/db';
 
 import { UserModel, UserRepo } from '../db/user.js';
 import { IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { RoleOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
@@ -58,6 +58,7 @@ export class UserUpdateAuthDTO extends TakaroDTO<UserUpdateAuthDTO> {
   discordId?: string;
 }
 
+@traceableClass('service:user')
 export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCreateInputDTO, UserUpdateDTO> {
   constructor(domainId: string) {
     super(domainId);

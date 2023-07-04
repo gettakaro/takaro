@@ -31,8 +31,6 @@ services:
     privileged: true
     devices:
       - /dev/kvm:/dev/kvm
-    depends_on:
-      - takaro
     build:
       context: .
       dockerfile: containers/vmm/dev.Dockerfile
@@ -126,6 +124,8 @@ services:
       - 13002:13002
       # mock server
       - 13006:3002
+      - 12004:12004
+      # connector
       - 12003:12003
       # Docs
       - 13005:13005

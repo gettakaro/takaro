@@ -1,4 +1,4 @@
-import { TakaroModelDTO } from '@takaro/util';
+import { TakaroModelDTO, traceableClass } from '@takaro/util';
 import { IsString } from 'class-validator';
 import { errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS: Partial<Settings> = {
   serverChatName: 'Takaro',
 };
 
+@traceableClass('service:settings')
 export class SettingsService extends TakaroService<SettingsModel, Settings, never, never> {
   constructor(public readonly domainId: string, public readonly gameServerId?: string) {
     super(domainId);
