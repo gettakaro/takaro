@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { TakaroService } from './Base.js';
 import { VariableRepo, VariablesModel } from '../db/variable.js';
 import { ITakaroQuery } from '@takaro/db';
@@ -54,6 +54,7 @@ export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
   playerId?: string;
 }
 
+@traceableClass('service:variable')
 export class VariablesService extends TakaroService<
   VariablesModel,
   VariableOutputDTO,

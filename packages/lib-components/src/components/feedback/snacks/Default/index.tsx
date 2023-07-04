@@ -8,14 +8,7 @@ import {
   AiOutlineMeh as ErrorIcon,
 } from 'react-icons/ai';
 
-import {
-  Wrapper,
-  ContentContainer,
-  TextContainer,
-  IconContainer,
-  CloseContainer,
-  ButtonContainer,
-} from './style';
+import { Wrapper, ContentContainer, TextContainer, IconContainer, CloseContainer, ButtonContainer } from './style';
 import { useTheme } from '../../../../hooks';
 import { ButtonProps, IconButton, Tooltip } from '../../../../components';
 import { AlertVariants } from '../../../../styled';
@@ -55,9 +48,7 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
       <Wrapper ref={ref}>
         <ContentContainer>
           <IconContainer variant={type}>
-            {icon
-              ? cloneElement(icon, { size: 15, fill: theme.colors[type] })
-              : getIcon()}
+            {icon ? cloneElement(icon, { size: 15, fill: theme.colors[type] }) : getIcon()}
           </IconContainer>
           <TextContainer>
             {title ? (
@@ -82,7 +73,7 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
         <Tooltip>
           <Tooltip.Trigger asChild>
             <CloseContainer onClick={handleDismiss}>
-              <IconButton icon={<CloseIcon size={15} />} />
+              <IconButton icon={<CloseIcon size={15} />} ariaLabel="Dismiss snack popup" />
             </CloseContainer>
           </Tooltip.Trigger>
           <Tooltip.Content>Dismiss</Tooltip.Content>

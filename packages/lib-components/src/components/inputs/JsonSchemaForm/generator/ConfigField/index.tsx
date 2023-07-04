@@ -1,17 +1,5 @@
-import {
-  Control,
-  UseFieldArrayRemove,
-  UseFormResetField,
-  useWatch,
-} from 'react-hook-form';
-import {
-  Select,
-  TextField,
-  Chip,
-  TextAreaField,
-  IconButton,
-  Tooltip,
-} from '../../../../../components';
+import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
+import { Select, TextField, Chip, TextAreaField, IconButton, Tooltip } from '../../../../../components';
 import { Header } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from '../InputTypes';
@@ -28,14 +16,7 @@ interface ConfigFieldProps {
   resetField: UseFormResetField<IFormInputs>;
 }
 
-export const ConfigField: FC<ConfigFieldProps> = ({
-  control,
-  input,
-  index,
-  remove,
-  id,
-  resetField,
-}) => {
+export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remove, id, resetField }) => {
   const [initialised, setInitialised] = useState<boolean>(false);
   const output = useWatch<IFormInputs>({
     control,
@@ -78,11 +59,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({
     }
   }, [fieldType]);
 
-  const typeSpecificFields = useCallback(TypeSpecificFieldsMap, [
-    fieldType,
-    index,
-    id,
-  ]);
+  const typeSpecificFields = useCallback(TypeSpecificFieldsMap, [fieldType, index, id]);
 
   return (
     <>
@@ -96,17 +73,13 @@ export const ConfigField: FC<ConfigFieldProps> = ({
             <IconButton
               onClick={() => remove(index)}
               icon={<RemoveIcon cursor="pointer" size={18} />}
+              ariaLabel="Remove field"
             />
           </Tooltip.Trigger>
           <Tooltip.Content>Remove field</Tooltip.Content>
         </Tooltip>
       </Header>
-      <TextField
-        control={control}
-        label="Name"
-        name={`configFields.${index}.name`}
-        required
-      />
+      <TextField control={control} label="Name" name={`configFields.${index}.name`} required />
       <TextAreaField
         control={control}
         label="Description"
@@ -119,11 +92,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({
         name={`configFields.${index}.type`}
         label="Type"
         render={(selectedIndex) => (
-          <div>
-            {selectedIndex !== -1
-              ? Object.values(InputType)[selectedIndex]
-              : Object.values(InputType)[0]}
-          </div>
+          <div>{selectedIndex !== -1 ? Object.values(InputType)[selectedIndex] : Object.values(InputType)[0]}</div>
         )}
       >
         <Select.OptionGroup label="type">

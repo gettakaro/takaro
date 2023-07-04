@@ -8,6 +8,7 @@ export interface IconButtonProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
   disabled?: boolean;
+  ariaLabel: string;
 }
 
 const getSize = (size: Size) => {
@@ -26,12 +27,9 @@ const getSize = (size: Size) => {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  (
-    { icon, color = 'primary', size = 'medium', disabled, onClick = () => {} },
-    ref
-  ) => {
+  ({ icon, color = 'primary', size = 'medium', disabled, onClick = () => {}, ariaLabel }, ref) => {
     return (
-      <Default color={color} onClick={onClick} ref={ref} disabled={disabled}>
+      <Default color={color} onClick={onClick} ref={ref} disabled={disabled} aria-label={ariaLabel}>
         {cloneElement(icon, { size: getSize(size) })}
       </Default>
     );

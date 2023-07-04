@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
-import { logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { migrate } from '@takaro/db';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
@@ -9,7 +9,7 @@ import { config } from './config.js';
 import { UserController } from './controllers/UserController.js';
 import { RoleController } from './controllers/Rolecontroller.js';
 import { GameServerController } from './controllers/GameServerController.js';
-import { DomainService } from './service/DomainService.js';
+import { DomainOutputDTO, DomainService } from './service/DomainService.js';
 import { GameServerService } from './service/GameServerService.js';
 import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
@@ -58,8 +58,16 @@ const log = logger('main');
 async function main() {
   log.info('Starting...');
 
-  config.validate();
-  log.info('✅ Config validated');
+  try {
+    config.validate();
+    log.info('✅ Config validated');
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new errors.ConfigError(`Config validation failed: ${error.message}`);
+    } else {
+      throw error;
+    }
+  }
 
   log.info('📖 Running database migrations');
   await migrate();
@@ -82,29 +90,32 @@ async function main() {
   const domainService = new DomainService();
   const domains = await domainService.find({});
 
-  for (const domain of domains.results) {
-    log.info('🌱 Seeding database with builtin modules');
-    const moduleService = new ModuleService(domain.id);
-    await moduleService.seedBuiltinModules();
-
-    log.info('🔌 Starting all game servers');
-    const gameServerService = new GameServerService(domain.id);
-    const cronjobService = new CronJobService(domain.id);
-    const gameServers = await gameServerService.find({});
-
-    await Promise.all(
-      gameServers.results.map(async (gameserver) => {
-        const installedModules = await gameServerService.getInstalledModules({
-          gameserverId: gameserver.id,
-        });
-        await Promise.all(
-          installedModules.map(async (mod) => {
-            await cronjobService.syncModuleCronjobs(mod);
-          })
-        );
-      })
-    );
-  }
+  await Promise.all(domains.results.map(ctx.wrap('domainInit', domainInit)));
 }
 
 main();
+
+async function domainInit(domain: DomainOutputDTO) {
+  ctx.addData({ domain: domain.id });
+  log.info('🌱 Seeding database with builtin modules');
+  const moduleService = new ModuleService(domain.id);
+  await moduleService.seedBuiltinModules();
+
+  log.info('🔌 Starting all game servers');
+  const gameServerService = new GameServerService(domain.id);
+  const cronjobService = new CronJobService(domain.id);
+  const gameServers = await gameServerService.find({});
+
+  await Promise.all(
+    gameServers.results.map(async (gameserver) => {
+      const installedModules = await gameServerService.getInstalledModules({
+        gameserverId: gameserver.id,
+      });
+      await Promise.all(
+        installedModules.map(async (mod) => {
+          await cronjobService.syncModuleCronjobs(mod);
+        })
+      );
+    })
+  );
+}

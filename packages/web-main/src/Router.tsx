@@ -47,67 +47,34 @@ export const Router: FC = () => (
   <BrowserRouter>
     <SentryRoutes>
       {/* ======================== Global ======================== */}
-      <Route
-        element={<AuthenticatedRoute frame="global" />}
-        path={PATHS.home()}
-      >
+      <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
         <Route element={<Dashboard />} path={PATHS.home()} />
         <Route element={<SettingsFrame />}>
-          <Route
-            element={<GlobalGameServerSettings />}
-            path={PATHS.settings.GameServerSettings()}
-          />
-          <Route
-            element={<DiscordSettings />}
-            path={PATHS.settings.discordSettings()}
-          />
+          <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
+          <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
         <Route element={<GameServers />} path="/server/" />
 
         <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
-          <Route
-            element={<GameServerCreate />}
-            path={PATHS.gameServers.create()}
-          />
-          <Route
-            element={<GameServerUpdate />}
-            path={PATHS.gameServers.update(':serverId')}
-          />
+          <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
+          <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
         </Route>
         <Route element={<Players />} path={PATHS.players()} />
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
-          <Route
-            element={<EditModule />}
-            path={PATHS.modules.update(':moduleId')}
-          />
+          <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
           <Route element={<CreateModule />} path={PATHS.modules.create()} />
         </Route>
       </Route>
 
       {/* TODO: fix path, frame should be aware of /servers/serverId */}
       {/* ======================== Game Server ======================== */}
-      <Route
-        element={<AuthenticatedRoute frame="gameserver" />}
-        path={PATHS.gameServer.dashboard(':serverId')}
-      >
-        <Route
-          element={<GameServerDashboard />}
-          path={PATHS.gameServer.dashboard(':serverId')}
-        />
-        <Route
-          element={<GameServerSettings />}
-          path={PATHS.gameServer.settings(':serverId')}
-        />
-        <Route
-          element={<GameServerModules />}
-          path={PATHS.gameServer.modules(':serverId')}
-        >
+      <Route element={<AuthenticatedRoute frame="gameserver" />} path={PATHS.gameServer.dashboard(':serverId')}>
+        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
+        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
           <Route
             element={<InstallModule />}
-            path={PATHS.gameServer.moduleInstallations.install(
-              ':serverId',
-              ':moduleId'
-            )}
+            path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
           />
         </Route>
       </Route>
@@ -117,6 +84,8 @@ export const Router: FC = () => (
         <Route element={<Studio />} path={PATHS.studio.module(':moduleId')} />
       </Route>
       <Route element={<LogIn />} path={PATHS.login()} />
+
+      <Route element={<NotFound />} path="/404" />
 
       {/* Page not found matches with everything => should stay at bottom */}
       <Route element={<NotFound />} path="*" />
