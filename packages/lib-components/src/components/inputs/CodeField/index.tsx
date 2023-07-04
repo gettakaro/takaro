@@ -1,20 +1,8 @@
-import React, {
-  KeyboardEvent,
-  FC,
-  useRef,
-  useEffect,
-  ChangeEvent,
-  useState,
-} from 'react';
+import React, { KeyboardEvent, FC, useRef, useEffect, ChangeEvent, useState } from 'react';
 import { Container, InputContainer, Input, LoadingField } from './style';
-import {
-  defaultInputProps,
-  defaultInputPropsFactory,
-  ControlledInputProps,
-} from '../InputProps';
-import { Label, ErrorMessage } from '../../../components';
+import { defaultInputProps, defaultInputPropsFactory, ControlledInputProps } from '../InputProps';
 import { useController } from 'react-hook-form';
-import { Description, setAriaDescribedBy } from '../layout';
+import { Label, ErrorMessage, Description, setAriaDescribedBy } from '../layout';
 
 export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
   name: string;
@@ -23,8 +11,7 @@ export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
   autoSubmit?: () => unknown;
 };
 
-const defaultsApplier =
-  defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
 
 // TODO: implement readonly
 export const CodeField: FC<CodeFieldProps> = (props) => {
@@ -131,10 +118,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
       <Container>
         <InputContainer fields={fields}>
           {Array.from(Array(fields).keys()).map((_, idx) => (
-            <LoadingField
-              key={`loading-field-array-${idx}`}
-              className="placeholder"
-            />
+            <LoadingField key={`loading-field-array-${idx}`} className="placeholder" />
           ))}
         </InputContainer>
       </Container>
@@ -155,10 +139,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
           htmlFor={`${name}-0`}
         />
       )}
-      <InputContainer
-        fields={fields}
-        aria-describedby={setAriaDescribedBy(name, !!description)}
-      >
+      <InputContainer fields={fields} aria-describedby={setAriaDescribedBy(name, !!description)}>
         {Array.from(Array(fields).keys()).map((_, i) => (
           <Input
             autoCapitalize="off"
@@ -182,12 +163,8 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             type="text"
           />
         ))}
-        {error && error.message && showError && (
-          <ErrorMessage message={error.message} />
-        )}
-        {description && (
-          <Description description={description} inputName={name} />
-        )}
+        {error && error.message && showError && <ErrorMessage message={error.message} />}
+        {description && <Description description={description} inputName={name} />}
       </InputContainer>
     </Container>
   );

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Size } from '../../../styled';
+import { Size } from '../../../../styled';
 import { Container } from './style';
 
 export type LabelPosition = 'left' | 'right' | 'top' | 'bottom';

@@ -25,8 +25,5 @@ export type { TooltipProps } from './Tooltip';
 export { Popover } from './Popover';
 export type { PopoverProps } from './Popover';
 
-export { ErrorMessage } from './ErrorMessage';
-export type { ErrorProps } from './ErrorMessage';
-
 export { PageNotFound } from './PageNotFound';
 export type { PageNotFoundProps } from './PageNotFound';

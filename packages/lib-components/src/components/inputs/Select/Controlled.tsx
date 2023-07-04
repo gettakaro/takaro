@@ -1,29 +1,19 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Container } from './style';
-import {
-  ControlledInputProps,
-  defaultInputPropsFactory,
-  defaultInputProps,
-} from '../InputProps';
+import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
 import { GenericSelect, SubComponentTypes } from '.';
-import { ErrorMessage, Label } from '../../../components';
 import { SelectProps } from './Generic';
 import { Option } from './Generic/Option';
 import { OptionGroup } from './Generic/OptionGroup';
-import { Wrapper, Description } from '../layout';
+import { ErrorMessage, Label, Wrapper, Description } from '../layout';
 
-export type ControlledSelectProps = PropsWithChildren<
-  ControlledInputProps & SelectProps
->;
+export type ControlledSelectProps = PropsWithChildren<ControlledInputProps & SelectProps>;
 
-const defaultsApplier =
-  defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
 
 // TODO: handle select loading state
-export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
-  props
-) => {
+export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (props) => {
   const {
     required,
     size: componentSize,
@@ -89,13 +79,9 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
         >
           {children}
         </GenericSelect>
-        {error && error.message && showError && (
-          <ErrorMessage message={error.message} />
-        )}
+        {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </Wrapper>
   );
 };
