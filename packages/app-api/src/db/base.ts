@@ -1,5 +1,5 @@
 import { getKnex, ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from '@takaro/db';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, ctx } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
 export interface PaginatedOutput<T> {
@@ -38,6 +38,7 @@ export abstract class ITakaroRepo<
   UpdateDTO extends TakaroDTO<UpdateDTO>
 > extends NOT_DOMAIN_SCOPED_ITakaroRepo<Model, OutputDTO, CreateInputDTO, UpdateDTO> {
   constructor(public readonly domainId: string) {
+    ctx.addData({ domain: domainId });
     super();
   }
 
