@@ -9,7 +9,7 @@ test('should open onboarding when new module with no functions is created', asyn
 
   const [onBoardingPage] = await Promise.all([
     context.waitForEvent('page'),
-    page.locator('a').filter({ hasText: 'Module without functions' }).click(),
+    page.getByText('Module without functions').click(),
   ]);
 
   await onBoardingPage.waitForLoadState();
@@ -21,7 +21,7 @@ test('should open studio when module with functions is created', async ({ page, 
 
   const [studioPage] = await Promise.all([
     context.waitForEvent('page'),
-    page.locator('a').filter({ hasText: 'Module with functions' }).click(),
+    page.getByText('Module with functions').click(),
   ]);
   await studioPage.waitForLoadState();
 

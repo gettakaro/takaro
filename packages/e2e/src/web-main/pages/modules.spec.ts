@@ -6,7 +6,7 @@ const { expect, test: pwTest } = playwright;
 basicTest('Can create module', async ({ page }) => {
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
-  await page.locator('a').filter({ hasText: 'new module' }).click();
+  await page.getByText('new module').click();
 
   const newModuleName = 'My new module';
   const moduleNameInput = page.getByPlaceholder('My cool module');
@@ -56,13 +56,13 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
 
-  const deleteButton = page.locator('a', { hasText: moduleName }).getByRole('button').nth(1);
+  const deleteButton = page.getByText(moduleName).getByRole('button').nth(1);
   await deleteButton.click();
 
   // dialog
   await page.getByRole('button', { name: 'Delete module' }).click();
 
-  expect(page.locator('a').filter({ hasText: moduleName })).toHaveCount(0);
+  expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
 pwTest.describe('Module config', () => {
