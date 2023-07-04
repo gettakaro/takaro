@@ -1,5 +1,5 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { VariableCreateDTO, VariableOutputDTO, VariableUpdateDTO } from '../service/VariablesService.js';
 import { config } from '../config.js';
@@ -15,6 +15,7 @@ export class VariablesModel extends TakaroModel {
   playerId?: string;
 }
 
+@traceableClass('repo:variable')
 export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO, VariableCreateDTO, VariableUpdateDTO> {
   async getModel() {
     const knex = await this.getKnex();

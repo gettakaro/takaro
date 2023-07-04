@@ -19,36 +19,38 @@ interface DialogHeadingProps extends HTMLProps<HTMLHeadingElement> {
   hasClose?: boolean;
 }
 
-export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
-  function DialogHeading({ children, hasClose = true, ...props }, ref) {
-    const { setLabelId, setOpen } = useDialogContext();
-    const id = useId();
+export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(function DialogHeading(
+  { children, hasClose = true, ...props },
+  ref
+) {
+  const { setLabelId, setOpen } = useDialogContext();
+  const id = useId();
 
-    useLayoutEffect(() => {
-      setLabelId(id);
-      return () => setLabelId(undefined);
-    }, [id, setLabelId]);
+  useLayoutEffect(() => {
+    setLabelId(id);
+    return () => setLabelId(undefined);
+  }, [id, setLabelId]);
 
-    return (
-      <Container>
-        <h4 {...props} ref={ref} id={id}>
-          {children}
-        </h4>
-        {hasClose && (
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen(false);
-                }}
-                icon={<CloseIcon cursor="pointer" />}
-              />
-            </Tooltip.Trigger>
-            <Tooltip.Content>Close dialog</Tooltip.Content>
-          </Tooltip>
-        )}
-      </Container>
-    );
-  }
-);
+  return (
+    <Container>
+      <h4 {...props} ref={ref} id={id}>
+        {children}
+      </h4>
+      {hasClose && (
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(false);
+              }}
+              ariaLabel="Close dialog"
+              icon={<CloseIcon cursor="pointer" />}
+            />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Close dialog</Tooltip.Content>
+        </Tooltip>
+      )}
+    </Container>
+  );
+});

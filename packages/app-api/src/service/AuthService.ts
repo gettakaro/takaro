@@ -1,5 +1,5 @@
 import { DomainScoped } from '../lib/DomainScoped.js';
-import { ctx, errors, logger } from '@takaro/util';
+import { ctx, errors, logger, traceableClass } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
@@ -62,7 +62,7 @@ export class TokenOutputDTO extends TakaroDTO<TokenOutputDTO> {
 }
 
 const log = logger('AuthService');
-
+@traceableClass('service:auth')
 export class AuthService extends DomainScoped {
   static async login(name: string, password: string): Promise<LoginOutputDTO> {
     try {

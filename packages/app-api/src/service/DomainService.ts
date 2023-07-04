@@ -1,4 +1,4 @@
-import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO } from '@takaro/util';
+import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, traceableClass } from '@takaro/util';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
 import { randomBytes } from 'crypto';
 import { RoleCreateInputDTO, RoleOutputDTO, RoleService } from './RoleService.js';
@@ -50,6 +50,7 @@ export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
   password: string;
 }
 
+@traceableClass('service:domain')
 export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   DomainModel,
   DomainOutputDTO,

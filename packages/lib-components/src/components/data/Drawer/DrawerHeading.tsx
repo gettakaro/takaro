@@ -37,6 +37,7 @@ export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
               <IconButton
                 onClick={() => setOpen(false)}
                 icon={<CloseIcon size={18} cursor="pointer" />}
+                ariaLabel="Close"
               />
             </Tooltip.Trigger>
             <Tooltip.Content>Close</Tooltip.Content>

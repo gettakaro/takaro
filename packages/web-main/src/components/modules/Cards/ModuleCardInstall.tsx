@@ -1,21 +1,10 @@
-import {
-  ModuleInstallationOutputDTO,
-  ModuleOutputDTO,
-} from '@takaro/apiclient';
+import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
 import { Tooltip, Dialog, Button, IconButton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
-import {
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineSetting as ConfigIcon,
-} from 'react-icons/ai';
+import { AiOutlineDelete as DeleteIcon, AiOutlineSetting as ConfigIcon } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import {
-  ModuleCardContainer,
-  SpacedRow,
-  ActionIconsContainer,
-  DeleteDialogContainer,
-} from './style';
+import { ModuleCardContainer, SpacedRow, ActionIconsContainer, DeleteDialogContainer } from './style';
 
 import { useGameServerModuleUninstall } from 'queries/gameservers';
 import { useGameServerOutletContext } from 'frames/GameServerFrame';
@@ -26,13 +15,9 @@ interface IModuleCardProps {
   onClick?: () => void;
 }
 
-export const ModuleCardInstall: FC<IModuleCardProps> = ({
-  mod,
-  installation,
-}) => {
+export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const { mutateAsync: uninstallModule, isLoading: isDeleting } =
-    useGameServerModuleUninstall();
+  const { mutateAsync: uninstallModule, isLoading: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
   const { gameServerId } = useGameServerOutletContext();
 
@@ -65,13 +50,9 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
                 <Tooltip.Trigger asChild>
                   <IconButton
                     onClick={() => {
-                      navigate(
-                        PATHS.gameServer.moduleInstallations.install(
-                          gameServerId,
-                          mod.id
-                        )
-                      );
+                      navigate(PATHS.gameServer.moduleInstallations.install(gameServerId, mod.id));
                     }}
+                    ariaLabel="Configure module"
                     icon={<ConfigIcon />}
                   />
                 </Tooltip.Trigger>
@@ -84,9 +65,8 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
                       e.stopPropagation();
                       setOpenDialog(true);
                     }}
-                    icon={
-                      <DeleteIcon key={`uninstall-module-icon-${mod.id}`} />
-                    }
+                    icon={<DeleteIcon key={`uninstall-module-icon-${mod.id}`} />}
+                    ariaLabel="Uninstall module"
                   />
                 </Tooltip.Trigger>
                 <Tooltip.Content>Uninstall</Tooltip.Content>
@@ -96,12 +76,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
             <Button
               text="Install"
               onClick={() => {
-                navigate(
-                  PATHS.gameServer.moduleInstallations.install(
-                    gameServerId,
-                    mod.id
-                  )
-                );
+                navigate(PATHS.gameServer.moduleInstallations.install(gameServerId, mod.id));
               }}
             />
           )}
@@ -111,14 +86,12 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
           <Dialog.Heading>
-            Module:{' '}
-            <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
+            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
           <DeleteDialogContainer>
             <h2>Uninstall module</h2>
             <p>
-              Are you sure you want to uninstall the module{' '}
-              <strong>{mod.name}</strong>? This action is irreversible!
+              Are you sure you want to uninstall the module <strong>{mod.name}</strong>? This action is irreversible!
             </p>
             <Button
               isLoading={isDeleting}

@@ -303,13 +303,13 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
         <>
           <Tooltip placement="top">
             <Tooltip.Trigger asChild>
-              <IconButton onClick={handleOnRenameClick} icon={<RenameIcon size={18} />} />
+              <IconButton onClick={handleOnRenameClick} ariaLabel="Rename file" icon={<RenameIcon size={18} />} />
             </Tooltip.Trigger>
             <Tooltip.Content>Rename file</Tooltip.Content>
           </Tooltip>
           <Tooltip placement="top">
             <Tooltip.Trigger asChild>
-              <IconButton icon={<DeleteIcon />} onClick={handleOnDeleteClick} />
+              <IconButton icon={<DeleteIcon />} onClick={handleOnDeleteClick} ariaLabel="Delete file" />
             </Tooltip.Trigger>
             <Tooltip.Content>Delete file</Tooltip.Content>
           </Tooltip>
@@ -319,7 +319,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
       return (
         <Tooltip placement="top">
           <Tooltip.Trigger asChild>
-            <IconButton onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
+            <IconButton ariaLabel="New file" onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
           </Tooltip.Trigger>
           <Tooltip.Content>New file</Tooltip.Content>
         </Tooltip>

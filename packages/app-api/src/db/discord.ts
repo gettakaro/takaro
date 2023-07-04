@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { USER_TABLE_NAME, UserModel } from './user.js';
 import { ITakaroRepo } from './base.js';
 import { GuildCreateInputDTO, GuildOutputDTO, GuildUpdateDTO } from '../service/DiscordService.js';
-import { errors, logger } from '@takaro/util';
+import { errors, logger, traceableClass } from '@takaro/util';
 
 const DISCORD_GUILDS_TABLE_NAME = 'discordGuilds';
 const USER_ON_DISCORD_GUILD_TABLE_NAME = 'userOnDiscordGuild';
@@ -49,6 +49,7 @@ export class DiscordGuildModel extends TakaroModel {
   };
 }
 
+@traceableClass('repo:discord')
 export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, GuildCreateInputDTO, GuildUpdateDTO> {
   static async NOT_DOMAIN_SCOPED_resolveDomainFromGuildId(guildId: string): Promise<string | null> {
     const knex = await getKnex();

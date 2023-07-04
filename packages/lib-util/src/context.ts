@@ -39,7 +39,7 @@ class Context {
 
   wrapContext(fn: any, metadata: TransactionStore = {}) {
     return (...args: any[]) => {
-      return this.asyncLocalStorage.run(metadata, fn, ...args) as Promise<unknown>;
+      return this.asyncLocalStorage.run(metadata, fn, ...args);
     };
   }
 
@@ -57,24 +57,59 @@ class Context {
    */
   wrap(name: string, fn: any) {
     const ctxWrapped = this.wrapContext(fn);
+
+    if (process.env.TRACING_ENABLED !== 'true') return ctxWrapped;
+
     return (...args: any[]) => {
-      return new Promise((resolve, reject) => {
-        const tracer: Tracer = trace.getTracer('takaro-generic-tracer');
-        tracer.startActiveSpan(name, (span: Span) => {
-          this.setContextAttributes(this.data, span);
-          ctxWrapped(...args)
-            .then((res) => {
-              span.end();
-              resolve(res);
-            })
-            .catch((err) => {
-              span.end();
-              reject(err);
-            });
-        });
+      const tracer: Tracer = trace.getTracer('takaro-generic-tracer');
+
+      return tracer.startActiveSpan(name, (span: Span) => {
+        this.setContextAttributes(this.data, span);
+        try {
+          const result = ctxWrapped(...args);
+          if (result instanceof Promise && result.then) {
+            return result
+              .then((res) => {
+                span.end();
+                return res;
+              })
+              .catch((err) => {
+                span.end();
+                throw err;
+              });
+          } else {
+            span.end();
+            return result;
+          }
+        } catch (err) {
+          span.end();
+          throw err;
+        }
       });
     };
   }
 }
 
 export const ctx = new Context();
+
+export function traceableClass(name: string) {
+  return function traceableClass<T extends { new (...args: any[]): object }>(OriginalConstructor: T) {
+    return class extends OriginalConstructor {
+      constructor(...args: any[]) {
+        super(...args);
+        for (const key of Object.getOwnPropertyNames(OriginalConstructor.prototype)) {
+          const typedKey = key as keyof typeof this;
+
+          if (key !== 'constructor' && typeof this[typedKey] === 'function') {
+            const originalMethod = this[typedKey];
+            // @ts-expect-error - I don't know how to fix this :(
+            this[typedKey] = ctx.wrap(`${name}:${key}`, (...args: any[]) => {
+              // @ts-expect-error - I don't know how to fix this :(
+              return originalMethod.bind(this)(...args);
+            });
+          }
+        }
+      }
+    };
+  };
+}
