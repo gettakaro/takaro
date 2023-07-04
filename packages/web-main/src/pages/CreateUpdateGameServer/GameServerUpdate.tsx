@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, ErrorMessage } from '@takaro/lib-components';
+import { Button, Select, TextField, Drawer, CollapseList } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -142,7 +142,6 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               <CollapseList.Item title="Connection info">
                 {connectionInfoFieldsMap(isLoading, control)[data.type]}
               </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>
