@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import {
@@ -66,7 +66,7 @@ export class CommandArgumentModel extends TakaroModel {
     };
   }
 }
-
+@traceableClass('repo:command')
 export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);

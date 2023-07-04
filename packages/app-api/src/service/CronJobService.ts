@@ -5,7 +5,7 @@ import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
 import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
-import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from './ModuleService.js';
@@ -69,6 +69,7 @@ export class CronJobTriggerDTO extends TakaroDTO<CronJobTriggerDTO> {
   moduleId: string;
 }
 
+@traceableClass('service:cronjob')
 export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO, CronJobCreateDTO, CronJobUpdateDTO> {
   get repo() {
     return new CronJobRepo(this.domainId);

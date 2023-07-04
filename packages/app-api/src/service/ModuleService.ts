@@ -6,7 +6,7 @@ import { IsJSON, IsOptional, IsString, Length, ValidateNested } from 'class-vali
 import { Type } from 'class-transformer';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
 import { HookCreateDTO, HookOutputDTO, HookService, HookUpdateDTO } from './HookService.js';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -90,6 +90,7 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   configSchema: string;
 }
 
+@traceableClass('service:module')
 export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, ModuleCreateDTO, ModuleUpdateDTO> {
   get repo() {
     return new ModuleRepo(this.domainId);

@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobUpdateDTO } from '../service/CronJobService.js';
@@ -28,6 +28,7 @@ export class CronJobModel extends TakaroModel {
   }
 }
 
+@traceableClass('repo:cronjob')
 export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, CronJobCreateDTO, CronJobUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);

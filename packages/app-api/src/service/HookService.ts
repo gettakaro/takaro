@@ -17,7 +17,7 @@ import {
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import safeRegex from 'safe-regex';
-import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
@@ -127,6 +127,7 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   msg: string;
 }
 
+@traceableClass('service:hook')
 export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCreateDTO, HookUpdateDTO> {
   get repo() {
     return new HookRepo(this.domainId);

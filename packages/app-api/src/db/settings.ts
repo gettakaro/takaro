@@ -1,5 +1,5 @@
 import { TakaroModel } from '@takaro/db';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo, PaginatedOutput } from './base.js';
 import { DEFAULT_SETTINGS, Settings, SETTINGS_KEYS } from '../service/SettingsService.js';
 
@@ -17,6 +17,7 @@ export class GameServerSettingsModel extends SettingsModel {
   gameServerId!: string;
 }
 
+@traceableClass('repo:settings')
 export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, never> {
   constructor(public readonly domainId: string, public readonly gameServerId?: string) {
     super(domainId);
