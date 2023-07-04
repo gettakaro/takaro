@@ -31,8 +31,6 @@ services:
     privileged: true
     devices:
       - /dev/kvm:/dev/kvm
-    depends_on:
-      - takaro
     build:
       context: .
       dockerfile: containers/vmm/dev.Dockerfile
