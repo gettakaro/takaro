@@ -1,4 +1,4 @@
-import { logger, errors } from '@takaro/util';
+import { logger, errors, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer } from '@takaro/modules';
 import {
@@ -13,6 +13,7 @@ import {
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
 
+@traceableClass('game:rust')
 export class Rust implements IGameServer {
   private log = logger('rust');
   connectionInfo: RustConnectionInfo;

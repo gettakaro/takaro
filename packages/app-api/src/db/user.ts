@@ -1,7 +1,7 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
 
@@ -35,6 +35,7 @@ export interface IUserFindOneOutput extends UserModel {
   roles: Array<RoleModel & { permissions: PermissionModel[] }>;
 }
 
+@traceableClass('repo:user')
 export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateInputDTO, UserUpdateDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);

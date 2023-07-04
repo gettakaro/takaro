@@ -4,7 +4,7 @@ import { PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsOptional, IsString } from 'class-validator';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { IGamePlayer } from '@takaro/modules';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 
@@ -43,6 +43,7 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   name!: string;
 }
 
+@traceableClass('service:player')
 export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {
   get repo() {
     return new PlayerRepo(this.domainId);

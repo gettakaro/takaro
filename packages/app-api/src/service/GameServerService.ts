@@ -15,7 +15,7 @@ import {
   BanDTO,
   IItemDTO,
 } from '@takaro/gameserver';
-import { errors, TakaroModelDTO } from '@takaro/util';
+import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
@@ -100,6 +100,7 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   systemConfig: Record<string, any>;
 }
 
+@traceableClass('service:gameserver')
 export class GameServerService extends TakaroService<
   GameServerModel,
   GameServerOutputDTO,

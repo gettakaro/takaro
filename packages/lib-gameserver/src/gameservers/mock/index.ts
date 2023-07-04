@@ -1,4 +1,4 @@
-import { logger } from '@takaro/util';
+import { logger, traceableClass } from '@takaro/util';
 import { IGamePlayer } from '@takaro/modules';
 import {
   BanDTO,
@@ -15,6 +15,7 @@ import { Socket, io } from 'socket.io-client';
 import assert from 'assert';
 import { MockConnectionInfo } from './connectionInfo.js';
 
+@traceableClass('game:mock')
 export class Mock implements IGameServer {
   private logger = logger('Mock');
   connectionInfo: MockConnectionInfo;

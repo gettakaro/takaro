@@ -1,10 +1,5 @@
-import { FC, Fragment } from 'react';
-import {
-  Divider,
-  Loading,
-  styled,
-  InfiniteScroll,
-} from '@takaro/lib-components';
+import { FC } from 'react';
+import { Divider, Loading, styled, InfiniteScroll } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
 import { useModules } from 'queries/modules';
@@ -21,14 +16,7 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
-  const {
-    data: modules,
-    hasNextPage,
-    isFetching,
-    isLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = useModules();
+  const { data: modules, hasNextPage, isFetching, isLoading, isFetchingNextPage, fetchNextPage } = useModules();
 
   const navigate = useNavigate();
 
@@ -48,10 +36,8 @@ export const ModuleDefinitions: FC = () => {
       </Helmet>
       <Page>
         <p>
-          Modules are the building blocks of your game server. They consist of
-          commands, cronjobs, or hooks. You can install the built-in modules
-          easily, just configure them!. Advanced users can create their own
-          modules.
+          Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
+          install the built-in modules easily, just configure them!. Advanced users can create their own modules.
         </p>
 
         <Divider />

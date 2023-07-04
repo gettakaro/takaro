@@ -17,7 +17,7 @@ export abstract class TakaroWorker<T> {
       })
     );
 
-    this.bullWorker = new Worker(name, instrumentedProcessor, {
+    this.bullWorker = new Worker(name, instrumentedProcessor as Processor, {
       connection: getRedisConnectionOptions(),
       concurrency,
     });

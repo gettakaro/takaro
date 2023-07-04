@@ -1,4 +1,4 @@
-import { logger } from '@takaro/util';
+import { logger, traceableClass } from '@takaro/util';
 import { IGamePlayer } from '@takaro/modules';
 import {
   BanDTO,
@@ -16,6 +16,7 @@ import { SdtdApiClient } from './sdtdAPIClient.js';
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 
+@traceableClass('game:7d2d')
 export class SevenDaysToDie implements IGameServer {
   private logger = logger('7D2D');
   private apiClient: SdtdApiClient;

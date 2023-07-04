@@ -1,6 +1,6 @@
 import { NOT_DOMAIN_SCOPED_TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { NOT_DOMAIN_SCOPED_ITakaroRepo } from './base.js';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { DomainOutputDTO, DomainCreateInputDTO, DomainUpdateInputDTO } from '../service/DomainService.js';
 import { UserRepo } from './user.js';
 
@@ -11,6 +11,7 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   name!: string;
 }
 
+@traceableClass('repo:domain')
 export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
   DomainModel,
   DomainOutputDTO,
