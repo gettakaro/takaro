@@ -1,12 +1,5 @@
 import { FC, useState, useMemo, useEffect } from 'react';
-import {
-  Button,
-  TextField,
-  ErrorMessage,
-  styled,
-  errors,
-  Company,
-} from '@takaro/lib-components';
+import { Button, TextField, styled, errors, Company } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -83,10 +76,7 @@ const LogIn: FC = () => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        email: z
-          .string()
-          .email('This is not a valid email address.')
-          .nonempty('Email is a required field.'),
+        email: z.string().email('This is not a valid email address.').nonempty('Email is a required field.'),
         password: z.string().nonempty('Password is a required field'),
       }),
     []
@@ -161,23 +151,8 @@ const LogIn: FC = () => {
           />
         */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {error && <ErrorMessage message={error} />}
-          <TextField
-            control={control}
-            label="Email"
-            loading={loading}
-            name="email"
-            placeholder="hi cutie"
-            required
-          />
-          <TextField
-            control={control}
-            label="Password"
-            loading={loading}
-            name="password"
-            required
-            type="password"
-          />
+          <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
+          <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
           <Button
             icon={<Mail />}

@@ -28,7 +28,7 @@ export type { ControlledTagFieldProps as TagFieldProps } from './TagField';
 export { EditableField } from './EditableField';
 export type { EditableFieldProps } from './EditableField';
 
-export { Label } from './Label';
-export type { LabelProps } from './Label';
+export { Label } from './layout/Label';
+export type { LabelProps } from './layout/Label';
 
 export { JsonSchemaForm, SchemaGenerator, generateJsonSchema } from './JsonSchemaForm';
