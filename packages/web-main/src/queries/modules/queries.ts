@@ -23,6 +23,7 @@ import {
 import * as Sentry from '@sentry/react';
 
 import { hasNextPage } from '../util';
+import { AxiosError } from 'axios';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -83,7 +84,7 @@ export const useModuleCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<ModuleOutputDTO, AxiosError, ModuleCreateDTO>({
     mutationFn: async (moduleCreateDTO: ModuleCreateDTO) =>
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
     onSuccess: (newModule: ModuleOutputDTO) => {
