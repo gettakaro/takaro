@@ -1,34 +1,35 @@
 import playwright from '@playwright/test';
-import { test } from './fixtures/index.js';
+import { integrationConfig } from '@takaro/test';
+import { basicTest } from './fixtures/index.js';
 
-const { test: pwTest, expect } = playwright;
+const { test, expect } = playwright;
 
-pwTest('has title', async ({ page }) => {
-  await page.goto(`${process.env.TAKARO_FRONTEND_HOST}/`);
+test('has title', async ({ page }) => {
+  await page.goto(`${integrationConfig.get('frontendHost')}/`);
   await expect(page).toHaveTitle(/Takaro/);
 });
 
-test('Can go to dashboard', async ({ page }) => {
+basicTest('Can go to dashboard', async ({ page }) => {
   await page.getByRole('link', { name: 'Dashboard' }).click();
-  await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'dashboard', exact: true })).toBeVisible();
 });
 
-test('Can go to servers', async ({ page }) => {
+basicTest('Can go to servers', async ({ page }) => {
   await page.getByRole('link', { name: 'Servers' }).click();
-  await expect(page.getByRole('heading', { name: 'Servers' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'servers', exact: true })).toBeVisible();
 });
 
-test('Can go to players', async ({ page }) => {
+basicTest('Can go to players', async ({ page }) => {
   await page.getByRole('link', { name: 'Players' }).click();
-  await expect(page.getByRole('heading', { name: 'Players' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'players', exact: true })).toBeVisible();
 });
 
-test('Can go to modules', async ({ page }) => {
+basicTest('Can go to modules', async ({ page }) => {
   await page.getByRole('link', { name: 'Modules' }).click();
-  await expect(page.getByRole('heading', { name: 'Modules' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'modules', exact: true })).toBeVisible();
 });
 
-test('Can go to settings', async ({ page }) => {
-  await page.getByRole('link', { name: 'Settings' }).click();
-  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+basicTest('Can go to settings', async ({ page }) => {
+  await page.getByRole('link', { name: 'Settings', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'settings' })).toBeVisible();
 });
