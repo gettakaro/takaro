@@ -109,6 +109,18 @@ services:
       - 13000:3000
       - 12001:12001
 
+  takaro_mgirator:
+    image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
+    container_name: takaro_migrator
+    command: npm -w packages/app-api run db:migrate
+    environment:
+      LOGGING_LEVEL: debug
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: 'postgresql'
+      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
+
   takaro_web_main:
     image: ghcr.io/gettakaro/takaro-web-main:${DOCKER_TAG}
     container_name: takaro_web_main
