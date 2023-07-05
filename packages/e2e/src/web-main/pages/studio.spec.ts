@@ -21,7 +21,7 @@ test('should open studio when module with functions is created', async ({ page, 
 
   const [studioPage] = await Promise.all([
     context.waitForEvent('page'),
-    page.getByText('Module with functions').click(),
+    page.getByRole('link', { name: 'Module with functions' }).click(),
   ]);
   await studioPage.waitForLoadState();
 

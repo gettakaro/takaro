@@ -19,11 +19,12 @@ basicTest('Can create module', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Save changes' }).click();
 
-  expect(page.getByText(newModuleName)).toBeVisible();
+  await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
-basicTest.fixme('Can edit module', async ({ page, takaro }) => {
-  const oldModuleName = 'My module';
+basicTest('Can edit module', async ({ page, takaro }) => {
+  const oldModuleName = 'edit this module';
+
   await takaro.client.module.moduleControllerCreate({
     name: oldModuleName,
     description: 'Modules are the building blocks of your game server. They consist of commands, c',
@@ -33,8 +34,7 @@ basicTest.fixme('Can edit module', async ({ page, takaro }) => {
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
 
-  const editButton = page.locator('a', { hasText: oldModuleName }).getByRole('button').first();
-  await editButton.click();
+  await page.getByRole('link', { name: oldModuleName }).getByRole('button', { name: 'Edit module' }).click();
 
   const newModuleName = 'My edited module';
   const moduleNameInput = page.getByPlaceholder('My cool module');
@@ -42,11 +42,11 @@ basicTest.fixme('Can edit module', async ({ page, takaro }) => {
   await moduleNameInput.fill(newModuleName);
 
   await page.getByRole('button', { name: 'Save changes' }).click();
-  await expect(page.locator('a', { hasText: newModuleName })).toBeVisible();
+  await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
 });
 
 basicTest('Can delete module', async ({ page, takaro }) => {
-  const moduleName = 'My module';
+  const moduleName = 'delete this module';
   await takaro.client.module.moduleControllerCreate({
     name: moduleName,
     description: 'Modules are the building blocks of your game server. They consist of commands, c',
@@ -55,14 +55,13 @@ basicTest('Can delete module', async ({ page, takaro }) => {
 
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
-
-  const deleteButton = page.getByText(moduleName).getByRole('button').nth(1);
-  await deleteButton.click();
+  const cardDeleteButton = page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Delete module' });
+  await cardDeleteButton.click();
 
   // dialog
   await page.getByRole('button', { name: 'Delete module' }).click();
 
-  expect(page.getByText(moduleName)).toHaveCount(0);
+  await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
 pwTest.describe('Module config', () => {
