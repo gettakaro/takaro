@@ -1,21 +1,14 @@
 import { FC, PropsWithChildren } from 'react';
 import { useController } from 'react-hook-form';
-import {
-  ControlledInputProps,
-  defaultInputProps,
-  defaultInputPropsFactory,
-} from '../InputProps';
+import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { SliderProps, GenericSlider } from '.';
-import { Skeleton, Label, ErrorMessage } from '../../../components';
+import { Skeleton } from '../../../components';
 import { Container } from './style';
-import { Wrapper, Description } from '../layout';
+import { Wrapper, Description, ErrorMessage, Label } from '../layout';
 
 export type ControlledSliderProps = ControlledInputProps & SliderProps;
 
-const defaultsApplier =
-  defaultInputPropsFactory<PropsWithChildren<ControlledSliderProps>>(
-    defaultInputProps
-  );
+const defaultsApplier = defaultInputPropsFactory<PropsWithChildren<ControlledSliderProps>>(defaultInputProps);
 
 export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
   const {
@@ -88,9 +81,7 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
         />
         {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </Wrapper>
   );
 };
