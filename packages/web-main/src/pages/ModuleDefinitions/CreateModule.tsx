@@ -32,7 +32,7 @@ const ButtonContainer = styled.div`
 
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | undefined>();
   const [schema, setSchema] = useState({});
   const navigate = useNavigate();
   const { mutateAsync, isLoading, error: createModuleError } = useModuleCreate();
@@ -68,6 +68,12 @@ const CreateModule: FC = () => {
     const errorType = errors.defineErrorType(createModuleError);
     if (errorType instanceof errors.UniqueConstraintError) {
       setErrorMessage('A module with that name already exists.');
+    }
+    if (errorType instanceof errors.ResponseValidationError) {
+      // TODO: setup error messages for response validation errors
+    }
+    if (errorType instanceof errors.InternalServerError) {
+      setErrorMessage(errorType.message);
     }
   }
 
