@@ -57,16 +57,19 @@ export const GlobalGameServerSettings: FC = () => {
     );
   };
 
-  const settingsComponents: ReactElement[] = [];
+  const settings = useMemo(() => {
+    const settingsComponents: ReactElement[] = [];
+    if (data) {
+      // TODO: this should be mapped using the new config generator
+      mapSettings(data, async (key, value) => {
+        if (value) setValue(key, value);
 
-  // TODO: this should be mapped using the new config generator
-  if (data) {
-    mapSettings(data, async (key, value) => {
-      if (value) setValue(key, value);
+        settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+      });
+    }
 
-      settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
-    });
-  }
+    return settingsComponents;
+  }, [data]);
 
   return (
     <Fragment>
@@ -74,8 +77,10 @@ export const GlobalGameServerSettings: FC = () => {
         <title>Settings - Takaro</title>
       </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {settingsComponents}
-        <Button icon={<AiFillSave />} isLoading={isLoading} text="Save" type="submit" variant="default" />
+        <Fragment>
+          {settings}
+          <Button icon={<AiFillSave />} isLoading={isLoading} text="Save" type="submit" variant="default" />
+        </Fragment>
       </form>
     </Fragment>
   );

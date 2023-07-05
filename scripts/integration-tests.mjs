@@ -133,6 +133,7 @@ async function main() {
         ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
         ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
         TAKARO_OAUTH_HOST: 'http://127.0.0.1:14444 ',
+        MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002',
       };
 
       for (const [key, value] of Object.entries(testVars)) {
@@ -149,7 +150,7 @@ async function main() {
   }
 
   const logsResult = await logs(
-    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm'],
+    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm', 'kratos', 'hydra', 'hydra-e2e'],
     { ...composeOpts, log: false }
   );
 
