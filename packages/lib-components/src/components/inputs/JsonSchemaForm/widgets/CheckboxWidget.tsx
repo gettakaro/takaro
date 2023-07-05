@@ -13,11 +13,9 @@ import { Container } from '../../CheckBox/style';
 import { Label } from '../../../../components';
 import { Wrapper } from '../../layout';
 
-export function CheckBoxWidget<
-  T = unknown,
-  S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = any
->(props: WidgetProps<T, S, F>) {
+export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
+  props: WidgetProps<T, S, F>
+) {
   const {
     schema,
     name,
@@ -36,12 +34,11 @@ export function CheckBoxWidget<
     options,
   } = props;
 
-  const DescriptionFieldTemplate = getTemplate<
+  const DescriptionFieldTemplate = getTemplate<'DescriptionFieldTemplate', T, S, F>(
     'DescriptionFieldTemplate',
-    T,
-    S,
-    F
-  >('DescriptionFieldTemplate', registry, options);
+    registry,
+    options
+  );
   const description = options.description || schema.description;
 
   // Because an unchecked checkbox will cause html5 validation to fail, only add
@@ -49,10 +46,8 @@ export function CheckBoxWidget<
   // "const" or "enum" keywords
   const required = schemaRequiresTrueValue<S>(schema);
 
-  const _onBlur = ({ target: { checked } }: FocusEvent<HTMLInputElement>) =>
-    onBlur(id, checked);
-  const _onFocus = ({ target: { checked } }: FocusEvent<HTMLInputElement>) =>
-    onFocus(id, checked);
+  const _onBlur = ({ target: { checked } }: FocusEvent<HTMLInputElement>) => onBlur(id, checked);
+  const _onFocus = ({ target: { checked } }: FocusEvent<HTMLInputElement>) => onFocus(id, checked);
 
   return (
     <Wrapper>
@@ -73,7 +68,7 @@ export function CheckBoxWidget<
           value={value}
           readOnly={readonly}
           disabled={disabled}
-          onChange={(val: boolean) => onChange(val)}
+          onChange={(e) => onChange(e.target.checked)}
           onBlur={_onBlur}
           onFocus={_onFocus}
           required={required}
