@@ -12,13 +12,7 @@ import {
   useMemo,
 } from 'react';
 import { SelectContext } from './context';
-import {
-  GroupLabel,
-  SelectButton,
-  SelectContainer,
-  StyledFloatingOverlay,
-  StyledArrowIcon,
-} from '../style';
+import { GroupLabel, SelectButton, SelectContainer, StyledFloatingOverlay, StyledArrowIcon } from '../style';
 
 import {
   useFloating,
@@ -35,11 +29,7 @@ import {
   size,
 } from '@floating-ui/react';
 
-import {
-  defaultInputPropsFactory,
-  defaultInputProps,
-  GenericInputProps,
-} from '../../InputProps';
+import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../../InputProps';
 import { Option } from './Option';
 import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
@@ -50,39 +40,21 @@ export interface SelectProps {
   minWidth?: string;
 }
 
-export type GenericSelectProps = PropsWithChildren<
-  SelectProps & GenericInputProps<HTMLDivElement>
->;
+export type GenericSelectProps = PropsWithChildren<SelectProps & GenericInputProps<string, HTMLDivElement>>;
 
-const defaultsApplier =
-  defaultInputPropsFactory<GenericSelectProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericSelectProps>(defaultInputProps);
 
 // TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
-export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
-  props
-) => {
-  const {
-    render,
-    children,
-    readOnly,
-    value,
-    onBlur,
-    onChange,
-    id,
-    hasError,
-    hasDescription,
-    name,
-  } = defaultsApplier(props);
+export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props) => {
+  const { render, children, readOnly, value, onBlur, onChange, id, hasError, hasDescription, name } =
+    defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
     'Select...',
     ...(Children.map(children, (child) =>
-      Children.map(
-        isValidElement(child) && child.props.children,
-        (child) => child.props.value
-      )
+      Children.map(isValidElement(child) && child.props.children, (child) => child.props.value)
     ) ?? []),
   ]);
 
@@ -122,25 +94,23 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
     ],
   });
 
-  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-    [
-      useClick(context),
-      useRole(context, { role: 'listbox' }),
-      useDismiss(context),
-      useListNavigation(context, {
-        listRef: listItemsRef,
-        activeIndex,
-        selectedIndex,
-        onNavigate: setActiveIndex,
-      }),
-      useTypeahead(context, {
-        listRef: listContentRef,
-        onMatch: open ? setActiveIndex : setSelectedIndex,
-        activeIndex,
-        selectedIndex,
-      }),
-    ]
-  );
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+    useClick(context),
+    useRole(context, { role: 'listbox' }),
+    useDismiss(context),
+    useListNavigation(context, {
+      listRef: listItemsRef,
+      activeIndex,
+      selectedIndex,
+      onNavigate: setActiveIndex,
+    }),
+    useTypeahead(context, {
+      listRef: listContentRef,
+      onMatch: open ? setActiveIndex : setSelectedIndex,
+      activeIndex,
+      selectedIndex,
+    }),
+  ]);
 
   const values = useMemo(() => {
     return (
@@ -155,7 +125,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
   }, []);
 
   useEffect(() => {
-    const index = values.indexOf(value as string);
+    const index = values.indexOf(value);
     if (index !== -1) {
       setSelectedIndex(index + 1);
     }
@@ -180,17 +150,9 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (
       children,
       (child) =>
         isValidElement(child) && (
-          <ul
-            key={child.props.label}
-            role="group"
-            aria-labelledby={`select-${child.props.label}`}
-          >
+          <ul key={child.props.label} role="group" aria-labelledby={`select-${child.props.label}`}>
             {child.props.label && (
-              <GroupLabel
-                role="presentation"
-                id={`select-${child.props.label}`}
-                aria-hidden="true"
-              >
+              <GroupLabel role="presentation" id={`select-${child.props.label}`} aria-hidden="true">
                 {child.props.label}
               </GroupLabel>
             )}

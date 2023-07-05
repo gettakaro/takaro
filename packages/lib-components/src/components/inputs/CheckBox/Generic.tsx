@@ -1,18 +1,10 @@
-import { useEffect, useState, forwardRef } from 'react';
-import {
-  BackgroundContainer,
-  CheckboxContainer,
-  CheckMarkContainer,
-} from './style';
+import { forwardRef, useRef } from 'react';
+import { BackgroundContainer, CheckboxContainer, CheckMarkContainer } from './style';
 
 import { AiOutlineCheck as Icon } from 'react-icons/ai';
 import { getTransition } from '../../../helpers';
 
-import {
-  defaultInputPropsFactory,
-  defaultInputProps,
-  GenericInputPropsFunctionHandlers,
-} from '../InputProps';
+import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
 const variants = {
@@ -20,42 +12,34 @@ const variants = {
   checked: { scale: 1, opacity: 1 },
 };
 
-export type GenericCheckBoxProps = GenericInputPropsFunctionHandlers<
-  boolean,
-  HTMLDivElement
-> & { value: boolean };
+export type GenericCheckBoxProps = GenericInputProps<boolean, HTMLInputElement>;
 
-const defaultsApplier =
-  defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
 
 // TODO: write a test that checks if the value is being processed as a boolean.
-export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
-  (props, ref) => {
-    const {
-      readOnly,
-      disabled,
-      value,
-      hasError,
-      onChange,
-      id,
-      name,
-      hasDescription,
-    } = defaultsApplier(props);
+export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>((props, ref) => {
+  const { readOnly, disabled, value: isChecked, hasError, onChange, id, name, hasDescription } = defaultsApplier(props);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const [isChecked, setChecked] = useState<boolean>(Boolean(value));
+  function handleOnClick(): void {
+    if (readOnly || disabled) return;
 
-    function handleOnClick(): void {
-      if (readOnly || disabled) {
-        return;
-      }
-      setChecked(!isChecked);
-    }
+    console.log('this fired');
+    inputRef.current?.click();
+  }
 
-    useEffect(() => {
-      onChange(isChecked);
-    }, [isChecked]);
-
-    return (
+  return (
+    <>
+      <input
+        type="checkbox"
+        aria-hidden="true"
+        style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
+        checked={isChecked}
+        tabIndex={-1}
+        value="on"
+        onChange={(e) => onChange(e)}
+        ref={inputRef}
+      />
       <CheckboxContainer
         id={id}
         isChecked={isChecked}
@@ -73,12 +57,13 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
           animate={isChecked ? 'checked' : 'unchecked'}
           transition={getTransition()}
           variants={variants}
+          layout
         >
           <CheckMarkContainer isChecked={isChecked}>
             <Icon size={15} />
           </CheckMarkContainer>
         </BackgroundContainer>
       </CheckboxContainer>
-    );
-  }
-);
+    </>
+  );
+});
