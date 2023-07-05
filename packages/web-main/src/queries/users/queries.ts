@@ -1,7 +1,8 @@
 import { useInfiniteQuery, useMutation } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { UserSearchInputDTO } from '@takaro/apiclient';
+import { APIOutput, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
+import { AxiosError } from 'axios';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -33,16 +34,15 @@ export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDT
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
-    mutationFn: async ({ userId, roleId }: RoleInput) =>
-      (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
+  return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
+    mutationFn: async ({ userId, roleId }) => (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
   });
 };
 
 export const useUserRemoveRole = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
+  return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
     mutationFn: async ({ userId, roleId }: RoleInput) =>
       (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
   });

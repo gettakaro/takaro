@@ -62,7 +62,7 @@ const CreateGameServer: FC = () => {
       connectionInfo: JSON.stringify(connectionInfo),
     });
 
-    if (response.data.data.connectable) {
+    if (response.connectable) {
       setConnectionOk(true);
     } // else {
     //setError(response.data.data.reason || 'Connection error');

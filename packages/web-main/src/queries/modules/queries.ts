@@ -3,20 +3,26 @@ import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
+  CommandOutputDTOAPI,
   CommandUpdateDTO,
   CronJobCreateDTO,
   CronJobOutputDTO,
+  CronJobOutputDTOAPI,
   CronJobUpdateDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
+  FunctionOutputDTOAPI,
   FunctionUpdateDTO,
   HookCreateDTO,
   HookOutputDTO,
+  HookOutputDTOAPI,
   HookUpdateDTO,
   IdUuidDTO,
+  IdUuidDTOAPI,
   ModuleCreateDTO,
   ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
+  ModuleOutputDTOAPI,
   ModuleSearchInputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
@@ -58,7 +64,7 @@ export const functionKeys = {
 export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<ModuleOutputArrayDTOAPI>({
+  return useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: moduleKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -74,7 +80,7 @@ export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchI
 export const useModule = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<ModuleOutputDTO>({
+  return useQuery<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>>({
     queryKey: moduleKeys.detail(id),
     queryFn: async () => (await apiClient.module.moduleControllerGetOne(id)).data.data,
   });
@@ -84,7 +90,7 @@ export const useModuleCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<ModuleOutputDTO, AxiosError, ModuleCreateDTO>({
+  return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleCreateDTO>({
     mutationFn: async (moduleCreateDTO: ModuleCreateDTO) =>
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
     onSuccess: (newModule: ModuleOutputDTO) => {
@@ -121,19 +127,16 @@ export const useModuleCreate = () => {
   });
 };
 
-/*
- *    mutationFn: async (moduleCreateDTO) => (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
-
-    
- *
- * */
+interface ModuleRemove {
+  id: string;
+}
 
 export const useModuleRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id }: { id: string }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
+    mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
     onSuccess: (removedModule: IdUuidDTO) => {
       try {
         // Remove item from list of modules
@@ -168,8 +171,8 @@ export const useModuleUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id, moduleUpdate }: ModuleUpdate) =>
+  return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleUpdate>({
+    mutationFn: async ({ id, moduleUpdate }) =>
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
     onSuccess: (updatedModule: ModuleOutputDTO) => {
       try {
@@ -209,7 +212,7 @@ export const useModuleUpdate = () => {
 export const useHook = (hookId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<HookOutputDTO, AxiosError>({
     queryKey: hookKeys.detail(hookId),
     queryFn: async () => (await apiClient.hook.hookControllerGetOne(hookId)).data.data,
   });
@@ -219,8 +222,8 @@ export const useHookCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (hook: HookCreateDTO) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
+  return useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreateDTO>({
+    mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
     onSuccess: async (newHook: HookOutputDTO) => {
       // add item to list of hooks
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) => (hooks ? [...hooks, newHook] : hooks!));
@@ -230,12 +233,16 @@ export const useHookCreate = () => {
   });
 };
 
+interface HookRemove {
+  hookId: string;
+}
+
 export const useHookRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ hookId }: { hookId: string }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, HookRemove>({
+    mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
     onSuccess: async (removedHook: IdUuidDTO) => {
       // Remove item from list of hooks
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
@@ -258,9 +265,8 @@ export const useHookUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ hookId, hook }: HookUpdate) =>
-      (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
+  return useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookUpdate>({
+    mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
     onSuccess: async (updatedHook: HookOutputDTO) => {
       // add item to list of hooks
       queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
@@ -278,7 +284,7 @@ export const useHookUpdate = () => {
 export const useCommand = (commandId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>>({
     queryKey: commandKeys.detail(commandId),
     queryFn: async () => (await apiClient.command.commandControllerGetOne(commandId)).data.data,
   });
@@ -288,9 +294,8 @@ export const useCommandCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (command: CommandCreateDTO) =>
-      (await apiClient.command.commandControllerCreate(command)).data.data,
+  return useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreateDTO>({
+    mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
     onSuccess: async (newCommand: CommandOutputDTO) => {
       // add item to command list
       queryClient.setQueryData<CommandOutputDTO[]>(commandKeys.list(), (commands) =>
@@ -310,8 +315,8 @@ export const useCommandUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ commandId, command }: CommandUpdate) =>
+  return useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandUpdate>({
+    mutationFn: async ({ commandId, command }) =>
       (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
     onSuccess: async (updatedCommand: CommandOutputDTO) => {
       // add item to command list
@@ -324,13 +329,16 @@ export const useCommandUpdate = () => {
   });
 };
 
+interface CommandRemove {
+  commandId: string;
+}
+
 export const useCommandRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ commandId }: { commandId: string }) =>
-      (await apiClient.command.commandControllerRemove(commandId)).data.data,
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CommandRemove>({
+    mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
     onSuccess: async (removedCommand: IdUuidDTO) => {
       // Remove item from list of commands
       queryClient.setQueryData<CommandOutputDTO[]>(commandKeys.list(), (commands) =>
@@ -351,7 +359,7 @@ export const useCommandRemove = ({ moduleId }) => {
 export const useCronJob = (cronJobId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery({
+  return useQuery<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>>({
     queryKey: cronJobKeys.detail(cronJobId),
     queryFn: async () => (await apiClient.cronjob.cronJobControllerGetOne(cronJobId)).data.data,
   });
@@ -361,7 +369,7 @@ export const useCronJobCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobCreateDTO>({
     mutationFn: async (cronjob: CronJobCreateDTO) =>
       (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
     onSuccess: async (newCronJob: CronJobOutputDTO) => {
@@ -383,8 +391,8 @@ export const useCronJobUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ cronJobId, cronJob }: CronJobUpdate) =>
+  return useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobUpdate>({
+    mutationFn: async ({ cronJobId, cronJob }) =>
       (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
     onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
       // add item to command list
@@ -397,11 +405,15 @@ export const useCronJobUpdate = () => {
   });
 };
 
+interface CronJobRemove {
+  cronJobId: string;
+}
+
 export const useCronJobRemove = ({ moduleId }) => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CronJobRemove>({
     mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
       (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
     onSuccess: async (removedCronJob: IdUuidDTO) => {
@@ -434,8 +446,8 @@ export const useFunctionCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async (fn: FunctionCreateDTO) => (await apiClient.function.functionControllerCreate(fn)).data.data,
+  return useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionCreateDTO>({
+    mutationFn: async (fn) => (await apiClient.function.functionControllerCreate(fn)).data.data,
     onSuccess: async (newFn: FunctionOutputDTO) => {
       queryClient.setQueryData<FunctionOutputDTO[]>(functionKeys.list(), (functions) =>
         functions ? [...functions, newFn] : functions!
@@ -452,7 +464,7 @@ export const useFunctionUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionUpdate>({
     mutationFn: async ({ functionId, fn }: FunctionUpdate) =>
       (await apiClient.function.functionControllerUpdate(functionId, fn)).data.data,
     onSuccess: async (updated: FunctionOutputDTO) => {
@@ -463,13 +475,16 @@ export const useFunctionUpdate = () => {
   });
 };
 
+interface FunctionRemove {
+  functionId: string;
+}
+
 export const useFunctionRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ functionId }: { functionId: string }) =>
-      (await apiClient.function.functionControllerRemove(functionId)).data.data,
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, FunctionRemove>({
+    mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
     onSuccess: async (removed: IdUuidDTO) => {
       // Remove item from list of cronjobs
       queryClient.setQueryData<FunctionOutputDTO[]>(functionKeys.list(), (fns) =>

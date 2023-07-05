@@ -1,7 +1,8 @@
 import { useInfiniteQuery, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { PlayerOutputDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
+import { PlayerOutputDTO, PlayerOutputDTOAPI, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
+import { AxiosError } from 'axios';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -28,7 +29,7 @@ export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchI
 export const usePlayer = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<PlayerOutputDTO>({
+  return useQuery<PlayerOutputDTO, AxiosError<PlayerOutputDTOAPI>>({
     queryKey: playerKeys.detail(id),
     queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
   });
