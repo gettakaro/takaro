@@ -24,7 +24,13 @@ jobs:
           node-version: 18.x
           cache: "npm"
 
-      - run: ./scripts/dev-init.sh
+      - uses: nick-fields/retry@v2
+        name: Init development environment
+        with:
+          timeout_minutes: 30
+          max_attempts: 5
+          shell: pwsh
+          command: ./scripts/dev-init.sh
 
       - name: Build packages
         run: |
