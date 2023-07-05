@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder, encrypt, decrypt } from '@takaro/db';
 import { Model } from 'objection';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './player.js';
@@ -67,6 +67,7 @@ class ModuleAssignmentModel extends TakaroModel {
   }
 }
 
+@traceableClass('repo:gameserver')
 export class GameServerRepo extends ITakaroRepo<
   GameServerModel,
   GameServerOutputDTO,

@@ -6,7 +6,7 @@ import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDT
 import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
-import { TakaroDTO, errors, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ICommand, ICommandArgument, EventChatMessage } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -158,6 +158,7 @@ export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
   msg: string;
 }
 
+@traceableClass('service:command')
 export class CommandService extends TakaroService<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
   get repo() {
     return new CommandRepo(this.domainId);

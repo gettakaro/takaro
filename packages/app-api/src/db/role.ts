@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { errors } from '@takaro/util';
+import { errors, traceableClass } from '@takaro/util';
 import { omit } from 'lodash-es';
 import { Model } from 'objection';
 import { RoleCreateInputDTO, RoleOutputDTO, RoleUpdateInputDTO, PermissionOutputDTO } from '../service/RoleService.js';
@@ -33,6 +33,7 @@ export class RoleModel extends TakaroModel {
   };
 }
 
+@traceableClass('repo:role')
 export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);

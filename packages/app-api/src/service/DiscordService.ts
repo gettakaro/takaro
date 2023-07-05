@@ -1,4 +1,4 @@
-import { TakaroDTO, errors, ctx } from '@takaro/util';
+import { TakaroDTO, errors, ctx, traceableClass } from '@takaro/util';
 import { DiscordGuildModel, DiscordRepo } from '../db/discord.js';
 import { TakaroService } from './Base.js';
 import { ITakaroQuery } from '@takaro/db';
@@ -54,6 +54,7 @@ export class SendMessageInputDTO extends TakaroDTO<SendMessageInputDTO> {
   message!: string;
 }
 
+@traceableClass('service:discord')
 export class DiscordService extends TakaroService<
   DiscordGuildModel,
   GuildOutputDTO,

@@ -9,7 +9,7 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "storybook build",
-    "start:dev": "storybook dev -p 13002",
+    "start:dev": "NODE_OPTIONS='' storybook dev -p 13002",
     "_test": "jest",
     "test:unit": "CI=true vitest",
     "test:watch": "jest --watch",

@@ -1,15 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  Button,
-  TextField,
-  Drawer,
-  CollapseList,
-  styled,
-  SchemaGenerator,
-  errors,
-  Alert,
-} from '@takaro/lib-components';
+import { Button, TextField, Drawer, CollapseList, styled, SchemaGenerator } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useNavigate } from 'react-router-dom';

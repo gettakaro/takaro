@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
 const Container = styled(motion.div)`

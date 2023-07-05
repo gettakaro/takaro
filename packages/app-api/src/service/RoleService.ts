@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
 import { Length, IsArray, ValidatorConstraint, ValidatorConstraintInterface, IsString, IsEnum } from 'class-validator';
@@ -51,6 +51,7 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   permissions: PermissionOutputDTO[];
 }
 
+@traceableClass('service:role')
 export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
   get repo() {
     return new RoleRepo(this.domainId);
