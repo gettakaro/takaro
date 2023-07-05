@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { PlayerOutputDTO, PlayerOutputDTOAPI, PlayerSearchInputDTO } from '@takaro/apiclient';
+import { PlayerOutputArrayDTOAPI, PlayerOutputDTO, PlayerOutputDTOAPI, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 
@@ -13,7 +13,7 @@ export const playerKeys = {
 export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery({
+  return useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: playerKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -23,6 +23,7 @@ export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchI
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -32,5 +33,6 @@ export const usePlayer = (id: string) => {
   return useQuery<PlayerOutputDTO, AxiosError<PlayerOutputDTOAPI>>({
     queryKey: playerKeys.detail(id),
     queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

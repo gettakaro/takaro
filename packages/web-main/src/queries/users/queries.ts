@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { APIOutput, UserSearchInputDTO } from '@takaro/apiclient';
+import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 
@@ -18,7 +18,7 @@ interface RoleInput {
 export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery({
+  return useInfiniteQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
     queryKey: userKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -28,6 +28,7 @@ export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDT
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -36,6 +37,7 @@ export const useUserAssignRole = () => {
 
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
     mutationFn: async ({ userId, roleId }) => (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -45,5 +47,6 @@ export const useUserRemoveRole = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
     mutationFn: async ({ userId, roleId }: RoleInput) =>
       (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

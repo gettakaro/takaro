@@ -166,6 +166,7 @@ export const useGameServerModuleInstall = () => {
         installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId)
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -201,6 +202,7 @@ export const useGameServerModuleUninstall = () => {
 
       queryClient.invalidateQueries(installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -257,6 +259,7 @@ export const useGameServerUpdate = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -299,6 +302,7 @@ export const useGameServerRemove = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -308,6 +312,7 @@ export const useGameServerReachabilityById = (id: string) => {
   return useQuery<TestReachabilityOutput, AxiosError<GameServerTestReachabilityDTOAPI>>({
     queryKey: gameServerKeys.reachability(id),
     queryFn: async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -339,5 +344,6 @@ export const useGameServerReachabilityByConfig = () => {
 
       // TODO:
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

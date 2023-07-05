@@ -74,6 +74,7 @@ export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchI
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -83,6 +84,7 @@ export const useModule = (id: string) => {
   return useQuery<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>>({
     queryKey: moduleKeys.detail(id),
     queryFn: async () => (await apiClient.module.moduleControllerGetOne(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -124,6 +126,7 @@ export const useModuleCreate = () => {
         return newData;
       });
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -160,6 +163,7 @@ export const useModuleRemove = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -203,6 +207,7 @@ export const useModuleUpdate = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -215,6 +220,7 @@ export const useHook = (hookId: string) => {
   return useQuery<HookOutputDTO, AxiosError>({
     queryKey: hookKeys.detail(hookId),
     queryFn: async () => (await apiClient.hook.hookControllerGetOne(hookId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -230,6 +236,7 @@ export const useHookCreate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -254,6 +261,7 @@ export const useHookRemove = ({ moduleId }) => {
 
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -275,6 +283,7 @@ export const useHookUpdate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -304,6 +313,7 @@ export const useCommandCreate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -326,6 +336,7 @@ export const useCommandUpdate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -350,6 +361,7 @@ export const useCommandRemove = ({ moduleId }) => {
 
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -380,6 +392,7 @@ export const useCronJobCreate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -402,6 +415,7 @@ export const useCronJobUpdate = () => {
 
       queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -427,6 +441,7 @@ export const useCronJobRemove = ({ moduleId }) => {
 
       queryClient.invalidateQueries(moduleKeys.detail(moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -453,6 +468,7 @@ export const useFunctionCreate = () => {
         functions ? [...functions, newFn] : functions!
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -472,6 +488,7 @@ export const useFunctionUpdate = () => {
         fns ? fns.map((fn) => (fn.id === updated.id ? updated : fn)) : fns!
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -491,5 +508,6 @@ export const useFunctionRemove = () => {
         fns ? fns.filter((fn) => fn.id !== removed.id) : fns!
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
