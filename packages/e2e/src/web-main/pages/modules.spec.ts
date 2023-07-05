@@ -14,9 +14,6 @@ basicTest('Can create module', async ({ page }) => {
   await moduleNameInput.click();
   await moduleNameInput.fill(newModuleName);
 
-  // remove auto created config field
-  await page.getByRole('button').nth(1).click();
-
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(newModuleName)).toBeVisible();

@@ -2,7 +2,8 @@ import { Transition } from 'framer-motion';
 
 export function getTransition(): Transition {
   return {
-    type: 'linear',
-    duration: 0.125,
+    type: 'spring',
+    bounce: 0.35,
+    duration: 0.3,
   };
 }
