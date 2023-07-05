@@ -1,6 +1,15 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, styled, SchemaGenerator } from '@takaro/lib-components';
+import {
+  Button,
+  TextField,
+  Drawer,
+  CollapseList,
+  styled,
+  SchemaGenerator,
+  errors,
+  FormError,
+} from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +43,7 @@ const CreateModule: FC = () => {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(moduleValidationSchema),
   });
@@ -58,7 +67,7 @@ const CreateModule: FC = () => {
   if (!errorMessage && createModuleError) {
     const errorType = errors.defineErrorType(createModuleError);
     if (errorType instanceof errors.UniqueConstraintError) {
-      setErrorMessage('A module with that name already exists');
+      setErrorMessage('A module with that name already exists.');
     }
   }
 
@@ -91,12 +100,18 @@ const CreateModule: FC = () => {
               <SchemaGenerator onSchemaChange={setSchema} />
             </CollapseList.Item>
           </CollapseList>
-          {errorMessage && <Alert text={errorMessage} variant="error" />}
+          {errorMessage && <FormError message={errorMessage} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" type="submit" form="create-module-form" />
+            <Button
+              fullWidth
+              text="Save changes"
+              type="submit"
+              form="create-module-form"
+              disabled={!!errorMessage && !formState.isDirty}
+            />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

@@ -1,7 +1,16 @@
+import { AxiosError } from 'axios';
 import { BaseError } from './base';
 
-export function defineErrorType(error: unknown) {
-  console.log(error, typeof error);
+export function defineErrorType(apiError: AxiosError<any>) {
+  const error = apiError.response?.data.meta.error;
+
+  if (error.code === 'ForbiddenError') {
+    return new NotAuthorizedError('Not authorized');
+  }
+
+  if (error.code === 'ConflictError') {
+    return new UniqueConstraintError('Unique constraint error');
+  }
 
   return new UniqueConstraintError('Unique constraint error');
 }
