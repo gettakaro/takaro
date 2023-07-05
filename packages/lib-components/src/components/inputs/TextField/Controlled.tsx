@@ -1,19 +1,13 @@
 import { FC, useState } from 'react';
 import { useController } from 'react-hook-form';
-import {
-  ControlledInputProps,
-  defaultInputProps,
-  defaultInputPropsFactory,
-} from '../InputProps';
+import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { TextFieldProps, GenericTextField } from '.';
 import { Container, InputContainer } from './style';
-import { Label, ErrorMessage } from '../../../components';
-import { Wrapper, Description } from '../layout';
+import { Label, ErrorMessage, Wrapper, Description } from '../layout';
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 
-const defaultsApplier =
-  defaultInputPropsFactory<ControlledTextFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledTextFieldProps>(defaultInputProps);
 
 export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
   const {
@@ -123,9 +117,7 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           <ErrorMessage message={fieldState.error.message} />
         )}
       </Container>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </Wrapper>
   );
 };
