@@ -1,24 +1,15 @@
 import { FC, useState } from 'react';
 import { TextAreaFieldProps, GenericTextAreaField } from '.';
-import {
-  ControlledInputProps,
-  defaultInputPropsFactory,
-  defaultInputProps,
-} from '../InputProps';
+import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
 import { Container, TextAreaContainer } from './style';
-import { Label, ErrorMessage } from '../../../components';
 import { useController } from 'react-hook-form';
-import { Wrapper, Description } from '../layout';
+import { Wrapper, Description, Label, ErrorMessage } from '../layout';
 
-export type ControlledTextAreaFieldProps = TextAreaFieldProps &
-  ControlledInputProps;
+export type ControlledTextAreaFieldProps = TextAreaFieldProps & ControlledInputProps;
 
-const defaultsApplier =
-  defaultInputPropsFactory<ControlledTextAreaFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledTextAreaFieldProps>(defaultInputProps);
 
-export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
-  props
-) => {
+export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (props) => {
   const {
     loading,
     label,
@@ -102,13 +93,9 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (
           hasDescription={!!description}
           ref={field.ref}
         />
-        {error && error.message && showError && (
-          <ErrorMessage message={error.message} />
-        )}
+        {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </Wrapper>
   );
 };
