@@ -113,7 +113,7 @@ export const Header: FC<HeaderProps> = ({ isLoading, idToNameMap }) => {
         open={openDropdown}
         setOpen={setOpenDropdown}
         renderReference={
-          <User>
+          <User role="button">
             <InitialsBlock>
               {getInitials(userData.name ? userData.name : 'u u')}
             </InitialsBlock>
