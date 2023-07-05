@@ -18,30 +18,13 @@ import { useGameServer } from 'queries/gameservers';
 import { useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/gameservers/queries';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
+import { gameTypeSelectOptions } from './GameTypeSelectOptions';
 
 export interface IFormInputs {
   name: string;
   type: GameServerCreateDTOTypeEnum;
   connectionInfo: MockConnectionInfo | RustConnectionInfo | SdtdConnectionInfo;
 }
-
-const gameTypeSelectOptions = [
-  {
-    name: 'Mock (testing purposes)',
-    value: GameServerCreateDTOTypeEnum.Mock,
-    show: import.meta.env.DEV,
-  },
-  {
-    name: 'Rust',
-    value: GameServerCreateDTOTypeEnum.Rust,
-    show: true,
-  },
-  {
-    name: '7 Days to die',
-    value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-    show: true,
-  },
-].filter(({ show }) => show);
 
 export const UpdateGameServer = () => {
   const { serverId } = useParams();
