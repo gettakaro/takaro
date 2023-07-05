@@ -88,6 +88,7 @@ const NewFileContainer = styled.div<{ depth: number }>`
   align-items: center;
   justify-content: flex-start;
   padding-left: ${({ depth }) => `${depth * 2 + 2}rem`};
+  margin-top: ${({ theme }) => theme.spacing['0_5']};
 
   svg {
     margin-right: ${({ theme }) => theme.spacing[1]};

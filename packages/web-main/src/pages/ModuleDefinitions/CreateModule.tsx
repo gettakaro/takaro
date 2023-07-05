@@ -1,14 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  Button,
-  TextField,
-  Drawer,
-  CollapseList,
-  ErrorMessage,
-  styled,
-  SchemaGenerator,
-} from '@takaro/lib-components';
+import { Button, TextField, Drawer, CollapseList, styled, SchemaGenerator } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useNavigate } from 'react-router-dom';
@@ -47,10 +39,7 @@ const CreateModule: FC = () => {
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({
-    name,
-    description,
-  }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
     try {
       setError('');
 
@@ -93,23 +82,13 @@ const CreateModule: FC = () => {
               <CollapseList.Item title="Config">
                 <SchemaGenerator onSchemaChange={setSchema} />
               </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-            />
-            <Button
-              fullWidth
-              text="Save changes"
-              type="submit"
-              form="create-module-form"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+            <Button fullWidth text="Save changes" type="submit" form="create-module-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

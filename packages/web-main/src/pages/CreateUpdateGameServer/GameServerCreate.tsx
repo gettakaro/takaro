@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, ErrorMessage } from '@takaro/lib-components';
+import { Button, Select, TextField, Drawer, CollapseList } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -25,7 +25,6 @@ export interface IFormInputs {
 
 const CreateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerCreate();
@@ -44,8 +43,6 @@ const CreateGameServer: FC = () => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
     try {
-      setError('');
-
       mutateAsync({
         type,
         name,
@@ -61,7 +58,6 @@ const CreateGameServer: FC = () => {
   const { type, connectionInfo, name } = watch();
 
   const clickTestReachability = async () => {
-    setError('');
     const response = await testReachabilityMutation({
       type,
       connectionInfo: JSON.stringify(connectionInfo),
@@ -69,9 +65,9 @@ const CreateGameServer: FC = () => {
 
     if (response.data.data.connectable) {
       setConnectionOk(true);
-    } else {
-      setError(response.data.data.reason || 'Connection error');
-    }
+    } // else {
+    //setError(response.data.data.reason || 'Connection error');
+    //}
   };
 
   return (
@@ -115,7 +111,7 @@ const CreateGameServer: FC = () => {
                   {connectionInfoFieldsMap(isLoading, control)[type]}
                 </CollapseList.Item>
               )}
-              {error && <ErrorMessage message={error} />}
+              {/* error && <ErrorMessage message={error} /> */}
             </form>
           </CollapseList>
         </Drawer.Body>

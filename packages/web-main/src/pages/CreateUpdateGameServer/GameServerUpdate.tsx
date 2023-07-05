@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, ErrorMessage } from '@takaro/lib-components';
+import { Button, Select, TextField, Drawer, CollapseList } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -48,7 +48,6 @@ interface Props {
 
 const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerUpdate();
   const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
@@ -72,7 +71,6 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
     try {
-      setError('');
       mutateAsync({
         gameServerId: serverId!,
         gameServerDetails: {
@@ -90,7 +88,6 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const { type, connectionInfo, name } = watch();
 
   const clickTestReachability = async () => {
-    setError('');
     const response = await testReachabilityMutation({
       type,
       connectionInfo: JSON.stringify(connectionInfo),
@@ -99,7 +96,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
     if (response.data.data.connectable) {
       setConnectionOk(true);
     } else {
-      setError(response.data.data.reason || 'Connection error');
+      // setError(response.data.data.reason || 'Connection error');
     }
   };
 
@@ -142,7 +139,6 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               <CollapseList.Item title="Connection info">
                 {connectionInfoFieldsMap(isLoading, control)[data.type]}
               </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>
