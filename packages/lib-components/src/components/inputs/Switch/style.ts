@@ -8,7 +8,7 @@ export const Container = styled.div`
   text-align: left;
 `;
 
-export const ContentContainer = styled.button<{ isChecked: boolean }>`
+export const ContentContainer = styled.button<{ isChecked: boolean; hasError: boolean }>`
   position: relative;
   width: 4.2rem;
   height: 2.5rem;
@@ -16,7 +16,12 @@ export const ContentContainer = styled.button<{ isChecked: boolean }>`
   cursor: pointer;
   border-radius: 9999px;
   margin: ${({ theme }) => theme.spacing[0]};
-  background-color: ${({ theme, isChecked }) => (isChecked ? theme.colors.primary : theme.colors.background)};
+  background-color: ${({ theme, isChecked, hasError }) => {
+    if (hasError) {
+      return theme.colors.error;
+    }
+    return isChecked ? theme.colors.primary : theme.colors.background;
+  }};
 
   &:focus {
     border: 0.1rem solid ${({ theme }) => theme.colors.primary};

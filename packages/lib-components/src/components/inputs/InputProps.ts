@@ -18,12 +18,12 @@ export interface GenericInputProps<V, T> extends InputProps {
   onBlur?: FocusEventHandler<T>;
   onFocus?: FocusEventHandler<T>;
 }
-export interface GenericInputPropsFunctionHandlers<V, T, D> extends InputProps {
+export interface GenericInputPropsFunctionHandlers<V, D> extends InputProps {
   value: V;
   id: string;
   hasError: boolean;
   hasDescription: boolean;
-  onChange: (val: T) => void;
+  onChange: (val: V) => void;
   onBlur?: FocusEventHandler<D>;
   onFocus?: FocusEventHandler<D>;
 }

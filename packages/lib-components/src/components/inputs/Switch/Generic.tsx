@@ -9,10 +9,11 @@ export type GenericSwitchProps = GenericInputProps<boolean, HTMLInputElement>;
 const defaultsApplier = defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
 
 export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((props, ref) => {
-  const { readOnly, onChange, value: isChecked, id, hasDescription, name } = defaultsApplier(props);
+  const { readOnly, onChange, value: isChecked, id, hasDescription, name, disabled, hasError } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOnClick(): void {
+    if (readOnly || disabled) return;
     inputRef.current?.click();
   }
 
@@ -21,7 +22,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
       <input
         type="checkbox"
         aria-hidden="true"
-        style={{ display: 'none' }}
+        style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
         checked={isChecked}
         tabIndex={-1}
         value="on"
@@ -36,6 +37,8 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         aria-checked={isChecked}
         isChecked={isChecked}
+        hasError={hasError}
+        tabIndex={readOnly || disabled ? -1 : 0}
         type="button"
       >
         <Dot
