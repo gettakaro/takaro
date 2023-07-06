@@ -108,6 +108,10 @@ async function main() {
 
   console.log('Pulling latest images...');
   await pullAll({ ...composeOpts, log: false });
+
+  console.log('Running Takaro SQL migrations...');
+  await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+
   console.log('Starting all containers...');
   await upAll(composeOpts);
 

@@ -20,10 +20,7 @@ export interface TagFieldProps {
 }
 
 // these are props that should only be available on the generic version.
-export type GenericTagFieldProps = TagFieldProps &
-  GenericInputPropsFunctionHandlers<string[], HTMLInputElement> & {
-    value: string[];
-  };
+export type GenericTagFieldProps = TagFieldProps & GenericInputPropsFunctionHandlers<string[], HTMLInputElement>;
 
 export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
   (
@@ -48,9 +45,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     ref
   ) => {
     const combinedSeparators = [...defaultSeparators, ...separators];
-    const [tags, setTags] = useState<string[]>(
-      Array.isArray(value) ? value : []
-    );
+    const [tags, setTags] = useState<string[]>(Array.isArray(value) ? value : []);
 
     useDidUpdateEffect(() => {
       onChange(tags);
@@ -61,12 +56,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       const text = e.currentTarget.value;
 
       // handle tag removing
-      if (
-        !text &&
-        !disableBackspaceRemove &&
-        tags.length &&
-        e.key === 'Backspace'
-      ) {
+      if (!text && !disableBackspaceRemove && tags.length && e.key === 'Backspace') {
         e.currentTarget.value = isEditOnRemove ? `${tags.at(-1)} ` : '';
         setTags([...tags.slice(0, -1)]);
       }
@@ -111,13 +101,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     return (
       <TagsContainer aria-labelledby={name} ref={ref}>
         {tags.map((tag) => (
-          <Tag
-            key={tag}
-            label={tag}
-            onDelete={() => onTagDelete(tag)}
-            disabled={disabled}
-            color="secondary"
-          />
+          <Tag key={tag} label={tag} onDelete={() => onTagDelete(tag)} disabled={disabled} color="secondary" />
         ))}
         <input
           type="text"

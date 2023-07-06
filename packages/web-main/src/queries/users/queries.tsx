@@ -2,6 +2,8 @@ import { useInfiniteQuery, useMutation } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
+import { useMemo } from 'react';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -17,7 +19,7 @@ interface RoleInput {
 export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery({
+  const queryOpts = useInfiniteQuery({
     queryKey: userKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -28,6 +30,12 @@ export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDT
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const useUserAssignRole = () => {

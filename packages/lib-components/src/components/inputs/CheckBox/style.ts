@@ -22,27 +22,29 @@ export const BackgroundContainer = styled(motion.div)`
   border-radius: ${({ theme }) => theme.borderRadius.small};
 `;
 
-export const CheckboxContainer = styled.div<{
+export const CheckboxContainer = styled.button<{
   isChecked?: boolean;
   readOnly: boolean;
-  error: boolean;
+  hasError: boolean;
   disabled: boolean;
 }>`
   display: flex;
+  padding: 0;
+  background-color: transparent;
   position: relative;
   min-width: 2rem;
   min-height: 2rem;
   align-items: center;
   justify-content: center;
   border: 0.1rem solid
-    ${({ theme, isChecked, error, disabled }): string => {
+    ${({ theme, isChecked, hasError, disabled }): string => {
       if (disabled) {
         return theme.colors.disabled;
       }
       if (isChecked) {
         return theme.colors.primary;
       }
-      if (error) {
+      if (hasError) {
         return theme.colors.error;
       }
       return theme.colors.primary;

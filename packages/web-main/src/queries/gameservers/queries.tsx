@@ -11,11 +11,13 @@ import {
   ModuleInstallDTO,
   SettingsOutputObjectDTOAPI,
 } from '@takaro/apiclient';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from 'react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
 import * as Sentry from '@sentry/react';
+import { useMemo } from 'react';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -36,7 +38,7 @@ export const installedModuleKeys = {
 export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameServerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
+  const queryOpts = useInfiniteQuery<GameServerOutputArrayDTOAPI>({
     queryKey: gameServerKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -47,6 +49,12 @@ export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameS
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const useGameServer = (id: string) => {
