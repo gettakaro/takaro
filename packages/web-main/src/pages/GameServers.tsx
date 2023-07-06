@@ -1,17 +1,7 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import {
-  Button,
-  Empty,
-  EmptyPage,
-  InfiniteScroll,
-  Skeleton,
-  styled,
-} from '@takaro/lib-components';
-import {
-  EmptyGameServerCard,
-  GameServerCard,
-} from '../components/GameServerCard';
+import { Button, Empty, EmptyPage, Skeleton, styled } from '@takaro/lib-components';
+import { EmptyGameServerCard, GameServerCard } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useGameServers } from 'queries/gameservers';
@@ -26,15 +16,7 @@ const List = styled.ul`
 const GameServers: FC = () => {
   const navigate = useNavigate();
 
-  const {
-    data: gameServers,
-    isLoading,
-    isError,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = useGameServers();
+  const { data: gameServers, isLoading, isError, InfiniteScroll } = useGameServers();
 
   if (isLoading) {
     return (
@@ -57,12 +39,7 @@ const GameServers: FC = () => {
         <Empty
           header="Bro, what are you waiting on?"
           description="Create a game server to really get started with Takaro."
-          actions={[
-            <Button
-              text="Create a game server"
-              onClick={() => navigate(PATHS.gameServers.create())}
-            />,
-          ]}
+          actions={[<Button text="Create a game server" onClick={() => navigate(PATHS.gameServers.create())} />]}
         />
         <Outlet />
       </EmptyPage>
@@ -80,16 +57,9 @@ const GameServers: FC = () => {
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
-        <EmptyGameServerCard
-          onClick={() => navigate(PATHS.gameServers.create())}
-        />
+        <EmptyGameServerCard onClick={() => navigate(PATHS.gameServers.create())} />
       </List>
-      <InfiniteScroll
-        isFetchingNextPage={isFetchingNextPage}
-        isFetching={isFetching}
-        hasNextPage={hasNextPage}
-        fetchNextPage={fetchNextPage}
-      />
+      {InfiniteScroll}
       {/* show editGameServer and newGameServer drawers above this listView*/}
       <Outlet />
     </Fragment>
