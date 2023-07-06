@@ -4,7 +4,7 @@ export { ITakaroQuery, QueryBuilder, SortDirection } from './queryBuilder.js';
 
 export { getKnex, disconnectKnex } from './knex.js';
 
-export { migrate } from './migrations/index.js';
+export { migrate, migrateUndo } from './migrations/index.js';
 
 export * from './encryption.js';
 
