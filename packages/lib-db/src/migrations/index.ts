@@ -2,8 +2,12 @@ import { getKnex } from '../knex.js';
 import { readdir } from 'fs/promises';
 import { Knex } from 'knex';
 import path from 'node:path';
+import { logger } from '@takaro/util';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+const log = logger('db:migrations');
+
 interface IMigration {
   name: string;
   up: (knex: Knex) => Promise<void>;
@@ -43,7 +47,24 @@ class TakaroMigrationSource {
 
 export async function migrate() {
   const knex = await getKnex();
+  knex.on('query', (queryData) => {
+    log.debug(queryData.sql);
+  });
   await knex.migrate.latest({
     migrationSource: new TakaroMigrationSource(),
   });
+  await knex.destroy();
+  log.info('Migrations complete');
+}
+
+export async function migrateUndo() {
+  const knex = await getKnex();
+  knex.on('query', (queryData) => {
+    log.debug(queryData.sql);
+  });
+  await knex.migrate.down({
+    migrationSource: new TakaroMigrationSource(),
+  });
+  await knex.destroy();
+  log.info('Migrations rollback complete');
 }

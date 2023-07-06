@@ -41,5 +41,7 @@ COPY --from=builder /app/libraries /app/
 RUN npm ci --only=production
 
 COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
+# Not all packages have a scripts folder, this is why we use the regex
+COPY --from=builder /app/packages/${PACKAGE}/script[s] /app/packages/${PACKAGE}/scripts
 
 CMD [ "npm", "-w", "packages/${PACKAGE}", "run" , "start"]
