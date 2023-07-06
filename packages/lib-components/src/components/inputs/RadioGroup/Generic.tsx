@@ -1,9 +1,5 @@
-import { FC, useState } from 'react';
-import {
-  defaultInputProps,
-  defaultInputPropsFactory,
-  GenericInputPropsFunctionHandlers,
-} from '../InputProps';
+import { ChangeEvent, FC } from 'react';
+import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { GenericRadio } from './Radio';
 import { Container } from './style';
 import { Label } from '../../../components';
@@ -15,19 +11,17 @@ export interface Option {
   value: string;
 }
 
-export interface RadioGroupProps
-  extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
+export interface RadioGroupProps extends GenericInputProps<string, HTMLDivElement> {
   options: Option[];
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
 
 // TODO: implement hint and description
 export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
   const {
     readOnly,
-    value,
+    value: selectedValue,
     name,
     size,
     options,
@@ -41,35 +35,16 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
     id,
   } = defaultsApplier(props);
 
-  const setDefaultvalue = () => {
-    const val = options.some((option) => option.value === value)
-      ? (value as string)
-      : options[0].value;
-
-    onChange(val);
-
-    return val;
-  };
-
-  const [selected, setSelected] = useState<string>(setDefaultvalue());
-  // check if value exists in options
-
-  const handleChange = (val: string) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (readOnly || disabled) return;
-    setSelected(val);
-    onChange(val);
+    onChange(e);
   };
 
   return (
     <>
       {options.map(({ label, value, labelPosition }) => {
         return (
-          <Container
-            isSelected={value === selected}
-            onClick={() => handleChange(value)}
-            role="radiogroup"
-            aria-describedby={setAriaDescribedBy(name, hasDescription)}
-          >
+          <Container role="radiogroup" aria-describedby={setAriaDescribedBy(name, hasDescription)}>
             {label && labelPosition === 'left' && (
               <Label
                 htmlFor={name}
@@ -89,9 +64,8 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
               onFocus={onFocus}
               name={name}
               readOnly={readOnly}
-              selected={selected === value}
-              setSelected={setSelected}
               value={value as string}
+              checked={selectedValue === value}
               size={size}
               required={required}
               disabled={disabled}
