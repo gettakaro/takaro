@@ -8,8 +8,9 @@ import {
   descriptionId,
   getTemplate,
 } from '@rjsf/utils';
-import { GenericCheckBox } from '../../CheckBox';
-import { Container } from '../../CheckBox/style';
+import { GenericSwitch } from '../../Switch';
+
+import { Container } from '../../Switch/style';
 import { Label } from '../../../../components';
 import { Wrapper } from '../../layout';
 
@@ -45,7 +46,6 @@ export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
   // the "required" attribute if the field value must be "true", due to the
   // "const" or "enum" keywords
   const required = schemaRequiresTrueValue<S>(schema);
-
   const _onBlur = ({ target: { checked } }: FocusEvent<HTMLInputElement>) => onBlur(id, checked);
   const _onFocus = ({ target: { checked } }: FocusEvent<HTMLInputElement>) => onFocus(id, checked);
 
@@ -62,10 +62,10 @@ export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
           size="medium"
         />
 
-        <GenericCheckBox
+        <GenericSwitch
           id={id}
           name={name}
-          value={value}
+          value={typeof value === 'undefined' ? true : Boolean(value)}
           readOnly={readonly}
           disabled={disabled}
           onChange={(e) => onChange(e.target.checked)}

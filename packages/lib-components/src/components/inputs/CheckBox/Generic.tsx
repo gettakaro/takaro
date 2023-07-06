@@ -17,14 +17,12 @@ export type GenericCheckBoxProps = GenericInputProps<boolean, HTMLInputElement>;
 const defaultsApplier = defaultInputPropsFactory<GenericCheckBoxProps>(defaultInputProps);
 
 // TODO: write a test that checks if the value is being processed as a boolean.
-export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>((props, ref) => {
-  const { readOnly, disabled, value: isChecked, hasError, onChange, id, name, hasDescription } = defaultsApplier(props);
+export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProps>((props, ref) => {
+  const { readOnly, disabled, value, hasError, onChange, id, name, hasDescription } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOnClick(): void {
     if (readOnly || disabled) return;
-
-    console.log('this fired');
     inputRef.current?.click();
   }
 
@@ -34,32 +32,30 @@ export const GenericCheckBox = forwardRef<HTMLDivElement, GenericCheckBoxProps>(
         type="checkbox"
         aria-hidden="true"
         style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
-        checked={isChecked}
+        checked={value}
         tabIndex={-1}
-        value="on"
-        onChange={(e) => onChange(e)}
+        id={`${id}-hidden-input`}
+        onChange={(e) => {
+          onChange(e);
+        }}
         ref={inputRef}
       />
       <CheckboxContainer
-        id={id}
-        isChecked={isChecked}
-        onClick={handleOnClick}
-        readOnly={readOnly}
-        error={hasError}
-        disabled={disabled}
-        ref={ref}
         role="checkbox"
-        aria-checked={isChecked}
+        id={id}
+        isChecked={value}
+        readOnly={readOnly}
+        disabled={disabled}
+        onClick={handleOnClick}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
+        aria-checked={value}
+        hasError={hasError}
+        ref={ref}
         tabIndex={readOnly || disabled ? -1 : 0}
+        type="button"
       >
-        <BackgroundContainer
-          animate={isChecked ? 'checked' : 'unchecked'}
-          transition={getTransition()}
-          variants={variants}
-          layout
-        >
-          <CheckMarkContainer isChecked={isChecked}>
+        <BackgroundContainer animate={value ? 'checked' : 'unchecked'} transition={getTransition()} variants={variants}>
+          <CheckMarkContainer isChecked={value}>
             <Icon size={15} />
           </CheckMarkContainer>
         </BackgroundContainer>
