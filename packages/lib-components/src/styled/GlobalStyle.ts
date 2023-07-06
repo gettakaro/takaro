@@ -54,6 +54,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     box-sizing: border-box;
     color: ${({ theme }) => theme.colors.text};
   }
+  
+  span {
+    letter-spacing: normal;
+  }
 
   h1 {
     font-size: ${({ theme }) => theme.fontSize.large};
