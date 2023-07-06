@@ -16,7 +16,6 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
     if (readOnly || disabled) return;
     inputRef.current?.click();
   }
-  console.log(isChecked);
 
   return (
     <>
