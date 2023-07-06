@@ -41,5 +41,6 @@ COPY --from=builder /app/libraries /app/
 RUN npm ci --only=production
 
 COPY --from=builder /app/packages/${PACKAGE}/dist /app/packages/${PACKAGE}/dist
+COPY --from=builder /app/packages/${PACKAGE}/scripts /app/packages/${PACKAGE}/scripts
 
 CMD [ "npm", "-w", "packages/${PACKAGE}", "run" , "start"]
