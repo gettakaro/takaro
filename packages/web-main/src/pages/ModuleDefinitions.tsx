@@ -16,7 +16,7 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
-  const { data: modules, hasNextPage, isFetching, isLoading, isFetchingNextPage, fetchNextPage } = useModules();
+  const { data: modules, isLoading, InfiniteScroll } = useModules();
 
   const navigate = useNavigate();
 
@@ -58,12 +58,7 @@ export const ModuleDefinitions: FC = () => {
             ))}
           <Outlet />
         </ModuleCards>
-        <InfiniteScroll
-          isFetching={isFetching}
-          isFetchingNextPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-        />
+        {InfiniteScroll}
       </Page>
     </>
   );
