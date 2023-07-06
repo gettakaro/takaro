@@ -8,6 +8,7 @@ export const PATHS = {
   notFound: () => '/404',
 
   settings: {
+    overview: () => '/settings',
     GameServerSettings: () => '/settings/gameservers',
     discordSettings: () => '/settings/discord',
   },
