@@ -15,17 +15,12 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
   display: block;
   cursor: pointer;
   border-radius: 9999px;
-  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
   margin: ${({ theme }) => theme.spacing[0]};
-  background-color: ${({ theme, isChecked, hasError }) => {
-    if (hasError) {
-      return theme.colors.error;
-    }
-    return isChecked ? theme.colors.primary : theme.colors.background;
-  }};
+  background-color: ${({ theme, isChecked }) => (isChecked ? theme.colors.primary : theme.colors.background)};
 
   &:focus {
-    border: 0.1rem solid ${({ theme }) => theme.colors.primary};
+    border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   }
 `;
 

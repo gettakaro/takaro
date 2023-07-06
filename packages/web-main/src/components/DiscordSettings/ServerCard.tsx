@@ -1,8 +1,9 @@
 import { GuildOutputDTO } from '@takaro/apiclient';
-import { Card, styled, UnControlledSwitch } from '@takaro/lib-components';
+import { Card, styled, Switch, UnControlledSwitch } from '@takaro/lib-components';
 import { useDiscordGuildUpdate } from 'queries/discord';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
+import { useSnackbar } from 'notistack';
 
 interface IServerCardProps {
   guild: GuildOutputDTO;
@@ -25,14 +26,30 @@ const StyledIcon = styled.img`
 `;
 
 export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
-  const { mutate } = useDiscordGuildUpdate();
+  const { mutate, isError } = useDiscordGuildUpdate();
+  const [takaroEnabled, setTakaroEnabled] = useState<boolean>(guild.takaroEnabled);
+  const { enqueueSnackbar } = useSnackbar();
 
   const iconUrl = guild.icon ? `https://cdn.discordapp.com/icons/${guild.discordId}/${guild.icon}.png?size=32` : null;
   const iconElement = iconUrl ? <StyledIcon src={iconUrl} alt={guild.name} /> : <FaDiscord size={32} />;
 
-  const handleOnSwitchChange = (val: boolean) => {
-    mutate({ id: guild.id, input: { takaroEnabled: val } });
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    mutate({ id: guild.id, input: { takaroEnabled: e.target.checked } });
+    setTakaroEnabled(e.target.checked);
+    setTakaroEnabled(guild.takaroEnabled);
   };
+
+  useEffect(() => {
+    if (isError) {
+      setTakaroEnabled(guild.takaroEnabled);
+      enqueueSnackbar(
+        <>
+          Failed to enable guild: <strong>{guild.name}</strong>
+        </>,
+        { variant: 'default', type: 'error' }
+      );
+    }
+  }, [isError, guild.takaroEnabled, enqueueSnackbar, guild.name]);
 
   return (
     <StyledCard>
@@ -42,11 +59,12 @@ export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
         <Box>
           <UnControlledSwitch
             hasDescription={false}
-            name="guildEnabled"
-            id={`guild-${guild.id}`}
-            value={guild.takaroEnabled}
-            onChange={handleOnSwitchChange}
-            hasError={false}
+            hasError={isError}
+            name="takaroEnabled"
+            onChange={handleOnChange}
+            disabled={isError}
+            id="guild-takaro"
+            value={takaroEnabled}
           />
         </Box>
       </form>
