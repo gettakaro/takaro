@@ -40,6 +40,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
         <GenericSwitch
           id={name}
           hasError={!!error}
+          hasDescription={!!description}
           readOnly={readOnly}
           required={required}
           disabled={disabled}
@@ -49,7 +50,6 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           onBlur={field.onBlur}
           value={field.value}
           ref={field.ref}
-          hasDescription={!!description}
         />
       </Container>
       {description && <Description description={description} inputName={name} />}

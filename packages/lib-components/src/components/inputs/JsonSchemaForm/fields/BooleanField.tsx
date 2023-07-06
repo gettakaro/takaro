@@ -1,16 +1,7 @@
-import {
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  FieldProps,
-} from '@rjsf/utils';
+import { FormContextType, RJSFSchema, StrictRJSFSchema, FieldProps } from '@rjsf/utils';
 import { CheckBoxWidget } from '../widgets/CheckboxWidget';
 
-export function BooleanField<
-  T = boolean,
-  S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = any
->({
+export function BooleanField<T = boolean, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   disabled,
   onChange,
@@ -20,6 +11,7 @@ export function BooleanField<
   required,
   readonly,
   schema,
+  formData,
   registry,
   uiSchema,
 }: FieldProps<T, S, F>) {
@@ -28,7 +20,7 @@ export function BooleanField<
       name={name}
       id={idSchema.$id}
       schema={schema}
-      value={schema.default ?? false}
+      value={formData}
       onChange={onChange}
       options={{}}
       onBlur={onBlur}

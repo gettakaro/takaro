@@ -16,6 +16,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
     if (readOnly || disabled) return;
     inputRef.current?.click();
   }
+  console.log(isChecked);
 
   return (
     <>
@@ -25,18 +26,20 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
         checked={isChecked}
         tabIndex={-1}
+        id={`${id}-hidden-input`}
         value="on"
         onChange={(e) => onChange(e)}
         ref={inputRef}
       />
       <ContentContainer
         role="switch"
+        id={id}
+        isChecked={isChecked}
+        disabled={disabled}
         onClick={handleOnClick}
         ref={ref}
-        id={id}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         aria-checked={isChecked}
-        isChecked={isChecked}
         hasError={hasError}
         tabIndex={readOnly || disabled ? -1 : 0}
         type="button"
