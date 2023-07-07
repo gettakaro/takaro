@@ -8,7 +8,7 @@ import {
   AiOutlineMeh as ErrorIcon,
 } from 'react-icons/ai';
 
-import { Wrapper, ContentContainer, TextContainer, IconContainer, CloseContainer, ButtonContainer } from './style';
+import { Wrapper, ContentContainer, TextContainer, IconContainer, ButtonContainer } from './style';
 import { useTheme } from '../../../../hooks';
 import { ButtonProps, IconButton, Tooltip } from '../../../../components';
 import { AlertVariants } from '../../../../styled';
@@ -51,15 +51,8 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
             {icon ? cloneElement(icon, { size: 15, fill: theme.colors[type] }) : getIcon()}
           </IconContainer>
           <TextContainer>
-            {title ? (
-              <>
-                <h3>{title}</h3>
-                <h5>{message}</h5>
-              </>
-            ) : (
-              <h5>{message}</h5>
-            )}
-
+            {title && <h3>{title}</h3>}
+            <h5>{message}</h5>
             {button1 && (
               <ButtonContainer>
                 <>
@@ -69,15 +62,15 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
               </ButtonContainer>
             )}
           </TextContainer>
+          <div style={{ width: '25px' }}>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <IconButton icon={<CloseIcon />} ariaLabel="Dismiss snack popup" onClick={handleDismiss} />
+              </Tooltip.Trigger>
+              <Tooltip.Content>Dismiss</Tooltip.Content>
+            </Tooltip>
+          </div>
         </ContentContainer>
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <CloseContainer onClick={handleDismiss}>
-              <IconButton icon={<CloseIcon size={15} />} ariaLabel="Dismiss snack popup" />
-            </CloseContainer>
-          </Tooltip.Trigger>
-          <Tooltip.Content>Dismiss</Tooltip.Content>
-        </Tooltip>
       </Wrapper>
     );
   }
