@@ -64,6 +64,7 @@
       "outFiles": [
         "${workspaceFolder}/packages/lib-http/**/*.js",
         "${workspaceFolder}/packages/lib-queues/**/*.js",
+        "${workspaceFolder}/packages/lib-gameserver/**/*.js",
         "${workspaceFolder}/packages/**/dist/*.js"
       ]
     }
