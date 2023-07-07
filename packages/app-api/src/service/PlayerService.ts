@@ -2,11 +2,12 @@ import { TakaroService } from './Base.js';
 
 import { PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsOptional, IsString } from 'class-validator';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
-import { IGamePlayer } from '@takaro/modules';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+import { IGamePlayer } from '@takaro/modules';
+import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -72,16 +73,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return id;
   }
 
-  async findAssociations(gameId: string) {
-    return this.repo.findGameAssociations(gameId);
-  }
-
-  async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
-    return this.repo.insertAssociation(gameId, playerId, gameServerId);
-  }
-
   async sync(playerData: IGamePlayer, gameServerId: string) {
-    const existingAssociations = await this.findAssociations(playerData.gameId);
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    const existingAssociations = await playerOnGameServerService.findAssociations(playerData.gameId);
     let player: PlayerOutputDTO;
 
     if (!existingAssociations.length) {
@@ -106,15 +100,18 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         player = existingPlayers.results[0];
       }
 
-      await this.insertAssociation(playerData.gameId, player.id, gameServerId);
+      await playerOnGameServerService.insertAssociation(playerData.gameId, player.id, gameServerId);
     }
   }
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOutputDTO> {
-    return this.repo.resolveRef(ref, gameserverId);
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    const playerOnGameServer = await playerOnGameServerService.resolveRef(ref, gameserverId);
+    return this.findOne(playerOnGameServer.playerId);
   }
 
   async getRef(playerId: string, gameserverId: string) {
-    return this.repo.getRef(playerId, gameserverId);
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    return playerOnGameServerService.getRef(playerId, gameserverId);
   }
 }
