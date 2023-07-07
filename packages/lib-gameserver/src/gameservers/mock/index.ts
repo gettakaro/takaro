@@ -66,7 +66,7 @@ export class Mock implements IGameServer {
     return data;
   }
 
-  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const client = await this.getClient();
     const data = await client.emitWithAck('getPlayerLocation', player);
     return data;

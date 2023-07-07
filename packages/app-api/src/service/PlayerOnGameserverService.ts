@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsString } from 'class-validator';
+import { IsIP, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -16,6 +16,26 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 
   @IsString()
   gameId: string;
+
+  @IsNumber()
+  @IsOptional()
+  positionX: number;
+
+  @IsNumber()
+  @IsOptional()
+  positionY: number;
+
+  @IsNumber()
+  @IsOptional()
+  positionZ: number;
+
+  @IsIP()
+  @IsOptional()
+  ip: string;
+
+  @IsNumber()
+  @IsOptional()
+  ping: number;
 }
 
 export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCreateDTO> {
@@ -29,7 +49,27 @@ export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCre
   gameId: string;
 }
 
-export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpdateDTO> {}
+export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpdateDTO> {
+  @IsNumber()
+  @IsOptional()
+  positionX: number;
+
+  @IsNumber()
+  @IsOptional()
+  positionY: number;
+
+  @IsNumber()
+  @IsOptional()
+  positionZ: number;
+
+  @IsIP()
+  @IsOptional()
+  ip: string;
+
+  @IsNumber()
+  @IsOptional()
+  ping: number;
+}
 
 @traceableClass('service:playerOnGameserver')
 export class PlayerOnGameServerService extends TakaroService<
@@ -79,5 +119,10 @@ export class PlayerOnGameServerService extends TakaroService<
 
   async getRef(playerId: string, gameserverId: string) {
     return this.repo.getRef(playerId, gameserverId);
+  }
+
+  async addInfo(ref: IPlayerReferenceDTO, gameserverId: string, data: PlayerOnGameServerUpdateDTO) {
+    const resolved = await this.resolveRef(ref, gameserverId);
+    return this.update(resolved.id, data);
   }
 }

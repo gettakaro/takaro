@@ -57,9 +57,9 @@ export class SevenDaysToDie implements IGameServer {
     return players;
   }
 
-  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const locations = await this.apiClient.getPlayersLocation();
-    const playerLocation = locations.data.find((location) => location.steamid === `Steam_${player.steamId}`);
+    const playerLocation = locations.data.find((location) => location.crossplatformid === `EOS_${player.gameId}`);
 
     if (!playerLocation) {
       return null;

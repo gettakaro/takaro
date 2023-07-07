@@ -103,14 +103,13 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
   private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
     const nameMatches = /PlayerName='(.+)'/.exec(logLine.msg);
-    const gameIdMatches = /EntityID=([\d]+),/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
     const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
     const name = nameMatches ? nameMatches[1] : 'Unknown name';
-    const gameId = gameIdMatches ? gameIdMatches[1] : null;
     const platformId = platformIdMatches ? platformIdMatches[1] : null;
     const epicOnlineServicesId = crossIdMatches ? crossIdMatches[1].replace('EOS_', '') : undefined;
+    const gameId = epicOnlineServicesId;
 
     const steamId = platformId && platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
     const xboxLiveId = platformId && platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
@@ -130,15 +129,16 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
   private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
     const nameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
-    const entityIDMatch = /EntityID=(\d+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
+    const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
     const name = nameMatch ? nameMatch[1] : 'Unknown name';
-    const gameId = entityIDMatch ? entityIDMatch[1] : null;
     const platformId = platformIdMatches ? platformIdMatches[1] : null;
 
     const steamId = platformId && platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
     const xboxLiveId = platformId && platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
+    const epicOnlineServicesId = crossIdMatches ? crossIdMatches[1].replace('EOS_', '') : undefined;
+    const gameId = epicOnlineServicesId;
 
     if (!gameId) throw new Error('Could not find gameId');
 

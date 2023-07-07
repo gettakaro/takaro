@@ -107,16 +107,14 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async findGameAssociations(gameId: string) {
-    const knex = await this.getKnex();
-    const model = PlayerOnGameServerModel.bindKnex(knex);
-    const foundProfiles = await model.query().modify('domainScoped', this.domainId).where({ gameId });
+    const { query } = await this.getModel();
+    const foundProfiles = await query.where({ gameId });
     return foundProfiles;
   }
 
   async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
-    const knex = await this.getKnex();
-    const model = PlayerOnGameServerModel.bindKnex(knex);
-    const foundProfiles = await model.query().insert({
+    const { query } = await this.getModel();
+    const foundProfiles = await query.insert({
       gameId,
       playerId,
       gameServerId,
@@ -126,27 +124,22 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async resolveRef(ref: IPlayerReferenceDTO, gameServerId: string): Promise<PlayerOnGameserverOutputDTO> {
-    const knex = await this.getKnex();
-    const model = PlayerOnGameServerModel.bindKnex(knex);
+    const { query } = await this.getModel();
 
-    const foundProfiles = await model
-      .query()
-      .modify('domainScoped', this.domainId)
-      .where({ gameId: ref.gameId, gameServerId });
+    const foundProfiles = await query.where({ gameId: ref.gameId, gameServerId });
 
     if (foundProfiles.length === 0) {
       throw new errors.NotFoundError();
     }
 
-    const player = await this.findOne(foundProfiles[0].playerId);
+    const player = await this.findOne(foundProfiles[0].id);
     return player;
   }
 
   async getRef(playerId: string, gameServerId: string) {
-    const knex = await this.getKnex();
-    const model = PlayerOnGameServerModel.bindKnex(knex);
+    const { query } = await this.getModel();
 
-    const foundProfiles = await model.query().modify('domainScoped', this.domainId).where({ playerId, gameServerId });
+    const foundProfiles = await query.where({ playerId, gameServerId });
 
     if (foundProfiles.length === 0) {
       throw new errors.NotFoundError();
