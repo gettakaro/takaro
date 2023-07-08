@@ -79,6 +79,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     text-transform: capitalize;
     font-weight: 400;
+    white-space: no-wrap;
   }
 
   form {

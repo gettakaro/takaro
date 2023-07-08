@@ -44,7 +44,7 @@ export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
       setTakaroEnabled(guild.takaroEnabled);
       enqueueSnackbar(
         <>
-          Failed to enable guild: <strong>{guild.name}</strong>
+          Failed to {guild.takaroEnabled ? 'disable' : 'enable'} guild: <strong>{guild.name}</strong>
         </>,
         { variant: 'default', type: 'error' }
       );
