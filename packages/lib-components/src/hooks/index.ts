@@ -6,3 +6,4 @@ export { useLocalStorage } from './useLocalStorage';
 export { useTheme } from './useTheme';
 export { useTableActions } from './useTableActions';
 export { useQueryParams } from './useQueryParams';
+export { useFocus } from './useFocus';

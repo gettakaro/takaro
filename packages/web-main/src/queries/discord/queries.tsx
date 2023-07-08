@@ -1,8 +1,16 @@
-import { GuildSearchInputDTO, GuildUpdateDTO, InviteOutputDTO } from '@takaro/apiclient';
+import {
+  DiscordInviteOutputDTO,
+  GuildOutputDTO,
+  GuildOutputDTOAPI,
+  GuildSearchInputDTO,
+  GuildUpdateDTO,
+  InviteOutputDTO,
+} from '@takaro/apiclient';
+import { AxiosError } from 'axios';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useMemo } from 'react';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
 import { hasNextPage } from '../util';
 
 export const discordKeys = {
@@ -13,7 +21,7 @@ export const discordKeys = {
 export const useDiscordGuilds = ({ page = 0, ...guildSearchInputArgs }: GuildSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  const query = useInfiniteQuery({
+  const query = useInfiniteQuery<GuildOutputDTOAPI, AxiosError<GuildOutputDTOAPI>>({
     queryKey: discordKeys.guilds,
     queryFn: async ({ pageParam = page }) =>
       (
@@ -35,22 +43,23 @@ export const useDiscordGuilds = ({ page = 0, ...guildSearchInputArgs }: GuildSea
 export const useDiscordInvite = () => {
   const apiClient = useApiClient();
 
-  return useQuery<InviteOutputDTO>({
+  return useQuery<InviteOutputDTO, AxiosError<DiscordInviteOutputDTO>>({
     queryKey: discordKeys.invite,
     queryFn: async () => (await apiClient.discord.discordControllerGetInvite()).data.data,
   });
 };
 
+interface GuildUpdateInput {
+  id: string;
+  input: GuildUpdateDTO;
+}
+
 export const useDiscordGuildUpdate = () => {
   const apiClient = useApiClient();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: GuildUpdateDTO }) =>
-      (await apiClient.discord.discordControllerUpdateGuild(id, input)).data.data,
-    onSuccess: () => {
-      // TODO: caching, after the returned type is fixed
-      queryClient.invalidateQueries(discordKeys.guilds);
+  return useMutation<GuildOutputDTO[], AxiosError<GuildOutputDTOAPI>, GuildUpdateInput>({
+    mutationFn: async ({ id, input }) => (await apiClient.discord.discordControllerUpdateGuild(id, input)).data.data,
+    onSuccess: (data) => {
+      // TODO: Add new guild data to list of guilds
     },
   });
 };
