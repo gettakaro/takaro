@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { Size, styled } from '../../../styled';
 
-const Container = styled.div<{ size: Size }>`
+const Container = styled.div<{ size: Size; fullWidth: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
-  width: 70%;
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : '70%')};
 
   ${({ size, theme }) => {
     switch (size) {
@@ -67,12 +67,13 @@ type LabelProps = {
 export interface DividerProps {
   label?: LabelProps;
   size?: Size;
+  fullWidth?: boolean;
   /* TODO: reimplement sizing (this might go automatically with different density options. */
 }
 
-export const Divider: FC<DividerProps> = ({ label, size = 'medium' }) => {
+export const Divider: FC<DividerProps> = ({ label, size = 'medium', fullWidth = false }) => {
   return (
-    <Container size={size}>
+    <Container fullWidth={fullWidth} size={size}>
       <Line />
       {label && (
         <Label position={label.labelPosition}>

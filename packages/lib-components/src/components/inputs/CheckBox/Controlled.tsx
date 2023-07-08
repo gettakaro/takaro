@@ -54,7 +54,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
               htmlFor={name}
             />
           )}
-          <CheckboxContainer className="placeholder" readOnly={readOnly} error={!!error} disabled={disabled} />
+          <CheckboxContainer className="placeholder" readOnly={readOnly} hasError={!!error} disabled={disabled} />
           {/* CASE: show label after <CheckBox /> */}
           {labelPosition === 'right' && label && (
             <Label
@@ -91,15 +91,15 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
         )}
         <GenericCheckBox
           id={name}
+          hasError={!!error}
+          hasDescription={!!description}
           name={name}
           disabled={disabled}
           size={size}
-          onBlur={field.onBlur}
           readOnly={readOnly}
-          hasError={!!error}
-          hasDescription={!!description}
           required={required}
           onChange={field.onChange}
+          onBlur={field.onBlur}
           value={field.value}
           ref={field.ref}
         />
