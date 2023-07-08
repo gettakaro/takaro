@@ -11,6 +11,7 @@ import {
 } from '@takaro/modules';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
+import { SevenDaysToDie } from './index.js';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -28,9 +29,11 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private SSERegex = /\d+-\d+-\d+T\d+:\d+:\d+ \d+\.\d+ INF (.+)/;
   private eventSource!: EventSource;
   private logger = logger('7D2D:SSE');
+  private sdtd: SevenDaysToDie;
 
   constructor(private config: SdtdConnectionInfo) {
     super();
+    this.sdtd = new SevenDaysToDie(config);
   }
 
   get url() {
@@ -169,15 +172,17 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       return;
     }
 
-    return new EventChatMessage().construct({
-      player: await new IGamePlayer().construct({
-        name,
-        steamId,
-        xboxLiveId,
-        gameId: entityId,
-      }),
-      msg: message.trim(),
-    });
+    if (steamId || xboxLiveId) {
+      const id = steamId || xboxLiveId || '';
+      const player = await this.sdtd.steamIdOrXboxToGameId(id);
+
+      if (player) {
+        return new EventChatMessage().construct({
+          player,
+          msg: message.trim(),
+        });
+      }
+    }
   }
 
   async listener(data: MessageEvent) {

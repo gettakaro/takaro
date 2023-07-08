@@ -404,5 +404,7 @@ export class GameServerService extends TakaroService<
         positionZ: location.z,
       })
     );
+
+    return location;
   }
 }

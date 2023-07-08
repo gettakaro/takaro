@@ -7,6 +7,7 @@ import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { CommandService } from '../service/CommandService.js';
+import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 
 const log = logger('worker:events');
 
@@ -52,4 +53,16 @@ async function processJob(job: Job<IEventQueueData>) {
 
   const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);
+
+  if ('player' in event && event.player) {
+    const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+    await playerOnGameServerService.addInfo(
+      event.player,
+      gameServerId,
+      await new PlayerOnGameServerUpdateDTO().construct({
+        ip: event.player.ip,
+        ping: event.player.ping,
+      })
+    );
+  }
 }
