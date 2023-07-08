@@ -103,6 +103,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
   position: number;
 
   @IsUUID()
+  @IsOptional()
   commandId: string;
 }
 
