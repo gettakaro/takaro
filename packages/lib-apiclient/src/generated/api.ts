@@ -1736,10 +1736,10 @@ export type GameServerSearchInputDTOSortDirectionEnum =
 export interface GameServerTestReachabilityDTOAPI {
   /**
    *
-   * @type {TestReachabilityOutput}
+   * @type {TestReachabilityOutputDTO}
    * @memberof GameServerTestReachabilityDTOAPI
    */
-  data: TestReachabilityOutput;
+  data: TestReachabilityOutputDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -4236,19 +4236,19 @@ export interface TeleportPlayerInputDTO {
 /**
  *
  * @export
- * @interface TestReachabilityOutput
+ * @interface TestReachabilityOutputDTO
  */
-export interface TestReachabilityOutput {
+export interface TestReachabilityOutputDTO {
   /**
    *
    * @type {boolean}
-   * @memberof TestReachabilityOutput
+   * @memberof TestReachabilityOutputDTO
    */
   connectable: boolean;
   /**
    *
    * @type {string}
-   * @memberof TestReachabilityOutput
+   * @memberof TestReachabilityOutputDTO
    */
   reason?: string;
 }

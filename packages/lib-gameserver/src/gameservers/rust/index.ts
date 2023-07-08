@@ -8,7 +8,7 @@ import {
   IItemDTO,
   IPlayerReferenceDTO,
   IPosition,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
@@ -92,13 +92,13 @@ export class Rust implements IGameServer {
     return null;
   }
 
-  async testReachability(): Promise<TestReachabilityOutput> {
+  async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       await this.executeConsoleCommand('serverinfo');
-      return new TestReachabilityOutput().construct({ connectable: true });
+      return new TestReachabilityOutputDTO().construct({ connectable: true });
     } catch (error) {
       this.log.warn('testReachability', error);
-      return new TestReachabilityOutput().construct({ connectable: false });
+      return new TestReachabilityOutputDTO().construct({ connectable: false });
     }
   }
 
