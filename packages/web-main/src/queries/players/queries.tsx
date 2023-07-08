@@ -3,6 +3,8 @@ import { useApiClient } from 'hooks/useApiClient';
 import { PlayerOutputArrayDTOAPI, PlayerOutputDTO, PlayerOutputDTOAPI, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
+import { useMemo } from 'react';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -13,7 +15,7 @@ export const playerKeys = {
 export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
+  const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: playerKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -25,6 +27,12 @@ export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchI
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const usePlayer = (id: string) => {

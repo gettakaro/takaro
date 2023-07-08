@@ -7,7 +7,9 @@ import {
   InviteOutputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
+import { useMemo } from 'react';
 import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
 import { hasNextPage } from '../util';
 
@@ -19,7 +21,7 @@ export const discordKeys = {
 export const useDiscordGuilds = ({ page = 0, ...guildSearchInputArgs }: GuildSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<GuildOutputDTOAPI, AxiosError<GuildOutputDTOAPI>>({
+  const query = useInfiniteQuery<GuildOutputDTOAPI, AxiosError<GuildOutputDTOAPI>>({
     queryKey: discordKeys.guilds,
     queryFn: async ({ pageParam = page }) =>
       (
@@ -30,6 +32,12 @@ export const useDiscordGuilds = ({ page = 0, ...guildSearchInputArgs }: GuildSea
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...query} />;
+  }, [query]);
+
+  return { ...query, InfiniteScroll };
 };
 
 export const useDiscordInvite = () => {
@@ -48,7 +56,6 @@ interface GuildUpdateInput {
 
 export const useDiscordGuildUpdate = () => {
   const apiClient = useApiClient();
-
   return useMutation<GuildOutputDTO[], AxiosError<GuildOutputDTOAPI>, GuildUpdateInput>({
     mutationFn: async ({ id, input }) => (await apiClient.discord.discordControllerUpdateGuild(id, input)).data.data,
     onSuccess: (data) => {

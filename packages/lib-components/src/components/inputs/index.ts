@@ -7,6 +7,8 @@ export type { ControlledSelectProps as SelectProps } from './Select';
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';
 
+export { GenericSwitch as UnControlledSwitch } from './Switch/Generic';
+
 export { ControlledTextField as TextField } from './TextField';
 export type { ControlledTextFieldProps as TextFieldProps } from './TextField';
 

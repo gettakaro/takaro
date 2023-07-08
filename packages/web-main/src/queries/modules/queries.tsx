@@ -27,9 +27,11 @@ import {
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
 import * as Sentry from '@sentry/react';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
+import { useMemo } from 'react';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -64,7 +66,7 @@ export const functionKeys = {
 export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+  const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: moduleKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -76,6 +78,12 @@ export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchI
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const useModule = (id: string) => {

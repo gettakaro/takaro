@@ -1,5 +1,4 @@
 import { styled } from '../../../styled';
-import { lighten, darken } from 'polished';
 import { motion } from 'framer-motion';
 
 export const Container = styled.div`
@@ -7,51 +6,40 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   text-align: left;
-  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-export const ContentContainer = styled.div`
+export const ContentContainer = styled.button<{ isChecked: boolean; hasError: boolean }>`
   position: relative;
-  width: 3rem;
+  width: 4.2rem;
+  height: 2.5rem;
   display: block;
   cursor: pointer;
-  border: 0 solid #cccccc;
+  border-radius: 9999px;
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
   margin: ${({ theme }) => theme.spacing[0]};
-`;
+  background-color: ${({ theme, isChecked }) => (isChecked ? theme.colors.primary : theme.colors.background)};
 
-export const Line = styled.span<{ isChecked: boolean; readOnly: boolean }>`
-  display: block;
-  width: 100%;
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  height: 0.9rem;
-  transition: background 0.2s ease-in-out;
-  background: ${({ theme, readOnly, isChecked }): string => {
-    let color = isChecked ? lighten(0.2, theme.colors.primary) : theme.colors.backgroundAlt;
-    if (readOnly) {
-      color = darken(0.2, theme.colors.gray);
-    }
-    return color;
-  }};
+  &:focus {
+    border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
+  }
 `;
 
 export const Dot = styled(motion.span)<{
   isChecked: boolean;
   readOnly: boolean;
 }>`
-  display: block;
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 0.1rem solid ${({ theme, isChecked }) => (isChecked ? theme.colors.primary : theme.colors.primary)};
+  position: absolute;
+  margin-top: -${({ theme }) => theme.spacing['0_5']};
+  top: 50%;
+  border-radius: 50%;
+  transform: translateY(-30%);
+  width: 2.1rem;
+  height: 2.1rem;
   background-color: ${({ theme, readOnly, isChecked }) => {
-    let color = isChecked ? theme.colors.primary : theme.colors.primary;
+    let color = isChecked ? theme.colors.white : theme.colors.white;
     if (readOnly) {
-      color = theme.colors.white;
+      color = theme.colors.disabled;
     }
     return color;
   }};
-  position: absolute;
-  margin-top: -${({ theme }) => theme.spacing['0_5']};
-  top: 0;
-  bottom: 0;
-  border-radius: 50%;
 `;

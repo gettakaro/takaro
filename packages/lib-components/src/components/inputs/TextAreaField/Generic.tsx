@@ -1,11 +1,7 @@
 import { forwardRef } from 'react';
 import { TextAreaContainer, TextArea } from './style';
 
-import {
-  GenericInputProps,
-  defaultInputProps,
-  defaultInputPropsFactory,
-} from '../InputProps';
+import { GenericInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
 export interface TextAreaFieldProps {
@@ -13,17 +9,13 @@ export interface TextAreaFieldProps {
   rows?: number;
 }
 
-export type GenericTextAreaFieldProps = TextAreaFieldProps &
-  GenericInputProps<HTMLTextAreaElement>;
+export type GenericTextAreaFieldProps = TextAreaFieldProps & GenericInputProps<string, HTMLTextAreaElement>;
 
-const defaultsApplier = defaultInputPropsFactory<
-  TextAreaFieldProps & GenericInputProps<HTMLTextAreaElement>
->(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<TextAreaFieldProps & GenericInputProps<string, HTMLTextAreaElement>>(
+  defaultInputProps
+);
 
-export const GenericTextAreaField = forwardRef<
-  HTMLTextAreaElement,
-  GenericTextAreaFieldProps
->((props, ref) => {
+export const GenericTextAreaField = forwardRef<HTMLTextAreaElement, GenericTextAreaFieldProps>((props, ref) => {
   const {
     disabled,
     required,
@@ -55,7 +47,7 @@ export const GenericTextAreaField = forwardRef<
         disabled={disabled}
         required={required}
         ref={ref}
-        value={value as string}
+        value={value}
         rows={rows}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />

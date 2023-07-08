@@ -55,11 +55,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
       <Wrapper>
         {options.map(({ label, labelPosition, value }) => {
           return (
-            <Container
-              key={`radiogroup-container-${name}-${value}`}
-              isSelected={value === selected}
-              onClick={() => handleChange(value)}
-            >
+            <Container key={`radiogroup-container-${name}-${value}`} onClick={() => handleChange(value)}>
               {label && labelPosition === 'left' && (
                 <Label
                   key={`radiogroup-label-${name}-${value}`}
@@ -83,8 +79,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 name={name}
                 id={name}
                 value={value}
-                selected={selected === value}
-                setSelected={setSelected}
+                checked={selected === value}
                 onChange={field.onChange}
                 size={size}
                 onBlur={handleOnBlur}

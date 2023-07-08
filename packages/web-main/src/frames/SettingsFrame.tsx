@@ -1,8 +1,8 @@
-import { FC } from 'react';
-import { styled, HorizontalNav } from '@takaro/lib-components';
+import { FC, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { HorizontalNavLink } from '@takaro/lib-components/src/components/navigation/HorizontalNav';
+import { styled, HorizontalNav, HorizontalNavLink } from '@takaro/lib-components';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   height: 100%;
@@ -12,6 +12,15 @@ const ContentContainer = styled.div`
 `;
 
 export const SettingsFrame: FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === PATHS.settings.overview()) {
+      navigate(PATHS.settings.GameServerSettings());
+    }
+  }, [location, navigate]);
+
   const links: HorizontalNavLink[] = [
     {
       text: 'Global Game Server Settings',

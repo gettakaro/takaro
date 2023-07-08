@@ -25,11 +25,29 @@ export default {
   },
 } as Meta<DefaultSnackProps>;
 
-export const Snacks: StoryFn<DefaultSnackProps> = (args) => {
+export const Default: StoryFn<DefaultSnackProps> = (args) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleOnClick = () => {
+    enqueueSnackbar(args.message, {
+      title: args.title,
+      type: args.type,
+      key: 'software-update',
+    });
+  };
+
+  return (
+    <Wrapper>
+      <Button onClick={handleOnClick} text="show snack" />
+    </Wrapper>
+  );
+};
+
+export const Buttons: StoryFn<DefaultSnackProps> = (args) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleOnClick = () => {
-    enqueueSnackbar(args.message!, {
+    enqueueSnackbar(args.message, {
       title: args.title,
       type: args.type,
       key: 'software-update',

@@ -15,6 +15,7 @@ import * as Sentry from '@sentry/react';
 import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/gameservers';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
+import { gameTypeSelectOptions } from './GameTypeSelectOptions';
 
 export interface IFormInputs {
   name: string;
@@ -68,24 +69,6 @@ const CreateGameServer: FC = () => {
     //setError(response.data.data.reason || 'Connection error');
     //}
   };
-
-  const gameTypeSelectOptions = [
-    {
-      name: 'Mock (testing purposes)',
-      value: GameServerCreateDTOTypeEnum.Mock,
-      show: import.meta.env.DEV,
-    },
-    {
-      name: 'Rust',
-      value: GameServerCreateDTOTypeEnum.Rust,
-      show: true,
-    },
-    {
-      name: '7 Days to die',
-      value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-      show: true,
-    },
-  ].filter(({ show }) => show);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>

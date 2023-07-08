@@ -61,7 +61,7 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Settings',
-      path: PATHS.settings.GameServerSettings(),
+      path: PATHS.settings.overview(),
       icon: <SettingsIcon />,
       end: false,
     },
@@ -76,10 +76,7 @@ export const GlobalFrame: FC = () => {
   return (
     <Container>
       <Navbar links={links} />
-      <ContentContainer
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
+      <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
         <Header />
         <ErrorBoundary fallback={<ErrorFallback />}>
           <Page>

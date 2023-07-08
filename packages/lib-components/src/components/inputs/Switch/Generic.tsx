@@ -1,53 +1,56 @@
-import { useEffect, useState, forwardRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { getTransition } from '../../../helpers';
-import { Dot, Line, ContentContainer } from './style';
-import {
-  defaultInputProps,
-  defaultInputPropsFactory,
-  GenericInputPropsFunctionHandlers,
-} from '../InputProps';
+import { Dot, ContentContainer } from './style';
+import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
-export type GenericSwitchProps = GenericInputPropsFunctionHandlers<
-  boolean,
-  HTMLDivElement
->;
+export type GenericSwitchProps = GenericInputProps<boolean, HTMLInputElement>;
 
-const defaultsApplier =
-  defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
 
-export const GenericSwitch = forwardRef<HTMLDivElement, GenericSwitchProps>(
-  (props, ref) => {
-    const { readOnly, onChange, value, id, hasDescription, name } =
-      defaultsApplier(props);
+export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((props, ref) => {
+  const { readOnly, onChange, value: isChecked, id, hasDescription, name, disabled, hasError } = defaultsApplier(props);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const [isChecked, setChecked] = useState<boolean>(value as boolean);
+  function handleOnClick(): void {
+    if (readOnly || disabled) return;
+    inputRef.current?.click();
+  }
 
-    function handleOnClick(): void {
-      setChecked(!isChecked);
-    }
-
-    useEffect(() => {
-      onChange(isChecked);
-    }, [isChecked]);
-
-    return (
+  return (
+    <>
+      <input
+        type="checkbox"
+        aria-hidden="true"
+        style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
+        checked={isChecked}
+        tabIndex={-1}
+        id={`${id}-hidden-input`}
+        value="on"
+        onChange={(e) => onChange(e)}
+        ref={inputRef}
+      />
       <ContentContainer
+        role="switch"
+        id={id}
+        isChecked={isChecked}
+        disabled={disabled}
         onClick={handleOnClick}
         ref={ref}
-        id={id}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
+        aria-checked={isChecked}
+        hasError={hasError}
+        tabIndex={readOnly || disabled ? -1 : 0}
+        type="button"
       >
-        <Line readOnly={readOnly} isChecked={isChecked}>
-          <Dot
-            animate={{ right: isChecked ? '-2px' : '15px' }}
-            readOnly={readOnly}
-            isChecked={isChecked}
-            layout
-            transition={getTransition()}
-          />
-        </Line>
+        <Dot
+          animate={{ right: isChecked ? '3px' : '23px' }}
+          readOnly={readOnly}
+          isChecked={isChecked}
+          layout
+          transition={getTransition()}
+        />
       </ContentContainer>
-    );
-  }
-);
+    </>
+  );
+});
