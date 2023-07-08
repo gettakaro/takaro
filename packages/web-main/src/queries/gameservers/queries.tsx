@@ -15,7 +15,7 @@ import {
   ModuleInstallDTO,
   Settings,
   SettingsOutputDTOAPI,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from 'react-query';
@@ -316,7 +316,7 @@ export const useGameServerRemove = () => {
 export const useGameServerReachabilityById = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<TestReachabilityOutput, AxiosError<GameServerTestReachabilityDTOAPI>>({
+  return useQuery<TestReachabilityOutputDTO, AxiosError<GameServerTestReachabilityDTOAPI>>({
     queryKey: gameServerKeys.reachability(id),
     queryFn: async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data.data,
     useErrorBoundary: (error) => error.response!.status >= 500,
@@ -331,7 +331,7 @@ interface GameServerTestReachabilityInput {
 export const useGameServerReachabilityByConfig = () => {
   const apiClient = useApiClient();
   return useMutation<
-    TestReachabilityOutput,
+    TestReachabilityOutputDTO,
     AxiosError<GameServerTestReachabilityDTOAPI>,
     GameServerTestReachabilityInput
   >({
