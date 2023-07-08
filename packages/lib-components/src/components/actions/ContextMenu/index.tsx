@@ -1,4 +1,14 @@
-import { Children, cloneElement, forwardRef, isValidElement, useEffect, useRef, useState, HTMLProps } from 'react';
+import {
+  Children,
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+  HTMLProps,
+  RefObject,
+} from 'react';
 import {
   useFloating,
   autoUpdate,
@@ -19,6 +29,7 @@ import { MenuItem } from './MenuItem';
 export interface ContextMenuProps extends HTMLProps<HTMLButtonElement> {
   label?: string;
   nested?: boolean;
+  targetRef?: RefObject<HTMLElement>;
 }
 
 type ContextMenuComponent = {
@@ -26,7 +37,7 @@ type ContextMenuComponent = {
   Item: typeof MenuItem;
 };
 
-export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ children }, _ref) => {
+export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ children, targetRef }, _ref) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -103,11 +114,22 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
       }
     }
 
-    document.addEventListener('contextmenu', onContextMenu);
-    document.addEventListener('mouseup', onMouseUp);
+    if (targetRef?.current) {
+      targetRef.current.addEventListener('contextmenu', onContextMenu);
+      targetRef.current.addEventListener('mouseup', onMouseUp);
+    } else {
+      document.addEventListener('contextmenu', onContextMenu);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
     return () => {
-      document.removeEventListener('contextmenu', onContextMenu);
-      document.removeEventListener('mouseup', onMouseUp);
+      if (targetRef?.current) {
+        targetRef.current.removeEventListener('contextmenu', onContextMenu);
+        targetRef.current.removeEventListener('mouseup', onMouseUp);
+      } else {
+        document.removeEventListener('contextmenu', onContextMenu);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
       clearTimeout(timeout);
     };
   }, [refs]);
