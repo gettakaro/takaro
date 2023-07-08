@@ -8,6 +8,10 @@ const Container = styled.button`
   color: ${({ theme }) => theme.colors.text};
   box-shadow: ${({ theme }) => theme.elevation[2]};
 
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  }
+
   &:first-child {
     border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
     border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -26,7 +30,7 @@ interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(({ label, disabled, ...props }, ref) => {
   return (
-    <Container {...props} className="MenuItem" ref={ref} role="menuitem" disabled={disabled}>
+    <Container {...props} ref={ref} role="menuitem" disabled={disabled}>
       {label}
     </Container>
   );

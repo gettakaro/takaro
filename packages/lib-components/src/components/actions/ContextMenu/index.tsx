@@ -25,6 +25,13 @@ import {
   FloatingOverlay,
 } from '@floating-ui/react';
 import { MenuItem } from './MenuItem';
+import { styled } from '../../../styled';
+
+const Container = styled.div`
+  &:focus-visible {
+    outline: none;
+  }
+`;
 
 export interface ContextMenuProps extends HTMLProps<HTMLButtonElement> {
   label?: string;
@@ -139,7 +146,7 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
       {isOpen && (
         <FloatingOverlay lockScroll>
           <FloatingFocusManager context={context} initialFocus={refs.floating}>
-            <div className="ContextMenu" ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
+            <Container className="ContextMenu" ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               {Children.map(
                 children,
                 (child, index) =>
@@ -162,7 +169,7 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
                     })
                   )
               )}
-            </div>
+            </Container>
           </FloatingFocusManager>
         </FloatingOverlay>
       )}
