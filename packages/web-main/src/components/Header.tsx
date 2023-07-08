@@ -1,20 +1,11 @@
 import { FC, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  styled,
-  getInitials,
-  BreadCrumbs,
-  Dropdown,
-  MenuList,
-} from '@takaro/lib-components';
+import { styled, getInitials, BreadCrumbs, Dropdown, MenuList } from '@takaro/lib-components';
 import { useUser } from 'hooks/useUser';
 import { useAuth } from 'hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiOutlineUser as ProfileIcon,
-  AiOutlineLogout as LogoutIcon,
-} from 'react-icons/ai';
+import { AiOutlineUser as ProfileIcon, AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
 
 const Container = styled.header`
   height: 80px;
@@ -114,9 +105,7 @@ export const Header: FC<HeaderProps> = ({ isLoading, idToNameMap }) => {
         setOpen={setOpenDropdown}
         renderReference={
           <User role="button">
-            <InitialsBlock>
-              {getInitials(userData.name ? userData.name : 'u u')}
-            </InitialsBlock>
+            <InitialsBlock>{getInitials(userData.name ? userData.name : 'u u')}</InitialsBlock>
             <Name>
               <h4>{userData.name ? userData.name : 'unknown user'}</h4>
               <p>{userData.email ? userData.email : 'unknown email'}</p>

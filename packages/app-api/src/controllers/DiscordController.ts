@@ -33,7 +33,7 @@ class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
 
 class DiscordParamId {
   @IsString()
-  @Length(18, 18)
+  @Length(16, 20)
   id!: string;
 }
 
