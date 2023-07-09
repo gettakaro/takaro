@@ -2,7 +2,7 @@ import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
 
 import { Configuration, FrontendApi } from '@ory/client';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { UserOutputDTO } from '@takaro/apiclient';
 
 let cachedClient: FrontendApi | null = null;
@@ -20,7 +20,7 @@ export function useAuth() {
     data: sessionData,
     isLoading,
     refetch,
-  } = useQuery('session', () => apiClient.user.userControllerMe(), {
+  } = useQuery(['session'], () => apiClient.user.userControllerMe(), {
     retry: 0,
   });
 

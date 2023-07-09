@@ -11,7 +11,7 @@ import { AxiosError } from 'axios';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useMemo } from 'react';
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { hasNextPage } from '../util';
 
 export const discordKeys = {
