@@ -39,29 +39,16 @@ const Studio: FC = () => {
 
   const activeModule = moduleData.fileMap[sandpack.activeFile];
 
+  if (!activeModule) return null;
+
   function getConfigComponent(type: FunctionType) {
     switch (type) {
       case FunctionType.Hooks:
-        return (
-          <HookConfig
-            moduleItem={activeModule}
-            readOnly={moduleData.isBuiltIn}
-          />
-        );
+        return <HookConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
       case FunctionType.Commands:
-        return (
-          <CommandConfig
-            moduleItem={activeModule}
-            readOnly={moduleData.isBuiltIn}
-          />
-        );
+        return <CommandConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
       case FunctionType.CronJobs:
-        return (
-          <CronJobConfig
-            moduleItem={activeModule}
-            readOnly={moduleData.isBuiltIn}
-          />
-        );
+        return <CronJobConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
       default:
         return null;
     }
@@ -98,9 +85,7 @@ const Studio: FC = () => {
               <FileExplorer sandpack={sandpack} />
             </CollapseList.Item>
             <CollapseList.Item title="Config">
-              <ConfigWrapper>
-                {getConfigComponent(activeModule.type)}
-              </ConfigWrapper>
+              <ConfigWrapper>{getConfigComponent(activeModule.type)}</ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>
