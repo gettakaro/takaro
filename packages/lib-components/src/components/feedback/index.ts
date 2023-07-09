@@ -27,3 +27,6 @@ export type { PopoverProps } from './Popover';
 
 export { PageNotFound } from './PageNotFound';
 export type { PageNotFoundProps } from './PageNotFound';
+
+export { FormError } from './FormError';
+export type { FormErrorProps } from './FormError';
