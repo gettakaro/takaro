@@ -7,6 +7,7 @@ async function main() {
   const modulesJson = JSON.stringify(modules, null, 2);
   await writeFile('dist/modules.json', modulesJson);
   await writeFile('../web-docs/pages/modules.json', modulesJson);
+  await writeFile('../e2e/src/web-main/fixtures/modules.json', modulesJson);
 }
 
 main().catch(console.error);

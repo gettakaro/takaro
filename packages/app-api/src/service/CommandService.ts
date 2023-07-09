@@ -85,7 +85,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
-  @Length(3, 50)
+  @Length(2, 50)
   name: string;
 
   @IsString()
@@ -103,6 +103,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
   position: number;
 
   @IsUUID()
+  @IsOptional()
   commandId: string;
 }
 
