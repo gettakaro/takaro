@@ -46,3 +46,10 @@ export class HookEventDiscordMessage extends TakaroDTO<HookEventDiscordMessage> 
   @Type(() => EventDiscordChannel)
   channel: EventDiscordChannel;
 }
+
+export function isDiscordMessageEvent(a: unknown): a is HookEventDiscordMessage {
+  if (typeof a === 'object' && a !== null) {
+    return 'type' in a && a.type === DiscordEvents.DISCORD_MESSAGE;
+  }
+  return false;
+}

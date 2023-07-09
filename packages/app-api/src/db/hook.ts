@@ -101,7 +101,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     await query.updateAndFetchById(id, { functionId });
   }
 
-  async getTriggeredHooks(eventType: HookEventTypes, msg: string, gameServerId: string): Promise<HookOutputDTO[]> {
+  async getTriggeredHooks(eventType: HookEventTypes, gameServerId: string): Promise<HookOutputDTO[]> {
     const { query } = await this.getModel();
 
     const hookIds: string[] = (
@@ -121,12 +121,6 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
       .map((x) => x.hookId);
 
     const hooksMatchingEvent = await Promise.all(hookIds.map((id) => this.findOne(id)));
-
-    return hooksMatchingEvent.filter((hook) => {
-      if (!hook.regex) return true;
-
-      const regex = new RegExp(hook.regex);
-      return regex.test(msg);
-    });
+    return hooksMatchingEvent;
   }
 }
