@@ -1,4 +1,4 @@
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,

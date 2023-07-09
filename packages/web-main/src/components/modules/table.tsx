@@ -1,13 +1,8 @@
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
-import {
-  Loading,
-  Table,
-  styled,
-  useTableActions,
-} from '@takaro/lib-components';
+import { Loading, Table, styled, useTableActions } from '@takaro/lib-components';
 import { NavLink } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -20,8 +15,7 @@ const TableContainer = styled.div`
 `;
 
 const TableLink = styled(NavLink)<{ type: 'normal' | 'danger' }>`
-  color: ${({ theme, type }) =>
-    type === 'normal' ? theme.colors.primary : theme.colors.error};
+  color: ${({ theme, type }) => (type === 'normal' ? theme.colors.primary : theme.colors.error)};
 `;
 
 export const ModulesTable: FC = () => {
@@ -29,7 +23,7 @@ export const ModulesTable: FC = () => {
   const { pagination } = useTableActions<ModuleOutputDTO>();
 
   const { data, isLoading, refetch } = useQuery(
-    `modules`,
+    [`modules`],
     async () =>
       pagination.paginate(
         await apiClient.module.moduleControllerSearch({

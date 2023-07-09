@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from 'react-query';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
