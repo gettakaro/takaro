@@ -1,17 +1,9 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import {
-  styled,
-  Table,
-  Loading,
-  useTableActions,
-} from '@takaro/lib-components';
+import { styled, Table, Loading, useTableActions } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
-import { useQuery } from 'react-query';
-import {
-  PlayerOutputDTO,
-  PlayerSearchInputDTOSortDirectionEnum,
-} from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
+import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { QueryKeys } from 'queryKeys';
 
@@ -24,8 +16,7 @@ const TableContainer = styled.div`
 
 const Players: FC = () => {
   const client = useApiClient();
-  const { pagination, columnFilters, sorting } =
-    useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting } = useTableActions<PlayerOutputDTO>();
 
   const { data, isLoading, refetch } = useQuery(
     [QueryKeys.players.list, pagination.paginationState, sorting.sortingState],
