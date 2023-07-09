@@ -66,7 +66,7 @@ export class Rust implements IGameServer {
     await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item.name} ${item.amount}`);
   }
 
-  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const rawResponse = await this.executeConsoleCommand('playerlistpos');
     const lines = rawResponse.rawResult.split('\n');
 
@@ -79,7 +79,7 @@ export class Rust implements IGameServer {
         const y = matches[3].replace(',', '');
         const z = matches[4].replace(')', '');
 
-        if (steamId === _player.gameId) {
+        if (steamId === player.gameId) {
           return {
             x: parseFloat(x),
             y: parseFloat(y),

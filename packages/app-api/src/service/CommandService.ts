@@ -275,9 +275,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
       const resolvedPlayer = await playerService.resolveRef(chatMessage.player, gameServerId);
 
-      const playerLocation = await (
-        await gameServerService.getGame(gameServerId)
-      ).getPlayerLocation(chatMessage.player);
+      const playerLocation = await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => ({
