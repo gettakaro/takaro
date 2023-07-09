@@ -1738,10 +1738,10 @@ export type GameServerSearchInputDTOSortDirectionEnum =
 export interface GameServerTestReachabilityDTOAPI {
   /**
    *
-   * @type {TestReachabilityOutput}
+   * @type {TestReachabilityOutputDTO}
    * @memberof GameServerTestReachabilityDTOAPI
    */
-  data: TestReachabilityOutput;
+  data: TestReachabilityOutputDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -1974,6 +1974,25 @@ export interface GuildCreateInputDTO {
 /**
  *
  * @export
+ * @interface GuildOutputArrayDTOAPI
+ */
+export interface GuildOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<GuildOutputDTO>}
+   * @memberof GuildOutputArrayDTOAPI
+   */
+  data: Array<GuildOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof GuildOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface GuildOutputDTO
  */
 export interface GuildOutputDTO {
@@ -2016,10 +2035,10 @@ export interface GuildOutputDTO {
 export interface GuildOutputDTOAPI {
   /**
    *
-   * @type {Array<GuildOutputDTO>}
+   * @type {GuildOutputDTO}
    * @memberof GuildOutputDTOAPI
    */
-  data: Array<GuildOutputDTO>;
+  data: GuildOutputDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -4221,19 +4240,19 @@ export interface TeleportPlayerInputDTO {
 /**
  *
  * @export
- * @interface TestReachabilityOutput
+ * @interface TestReachabilityOutputDTO
  */
-export interface TestReachabilityOutput {
+export interface TestReachabilityOutputDTO {
   /**
    *
    * @type {boolean}
-   * @memberof TestReachabilityOutput
+   * @memberof TestReachabilityOutputDTO
    */
   connectable: boolean;
   /**
    *
    * @type {string}
-   * @memberof TestReachabilityOutput
+   * @memberof TestReachabilityOutputDTO
    */
   reason?: string;
 }
@@ -6244,7 +6263,7 @@ export const DiscordApiFp = function (configuration?: Configuration) {
     async discordControllerSearch(
       guildSearchInputDTO?: GuildSearchInputDTO,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuildOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuildOutputArrayDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerSearch(guildSearchInputDTO, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -6314,7 +6333,10 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    discordControllerSearch(guildSearchInputDTO?: GuildSearchInputDTO, options?: any): AxiosPromise<GuildOutputDTOAPI> {
+    discordControllerSearch(
+      guildSearchInputDTO?: GuildSearchInputDTO,
+      options?: any
+    ): AxiosPromise<GuildOutputArrayDTOAPI> {
       return localVarFp
         .discordControllerSearch(guildSearchInputDTO, options)
         .then((request) => request(axios, basePath));

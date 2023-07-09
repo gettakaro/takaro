@@ -12,7 +12,13 @@ import {
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { TestReachabilityOutput, CommandOutput, IMessageOptsDTO, GAME_SERVER_TYPE, BanDTO } from '@takaro/gameserver';
+import {
+  TestReachabilityOutputDTO,
+  CommandOutput,
+  IMessageOptsDTO,
+  GAME_SERVER_TYPE,
+  BanDTO,
+} from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -49,10 +55,10 @@ class GameServerOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   declare data: GameServerOutputDTO[];
 }
 
-class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutput> {
-  @Type(() => TestReachabilityOutput)
+class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputDTO> {
+  @Type(() => TestReachabilityOutputDTO)
   @ValidateNested()
-  declare data: TestReachabilityOutput;
+  declare data: TestReachabilityOutputDTO;
 }
 
 class GameServerSearchInputAllowedFilters {
