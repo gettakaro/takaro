@@ -13,9 +13,8 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Header, PaginationContainer } from './style';
-import { Empty, Button } from '../../../components';
-import { AiOutlineReload as ReloadIcon } from 'react-icons/ai';
-import { ColumnController, Pagination, Sorting } from './subcomponents';
+import { Empty } from '../../../components';
+import { Pagination, Sorting } from './subcomponents';
 
 export interface TableProps<DataType extends object> {
   refetching?: boolean;
@@ -42,17 +41,14 @@ export interface TableProps<DataType extends object> {
 }
 
 export function Table<DataType extends object>({
-  refetching = false,
   data,
   columns,
   sorting,
   spacing = 'tight',
   pagination,
-  refetch,
   columnFiltering,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [refetchTimeout, setRefetchTimeout] = useState<boolean>(false);
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => {
       if (column.id === undefined) {
@@ -61,16 +57,6 @@ export function Table<DataType extends object>({
       return column.id;
     })
   );
-
-  const handleRefetch = () => {
-    if (!refetchTimeout) {
-      refetch();
-    }
-    setRefetchTimeout(true);
-    setTimeout(() => {
-      setRefetchTimeout(false);
-    }, 5000);
-  };
 
   const table = useReactTable({
     data,
@@ -103,40 +89,12 @@ export function Table<DataType extends object>({
 
   // TODO: add a border outline with an empty table message
   if (data.length === 0) {
-    return (
-      <Empty
-        header="No data"
-        description="Looks like there is no data"
-        actions={[]}
-      />
-    );
+    return <Empty header="No data" description="Looks like there is no data" actions={[]} />;
   }
 
   return (
-    <Wrapper refetching={refetching}>
-      <Header>
-        {/* todo: filter menu 
-          <Button
-            icon={<FilterIcon />}
-            text="Filters"
-            color="background"
-            onClick={() => setShowFilters(!showFilters)}
-          />
-          */}
-
-        <ColumnController
-          columns={table.getAllLeafColumns()}
-          setColumnOrder={setColumnOrder}
-          columnOrder={columnOrder}
-        />
-        <Button
-          icon={<ReloadIcon />}
-          text="Refresh"
-          onClick={handleRefetch}
-          color="background"
-          disabled={refetchTimeout}
-        />
-      </Header>
+    <Wrapper>
+      <Header></Header>
 
       {/* todo: filter menu 
         {showFilters && (
@@ -177,9 +135,7 @@ export function Table<DataType extends object>({
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map(({ column, id, getContext }) => (
-                <td key={id}>
-                  {flexRender(column.columnDef.cell, getContext())}
-                </td>
+                <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
               ))}
             </tr>
           ))}

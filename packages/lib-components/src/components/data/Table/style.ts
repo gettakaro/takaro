@@ -1,7 +1,7 @@
 import { styled } from '../../../styled';
 import { darken } from 'polished';
 
-export const Wrapper = styled.div<{ refetching: boolean }>`
+export const Wrapper = styled.div`
   width: 100%;
   overflow-x: auto;
 `;
