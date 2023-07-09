@@ -1,8 +1,9 @@
 /* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
-import { EventChatMessage, EventPlayerConnected, GameEvents } from '@takaro/modules';
+import { EventChatMessage, EventPlayerConnected, GameEvents, IGamePlayer } from '@takaro/modules';
 import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
+import { SevenDaysToDie } from '../index.js';
 
 const mockSdtdConnectionInfo = new SdtdConnectionInfo().construct({
   adminToken: 'aaa',
@@ -30,7 +31,7 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
-      gameId: '171',
+      gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
@@ -50,7 +51,7 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
-      gameId: '171',
+      gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: undefined,
       xboxLiveId: '123456abcdef',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
@@ -70,7 +71,7 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Cata lysm',
       ping: undefined,
-      gameId: '171',
+      gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
@@ -91,7 +92,7 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
-      gameId: '171',
+      gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
       ip: undefined,
@@ -103,7 +104,17 @@ describe('7d2d event detection', () => {
 
   it('[ChatMessage] Can detect chat message', async () => {
     // Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': /ping
-    await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
+    sandbox.stub(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').resolves(
+      await new IGamePlayer().construct({
+        name: 'Catalysm',
+        ping: undefined,
+        gameId: '0002b5d970954287afdcb5dc35af0424',
+        steamId: '76561198028175941',
+      })
+    );
+    const emitter = new SevenDaysToDieEmitter(await mockSdtdConnectionInfo);
+
+    await emitter.parseMessage({
       // eslint-disable-next-line quotes
       msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': fsafsafasf`,
     });
@@ -116,7 +127,7 @@ describe('7d2d event detection', () => {
     expect((emitStub.getCalls()[0].args[1] as EventChatMessage).player).to.deep.equal({
       name: 'Catalysm',
       ping: undefined,
-      gameId: '549',
+      gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
       ip: undefined,

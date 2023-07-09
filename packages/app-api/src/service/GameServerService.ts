@@ -29,6 +29,7 @@ import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
+import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -366,6 +367,44 @@ export class GameServerService extends TakaroService<
 
   async getPlayers(gameServerId: string) {
     const gameInstance = await this.getGame(gameServerId);
-    return gameInstance.getPlayers();
+    const players = await gameInstance.getPlayers();
+
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    await Promise.all(
+      players.map(async (player) =>
+        playerOnGameServerService.addInfo(
+          player,
+          gameServerId,
+          await new PlayerOnGameServerUpdateDTO().construct({
+            ping: player.ping,
+            ip: player.ip,
+          })
+        )
+      )
+    );
+
+    return players;
+  }
+
+  async getPlayerLocation(gameServerId: string, playerId: string) {
+    const playerService = new PlayerService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const playerRef = await playerService.getRef(playerId, gameServerId);
+    const location = await gameInstance.getPlayerLocation(playerRef);
+
+    if (!location) return location;
+
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    await playerOnGameServerService.addInfo(
+      playerRef,
+      gameServerId,
+      await new PlayerOnGameServerUpdateDTO().construct({
+        positionX: location.x,
+        positionY: location.y,
+        positionZ: location.z,
+      })
+    );
+
+    return location;
   }
 }

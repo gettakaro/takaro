@@ -71,7 +71,7 @@ export interface IGameServer {
 
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
-  getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
+  getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
 
   giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
 

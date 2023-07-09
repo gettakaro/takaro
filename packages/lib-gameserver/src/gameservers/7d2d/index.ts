@@ -43,7 +43,7 @@ export class SevenDaysToDie implements IGameServer {
     const players = await Promise.all(
       onlinePlayersRes.data.map((p) => {
         return new IGamePlayer().construct({
-          gameId: p.crossplatformid,
+          gameId: p.crossplatformid.replace('EOS_', ''),
           ip: p.ip,
           name: p.name,
           steamId: p.steamid.replace('Steam_', ''),
@@ -57,9 +57,15 @@ export class SevenDaysToDie implements IGameServer {
     return players;
   }
 
-  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+  async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    const players = await this.getPlayers();
+    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
+    return player;
+  }
+
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const locations = await this.apiClient.getPlayersLocation();
-    const playerLocation = locations.data.find((location) => location.steamid === `Steam_${player.steamId}`);
+    const playerLocation = locations.data.find((location) => location.crossplatformid === `EOS_${player.gameId}`);
 
     if (!playerLocation) {
       return null;
