@@ -62,7 +62,7 @@ export const IconContainer = styled.div<{ variant: AlertVariants }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: ${({ theme }) => theme.spacing['1_5']};
+  margin-right: ${({ theme }) => theme.spacing['1']};
   svg {
     fill: ${({ variant, theme }): string => theme.colors[variant]};
   }
@@ -74,7 +74,7 @@ export const ButtonContainer = styled.div<{
 }>`
   display: ${({ show }): string => (show ? 'flex' : 'none')};
   button {
-    margin-top: ${({ theme }) => theme.spacing[2]};
+    margin-top: ${({ theme }) => theme.spacing[1]};
     margin-right: ${({ theme }) => theme.spacing[2]};
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
     border-radius: ${({ theme }) => theme.borderRadius.medium};

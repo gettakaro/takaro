@@ -51,6 +51,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
             initial={{ opacity: 0 }}
             variant={variant}
             elevation={elevation}
+            transition={{ duration: 0.2 }}
             ref={ref}
           >
             <Grid>
