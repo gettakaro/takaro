@@ -10,7 +10,7 @@ async function teleport() {
     filters: {
       key: `t_tp_${args.tp}`,
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -49,7 +49,7 @@ async function teleport() {
     filters: {
       key: `t_tp_${args.tp}_lastExecuted`,
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -59,7 +59,7 @@ async function teleport() {
     await takaro.variable.variableControllerCreate({
       key: `t_tp_${args.tp}_lastExecuted`,
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
       value: new Date().toISOString(),
     });
   } else {
@@ -78,7 +78,7 @@ async function teleport() {
 
   const teleport = JSON.parse(teleports[0].value);
 
-  await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, player.id, {
+  await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, player.playerId, {
     x: teleport.x,
     y: teleport.y,
     z: teleport.z,

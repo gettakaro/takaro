@@ -83,7 +83,7 @@ const tests = [
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(this.client);
 
-      const numberOfEvents = 5;
+      const numberOfEvents = 10;
       const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
 
       // Trigger it multiple times

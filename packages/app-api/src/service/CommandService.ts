@@ -13,7 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -271,11 +271,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }
 
       const gameServerService = new GameServerService(this.domainId);
-      const playerService = new PlayerService(this.domainId);
+      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
 
-      const resolvedPlayer = await playerService.resolveRef(chatMessage.player, gameServerId);
-
-      const playerLocation = await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
+      const resolvedPlayer = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => ({
@@ -283,11 +281,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           data: {
             timestamp: chatMessage.timestamp,
             ...parseCommand(chatMessage.msg, c),
-            player: {
-              ...resolvedPlayer,
-              ...chatMessage.player,
-              location: playerLocation,
-            },
+            player: resolvedPlayer,
             module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
           },
         }))
@@ -308,10 +302,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
         return queueService.queues.commands.queue.add(
           {
+            timestamp: data.timestamp,
             domainId: this.domainId,
             functionId: db.function.id,
             itemId: db.id,
-            data,
+            player: resolvedPlayer,
+            arguments: data.arguments,
+            module: data.module,
             gameServerId,
           },
           { delay }

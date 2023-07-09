@@ -18,7 +18,7 @@ async function setpublic() {
   const teleportRes = await takaro.variable.variableControllerFind({
     filters: {
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
       key: `t_tp_${args.tp}`,
     },
     sortBy: 'key',

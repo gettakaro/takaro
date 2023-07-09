@@ -10,18 +10,13 @@ async function settp() {
 
   const { player, gameServerId, module: mod, arguments: args } = data;
 
-  const prefix = (
-    await takaro.settings.settingsControllerGetOne(
-      'commandPrefix',
-      gameServerId
-    )
-  ).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
       key: getVariableKey(args.tp),
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
   });
 
@@ -38,7 +33,7 @@ async function settp() {
     },
     filters: {
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
   });
 
@@ -53,12 +48,12 @@ async function settp() {
     key: getVariableKey(args.tp),
     value: JSON.stringify({
       name: args.tp,
-      x: data.player.location.x,
-      y: data.player.location.y,
-      z: data.player.location.z,
+      x: data.player.positionX,
+      y: data.player.positionY,
+      z: data.player.positionZ,
     }),
     gameServerId,
-    playerId: player.id,
+    playerId: player.playerId,
   });
 
   await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {

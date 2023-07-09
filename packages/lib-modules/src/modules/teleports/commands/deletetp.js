@@ -14,7 +14,7 @@ async function deletetp() {
     filters: {
       key: getVariableKey(args.tp),
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
   });
 
@@ -25,9 +25,7 @@ async function deletetp() {
     return;
   }
 
-  await takaro.variable.variableControllerDelete(
-    existingVariable.data.data[0].id
-  );
+  await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);
 
   await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `Teleport ${args.tp} deleted.`,
