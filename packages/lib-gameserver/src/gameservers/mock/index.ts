@@ -8,7 +8,7 @@ import {
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
 import { Socket, io } from 'socket.io-client';
@@ -72,33 +72,33 @@ export class Mock implements IGameServer {
     return data;
   }
 
-  async testReachability(): Promise<TestReachabilityOutput> {
+  async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       const client = await this.getClient();
       const data = await client.emitWithAck('ping');
       assert(data === 'pong');
     } catch (error) {
       if (!error || !(error instanceof Error)) {
-        return new TestReachabilityOutput().construct({
+        return new TestReachabilityOutputDTO().construct({
           connectable: false,
           reason: 'Unknown error',
         });
       }
 
       if (error.name === 'AssertionError') {
-        return new TestReachabilityOutput().construct({
+        return new TestReachabilityOutputDTO().construct({
           connectable: false,
           reason: 'Server responded with invalid data',
         });
       }
 
-      return new TestReachabilityOutput().construct({
+      return new TestReachabilityOutputDTO().construct({
         connectable: false,
         reason: 'Unable to connect to server',
       });
     }
 
-    return new TestReachabilityOutput().construct({
+    return new TestReachabilityOutputDTO().construct({
       connectable: true,
     });
   }

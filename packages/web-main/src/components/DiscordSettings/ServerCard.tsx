@@ -1,5 +1,5 @@
 import { GuildOutputDTO } from '@takaro/apiclient';
-import { Card, styled, Switch, UnControlledSwitch } from '@takaro/lib-components';
+import { Card, styled, UnControlledSwitch } from '@takaro/lib-components';
 import { useDiscordGuildUpdate } from 'queries/discord';
 import { FC, useEffect, useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
@@ -44,7 +44,7 @@ export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
       setTakaroEnabled(guild.takaroEnabled);
       enqueueSnackbar(
         <>
-          Failed to enable guild: <strong>{guild.name}</strong>
+          Failed to {guild.takaroEnabled ? 'disable' : 'enable'} guild: <strong>{guild.name}</strong>
         </>,
         { variant: 'default', type: 'error' }
       );

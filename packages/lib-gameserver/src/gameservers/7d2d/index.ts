@@ -8,7 +8,7 @@ import {
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
@@ -77,7 +77,7 @@ export class SevenDaysToDie implements IGameServer {
     await this.apiClient.executeConsoleCommand(command);
   }
 
-  async testReachability(): Promise<TestReachabilityOutput> {
+  async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       await this.apiClient.getStats();
       await this.apiClient.executeConsoleCommand('version');
@@ -98,13 +98,13 @@ export class SevenDaysToDie implements IGameServer {
         }
       }
 
-      return new TestReachabilityOutput().construct({
+      return new TestReachabilityOutputDTO().construct({
         connectable: false,
         reason,
       });
     }
 
-    return new TestReachabilityOutput().construct({
+    return new TestReachabilityOutputDTO().construct({
       connectable: true,
     });
   }
