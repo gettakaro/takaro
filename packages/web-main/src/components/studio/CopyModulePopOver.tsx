@@ -130,7 +130,7 @@ export const CopyModulePopOver = () => {
   return (
     <Popover placement="bottom">
       <Popover.Trigger asChild>
-        <IconButton icon={<CopyIcon />} ariaLabel="Copy module" />
+        <IconButton icon={<CopyIcon />} ariaLabel="Make copy of module" />
       </Popover.Trigger>
       <Popover.Content>
         <PopoverBody>

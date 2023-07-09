@@ -146,8 +146,8 @@ pwTest.describe('Copy modules', () => {
       const newPage = await pagePromise;
       await newPage.waitForLoadState();
 
-      await newPage.getByRole('button', { name: 'Copy module' }).click();
-      await newPage.getByText('Copy module').click();
+      await newPage.getByRole('button', { name: 'Make copy of module' }).click();
+      await newPage.getByRole('button', { name: 'Copy Module' }).click();
 
       await newPage.goto('/modules');
       await newPage.waitForLoadState();
