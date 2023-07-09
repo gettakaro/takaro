@@ -140,7 +140,7 @@ export const BaseGameEventTypeEnum = {
   ChatMessage: 'chat-message',
 } as const;
 
-export type BaseGameEventTypeEnum = (typeof BaseGameEventTypeEnum)[keyof typeof BaseGameEventTypeEnum];
+export type BaseGameEventTypeEnum = typeof BaseGameEventTypeEnum[keyof typeof BaseGameEventTypeEnum];
 
 /**
  *
@@ -582,7 +582,7 @@ export const CommandSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type CommandSearchInputDTOSortDirectionEnum =
-  (typeof CommandSearchInputDTOSortDirectionEnum)[keyof typeof CommandSearchInputDTOSortDirectionEnum];
+  typeof CommandSearchInputDTOSortDirectionEnum[keyof typeof CommandSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -839,7 +839,7 @@ export const CronJobSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type CronJobSearchInputDTOSortDirectionEnum =
-  (typeof CronJobSearchInputDTOSortDirectionEnum)[keyof typeof CronJobSearchInputDTOSortDirectionEnum];
+  typeof CronJobSearchInputDTOSortDirectionEnum[keyof typeof CronJobSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -1130,7 +1130,7 @@ export const DomainSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type DomainSearchInputDTOSortDirectionEnum =
-  (typeof DomainSearchInputDTOSortDirectionEnum)[keyof typeof DomainSearchInputDTOSortDirectionEnum];
+  typeof DomainSearchInputDTOSortDirectionEnum[keyof typeof DomainSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -1209,7 +1209,7 @@ export const EventChatMessageTypeEnum = {
   ChatMessage: 'chat-message',
 } as const;
 
-export type EventChatMessageTypeEnum = (typeof EventChatMessageTypeEnum)[keyof typeof EventChatMessageTypeEnum];
+export type EventChatMessageTypeEnum = typeof EventChatMessageTypeEnum[keyof typeof EventChatMessageTypeEnum];
 
 /**
  *
@@ -1307,7 +1307,7 @@ export const EventPlayerConnectedTypeEnum = {
 } as const;
 
 export type EventPlayerConnectedTypeEnum =
-  (typeof EventPlayerConnectedTypeEnum)[keyof typeof EventPlayerConnectedTypeEnum];
+  typeof EventPlayerConnectedTypeEnum[keyof typeof EventPlayerConnectedTypeEnum];
 
 /**
  *
@@ -1349,7 +1349,7 @@ export const EventPlayerDisconnectedTypeEnum = {
 } as const;
 
 export type EventPlayerDisconnectedTypeEnum =
-  (typeof EventPlayerDisconnectedTypeEnum)[keyof typeof EventPlayerDisconnectedTypeEnum];
+  typeof EventPlayerDisconnectedTypeEnum[keyof typeof EventPlayerDisconnectedTypeEnum];
 
 /**
  *
@@ -1502,7 +1502,7 @@ export const FunctionSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type FunctionSearchInputDTOSortDirectionEnum =
-  (typeof FunctionSearchInputDTOSortDirectionEnum)[keyof typeof FunctionSearchInputDTOSortDirectionEnum];
+  typeof FunctionSearchInputDTOSortDirectionEnum[keyof typeof FunctionSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -1549,8 +1549,7 @@ export const GameServerCreateDTOTypeEnum = {
   Rust: 'RUST',
 } as const;
 
-export type GameServerCreateDTOTypeEnum =
-  (typeof GameServerCreateDTOTypeEnum)[keyof typeof GameServerCreateDTOTypeEnum];
+export type GameServerCreateDTOTypeEnum = typeof GameServerCreateDTOTypeEnum[keyof typeof GameServerCreateDTOTypeEnum];
 
 /**
  *
@@ -1621,8 +1620,7 @@ export const GameServerOutputDTOTypeEnum = {
   Rust: 'RUST',
 } as const;
 
-export type GameServerOutputDTOTypeEnum =
-  (typeof GameServerOutputDTOTypeEnum)[keyof typeof GameServerOutputDTOTypeEnum];
+export type GameServerOutputDTOTypeEnum = typeof GameServerOutputDTOTypeEnum[keyof typeof GameServerOutputDTOTypeEnum];
 
 /**
  *
@@ -1670,7 +1668,7 @@ export const GameServerSearchInputAllowedFiltersTypeEnum = {
 } as const;
 
 export type GameServerSearchInputAllowedFiltersTypeEnum =
-  (typeof GameServerSearchInputAllowedFiltersTypeEnum)[keyof typeof GameServerSearchInputAllowedFiltersTypeEnum];
+  typeof GameServerSearchInputAllowedFiltersTypeEnum[keyof typeof GameServerSearchInputAllowedFiltersTypeEnum];
 
 /**
  *
@@ -1728,7 +1726,7 @@ export const GameServerSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type GameServerSearchInputDTOSortDirectionEnum =
-  (typeof GameServerSearchInputDTOSortDirectionEnum)[keyof typeof GameServerSearchInputDTOSortDirectionEnum];
+  typeof GameServerSearchInputDTOSortDirectionEnum[keyof typeof GameServerSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -1776,7 +1774,7 @@ export const GameServerTestReachabilityInputDTOTypeEnum = {
 } as const;
 
 export type GameServerTestReachabilityInputDTOTypeEnum =
-  (typeof GameServerTestReachabilityInputDTOTypeEnum)[keyof typeof GameServerTestReachabilityInputDTOTypeEnum];
+  typeof GameServerTestReachabilityInputDTOTypeEnum[keyof typeof GameServerTestReachabilityInputDTOTypeEnum];
 
 /**
  *
@@ -1805,7 +1803,7 @@ export const GameServerTypesOutputDTOTypeEnum = {
 } as const;
 
 export type GameServerTypesOutputDTOTypeEnum =
-  (typeof GameServerTypesOutputDTOTypeEnum)[keyof typeof GameServerTypesOutputDTOTypeEnum];
+  typeof GameServerTypesOutputDTOTypeEnum[keyof typeof GameServerTypesOutputDTOTypeEnum];
 
 /**
  *
@@ -1858,8 +1856,7 @@ export const GameServerUpdateDTOTypeEnum = {
   Rust: 'RUST',
 } as const;
 
-export type GameServerUpdateDTOTypeEnum =
-  (typeof GameServerUpdateDTOTypeEnum)[keyof typeof GameServerUpdateDTOTypeEnum];
+export type GameServerUpdateDTOTypeEnum = typeof GameServerUpdateDTOTypeEnum[keyof typeof GameServerUpdateDTOTypeEnum];
 
 /**
  *
@@ -1886,7 +1883,7 @@ export const GetSettingsInputKeysEnum = {
   ServerChatName: 'serverChatName',
 } as const;
 
-export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
+export type GetSettingsInputKeysEnum = typeof GetSettingsInputKeysEnum[keyof typeof GetSettingsInputKeysEnum];
 
 /**
  *
@@ -2127,7 +2124,7 @@ export const GuildSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type GuildSearchInputDTOSortDirectionEnum =
-  (typeof GuildSearchInputDTOSortDirectionEnum)[keyof typeof GuildSearchInputDTOSortDirectionEnum];
+  typeof GuildSearchInputDTOSortDirectionEnum[keyof typeof GuildSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -2219,7 +2216,7 @@ export const HookCreateDTOEventTypeEnum = {
   DiscordMessage: 'discord-message',
 } as const;
 
-export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
+export type HookCreateDTOEventTypeEnum = typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
 
 /**
  *
@@ -2335,7 +2332,7 @@ export const HookOutputDTOEventTypeEnum = {
   DiscordMessage: 'discord-message',
 } as const;
 
-export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
+export type HookOutputDTOEventTypeEnum = typeof HookOutputDTOEventTypeEnum[keyof typeof HookOutputDTOEventTypeEnum];
 
 /**
  *
@@ -2397,7 +2394,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
-  (typeof HookSearchInputAllowedFiltersEventTypeEnum)[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
+  typeof HookSearchInputAllowedFiltersEventTypeEnum[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
 
 /**
  *
@@ -2455,7 +2452,7 @@ export const HookSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type HookSearchInputDTOSortDirectionEnum =
-  (typeof HookSearchInputDTOSortDirectionEnum)[keyof typeof HookSearchInputDTOSortDirectionEnum];
+  typeof HookSearchInputDTOSortDirectionEnum[keyof typeof HookSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -2497,8 +2494,7 @@ export const HookTriggerDTOEventTypeEnum = {
   DiscordMessage: 'discord-message',
 } as const;
 
-export type HookTriggerDTOEventTypeEnum =
-  (typeof HookTriggerDTOEventTypeEnum)[keyof typeof HookTriggerDTOEventTypeEnum];
+export type HookTriggerDTOEventTypeEnum = typeof HookTriggerDTOEventTypeEnum[keyof typeof HookTriggerDTOEventTypeEnum];
 
 /**
  *
@@ -2546,7 +2542,7 @@ export const HookUpdateDTOEventTypeEnum = {
   DiscordMessage: 'discord-message',
 } as const;
 
-export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
+export type HookUpdateDTOEventTypeEnum = typeof HookUpdateDTOEventTypeEnum[keyof typeof HookUpdateDTOEventTypeEnum];
 
 /**
  *
@@ -2602,25 +2598,6 @@ export interface IGamePlayer {
    * @memberof IGamePlayer
    */
   ping?: number;
-}
-/**
- *
- * @export
- * @interface IGamePlayersOutputDTO
- */
-export interface IGamePlayersOutputDTO {
-  /**
-   *
-   * @type {Array<IGamePlayer>}
-   * @memberof IGamePlayersOutputDTO
-   */
-  data: Array<IGamePlayer>;
-  /**
-   *
-   * @type {MetadataOutput}
-   * @memberof IGamePlayersOutputDTO
-   */
-  meta: MetadataOutput;
 }
 /**
  *
@@ -2723,7 +2700,7 @@ export const ITakaroQuerySortDirectionEnum = {
 } as const;
 
 export type ITakaroQuerySortDirectionEnum =
-  (typeof ITakaroQuerySortDirectionEnum)[keyof typeof ITakaroQuerySortDirectionEnum];
+  typeof ITakaroQuerySortDirectionEnum[keyof typeof ITakaroQuerySortDirectionEnum];
 
 /**
  *
@@ -3263,7 +3240,7 @@ export const ModuleSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type ModuleSearchInputDTOSortDirectionEnum =
-  (typeof ModuleSearchInputDTOSortDirectionEnum)[keyof typeof ModuleSearchInputDTOSortDirectionEnum];
+  typeof ModuleSearchInputDTOSortDirectionEnum[keyof typeof ModuleSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -3410,7 +3387,7 @@ export const ParamKeyKeyEnum = {
   ServerChatName: 'serverChatName',
 } as const;
 
-export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
+export type ParamKeyKeyEnum = typeof ParamKeyKeyEnum[keyof typeof ParamKeyKeyEnum];
 
 /**
  *
@@ -3471,7 +3448,7 @@ export const PermissionOutputDTOPermissionEnum = {
 } as const;
 
 export type PermissionOutputDTOPermissionEnum =
-  (typeof PermissionOutputDTOPermissionEnum)[keyof typeof PermissionOutputDTOPermissionEnum];
+  typeof PermissionOutputDTOPermissionEnum[keyof typeof PermissionOutputDTOPermissionEnum];
 
 /**
  *
@@ -3503,6 +3480,160 @@ export interface PlayerCreateDTO {
    * @memberof PlayerCreateDTO
    */
   epicOnlineServicesId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerCreateDTO
+ */
+export interface PlayerOnGameServerCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  gameId: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerUpdateDTO
+ */
+export interface PlayerOnGameServerUpdateDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ping?: number;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameserverOutputDTO
+ */
+export interface PlayerOnGameserverOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ping?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameserverOutputDTOAPI
+ */
+export interface PlayerOnGameserverOutputDTOAPI {
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTOAPI
+   */
+  data: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOnGameserverOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -3684,7 +3815,7 @@ export const PlayerSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type PlayerSearchInputDTOSortDirectionEnum =
-  (typeof PlayerSearchInputDTOSortDirectionEnum)[keyof typeof PlayerSearchInputDTOSortDirectionEnum];
+  typeof PlayerSearchInputDTOSortDirectionEnum[keyof typeof PlayerSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -3759,7 +3890,7 @@ export const RoleCreateInputDTOPermissionsEnum = {
 } as const;
 
 export type RoleCreateInputDTOPermissionsEnum =
-  (typeof RoleCreateInputDTOPermissionsEnum)[keyof typeof RoleCreateInputDTOPermissionsEnum];
+  typeof RoleCreateInputDTOPermissionsEnum[keyof typeof RoleCreateInputDTOPermissionsEnum];
 
 /**
  *
@@ -3905,7 +4036,7 @@ export const RoleSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type RoleSearchInputDTOSortDirectionEnum =
-  (typeof RoleSearchInputDTOSortDirectionEnum)[keyof typeof RoleSearchInputDTOSortDirectionEnum];
+  typeof RoleSearchInputDTOSortDirectionEnum[keyof typeof RoleSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -3954,7 +4085,7 @@ export const RoleUpdateInputDTOPermissionsEnum = {
 } as const;
 
 export type RoleUpdateInputDTOPermissionsEnum =
-  (typeof RoleUpdateInputDTOPermissionsEnum)[keyof typeof RoleUpdateInputDTOPermissionsEnum];
+  typeof RoleUpdateInputDTOPermissionsEnum[keyof typeof RoleUpdateInputDTOPermissionsEnum];
 
 /**
  *
@@ -4543,7 +4674,7 @@ export const UserSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type UserSearchInputDTOSortDirectionEnum =
-  (typeof UserSearchInputDTOSortDirectionEnum)[keyof typeof UserSearchInputDTOSortDirectionEnum];
+  typeof UserSearchInputDTOSortDirectionEnum[keyof typeof UserSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -4776,7 +4907,7 @@ export const VariableSearchInputDTOSortDirectionEnum = {
 } as const;
 
 export type VariableSearchInputDTOSortDirectionEnum =
-  (typeof VariableSearchInputDTOSortDirectionEnum)[keyof typeof VariableSearchInputDTOSortDirectionEnum];
+  typeof VariableSearchInputDTOSortDirectionEnum[keyof typeof VariableSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -8562,7 +8693,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     async gameServerControllerGetPlayers(
       id: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IGamePlayersOutputDTO>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetPlayers(id, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -8936,7 +9067,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<IGamePlayersOutputDTO> {
+    gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
     },
     /**
