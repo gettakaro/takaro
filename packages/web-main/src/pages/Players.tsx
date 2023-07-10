@@ -1,19 +1,11 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import {
-  styled,
-  Table,
-  Loading,
-  useTableActions,
-} from '@takaro/lib-components';
+import { styled, Table, Loading, useTableActions } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
-import { useQuery } from 'react-query';
-import {
-  PlayerOutputDTO,
-  PlayerSearchInputDTOSortDirectionEnum,
-} from '@takaro/apiclient';
+import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { QueryKeys } from 'queryKeys';
+import { usePlayers } from 'queries/players';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -24,24 +16,16 @@ const TableContainer = styled.div`
 
 const Players: FC = () => {
   const client = useApiClient();
-  const { pagination, columnFilters, sorting } =
-    useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting } = useTableActions<PlayerOutputDTO>();
 
-  const { data, isLoading, refetch } = useQuery(
-    [QueryKeys.players.list, pagination.paginationState, sorting.sortingState],
-    async () =>
-      pagination.paginate(
-        await client.player.playerControllerSearch({
-          page: pagination.paginationState.pageIndex,
-          limit: pagination.paginationState.pageSize,
-          sortBy: sorting.sortingState[0]?.id,
-          sortDirection: sorting.sortingState[0]?.desc
-            ? PlayerSearchInputDTOSortDirectionEnum.Desc
-            : PlayerSearchInputDTOSortDirectionEnum.Asc,
-        })
-      ),
-    { keepPreviousData: true }
-  );
+  const { data, isLoading } = usePlayers({
+    page: pagination.paginationState.pageIndex,
+    limit: pagination.paginationState.pageSize,
+    sortBy: sorting.sortingState[0]?.id,
+    sortDirection: sorting.sortingState[0]?.desc
+      ? PlayerSearchInputDTOSortDirectionEnum.Desc
+      : PlayerSearchInputDTOSortDirectionEnum.Asc,
+  });
 
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
@@ -91,7 +75,6 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
-          refetch={refetch}
           columns={columnDefs}
           data={data.rows}
           pagination={{
@@ -101,7 +84,6 @@ const Players: FC = () => {
           }}
           columnFiltering={{ ...columnFilters }}
           sorting={{ ...sorting }}
-          refetching={isLoading}
         />
       </TableContainer>
     </Fragment>

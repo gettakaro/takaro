@@ -13,11 +13,15 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Header, PaginationContainer } from './style';
-import { Empty } from '../../../components';
-import { Pagination, Sorting } from './subcomponents';
+import { Dropdown, Empty, IconButton } from '../../../components';
+import { Pagination } from './subcomponents';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlineSortAscending as SortAscendingIcon,
+  AiOutlineSortDescending as SortDescendingIcon,
+} from 'react-icons/ai';
 
 export interface TableProps<DataType extends object> {
-  refetching?: boolean;
   data: DataType[];
   spacing?: 'relaxed' | 'tight';
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
@@ -37,7 +41,6 @@ export interface TableProps<DataType extends object> {
     columnFiltersState: ColumnFiltersState;
     setColumnFiltersState: OnChangeFn<ColumnFiltersState>;
   };
-  refetch: () => Promise<unknown>;
 }
 
 export function Table<DataType extends object>({
@@ -96,36 +99,36 @@ export function Table<DataType extends object>({
     <Wrapper>
       <Header></Header>
 
-      {/* todo: filter menu 
-        {showFilters && (
-          <FilterContainer>
-            {columnFiltering && (
-              <ColumnFilters
-                columnFilterState={columnFiltering.columnFiltersState}
-                columns={table
-                  .getAllLeafColumns()
-                  .filter((column) => column.getCanFilter())
-                  .map((column) => column.id)}
-              />
-            )}
-          </FilterContainer>
-        )}
-
-        {/* table */}
+      {/* table */}
       <StyledTable spacing={spacing}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(({ id, colSpan, column }) => (
                 <th key={id} colSpan={colSpan} scope="col">
-                  {column.getCanSort() && sorting !== undefined && (
-                    <Sorting
-                      header={column.columnDef.header as string}
-                      setSorting={sorting.setSortingState!}
-                      sorting={sorting.sortingState}
-                      id={column.id}
-                    />
-                  )}
+                  <Dropdown>
+                    <Dropdown.Trigger>
+                      <IconButton icon={<MenuIcon />} ariaLabel="column settings" />
+                    </Dropdown.Trigger>
+                    <Dropdown.Menu>
+                      <Dropdown.Menu.Item
+                        icon={<SortAscendingIcon />}
+                        onClick={() => {
+                          /* WHENEVER sorting multiple columns at once is supported, should first, try to find the id, update if found, add if not found*/
+                          table.setSorting([{ id: column.id, desc: false }]);
+                        }}
+                        label="Sort ascending (A..Z)"
+                        disabled={!column.getCanSort()}
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<SortDescendingIcon />}
+                        onClick={() => {
+                          table.setSorting([{ id: column.id, desc: true }]);
+                        }}
+                        label="Sort descending (Z..A)"
+                      />
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </th>
               ))}
             </tr>

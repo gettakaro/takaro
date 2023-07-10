@@ -3,7 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 
 import { Table, TableProps } from '.';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Chip, MenuList } from '../../../components';
+import { Chip } from '../../../components';
 import { useTableActions } from '../../../hooks';
 
 type User = {
@@ -107,7 +107,7 @@ export default {
   },
 } as Meta<TableProps<User>>;
 
-const Users: FC<TableProps<User>> = (props) => {
+const Users: FC<TableProps<User>> = () => {
   const { pagination } = useTableActions<User>();
 
   useEffect(() => {
@@ -121,8 +121,6 @@ const Users: FC<TableProps<User>> = (props) => {
     <Table
       data={data}
       columns={columns}
-      refetch={async () => {}}
-      refetching={props.refetching}
       pagination={{
         ...pagination,
         pageCount: 20,
@@ -133,15 +131,3 @@ const Users: FC<TableProps<User>> = (props) => {
 };
 
 export const TableExample: StoryFn<TableProps<User>> = (args) => <Users {...args} />;
-
-export const ColumnActions: StoryFn = () => {
-  return (
-    <div>
-      <MenuList>
-        <MenuList.Item>Item 1</MenuList.Item>
-        <MenuList.Item>Item 2</MenuList.Item>
-        <MenuList.Item>Item 3</MenuList.Item>
-      </MenuList>
-    </div>
-  );
-};
