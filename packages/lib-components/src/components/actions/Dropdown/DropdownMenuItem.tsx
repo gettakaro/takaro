@@ -2,6 +2,8 @@ import { useListItem } from '@floating-ui/react';
 import { cloneElement, FC, ReactElement, MouseEvent } from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { styled } from '../../../styled';
+import { IconButton } from '../IconButton';
+import { AiOutlineClose as UndoIcon } from 'react-icons/ai';
 
 const Container = styled.button<{ isActive: boolean }>`
   background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.background)};
@@ -9,9 +11,9 @@ const Container = styled.button<{ isActive: boolean }>`
   border-radius: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
   &:disabled {
@@ -19,13 +21,18 @@ const Container = styled.button<{ isActive: boolean }>`
     cursor: not-allowed;
   }
 
+  div {
+    svg {
+      margin-right: ${({ theme }) => theme.spacing['0_75']};
+    }
+  }
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
   }
 
-  svg,
-  div {
-    margin-right: ${({ theme }) => theme.spacing['0_75']};
+  button {
+    margin-left: ${({ theme }) => theme.spacing['0_75']};
   }
 `;
 
@@ -35,6 +42,7 @@ interface DropdownMenuItemProps {
   icon?: ReactElement;
   iconPosition?: 'left' | 'right';
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+  active?: boolean;
 }
 
 export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
@@ -42,6 +50,7 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   disabled,
   onClick,
   iconPosition = 'left',
+  active = false,
   icon,
 }) => {
   const { activeIndex, setOpen, getItemProps } = useDropdownContext();
@@ -78,9 +87,12 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
         onMouseUp: handleMouseUp,
       })}
     >
-      {icon && iconPosition === 'left' && getIcon()}
-      {label}
-      {icon && iconPosition === 'right' && getIcon()}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        {icon && iconPosition === 'left' && getIcon()}
+        {label}
+        {icon && iconPosition === 'right' && getIcon()}
+      </div>
+      {active && <IconButton icon={<UndoIcon />} ariaLabel="undo action" size="tiny" />}
     </Container>
   );
 };
