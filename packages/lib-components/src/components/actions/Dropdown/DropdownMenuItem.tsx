@@ -9,19 +9,14 @@ const Container = styled.button<{ isActive: boolean }>`
   border-radius: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
 
-  &:first-of-type {
-    border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
-    border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
-  }
-
-  &:last-of-type {
-    border-bottom-left-radius: ${({ theme }) => theme.borderRadius.medium};
-    border-bottom-right-radius: ${({ theme }) => theme.borderRadius.medium};
-    margin-bottom: 0;
+  &:disabled {
+    background-color: ${({ theme }) => theme.colors.disabled};
+    cursor: not-allowed;
   }
 
   &:hover {

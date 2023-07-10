@@ -1,9 +1,24 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { Button } from '../../../components';
+import { IconButton } from '../../../components';
 import { Dropdown } from '.';
 import { DropdownMenu } from './DropdownMenu';
-import { AiOutlineProfile as ProfileIcon } from 'react-icons/ai';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineSortAscending as SortAscendingIcon,
+  AiOutlineSortDescending as SortDescendingIcon,
+  AiOutlineFilter as FilterIcon,
+  AiOutlineGroup as GroupIcon,
+  AiOutlineEyeInvisible as HideIcon,
+  AiOutlineDelete as DeleteIcon,
+} from 'react-icons/ai';
+import { styled } from '../../../styled';
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
 export default {
   title: 'Actions/Dropdown',
@@ -12,18 +27,33 @@ export default {
 
 export const Default: StoryFn = () => {
   return (
-    <Dropdown>
-      <Dropdown.Trigger asChild>
-        <Button text="click me" />
-      </Dropdown.Trigger>
-      <Dropdown.Menu>
-        <DropdownMenu.Group label="Group 1">
-          <Dropdown.Menu.Item label="item 1" onClick={() => {}} icon={<ProfileIcon />} />
-          <Dropdown.Menu.Item label="item 2" onClick={() => {}} />
-          <Dropdown.Menu.Item label="item 3" onClick={() => {}} />
-          <Dropdown.Menu.Item label="item 4" onClick={() => {}} />
-        </DropdownMenu.Group>
-      </Dropdown.Menu>
-    </Dropdown>
+    <Wrapper>
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <IconButton icon={<MenuIcon />} ariaLabel="click me" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <DropdownMenu.Group label="Sorting">
+            <Dropdown.Menu.Item label="Sort ascending (first...last)" onClick={() => {}} icon={<SortAscendingIcon />} />
+            <Dropdown.Menu.Item
+              label="Sort descending (last...first)"
+              onClick={() => {}}
+              icon={<SortDescendingIcon />}
+            />
+          </DropdownMenu.Group>
+
+          <DropdownMenu.Group label="Editing">
+            <Dropdown.Menu.Item label="Edit values..." onClick={() => {}} icon={<EditIcon />} />
+            <Dropdown.Menu.Item label="Filter by values" onClick={() => {}} icon={<FilterIcon />} />
+            <Dropdown.Menu.Item label="Group by values" onClick={() => {}} icon={<GroupIcon />} />
+          </DropdownMenu.Group>
+
+          <DropdownMenu.Group>
+            <Dropdown.Menu.Item label="Hide field" onClick={() => {}} icon={<HideIcon />} disabled />
+            <Dropdown.Menu.Item label="Delete field" onClick={() => {}} icon={<DeleteIcon />} />
+          </DropdownMenu.Group>
+        </Dropdown.Menu>
+      </Dropdown>
+    </Wrapper>
   );
 };

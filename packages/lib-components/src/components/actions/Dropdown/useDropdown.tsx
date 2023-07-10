@@ -10,6 +10,7 @@ import {
   useListNavigation,
   useTypeahead,
   useClick,
+  shift,
 } from '@floating-ui/react';
 
 export interface UseDropdownOptions {
@@ -41,7 +42,7 @@ export function useDropdown({
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
-    middleware: [offset({ mainAxis: 2 })],
+    middleware: [offset({ mainAxis: 10 }), shift()],
   });
 
   const interactions = useInteractions([
