@@ -56,10 +56,7 @@ export const setApiKeyToObject = async function (object: any, keyParamName: stri
  */
 export const setBasicAuthToObject = function (object: any, configuration?: Configuration) {
   if (configuration && (configuration.username || configuration.password)) {
-    object['auth'] = {
-      username: configuration.username,
-      password: configuration.password,
-    };
+    object['auth'] = { username: configuration.username, password: configuration.password };
   }
 };
 
@@ -149,10 +146,7 @@ export const createRequestFunction = function (
   configuration?: Configuration
 ) {
   return <T = unknown, R = AxiosResponse<T>>(axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-    const axiosRequestArgs = {
-      ...axiosArgs.options,
-      url: (configuration?.basePath || basePath) + axiosArgs.url,
-    };
+    const axiosRequestArgs = { ...axiosArgs.options, url: (configuration?.basePath || basePath) + axiosArgs.url };
     return axios.request<T, R>(axiosRequestArgs);
   };
 };

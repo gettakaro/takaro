@@ -1,6 +1,8 @@
 import playwright from '@playwright/test';
 import { test } from '../fixtures/index.js';
 
+import builtinModules from '../fixtures/modules.json' assert { type: 'json' };
+
 const { expect, test: pwTest } = playwright;
 
 test('should open onboarding when new module with no functions is created', async ({ page, context }) => {
@@ -131,6 +133,27 @@ test('Can delete cronjob', async ({ page, takaro }) => {
   await testHookFile.getByRole('button').nth(1).click();
   await page.getByRole('button', { name: 'Remove file' }).click();
   await expect(page.getByRole('button', { name: 'test-cronjob' })).toHaveCount(0);
+});
+
+pwTest.describe('Copy modules', () => {
+  for (const mod of builtinModules) {
+    test(`Can copy ${mod.name}`, async ({ page, context }) => {
+      await page.goto('/modules');
+      const pagePromise = context.waitForEvent('page');
+
+      await page.getByText(mod.name).click();
+
+      const newPage = await pagePromise;
+      await newPage.waitForLoadState();
+
+      await newPage.getByRole('button', { name: 'Make copy of module' }).click();
+      await newPage.getByRole('button', { name: 'Copy Module' }).click();
+
+      await newPage.goto('/modules');
+      await newPage.waitForLoadState();
+      await expect(newPage.getByText(`${mod.name}-copy`)).toBeVisible();
+    });
+  }
 });
 
 pwTest.describe('Built-in modules', () => {

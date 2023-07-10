@@ -13,7 +13,7 @@ export class CommandOutput extends TakaroDTO<CommandOutput> {
   @IsString()
   errorMessage?: string;
 }
-export class TestReachabilityOutput extends TakaroDTO<TestReachabilityOutput> {
+export class TestReachabilityOutputDTO extends TakaroDTO<TestReachabilityOutputDTO> {
   @IsBoolean()
   connectable: boolean;
 
@@ -71,7 +71,7 @@ export interface IGameServer {
 
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
-  getPlayerLocation(player: IGamePlayer): Promise<IPosition | null>;
+  getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
 
   giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
 
@@ -83,7 +83,7 @@ export interface IGameServer {
    * Try and connect to the gameserver
    * If anything goes wrong, this function will report a detailed reason
    */
-  testReachability(): Promise<TestReachabilityOutput>;
+  testReachability(): Promise<TestReachabilityOutputDTO>;
 
   kickPlayer(player: IPlayerReferenceDTO, reason: string): Promise<void>;
 

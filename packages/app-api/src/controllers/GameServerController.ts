@@ -12,7 +12,13 @@ import {
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO } from '@takaro/util';
-import { TestReachabilityOutput, CommandOutput, IMessageOptsDTO, GAME_SERVER_TYPE, BanDTO } from '@takaro/gameserver';
+import {
+  TestReachabilityOutputDTO,
+  CommandOutput,
+  IMessageOptsDTO,
+  GAME_SERVER_TYPE,
+  BanDTO,
+} from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
   GameServerCreateDTO,
@@ -29,7 +35,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { IGamePlayer } from '@takaro/modules';
+import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -49,10 +55,10 @@ class GameServerOutputArrayDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   declare data: GameServerOutputDTO[];
 }
 
-class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutput> {
-  @Type(() => TestReachabilityOutput)
+class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputDTO> {
+  @Type(() => TestReachabilityOutputDTO)
   @ValidateNested()
-  declare data: TestReachabilityOutput;
+  declare data: TestReachabilityOutputDTO;
 }
 
 class GameServerSearchInputAllowedFilters {
@@ -176,10 +182,10 @@ class BanOutputDTO extends APIOutput<BanDTO[]> {
   declare data: BanDTO[];
 }
 
-class IGamePlayersOutputDTO extends APIOutput<IGamePlayer[]> {
-  @Type(() => IGamePlayer)
+class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO[]> {
+  @Type(() => PlayerOnGameserverOutputDTO)
   @ValidateNested({ each: true })
-  declare data: IGamePlayer[];
+  declare data: PlayerOnGameserverOutputDTO[];
 }
 
 @OpenAPI({
@@ -395,7 +401,7 @@ export class GameServerController {
 
   @Get('/gameserver/:id/players')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
-  @ResponseSchema(IGamePlayersOutputDTO)
+  @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const result = await service.getPlayers(params.id);

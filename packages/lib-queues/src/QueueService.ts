@@ -1,5 +1,11 @@
 import { config } from './config.js';
-import { IConnectorQueueData, IEventQueueData, IJobData } from './dataDefinitions.js';
+import {
+  ICommandJobData,
+  IConnectorQueueData,
+  ICronJobData,
+  IEventQueueData,
+  IHookJobData,
+} from './dataDefinitions.js';
 import { TakaroQueue } from './TakaroQueue.js';
 
 class QueuesService {
@@ -14,13 +20,13 @@ class QueuesService {
 
   private queuesMap = {
     commands: {
-      queue: new TakaroQueue<IJobData>(config.get('queues.commands.name')),
+      queue: new TakaroQueue<ICommandJobData>(config.get('queues.commands.name')),
     },
     cronjobs: {
-      queue: new TakaroQueue<IJobData>(config.get('queues.cronjobs.name')),
+      queue: new TakaroQueue<ICronJobData>(config.get('queues.cronjobs.name')),
     },
     hooks: {
-      queue: new TakaroQueue<IJobData>(config.get('queues.hooks.name')),
+      queue: new TakaroQueue<IHookJobData>(config.get('queues.hooks.name')),
     },
     events: {
       queue: new TakaroQueue<IEventQueueData>(config.get('queues.events.name')),
