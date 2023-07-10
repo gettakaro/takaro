@@ -21,6 +21,9 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
           ref,
           ...props,
           ...children.props,
+          onClick(event) {
+            event.stopPropagation();
+          },
         })
       );
     }
@@ -30,7 +33,13 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
         ref={ref}
         type="button"
         // The user can style the trigger based on the state
-        {...context.getReferenceProps(props)}
+        {...context.getReferenceProps({
+          ...props,
+          ref,
+          onClick(event) {
+            event.stopPropagation();
+          },
+        })}
       >
         {children}
       </button>

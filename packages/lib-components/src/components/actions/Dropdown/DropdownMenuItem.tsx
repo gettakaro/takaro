@@ -1,16 +1,17 @@
 import { useListItem } from '@floating-ui/react';
-import { cloneElement, FC, ReactElement } from 'react';
+import { cloneElement, FC, ReactElement, MouseEvent } from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { styled } from '../../../styled';
 
 const Container = styled.button<{ isActive: boolean }>`
-  background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.backgroundAlt)};
+  background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.background)};
   color: ${({ theme }) => theme.colors.text};
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[1]}`};
 
   &:first-of-type {
     border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -31,11 +32,6 @@ const Container = styled.button<{ isActive: boolean }>`
   div {
     margin-right: ${({ theme }) => theme.spacing['0_75']};
   }
-
-  div {
-    width: 18px;
-    height: 18px;
-  }
 `;
 
 interface DropdownMenuItemProps {
@@ -43,7 +39,7 @@ interface DropdownMenuItemProps {
   disabled?: boolean;
   icon?: ReactElement;
   iconPosition?: 'left' | 'right';
-  onClick: () => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
@@ -59,34 +55,37 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   const isActive = activeIndex === index;
 
   const getIcon = () => {
-    if (icon) return cloneElement(icon, { size: 18 });
+    if (icon) return cloneElement(icon, { size: 16 });
   };
 
-  const handleClick = () => {
-    onClick();
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    onClick(e);
     setOpen(false);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: MouseEvent<HTMLButtonElement>) => {
+    onClick(e);
     setOpen(false);
   };
 
   return (
     <Container
-      onClick={handleClick}
+      type="button"
+      onClick={(e) => handleClick(e)}
       onMouseUp={handleMouseUp}
       isActive={isActive}
       ref={ref}
       tabIndex={disabled ? -1 : 0}
       role="menuitem"
       disabled={disabled}
-      {...getItemProps()}
+      {...getItemProps({
+        onClick: handleClick,
+        onMouseUp: handleMouseUp,
+      })}
     >
       {icon && iconPosition === 'left' && getIcon()}
-      {iconPosition === 'left' && !icon && <div aria-hidden />}
       {label}
       {icon && iconPosition === 'right' && getIcon()}
-      {iconPosition === 'right' && !icon && <div aria-hidden />}
     </Container>
   );
 };
