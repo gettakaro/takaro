@@ -1,11 +1,6 @@
 import { errors, logger } from '@takaro/util';
 import { CommandOutputDTO } from '../service/CommandService.js';
-
-interface IParsedCommand {
-  command: string;
-  arguments: Record<string, string | number | boolean>;
-  [key: string]: string | Record<string, string | number | boolean>;
-}
+import { IParsedCommand } from '@takaro/queues';
 
 const log = logger('lib:commandParser');
 

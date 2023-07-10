@@ -11,7 +11,7 @@ async function tplist() {
   const ownedTeleportRes = await takaro.variable.variableControllerFind({
     filters: {
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
     },
     search: {
       key: 't_tp',

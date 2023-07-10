@@ -1,10 +1,8 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions } from '@takaro/lib-components';
-import { useApiClient } from 'hooks/useApiClient';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { QueryKeys } from 'queryKeys';
 import { usePlayers } from 'queries/players';
 
 const TableContainer = styled.div`
@@ -15,7 +13,6 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
-  const client = useApiClient();
   const { pagination, columnFilters, sorting } = useTableActions<PlayerOutputDTO>();
 
   const { data, isLoading } = usePlayers({
@@ -25,12 +22,28 @@ const Players: FC = () => {
     sortDirection: sorting.sortingState[0]?.desc
       ? PlayerSearchInputDTOSortDirectionEnum.Desc
       : PlayerSearchInputDTOSortDirectionEnum.Asc,
+    filters: {
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
+      steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value as string,
+      epicOnlineServicesId: columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')
+        ?.value as string,
+      xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value as string,
+    },
   });
 
+  useEffect(() => {
+    console.log('players filter state', columnFilters.columnFiltersState);
+  }, [columnFilters]);
+
+  useEffect(() => {
+    console.log('players sorting state', sorting.sortingState);
+  }, [sorting]);
+
+  // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('updatedAt', {
-      header: 'Updated',
+      header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
       enableColumnFilter: false,
@@ -76,11 +89,11 @@ const Players: FC = () => {
       <TableContainer>
         <Table
           columns={columnDefs}
-          data={data.rows}
+          data={data.pages[pagination.paginationState.pageIndex].data}
           pagination={{
             ...pagination,
-            pageCount: data.pageCount,
-            total: data.total,
+            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
+            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
           }}
           columnFiltering={{ ...columnFilters }}
           sorting={{ ...sorting }}

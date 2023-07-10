@@ -1,21 +1,13 @@
 import { ThemeProvider } from 'styled-components';
 import { Helmet } from 'react-helmet';
-import { QueryClientProvider, QueryClient } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import {
-  GlobalStyle,
-  SnackbarProvider,
-  darkTheme,
-} from '@takaro/lib-components';
+import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { Router } from './Router';
 import { useMemo, useState } from 'react';
 import { UserContext } from 'context/userContext';
-import {
-  ConfigContext,
-  TakaroConfig,
-  getConfigVar,
-} from 'context/configContext';
+import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
 import { UserOutputDTO } from '@takaro/apiclient';
 
@@ -35,15 +27,11 @@ const defaultUserData: Partial<UserOutputDTO> = {
 };
 
 function App() {
-  const [userData, setUserData] =
-    useState<Partial<UserOutputDTO>>(defaultUserData);
+  const [userData, setUserData] = useState<Partial<UserOutputDTO>>(defaultUserData);
   const [config, setConfig] = useState<TakaroConfig>();
   const [loading, setLoading] = useState<boolean>(true);
 
-  const providerUserData = useMemo(
-    () => ({ userData, setUserData }),
-    [userData, setUserData]
-  );
+  const providerUserData = useMemo(() => ({ userData, setUserData }), [userData, setUserData]);
 
   // the config can be loaded before or after the app is loaded
   // if before window.__env__ will contain the env variables
@@ -57,9 +45,7 @@ function App() {
     setLoading(false);
   };
 
-  const configScriptElement = document.querySelector(
-    '#global-config'
-  ) as HTMLScriptElement;
+  const configScriptElement = document.querySelector('#global-config') as HTMLScriptElement;
   if (!configScriptElement) throw new Error('Forgot the public .env?');
   configScriptElement.addEventListener('load', () => {
     loadConfig();

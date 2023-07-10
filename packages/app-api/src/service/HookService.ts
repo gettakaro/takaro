@@ -221,10 +221,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
           return queueService.queues.hooks.queue.add({
             itemId: hook.id,
-            data: {
-              ...eventData,
-              module: moduleInstallation,
-            },
+            module: await gameServerService.getModuleInstallation(gameServerId, hook.moduleId),
+            eventData: eventData,
             domainId: this.domainId,
             functionId: hook.function.id,
             gameServerId,

@@ -2606,25 +2606,6 @@ export interface IGamePlayer {
 /**
  *
  * @export
- * @interface IGamePlayersOutputDTO
- */
-export interface IGamePlayersOutputDTO {
-  /**
-   *
-   * @type {Array<IGamePlayer>}
-   * @memberof IGamePlayersOutputDTO
-   */
-  data: Array<IGamePlayer>;
-  /**
-   *
-   * @type {MetadataOutput}
-   * @memberof IGamePlayersOutputDTO
-   */
-  meta: MetadataOutput;
-}
-/**
- *
- * @export
  * @interface IItemDTO
  */
 export interface IItemDTO {
@@ -3503,6 +3484,160 @@ export interface PlayerCreateDTO {
    * @memberof PlayerCreateDTO
    */
   epicOnlineServicesId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerCreateDTO
+ */
+export interface PlayerOnGameServerCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerCreateDTO
+   */
+  gameId: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerUpdateDTO
+ */
+export interface PlayerOnGameServerUpdateDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ping?: number;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameserverOutputDTO
+ */
+export interface PlayerOnGameserverOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ping?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameserverOutputDTOAPI
+ */
+export interface PlayerOnGameserverOutputDTOAPI {
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTOAPI
+   */
+  data: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOnGameserverOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -8562,7 +8697,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     async gameServerControllerGetPlayers(
       id: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IGamePlayersOutputDTO>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetPlayers(id, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -8936,7 +9071,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<IGamePlayersOutputDTO> {
+    gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
     },
     /**
