@@ -1,32 +1,30 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
-  useFloating,
   autoUpdate,
   offset,
-  flip,
-  shift,
-  useClick,
-  useDismiss,
-  useRole,
-  useInteractions,
   Placement,
+  useFloating,
+  useInteractions,
+  useRole,
+  useDismiss,
+  useListNavigation,
+  useTypeahead,
+  useClick,
 } from '@floating-ui/react';
 
-export interface PopoverOptions {
+export interface UseDropdownOptions {
   initialOpen?: boolean;
   placement?: Placement;
-  modal?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function usePopover({
+export function useDropdown({
   initialOpen = false,
   placement = 'bottom',
-  modal,
   open: controlledOpen,
   onOpenChange: setControlledOpen,
-}: PopoverOptions = {}) {
+}: UseDropdownOptions) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
@@ -34,28 +32,33 @@ export function usePopover({
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = setControlledOpen ?? setUncontrolledOpen;
 
+  const elementsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const labelsRef = useRef<Array<string | null>>([]);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
   const { context, ...data } = useFloating({
     placement,
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
-    middleware: [
-      offset(5),
-      flip({
-        crossAxis: placement.includes('-'),
-        fallbackAxisSideDirection: 'end',
-        padding: 5,
-      }),
-      shift({ padding: 5 }),
-    ],
+    middleware: [offset({ mainAxis: 2 })],
   });
 
   const interactions = useInteractions([
-    useClick(context, {
-      enabled: controlledOpen == null,
-    }),
+    useClick(context, { enabled: controlledOpen == null }),
+    useRole(context, { role: 'menu' }),
     useDismiss(context),
-    useRole(context),
+    useListNavigation(context, {
+      listRef: elementsRef,
+      onNavigate: setActiveIndex,
+      activeIndex,
+    }),
+    useTypeahead(context, {
+      enabled: context.open,
+      activeIndex,
+      listRef: labelsRef,
+      onMatch: setActiveIndex,
+    }),
   ]);
 
   return useMemo(
@@ -65,12 +68,14 @@ export function usePopover({
       ...interactions,
       context,
       ...data,
-      modal,
       labelId,
       descriptionId,
       setLabelId,
       setDescriptionId,
+      activeIndex,
+      labelsRef,
+      elementsRef,
     }),
-    [open, setOpen, interactions, data, modal, labelId, descriptionId]
+    [open, setOpen, data, context, labelId, descriptionId, interactions]
   );
 }

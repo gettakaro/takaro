@@ -3,7 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 
 import { Table, TableProps } from '.';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Chip } from '../../../components';
+import { Chip, MenuList } from '../../../components';
 import { useTableActions } from '../../../hooks';
 
 type User = {
@@ -90,9 +90,7 @@ const columns = [
   columnHelper.accessor('status', {
     id: 'status',
     header: 'Status',
-    cell: (info) => (
-      <Chip variant="outline" color="primary" label={info.getValue()} />
-    ),
+    cell: (info) => <Chip variant="outline" color="primary" label={info.getValue()} />,
   }),
   columnHelper.accessor('progress', {
     id: 'progress',
@@ -134,6 +132,16 @@ const Users: FC<TableProps<User>> = (props) => {
   );
 };
 
-export const TableExample: StoryFn<TableProps<User>> = (args) => (
-  <Users {...args} />
-);
+export const TableExample: StoryFn<TableProps<User>> = (args) => <Users {...args} />;
+
+export const ColumnActions: StoryFn = () => {
+  return (
+    <div>
+      <MenuList>
+        <MenuList.Item>Item 1</MenuList.Item>
+        <MenuList.Item>Item 2</MenuList.Item>
+        <MenuList.Item>Item 3</MenuList.Item>
+      </MenuList>
+    </div>
+  );
+};

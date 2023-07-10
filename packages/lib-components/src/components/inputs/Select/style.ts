@@ -71,7 +71,6 @@ export const SelectContainer = styled.div`
 `;
 
 export const GroupLabel = styled.li`
-  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[0]}`};
   opacity: 0.5;
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
 `;
