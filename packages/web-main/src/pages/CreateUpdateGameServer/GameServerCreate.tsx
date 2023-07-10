@@ -112,10 +112,9 @@ const CreateGameServer: FC = () => {
                   {connectionInfoFieldsMap(isLoading, control)[type]}
                 </CollapseList.Item>
               )}
-              {/* error && <ErrorMessage message={error} /> */}
+              {error && <FormError message={error} />}
             </form>
           </CollapseList>
-          {error && <FormError message={error} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
