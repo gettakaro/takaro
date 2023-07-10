@@ -1,5 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, MenuList, Skeleton, IconButton, Tooltip } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,6 @@ import { PATHS } from 'paths';
 import { useGameServerRemove, useGameServerReachabilityById } from 'queries/gameservers';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
-  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -17,20 +16,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
-    e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
-    setOpenDropdown(false);
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
-    e.stopPropagation();
     setOpenDialog(true);
-    setOpenDropdown(false);
   };
 
   const handleOnDelete = async (e: MouseEvent) => {
-    e.stopPropagation();
     await mutateAsync({ id });
-    setOpenDialog(false);
   };
 
   const status = data?.connectable ? 'online' : 'offline';
@@ -46,24 +39,15 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
           ) : (
             <Chip label={status} color="error" variant="outline" />
           )}
-          <Dropdown
-            open={openDropdown}
-            setOpen={setOpenDropdown}
-            renderReference={
-              <Tooltip>
-                <Tooltip.Trigger asChild>
-                  <IconButton icon={<MenuIcon />} ariaLabel="Actions" />
-                </Tooltip.Trigger>
-                <Tooltip.Content>Actions</Tooltip.Content>
-              </Tooltip>
-            }
-            renderFloating={
-              <MenuList>
-                <MenuList.Item onClick={handleOnEditClick}>Edit server</MenuList.Item>
-                <MenuList.Item onClick={handleOnDeleteClick}>Delete server</MenuList.Item>
-              </MenuList>
-            }
-          />
+          <Dropdown>
+            <Dropdown.Trigger asChild>
+              <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+            </Dropdown.Trigger>
+            <Dropdown.Menu>
+              <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
+              <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
+            </Dropdown.Menu>
+          </Dropdown>
         </Header>
         <TitleContainer>
           <h3>{name}</h3>
