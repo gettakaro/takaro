@@ -1,6 +1,6 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function teleport() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
@@ -89,4 +89,4 @@ async function teleport() {
   });
 }
 
-teleport();
+await main();

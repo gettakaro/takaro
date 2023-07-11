@@ -102,7 +102,8 @@ export class VMM {
       await vmClient.waitUntilHealthy();
 
       // Execute the function
-      await vmClient.exec(fn, data, token);
+      const res = await vmClient.exec(fn, data, token);
+      return res;
     } catch (err) {
       this.log.error(err);
       throw err;

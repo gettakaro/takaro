@@ -42,6 +42,18 @@ export interface ICommandJobData extends IJobData {
 
 export type ICronJobData = IJobData;
 
+export function isCommandData(data: IJobData): data is ICommandJobData {
+  return 'arguments' in data;
+}
+
+export function isHookData(data: IJobData): data is IHookJobData {
+  return 'eventData' in data;
+}
+
+export function isCronData(data: IJobData): data is ICronJobData {
+  return !isCommandData(data) && !isHookData(data);
+}
+
 export interface IEventQueueData extends IBaseJobData {
   type: GameEvents;
   gameServerId: string;

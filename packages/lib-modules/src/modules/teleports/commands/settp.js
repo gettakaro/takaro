@@ -4,7 +4,7 @@ function getVariableKey(tpName) {
   return `t_tp_${tpName}`;
 }
 
-async function settp() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
@@ -61,4 +61,4 @@ async function settp() {
   });
 }
 
-settp();
+await main();

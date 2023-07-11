@@ -5,13 +5,11 @@ async function main() {
   const takaro = await getTakaro(data);
 
   const randomMessage =
-    data.module.userConfig.messages[
-      Math.floor(Math.random() * data.module.userConfig.messages.length)
-    ];
+    data.module.userConfig.messages[Math.floor(Math.random() * data.module.userConfig.messages.length)];
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
     message: randomMessage,
   });
 }
 
-main();
+await main();
