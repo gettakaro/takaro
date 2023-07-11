@@ -52,10 +52,15 @@ export async function executeFunction(
   if (isCommandData(data)) {
     eventData.playerId = data.player.playerId;
     eventData.eventName = 'command-executed';
+    eventData.meta['command'] = {
+      command: data.itemId,
+      arguments: data.arguments,
+    };
   }
 
   if (isHookData(data)) {
     eventData.eventName = 'hook-executed';
+    eventData.meta['eventData'] = data.eventData;
   }
 
   if (isCronData(data)) {
