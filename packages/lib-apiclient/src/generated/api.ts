@@ -1214,6 +1214,43 @@ export type EventChatMessageTypeEnum = (typeof EventChatMessageTypeEnum)[keyof t
 /**
  *
  * @export
+ * @interface EventCreateDTO
+ */
+export interface EventCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof EventCreateDTO
+   */
+  eventName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventCreateDTO
+   */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventCreateDTO
+   */
+  playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventCreateDTO
+   */
+  gameserverId?: string;
+  /**
+   *
+   * @type {object}
+   * @memberof EventCreateDTO
+   */
+  meta?: object;
+}
+/**
+ *
+ * @export
  * @interface EventDiscordChannel
  */
 export interface EventDiscordChannel {
@@ -1266,6 +1303,74 @@ export interface EventDiscordUser {
    * @memberof EventDiscordUser
    */
   isTakaroBot: boolean;
+}
+/**
+ *
+ * @export
+ * @interface EventOutputArrayDTOAPI
+ */
+export interface EventOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<EventOutputDTO>}
+   * @memberof EventOutputArrayDTOAPI
+   */
+  data: Array<EventOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof EventOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface EventOutputDTO
+ */
+export interface EventOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  eventName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  gameserverId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof EventOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof EventOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -1350,6 +1455,95 @@ export const EventPlayerDisconnectedTypeEnum = {
 
 export type EventPlayerDisconnectedTypeEnum =
   (typeof EventPlayerDisconnectedTypeEnum)[keyof typeof EventPlayerDisconnectedTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface EventSearchInputAllowedFilters
+ */
+export interface EventSearchInputAllowedFilters {
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  eventName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  gameserverId?: string;
+}
+/**
+ *
+ * @export
+ * @interface EventSearchInputDTO
+ */
+export interface EventSearchInputDTO {
+  /**
+   *
+   * @type {EventSearchInputAllowedFilters}
+   * @memberof EventSearchInputDTO
+   */
+  filters?: EventSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof EventSearchInputDTO
+   */
+  search?: any;
+  /**
+   *
+   * @type {number}
+   * @memberof EventSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof EventSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputDTO
+   */
+  sortDirection?: EventSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof EventSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const EventSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type EventSearchInputDTOSortDirectionEnum =
+  (typeof EventSearchInputDTOSortDirectionEnum)[keyof typeof EventSearchInputDTOSortDirectionEnum];
 
 /**
  *
@@ -3449,6 +3643,8 @@ export const PermissionOutputDTOPermissionEnum = {
   ReadSettings: 'READ_SETTINGS',
   ReadVariables: 'READ_VARIABLES',
   ManageVariables: 'MANAGE_VARIABLES',
+  ReadEvents: 'READ_EVENTS',
+  ManageEvents: 'MANAGE_EVENTS',
 } as const;
 
 export type PermissionOutputDTOPermissionEnum =
@@ -3891,6 +4087,8 @@ export const RoleCreateInputDTOPermissionsEnum = {
   ReadSettings: 'READ_SETTINGS',
   ReadVariables: 'READ_VARIABLES',
   ManageVariables: 'MANAGE_VARIABLES',
+  ReadEvents: 'READ_EVENTS',
+  ManageEvents: 'MANAGE_EVENTS',
 } as const;
 
 export type RoleCreateInputDTOPermissionsEnum =
@@ -4086,6 +4284,8 @@ export const RoleUpdateInputDTOPermissionsEnum = {
   ReadSettings: 'READ_SETTINGS',
   ReadVariables: 'READ_VARIABLES',
   ManageVariables: 'MANAGE_VARIABLES',
+  ReadEvents: 'READ_EVENTS',
+  ManageEvents: 'MANAGE_EVENTS',
 } as const;
 
 export type RoleUpdateInputDTOPermissionsEnum =
@@ -7097,6 +7297,196 @@ export class DomainApi extends BaseAPI {
   public domainControllerUpdate(id: string, domainUpdateInputDTO?: DomainUpdateInputDTO, options?: AxiosRequestConfig) {
     return DomainApiFp(this.configuration)
       .domainControllerUpdate(id, domainUpdateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * EventApi - axios parameter creator
+ * @export
+ */
+export const EventApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerCreate: async (
+      eventCreateDTO?: EventCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerSearch: async (
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * EventApi - functional programming interface
+ * @export
+ */
+export const EventApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = EventApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerCreate(
+      eventCreateDTO?: EventCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerCreate(eventCreateDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerSearch(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerSearch(eventSearchInputDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+  };
+};
+
+/**
+ * EventApi - factory interface
+ * @export
+ */
+export const EventApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+  const localVarFp = EventApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: any): AxiosPromise<EventOutputDTO> {
+      return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerSearch(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: any
+    ): AxiosPromise<EventOutputArrayDTOAPI> {
+      return localVarFp.eventControllerSearch(eventSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * EventApi - object-oriented interface
+ * @export
+ * @class EventApi
+ * @extends {BaseAPI}
+ */
+export class EventApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: AxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerSearch(eventSearchInputDTO?: EventSearchInputDTO, options?: AxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerSearch(eventSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

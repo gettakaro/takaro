@@ -10,8 +10,21 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
   data.token = token;
   data.url = config.get('takaro.url');
 
+  const logs = {
+    stdout: [] as string[],
+    stderr: [] as string[],
+  };
+
   const contextifiedObject = vm.createContext({
     process: { env: { DATA: JSON.stringify(data) } },
+    console: {
+      log: (...args: string[]) => {
+        logs.stdout.push(...args);
+      },
+      error: (...args: string[]) => {
+        logs.stderr.push(...args);
+      },
+    },
   });
 
   const toEval = new vm.SourceTextModule(fn, { context: contextifiedObject });
@@ -36,5 +49,18 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
     throw new Error(`Unable to resolve dependency: ${specifier}`);
   });
 
-  await toEval.evaluate();
+  try {
+    await toEval.evaluate();
+    return {
+      logs,
+      success: true,
+    };
+  } catch (error) {
+    if (error instanceof Error) logs.stderr.push(error.message);
+
+    return {
+      logs,
+      success: false,
+    };
+  }
 }
