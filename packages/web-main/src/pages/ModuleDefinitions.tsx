@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Divider, Loading, styled, InfiniteScroll } from '@takaro/lib-components';
+import { Divider, Loading, styled } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
 import { useModules } from 'queries/modules';
