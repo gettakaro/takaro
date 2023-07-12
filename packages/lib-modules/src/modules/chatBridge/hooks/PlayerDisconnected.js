@@ -4,12 +4,11 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const discordChannel =
-    data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
+  const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
 
   await takaro.discord.discordControllerSendMessage(discordChannel, {
-    message: `[👋 Disconnected]: ${data.player.name}`,
+    message: `[👋 Disconnected]: ${data.eventData.player.name}`,
   });
 }
 
-main();
+await main();

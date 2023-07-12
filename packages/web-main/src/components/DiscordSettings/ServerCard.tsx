@@ -36,7 +36,6 @@ export const ServerCard: FC<IServerCardProps> = ({ guild }) => {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     mutate({ id: guild.id, input: { takaroEnabled: e.target.checked } });
     setTakaroEnabled(e.target.checked);
-    setTakaroEnabled(guild.takaroEnabled);
   };
 
   useEffect(() => {

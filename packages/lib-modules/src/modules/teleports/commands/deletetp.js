@@ -4,7 +4,7 @@ function getVariableKey(tpName) {
   return `t_tp_${tpName}`;
 }
 
-async function deletetp() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
@@ -32,4 +32,4 @@ async function deletetp() {
   });
 }
 
-deletetp();
+await main();

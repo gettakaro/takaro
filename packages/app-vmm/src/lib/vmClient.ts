@@ -152,5 +152,13 @@ export class VmClient {
         ...(this.log.isDebugEnabled() ? { stderr: output.stderr, stdout: output.stdout } : {}),
       });
     }
+
+    return {
+      success: output.exit_code === 0,
+      logs: {
+        stdout: output.stdout,
+        stderr: output.stderr,
+      },
+    };
   }
 }
