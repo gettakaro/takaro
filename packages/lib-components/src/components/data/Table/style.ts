@@ -1,5 +1,4 @@
-import { styled } from '../../../styled';
-import { darken } from 'polished';
+import { Density, styled } from '../../../styled';
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -10,57 +9,56 @@ export const Header = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  gap: 1rem;
   margin-bottom: 1rem;
+  gap: 1rem;
 `;
 
-export const FilterContainer = styled.div`
-  padding: 2rem 0;
-`;
-
-export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
+export const StyledTable = styled.table<{ density: Density }>`
   width: 100%;
-  border-spacing: 0; /* disable inner borders */
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
   text-align: left;
   background-color: ${({ theme }) => theme.colors.background};
+  overflow: hidden;
 
-  thead {
-    color: ${({ theme }) => theme.colors.text};
-    th {
-      background-color: ${({ theme }) => theme.colors.backgroundAlt};
-      color: ${({ theme }) => darken(0.3, theme.colors.text)};
+  &,td,th {
+    border-collapse: collapse;
+  }
 
-      padding: ${({ theme }) => theme.spacing[2]};
-
-      & > div {
-        font-weight: 600;
+  &,
+  td {
+    padding: ${({ theme, density }) => {
+      if (density === 'tight') {
+        return `${theme.spacing['0_75']} ${theme.spacing['0_5']}`;
       }
+      return `${theme.spacing['2']} ${theme.spacing['1_5']};`;
+    }}
+
+    &:first-of-type {
+      border-left: 1px solid transparent;
+    }
+    &:last-of-type {
+      border-right: 1px solid transparent;
     }
   }
 
-  tbody {
-    background-color: ${({ theme }) => theme.colors.background};
+  td {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
+  }
 
-    tr {
-      text-align: left;
+  th {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
 
-      &:last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[2]}`};
 
-      td {
-        padding: ${({ theme }) => theme.spacing[2]};
-      }
+    &:last-of-type {
+      border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+      border-bottom-right-radius: ${({ theme }) => theme.borderRadius.medium};
     }
   }
 
   tfoot {
     tr {
       td {
-        padding-top: ${({ theme }) => theme.spacing[4]};
+        padding-top: ${({ theme }) => theme.spacing[1]};
       }
     }
   }

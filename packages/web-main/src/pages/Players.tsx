@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect } from 'react';
+import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
@@ -31,24 +31,9 @@ const Players: FC = () => {
     },
   });
 
-  useEffect(() => {
-    console.log('players filter state', columnFilters.columnFiltersState);
-  }, [columnFilters]);
-
-  useEffect(() => {
-    console.log('players sorting state', sorting.sortingState);
-  }, [sorting]);
-
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
-    columnHelper.accessor('updatedAt', {
-      header: 'Updated at',
-      id: 'updatedAt',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: false,
-      enableSorting: true,
-    }),
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
@@ -62,6 +47,7 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
     }),
+
     columnHelper.accessor('epicOnlineServicesId', {
       header: 'EOS ID',
       id: 'epicOnlineServicesId',
@@ -73,6 +59,20 @@ const Players: FC = () => {
       id: 'xboxLiveId',
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
+    }),
+    columnHelper.accessor('createdAt', {
+      header: 'Created at',
+      id: 'createdAt',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('updatedAt', {
+      header: 'Updated at',
+      id: 'updatedAt',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+      enableSorting: true,
     }),
   ];
 
@@ -89,14 +89,15 @@ const Players: FC = () => {
       <TableContainer>
         <Table
           columns={columnDefs}
+          defaultDensity="relaxed"
           data={data.pages[pagination.paginationState.pageIndex].data}
           pagination={{
             ...pagination,
             pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
             total: data.pages[pagination.paginationState.pageIndex].meta.total!,
           }}
-          columnFiltering={{ ...columnFilters }}
-          sorting={{ ...sorting }}
+          columnFiltering={columnFilters}
+          sorting={sorting}
         />
       </TableContainer>
     </Fragment>
