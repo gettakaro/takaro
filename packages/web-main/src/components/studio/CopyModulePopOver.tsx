@@ -139,7 +139,7 @@ export const CopyModulePopOver = () => {
           </PopoverHeading>
           <Alert
             variant="info"
-            text="Copying a module copies commands with their original name. Leading to a simultaneious trigger if both modules are installed."
+            text="Copying a module copies commands with their original name. Leading to a simultaneous trigger if both modules are installed."
           />
 
           <form onSubmit={handleSubmit(onSubmit)}>
