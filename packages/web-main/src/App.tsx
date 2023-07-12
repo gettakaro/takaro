@@ -1,7 +1,6 @@
 import { ThemeProvider } from 'styled-components';
 import { Helmet } from 'react-helmet';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { Router } from './Router';
@@ -83,11 +82,6 @@ function App() {
                 <link href="https://takaro.io/" rel="canonical" />
               </Helmet>
               <Router />
-              {
-                // React query devtools are only included in bundles with NODE_ENV === 'development'.
-                // No need to manually exclude them.
-              }
-              <ReactQueryDevtools initialIsOpen={false} position="top-left" />
             </QueryClientProvider>
           </SnackbarProvider>
         </ConfigContext.Provider>
