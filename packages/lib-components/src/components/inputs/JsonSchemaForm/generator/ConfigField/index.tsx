@@ -79,12 +79,19 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
           <Tooltip.Content>Remove field</Tooltip.Content>
         </Tooltip>
       </Header>
-      <TextField control={control} label="Name" name={`configFields.${index}.name`} required />
+      <TextField
+        control={control}
+        label="Name"
+        name={`configFields.${index}.name`}
+        required
+        placeholder="Config field name"
+      />
       <TextAreaField
         control={control}
         label="Description"
         rows={8}
         name={`configFields.${index}.description`}
+        placeholder="Enables you to ..."
         required
       />
       <Select
