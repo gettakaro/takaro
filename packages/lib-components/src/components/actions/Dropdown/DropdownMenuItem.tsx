@@ -2,10 +2,11 @@ import { useListItem } from '@floating-ui/react';
 import { cloneElement, FC, ReactElement, MouseEvent } from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { styled } from '../../../styled';
-import { IconButton } from '../IconButton';
 import { AiOutlineClose as UndoIcon } from 'react-icons/ai';
+import { motion } from 'framer-motion';
+import { GenericCheckBox } from '../../../components/inputs/CheckBox/Generic';
 
-const Container = styled.button<{ isActive: boolean }>`
+const Container = styled(motion.button)<{ isActive: boolean }>`
   background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.background)};
   color: ${({ theme }) => theme.colors.text};
   border-radius: 0;
@@ -16,15 +17,19 @@ const Container = styled.button<{ isActive: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
-  &:disabled {
-    background-color: ${({ theme }) => theme.colors.disabled};
-    cursor: not-allowed;
+  span {
+    margin-left: ${({ theme }) => theme.spacing['0_75']};
   }
 
-  div {
-    svg {
-      margin-right: ${({ theme }) => theme.spacing['0_75']};
+  &:disabled {
+    span {
+      color: ${({ theme }) => theme.colors.textAlt};
     }
+    svg {
+      fill: ${({ theme }) => theme.colors.textAlt};
+      stroke: ${({ theme }) => theme.colors.textAlt};
+    }
+    cursor: not-allowed;
   }
 
   &:hover {
@@ -43,6 +48,7 @@ interface DropdownMenuItemProps {
   iconPosition?: 'left' | 'right';
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
   active?: boolean;
+  activeStyle?: 'checkbox' | 'undo';
 }
 
 export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
@@ -50,6 +56,7 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   disabled,
   onClick,
   iconPosition = 'left',
+  activeStyle = 'undo',
   active = false,
   icon,
 }) => {
@@ -64,12 +71,15 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     onClick(e);
-    setOpen(false);
+    if (activeStyle === 'undo') {
+      setOpen(false);
+    }
   };
 
-  const handleMouseUp = (e: MouseEvent<HTMLButtonElement>) => {
-    onClick(e);
-    setOpen(false);
+  const handleMouseUp = () => {
+    if (activeStyle === 'undo') {
+      setOpen(false);
+    }
   };
 
   return (
@@ -87,12 +97,24 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
         onMouseUp: handleMouseUp,
       })}
     >
+      {activeStyle === 'checkbox' && (
+        <GenericCheckBox
+          onChange={() => {}}
+          value={active}
+          hasDescription={false}
+          size="tiny"
+          hasError={false}
+          name={`menu-item-checkbox-${label}`}
+          disabled={false}
+          id={`menu-item-checkbox-${label}`}
+        />
+      )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
         {icon && iconPosition === 'left' && getIcon()}
-        {label}
+        <span>{label}</span>
         {icon && iconPosition === 'right' && getIcon()}
       </div>
-      {active && <IconButton icon={<UndoIcon />} ariaLabel="undo action" size="tiny" />}
+      {active && activeStyle === 'undo' && <UndoIcon size={16} />}
     </Container>
   );
 };

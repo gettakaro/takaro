@@ -1,5 +1,11 @@
 import { forwardRef, HTMLProps, Ref } from 'react';
-import { useMergeRefs, FloatingPortal, FloatingFocusManager, FloatingList } from '@floating-ui/react';
+import {
+  useMergeRefs,
+  FloatingPortal,
+  FloatingFocusManager,
+  FloatingList,
+  useTransitionStyles,
+} from '@floating-ui/react';
 import { useDropdownContext } from './DropdownContext';
 import { DropdownMenuItem } from './DropdownMenuItem';
 import { DropdownMenuGroup } from './DropdownMenuGroup';
@@ -18,33 +24,48 @@ type DropdownMenuComponent = {
   Group: typeof DropdownMenuGroup;
 };
 
-export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
-  ({ style, children, ...props }, propRef) => {
-    const { context, floatingStyles, elementsRef, labelsRef, getFloatingProps, descriptionId, labelId, open } =
-      useDropdownContext();
-    const ref = useMergeRefs([context.refs.setFloating, propRef]);
+export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ children, ...props }, propRef) => {
+  const { context, floatingStyles, elementsRef, labelsRef, getFloatingProps, descriptionId, labelId } =
+    useDropdownContext();
+  const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-    return (
-      <FloatingPortal>
-        {open && (
-          <FloatingFocusManager context={context} modal={false}>
-            <Container
-              ref={ref}
-              style={{ ...floatingStyles, ...style }}
-              aria-labelledby={labelId}
-              aria-describedby={descriptionId}
-              {...getFloatingProps(props)}
-            >
-              <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
-                {children}
-              </FloatingList>
-            </Container>
-          </FloatingFocusManager>
-        )}
-      </FloatingPortal>
-    );
-  }
-) as unknown as DropdownMenuComponent;
+  const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
+    duration: {
+      open: 150,
+      close: 0,
+    },
+    initial: ({ side }) => ({
+      opacity: 0,
+      transform: {
+        top: 'translateY(5px)',
+        bottom: 'translateY(-5px)',
+        right: 'translateX(-5px)',
+        left: 'translateX(5px)',
+      }[side],
+      open: { opacity: 1, transform: 'translate(0)' },
+    }),
+  });
+
+  return (
+    <FloatingPortal>
+      {isMounted && (
+        <FloatingFocusManager context={context} modal={false}>
+          <Container
+            ref={ref}
+            style={{ ...transitionStyles, ...floatingStyles }}
+            aria-labelledby={labelId}
+            aria-describedby={descriptionId}
+            {...getFloatingProps(props)}
+          >
+            <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
+              {children}
+            </FloatingList>
+          </Container>
+        </FloatingFocusManager>
+      )}
+    </FloatingPortal>
+  );
+}) as unknown as DropdownMenuComponent;
 
 DropdownMenu.Item = DropdownMenuItem;
 DropdownMenu.Group = DropdownMenuGroup;
