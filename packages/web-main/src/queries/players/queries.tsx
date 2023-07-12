@@ -16,12 +16,13 @@ export const usePlayers = ({ page = 0, filters, sortBy, limit, search, sortDirec
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: [playerKeys.list(), page, sortBy, sortDirection, filters, search],
+    queryKey: [...playerKeys.list(), page, sortBy, sortDirection, filters, search],
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.player.playerControllerSearch({
           limit,
           sortBy,
+          sortDirection,
           filters,
           search,
           page: pageParam,

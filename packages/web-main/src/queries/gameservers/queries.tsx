@@ -42,16 +42,27 @@ export const installedModuleKeys = {
     [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
 };
 
-export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameServerSearchInputDTO = {}) => {
+export const useGameServers = ({
+  page = 0,
+  filters,
+  sortBy,
+  limit,
+  search,
+  sortDirection,
+}: GameServerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
-    queryKey: gameServerKeys.list(),
+    queryKey: [gameServerKeys.list(), page, sortBy, sortDirection, filters, search],
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.gameserver.gameServerControllerSearch({
+          limit,
+          sortBy,
+          sortDirection,
+          filters,
+          search,
           page: pageParam,
-          ...gameServerSearchInputArgs,
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),

@@ -63,16 +63,20 @@ export const functionKeys = {
   detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
-export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchInputDTO = {}) => {
+export const useModules = ({ page = 0, sortDirection, sortBy, limit, search, filters }: ModuleSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: moduleKeys.list(),
+    queryKey: [moduleKeys.list(), sortDirection, sortBy, limit, search, filters],
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.module.moduleControllerSearch({
           page: pageParam,
-          ...moduleSearchInputArgs,
+          sortDirection,
+          sortBy,
+          limit,
+          search,
+          filters,
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
