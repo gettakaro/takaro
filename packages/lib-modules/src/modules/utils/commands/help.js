@@ -1,18 +1,14 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function help() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const enabledModules =
-    await takaro.gameserver.gameServerControllerGetInstalledModules(
-      data.gameServerId
-    );
+  const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);
 
   const moduleCommands = await Promise.all(
     enabledModules.data.data.map(async (mod) => {
-      return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data
-        .data.commands;
+      return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data.data.commands;
     })
   );
 
@@ -24,12 +20,9 @@ async function help() {
     for (const mod of moduleCommands) {
       await Promise.all(
         mod.map(async (command) => {
-          await takaro.gameserver.gameServerControllerSendMessage(
-            data.gameServerId,
-            {
-              message: `${command.name}: ${command.helpText}`,
-            }
-          );
+          await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+            message: `${command.name}: ${command.helpText}`,
+          });
         })
       );
     }
@@ -40,21 +33,15 @@ async function help() {
     });
 
     if (!requestedCommand) {
-      await takaro.gameserver.gameServerControllerSendMessage(
-        data.gameServerId,
-        {
-          message: `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`,
-        }
-      );
+      await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+        message: `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`,
+      });
     } else {
-      await takaro.gameserver.gameServerControllerSendMessage(
-        data.gameServerId,
-        {
-          message: `${requestedCommand.name}: ${requestedCommand.helpText}`,
-        }
-      );
+      await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+        message: `${requestedCommand.name}: ${requestedCommand.helpText}`,
+      });
     }
   }
 }
 
-help();
+await main();

@@ -1,6 +1,6 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function tplist() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
@@ -8,35 +8,41 @@ async function tplist() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
-  const ownedTeleportRes = await takaro.variable.variableControllerFind({
-    filters: {
-      gameServerId,
-      playerId: player.playerId,
-    },
-    search: {
-      key: 't_tp',
-    },
-    sortBy: 'key',
-    sortDirection: 'asc',
-  });
+  const ownedTeleports = (
+    await takaro.variable.variableControllerFind({
+      filters: {
+        gameServerId,
+        playerId: player.playerId,
+      },
+      search: {
+        key: 't_tp',
+      },
+      sortBy: 'key',
+      sortDirection: 'asc',
+    })
+  ).data.data;
 
-  const maybePublicTeleportRes = await takaro.variable.variableControllerFind({
-    filters: {
-      gameServerId,
-    },
-    search: {
-      key: 't_tp',
-    },
-    sortBy: 'key',
-    sortDirection: 'asc',
-  });
+  const maybePublicTeleports = (
+    await takaro.variable.variableControllerFind({
+      filters: {
+        gameServerId,
+      },
+      search: {
+        key: 't_tp',
+      },
+      sortBy: 'key',
+      sortDirection: 'asc',
+    })
+  ).data.data;
 
-  const publicTeleports = maybePublicTeleportRes.data.data.filter((tele) => {
+  const teleports = maybePublicTeleports.filter((tele) => {
     const teleport = JSON.parse(tele.value);
-    return teleport.public;
-  });
 
-  const teleports = ownedTeleportRes.data.data.concat(publicTeleports);
+    const isPublic = teleport.public && teleport.playerId !== player.playerId;
+    const isOwned = ownedTeleports.find((t) => t.playerId === player.playerId);
+
+    return isPublic || isOwned;
+  });
 
   if (teleports.length === 0) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
@@ -57,4 +63,4 @@ async function tplist() {
   }
 }
 
-tplist();
+await main();

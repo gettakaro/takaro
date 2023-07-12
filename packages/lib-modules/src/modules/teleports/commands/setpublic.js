@@ -1,6 +1,6 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function setpublic() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
@@ -48,4 +48,4 @@ async function setpublic() {
   });
 }
 
-setpublic();
+await main();

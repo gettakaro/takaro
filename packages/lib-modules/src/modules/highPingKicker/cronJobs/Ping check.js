@@ -6,9 +6,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(
-    data.gameServerId
-  );
+  const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(data.gameServerId);
 
   await Promise.all(
     currentPlayers.data.data.map(async (player) => {
@@ -21,14 +19,12 @@ async function main() {
 
         const takaroPlayer = takaroPlayerRes.data.data[0];
 
-        const currentWarningsRes = await takaro.variable.variableControllerFind(
-          {
-            filters: {
-              playerId: takaroPlayer.id,
-              key: VARIABLE_KEY,
-            },
-          }
-        );
+        const currentWarningsRes = await takaro.variable.variableControllerFind({
+          filters: {
+            playerId: takaroPlayer.id,
+            key: VARIABLE_KEY,
+          },
+        });
 
         const currentWarningsRecords = currentWarningsRes.data.data;
 
@@ -44,42 +40,30 @@ async function main() {
         }
 
         if (currentWarningsRecords.length === 1) {
-          await takaro.variable.variableControllerUpdate(
-            currentWarningsRecords[0].id,
-            {
-              value: (currentWarnings + 1).toString(),
-            }
-          );
+          await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {
+            value: (currentWarnings + 1).toString(),
+          });
 
-          await takaro.gameserver.gameServerControllerSendMessage(
-            data.gameServerId,
-            {
-              message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,
-              opts: {
-                recipient: {
-                  gameId: player.gameId,
-                },
+          await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+            message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,
+            opts: {
+              recipient: {
+                gameId: player.gameId,
               },
-            }
-          );
+            },
+          });
         }
 
         if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {
-          await takaro.gameserver.gameServerControllerKickPlayer(
-            data.gameServerId,
-            takaroPlayer.id,
-            {
-              reason: `Your ping (${player.ping}) is too high, please try again later.`,
-            }
-          );
+          await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {
+            reason: `Your ping (${player.ping}) is too high, please try again later.`,
+          });
 
-          await takaro.variable.variableControllerDelete(
-            currentWarningsRecords[0].id
-          );
+          await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);
         }
       }
     })
   );
 }
 
-main();
+await main();
