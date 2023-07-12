@@ -63,12 +63,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
     } else {
       // handle case that each button has a seperate state
       setSelected(
-        new Map(
-          (selected as Map<string, boolean>).set(
-            value,
-            !(selected as Map<string, boolean>).get(value)
-          )
-        )
+        new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value)))
       );
     }
   };
@@ -78,19 +73,16 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
   }, [selected]);
 
   return (
-    <Container orientation={orientation} fullWidth={fullWidth}>
+    <Container orientation={orientation} fullWidth={fullWidth} aria-orientation={orientation}>
       {Children.map(children, (child) => {
         if (isValidElement(child)) {
-          return cloneElement(
-            child as ReactElement<ToggleButtonProps | Record<string, unknown>>,
-            {
-              selected: exclusive
-                ? selected == child.props.value
-                : (selected as Map<string, boolean>).get(child.props.value),
-              parentClickEvent: clickEvent,
-              orientation: orientation,
-            }
-          );
+          return cloneElement(child as ReactElement<ToggleButtonProps | Record<string, unknown>>, {
+            selected: exclusive
+              ? selected == child.props.value
+              : (selected as Map<string, boolean>).get(child.props.value),
+            parentClickEvent: clickEvent,
+            orientation: orientation,
+          });
         }
         return child;
       })}
