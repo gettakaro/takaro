@@ -31,39 +31,40 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const status = data?.connectable ? 'online' : 'offline';
 
   return (
-    <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
-      <Body>
-        <Header>
-          {isLoading || !data ? (
-            <Skeleton variant="text" width="50px" height="15px" />
-          ) : status === 'online' ? (
-            <>{status}</>
-          ) : (
-            <Chip label={status} color="error" variant="outline" />
-          )}
-          <Dropdown>
-            <Dropdown.Trigger asChild>
-              <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-            </Dropdown.Trigger>
-            <Dropdown.Menu>
-              <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
-              <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
-            </Dropdown.Menu>
-          </Dropdown>
-        </Header>
-        <TitleContainer>
-          <h3>{name}</h3>
-          <div>
-            <Tooltip placement="bottom">
-              <Tooltip.Trigger asChild>
-                <p>{type}</p>
-              </Tooltip.Trigger>
-              <Tooltip.Content>Game server type</Tooltip.Content>
-            </Tooltip>
-          </div>
-        </TitleContainer>
-      </Body>
-
+    <>
+      <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
+        <Body>
+          <Header>
+            {isLoading || !data ? (
+              <Skeleton variant="text" width="50px" height="15px" />
+            ) : status === 'online' ? (
+              <>{status}</>
+            ) : (
+              <Chip label={status} color="error" variant="outline" />
+            )}
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
+                <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
+              </Dropdown.Menu>
+            </Dropdown>
+          </Header>
+          <TitleContainer>
+            <h3>{name}</h3>
+            <div>
+              <Tooltip placement="bottom">
+                <Tooltip.Trigger asChild>
+                  <p>{type}</p>
+                </Tooltip.Trigger>
+                <Tooltip.Content>Game server type</Tooltip.Content>
+              </Tooltip>
+            </div>
+          </TitleContainer>
+        </Body>
+      </Container>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
           <Dialog.Heading>
@@ -84,7 +85,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
           </StyledDialogBody>
         </Dialog.Content>
       </Dialog>
-    </Container>
+    </>
   );
 };
 
