@@ -1,6 +1,5 @@
 import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
-import { darken } from 'polished';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Company, styled } from '@takaro/lib-components';
@@ -42,18 +41,10 @@ const Nav = styled.nav`
   flex-direction: column;
   margin-top: ${({ theme }) => theme.spacing[8]};
 
-  a.sublink {
-    padding-left: ${({ theme }) => theme.spacing[1]};
-
-    &:hover {
-      background-color: none;
-    }
-  }
-
   a {
     width: 100%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: ${({ theme }) => theme.spacing['1_5']};
+    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -78,15 +69,10 @@ const Nav = styled.nav`
     }
 
     &.active {
-      background-color: ${({ theme }) => theme.colors.primary};
-
-      &:hover {
-        background-color: ${({ theme }) => darken(0.05, theme.colors.primary)};
+      svg {
+        fill: ${({ theme }) => theme.colors.primary};
       }
-
-      svg,
       p {
-        fill: white;
         color: white;
       }
     }
