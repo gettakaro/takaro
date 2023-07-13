@@ -31,8 +31,8 @@ export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>
 
   const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
     duration: {
-      open: 150,
-      close: 0,
+      open: 0,
+      close: 100,
     },
     initial: ({ side }) => ({
       opacity: 0,
@@ -43,6 +43,7 @@ export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>
         left: 'translateX(5px)',
       }[side],
       open: { opacity: 1, transform: 'translate(0)' },
+      close: { opacity: 0, transform: 'scale(0.8)' },
     }),
   });
 

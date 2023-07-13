@@ -16,9 +16,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
+    e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
+    e.stopPropagation();
     setOpenDialog(true);
   };
 
