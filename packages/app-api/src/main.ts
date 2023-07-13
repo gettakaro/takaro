@@ -26,6 +26,7 @@ import { ExternalAuthController } from './controllers/ExternalAuthController.js'
 import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
 import { discordBot } from './lib/DiscordBot.js';
+import { EventController } from './controllers/EventController.js';
 
 export const server = new HTTP(
   {
@@ -44,6 +45,7 @@ export const server = new HTTP(
       VariableController,
       ExternalAuthController,
       DiscordController,
+      EventController,
     ],
   },
   {

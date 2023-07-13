@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { LoginDiscord } from 'components/DiscordSettings/LoginDiscord';
@@ -58,13 +58,25 @@ export const DiscordSettings = () => {
     return <p>Something went wrong</p>;
   }
 
+  let guildDisplay: ReactNode = null;
+
   if (guilds.pages.length === 0 || guilds.pages[0].data.length === 0) {
-    return (
+    guildDisplay = (
       <Empty
         header="No guilds found"
         description="It seems like you don't have any guilds. Are you sure you have the rights to change guild settings on any of your discord servers"
         actions={[<Button text="Try again" onClick={() => refetch()} />]}
       />
+    );
+  } else {
+    guildDisplay = (
+      <List>
+        {guilds.pages
+          .flatMap((page) => page.data)
+          .map((guild) => (
+            <ServerCard key={guild.id} guild={guild} />
+          ))}
+      </List>
     );
   }
 
@@ -78,13 +90,7 @@ export const DiscordSettings = () => {
         <InviteCard />
       </Flex>
       <h1> Guilds</h1>
-      <List>
-        {guilds.pages
-          .flatMap((page) => page.data)
-          .map((guild) => (
-            <ServerCard key={guild.id} guild={guild} />
-          ))}
-      </List>
+      {guildDisplay}
       {InfiniteScroll}
     </Fragment>
   );
