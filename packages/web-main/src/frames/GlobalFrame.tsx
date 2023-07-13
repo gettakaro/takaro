@@ -34,49 +34,49 @@ const ContentContainer = styled(motion.div)`
   overflow-y: auto;
 `;
 
-export const GlobalFrame: FC = () => {
-  const links: NavbarLink[] = [
-    {
-      label: 'Dashboard',
-      path: PATHS.home(),
-      icon: <DashboardIcon />,
-    },
-    {
-      label: 'Servers',
-      path: PATHS.gameServers.overview(),
-      icon: <GameServersIcon />,
-    },
-    {
-      label: 'Players',
-      path: PATHS.players(),
-      icon: <PlayersIcon />,
-    },
-    /*
-    {
-      label: 'Users',
-      path: PATHS.users(),
-      icon: <UsersIcon />,
-    },
-    */
-    {
-      label: 'Modules',
-      path: PATHS.moduleDefinitions(),
-      icon: <ModulesIcon />,
-    },
-    {
-      label: 'Settings',
-      path: PATHS.settings.overview(),
-      icon: <SettingsIcon />,
-      end: false,
-    },
-    {
-      label: 'Documentation',
-      path: 'https://docs.takaro.io',
-      icon: <DocumentationIcon />,
-      external: true,
-    },
-  ];
+const links: NavbarLink[] = [
+  {
+    label: 'Dashboard',
+    path: PATHS.home(),
+    icon: <DashboardIcon />,
+  },
+  {
+    label: 'Servers',
+    path: PATHS.gameServers.overview(),
+    icon: <GameServersIcon />,
+  },
+  {
+    label: 'Players',
+    path: PATHS.players(),
+    icon: <PlayersIcon />,
+  },
+  /*
+  {
+    label: 'Users',
+    path: PATHS.users(),
+    icon: <UsersIcon />,
+  },
+  */
+  {
+    label: 'Modules',
+    path: PATHS.moduleDefinitions(),
+    icon: <ModulesIcon />,
+  },
+  {
+    label: 'Settings',
+    path: PATHS.settings.overview(),
+    icon: <SettingsIcon />,
+    end: false,
+  },
+  {
+    label: 'Documentation',
+    path: 'https://docs.takaro.io',
+    icon: <DocumentationIcon />,
+    external: true,
+  },
+];
 
+export const GlobalFrame: FC = () => {
   return (
     <Container>
       <Navbar links={links} />
