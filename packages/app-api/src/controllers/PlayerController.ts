@@ -3,12 +3,14 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { ParamIdAndRoleId } from './UserController.js';
+import { RoleService } from '../service/RoleService.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
   @Type(() => PlayerOutputDTO)
@@ -78,5 +80,21 @@ export class PlayerController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new PlayerService(req.domainId);
     return apiResponse(await service.findOne(params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
+  @Post('/player/:id/role/:roleId')
+  @ResponseSchema(APIOutput)
+  async assignRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.assignRole(params.id, params.roleId));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
+  @Delete('/player/:id/role/:roleId')
+  @ResponseSchema(APIOutput)
+  async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.removeRole(params.id, params.roleId));
   }
 }

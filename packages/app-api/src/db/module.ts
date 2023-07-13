@@ -13,6 +13,13 @@ import { FunctionOutputDTO } from '../service/FunctionService.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
 
 export const MODULE_TABLE_NAME = 'modules';
+export const MODULE_PERMISSIONS_TABLE_NAME = 'modulePermission';
+
+export class ModulePermissionModel extends TakaroModel {
+  static tableName = MODULE_PERMISSIONS_TABLE_NAME;
+  moduleId!: string;
+  permission!: string;
+}
 
 export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
@@ -52,6 +59,15 @@ export class ModuleModel extends TakaroModel {
           to: `${COMMANDS_TABLE_NAME}.moduleId`,
         },
       },
+
+      permissions: {
+        relation: Model.HasManyRelation,
+        modelClass: ModulePermissionModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: `${MODULE_PERMISSIONS_TABLE_NAME}.moduleId`,
+        },
+      },
     };
   }
 }
@@ -83,6 +99,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         'hooks.function',
         'commands.function',
         'commands.arguments',
+        'permissions',
       ],
     }).build(query);
 
@@ -138,6 +155,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('hooks.function')
       .withGraphJoined('commands.function')
       .withGraphJoined('commands.arguments')
+      .withGraphJoined('permissions')
       .orderBy('commands.name', 'DESC');
 
     if (!data) {
@@ -151,10 +169,22 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
+
     const data = await query.insert({
       ...item.toJSON(),
       domain: this.domainId,
     });
+
+    if (item.permissions && item.permissions.length > 0) {
+      const knex = await this.getKnex();
+      const permissionModel = ModulePermissionModel.bindKnex(knex);
+      await permissionModel.query().insert(
+        item.permissions.map((permission) => ({
+          moduleId: data.id,
+          permission,
+        }))
+      );
+    }
 
     return this.findOne(data.id);
   }
@@ -168,6 +198,34 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON());
+
+    if (data.permissions && data.permissions.length > 0) {
+      const knex = await this.getKnex();
+      const permissionModel = ModulePermissionModel.bindKnex(knex);
+
+      const existingPermissions = await permissionModel.query().where('moduleId', id);
+      const existingPermissionsMap = existingPermissions.reduce((acc, permission) => {
+        acc[permission.permission] = permission;
+        return acc;
+      }, {} as Record<string, ModulePermissionModel>);
+
+      const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission]);
+      const toDelete = existingPermissions.filter((permission) => !data.permissions.includes(permission.permission));
+
+      await permissionModel
+        .query()
+        .delete()
+        .whereIn(
+          'id',
+          toDelete.map((permission) => permission.id)
+        );
+      await permissionModel.query().insert(
+        toInsert.map((permission) => ({
+          moduleId: id,
+          permission,
+        }))
+      );
+    }
 
     return this.findOne(item.id);
   }

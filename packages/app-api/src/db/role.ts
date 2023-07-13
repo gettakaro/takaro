@@ -5,6 +5,8 @@ import { Model } from 'objection';
 import { RoleCreateInputDTO, RoleOutputDTO, RoleUpdateInputDTO, PermissionOutputDTO } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
 import { PERMISSIONS } from '@takaro/auth';
+import { UserRepo } from './user.js';
+import { PlayerRepo } from './player.js';
 
 export const ROLE_TABLE_NAME = 'roles';
 const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
@@ -140,5 +142,25 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
         permission,
       })
       .del();
+  }
+
+  async assignRoleToUser(userId: string, roleId: string) {
+    const userRepo = new UserRepo(this.domainId);
+    await userRepo.assignRole(userId, roleId);
+  }
+
+  async removeRoleFromUser(userId: string, roleId: string) {
+    const userRepo = new UserRepo(this.domainId);
+    await userRepo.removeRole(userId, roleId);
+  }
+
+  async assignRoleToPlayer(playerId: string, roleId: string) {
+    const playerRepo = new PlayerRepo(this.domainId);
+    await playerRepo.assignRole(playerId, roleId);
+  }
+
+  async removeRoleFromPlayer(playerId: string, roleId: string) {
+    const playerRepo = new PlayerRepo(this.domainId);
+    await playerRepo.removeRole(playerId, roleId);
   }
 }

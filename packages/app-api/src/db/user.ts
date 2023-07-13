@@ -15,20 +15,22 @@ export class UserModel extends TakaroModel {
   idpId: string;
   discordId?: string;
 
-  static relationMappings = {
-    roles: {
-      relation: Model.ManyToManyRelation,
-      modelClass: RoleModel,
-      join: {
-        from: `${USER_TABLE_NAME}.id`,
-        through: {
-          from: `${ROLE_ON_USER_TABLE_NAME}.userId`,
-          to: `${ROLE_ON_USER_TABLE_NAME}.roleId`,
+  static get relationMappings() {
+    return {
+      roles: {
+        relation: Model.ManyToManyRelation,
+        modelClass: RoleModel,
+        join: {
+          from: `${USER_TABLE_NAME}.id`,
+          through: {
+            from: `${ROLE_ON_USER_TABLE_NAME}.userId`,
+            to: `${ROLE_ON_USER_TABLE_NAME}.roleId`,
+          },
+          to: `${ROLE_TABLE_NAME}.id`,
         },
-        to: `${ROLE_TABLE_NAME}.id`,
       },
-    },
-  };
+    };
+  }
 }
 
 export interface IUserFindOneOutput extends UserModel {

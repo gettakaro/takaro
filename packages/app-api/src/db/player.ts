@@ -5,8 +5,10 @@ import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
 import { PlayerCreateDTO, PlayerOutputDTO, PlayerUpdateDTO } from '../service/PlayerService.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './playerOnGameserver.js';
+import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 
 export const PLAYER_TABLE_NAME = 'players';
+const ROLE_ON_PLAYER_TABLE_NAME = 'roleOnPlayer';
 
 export class PlayerModel extends TakaroModel {
   static tableName = PLAYER_TABLE_NAME;
@@ -27,6 +29,18 @@ export class PlayerModel extends TakaroModel {
             to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
           },
           to: `${GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+      roles: {
+        relation: Model.ManyToManyRelation,
+        modelClass: RoleModel,
+        join: {
+          from: `${PLAYER_TABLE_NAME}.id`,
+          through: {
+            from: `${ROLE_ON_PLAYER_TABLE_NAME}.playerId`,
+            to: `${ROLE_ON_PLAYER_TABLE_NAME}.roleId`,
+          },
+          to: `${ROLE_TABLE_NAME}.id`,
         },
       },
     };
@@ -90,5 +104,15 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
     return new PlayerOutputDTO().construct(res);
+  }
+
+  async assignRole(playerId: string, roleId: string): Promise<void> {
+    const { model } = await this.getModel();
+    await model.relatedQuery('roles').for(playerId).relate(roleId);
+  }
+
+  async removeRole(playerId: string, roleId: string): Promise<void> {
+    const { model } = await this.getModel();
+    await model.relatedQuery('roles').for(playerId).unrelate().where('roleId', roleId);
   }
 }

@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "d2c3a892-539a-4b17-9f89-57777e3f0de9",
-      "createdAt": "2023-07-12T09:49:28.774Z",
-      "updatedAt": "2023-07-12T09:49:28.774Z",
+      "id": "42b16bb6-8c16-41b5-b225-4c415a293528",
+      "createdAt": "2023-07-12T09:49:29.859Z",
+      "updatedAt": "2023-07-12T09:49:29.872Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
@@ -13,16 +13,26 @@
       "cronJobs": [],
       "hooks": [],
       "commands": [],
-      "permissions": []
+      "permissions": [
+        {
+          "id": "37867142-e46c-4067-8636-6b770c80166c",
+          "createdAt": "2023-07-12T09:49:29.873Z",
+          "updatedAt": "2023-07-12T09:49:29.873Z",
+          "moduleId": "42b16bb6-8c16-41b5-b225-4c415a293528",
+          "permission": "test"
+        }
+      ]
     }
   },
   "status": 200,
   "test": {
     "group": "ModuleController",
     "snapshot": true,
-    "name": "Create",
+    "name": "Allows passing an array of permissions when updating a module",
+    "filteredFields": [
+      "moduleId"
+    ],
     "expectedStatus": 200,
-    "filteredFields": [],
     "standardEnvironment": true
   }
 }
