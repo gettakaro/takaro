@@ -1,4 +1,4 @@
-import { Configuration, FrontendApi, IdentityApi, OAuth2Api } from '@ory/client';
+import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi, OAuth2Api } from '@ory/client';
 import { config } from '../config.js';
 import { errors, logger, TakaroDTO } from '@takaro/util';
 import { AdminClient as TakaroClient } from '@takaro/apiclient';
@@ -119,24 +119,30 @@ class Ory {
     };
   }
 
-  async createIdentity(email: string, password: string, domainId: string): Promise<ITakaroIdentity> {
-    const res = await this.identityClient.createIdentity({
-      createIdentityBody: {
-        schema_id: IDENTITY_SCHEMA.USER,
-        traits: {
-          email,
-        },
-        metadata_public: {
-          domainId,
-        },
-        credentials: {
-          password: {
-            config: {
-              password,
-            },
+  async createIdentity(email: string, domainId: string, password?: string): Promise<ITakaroIdentity> {
+    const body: CreateIdentityBody = {
+      schema_id: IDENTITY_SCHEMA.USER,
+      traits: {
+        email,
+      },
+      metadata_public: {
+        domainId,
+      },
+
+    };
+
+    if (password) {
+      body.credentials = {
+        password: {
+          config: {
+            password,
           },
         },
-      },
+      };
+    }
+
+    const res = await this.identityClient.createIdentity({
+      createIdentityBody: body,
     });
 
     return {
@@ -258,6 +264,18 @@ class Ory {
       clientSecret: client.data.client_secret,
     };
   }
+
+  async getRecoveryFlow(id: string) {
+    const recoveryRes = await this.identityClient.createRecoveryLinkForIdentity({
+      createRecoveryLinkForIdentityBody: {
+        identity_id: id,
+        expires_in: '12h',
+      }
+    });
+
+    return recoveryRes.data;
+  }
+
 }
 
 export const ory = new Ory();

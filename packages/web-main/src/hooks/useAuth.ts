@@ -75,5 +75,6 @@ export function useAuth() {
     createLoginFlow,
     session: sessionData?.data.data,
     isLoading,
+    oryClient: cachedClient,
   };
 }

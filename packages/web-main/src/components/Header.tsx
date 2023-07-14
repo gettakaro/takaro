@@ -114,7 +114,7 @@ export const Header: FC<HeaderProps> = ({ isLoading, idToNameMap }) => {
         }
         renderFloating={
           <MenuList>
-            <MenuList.Item onClick={() => navigate(PATHS.login())}>
+            <MenuList.Item onClick={() => navigate(PATHS.auth.profile())}>
               <InnerItem>
                 <ProfileIcon /> Profile
               </InnerItem>

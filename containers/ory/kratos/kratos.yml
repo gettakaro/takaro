@@ -37,7 +37,7 @@ selfservice:
     totp:
       config:
         issuer: Kratos
-      enabled: true
+      enabled: false
     lookup_secret:
       enabled: true
     link:
@@ -50,13 +50,13 @@ selfservice:
       ui_url: http://127.0.0.1:13001/error
 
     settings:
-      ui_url: http://127.0.0.1:13001/settings
+      ui_url: http://127.0.0.1:13001/auth/profile
       privileged_session_max_age: 15m
       required_aal: highest_available
 
     recovery:
       enabled: true
-      ui_url: http://127.0.0.1:13001/recovery
+      ui_url: http://127.0.0.1:13001/auth/recovery
       use: code
 
     verification:

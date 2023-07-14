@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserService, UserUpdateDTO } from '../service/UserService.js';
@@ -26,6 +26,12 @@ export class LoginDTO {
 export class ParamIdAndRoleId extends ParamId {
   @IsUUID('4')
   roleId!: string;
+}
+
+export class InviteCreateDTO {
+  @IsString()
+  @IsEmail()
+  email!: string;
 }
 
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
@@ -147,5 +153,14 @@ export class UserController {
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
     const service = new UserService(req.domainId);
     return apiResponse(await service.removeRole(params.id, params.roleId));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @Post('/user/invite')
+  @ResponseSchema(APIOutput)
+  async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
+    const service = new UserService(req.domainId);
+    await service.inviteUser(data.email);
+    return apiResponse();
   }
 }
