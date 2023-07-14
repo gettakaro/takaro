@@ -2,10 +2,7 @@ import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { TextField, Switch } from '@takaro/lib-components';
 import { Control } from 'react-hook-form';
 
-export const connectionInfoFieldsMap = (
-  isLoading: boolean,
-  control: Control<any>
-) => {
+export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any>) => {
   return {
     [GameServerCreateDTOTypeEnum.Sevendaystodie]: [
       <TextField
@@ -39,6 +36,16 @@ export const connectionInfoFieldsMap = (
           label="Use TLS"
           name="connectionInfo.useTls"
           key="seven-days-to-die-use-tls"
+          control={control}
+          loading={isLoading}
+          required
+        />
+      </>,
+      <>
+        <Switch
+          label="Use CPM"
+          name="connectionInfo.useCPM"
+          key="seven-days-to-die-use-cpm"
           control={control}
           loading={isLoading}
           required

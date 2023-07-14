@@ -12,6 +12,7 @@ import {
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
+import { Settings } from '@takaro/apiclient';
 
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
@@ -22,7 +23,7 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: SdtdConnectionInfo) {
+  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings>) {
     this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
@@ -79,8 +80,13 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    const command = `give ${player.gameId} ${item.name} ${item.amount}`;
-    await this.executeConsoleCommand(command);
+    if (this.connectionInfo.useCPM) {
+      const command = `giveplus EOS_${player.gameId} ${item.name} ${item.amount}`;
+      await this.executeConsoleCommand(command);
+    } else {
+      const command = `give EOS_${player.gameId} ${item.name} ${item.amount}`;
+      await this.executeConsoleCommand(command);
+    }
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
@@ -130,6 +136,15 @@ export class SevenDaysToDie implements IGameServer {
 
     if (opts?.recipient?.gameId) {
       command = `sayplayer "EOS_${opts.recipient.gameId}" "${message}"`;
+    }
+
+    if (this.connectionInfo.useCPM) {
+      const sender = this.settings.serverChatName || 'Takaro';
+      command = `say2 "${sender}" "${message}"`;
+
+      if (opts?.recipient?.gameId) {
+        command = `pm2 "${sender}" "EOS_${opts.recipient.gameId}" "${message}"`;
+      }
     }
 
     await this.executeConsoleCommand(command);

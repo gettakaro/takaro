@@ -12,6 +12,7 @@ import {
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
+import { Settings } from '@takaro/apiclient';
 
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
@@ -19,7 +20,7 @@ export class Rust implements IGameServer {
   connectionInfo: RustConnectionInfo;
   private client: WebSocket | null;
 
-  constructor(config: RustConnectionInfo) {
+  constructor(config: RustConnectionInfo, private settings: Partial<Settings>) {
     this.connectionInfo = config;
   }
 

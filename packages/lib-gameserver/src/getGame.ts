@@ -1,5 +1,5 @@
 import { errors } from '@takaro/util';
-import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
+import { GameServerOutputDTOTypeEnum, Settings } from '@takaro/apiclient';
 import { SdtdConnectionInfo } from './gameservers/7d2d/connectionInfo.js';
 import { SevenDaysToDie } from './gameservers/7d2d/index.js';
 import { MockConnectionInfo } from './gameservers/mock/connectionInfo.js';
@@ -16,15 +16,16 @@ export enum GAME_SERVER_TYPE {
 
 export async function getGame(
   type: GAME_SERVER_TYPE | GameServerOutputDTOTypeEnum,
-  connectionInfo: Record<string, unknown>
+  connectionInfo: Record<string, unknown>,
+  settings: Partial<Settings>
 ): Promise<IGameServer> {
   switch (type) {
     case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-      return new SevenDaysToDie(await new SdtdConnectionInfo().construct(connectionInfo));
+      return new SevenDaysToDie(await new SdtdConnectionInfo().construct(connectionInfo), settings);
     case GAME_SERVER_TYPE.RUST:
-      return new Rust(await new RustConnectionInfo().construct(connectionInfo));
+      return new Rust(await new RustConnectionInfo().construct(connectionInfo), settings);
     case GAME_SERVER_TYPE.MOCK:
-      return new Mock(await new MockConnectionInfo().construct(connectionInfo));
+      return new Mock(await new MockConnectionInfo().construct(connectionInfo), settings);
     default:
       throw new errors.NotImplementedError();
   }
