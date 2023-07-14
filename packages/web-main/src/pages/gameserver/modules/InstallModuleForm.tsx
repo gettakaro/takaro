@@ -7,6 +7,7 @@ import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { useGameServerModuleInstall, useGameServerModuleInstallation } from 'queries/gameservers';
 import { useModule } from 'queries/modules';
+import { set } from 'zod';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -16,6 +17,7 @@ const ButtonContainer = styled.div`
 
 const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
+  const [submitRequested, setSubmitRequested] = useState(false);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
@@ -25,8 +27,8 @@ const InstallModule: FC = () => {
     moduleId!
   );
 
-  const [userConfig, setUserConfig] = useState<Record<string, unknown> | null>(null);
-  const [systemConfig, setSystemConfig] = useState<Record<string, unknown> | null>(null);
+  const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
+  const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
 
   const userConfigFormRef = useRef<Form>(null);
   const systemConfigFormRef = useRef<Form>(null);
@@ -69,10 +71,11 @@ const InstallModule: FC = () => {
   }, [moduleId, mutateAsync, navigate, serverId, systemConfig, userConfig]);
 
   useEffect(() => {
-    if (userConfig && systemConfig) {
+    if (userConfig && systemConfig && submitRequested) {
       onSubmit();
     }
-  }, [userConfig, systemConfig, onSubmit]);
+    setSubmitRequested(false);
+  }, [userConfig, systemConfig, onSubmit, submitRequested]);
 
   if (moduleLoading || moduleInstallationLoading) {
     return <DrawerSkeleton />;
@@ -120,6 +123,7 @@ const InstallModule: FC = () => {
               onClick={() => {
                 systemConfigFormRef.current?.formElement.current.requestSubmit();
                 userConfigFormRef.current?.formElement.current.requestSubmit();
+                setSubmitRequested(true);
               }}
             />
           </ButtonContainer>
