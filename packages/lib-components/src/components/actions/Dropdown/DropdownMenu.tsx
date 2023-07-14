@@ -27,6 +27,7 @@ type DropdownMenuComponent = {
 export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ children, ...props }, propRef) => {
   const { context, floatingStyles, elementsRef, labelsRef, getFloatingProps, descriptionId, labelId } =
     useDropdownContext();
+
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
   const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {

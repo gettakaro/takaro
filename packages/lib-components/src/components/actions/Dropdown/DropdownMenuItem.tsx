@@ -85,7 +85,7 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   return (
     <Container
       type="button"
-      onClick={(e) => handleClick(e)}
+      onClick={handleClick}
       onMouseUp={handleMouseUp}
       isActive={isActive}
       ref={ref}

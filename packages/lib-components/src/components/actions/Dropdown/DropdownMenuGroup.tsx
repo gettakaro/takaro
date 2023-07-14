@@ -28,8 +28,6 @@ interface DropdownGroupProps {
 export const DropdownMenuGroup: FC<PropsWithChildren<DropdownGroupProps>> = ({ label, divider = false, children }) => {
   const showDivider = divider || label ? true : false;
 
-  console.log(label, children, divider, Array.isArray(children) ? children.length !== 0 : true);
-
   return (
     <Container role="group" divider={showDivider} hasChildren={Array.isArray(children) ? children.length !== 0 : true}>
       {label && <span role="presentation">{label}</span>}
