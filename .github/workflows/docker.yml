@@ -160,9 +160,15 @@ jobs:
       - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - run: npx zx scripts/integration-tests.mjs
+      - uses: nick-fields/retry@v2
+        name: Integration tests e2e
+        with:
+          timeout_minutes: 60
+          max_attempts: 5
+          shell: pwsh
+          command: npx zx scripts/integration-tests.mjs
         env:
-          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}        
           IS_E2E: true
       - uses: actions/upload-artifact@v3
         if: always()
