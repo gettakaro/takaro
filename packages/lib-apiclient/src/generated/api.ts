@@ -4936,6 +4936,12 @@ export interface VariableCreateDTO {
    * @memberof VariableCreateDTO
    */
   playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableCreateDTO
+   */
+  moduleId?: string;
 }
 /**
  *
@@ -4986,6 +4992,12 @@ export interface VariableOutputDTO {
    * @memberof VariableOutputDTO
    */
   playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableOutputDTO
+   */
+  moduleId?: string;
   /**
    *
    * @type {string}
@@ -5054,6 +5066,12 @@ export interface VariableSearchInputAllowedFilters {
    * @memberof VariableSearchInputAllowedFilters
    */
   playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputAllowedFilters
+   */
+  moduleId?: string;
 }
 /**
  *
@@ -5143,6 +5161,12 @@ export interface VariableUpdateDTO {
    * @memberof VariableUpdateDTO
    */
   playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableUpdateDTO
+   */
+  moduleId?: string;
 }
 
 /**

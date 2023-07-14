@@ -13,6 +13,7 @@ export class VariablesModel extends TakaroModel {
 
   gameServerId?: string;
   playerId?: string;
+  moduleId?: string;
 }
 
 @traceableClass('repo:variable')
