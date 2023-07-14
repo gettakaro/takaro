@@ -48,6 +48,7 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
           key="seven-days-to-die-use-cpm"
           control={control}
           loading={isLoading}
+          description="CPM is a helper mod for 7 Days to Die. Download at https://cpm.7d2d.download"
           required
         />
       </>,
