@@ -32,7 +32,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
   return (
     <>
-      <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))}>
+      <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))} tabIndex={0}>
         <Body>
           <Header>
             {isLoading || !data ? (
