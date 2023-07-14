@@ -55,6 +55,8 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
                 <MenuList>
                   <MenuList.Item onClick={handleOnEditClick}>Edit role</MenuList.Item>
                   <MenuList.Item onClick={handleOnDeleteClick}>Delete role</MenuList.Item>
+                  <MenuList.Item onClick={() => {}}>Manage users</MenuList.Item>
+                  <MenuList.Item onClick={() => {}}>Manage players</MenuList.Item>
                 </MenuList>
               }
             />
