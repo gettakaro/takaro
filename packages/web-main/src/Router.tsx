@@ -22,6 +22,10 @@ import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
 
+import { Roles } from './pages/roles';
+import { RolesCreate } from './pages/roles/RolesCreate';
+import { RolesUpdate } from './pages/roles/RolesUpdate';
+
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
@@ -54,16 +58,25 @@ export const Router: FC = () => (
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
           <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
+        <Route element={<Players />} path={PATHS.players()} />
         <Route element={<GameServers />} path="/server/" />
 
+        {/* ======================== CRUD Game Servers ======================== */}
         <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
           <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
           <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
         </Route>
-        <Route element={<Players />} path={PATHS.players()} />
+
+        {/* ======================== CRUD Modules ======================== */}
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
           <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
           <Route element={<CreateModule />} path={PATHS.modules.create()} />
+        </Route>
+
+        {/* ======================== CRUD Roles ======================== */}
+        <Route element={<Roles />} path={PATHS.roles.overview()}>
+          <Route element={<RolesCreate />} path={PATHS.roles.create()} />
+          <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
         </Route>
       </Route>
 

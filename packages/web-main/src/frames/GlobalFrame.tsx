@@ -12,6 +12,7 @@ import {
   AiOutlineBook as DocumentationIcon,
   // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
+  AiOutlineUsergroupAdd as RolesIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -41,6 +42,11 @@ export const GlobalFrame: FC = () => {
       label: 'Servers',
       path: PATHS.gameServers.overview(),
       icon: <GameServersIcon />,
+    },
+    {
+      label: 'Roles',
+      path: PATHS.roles.overview(),
+      icon: <RolesIcon />,
     },
     {
       label: 'Players',
