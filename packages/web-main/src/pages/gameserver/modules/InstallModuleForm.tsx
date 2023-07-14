@@ -7,7 +7,6 @@ import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { useGameServerModuleInstall, useGameServerModuleInstallation } from 'queries/gameservers';
 import { useModule } from 'queries/modules';
-import { set } from 'zod';
 
 const ButtonContainer = styled.div`
   display: flex;
