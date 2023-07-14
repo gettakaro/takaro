@@ -1,17 +1,16 @@
 import { FC, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
-import { RecoveryFlow, SettingsFlow } from '@ory/client';
+import { SettingsFlow } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-
-import { Button, TextField, styled, errors, Company, FormError, Loading } from '@takaro/lib-components';
-import { Form } from '@takaro/lib-components/src/components/inputs/JsonSchemaForm/generator/style';
+import { filterNodesByGroups } from '@ory/integrations/ui';
+import { styled, Loading, mapUINode } from '@takaro/lib-components';
 import { useForm } from 'react-hook-form';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
   height: 100vh;
@@ -28,43 +27,60 @@ export const AuthSettings: FC = () => {
   const [searchParams] = useSearchParams();
   const [flow, setFlow] = useState<SettingsFlow | null>(null);
 
-  const {control} = useForm();
+  const { control, handleSubmit } = useForm();
 
   useEffect(() => {
     const flowId = searchParams.get('flow');
 
-    if (!flowId) {
-      return;
-    }
+    try {
+      const createFlow = async () => {
+        setFlow((await oryClient.createBrowserSettingsFlow()).data);
+      };
 
-    oryClient.getSettingsFlow({ id: flowId }).then((flowRes) => {
-      setFlow(flowRes.data);
-    });
-  }, []);
+      if (!flowId) {
+        createFlow();
+        return;
+      }
+
+      oryClient.getSettingsFlow({ id: flowId }).then((flowRes) => {
+        setFlow(flowRes.data);
+      });
+    } catch (e) {
+      // failed to create flow error handling
+      console.log(e);
+    }
+  }, [oryClient, searchParams]);
 
   if (!flow) {
     return <Loading />;
   }
 
-  const ui = flow.ui;
-
-  const passwordComponents = (
-    <>
-      <TextField control={control} label="Password" loading={false} name="password" required type="password"  />
-      <Button text='Submit' type='submit'/>
-    </>
-  )
+  const onSubmit = async (formData: unknown) => {
+    // TODO:
+    /*oryClient.updateSettingsFlow({
+      flow: flow.id,
+      updateSettingsFlowBody: {
+        flow: flow.id,
+      },
+    });
+  */
+  };
 
   return (
     <>
       <Helmet>
-        <title>Profile - Takaro </title>
+        <title>Profile - Takaro</title>
       </Helmet>
       <Container>
-        <h2>Password</h2>
-        <Form action={ui.action} method={ui.method}>
-        {passwordComponents}
-        </Form>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {filterNodesByGroups({
+            nodes: flow.ui.nodes,
+            // we will also map default fields here such as csrf_token
+            // this only maps the `password` method
+            // other methods can also be mapped such as `oidc` or `webauthn`
+            groups: ['profile', 'password'],
+          }).map((node, idx) => mapUINode(node, idx, control))}
+        </form>
       </Container>
     </>
   );

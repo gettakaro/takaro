@@ -1,9 +1,4 @@
-import {
-  cloneElement,
-  forwardRef,
-  MouseEvent as ReactMouseEvent,
-  ReactElement,
-} from 'react';
+import { cloneElement, forwardRef, MouseEvent as ReactMouseEvent, ReactElement } from 'react';
 import { Spinner } from '../../../components';
 import { ButtonColor, Default, Outline, Clear, White } from './style';
 import { Size, Variant } from '../../../styled';
@@ -47,13 +42,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     function getIcon(): JSX.Element {
-      if (isLoading)
-        return (
-          <Spinner
-            color={variant === 'default' ? 'white' : color}
-            size="small"
-          />
-        );
+      if (isLoading) return <Spinner color={variant === 'default' ? 'white' : color} size="small" />;
 
       if (icon) return cloneElement(icon, { size: 20 });
 
@@ -80,29 +69,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         case 'default':
           return (
             <Default {...props}>
-              {iconPosition === 'left' && getIcon()} <span>{text}</span>{' '}
-              {iconPosition === 'right' && getIcon()}
+              {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
             </Default>
           );
         case 'outline':
           return (
             <Outline {...props}>
-              {iconPosition === 'left' && getIcon()} <span>{text}</span>{' '}
-              {iconPosition === 'right' && getIcon()}
+              {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
             </Outline>
           );
         case 'clear':
           return (
             <Clear {...props}>
-              {iconPosition === 'left' && getIcon()} <span>{text}</span>{' '}
-              {iconPosition === 'right' && getIcon()}
+              {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
             </Clear>
           );
         case 'white':
           return (
             <White {...props}>
-              {iconPosition === 'left' && getIcon()} <span>{text}</span>{' '}
-              {iconPosition === 'right' && getIcon()}
+              {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
             </White>
           );
       }
