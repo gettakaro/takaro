@@ -11,6 +11,8 @@ import {
   AiOutlineDelete as DeleteIcon,
 } from 'react-icons/ai';
 import { Dropdown, IconButton, Tooltip } from '../../../../../components';
+import { useTableContext } from '../../Context';
+import { getTokenChars, TokenType } from '../FilterAndSearchField/tokenizer';
 
 interface ColumnSettingsProps<DataType extends object> {
   header: Header<DataType, unknown>;
@@ -18,6 +20,7 @@ interface ColumnSettingsProps<DataType extends object> {
 }
 
 export function ColumnSettings<DataType extends object>({ header, table }: ColumnSettingsProps<DataType>) {
+  const { setSearchAndFilterInputValue, SearchAndFilterInputRef } = useTableContext();
   const toggleSorting = (desc: boolean) => {
     table.setSorting(() => [{ id: header.column.id, desc }]);
   };
@@ -123,14 +126,18 @@ export function ColumnSettings<DataType extends object>({ header, table }: Colum
               label="Filter by values"
               disabled={!header.column.getCanFilter()}
               onClick={() => {
-                /* todo */
+                setSearchAndFilterInputValue(header.column.id + getTokenChars(TokenType.EXACT_COLUMN));
+                SearchAndFilterInputRef.current?.focus();
               }}
             />
             <Dropdown.Menu.Item
               icon={<SearchIcon />}
               label="Search by values"
               disabled={!header.column.getCanFilter()}
-              onClick={() => {}}
+              onClick={() => {
+                setSearchAndFilterInputValue(header.column.id + getTokenChars(TokenType.SEARCH_COLUMN));
+                SearchAndFilterInputRef.current?.focus();
+              }}
             />
           </Dropdown.Menu.Group>
           <Dropdown.Menu.Item

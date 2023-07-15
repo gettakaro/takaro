@@ -31,6 +31,8 @@ const Players: FC = () => {
     },
   });
 
+  console.log(columnFilters.columnFiltersState);
+
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
