@@ -197,7 +197,7 @@ export class AuthService extends DomainScoped {
 
         const allUserPermissions = user.roles.reduce((acc, role) => {
           return [...acc, ...role.permissions.map((c) => c.permission)];
-        }, [] as PERMISSIONS[]);
+        }, [] as string[]);
 
         const hasAllPermissions = permissions.every((permission) => allUserPermissions.includes(permission));
 

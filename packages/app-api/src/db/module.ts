@@ -19,6 +19,8 @@ export class ModulePermissionModel extends TakaroModel {
   static tableName = MODULE_PERMISSIONS_TABLE_NAME;
   moduleId!: string;
   permission!: string;
+  friendlyName!: string;
+  description!: string;
 }
 
 export class ModuleModel extends TakaroModel {
@@ -181,7 +183,9 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       await permissionModel.query().insert(
         item.permissions.map((permission) => ({
           moduleId: data.id,
-          permission,
+          permission: permission.permission,
+          friendlyName: permission.friendlyName,
+          description: permission.description,
         }))
       );
     }
@@ -209,8 +213,10 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         return acc;
       }, {} as Record<string, ModulePermissionModel>);
 
-      const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission]);
-      const toDelete = existingPermissions.filter((permission) => !data.permissions.includes(permission.permission));
+      const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission.permission]);
+      const toDelete = existingPermissions.filter(
+        (permission) => !data.permissions.find((p) => p.permission === permission.permission)
+      );
 
       await permissionModel
         .query()
@@ -222,7 +228,9 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       await permissionModel.query().insert(
         toInsert.map((permission) => ({
           moduleId: id,
-          permission,
+          permission: permission.permission,
+          friendlyName: permission.friendlyName,
+          description: permission.description,
         }))
       );
     }

@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { ModuleModel, ModuleRepo } from '../db/module.js';
-import { IsArray, IsJSON, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsJSON, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 
 import { Type } from 'class-transformer';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
@@ -13,14 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
-
-export class ModulePermissionOutputDTO extends TakaroModelDTO<ModulePermissionOutputDTO> {
-  @IsUUID()
-  moduleId!: string;
-
-  @IsString()
-  permission!: string;
-}
+import { PermissionOutputDTO } from './RoleService.js';
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -52,8 +45,8 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   commands: CommandOutputDTO[];
 
   @ValidateNested({ each: true })
-  @Type(() => ModulePermissionOutputDTO)
-  permissions: ModulePermissionOutputDTO[];
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
@@ -69,10 +62,10 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsOptional()
   configSchema: string;
 
-  @IsArray()
   @IsOptional()
-  @IsString({ each: true })
-  permissions: string[];
+  @ValidateNested({ each: true })
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
@@ -92,10 +85,10 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsOptional()
   builtin: string;
 
-  @IsArray()
   @IsOptional()
-  @IsString({ each: true })
-  permissions: string[];
+  @ValidateNested({ each: true })
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
@@ -113,10 +106,10 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsOptional()
   configSchema: string;
 
-  @IsArray()
   @IsOptional()
-  @IsString({ each: true })
-  permissions: string[];
+  @ValidateNested({ each: true })
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 @traceableClass('service:module')

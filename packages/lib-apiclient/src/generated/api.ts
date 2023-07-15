@@ -3087,10 +3087,10 @@ export interface ModuleCreateDTO {
     'configSchema'?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<PermissionOutputDTO>}
      * @memberof ModuleCreateDTO
      */
-    'permissions'?: Array<string>;
+    'permissions'?: Array<PermissionOutputDTO>;
 }
 /**
  * 
@@ -3124,10 +3124,10 @@ export interface ModuleCreateInternalDTO {
     'builtin'?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<PermissionOutputDTO>}
      * @memberof ModuleCreateInternalDTO
      */
-    'permissions'?: Array<string>;
+    'permissions'?: Array<PermissionOutputDTO>;
 }
 /**
  * 
@@ -3310,10 +3310,10 @@ export interface ModuleOutputDTO {
     'commands': Array<CommandOutputDTO>;
     /**
      * 
-     * @type {Array<ModulePermissionOutputDTO>}
+     * @type {Array<PermissionOutputDTO>}
      * @memberof ModuleOutputDTO
      */
-    'permissions': Array<ModulePermissionOutputDTO>;
+    'permissions': Array<PermissionOutputDTO>;
     /**
      * 
      * @type {string}
@@ -3351,43 +3351,6 @@ export interface ModuleOutputDTOAPI {
      * @memberof ModuleOutputDTOAPI
      */
     'meta': MetadataOutput;
-}
-/**
- * 
- * @export
- * @interface ModulePermissionOutputDTO
- */
-export interface ModulePermissionOutputDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof ModulePermissionOutputDTO
-     */
-    'moduleId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModulePermissionOutputDTO
-     */
-    'permission': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ModulePermissionOutputDTO
-     */
-    'id': string;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof ModulePermissionOutputDTO
-     */
-    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof ModulePermissionOutputDTO
-     */
-    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -3491,10 +3454,10 @@ export interface ModuleUpdateDTO {
     'configSchema'?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<PermissionOutputDTO>}
      * @memberof ModuleUpdateDTO
      */
-    'permissions'?: Array<string>;
+    'permissions'?: Array<PermissionOutputDTO>;
 }
 /**
  * 
@@ -3629,57 +3592,39 @@ export interface PermissionOutputDTO {
      * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'permission': PermissionOutputDTOPermissionEnum;
+    'permission': string;
     /**
      * 
      * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'id': string;
+    'friendlyName': string;
     /**
      * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof PermissionOutputDTO
-     */
-    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    'description': string;
 }
-
-export const PermissionOutputDTOPermissionEnum = {
-    Root: 'ROOT',
-    ManageUsers: 'MANAGE_USERS',
-    ReadUsers: 'READ_USERS',
-    ManageRoles: 'MANAGE_ROLES',
-    ReadRoles: 'READ_ROLES',
-    ManageGameservers: 'MANAGE_GAMESERVERS',
-    ReadGameservers: 'READ_GAMESERVERS',
-    ReadFunctions: 'READ_FUNCTIONS',
-    ManageFunctions: 'MANAGE_FUNCTIONS',
-    ReadCronjobs: 'READ_CRONJOBS',
-    ManageCronjobs: 'MANAGE_CRONJOBS',
-    ReadHooks: 'READ_HOOKS',
-    ManageHooks: 'MANAGE_HOOKS',
-    ReadCommands: 'READ_COMMANDS',
-    ManageCommands: 'MANAGE_COMMANDS',
-    ReadModules: 'READ_MODULES',
-    ManageModules: 'MANAGE_MODULES',
-    ReadPlayers: 'READ_PLAYERS',
-    ManagePlayers: 'MANAGE_PLAYERS',
-    ManageSettings: 'MANAGE_SETTINGS',
-    ReadSettings: 'READ_SETTINGS',
-    ReadVariables: 'READ_VARIABLES',
-    ManageVariables: 'MANAGE_VARIABLES',
-    ReadEvents: 'READ_EVENTS',
-    ManageEvents: 'MANAGE_EVENTS'
-} as const;
-
-export type PermissionOutputDTOPermissionEnum = typeof PermissionOutputDTOPermissionEnum[keyof typeof PermissionOutputDTOPermissionEnum];
-
+/**
+ * 
+ * @export
+ * @interface PermissionOutputDTOAPI
+ */
+export interface PermissionOutputDTOAPI {
+    /**
+     * 
+     * @type {Array<PermissionOutputDTO>}
+     * @memberof PermissionOutputDTOAPI
+     */
+    'data': Array<PermissionOutputDTO>;
+    /**
+     * 
+     * @type {MetadataOutput}
+     * @memberof PermissionOutputDTOAPI
+     */
+    'meta': MetadataOutput;
+}
 /**
  * 
  * @export
@@ -4089,39 +4034,8 @@ export interface RoleCreateInputDTO {
      * @type {Array<string>}
      * @memberof RoleCreateInputDTO
      */
-    'permissions': Array<RoleCreateInputDTOPermissionsEnum>;
+    'permissions': Array<string>;
 }
-
-export const RoleCreateInputDTOPermissionsEnum = {
-    Root: 'ROOT',
-    ManageUsers: 'MANAGE_USERS',
-    ReadUsers: 'READ_USERS',
-    ManageRoles: 'MANAGE_ROLES',
-    ReadRoles: 'READ_ROLES',
-    ManageGameservers: 'MANAGE_GAMESERVERS',
-    ReadGameservers: 'READ_GAMESERVERS',
-    ReadFunctions: 'READ_FUNCTIONS',
-    ManageFunctions: 'MANAGE_FUNCTIONS',
-    ReadCronjobs: 'READ_CRONJOBS',
-    ManageCronjobs: 'MANAGE_CRONJOBS',
-    ReadHooks: 'READ_HOOKS',
-    ManageHooks: 'MANAGE_HOOKS',
-    ReadCommands: 'READ_COMMANDS',
-    ManageCommands: 'MANAGE_COMMANDS',
-    ReadModules: 'READ_MODULES',
-    ManageModules: 'MANAGE_MODULES',
-    ReadPlayers: 'READ_PLAYERS',
-    ManagePlayers: 'MANAGE_PLAYERS',
-    ManageSettings: 'MANAGE_SETTINGS',
-    ReadSettings: 'READ_SETTINGS',
-    ReadVariables: 'READ_VARIABLES',
-    ManageVariables: 'MANAGE_VARIABLES',
-    ReadEvents: 'READ_EVENTS',
-    ManageEvents: 'MANAGE_EVENTS'
-} as const;
-
-export type RoleCreateInputDTOPermissionsEnum = typeof RoleCreateInputDTOPermissionsEnum[keyof typeof RoleCreateInputDTOPermissionsEnum];
-
 /**
  * 
  * @export
@@ -4155,10 +4069,10 @@ export interface RoleOutputDTO {
     'name': string;
     /**
      * 
-     * @type {Array<any>}
+     * @type {Array<PermissionOutputDTO>}
      * @memberof RoleOutputDTO
      */
-    'permissions': Array<any>;
+    'permissions': Array<PermissionOutputDTO>;
     /**
      * 
      * @type {string}
@@ -4284,39 +4198,8 @@ export interface RoleUpdateInputDTO {
      * @type {Array<string>}
      * @memberof RoleUpdateInputDTO
      */
-    'permissions': Array<RoleUpdateInputDTOPermissionsEnum>;
+    'permissions': Array<string>;
 }
-
-export const RoleUpdateInputDTOPermissionsEnum = {
-    Root: 'ROOT',
-    ManageUsers: 'MANAGE_USERS',
-    ReadUsers: 'READ_USERS',
-    ManageRoles: 'MANAGE_ROLES',
-    ReadRoles: 'READ_ROLES',
-    ManageGameservers: 'MANAGE_GAMESERVERS',
-    ReadGameservers: 'READ_GAMESERVERS',
-    ReadFunctions: 'READ_FUNCTIONS',
-    ManageFunctions: 'MANAGE_FUNCTIONS',
-    ReadCronjobs: 'READ_CRONJOBS',
-    ManageCronjobs: 'MANAGE_CRONJOBS',
-    ReadHooks: 'READ_HOOKS',
-    ManageHooks: 'MANAGE_HOOKS',
-    ReadCommands: 'READ_COMMANDS',
-    ManageCommands: 'MANAGE_COMMANDS',
-    ReadModules: 'READ_MODULES',
-    ManageModules: 'MANAGE_MODULES',
-    ReadPlayers: 'READ_PLAYERS',
-    ManagePlayers: 'MANAGE_PLAYERS',
-    ManageSettings: 'MANAGE_SETTINGS',
-    ReadSettings: 'READ_SETTINGS',
-    ReadVariables: 'READ_VARIABLES',
-    ManageVariables: 'MANAGE_VARIABLES',
-    ReadEvents: 'READ_EVENTS',
-    ManageEvents: 'MANAGE_EVENTS'
-} as const;
-
-export type RoleUpdateInputDTOPermissionsEnum = typeof RoleUpdateInputDTOPermissionsEnum[keyof typeof RoleUpdateInputDTOPermissionsEnum];
-
 /**
  * 
  * @export
@@ -11013,6 +10896,38 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @summary Get permissions
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        roleControllerGetPermissions: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/permissions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication domainAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Remove
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -11157,6 +11072,16 @@ export const RoleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get permissions
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async roleControllerGetPermissions(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PermissionOutputDTOAPI>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetPermissions(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Remove
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -11221,6 +11146,15 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @summary Get permissions
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        roleControllerGetPermissions(options?: any): AxiosPromise<PermissionOutputDTOAPI> {
+            return localVarFp.roleControllerGetPermissions(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Remove
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -11282,6 +11216,17 @@ export class RoleApi extends BaseAPI {
      */
     public roleControllerGetOne(id: string, options?: AxiosRequestConfig) {
         return RoleApiFp(this.configuration).roleControllerGetOne(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof RoleApi
+     */
+    public roleControllerGetPermissions(options?: AxiosRequestConfig) {
+        return RoleApiFp(this.configuration).roleControllerGetPermissions(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

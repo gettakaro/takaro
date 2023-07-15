@@ -17,8 +17,6 @@ export const Roles: FC = () => {
   const navigate = useNavigate();
   const { data: roles, isLoading, isError, InfiniteScroll } = useRoles();
 
-  console.log(roles);
-
   if (isLoading) {
     return (
       <Grid>

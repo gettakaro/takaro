@@ -7,6 +7,8 @@ import {
   IdUuidDTO,
   IdUuidDTOAPI,
   RoleOutputDTOAPI,
+  PermissionOutputDTOAPI,
+  PermissionOutputDTO,
 } from '@takaro/apiclient';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -20,6 +22,7 @@ export const roleKeys = {
   all: ['roles'] as const,
   list: () => [...roleKeys.all, 'list'] as const,
   detail: (id: string) => [...roleKeys.all, 'detail', id] as const,
+  permissions: () => [...roleKeys.all, 'permissions'] as const,
 };
 
 export const useRole = (id: string) => {
@@ -62,6 +65,16 @@ export const useRoles = ({ page = 0, limit, sortBy, sortDirection, filters, sear
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const usePermissions = () => {
+  const apiClient = useApiClient();
+
+  return useQuery<PermissionOutputDTO[], AxiosError<PermissionOutputDTOAPI>>({
+    queryKey: roleKeys.permissions(),
+    queryFn: async () => (await apiClient.role.roleControllerGetPermissions()).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
 };
 
 export const useRoleCreate = () => {

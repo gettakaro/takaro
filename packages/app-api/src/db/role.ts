@@ -4,7 +4,6 @@ import { omit } from 'lodash-es';
 import { Model } from 'objection';
 import { RoleCreateInputDTO, RoleOutputDTO, RoleUpdateInputDTO, PermissionOutputDTO } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
-import { PERMISSIONS } from '@takaro/auth';
 import { UserRepo } from './user.js';
 import { PlayerRepo } from './player.js';
 
@@ -13,7 +12,7 @@ const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
 
 export class PermissionModel extends TakaroModel {
   static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
-  permission!: PERMISSIONS;
+  permission!: string;
   roleId!: string;
 }
 
@@ -123,7 +122,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     return item;
   }
 
-  async addPermissionToRole(roleId: string, permission: PERMISSIONS) {
+  async addPermissionToRole(roleId: string, permission: string) {
     return PermissionModel.bindKnex(await this.getKnex())
       .query()
       .insert({
@@ -133,7 +132,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
       });
   }
 
-  async removePermissionFromRole(roleId: string, permission: PERMISSIONS) {
+  async removePermissionFromRole(roleId: string, permission: string) {
     return PermissionModel.bindKnex(await this.getKnex())
       .query()
       .modify('domainScoped', this.domainId)

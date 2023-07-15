@@ -1,21 +1,32 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, FormError, Switch } from '@takaro/lib-components';
+import { Button, TextField, Drawer, CollapseList, FormError, Switch, Loading } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
-import { useRoleCreate } from 'queries/roles';
-import { RoleCreateInputDTOPermissionsEnum } from '@takaro/apiclient';
+import { usePermissions, useRoleCreate } from 'queries/roles';
 import { validationSchema } from './validationSchema';
+import { PermissionOutputDTO } from '@takaro/apiclient';
 
+export const RolesCreate = () => {
+  const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
+
+  if (isLoadingPermissions || !permissions) return <Loading />;
+
+  return <RolesCreateForm permissions={permissions} />;
+};
+
+interface CreateRoleformProps {
+  permissions: PermissionOutputDTO[];
+}
 interface IFormInputs {
   name: string;
   permissions: Record<string, boolean>;
 }
 
-export const RolesCreate: FC = () => {
+export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -32,20 +43,18 @@ export const RolesCreate: FC = () => {
     resolver: zodResolver(validationSchema),
     defaultValues: {
       name: '',
-      permissions: Object.keys(RoleCreateInputDTOPermissionsEnum).reduce(
-        (acc, permission) => ({ ...acc, [permission]: false }),
+      permissions: Object.values(permissions).reduce(
+        (acc, permission) => ({ ...acc, [permission.permission]: false }),
         {}
       ),
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions: formPermissions }) => {
     try {
-      const activePermissions = Object.entries(permissions)
+      const activePermissions = Object.entries(formPermissions)
         .filter(([_key, value]) => value === true)
-        .map(
-          ([key, _value]) => RoleCreateInputDTOPermissionsEnum[key as keyof typeof RoleCreateInputDTOPermissionsEnum]
-        );
+        .map(([key, _value]) => key);
 
       await mutateAsync({
         name,
@@ -54,6 +63,7 @@ export const RolesCreate: FC = () => {
 
       navigate(PATHS.roles.overview());
     } catch (error) {
+      console.error(error);
       Sentry.captureException(error);
     }
   };
@@ -76,12 +86,13 @@ export const RolesCreate: FC = () => {
                 />
               </CollapseList.Item>
               <CollapseList.Item title="Permissions">
-                {Object.keys(RoleCreateInputDTOPermissionsEnum).map((permission) => (
+                {permissions.map((permission) => (
                   <Switch
                     control={control}
-                    label={permission.replace(/([A-Z])/g, ' $1').trim()}
-                    name={`permissions.${permission}`}
-                    key={permission}
+                    label={permission.friendlyName}
+                    name={`permissions.${permission.permission}`}
+                    key={permission.permission}
+                    description={permission.description}
                   />
                 ))}
               </CollapseList.Item>

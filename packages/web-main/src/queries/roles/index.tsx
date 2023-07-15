@@ -1,1 +1,1 @@
-export { useRoles, useRoleCreate, useRoleUpdate } from './queries';
+export * from './queries';
