@@ -108,7 +108,7 @@ export class RoleController {
   @Get('/permissions')
   async getPermissions(@Req() req: AuthenticatedRequest) {
     const moduleService = new ModuleService(req.domainId);
-    const modules = await moduleService.find({ page: 1, limit: 1000 });
+    const modules = await moduleService.find({ limit: 1000 });
     const modulePermissions = modules.results.map((mod) => mod.permissions).flat();
 
     const allPermissions = Object.values(PERMISSION_DETAILS).concat(modulePermissions);

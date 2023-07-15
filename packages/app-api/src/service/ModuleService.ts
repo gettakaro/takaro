@@ -165,6 +165,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         await new ModuleCreateInternalDTO().construct({
           ...builtin,
           builtin: builtin.name,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     } else {
@@ -172,6 +173,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.id,
         await new ModuleUpdateDTO().construct({
           ...builtin,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     }
