@@ -23,7 +23,7 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings>) {
+  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }

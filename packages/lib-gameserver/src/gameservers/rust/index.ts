@@ -20,7 +20,7 @@ export class Rust implements IGameServer {
   connectionInfo: RustConnectionInfo;
   private client: WebSocket | null;
 
-  constructor(config: RustConnectionInfo, private settings: Partial<Settings>) {
+  constructor(config: RustConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
   }
 

@@ -23,7 +23,7 @@ export class Mock implements IGameServer {
   emitter: MockEmitter;
   io: Socket;
 
-  constructor(config: MockConnectionInfo, private settings: Partial<Settings>) {
+  constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
     this.io = io(this.connectionInfo.host);
     this.emitter = new MockEmitter(this.connectionInfo, this.io);
