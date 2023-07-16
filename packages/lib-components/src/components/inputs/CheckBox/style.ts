@@ -76,7 +76,15 @@ export const CheckboxContainer = styled.button<{
 
   border-radius: ${({ theme }) => theme.borderRadius.small};
   transition: box-shadow 100ms linear, border-color 100ms linear;
-  cursor: ${({ readOnly, disabled }) => (readOnly || disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ readOnly, disabled }) => {
+    if (disabled) {
+      return 'not-allowed';
+    }
+    if (readOnly) {
+      return 'inherit';
+    }
+    return 'pointer';
+  }};
   overflow: visible;
   &.placeholder {
     border: none; /* Otherwise the border does not have the animation */

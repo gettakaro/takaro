@@ -71,6 +71,7 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     onClick(e);
+
     if (activeStyle === 'undo') {
       setOpen(false);
     }
@@ -99,13 +100,16 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
     >
       {activeStyle === 'checkbox' && (
         <GenericCheckBox
-          onChange={() => {}}
+          onChange={(e) => {
+            e.stopPropagation();
+          }}
           value={active}
           hasDescription={false}
           size="tiny"
           hasError={false}
           name={`menu-item-checkbox-${label}`}
           disabled={false}
+          readOnly
           id={`menu-item-checkbox-${label}`}
         />
       )}
