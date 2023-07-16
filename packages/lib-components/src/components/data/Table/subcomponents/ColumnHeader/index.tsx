@@ -3,8 +3,9 @@ import { useDrag, useDragLayer, useDrop, XYCoord } from 'react-dnd';
 import { ColumnSettings } from './ColumnSettings';
 import { Identifier } from 'dnd-core';
 import { styled } from '../../../../../styled';
-import { FC, forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+import { Target, Content, Container, ResizeHandle } from './style';
 
 const ItemTypes = {
   COLUMN: 'column',
@@ -15,66 +16,6 @@ interface CollectedProps {
   isActive: boolean;
   isRight: boolean;
 }
-
-const Container = styled.th<{ isActive: boolean; isRight: boolean; isDragging: boolean; width: number }>`
-  position: relative;
-  width: ${({ width }) => width}px;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[2]}`};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
-
-  border-right: ${({ theme, isActive, isRight }) =>
-    isActive && isRight ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.backgroundAlt}`};
-  border-left: ${({ theme, isActive, isRight }) =>
-    isActive && !isRight ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.backgroundAlt}`};
-  cursor: grab;
-
-  &:first-child {
-    border-left: ${({ theme, isActive, isRight }) =>
-      isActive && !isRight ? `2px solid ${theme.colors.primary}` : 'none'};
-    border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
-  }
-
-  &:last-of-type {
-    border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
-    border-right: ${({ theme, isActive, isRight }) =>
-      isActive && isRight ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.backgroundAlt}`};
-  }
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  & > div {
-    font-weight: 600;
-  }
-`;
-
-const Target = styled.div<{ isDragging: boolean }>`
-  opacity: ${({ isDragging }) => (isDragging ? 0 : 1)};
-  height: ${({ isDragging }) => (isDragging ? 0 : '')};
-`;
-
-const Content = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const ResizeHandle = styled.div<{ isResizing: boolean }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4px;
-  right: -1px;
-  height: 100vh;
-  cursor: col-resize;
-  user-select: none;
-  /* prevents from scrolling while dragging on touch devices */
-  touch-action: none;
-  opacity: ${({ isResizing }) => (isResizing ? 1 : 0)};
-  background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.secondary)};
-`;
 
 export interface ColumnHeaderProps<DataType extends object> {
   header: Header<DataType, unknown>;
@@ -94,6 +35,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
   const { getState, setColumnOrder } = table;
   const { columnOrder } = getState();
   const { column } = header;
+  const ref = useRef<HTMLDivElement>(null);
 
   const [{ isActive, isRight }, dropRef] = useDrop<Column<DataType>, void, CollectedProps>({
     accept: ItemTypes.COLUMN,
@@ -107,24 +49,69 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       const newColumnOrder = reorder(draggedColumn.id, column.id, columnOrder);
       setColumnOrder(newColumnOrder);
     },
-  });
+    canDrop: (draggedColumn: Column<DataType>) => draggedColumn.id !== column.id,
+    hover: (draggedColumn: Column<DataType>, monitor) => {
+      if (!ref.current) {
+        return;
+      }
+      const hoverIndex = columnOrder.indexOf(column.id);
+      const draggedIndex = columnOrder.indexOf(draggedColumn.id);
 
-  function attachRef(el: HTMLDivElement) {
-    dropRef(el);
-    dragRef(el);
-  }
+      // Don't replace items with themselves
+      if (draggedIndex === hoverIndex) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+
+      // Get vertical middle
+      const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset()!;
+
+      // Get pixels to the top
+      const hoverClientX = clientOffset.x - hoverBoundingRect.left;
+
+      // Dragging left
+      if (draggedIndex < hoverIndex && hoverClientX < hoverMiddleX) {
+        return;
+      }
+
+      // Dragging right
+      if (draggedIndex > hoverIndex && hoverClientX > hoverMiddleX) {
+        return;
+      }
+
+      // Time to actually perform the action
+      const newColumnOrder = reorder(draggedColumn.id, column.id, columnOrder);
+      setColumnOrder(newColumnOrder);
+    },
+  });
 
   const [{ isDragging }, dragRef, previewRef] = useDrag({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    item: () => column,
+    item: () => ({
+      ...column,
+      draggedIndex: columnOrder.indexOf(column.id),
+    }),
     type: ItemTypes.COLUMN,
   });
 
   useEffect(() => {
     previewRef(getEmptyImage(), { captureDraggingState: true });
   }, []);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (node) {
+      dragRef(node);
+      dropRef(node);
+    }
+  }, [dragRef, dropRef]);
 
   return (
     <Container
@@ -135,7 +122,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       isRight={isRight}
       width={header.getSize()}
     >
-      <Target ref={attachRef} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
+      <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
         <CustomDragLayer />
         <Content>
           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -152,14 +139,6 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
     </Container>
   );
 }
-
-interface CustomDragPreviewProps {
-  title?: string;
-}
-
-const CustomDragPreview: FC<CustomDragPreviewProps> = ({ title = '' }) => {
-  return <div>{title}</div>;
-};
 
 export const Wrapper = styled.div`
   position: fixed;
@@ -188,7 +167,7 @@ export const CustomDragLayer = forwardRef<HTMLDivElement>((_, ref) => {
   function renderItem() {
     switch (itemType) {
       case ItemTypes.COLUMN:
-        return <CustomDragPreview />;
+        return <div></div>;
       default:
         return null;
     }
