@@ -26,7 +26,7 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
       asChild = false,
       tooltipOptions = {
         initialOpen: false,
-        placement: 'top',
+        placement: 'top', // because dropdown will be below by default
       },
       ...props
     },
@@ -36,7 +36,7 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
     const childrenRef = (children as any).ref;
     const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
-    const [unControlledOpen, setUncontrolledOpen] = useState(tooltipOptions?.initialOpen);
+    const [unControlledOpen, setUncontrolledOpen] = useState<boolean>(tooltipOptions?.initialOpen ?? false);
 
     const open = tooltipOptions.open ?? unControlledOpen;
     const setOpen = tooltipOptions.onOpenChange ?? setUncontrolledOpen;
@@ -77,12 +77,7 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
 
     if (tooltipOptions && tooltipOptions.content) {
       return (
-        <Tooltip
-          open={open}
-          onOpenChange={setOpen}
-          placement={tooltipOptions.placement}
-          initialOpen={tooltipOptions.initialOpen}
-        >
+        <Tooltip open={open} onOpenChange={setOpen} placement={tooltipOptions.placement}>
           <Tooltip.Trigger>{inner}</Tooltip.Trigger>
           <Tooltip.Content>{tooltipOptions.content}</Tooltip.Content>
         </Tooltip>

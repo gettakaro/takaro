@@ -57,3 +57,27 @@ export const Default: StoryFn = () => {
     </Wrapper>
   );
 };
+
+export const ToolTipOnTrigger = () => {
+  return (
+    <>
+      Because <strong>Dropdown.trigger</strong> adds properties to the child element, The IconButton cannot be wrapped
+      in a tooltip. Tooltip props should be passed as props to the <strong>Dropdown.trigger</strong> element.
+      <Dropdown>
+        <Dropdown.Trigger
+          asChild
+          tooltipOptions={{
+            content: 'This is the tooltip',
+            placement: 'top',
+          }}
+        >
+          <IconButton icon={<MenuIcon />} ariaLabel="click me" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <Dropdown.Menu.Item label="Sort ascending (first...last)" onClick={() => {}} icon={<SortAscendingIcon />} />
+          <Dropdown.Menu.Item label="Sort descending (last...first)" onClick={() => {}} icon={<SortDescendingIcon />} />
+        </Dropdown.Menu>
+      </Dropdown>
+    </>
+  );
+};
