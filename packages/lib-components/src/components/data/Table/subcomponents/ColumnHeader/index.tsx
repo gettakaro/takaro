@@ -66,7 +66,7 @@ const ResizeHandle = styled.div<{ isResizing: boolean }>`
   top: 0;
   right: 0;
   width: 4px;
-  right: -3px;
+  right: -1px;
   height: 100vh;
   cursor: col-resize;
   user-select: none;
