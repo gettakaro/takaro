@@ -1,21 +1,51 @@
-import { forwardRef, cloneElement, isValidElement, HTMLProps, PropsWithChildren } from 'react';
+import {
+  forwardRef,
+  cloneElement,
+  isValidElement,
+  HTMLProps,
+  PropsWithChildren,
+  useState,
+  ReactElement,
+  ReactNode,
+} from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { useMergeRefs } from '@floating-ui/react';
+import { TooltipOptions } from '../../feedback/Tooltip/useTooltip';
+import { Tooltip } from '../../../components';
 
 export type DropdownTriggerProps = HTMLProps<HTMLElement> &
   PropsWithChildren<{
     asChild?: boolean;
+    tooltipOptions?: TooltipOptions & { content: ReactNode };
   }>;
 
 export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
-  ({ children, asChild = false, ...props }, propRef) => {
+  (
+    {
+      children,
+      asChild = false,
+      tooltipOptions = {
+        initialOpen: false,
+        placement: 'top',
+      },
+      ...props
+    },
+    propRef
+  ) => {
     const context = useDropdownContext();
     const childrenRef = (children as any).ref;
     const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
+    const [unControlledOpen, setUncontrolledOpen] = useState(tooltipOptions?.initialOpen);
+
+    const open = tooltipOptions.open ?? unControlledOpen;
+    const setOpen = tooltipOptions.onOpenChange ?? setUncontrolledOpen;
+
+    let inner: ReactElement;
+
     // `asChild` allows the user to pass any element as the anchor
     if (asChild && isValidElement(children)) {
-      return cloneElement(
+      inner = cloneElement(
         children,
         context.getReferenceProps({
           ref,
@@ -26,23 +56,39 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
           },
         })
       );
+    } else {
+      inner = (
+        <button
+          ref={ref}
+          type="button"
+          // The user can style the trigger based on the state
+          {...context.getReferenceProps({
+            ...props,
+            ref,
+            onClick(event) {
+              event.stopPropagation();
+            },
+          })}
+        >
+          {children}
+        </button>
+      );
     }
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        // The user can style the trigger based on the state
-        {...context.getReferenceProps({
-          ...props,
-          ref,
-          onClick(event) {
-            event.stopPropagation();
-          },
-        })}
-      >
-        {children}
-      </button>
-    );
+    if (tooltipOptions && tooltipOptions.content) {
+      return (
+        <Tooltip
+          open={open}
+          onOpenChange={setOpen}
+          placement={tooltipOptions.placement}
+          initialOpen={tooltipOptions.initialOpen}
+        >
+          <Tooltip.Trigger>{inner}</Tooltip.Trigger>
+          <Tooltip.Content>{tooltipOptions.content}</Tooltip.Content>
+        </Tooltip>
+      );
+    }
+
+    return inner;
   }
 );
