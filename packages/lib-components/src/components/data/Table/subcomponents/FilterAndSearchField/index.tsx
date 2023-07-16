@@ -20,7 +20,7 @@ import {
   TokenValue,
 } from './style';
 import { getTokenChars, tokenize, TokenType } from './tokenizer';
-import { AiOutlineFilter as FilterIcon } from 'react-icons/ai';
+import { AiOutlineFilter as FilterIcon, AiFillCloseCircle as ClearIcon } from 'react-icons/ai';
 import {
   FloatingFocusManager,
   FloatingPortal,
@@ -38,6 +38,7 @@ import {
 } from '@floating-ui/react';
 import { Table } from '@tanstack/react-table';
 import { useTableContext } from '../../Context';
+import { IconButton, Tooltip } from '../../../../../components';
 
 export interface FilterAndSearchFieldProps<DataType extends object> {
   data?: string[];
@@ -103,17 +104,17 @@ export function FilterAndSearchField<DataType extends object>({
   useEffect(() => {
     const tokens = tokenize(inputValue);
 
-    // only keep the exact_column tokens and the value token directly after it
-    const exactColumnTokens = tokens.filter((token) => {
-      if (token.type === TokenType.EXACT_COLUMN) {
-        return token;
-      }
-    });
-
     table.setColumnFilters(
-      exactColumnTokens.map((token) => {
-        return { id: token.key, value: token.value };
-      })
+      tokens
+        .filter((token) => token.type === TokenType.EXACT_COLUMN)
+        .map((token) => {
+          return { id: token.key, value: token.value };
+        })
+    );
+    table.setGlobalFilter(
+      tokens
+        .filter((token) => token.type === TokenType.SEARCH_COLUMN)
+        .map((token) => ({ id: token.key, value: token.value }))
     );
   }, [inputValue]);
 
@@ -200,6 +201,21 @@ export function FilterAndSearchField<DataType extends object>({
             />
           </div>
         </Inner>
+        {inputValue && (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                onClick={() => {
+                  setInputValue('');
+                  setOpen(false);
+                }}
+                ariaLabel="Clear Search And Filter Input"
+                icon={<ClearIcon className="icon" />}
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Clear field</Tooltip.Content>
+          </Tooltip>
+        )}
       </InputContainer>
       {open && items.length !== 0 && (
         <FloatingPortal>

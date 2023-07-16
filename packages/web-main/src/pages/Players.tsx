@@ -13,7 +13,7 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
-  const { pagination, columnFilters, sorting } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
 
   const { data, isLoading } = usePlayers({
     page: pagination.paginationState.pageIndex,
@@ -29,9 +29,13 @@ const Players: FC = () => {
         ?.value as string,
       xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value as string,
     },
+    search: {
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
+      steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value as string,
+      epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId'),
+      xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value as string,
+    },
   });
-
-  console.log(columnFilters.columnFiltersState);
 
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
@@ -99,6 +103,7 @@ const Players: FC = () => {
             total: data.pages[pagination.paginationState.pageIndex].meta.total!,
           }}
           columnFiltering={columnFilters}
+          columnSearch={columnSearch}
           sorting={sorting}
         />
       </TableContainer>
