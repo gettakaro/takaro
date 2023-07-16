@@ -39,6 +39,7 @@ import {
 import { Table } from '@tanstack/react-table';
 import { useTableContext } from '../../Context';
 import { IconButton, Tooltip } from '../../../../../components';
+import { useDebounce } from '../../../../../hooks';
 
 export interface FilterAndSearchFieldProps<DataType extends object> {
   data?: string[];
@@ -63,6 +64,7 @@ export function FilterAndSearchField<DataType extends object>({
   const elementsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const labelsRef = useRef<Array<string | null>>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const debouncedInputValue = useDebounce<string>(inputValue, 1000);
 
   const [isFocused, setIsFocused] = useState(false);
 
@@ -124,7 +126,7 @@ export function FilterAndSearchField<DataType extends object>({
         .filter((token) => token.type === TokenType.SEARCH_COLUMN)
         .map((token) => ({ id: token.key, value: token.value })),
     ]);
-  }, [inputValue]);
+  }, [debouncedInputValue]);
 
   const focusOnClick = useCallback(() => {
     inputRef.current?.focus();
