@@ -188,6 +188,7 @@ export function Table<DataType extends object>({
                           onOpenChange: setOpenColumnVisibilityTooltip,
                           open: openColumnVisibilityTooltip,
                           content: 'Show or hide columns',
+                          placement: 'right',
                         }}
                       >
                         <IconButton icon={<PlusIcon />} ariaLabel="Change column visibility" />

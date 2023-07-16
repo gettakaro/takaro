@@ -69,6 +69,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
 
       // Determine mouse position
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const clientOffset = monitor.getClientOffset()!;
 
       // Get pixels to the top
@@ -126,7 +127,11 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
         <CustomDragLayer />
         <Content>
           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-          <ColumnSettings header={header} table={table} />
+
+          {/* Only show columnSettings when sorting and filtering is enabled */}
+          {column.getCanFilter() && column.getCanSort() && column.getCanGlobalFilter() && (
+            <ColumnSettings header={header} table={table} />
+          )}
         </Content>
       </Target>
       {header.column.getCanResize() && (
