@@ -42,23 +42,13 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   }, [monaco]);
 
   useEffect(() => {
-    if (
-      !readOnly &&
-      debouncedCode !== '' &&
-      moduleData.fileMap[sandpack.activeFile]
-    ) {
+    if (!readOnly && debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
       updateFunction({
         functionId: moduleData.fileMap[sandpack.activeFile].functionId,
         fn: { code: debouncedCode },
       });
     }
-  }, [
-    debouncedCode,
-    sandpack.activeFile,
-    moduleData.fileMap,
-    updateFunction,
-    readOnly,
-  ]);
+  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap, updateFunction, readOnly]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
@@ -80,9 +70,9 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             contextmenu: false,
             'semanticHighlighting.enabled': true,
             readOnly,
-            fontSize: 12,
-            fontFamily: 'Fira Code',
+            fontSize: 14,
             lineHeight: 22,
+            fontFamily: 'Fira Code',
             fontWeight: '400',
             fontLigatures: false,
           }}
