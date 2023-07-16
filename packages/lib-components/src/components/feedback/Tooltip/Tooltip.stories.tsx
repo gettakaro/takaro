@@ -13,12 +13,24 @@ export default {
   component: Tooltip,
   args: {
     placement: 'bottom',
+    label: 'this is the tooltip content',
   },
 } as Meta<TooltipProps & ExtraTooltipStoryProps>;
 
+export const Default: StoryFn<TooltipProps & ExtraTooltipStoryProps> = (args) => (
+  <>
+    By default the tooltip is rendered in a div tag. This is because the tooltip component needs a ref to the trigger
+    element. If you want to render the tooltip in a different element, you can use the asChild prop.
+    <Tooltip placement={args.placement}>
+      <Tooltip.Trigger asChild>trigger</Tooltip.Trigger>
+      <Tooltip.Content>{args.label}</Tooltip.Content>
+    </Tooltip>
+  </>
+);
+
 export const UnControlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> = (args) => (
   <Tooltip placement={args.placement}>
-    <Tooltip.Trigger>
+    <Tooltip.Trigger asChild>
       <span>trigger</span>
     </Tooltip.Trigger>
     <Tooltip.Content>{args.label}</Tooltip.Content>
@@ -48,7 +60,7 @@ export const Controlled: StoryFn<TooltipProps & ExtraTooltipStoryProps> = () => 
       useful when you want to open the tooltip on click instead of hover. or when you want to open a tooltip on a
       different component than the trigger.
       <Tooltip open={open} onOpenChange={setOpen}>
-        <Tooltip.Trigger>I am the trigger</Tooltip.Trigger>
+        <Tooltip.Trigger asChild>I am the trigger</Tooltip.Trigger>
         <Tooltip.Content>controlled tooltip</Tooltip.Content>
       </Tooltip>
       <Button onClick={() => setOpen(true)} text="open tooltip on, I am the trigger" />
