@@ -31,7 +31,7 @@ const Container = styled.th<{ isActive: boolean; isRight: boolean; isDragging: b
 
   &:first-child {
     border-left: ${({ theme, isActive, isRight }) =>
-      isActive && !isRight ? `2px solid ${theme.colors.primary}` : `1px solid ${theme.colors.backgroundAlt}`};
+      isActive && !isRight ? `2px solid ${theme.colors.primary}` : 'none'};
     border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
   }
 

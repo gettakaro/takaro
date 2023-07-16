@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -69,7 +69,27 @@ export function Table<DataType extends object>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [density, setDensity] = useState<Density>(defaultDensity);
+
+  const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
+  const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
+
+  // this is a custom hook used in combination with context
+  // to pass down table state to bunch of components.
   const manualTableState = useTable();
+
+  useEffect(() => {
+    if (
+      !hasShownColumnVisibilityTooltip &&
+      Object.values(columnVisibility).filter((visible) => visible === false).length === 1
+    ) {
+      setOpenColumnVisibilityTooltip(true);
+      setHasShownColumnVisibilityTooltip(true); // update state to remember that tooltip has been shown
+
+      setTimeout(() => {
+        setOpenColumnVisibilityTooltip(false);
+      }, 3000);
+    }
+  }, [columnVisibility, hasShownColumnVisibilityTooltip]); // add hasShownTooltip to the dependency array
 
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => {
@@ -93,6 +113,8 @@ export function Table<DataType extends object>({
     manualSorting: true,
 
     enableExpanding: true,
+    enableFilters: true,
+    enableGlobalFilter: true,
 
     autoResetPageIndex: false,
     enableSorting: !!sorting,
@@ -160,7 +182,14 @@ export function Table<DataType extends object>({
                   ))}
                   <th colSpan={1}>
                     <Dropdown>
-                      <Dropdown.Trigger asChild>
+                      <Dropdown.Trigger
+                        asChild
+                        tooltipOptions={{
+                          onOpenChange: setOpenColumnVisibilityTooltip,
+                          open: openColumnVisibilityTooltip,
+                          content: 'Show or hide columns',
+                        }}
+                      >
                         <IconButton icon={<PlusIcon />} ariaLabel="Change column visibility" />
                       </Dropdown.Trigger>
                       <Dropdown.Menu>
@@ -168,7 +197,11 @@ export function Table<DataType extends object>({
                           {table.getVisibleFlatColumns().map((column) => (
                             <Dropdown.Menu.Item
                               key={column.id}
-                              onClick={() => column.toggleVisibility()}
+                              onClick={() => {
+                                // In case they open the dropdown they already know about the column visibility
+                                setHasShownColumnVisibilityTooltip(true);
+                                column.toggleVisibility();
+                              }}
                               label={column.id}
                               activeStyle="checkbox"
                               active={true}
@@ -182,7 +215,11 @@ export function Table<DataType extends object>({
                             .map((column) => (
                               <Dropdown.Menu.Item
                                 key={column.id}
-                                onClick={() => column.toggleVisibility()}
+                                onClick={() => {
+                                  // In case they open the dropdown they already know about the column visibility
+                                  setHasShownColumnVisibilityTooltip(true);
+                                  column.toggleVisibility();
+                                }}
                                 label={column.id}
                                 activeStyle="checkbox"
                                 active={false}

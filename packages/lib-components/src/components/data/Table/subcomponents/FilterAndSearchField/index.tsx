@@ -111,11 +111,19 @@ export function FilterAndSearchField<DataType extends object>({
           return { id: token.key, value: token.value };
         })
     );
-    table.setGlobalFilter(
-      tokens
+
+    const globalSearchToken = tokens.find((token) => token.type === TokenType.SEARCH_GLOBAL && token.value !== '');
+
+    table.setGlobalFilter([
+      // in case there is also a SEARCH_GLOBAL token, we will add a search to all columns that do not have a specific SEARCH_COLUMN filter yet.
+      ...(globalSearchToken
+        ? table.getAllLeafColumns().map((column) => ({ id: column.id, value: globalSearchToken.value }))
+        : []),
+
+      ...tokens
         .filter((token) => token.type === TokenType.SEARCH_COLUMN)
-        .map((token) => ({ id: token.key, value: token.value }))
-    );
+        .map((token) => ({ id: token.key, value: token.value })),
+    ]);
   }, [inputValue]);
 
   const focusOnClick = useCallback(() => {
