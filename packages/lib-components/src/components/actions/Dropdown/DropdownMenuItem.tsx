@@ -12,7 +12,7 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   border-radius: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -34,10 +34,6 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
-  }
-
-  button {
-    margin-left: ${({ theme }) => theme.spacing['0_75']};
   }
 `;
 
