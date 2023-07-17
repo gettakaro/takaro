@@ -1,4 +1,4 @@
-import { getTakaro } from '@takaro/helpers';
+import { getTakaro, checkPermission } from '@takaro/helpers';
 import vm, { Module } from 'node:vm';
 import { config } from '../../config.js';
 
@@ -34,9 +34,10 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
 
   await toEval.link((specifier: string, referencingModule: Module) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'getData'],
+      ['getTakaro', 'getData', 'checkPermission'],
       function () {
         this.setExport('getTakaro', getTakaro);
+        this.setExport('checkPermission', checkPermission);
         this.setExport('getData', monkeyPatchedGetData);
       },
       { context: referencingModule.context }

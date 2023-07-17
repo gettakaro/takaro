@@ -218,21 +218,26 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         (permission) => !data.permissions.find((p) => p.permission === permission.permission)
       );
 
-      await permissionModel
-        .query()
-        .delete()
-        .whereIn(
-          'id',
-          toDelete.map((permission) => permission.id)
+      if (toDelete.length) {
+        await permissionModel
+          .query()
+          .delete()
+          .whereIn(
+            'id',
+            toDelete.map((permission) => permission.id)
+          );
+      }
+
+      if (toInsert.length) {
+        await permissionModel.query().insert(
+          toInsert.map((permission) => ({
+            moduleId: id,
+            permission: permission.permission,
+            friendlyName: permission.friendlyName,
+            description: permission.description,
+          }))
         );
-      await permissionModel.query().insert(
-        toInsert.map((permission) => ({
-          moduleId: id,
-          permission: permission.permission,
-          friendlyName: permission.friendlyName,
-          description: permission.description,
-        }))
-      );
+      }
     }
 
     return this.findOne(item.id);

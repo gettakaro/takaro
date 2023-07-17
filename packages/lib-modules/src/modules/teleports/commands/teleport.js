@@ -1,10 +1,22 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
   const { player, gameServerId, arguments: args, module: mod } = data;
+
+  if (!checkPermission(player, 'TELEPORTS_USE')) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: 'You do not have permission to use teleports.',
+      opts: {
+        recipient: {
+          gameId: player.gameId,
+        },
+      },
+    });
+    return;
+  }
 
   const ownedTeleportRes = await takaro.variable.variableControllerFind({
     filters: {
