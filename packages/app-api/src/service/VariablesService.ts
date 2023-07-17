@@ -19,6 +19,10 @@ export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
   @IsUUID()
   @IsOptional()
   playerId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 }
 
 export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
@@ -35,6 +39,10 @@ export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
   @IsUUID()
   @IsOptional()
   playerId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 }
 
 export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
@@ -52,6 +60,10 @@ export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
   @IsUUID()
   @IsOptional()
   playerId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 }
 
 @traceableClass('service:variable')

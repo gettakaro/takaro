@@ -128,6 +128,10 @@ async function main() {
     domainRes.data.data.rootRole.id
   );
 
+  await client.settings.settingsControllerSet('commandPrefix', {
+    value: '&'
+  });
+
   const gameserver = (
     await client.gameserver.gameServerControllerCreate({
       name: 'Test server',

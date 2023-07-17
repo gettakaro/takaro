@@ -43,6 +43,10 @@ class VariableSearchInputAllowedFilters {
   @IsOptional()
   @IsUUID()
   playerId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  moduleId!: string;
 }
 
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {

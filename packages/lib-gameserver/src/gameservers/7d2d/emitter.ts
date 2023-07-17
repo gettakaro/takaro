@@ -33,7 +33,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
   constructor(private config: SdtdConnectionInfo) {
     super();
-    this.sdtd = new SevenDaysToDie(config);
+    this.sdtd = new SevenDaysToDie(config, {});
   }
 
   get url() {

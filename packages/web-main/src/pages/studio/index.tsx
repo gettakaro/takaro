@@ -13,7 +13,7 @@ import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
 import { Header } from 'components/studio/Header';
 
 const Wrapper = styled.div`
-  padding: ${({ theme }) => `0 ${theme.spacing[2]}}`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}} ${theme.spacing[2]} 0`};
 `;
 
 const Container = styled.div`
