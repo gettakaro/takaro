@@ -8,7 +8,7 @@ import { UserRepo } from './user.js';
 import { PlayerRepo } from './player.js';
 
 export const ROLE_TABLE_NAME = 'roles';
-const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
+export const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
 
 export class PermissionModel extends TakaroModel {
   static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
@@ -153,13 +153,13 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     await userRepo.removeRole(userId, roleId);
   }
 
-  async assignRoleToPlayer(playerId: string, roleId: string) {
+  async assignRoleToPlayer(playerId: string, roleId: string, gameserverId?: string) {
     const playerRepo = new PlayerRepo(this.domainId);
-    await playerRepo.assignRole(playerId, roleId);
+    await playerRepo.assignRole(playerId, roleId, gameserverId);
   }
 
-  async removeRoleFromPlayer(playerId: string, roleId: string) {
+  async removeRoleFromPlayer(playerId: string, roleId: string, gameserverId?: string) {
     const playerRepo = new PlayerRepo(this.domainId);
-    await playerRepo.removeRole(playerId, roleId);
+    await playerRepo.removeRole(playerId, roleId, gameserverId);
   }
 }

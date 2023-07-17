@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "9a96895c-e613-4d97-80a4-424427fa185b",
-      "createdAt": "2023-07-12T09:49:29.713Z",
-      "updatedAt": "2023-07-12T09:49:29.714Z",
+      "id": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
+      "createdAt": "2023-07-17T15:56:31.115Z",
+      "updatedAt": "2023-07-17T15:56:31.115Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
@@ -15,11 +15,13 @@
       "commands": [],
       "permissions": [
         {
-          "id": "1ced4301-8062-4350-b3d0-9558ee84924b",
-          "createdAt": "2023-07-12T09:49:29.714Z",
-          "updatedAt": "2023-07-12T09:49:29.714Z",
-          "moduleId": "9a96895c-e613-4d97-80a4-424427fa185b",
-          "permission": "test"
+          "id": "6a183bc2-1c89-4711-95b3-cd1e146ad3b5",
+          "createdAt": "2023-07-17T15:56:31.115Z",
+          "updatedAt": "2023-07-17T15:56:31.116Z",
+          "moduleId": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
+          "permission": "test",
+          "friendlyName": "test",
+          "description": "test"
         }
       ]
     }

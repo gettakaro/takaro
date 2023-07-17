@@ -1,13 +1,15 @@
 import { TakaroService } from './Base.js';
 
 import { PlayerModel, PlayerRepo } from '../db/player.js';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { Type } from 'class-transformer';
+import { RoleOutputDTO } from './RoleService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -22,6 +24,12 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+}
+
+export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
+  @Type(() => RoleOutputDTO)
+  @ValidateNested({ each: true })
+  roles: RoleOutputDTO[];
 }
 
 export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
@@ -54,7 +62,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return this.repo.find(filters);
   }
 
-  findOne(id: string): Promise<PlayerOutputDTO> {
+  findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     return this.repo.findOne(id);
   }
 

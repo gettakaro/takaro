@@ -67,7 +67,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('roles.permissions');
+    const data = await query.findById(id).withGraphFetched('roles.permissions');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);

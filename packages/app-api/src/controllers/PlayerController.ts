@@ -52,6 +52,12 @@ class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters>
   declare filters: PlayerSearchInputAllowedFilters;
 }
 
+class PlayerRoleAssignChangeDTO {
+  @IsUUID()
+  @IsOptional()
+  gameServerId?: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -85,16 +91,24 @@ export class PlayerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
   @Post('/player/:id/role/:roleId')
   @ResponseSchema(APIOutput)
-  async assignRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
+  async assignRole(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndRoleId,
+    @Body() data: PlayerRoleAssignChangeDTO
+  ) {
     const service = new RoleService(req.domainId);
-    return apiResponse(await service.assignRole(params.id, params.roleId));
+    return apiResponse(await service.assignRole(params.roleId, params.id, data.gameServerId));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
   @Delete('/player/:id/role/:roleId')
   @ResponseSchema(APIOutput)
-  async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
+  async removeRole(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndRoleId,
+    @Body() data: PlayerRoleAssignChangeDTO
+  ) {
     const service = new RoleService(req.domainId);
-    return apiResponse(await service.removeRole(params.id, params.roleId));
+    return apiResponse(await service.removeRole(params.roleId, params.id, data.gameServerId));
   }
 }

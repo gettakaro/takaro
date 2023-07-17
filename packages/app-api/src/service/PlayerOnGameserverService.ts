@@ -1,11 +1,13 @@
 import { TakaroService } from './Base.js';
 
-import { IsIP, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsIP, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { Type } from 'class-transformer';
+import { RoleOutputDTO } from './RoleService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -36,6 +38,12 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
   @IsNumber()
   @IsOptional()
   ping: number;
+}
+
+export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
+  @Type(() => RoleOutputDTO)
+  @ValidateNested({ each: true })
+  roles: RoleOutputDTO[];
 }
 
 export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCreateDTO> {
@@ -113,7 +121,7 @@ export class PlayerOnGameServerService extends TakaroService<
     return this.repo.insertAssociation(gameId, playerId, gameServerId);
   }
 
-  async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
+  async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     return this.repo.resolveRef(ref, gameserverId);
   }
 

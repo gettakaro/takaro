@@ -3,6 +3,8 @@ import { isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 
 const group = 'ModuleController';
 
+const testPermission = { permission: 'test', description: 'test', friendlyName: 'test' };
+
 const tests = [
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -179,7 +181,7 @@ const tests = [
     test: async function () {
       return this.client.module.moduleControllerCreate({
         name: 'Test module',
-        permissions: ['test'],
+        permissions: [testPermission],
       });
     },
     filteredFields: ['moduleId'],
@@ -197,7 +199,7 @@ const tests = [
     },
     test: async function () {
       return this.client.module.moduleControllerUpdate(this.setupData.id, {
-        permissions: ['test'],
+        permissions: [testPermission],
       });
     },
     filteredFields: ['moduleId'],
@@ -210,13 +212,14 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
-          permissions: ['test'],
+          permissions: [testPermission],
         })
       ).data.data;
     },
     test: async function () {
+      const secondPermission = { permission: 'test2', description: 'test2', friendlyName: 'test2' };
       const updateRes = await this.client.module.moduleControllerUpdate(this.setupData.id, {
-        permissions: ['test', 'test2'],
+        permissions: [testPermission, secondPermission],
       });
 
       const newPermission = updateRes.data.data.permissions.find((p) => p.permission === 'test');

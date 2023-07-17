@@ -3592,19 +3592,25 @@ export interface PermissionOutputDTO {
      * @type {string}
      * @memberof PermissionOutputDTO
      */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionOutputDTO
+     */
     'permission': string;
     /**
      * 
      * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'friendlyName': string;
+    'friendlyName'?: string;
     /**
      * 
      * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'description': string;
+    'description'?: string;
 }
 /**
  * 
@@ -3813,6 +3819,85 @@ export interface PlayerOnGameserverOutputDTOAPI {
 /**
  * 
  * @export
+ * @interface PlayerOnGameserverOutputWithRolesDTO
+ */
+export interface PlayerOnGameserverOutputWithRolesDTO {
+    /**
+     * 
+     * @type {Array<RoleOutputDTO>}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'roles': Array<RoleOutputDTO>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'gameServerId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'playerId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'gameId': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'positionX'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'positionY'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'positionZ'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'ip'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlayerOnGameserverOutputWithRolesDTO
+     */
+    'ping'?: number;
+}
+/**
+ * 
+ * @export
  * @interface PlayerOutputArrayDTOAPI
  */
 export interface PlayerOutputArrayDTOAPI {
@@ -3896,6 +3981,74 @@ export interface PlayerOutputDTOAPI {
      * @memberof PlayerOutputDTOAPI
      */
     'meta': MetadataOutput;
+}
+/**
+ * 
+ * @export
+ * @interface PlayerOutputWithRolesDTO
+ */
+export interface PlayerOutputWithRolesDTO {
+    /**
+     * 
+     * @type {Array<RoleOutputDTO>}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'roles': Array<RoleOutputDTO>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'steamId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'xboxLiveId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'epicOnlineServicesId'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface PlayerRoleAssignChangeDTO
+ */
+export interface PlayerRoleAssignChangeDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerRoleAssignChangeDTO
+     */
+    'gameServerId'?: string;
 }
 /**
  * 
@@ -4671,10 +4824,10 @@ export interface UserOutputDTOAPI {
 export interface UserOutputWithRolesDTO {
     /**
      * 
-     * @type {RoleOutputDTO}
+     * @type {Array<RoleOutputDTO>}
      * @memberof UserOutputWithRolesDTO
      */
-    'roles': RoleOutputDTO;
+    'roles': Array<RoleOutputDTO>;
     /**
      * 
      * @type {string}
@@ -10499,10 +10652,11 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
          * @summary Assign role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerAssignRole: async (id: string, roleId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        playerControllerAssignRole: async (id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('playerControllerAssignRole', 'id', id)
             // verify required parameter 'roleId' is not null or undefined
@@ -10525,9 +10679,12 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(playerRoleAssignChangeDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -10575,10 +10732,11 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
          * @summary Remove role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerRemoveRole: async (id: string, roleId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        playerControllerRemoveRole: async (id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('playerControllerRemoveRole', 'id', id)
             // verify required parameter 'roleId' is not null or undefined
@@ -10601,9 +10759,12 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(playerRoleAssignChangeDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -10661,11 +10822,12 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          * @summary Assign role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async playerControllerAssignRole(id: string, roleId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerAssignRole(id, roleId, options);
+        async playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -10684,11 +10846,12 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          * @summary Remove role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async playerControllerRemoveRole(id: string, roleId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerRemoveRole(id, roleId, options);
+        async playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -10717,11 +10880,12 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @summary Assign role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerAssignRole(id: string, roleId: string, options?: any): AxiosPromise<APIOutput> {
-            return localVarFp.playerControllerAssignRole(id, roleId, options).then((request) => request(axios, basePath));
+        playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: any): AxiosPromise<APIOutput> {
+            return localVarFp.playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10738,11 +10902,12 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @summary Remove role
          * @param {string} id 
          * @param {string} roleId 
+         * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerRemoveRole(id: string, roleId: string, options?: any): AxiosPromise<APIOutput> {
-            return localVarFp.playerControllerRemoveRole(id, roleId, options).then((request) => request(axios, basePath));
+        playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: any): AxiosPromise<APIOutput> {
+            return localVarFp.playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10769,12 +10934,13 @@ export class PlayerApi extends BaseAPI {
      * @summary Assign role
      * @param {string} id 
      * @param {string} roleId 
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayerApi
      */
-    public playerControllerAssignRole(id: string, roleId: string, options?: AxiosRequestConfig) {
-        return PlayerApiFp(this.configuration).playerControllerAssignRole(id, roleId, options).then((request) => request(this.axios, this.basePath));
+    public playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: AxiosRequestConfig) {
+        return PlayerApiFp(this.configuration).playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10794,12 +10960,13 @@ export class PlayerApi extends BaseAPI {
      * @summary Remove role
      * @param {string} id 
      * @param {string} roleId 
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayerApi
      */
-    public playerControllerRemoveRole(id: string, roleId: string, options?: AxiosRequestConfig) {
-        return PlayerApiFp(this.configuration).playerControllerRemoveRole(id, roleId, options).then((request) => request(this.axios, this.basePath));
+    public playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: AxiosRequestConfig) {
+        return PlayerApiFp(this.configuration).playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -2,7 +2,15 @@ import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
-import { Length, ValidatorConstraint, ValidatorConstraintInterface, IsString, ValidateNested } from 'class-validator';
+import {
+  Length,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  IsString,
+  ValidateNested,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
@@ -40,13 +48,19 @@ export class SearchRoleInputDTO {
 }
 
 export class PermissionOutputDTO extends TakaroDTO<PermissionOutputDTO> {
+  @IsUUID()
+  @IsOptional()
+  id?: string;
+
   @IsString()
   permission!: string;
 
   @IsString()
+  @IsOptional()
   friendlyName: string;
 
   @IsString()
+  @IsOptional()
   description: string;
 }
 
@@ -117,7 +131,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     return this.repo.findOne(roleId);
   }
 
-  async assignRole(roleId: string, targetId: string) {
+  async assignRole(roleId: string, targetId: string, gameserverId?: string) {
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
 
@@ -130,11 +144,11 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     }
     if (playerRes.total) {
       this.log.info('Assigning role to player');
-      await this.repo.assignRoleToPlayer(targetId, roleId);
+      await this.repo.assignRoleToPlayer(targetId, roleId, gameserverId);
     }
   }
 
-  async removeRole(roleId: string, targetId: string) {
+  async removeRole(roleId: string, targetId: string, gameserverId?: string) {
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
 
@@ -147,7 +161,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     }
     if (playerRes.total) {
       this.log.info('Removing role from player');
-      await this.repo.removeRoleFromPlayer(targetId, roleId);
+      await this.repo.removeRoleFromPlayer(targetId, roleId, gameserverId);
     }
   }
 }

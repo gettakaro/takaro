@@ -5,12 +5,14 @@ import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { GameServerModel } from './gameserver.js';
-import { PlayerModel } from './player.js';
+import { PlayerModel, RoleOnPlayerModel } from './player.js';
 import {
   PlayerOnGameserverOutputDTO,
   PlayerOnGameServerCreateDTO,
   PlayerOnGameServerUpdateDTO,
+  PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
+import { RoleOutputDTO } from '../service/RoleService.js';
 
 export class PlayerOnGameServerModel extends TakaroModel {
   static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
@@ -19,6 +21,13 @@ export class PlayerOnGameServerModel extends TakaroModel {
   playerId!: string;
 
   gameId!: string;
+
+  ping: number;
+  ip: string;
+
+  positionX: number;
+  positionY: number;
+  positionZ: number;
 
   static get relationMappings() {
     return {
@@ -66,15 +75,31 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     };
   }
 
-  async findOne(id: string): Promise<PlayerOnGameserverOutputDTO> {
+  async findOne(id: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id);
+    const data = (await query.findById(id)) as unknown as PlayerOnGameserverOutputWithRolesDTO;
 
     if (!data) {
       throw new errors.NotFoundError();
     }
 
-    return new PlayerOnGameserverOutputDTO().construct(data);
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+    const roles = await roleOnPlayerModel
+      .query()
+      .where({ playerId: data.playerId })
+      .withGraphFetched('role.permissions');
+    const globalRoles = roles.filter((role) => role.gameServerId === null);
+    const gameServerRoles = roles.filter((role) => role.gameServerId !== data.gameServerId);
+    const filteredRoles = [...globalRoles, ...gameServerRoles];
+    const uniqueRoles = filteredRoles.filter(
+      (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
+    );
+    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new RoleOutputDTO().construct(role)));
+
+    data.roles = roleDTOs;
+
+    return new PlayerOnGameserverOutputWithRolesDTO().construct(data);
   }
 
   async create(item: PlayerOnGameServerCreateDTO): Promise<PlayerOnGameserverOutputDTO> {
@@ -102,7 +127,15 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+    const res = await query
+      .updateAndFetchById(id, {
+        ping: data.ping,
+        ip: data.ip,
+        positionX: data.positionX,
+        positionY: data.positionY,
+        positionZ: data.positionZ,
+      })
+      .returning('*');
     return new PlayerOnGameserverOutputDTO().construct(res);
   }
 
@@ -123,7 +156,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return foundProfiles;
   }
 
-  async resolveRef(ref: IPlayerReferenceDTO, gameServerId: string): Promise<PlayerOnGameserverOutputDTO> {
+  async resolveRef(ref: IPlayerReferenceDTO, gameServerId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const { query } = await this.getModel();
 
     const foundProfiles = await query.where({ gameId: ref.gameId, gameServerId });
