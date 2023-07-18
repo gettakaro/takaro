@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -11,6 +11,18 @@ async function main() {
   if (!mod.userConfig.allowPublicTeleports) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: 'Public teleports are disabled.',
+    });
+    return;
+  }
+
+  if (!checkPermission(player, 'TELEPORTS_CREATE_PUBLIC')) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: 'You do not have permission to create public teleports.',
+      opts: {
+        recipient: {
+          gameId: player.gameId,
+        },
+      },
     });
     return;
   }
