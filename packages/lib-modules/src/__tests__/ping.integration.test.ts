@@ -20,9 +20,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/ping',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);

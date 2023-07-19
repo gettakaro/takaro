@@ -25,9 +25,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -37,9 +35,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);
@@ -49,9 +45,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
@@ -77,9 +71,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -89,9 +81,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);
@@ -101,9 +91,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setprivate test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setPrivateEvent).length).to.be.eq(1);
@@ -113,9 +101,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await tpEvent)[0].data.msg).to.be.eq('Teleport test does not exist.');
@@ -142,9 +128,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -154,9 +138,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);
@@ -184,9 +166,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -196,9 +176,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);
@@ -208,9 +186,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await tpEvent).length).to.be.eq(1);
@@ -231,9 +207,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await tpEvent2).length).to.be.eq(1);
@@ -266,9 +240,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -278,9 +250,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
-        player: {
-          gameId: '2',
-        },
+        playerId: this.setupData.players[1].id,
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);

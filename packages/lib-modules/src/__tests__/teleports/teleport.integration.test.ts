@@ -19,9 +19,7 @@ const tests = [
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setEvents).length).to.be.eq(1);
@@ -30,9 +28,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -53,9 +49,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -82,9 +76,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
@@ -93,9 +85,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
@@ -104,9 +94,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await tpTimeoutEvent)[0].data.msg).to.be.eq('You cannot teleport yet. Please wait before trying again.');

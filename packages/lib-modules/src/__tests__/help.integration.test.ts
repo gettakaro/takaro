@@ -18,9 +18,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(3);
@@ -50,9 +48,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 9);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(9);
@@ -90,9 +86,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help ping',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -116,9 +110,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help foobar',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);

@@ -47,9 +47,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(2);
@@ -75,9 +73,7 @@ const tests = [
       const firstEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await firstEvents).length).to.be.eq(2);
@@ -87,9 +83,7 @@ const tests = [
       const secondEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await secondEvents).length).to.be.eq(1);
@@ -109,9 +103,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);

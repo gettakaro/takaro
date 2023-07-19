@@ -581,10 +581,10 @@ export type CommandSearchInputDTOSortDirectionEnum = typeof CommandSearchInputDT
 export interface CommandTriggerDTO {
     /**
      * 
-     * @type {IPlayerReferenceDTO}
+     * @type {string}
      * @memberof CommandTriggerDTO
      */
-    'player': IPlayerReferenceDTO;
+    'playerId': string;
     /**
      * 
      * @type {string}

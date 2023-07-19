@@ -19,9 +19,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -43,9 +41,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await firstEvents).length).to.be.eq(1);
@@ -55,9 +51,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await secondEvents).length).to.be.eq(1);
@@ -85,9 +79,7 @@ const tests = [
         Array.from({ length: 3 }).map(async (_, i) => {
           return this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
             msg: `/settp test${i}`,
-            player: {
-              gameId: '1',
-            },
+            playerId: this.setupData.players[0].id,
           });
         })
       );
@@ -101,9 +93,7 @@ const tests = [
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -128,9 +118,7 @@ const tests = [
         Array.from({ length: 3 }).map(async (_, i) => {
           return this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
             msg: `/settp test${i}`,
-            player: {
-              gameId: '1',
-            },
+            playerId: this.setupData.players[0].id,
           });
         })
       );
@@ -143,9 +131,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test1',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
@@ -165,9 +151,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test',
-        player: {
-          gameId: '1',
-        },
+        playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
