@@ -1,7 +1,7 @@
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import {
   Length,
   ValidatorConstraint,
@@ -62,6 +62,9 @@ export class PermissionOutputDTO extends TakaroDTO<PermissionOutputDTO> {
   @IsString()
   @IsOptional()
   description: string;
+
+  @Exclude()
+  domain: string;
 }
 
 export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
