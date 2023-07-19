@@ -1,4 +1,4 @@
-import { IntegrationTest } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 
@@ -103,7 +103,7 @@ const tests = [
       });
 
       const newRoleRes = await this.client.role.roleControllerGetOne(this.setupData.id);
-      expect(newRoleRes.data.data.permissions).toEqual([]);
+      expect(newRoleRes.data.data.permissions).to.deep.eq([]);
 
       return newRoleRes;
     },
