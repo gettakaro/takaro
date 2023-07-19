@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from '../setupData.integration.test.js';
 import { GameEvents } from '../../dto/index.js';
 
@@ -16,9 +16,7 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
         player: {
@@ -29,7 +27,7 @@ const tests = [
       expect((await setEvents).length).to.be.eq(1);
       expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
 
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
         player: {
@@ -51,9 +49,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
@@ -81,10 +77,8 @@ const tests = [
           }),
         }
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
 
-      const setTpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -95,7 +89,7 @@ const tests = [
 
       expect((await setTpEvent).length).to.be.eq(1);
 
-      const tpEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
@@ -106,7 +100,7 @@ const tests = [
 
       expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
 
-      const tpTimeoutEvent = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const tpTimeoutEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',

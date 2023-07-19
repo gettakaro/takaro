@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/gameEvents.js';
 
@@ -15,9 +15,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
         player: {
@@ -49,9 +47,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 9);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 9);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
         player: {
@@ -90,9 +86,7 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help ping',
@@ -118,9 +112,7 @@ const tests = [
         this.setupData.utilsModule.id
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help foobar',

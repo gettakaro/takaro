@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from '../setupData.integration.test.js';
 import { GameEvents } from '../../dto/index.js';
 
@@ -15,9 +15,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -41,9 +39,7 @@ const tests = [
         this.setupData.teleportsModule.id
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const firstEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const firstEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -55,7 +51,7 @@ const tests = [
       expect((await firstEvents).length).to.be.eq(1);
       expect((await firstEvents)[0].data.msg).to.be.eq('Teleport test set.');
 
-      const secondEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const secondEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -83,9 +79,7 @@ const tests = [
           userConfig: JSON.stringify({ maxTeleports: 3 }),
         }
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -103,7 +97,7 @@ const tests = [
       for (const event of await setEvents) {
         expect(event.data.msg).to.match(/Teleport test\d set\./);
       }
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -128,9 +122,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const setEvents = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -148,7 +140,7 @@ const tests = [
       for (const event of await setEvents) {
         expect(event.data.msg).to.match(/Teleport test\d set\./);
       }
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test1',
         player: {
@@ -170,9 +162,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id
       );
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test',
         player: {

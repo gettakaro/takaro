@@ -17,6 +17,7 @@ export interface IModuleTestsSetupData {
   serverMessagesModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
+  eventAwaiter: EventsAwaiter;
 }
 
 export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -87,5 +88,6 @@ export const modulesTestSetup = async function (
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,
+    eventAwaiter,
   };
 };
