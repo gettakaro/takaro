@@ -90,7 +90,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       .where({ playerId: data.playerId })
       .withGraphFetched('role.permissions');
     const globalRoles = roles.filter((role) => role.gameServerId === null);
-    const gameServerRoles = roles.filter((role) => role.gameServerId !== data.gameServerId);
+    const gameServerRoles = roles.filter((role) => role.gameServerId === data.gameServerId);
     const filteredRoles = [...globalRoles, ...gameServerRoles];
     const uniqueRoles = filteredRoles.filter(
       (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
