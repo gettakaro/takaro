@@ -5,9 +5,10 @@ import {
   TextField,
   Drawer,
   CollapseList,
-  ErrorMessage,
   styled,
   SchemaGenerator,
+  errors,
+  FormError,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -31,10 +32,10 @@ const ButtonContainer = styled.div`
 
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | undefined>();
   const [schema, setSchema] = useState({});
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useModuleCreate();
+  const { mutateAsync, isLoading, error: createModuleError } = useModuleCreate();
 
   useEffect(() => {
     if (!open) {
@@ -42,19 +43,15 @@ const CreateModule: FC = () => {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({
-    name,
-    description,
-  }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
     try {
-      setError('');
-
-      mutateAsync({
+      setErrorMessage(undefined);
+      await mutateAsync({
         name,
         description,
         configSchema: JSON.stringify(schema),
@@ -62,9 +59,23 @@ const CreateModule: FC = () => {
 
       navigate(PATHS.moduleDefinitions());
     } catch (error) {
+      console.log(error);
       Sentry.captureException(error);
     }
   };
+
+  if (!errorMessage && createModuleError) {
+    const errorType = errors.defineErrorType(createModuleError);
+    if (errorType instanceof errors.UniqueConstraintError) {
+      setErrorMessage('A module with that name already exists.');
+    }
+    if (errorType instanceof errors.ResponseValidationError) {
+      // TODO: setup error messages for response validation errors
+    }
+    if (errorType instanceof errors.InternalServerError) {
+      setErrorMessage(errorType.message);
+    }
+  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -72,8 +83,8 @@ const CreateModule: FC = () => {
         <Drawer.Heading>Create Module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
-              <CollapseList.Item title="General">
+            <CollapseList.Item title="General">
+              <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
                 <TextField
                   control={control}
                   label="Name"
@@ -89,26 +100,23 @@ const CreateModule: FC = () => {
                   name="description"
                   placeholder="This module does cool stuff"
                 />
-              </CollapseList.Item>
-              <CollapseList.Item title="Config">
-                <SchemaGenerator onSchemaChange={setSchema} />
-              </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
-            </form>
+              </form>
+            </CollapseList.Item>
+            <CollapseList.Item title="Config">
+              <SchemaGenerator onSchemaChange={setSchema} />
+            </CollapseList.Item>
           </CollapseList>
+          {errorMessage && <FormError message={errorMessage} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
               text="Save changes"
               type="submit"
               form="create-module-form"
+              disabled={!!errorMessage && !formState.isDirty}
             />
           </ButtonContainer>
         </Drawer.Footer>

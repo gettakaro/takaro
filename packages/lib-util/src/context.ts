@@ -52,11 +52,11 @@ class Context {
   /**
    * Wraps a function with opentelemetry tracing AND custom context tracking
    * @param name Name of the span
-   * @param fn Abitrary function
+   * @param fn Arbitrary function
    * @returns A wrapped function that will start a span and end it when the function is done
    */
   wrap(name: string, fn: any) {
-    const ctxWrapped = this.wrapContext(fn);
+    const ctxWrapped = this.wrapContext(fn, ctx.data);
 
     if (process.env.TRACING_ENABLED !== 'true') return ctxWrapped;
 

@@ -29,7 +29,7 @@ const Wrapper = styled.div`
 export const StudioFrame: FC = () => {
   const { moduleId } = useParams();
   const navigate = useNavigate();
-  const { data: mod, isSuccess, isError, isLoading, isRefetching } = useModule(moduleId!);
+  const { data: mod, isSuccess, isError, isLoading } = useModule(moduleId!);
 
   const [moduleData, setModuleData] = useState<ModuleData>({
     fileMap: {},
@@ -81,7 +81,7 @@ export const StudioFrame: FC = () => {
     return files;
   })();
 
-  if (isLoading || isRefetching) {
+  if (isLoading) {
     return <Loading />;
   }
 

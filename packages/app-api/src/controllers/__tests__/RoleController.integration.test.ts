@@ -1,22 +1,24 @@
-import { IntegrationTest } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 
 const group = 'RoleController';
+
+const setup = async function (this: IntegrationTest<RoleOutputDTO>) {
+  return (
+    await this.client.role.roleControllerCreate({
+      name: 'Test role',
+      permissions: [PERMISSIONS.MANAGE_ROLES],
+    })
+  ).data.data;
+};
 
 const tests = [
   new IntegrationTest<RoleOutputDTO>({
     group,
     snapshot: true,
     name: 'Get by ID',
-    setup: async function () {
-      return (
-        await this.client.role.roleControllerCreate({
-          name: 'Test role',
-          permissions: [PERMISSIONS.MANAGE_ROLES],
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.role.roleControllerGetOne(this.setupData.id);
     },
@@ -35,14 +37,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Update by ID',
-    setup: async function () {
-      return (
-        await this.client.role.roleControllerCreate({
-          name: 'Test role',
-          permissions: [PERMISSIONS.MANAGE_ROLES],
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.role.roleControllerUpdate(this.setupData.id, {
         name: 'New name',
@@ -68,14 +63,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Delete',
-    setup: async function () {
-      return (
-        await this.client.role.roleControllerCreate({
-          name: 'Test role',
-          permissions: [PERMISSIONS.MANAGE_ROLES],
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.role.roleControllerRemove(this.setupData.id);
     },
@@ -95,20 +83,30 @@ const tests = [
     group,
     snapshot: true,
     name: 'Filter by name',
-    setup: async function () {
-      return (
-        await this.client.role.roleControllerCreate({
-          name: 'Test role',
-          permissions: [PERMISSIONS.MANAGE_ROLES],
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.role.roleControllerSearch({
         filters: { name: 'Test role' },
       });
     },
     filteredFields: ['roleId'],
+  }),
+  new IntegrationTest<RoleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Update permissions with empty array',
+    setup,
+    test: async function () {
+      await this.client.role.roleControllerUpdate(this.setupData.id, {
+        name: 'New name',
+        permissions: [],
+      });
+
+      const newRoleRes = await this.client.role.roleControllerGetOne(this.setupData.id);
+      expect(newRoleRes.data.data.permissions).to.deep.eq([]);
+
+      return newRoleRes;
+    },
   }),
 ];
 

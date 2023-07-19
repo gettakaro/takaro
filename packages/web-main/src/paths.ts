@@ -7,7 +7,14 @@ export const PATHS = {
   moduleDefinitions: () => '/modules',
   notFound: () => '/404',
 
+  roles: {
+    overview: () => '/roles',
+    create: () => '/roles/create',
+    update: (roleId: string) => `/roles/update/${roleId}`,
+  },
+
   settings: {
+    overview: () => '/settings',
     GameServerSettings: () => '/settings/gameservers',
     discordSettings: () => '/settings/discord',
   },

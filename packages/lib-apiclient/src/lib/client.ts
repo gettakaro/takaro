@@ -11,6 +11,7 @@ import {
   CommandApi,
   VariableApi,
   DiscordApi,
+  EventApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -174,6 +175,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   get discord() {
     return new DiscordApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get event() {
+    return new EventApi(
       {
         isJsonMime: this.isJsonMime,
       },

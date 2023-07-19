@@ -3,28 +3,16 @@ import { useController } from 'react-hook-form';
 import { FC } from 'react';
 import { GenericSwitch } from '.';
 import { defaultInputProps, defaultInputPropsFactory } from '../InputProps';
-import { Skeleton, Label } from '../../../components';
+import { Label } from '../../../components';
 import { Container } from './style';
 import { Wrapper, Description } from '../layout';
 
 export type ControlledSwitchProps = ControlledInputProps;
 
-const defaultsApplier =
-  defaultInputPropsFactory<ControlledSwitchProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledSwitchProps>(defaultInputProps);
 
 export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
-  const {
-    readOnly,
-    size,
-    name,
-    required,
-    disabled,
-    hint,
-    label,
-    control,
-    loading,
-    description,
-  } = defaultsApplier(props);
+  const { readOnly, size, name, required, disabled, hint, label, control, description } = defaultsApplier(props);
 
   const {
     field,
@@ -33,15 +21,6 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
     name,
     control,
   });
-
-  if (loading) {
-    return (
-      <Container>
-        {label && <div>{label}</div>}
-        <Skeleton variant="text" width="30px" height="15px" />
-      </Container>
-    );
-  }
 
   return (
     <Wrapper>
@@ -61,6 +40,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
         <GenericSwitch
           id={name}
           hasError={!!error}
+          hasDescription={!!description}
           readOnly={readOnly}
           required={required}
           disabled={disabled}
@@ -70,12 +50,9 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           onBlur={field.onBlur}
           value={field.value}
           ref={field.ref}
-          hasDescription={!!description}
         />
       </Container>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </Wrapper>
   );
 };

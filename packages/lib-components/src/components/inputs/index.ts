@@ -7,6 +7,8 @@ export type { ControlledSelectProps as SelectProps } from './Select';
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';
 
+export { GenericSwitch as UnControlledSwitch } from './Switch/Generic';
+
 export { ControlledTextField as TextField } from './TextField';
 export type { ControlledTextFieldProps as TextFieldProps } from './TextField';
 
@@ -28,7 +30,7 @@ export type { ControlledTagFieldProps as TagFieldProps } from './TagField';
 export { EditableField } from './EditableField';
 export type { EditableFieldProps } from './EditableField';
 
-export { Label } from './Label';
-export type { LabelProps } from './Label';
+export { Label } from './layout/Label';
+export type { LabelProps } from './layout/Label';
 
 export { JsonSchemaForm, SchemaGenerator, generateJsonSchema } from './JsonSchemaForm';

@@ -1,5 +1,5 @@
-import { IntegrationTest, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
-import { GameServerOutputDTO, PlayerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, integrationConfig, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
+import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
 import { config } from '../../config.js';
 import { EventTypes } from '@takaro/modules';
 
@@ -18,6 +18,7 @@ interface ISetupWithGameServersAndPlayers {
   gameServer1: GameServerOutputDTO;
   gameServer2: GameServerOutputDTO;
   players: PlayerOutputDTO[];
+  mod: ModuleOutputDTO;
 }
 
 const setupWithGameServersAndPlayers = async function (
@@ -39,6 +40,12 @@ const setupWithGameServersAndPlayers = async function (
     }),
   });
 
+  const mod = (
+    await this.client.module.moduleControllerCreate({
+      name: 'Test module',
+    })
+  ).data.data;
+
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 10);
@@ -56,6 +63,7 @@ const setupWithGameServersAndPlayers = async function (
     gameServer1: gameServer1.data.data,
     gameServer2: gameServer2.data.data,
     players,
+    mod,
   };
 };
 
@@ -119,11 +127,11 @@ const tests = [
     },
     expectedStatus: 409,
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key but different gameServerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -139,11 +147,11 @@ const tests = [
     },
     filteredFields: ['gameServerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key but different playerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -159,11 +167,11 @@ const tests = [
     },
     filteredFields: ['playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same playerId and different gameServerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -181,11 +189,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same gameServerId and different playerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -203,11 +211,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same playerId and same gameServerId is not allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -226,11 +234,11 @@ const tests = [
     expectedStatus: 409,
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Can query API with playerId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -257,11 +265,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Can query API with gameServerId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -320,6 +328,42 @@ const tests = [
       });
     },
     expectedStatus: 400,
+  }),
+  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+    group,
+    snapshot: true,
+    name: 'Create with moduleId',
+    setup: setupWithGameServersAndPlayers,
+    test: async function () {
+      return this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        moduleId: this.setupData.mod.id,
+      });
+    },
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+    group,
+    snapshot: true,
+    name: 'Prevents creating duplicate variables with same moduleId',
+    setup: setupWithGameServersAndPlayers,
+    test: async function () {
+      // First creation should succeed
+      await this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        moduleId: this.setupData.mod.id,
+      });
+
+      // Second creation with same moduleId should fail
+      return this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        moduleId: this.setupData.mod.id,
+      });
+    },
+    expectedStatus: 409, // Expect a conflict HTTP status code
   }),
 ];
 

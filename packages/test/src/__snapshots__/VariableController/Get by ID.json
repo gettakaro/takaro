@@ -2,13 +2,14 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "33de449d-830d-45af-89ab-a2f7820d8261",
-      "createdAt": "2023-05-03T13:40:50.273Z",
-      "updatedAt": "2023-05-03T13:40:50.274Z",
+      "id": "6fd25375-36c9-46ae-a620-faef1cb55053",
+      "createdAt": "2023-07-13T19:15:54.638Z",
+      "updatedAt": "2023-07-13T19:15:54.638Z",
       "key": "Test variable",
       "value": "Test value",
       "gameServerId": null,
-      "playerId": null
+      "playerId": null,
+      "moduleId": null
     }
   },
   "status": 200,

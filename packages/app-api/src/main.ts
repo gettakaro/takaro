@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
 import { ctx, errors, logger } from '@takaro/util';
-import { migrate } from '@takaro/db';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
 import { config } from './config.js';
@@ -27,6 +26,7 @@ import { ExternalAuthController } from './controllers/ExternalAuthController.js'
 import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
 import { discordBot } from './lib/DiscordBot.js';
+import { EventController } from './controllers/EventController.js';
 
 export const server = new HTTP(
   {
@@ -45,6 +45,7 @@ export const server = new HTTP(
       VariableController,
       ExternalAuthController,
       DiscordController,
+      EventController,
     ],
   },
   {
@@ -68,11 +69,6 @@ async function main() {
       throw error;
     }
   }
-
-  log.info('📖 Running database migrations');
-  await migrate();
-
-  log.info('🦾 Database up to date');
 
   const initProviders = await AuthService.initPassport();
   log.info(`🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`);

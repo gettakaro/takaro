@@ -1,13 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import {
-  Button,
-  Select,
-  TextField,
-  Drawer,
-  CollapseList,
-  ErrorMessage,
-} from '@takaro/lib-components';
+import { Button, Select, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -22,36 +15,16 @@ import { PATHS } from 'paths';
 import { useParams } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { useGameServer } from 'queries/gameservers';
-import {
-  useGameServerReachabilityByConfig,
-  useGameServerUpdate,
-} from 'queries/gameservers/queries';
+import { useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/gameservers/queries';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
+import { gameTypeSelectOptions } from './GameTypeSelectOptions';
 
 export interface IFormInputs {
   name: string;
   type: GameServerCreateDTOTypeEnum;
   connectionInfo: MockConnectionInfo | RustConnectionInfo | SdtdConnectionInfo;
 }
-
-const gameTypeSelectOptions = [
-  {
-    name: 'Mock (testing purposes)',
-    value: GameServerCreateDTOTypeEnum.Mock,
-    show: import.meta.env.DEV,
-  },
-  {
-    name: 'Rust',
-    value: GameServerCreateDTOTypeEnum.Rust,
-    show: true,
-  },
-  {
-    name: '7 Days to die',
-    value: GameServerCreateDTOTypeEnum.Sevendaystodie,
-    show: true,
-  },
-].filter(({ show }) => show);
 
 export const UpdateGameServer = () => {
   const { serverId } = useParams();
@@ -75,13 +48,10 @@ interface Props {
 
 const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerUpdate();
-  const {
-    mutateAsync: testReachabilityMutation,
-    isLoading: testingConnection,
-  } = useGameServerReachabilityByConfig();
+  const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   useEffect(() => {
@@ -100,12 +70,8 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({
-    name,
-    connectionInfo,
-  }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
     try {
-      setError('');
       mutateAsync({
         gameServerId: serverId!,
         gameServerDetails: {
@@ -123,16 +89,15 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const { type, connectionInfo, name } = watch();
 
   const clickTestReachability = async () => {
-    setError('');
     const response = await testReachabilityMutation({
       type,
       connectionInfo: JSON.stringify(connectionInfo),
     });
 
-    if (response.data.data.connectable) {
+    if (response.connectable) {
       setConnectionOk(true);
     } else {
-      setError(response.data.data.reason || 'Connection error');
+      setError(response.reason || 'Connection error');
     }
   };
 
@@ -142,10 +107,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
         <Drawer.Heading>Edit Game Server</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              id="update-game-server-form"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} id="update-game-server-form">
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -162,12 +124,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                   required
                   loading={isLoading}
                   readOnly
-                  render={(selectedIndex) => (
-                    <div>
-                      {gameTypeSelectOptions[selectedIndex]?.name ??
-                        'Select...'}
-                    </div>
-                  )}
+                  render={(selectedIndex) => <div>{gameTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</div>}
                 >
                   <Select.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
@@ -183,24 +140,14 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               <CollapseList.Item title="Connection info">
                 {connectionInfoFieldsMap(isLoading, control)[data.type]}
               </CollapseList.Item>
-              {error && <ErrorMessage message={error} />}
             </form>
           </CollapseList>
+          {error && <FormError message={error} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-              type="button"
-            />
-            <Button
-              fullWidth
-              isLoading={testingConnection}
-              onClick={clickTestReachability}
-              text="Test connection"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
+            <Button fullWidth isLoading={testingConnection} onClick={clickTestReachability} text="Test connection" />
             {connectionOk && (
               <Button
                 fullWidth

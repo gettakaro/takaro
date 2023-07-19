@@ -12,6 +12,7 @@ import {
   AiOutlineBook as DocumentationIcon,
   // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
+  AiOutlineUsergroupAdd as RolesIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -43,6 +44,11 @@ export const GlobalFrame: FC = () => {
       icon: <GameServersIcon />,
     },
     {
+      label: 'Roles',
+      path: PATHS.roles.overview(),
+      icon: <RolesIcon />,
+    },
+    {
       label: 'Players',
       path: PATHS.players(),
       icon: <PlayersIcon />,
@@ -61,7 +67,7 @@ export const GlobalFrame: FC = () => {
     },
     {
       label: 'Settings',
-      path: PATHS.settings.GameServerSettings(),
+      path: PATHS.settings.overview(),
       icon: <SettingsIcon />,
       end: false,
     },
@@ -76,10 +82,7 @@ export const GlobalFrame: FC = () => {
   return (
     <Container>
       <Navbar links={links} />
-      <ContentContainer
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
+      <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
         <Header />
         <ErrorBoundary fallback={<ErrorFallback />}>
           <Page>

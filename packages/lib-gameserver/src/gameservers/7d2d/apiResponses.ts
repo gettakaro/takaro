@@ -118,7 +118,7 @@ export interface PlayerNotOnline {
 
 export interface PlayerLocation {
   steamid: string;
-  userid: string;
+  crossplatformid: string;
   name: string;
   online: boolean;
   position: Position;

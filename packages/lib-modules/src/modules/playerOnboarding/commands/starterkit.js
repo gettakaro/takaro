@@ -10,8 +10,7 @@ async function main() {
 
   if (!items.length) {
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message:
-        'No starter kit items configured. Please ask your server administrator to configure this.',
+      message: 'No starter kit items configured. Please ask your server administrator to configure this.',
     });
     return;
   }
@@ -20,7 +19,7 @@ async function main() {
     filters: {
       key: VARIABLE_KEY,
       gameServerId: data.gameServerId,
-      playerId: data.player.id,
+      playerId: data.player.playerId,
     },
   });
 
@@ -37,14 +36,10 @@ async function main() {
 
   await Promise.all(
     items.map(async (item) => {
-      return takaro.gameserver.gameServerControllerGiveItem(
-        data.gameServerId,
-        data.player.id,
-        {
-          name: item,
-          amount: 1,
-        }
-      );
+      return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.playerId, {
+        name: item,
+        amount: 1,
+      });
     })
   );
 
@@ -52,7 +47,7 @@ async function main() {
     key: VARIABLE_KEY,
     value: '1',
     gameServerId: data.gameServerId,
-    playerId: data.player.id,
+    playerId: data.player.playerId,
   });
 
   await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
@@ -60,4 +55,4 @@ async function main() {
   });
 }
 
-main();
+await main();

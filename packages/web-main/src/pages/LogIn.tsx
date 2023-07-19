@@ -1,12 +1,5 @@
 import { FC, useState, useMemo, useEffect } from 'react';
-import {
-  Button,
-  TextField,
-  ErrorMessage,
-  styled,
-  errors,
-  Company,
-} from '@takaro/lib-components';
+import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -17,6 +10,7 @@ import { PATHS } from 'paths';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { AxiosError } from 'axios';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -83,10 +77,7 @@ const LogIn: FC = () => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        email: z
-          .string()
-          .email('This is not a valid email address.')
-          .nonempty('Email is a required field.'),
+        email: z.string().email('This is not a valid email address.').nonempty('Email is a required field.'),
         password: z.string().nonempty('Password is a required field'),
       }),
     []
@@ -123,12 +114,19 @@ const LogIn: FC = () => {
       }
     } catch (error) {
       reset();
-      if (error instanceof errors.NotAuthorizedError) {
+
+      if (error instanceof AxiosError) {
+        const err = errors.defineErrorType(error);
+
+        if (err instanceof errors.NotAuthorizedError) {
+          setError('Incorrect email or password.');
+          return;
+        }
+        if (err instanceof errors.ResponseClientError) {
+          setError('Something went wrong processing your request.');
+        }
+      } else {
         setError('Incorrect email or password.');
-        return;
-      }
-      if (error instanceof errors.ResponseClientError) {
-        setError('Something went wrong processing your request.');
       }
     } finally {
       setLoading(false);
@@ -161,24 +159,10 @@ const LogIn: FC = () => {
           />
         */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {error && <ErrorMessage message={error} />}
-          <TextField
-            control={control}
-            label="Email"
-            loading={loading}
-            name="email"
-            placeholder="hi cutie"
-            required
-          />
-          <TextField
-            control={control}
-            label="Password"
-            loading={loading}
-            name="password"
-            required
-            type="password"
-          />
+          <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
+          <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
+          {error && <FormError message={error} />}
           <Button
             icon={<Mail />}
             isLoading={loading}

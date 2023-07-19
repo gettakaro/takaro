@@ -1,28 +1,10 @@
-import {
-  cloneElement,
-  useState,
-  ChangeEvent,
-  ReactElement,
-  forwardRef,
-} from 'react';
-import {
-  InputContainer,
-  Input,
-  PrefixContainer,
-  SuffixContainer,
-} from './style';
+import { cloneElement, useState, ChangeEvent, ReactElement, forwardRef } from 'react';
+import { InputContainer, Input, PrefixContainer, SuffixContainer } from './style';
 
 import { Size } from '../../../styled';
-import {
-  AiOutlineEye as ShowPasswordIcon,
-  AiOutlineEyeInvisible as HidePasswordIcon,
-} from 'react-icons/ai';
+import { AiOutlineEye as ShowPasswordIcon, AiOutlineEyeInvisible as HidePasswordIcon } from 'react-icons/ai';
 import { getFieldType, getInputMode } from './util';
-import {
-  defaultInputProps,
-  defaultInputPropsFactory,
-  GenericInputProps,
-} from '../InputProps';
+import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number';
@@ -36,16 +18,11 @@ export interface TextFieldProps {
   icon?: ReactElement;
 }
 
-export type GenericTextFieldProps = GenericInputProps<HTMLInputElement> &
-  TextFieldProps;
+export type GenericTextFieldProps = GenericInputProps<string, HTMLInputElement> & TextFieldProps;
 
-const defaultsApplier =
-  defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericTextFieldProps>(defaultInputProps);
 
-export const GenericTextField = forwardRef<
-  HTMLInputElement,
-  GenericTextFieldProps
->((props, ref) => {
+export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldProps>((props, ref) => {
   const {
     onChange,
     onBlur = () => {},
@@ -73,9 +50,7 @@ export const GenericTextField = forwardRef<
 
   return (
     <InputContainer>
-      {prefix && (
-        <PrefixContainer hasError={hasError}>{prefix}</PrefixContainer>
-      )}
+      {prefix && <PrefixContainer hasError={hasError}>{prefix}</PrefixContainer>}
       {icon && cloneElement(icon, { size: 22, className: 'icon' })}
       <Input
         autoCapitalize="off"
@@ -98,7 +73,7 @@ export const GenericTextField = forwardRef<
         inputMode={getInputMode(type)}
         type={getFieldType(type, showPassword)}
         ref={ref}
-        value={value as string}
+        value={value}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
       {type === 'password' &&
@@ -119,9 +94,7 @@ export const GenericTextField = forwardRef<
             size="22"
           />
         ))}
-      {suffix && (
-        <SuffixContainer hasError={hasError}>{suffix}</SuffixContainer>
-      )}
+      {suffix && <SuffixContainer hasError={hasError}>{suffix}</SuffixContainer>}
     </InputContainer>
   );
 });

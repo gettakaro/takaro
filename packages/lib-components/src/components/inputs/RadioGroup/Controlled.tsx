@@ -1,36 +1,20 @@
 import { FC, useState, useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { Option } from '.';
-import {
-  ControlledInputProps,
-  defaultInputProps,
-  defaultInputPropsFactory,
-} from '../InputProps';
-import { ErrorMessage, Label } from '../../../components';
+import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Container, FieldSet } from './style';
 import { GenericRadio } from './Radio';
-import { Wrapper, Description } from '../layout';
+import { Wrapper, ErrorMessage, Label, Description } from '../layout';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
   options: Option[];
 }
 
-const defaultsApplier =
-  defaultInputPropsFactory<ControlledRadioGroupProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledRadioGroupProps>(defaultInputProps);
 
 export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
-  const {
-    readOnly,
-    name,
-    size,
-    label,
-    options,
-    control,
-    required,
-    disabled,
-    hint,
-    description,
-  } = defaultsApplier(props);
+  const { readOnly, name, size, label, options, control, required, disabled, hint, description } =
+    defaultsApplier(props);
 
   const {
     field,
@@ -71,11 +55,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
       <Wrapper>
         {options.map(({ label, labelPosition, value }) => {
           return (
-            <Container
-              key={`radiogroup-container-${name}-${value}`}
-              isSelected={value === selected}
-              onClick={() => handleChange(value)}
-            >
+            <Container key={`radiogroup-container-${name}-${value}`} onClick={() => handleChange(value)}>
               {label && labelPosition === 'left' && (
                 <Label
                   key={`radiogroup-label-${name}-${value}`}
@@ -99,8 +79,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
                 name={name}
                 id={name}
                 value={value}
-                selected={selected === value}
-                setSelected={setSelected}
+                checked={selected === value}
                 onChange={field.onChange}
                 size={size}
                 onBlur={handleOnBlur}
@@ -126,13 +105,9 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
             </Container>
           );
         })}
-        {error && showError && error.message && (
-          <ErrorMessage message={error.message} />
-        )}
+        {error && showError && error.message && <ErrorMessage message={error.message} />}
       </Wrapper>
-      {description && (
-        <Description description={description} inputName={name} />
-      )}
+      {description && <Description description={description} inputName={name} />}
     </FieldSet>
   );
 };

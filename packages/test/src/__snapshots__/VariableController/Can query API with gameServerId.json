@@ -7,13 +7,14 @@
     },
     "data": [
       {
-        "id": "ae923f36-ba3d-4aa1-96e2-7930b2251682",
-        "createdAt": "2023-05-03T15:12:46.798Z",
-        "updatedAt": "2023-05-03T15:12:46.798Z",
+        "id": "ee09de8a-7304-45f7-b74c-504bf57cf314",
+        "createdAt": "2023-07-13T19:16:00.313Z",
+        "updatedAt": "2023-07-13T19:16:00.313Z",
         "key": "Variable",
         "value": "Test value",
-        "gameServerId": "77c6c21e-ded0-4e77-be64-733a9f795f6e",
-        "playerId": null
+        "gameServerId": "b2ee7923-3024-4d0a-b88a-1a858930d80a",
+        "playerId": null,
+        "moduleId": null
       }
     ]
   },

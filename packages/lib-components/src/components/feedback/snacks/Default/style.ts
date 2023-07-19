@@ -15,17 +15,19 @@ export const ContentContainer = styled.div`
   display: flex;
   width: 100%;
   flex-direction: row;
+  justify-content: space-between;
 `;
 
 export const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 200px;
+  width: 250px;
   h3 {
     font-weight: 700;
     margin-bottom: ${({ theme }) => theme.spacing[1]};
   }
+  margin-right: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const IconContainer = styled.div<{
@@ -54,11 +56,4 @@ export const ButtonContainer = styled.div`
       margin-right: ${({ theme }) => theme.spacing['0_5']};
     }
   }
-`;
-
-export const CloseContainer = styled.div`
-  position: absolute;
-  top: ${({ theme }) => theme.spacing['0_75']};
-  cursor: pointer;
-  right: ${({ theme }) => theme.spacing['2']};
 `;

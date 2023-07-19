@@ -8,10 +8,11 @@ import {
   IItemDTO,
   IPlayerReferenceDTO,
   IPosition,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
+import { Settings } from '@takaro/apiclient';
 
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
@@ -19,7 +20,7 @@ export class Rust implements IGameServer {
   connectionInfo: RustConnectionInfo;
   private client: WebSocket | null;
 
-  constructor(config: RustConnectionInfo) {
+  constructor(config: RustConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
   }
 
@@ -66,7 +67,7 @@ export class Rust implements IGameServer {
     await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item.name} ${item.amount}`);
   }
 
-  async getPlayerLocation(_player: IGamePlayer): Promise<IPosition | null> {
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const rawResponse = await this.executeConsoleCommand('playerlistpos');
     const lines = rawResponse.rawResult.split('\n');
 
@@ -79,7 +80,7 @@ export class Rust implements IGameServer {
         const y = matches[3].replace(',', '');
         const z = matches[4].replace(')', '');
 
-        if (steamId === _player.gameId) {
+        if (steamId === player.gameId) {
           return {
             x: parseFloat(x),
             y: parseFloat(y),
@@ -92,13 +93,13 @@ export class Rust implements IGameServer {
     return null;
   }
 
-  async testReachability(): Promise<TestReachabilityOutput> {
+  async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       await this.executeConsoleCommand('serverinfo');
-      return new TestReachabilityOutput().construct({ connectable: true });
+      return new TestReachabilityOutputDTO().construct({ connectable: true });
     } catch (error) {
       this.log.warn('testReachability', error);
-      return new TestReachabilityOutput().construct({ connectable: false });
+      return new TestReachabilityOutputDTO().construct({ connectable: false });
     }
   }
 

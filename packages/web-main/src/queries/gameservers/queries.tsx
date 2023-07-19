@@ -1,21 +1,30 @@
 import {
+  APIOutput,
   GameServerCreateDTO,
   GameServerOutputArrayDTOAPI,
   GameServerOutputDTO,
+  GameServerOutputDTOAPI,
   GameServerSearchInputDTO,
   GameServerTestReachabilityDTOAPI,
   GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
   IdUuidDTO,
+  IdUuidDTOAPI,
   ModuleInstallationOutputDTO,
+  ModuleInstallationOutputDTOAPI,
   ModuleInstallDTO,
-  SettingsOutputObjectDTOAPI,
+  Settings,
+  SettingsOutputDTOAPI,
+  TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from 'react-query';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
 import * as Sentry from '@sentry/react';
+import { AxiosError } from 'axios';
+import { useMemo } from 'react';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -36,7 +45,7 @@ export const installedModuleKeys = {
 export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameServerSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useInfiniteQuery<GameServerOutputArrayDTOAPI>({
+  const queryOpts = useInfiniteQuery<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
     queryKey: gameServerKeys.list(),
     queryFn: async ({ pageParam = page }) =>
       (
@@ -47,12 +56,18 @@ export const useGameServers = ({ page = 0, ...gameServerSearchInputArgs }: GameS
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const useGameServer = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<GameServerOutputDTO>({
+  return useQuery<GameServerOutputDTO, AxiosError<GameServerOutputDTOAPI>>({
     queryKey: gameServerKeys.detail(id),
     queryFn: async () => {
       const resp = (await apiClient.gameserver.gameServerControllerGetOne(id)).data.data;
@@ -67,9 +82,8 @@ export const useGameServerCreate = () => {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return useMutation({
-    mutationFn: async (gameServer: GameServerCreateDTO) =>
-      (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
+  return useMutation<GameServerOutputDTO, AxiosError<GameServerOutputDTOAPI>, GameServerCreateDTO>({
+    mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
     onSuccess: async (newGameServer: GameServerOutputDTO) => {
       queryClient.setQueryData<InfiniteData<GameServerOutputArrayDTOAPI>>(gameServerKeys.list(), (prev) => {
         // in case there are no game servers yet
@@ -106,16 +120,20 @@ export const useGameServerCreate = () => {
   });
 };
 
+interface SendGameServerMessage {
+  gameServerId: string;
+}
+
 export const useGameServerSendMessage = () => {
   const apiClient = useApiClient();
 
-  return useMutation({
-    mutationFn: async ({ gameServerId }: { gameServerId: string }) =>
+  return useMutation<APIOutput, AxiosError<APIOutput>, SendGameServerMessage>({
+    mutationFn: async ({ gameServerId }) =>
       (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId)).data,
   });
 };
 
-// INSTALLED MODULES
+// TODO: implement pagination
 export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
   return useQuery<ModuleInstallationOutputDTO[]>({
@@ -127,7 +145,7 @@ export const useGameServerModuleInstallations = (gameServerId: string) => {
 export const useGameServerModuleInstallation = (gameServerId: string, moduleId: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<ModuleInstallationOutputDTO>({
+  return useQuery<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>>({
     queryKey: installedModuleKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
       (await apiClient.gameserver.gameServerControllerGetModuleInstallation(gameServerId, moduleId)).data.data,
@@ -144,8 +162,8 @@ export const useGameServerModuleInstall = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ gameServerId, moduleId, moduleInstall }: GameServerModuleInstall) =>
+  return useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleInstall>({
+    mutationFn: async ({ gameServerId, moduleId, moduleInstall }) =>
       (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
     onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
       // invalidate list of installed modules
@@ -155,15 +173,25 @@ export const useGameServerModuleInstall = () => {
         installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId)
       );
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
+
+interface GameServerModuleUninstall {
+  gameServerId: string;
+  moduleId: string;
+}
 
 export const useGameServerModuleUninstall = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ gameServerId, moduleId }: { gameServerId: string; moduleId: string }) =>
+  return useMutation<
+    ModuleInstallationOutputDTO,
+    AxiosError<ModuleInstallationOutputDTOAPI>,
+    GameServerModuleUninstall
+  >({
+    mutationFn: async ({ gameServerId, moduleId }) =>
       (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
     onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
       // update the list of installed modules
@@ -181,6 +209,7 @@ export const useGameServerModuleUninstall = () => {
 
       queryClient.invalidateQueries(installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId));
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -188,7 +217,7 @@ export const useGameServerModuleUninstall = () => {
 export const useGameServerSettings = (id?: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<SettingsOutputObjectDTOAPI['data']>({
+  return useQuery<Settings, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: gameServerKeys.settings(id),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
   });
@@ -203,7 +232,7 @@ export const useGameServerUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<GameServerOutputDTO, AxiosError<GameServerOutputDTO>, GameServerUpdate>({
     mutationFn: async ({ gameServerId, gameServerDetails }: GameServerUpdate) => {
       return (await apiClient.gameserver.gameServerControllerUpdate(gameServerId, gameServerDetails)).data.data;
     },
@@ -237,15 +266,20 @@ export const useGameServerUpdate = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
+
+interface GameServerRemove {
+  id: string;
+}
 
 export const useGameServerRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ id }: { id: string }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, GameServerRemove>({
+    mutationFn: async ({ id }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: (removedGameServer: IdUuidDTO) => {
       try {
         // update list that contain this gameserver
@@ -275,21 +309,32 @@ export const useGameServerRemove = () => {
         Sentry.captureException(e);
       }
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useGameServerReachabilityById = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<GameServerTestReachabilityDTOAPI>(
-    gameServerKeys.reachability(id),
-    async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data
-  );
+  return useQuery<TestReachabilityOutputDTO, AxiosError<GameServerTestReachabilityDTOAPI>>({
+    queryKey: gameServerKeys.reachability(id),
+    queryFn: async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
 };
+
+interface GameServerTestReachabilityInput {
+  type: GameServerTestReachabilityInputDTOTypeEnum;
+  connectionInfo: string;
+}
 
 export const useGameServerReachabilityByConfig = () => {
   const apiClient = useApiClient();
-  return useMutation({
+  return useMutation<
+    TestReachabilityOutputDTO,
+    AxiosError<GameServerTestReachabilityDTOAPI>,
+    GameServerTestReachabilityInput
+  >({
     mutationFn: async ({
       type,
       connectionInfo,
@@ -297,10 +342,15 @@ export const useGameServerReachabilityByConfig = () => {
       type: GameServerTestReachabilityInputDTOTypeEnum;
       connectionInfo: string;
     }) => {
-      return await apiClient.gameserver.gameServerControllerTestReachability({
-        type,
-        connectionInfo,
-      });
+      return (
+        await apiClient.gameserver.gameServerControllerTestReachability({
+          type,
+          connectionInfo,
+        })
+      ).data.data;
+
+      // TODO:
     },
+    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

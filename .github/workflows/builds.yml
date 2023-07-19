@@ -1,38 +1,27 @@
 name: Builds
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        node-version: [18.x]
-        pkg:
-          [
-            app-vmm,
-            app-api,
-            app-mock-gameserver,
-            app-connector,
-            lib-apiclient,
-            lib-components,
-            lib-config,
-            lib-db,
-            lib-gameserver,
-            lib-http,
-            lib-util,
-            lib-queues,
-            lib-modules,
-            test,
-            web-main,
-          ]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
           cache: "npm"
 
       - uses: nick-fields/retry@v2
@@ -43,7 +32,23 @@ jobs:
           shell: pwsh
           command: ./scripts/dev-init.sh
 
-      - run: npm -w packages/${{ matrix.pkg }} run build
+      - name: Build packages
+        run: |
+          npm -w packages/app-vmm run build
+          npm -w packages/app-api run build
+          npm -w packages/app-mock-gameserver run build
+          npm -w packages/app-connector run build
+          npm -w packages/lib-apiclient run build
+          npm -w packages/lib-components run build
+          npm -w packages/lib-config run build
+          npm -w packages/lib-db run build
+          npm -w packages/lib-gameserver run build
+          npm -w packages/lib-http run build
+          npm -w packages/lib-util run build
+          npm -w packages/lib-queues run build
+          npm -w packages/lib-modules run build
+          npm -w packages/test run build
+          npm -w packages/web-main run build
 
       - name: Extract branch name
         shell: bash
@@ -51,11 +56,10 @@ jobs:
         id: extract_branch
 
       - name: Upload Sourcemaps to Sentry
-        if: matrix.pkg == 'web-main'
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ matrix.pkg }}
+          SENTRY_PROJECT: web-main
         with:
-          sourcemaps: ./packages/${{ matrix.pkg }}/dist
+          sourcemaps: ./packages/web-main/dist

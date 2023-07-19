@@ -8,10 +8,11 @@ import {
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   IPosition,
-  TestReachabilityOutput,
+  TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
+import { Settings } from '@takaro/apiclient';
 
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
@@ -22,7 +23,7 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: SdtdConnectionInfo) {
+  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
@@ -43,7 +44,7 @@ export class SevenDaysToDie implements IGameServer {
     const players = await Promise.all(
       onlinePlayersRes.data.map((p) => {
         return new IGamePlayer().construct({
-          gameId: p.crossplatformid,
+          gameId: p.crossplatformid.replace('EOS_', ''),
           ip: p.ip,
           name: p.name,
           steamId: p.steamid.replace('Steam_', ''),
@@ -57,9 +58,15 @@ export class SevenDaysToDie implements IGameServer {
     return players;
   }
 
-  async getPlayerLocation(player: IGamePlayer): Promise<IPosition | null> {
+  async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    const players = await this.getPlayers();
+    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
+    return player;
+  }
+
+  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
     const locations = await this.apiClient.getPlayersLocation();
-    const playerLocation = locations.data.find((location) => location.steamid === `Steam_${player.steamId}`);
+    const playerLocation = locations.data.find((location) => location.crossplatformid === `EOS_${player.gameId}`);
 
     if (!playerLocation) {
       return null;
@@ -73,14 +80,19 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    const command = `give ${player.gameId} ${item.name} ${item.amount}`;
-    await this.apiClient.executeConsoleCommand(command);
+    if (this.connectionInfo.useCPM) {
+      const command = `giveplus EOS_${player.gameId} ${item.name} ${item.amount}`;
+      await this.executeConsoleCommand(command);
+    } else {
+      const command = `give EOS_${player.gameId} ${item.name} ${item.amount}`;
+      await this.executeConsoleCommand(command);
+    }
   }
 
-  async testReachability(): Promise<TestReachabilityOutput> {
+  async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       await this.apiClient.getStats();
-      await this.apiClient.executeConsoleCommand('version');
+      await this.executeConsoleCommand('version');
     } catch (error) {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
@@ -98,19 +110,20 @@ export class SevenDaysToDie implements IGameServer {
         }
       }
 
-      return new TestReachabilityOutput().construct({
+      return new TestReachabilityOutputDTO().construct({
         connectable: false,
         reason,
       });
     }
 
-    return new TestReachabilityOutput().construct({
+    return new TestReachabilityOutputDTO().construct({
       connectable: true,
     });
   }
 
   async executeConsoleCommand(rawCommand: string) {
-    const result = await this.apiClient.executeConsoleCommand(rawCommand);
+    const encodedCommand = encodeURIComponent(rawCommand);
+    const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
     return new CommandOutput().construct({
       rawResult: result.data.result,
@@ -122,30 +135,39 @@ export class SevenDaysToDie implements IGameServer {
     let command = `say "${message}"`;
 
     if (opts?.recipient?.gameId) {
-      command = `sayplayer "${opts.recipient.gameId}" "${message}"}`;
+      command = `sayplayer "EOS_${opts.recipient.gameId}" "${message}"`;
     }
 
-    await this.apiClient.executeConsoleCommand(command);
+    if (this.connectionInfo.useCPM) {
+      const sender = this.settings.serverChatName || 'Takaro';
+      command = `say2 "${sender}" "${message}"`;
+
+      if (opts?.recipient?.gameId) {
+        command = `pm2 "${sender}" "EOS_${opts.recipient.gameId}" "${message}"`;
+      }
+    }
+
+    await this.executeConsoleCommand(command);
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    const command = `teleportplayer ${player.gameId} ${x} ${y} ${z}`;
-    await this.apiClient.executeConsoleCommand(command);
+    const command = `teleportplayer EOS_${player.gameId} ${x} ${y} ${z}`;
+    await this.executeConsoleCommand(command);
   }
 
   async kickPlayer(player: IPlayerReferenceDTO, reason: string) {
-    const command = `kick "${player.gameId}" "${reason}"`;
-    await this.apiClient.executeConsoleCommand(command);
+    const command = `kick "EOS_${player.gameId}" "${reason}"`;
+    await this.executeConsoleCommand(command);
   }
 
   async banPlayer(options: BanDTO) {
-    const command = `ban add ${options.player.gameId} ${options.expiresAt} ${options.reason}`;
-    await this.apiClient.executeConsoleCommand(command);
+    const command = `ban add EOS_${options.player.gameId} ${options.expiresAt} ${options.reason}`;
+    await this.executeConsoleCommand(command);
   }
 
   async unbanPlayer(player: IPlayerReferenceDTO) {
-    const command = `ban remove ${player.gameId}`;
-    await this.apiClient.executeConsoleCommand(command);
+    const command = `ban remove EOS_${player.gameId}`;
+    await this.executeConsoleCommand(command);
   }
 
   async listBans(): Promise<BanDTO[]> {

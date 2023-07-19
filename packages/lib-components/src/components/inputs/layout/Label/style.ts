@@ -1,5 +1,5 @@
 import { LabelPosition } from '.';
-import { styled, Size } from '../../../styled';
+import { styled, Size } from '../../../../styled';
 
 export const Container = styled.label<{
   error: boolean;

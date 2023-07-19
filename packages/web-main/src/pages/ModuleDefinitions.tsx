@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Divider, Loading, styled, InfiniteScroll } from '@takaro/lib-components';
+import { Divider, Loading, styled } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
 import { useModules } from 'queries/modules';
@@ -16,7 +16,7 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
-  const { data: modules, hasNextPage, isFetching, isLoading, isFetchingNextPage, fetchNextPage } = useModules();
+  const { data: modules, isLoading, InfiniteScroll } = useModules();
 
   const navigate = useNavigate();
 
@@ -58,12 +58,7 @@ export const ModuleDefinitions: FC = () => {
             ))}
           <Outlet />
         </ModuleCards>
-        <InfiniteScroll
-          isFetching={isFetching}
-          isFetchingNextPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-        />
+        {InfiniteScroll}
       </Page>
     </>
   );

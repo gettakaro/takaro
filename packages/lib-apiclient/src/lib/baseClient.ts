@@ -78,7 +78,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
           details = JSON.stringify(data.meta);
         }
 
-        this.log.error(`☠️ Request errored: ${error.message}`, {
+        this.log.error('☠️ Request errored', {
           details,
           status: error.response?.status,
           statusText: error.response?.statusText,

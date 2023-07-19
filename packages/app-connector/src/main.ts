@@ -34,7 +34,12 @@ async function main() {
 
   await server.start();
   new ConnectorWorker();
-  await gameServerManager.init();
+  try {
+    await gameServerManager.init();
+  } catch (error) {
+    log.error('Error initializing game server manager', { error });
+    process.exit(1);
+  }
 
   log.info('🚀 Server started');
 }

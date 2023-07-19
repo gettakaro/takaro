@@ -1,6 +1,11 @@
 #!/bin/node
 
-import { Client, AdminClient, isAxiosError, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
+import {
+  Client,
+  AdminClient,
+  isAxiosError,
+  GameServerCreateDTOTypeEnum,
+} from '@takaro/apiclient';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -19,29 +24,30 @@ const config = {
         host: process.env.TAKARO_DEV_RUST_HOST,
         rconPort: process.env.TAKARO_DEV_RUST_PORT,
         rconPassword: process.env.TAKARO_DEV_RUST_RCON_PASSWORD,
-      }
+      },
     },
     sdtd: {
       connectionInfo: {
         host: process.env.TAKARO_DEV_SDTD_HOST,
         adminUser: process.env.TAKARO_DEV_SDTD_ADMIN_USER,
         adminToken: process.env.TAKARO_DEV_SDTD_ADMIN_PASSWORD,
-      }
-    }
+      },
+    },
   },
   moduleConfigs: {
     chatBridge: {
       enabled: process.env.TAKARO_DEV_CHAT_BRIDGE_ENABLED !== 'false',
       systemConfig: {
         hooks: {
-          ['DiscordToGame Discord channel ID']: process.env.TAKARO_DEV_CHAT_BRIDGE_CHANNEL_ID,
+          ['DiscordToGame Discord channel ID']:
+            process.env.TAKARO_DEV_CHAT_BRIDGE_CHANNEL_ID,
         },
       },
       userConfig: {
         allowBotMessage: process.env.TAKARO_DEV_CHAT_BRIDGE_ALLOW_BOT_MESSAGE,
       },
-    }
-  }
+    },
+  },
 };
 
 const adminClient = new AdminClient({
@@ -54,10 +60,9 @@ const adminClient = new AdminClient({
   log: false,
 });
 
-
 /**
- * 
- * @param {ModuleOutputDTO} mod 
+ *
+ * @param {ModuleOutputDTO} mod
  */
 async function resolveCustomModuleConfig(mod) {
   const returnValue = {
@@ -123,12 +128,15 @@ async function main() {
     domainRes.data.data.rootRole.id
   );
 
+  await client.settings.settingsControllerSet('commandPrefix', {
+    value: '&'
+  });
+
   const gameserver = (
     await client.gameserver.gameServerControllerCreate({
       name: 'Test server',
       type: GameServerCreateDTOTypeEnum.Mock,
       connectionInfo: JSON.stringify({
-        eventInterval: 10000,
         host: 'http://127.0.0.1:3002',
       }),
     })
@@ -152,9 +160,11 @@ async function main() {
       );
       console.log(`Installed module ${mod.name}`, customConfig);
     } catch (error) {
-      console.error(`🔴 Error installing module ${mod.builtin}`, { config: customConfig, response: JSON.stringify(error.response.data) });
+      console.error(`🔴 Error installing module ${mod.builtin}`, {
+        config: customConfig,
+        response: JSON.stringify(error.response.data),
+      });
     }
-
   }
 
   if (config.gameservers.rust.connectionInfo.host) {
@@ -166,7 +176,10 @@ async function main() {
       });
       console.log('🎮 Added Rust server');
     } catch (error) {
-      console.error('🔴 Error creating Rust gameserver', { config: config.gameservers.rust.connectionInfo, response: JSON.stringify(error.response.data) });
+      console.error('🔴 Error creating Rust gameserver', {
+        config: config.gameservers.rust.connectionInfo,
+        response: JSON.stringify(error.response.data),
+      });
     }
   }
 
@@ -179,7 +192,10 @@ async function main() {
       });
       console.log('🎮 Added 7 days to die server');
     } catch (error) {
-      console.error('🔴 Error creating 7 Days to Die gameserver', { config: config.gameservers.sdtd.connectionInfo, response: JSON.stringify(error.response.data) });
+      console.error('🔴 Error creating 7 Days to Die gameserver', {
+        config: config.gameservers.sdtd.connectionInfo,
+        response: JSON.stringify(error.response.data),
+      });
     }
   }
 }

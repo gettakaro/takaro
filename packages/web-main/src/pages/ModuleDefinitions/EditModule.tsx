@@ -8,6 +8,7 @@ import {
   styled,
   SchemaGenerator,
   TextAreaField,
+  errors,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -50,10 +51,11 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
   const [open, setOpen] = useState(true);
 
   const [generalData, setGeneralData] = useState<IFormInputs>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | undefined>();
   const [schema, setSchema] = useState<AnySchema>({});
   const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useModuleUpdate();
+  const { mutateAsync, isLoading, error: moduleUpdateError } = useModuleUpdate();
 
   useEffect(() => {
     if (!open) {
@@ -71,10 +73,7 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
   });
 
   // submit of the general form
-  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({
-    name,
-    description,
-  }) => {
+  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
     setGeneralData({ name, description });
   };
 
@@ -84,11 +83,7 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
 
   useEffect(() => {
     try {
-      if (
-        generalData &&
-        Object.keys(generalData).length !== 0 &&
-        Object.keys(schema).length !== 0
-      ) {
+      if (generalData && Object.keys(generalData).length !== 0 && Object.keys(schema).length !== 0) {
         mutateAsync({
           id: mod.id,
           moduleUpdate: {
@@ -102,15 +97,20 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
     } catch (error) {
       Sentry.captureException(error);
     }
-  }, [
-    generalData,
-    setGeneralData,
-    mutateAsync,
-    navigate,
-    mod.id,
-    schema,
-    setSchema,
-  ]);
+  }, [generalData, setGeneralData, mutateAsync, navigate, mod.id, schema, setSchema]);
+
+  if (!errorMessage && moduleUpdateError) {
+    const errorType = errors.defineErrorType(moduleUpdateError);
+    if (errorType instanceof errors.UniqueConstraintError) {
+      setErrorMessage('A module with that name already exists.');
+    }
+    if (errorType instanceof errors.ResponseValidationError) {
+      // TODO: setup error messages for response validation errors
+    }
+    if (errorType instanceof errors.InternalServerError) {
+      setErrorMessage(errorType.message);
+    }
+  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -148,19 +148,13 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
               text="Save changes"
               onClick={() => {
                 handleSubmit(onGeneralSubmit)();
-                SchemaGeneratorFormRef.current?.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true })
-                );
+                SchemaGeneratorFormRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
               }}
             />
           </ButtonContainer>

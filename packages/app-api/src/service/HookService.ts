@@ -30,6 +30,7 @@ import {
   EventPlayerConnected,
   EventPlayerDisconnected,
   EventLogLine,
+  isDiscordMessageEvent,
 } from '@takaro/modules';
 
 @ValidatorConstraint()
@@ -195,19 +196,33 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     this.log.debug('Handling hooks', { eventData });
     const gameServerService = new GameServerService(this.domainId);
 
-    const triggeredHooks = await this.repo.getTriggeredHooks(eventData.type, eventData.msg, gameServerId);
+    const triggeredHooks = await this.repo.getTriggeredHooks(eventData.type, gameServerId);
 
-    if (triggeredHooks.length) {
-      this.log.debug(`Found ${triggeredHooks.length} hooks that match the event`);
+    const hooksAfterFilters = triggeredHooks
+      // Regex checks
+      .filter((hook) => {
+        if (!hook.regex) return true;
+
+        const regex = new RegExp(hook.regex);
+        return regex.test(eventData.msg);
+      });
+
+    if (hooksAfterFilters.length) {
+      this.log.debug(`Found ${hooksAfterFilters.length} hooks that match the event`);
 
       await Promise.all(
-        triggeredHooks.map(async (hook) => {
+        hooksAfterFilters.map(async (hook) => {
+          const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+
+          if (isDiscordMessageEvent(eventData)) {
+            const configuredChannel = moduleInstallation.systemConfig.hooks[`${hook.name} Discord channel ID`];
+            if (eventData.channel.id !== configuredChannel) return;
+          }
+
           return queueService.queues.hooks.queue.add({
             itemId: hook.id,
-            data: {
-              ...eventData,
-              module: await gameServerService.getModuleInstallation(gameServerId, hook.moduleId),
-            },
+            module: await gameServerService.getModuleInstallation(gameServerId, hook.moduleId),
+            eventData: eventData,
             domainId: this.domainId,
             functionId: hook.function.id,
             gameServerId,

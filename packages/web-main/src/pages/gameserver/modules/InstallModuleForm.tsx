@@ -1,21 +1,11 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Drawer,
-  CollapseList,
-  styled,
-  JsonSchemaForm,
-  DrawerSkeleton,
-} from '@takaro/lib-components';
+import { Button, Drawer, CollapseList, styled, JsonSchemaForm, DrawerSkeleton } from '@takaro/lib-components';
 import Form from '@rjsf/core';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
-import {
-  useGameServerModuleInstall,
-  useGameServerModuleInstallation,
-} from 'queries/gameservers';
+import { useGameServerModuleInstall, useGameServerModuleInstallation } from 'queries/gameservers';
 import { useModule } from 'queries/modules';
 
 const ButtonContainer = styled.div`
@@ -26,20 +16,18 @@ const ButtonContainer = styled.div`
 
 const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
+  const [submitRequested, setSubmitRequested] = useState(false);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
-  const { data: modInstallation, isLoading: moduleInstallationLoading } =
-    useGameServerModuleInstallation(serverId!, moduleId!);
-
-  const [userConfig, setUserConfig] = useState<Record<string, unknown> | null>(
-    null
+  const { data: modInstallation, isLoading: moduleInstallationLoading } = useGameServerModuleInstallation(
+    serverId!,
+    moduleId!
   );
-  const [systemConfig, setSystemConfig] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
+
+  const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
+  const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
 
   const userConfigFormRef = useRef<Form>(null);
   const systemConfigFormRef = useRef<Form>(null);
@@ -53,10 +41,7 @@ const InstallModule: FC = () => {
     setUserConfig(formData);
   };
 
-  const onSystemConfigSubmit = (
-    { formData },
-    e: FormEvent<HTMLFormElement>
-  ) => {
+  const onSystemConfigSubmit = ({ formData }, e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSystemConfig(formData);
   };
@@ -85,19 +70,23 @@ const InstallModule: FC = () => {
   }, [moduleId, mutateAsync, navigate, serverId, systemConfig, userConfig]);
 
   useEffect(() => {
-    if (userConfig && systemConfig) {
+    if (userConfig && systemConfig && submitRequested) {
       onSubmit();
     }
-  }, [userConfig, systemConfig, onSubmit]);
+    setSubmitRequested(false);
+  }, [userConfig, systemConfig, onSubmit, submitRequested]);
 
   if (moduleLoading || moduleInstallationLoading) {
     return <DrawerSkeleton />;
   }
 
+  const isInstalled = modInstallation?.createdAt !== undefined;
+  const actionType = isInstalled ? 'Update' : 'Install';
+
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>Install Module</Drawer.Heading>
+        <Drawer.Heading>{actionType} Module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
@@ -124,19 +113,16 @@ const InstallModule: FC = () => {
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button
-              text="Cancel"
-              onClick={() => setOpen(false)}
-              color="background"
-            />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
               isLoading={isLoading}
-              text="Install"
+              text={actionType}
               type="button"
               onClick={() => {
                 systemConfigFormRef.current?.formElement.current.requestSubmit();
                 userConfigFormRef.current?.formElement.current.requestSubmit();
+                setSubmitRequested(true);
               }}
             />
           </ButtonContainer>

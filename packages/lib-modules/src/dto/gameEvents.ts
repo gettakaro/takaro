@@ -83,3 +83,15 @@ export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
 
   declare msg: string;
 }
+
+export function isConnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerConnected {
+  return a.type === GameEvents.PLAYER_CONNECTED;
+}
+
+export function isDisconnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerDisconnected {
+  return a.type === GameEvents.PLAYER_DISCONNECTED;
+}
+
+export function isChatMessageEvent(a: BaseGameEvent<unknown>): a is EventChatMessage {
+  return a.type === GameEvents.CHAT_MESSAGE;
+}

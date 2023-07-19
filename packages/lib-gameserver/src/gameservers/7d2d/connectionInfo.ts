@@ -10,6 +10,8 @@ export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   public readonly adminToken!: string;
   @IsBoolean()
   public readonly useTls!: boolean;
+  @IsBoolean()
+  public readonly useCPM!: boolean;
 }
 
 export const sdtdJsonSchema = {
@@ -28,6 +30,10 @@ export const sdtdJsonSchema = {
     },
     useTls: {
       type: 'boolean',
+    },
+    useCPM: {
+      type: 'boolean',
+      default: false,
     },
   },
   required: ['host', 'adminUser', 'adminToken', 'useTls'],

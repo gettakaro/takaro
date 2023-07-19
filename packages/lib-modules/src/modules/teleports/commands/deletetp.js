@@ -1,20 +1,17 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function getVariableKey(tpName) {
-  return `t_tp_${tpName}`;
-}
-
-async function deletetp() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, arguments: args } = data;
+  const { player, gameServerId, arguments: args, module: mod } = data;
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: getVariableKey(args.tp),
+      key: `tp_${args.tp}`,
       gameServerId,
-      playerId: player.id,
+      playerId: player.playerId,
+      moduleId: mod.moduleId,
     },
   });
 
@@ -25,13 +22,16 @@ async function deletetp() {
     return;
   }
 
-  await takaro.variable.variableControllerDelete(
-    existingVariable.data.data[0].id
-  );
+  await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);
 
   await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `Teleport ${args.tp} deleted.`,
+    opts: {
+      recipient: {
+        gameId: player.gameId,
+      },
+    },
   });
 }
 
-deletetp();
+await main();

@@ -3,7 +3,7 @@ import { TakaroService } from './Base.js';
 import { CommandModel, CommandRepo } from '../db/command.js';
 import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
-import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IMessageOptsDTO } from '@takaro/gameserver';
 import { queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
@@ -13,6 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
@@ -85,7 +86,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
-  @Length(3, 50)
+  @Length(2, 50)
   name: string;
 
   @IsString()
@@ -103,6 +104,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
   position: number;
 
   @IsUUID()
+  @IsOptional()
   commandId: string;
 }
 
@@ -150,9 +152,8 @@ export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO
 }
 
 export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
-  @ValidateNested()
-  @Type(() => IPlayerReferenceDTO)
-  player: IPlayerReferenceDTO;
+  @IsUUID()
+  playerId: string;
 
   @IsString()
   msg: string;
@@ -270,13 +271,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }
 
       const gameServerService = new GameServerService(this.domainId);
-      const playerService = new PlayerService(this.domainId);
+      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
 
-      const resolvedPlayer = await playerService.resolveRef(chatMessage.player, gameServerId);
-
-      const playerLocation = await (
-        await gameServerService.getGame(gameServerId)
-      ).getPlayerLocation(chatMessage.player);
+      const resolvedPlayer = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => ({
@@ -284,11 +281,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           data: {
             timestamp: chatMessage.timestamp,
             ...parseCommand(chatMessage.msg, c),
-            player: {
-              ...resolvedPlayer,
-              ...chatMessage.player,
-              location: playerLocation,
-            },
+            player: resolvedPlayer,
             module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
           },
         }))
@@ -309,10 +302,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
         return queueService.queues.commands.queue.add(
           {
+            timestamp: data.timestamp,
             domainId: this.domainId,
             functionId: db.function.id,
             itemId: db.id,
-            data,
+            player: resolvedPlayer,
+            arguments: data.arguments,
+            module: data.module,
             gameServerId,
           },
           { delay }
@@ -325,12 +321,14 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
   async trigger(gameServerId: string, triggered: CommandTriggerDTO) {
     const gameServerService = new GameServerService(this.domainId);
-    const player = await gameServerService.getPlayer(gameServerId, triggered.player);
+    const playerService = new PlayerService(this.domainId);
+    const player = await playerService.getRef(triggered.playerId, gameServerId);
+    const playerOnGameserver = await gameServerService.getPlayer(gameServerId, player);
 
-    if (!player) throw new errors.NotFoundError('Player not found');
+    if (!player || !playerOnGameserver) throw new errors.NotFoundError('Player not found');
 
     const eventDto = await new EventChatMessage().construct({
-      player,
+      player: playerOnGameserver,
       timestamp: new Date(),
       msg: triggered.msg,
     });

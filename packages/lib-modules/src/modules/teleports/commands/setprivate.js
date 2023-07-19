@@ -1,18 +1,19 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-async function setprivate() {
+async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, arguments: args } = data;
+  const { player, gameServerId, arguments: args, module: mod } = data;
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   const teleportRes = await takaro.variable.variableControllerFind({
     filters: {
       gameServerId,
-      playerId: player.id,
-      key: `t_tp_${args.tp}`,
+      playerId: player.playerId,
+      key: `tp_${args.tp}`,
+      moduleId: mod.moduleId,
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -23,6 +24,11 @@ async function setprivate() {
   if (teleports.length === 0) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: `No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`,
+      opts: {
+        recipient: {
+          gameId: player.gameId,
+        },
+      },
     });
   }
 
@@ -38,7 +44,12 @@ async function setprivate() {
 
   await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `Teleport ${args.tp} is now private.`,
+    opts: {
+      recipient: {
+        gameId: player.gameId,
+      },
+    },
   });
 }
 
-setprivate();
+await main();

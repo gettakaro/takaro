@@ -33,11 +33,17 @@ class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
 
 class DiscordParamId {
   @IsString()
-  @Length(18, 18)
+  @Length(16, 20)
   id!: string;
 }
 
-class GuildOutputDTOAPI extends APIOutput<GuildOutputDTO[]> {
+class GuildOutputDTOAPI extends APIOutput<GuildOutputDTO> {
+  @Type(() => GuildOutputDTO)
+  @ValidateNested()
+  declare data: GuildOutputDTO;
+}
+
+class GuildOutputArrayDTOAPI extends APIOutput<GuildOutputDTO[]> {
   @Type(() => GuildOutputDTO)
   @ValidateNested({ each: true })
   declare data: GuildOutputDTO[];
@@ -65,7 +71,7 @@ class DiscordInviteOutputDTO extends APIOutput<InviteOutputDTO> {
 @JsonController()
 export class DiscordController {
   @Post('/discord/guilds/search')
-  @ResponseSchema(GuildOutputDTOAPI)
+  @ResponseSchema(GuildOutputArrayDTOAPI)
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: GuildSearchInputDTO) {
     const service = new DiscordService(req.domainId);
     const result = await service.find({

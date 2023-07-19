@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
@@ -16,9 +16,7 @@ const tests = [
         this.setupData.serverMessagesModule.id
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
@@ -49,9 +47,7 @@ const tests = [
         }
       );
 
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
         cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
@@ -80,11 +76,9 @@ const tests = [
       );
 
       // We should see each of our test messages at least once
-      const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(this.client);
 
-      const numberOfEvents = 5;
-      const events = eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
+      const numberOfEvents = 10;
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
 
       // Trigger it multiple times
       await Promise.all(
