@@ -50,6 +50,21 @@ export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
   password: string;
 }
 
+const DEFAULT_ROLES: Promise<RoleCreateInputDTO>[] = [
+  new RoleCreateInputDTO().construct({
+    name: 'Admin',
+    permissions: ['ROOT'],
+  }),
+  new RoleCreateInputDTO().construct({
+    name: 'Moderator',
+    permissions: ['TELEPORTS_USE', PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_SETTINGS],
+  }),
+  new RoleCreateInputDTO().construct({
+    name: 'Player',
+    permissions: ['TELEPORTS_USE'],
+  }),
+];
+
 @traceableClass('service:domain')
 export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   DomainModel,
@@ -116,6 +131,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await new RoleCreateInputDTO().construct({ name: 'root' }),
       [PERMISSIONS.ROOT]
     );
+
+    const defaultRolesToCreate = await Promise.all(DEFAULT_ROLES);
+    await Promise.all(defaultRolesToCreate.map((r) => roleService.create(r)));
 
     const password = randomBytes(20).toString('hex');
     const rootUser = await userService.create(
