@@ -1,7 +1,7 @@
 import { ITakaroQuery } from '@takaro/db';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
-import { Exclude, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   Length,
   ValidatorConstraint,
@@ -9,7 +9,6 @@ import {
   IsString,
   ValidateNested,
   IsOptional,
-  IsUUID,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -47,11 +46,7 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
-export class PermissionOutputDTO extends TakaroDTO<PermissionOutputDTO> {
-  @IsUUID()
-  @IsOptional()
-  id?: string;
-
+export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @IsString()
   permission!: string;
 
@@ -62,9 +57,19 @@ export class PermissionOutputDTO extends TakaroDTO<PermissionOutputDTO> {
   @IsString()
   @IsOptional()
   description: string;
+}
 
-  @Exclude()
-  domain: string;
+export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
+  @IsString()
+  permission!: string;
+
+  @IsString()
+  @IsOptional()
+  friendlyName: string;
+
+  @IsString()
+  @IsOptional()
+  description: string;
 }
 
 export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {

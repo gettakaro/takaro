@@ -13,7 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
-import { PermissionOutputDTO } from './RoleService.js';
+import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -64,8 +64,8 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => PermissionOutputDTO)
-  permissions: PermissionOutputDTO[];
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
@@ -87,8 +87,8 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => PermissionOutputDTO)
-  permissions: PermissionOutputDTO[];
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
@@ -108,8 +108,8 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
 
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => PermissionOutputDTO)
-  permissions: PermissionOutputDTO[];
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 @traceableClass('service:module')
