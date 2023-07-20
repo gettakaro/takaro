@@ -24,7 +24,7 @@ export async function up(knex: Knex): Promise<void> {
     FOR EACH ROW EXECUTE PROCEDURE set_friendly_name();
   `);
 
-  await knex.raw('ALTER TABLE "permissionOnRole" DROP CONSTRAINT "permissionOnRole_permission_check";');
+  await knex.raw('ALTER TABLE "permissionOnRole" DROP CONSTRAINT IF EXISTS "capabilityOnRole_capability_check";');
 }
 
 export async function down(knex: Knex): Promise<void> {
