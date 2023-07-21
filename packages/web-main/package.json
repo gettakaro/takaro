@@ -19,8 +19,7 @@
     "build": "tsc --noemit && NODE_OPTIONS=--max-old-space-size=8195 vite build",
     "preview": "vite preview",
     "test:unit": "CI=true vitest",
-    "test:watch": "echo 'no tests :('",
-    "eject": "craco eject"
+    "test:watch": "echo 'no tests :('"
   },
   "eslintConfig": {
     "extends": [
