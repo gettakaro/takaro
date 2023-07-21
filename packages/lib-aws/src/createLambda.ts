@@ -29,6 +29,7 @@ export async function createLambda({ domainId }: CreateLambdaOptions) {
     FunctionName: domainId,
     Role: templateFn.Configuration?.Role,
     Layers: templateFn.Configuration?.Layers?.map((layer) => layer.Arn).filter((arn): arn is string => !!arn),
+    Timeout: 60,
     Tags: {
       domainId,
     },
