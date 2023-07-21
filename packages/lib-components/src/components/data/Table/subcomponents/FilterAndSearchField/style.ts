@@ -1,4 +1,5 @@
 import { styled } from '../../../../../styled';
+import { keyframes } from 'styled-components';
 
 export const InputContainer = styled.div`
   width: 100%;
@@ -93,4 +94,33 @@ export const TokenKey = styled.span`
 
 export const TokenValue = styled(TokenKey)`
   color: ${({ theme }): string => theme.colors.primary};
+`;
+
+const blinkAnimation = keyframes`
+  0% {
+    opacity: 1;
+  }
+  49%{
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+
+`;
+
+export const Caret = styled.span<{ isVisible: boolean }>`
+  display: ${({ isVisible }): string => (isVisible ? 'inline-block' : 'none')};
+  pointer-events: none;
+  height: 19px;
+  top: 50%;
+  line-height: 1.4;
+  border-left: 1.2px solid white;
+  font-family: monospace;
+  animation-name: ${blinkAnimation};
+  animation-iteration-count: infinite;
+  animation-duration: 1200ms;
+  contain: size style;
 `;

@@ -18,6 +18,7 @@ import {
   Inner,
   TokenKey,
   TokenValue,
+  Caret,
 } from './style';
 import { getTokenChars, tokenize, TokenType } from './tokenizer';
 import { AiOutlineFilter as FilterIcon, AiFillCloseCircle as ClearIcon } from 'react-icons/ai';
@@ -94,16 +95,6 @@ export function FilterAndSearchField<DataType extends object>({
   });
 
   useEffect(() => {
-    const inputElement = inputRef.current;
-
-    if (inputElement === document.activeElement) {
-      setIsFocused(true);
-    } else {
-      setIsFocused(false);
-    }
-  }, [inputValue, inputRef]);
-
-  useEffect(() => {
     const tokens = tokenize(inputValue);
 
     table.setColumnFilters(
@@ -168,9 +159,9 @@ export function FilterAndSearchField<DataType extends object>({
   return (
     <>
       <InputContainer
-        onClick={focusOnClick}
         {...getReferenceProps({
           ref: context.refs.setReference,
+          onClick: focusOnClick,
         })}
       >
         <FilterIcon className="icon" />
@@ -187,6 +178,7 @@ export function FilterAndSearchField<DataType extends object>({
                 </>
               );
             })}
+            <Caret isVisible={isFocused} />
           </TokenizerContainer>
           <div style={{ height: '100%', minWidth: '100%' }}>
             <Input
@@ -199,6 +191,12 @@ export function FilterAndSearchField<DataType extends object>({
               spellCheck={false}
               autoComplete="off"
               autoCapitalize="false"
+              onFocus={() => {
+                setIsFocused(true);
+              }}
+              onBlur={() => {
+                setIsFocused(false);
+              }}
               value={inputValue}
               ref={inputRef}
               onKeyDown={(event) => {
