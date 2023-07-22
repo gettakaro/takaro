@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useRef, useState } from 'react';
 import {
   styled,
   Button as TakaroButton,
@@ -7,6 +7,7 @@ import {
   EditableField,
   Dialog,
   IconButton,
+  ContextMenu,
 } from '@takaro/lib-components';
 import {
   AiFillFolder as DirClosedIcon,
@@ -78,6 +79,7 @@ const FileContainer = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  line-height: 1.5;
   svg {
     margin-right: ${({ theme }) => theme.spacing[1]};
   }
@@ -123,6 +125,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const fileRef = useRef<HTMLButtonElement>(null);
 
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
@@ -233,7 +236,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
             moduleId: moduleData.id!,
             name: newFileName,
             eventType: 'log',
-            regex: `/w+/`,
+            regex: '/w+/',
           });
           break;
         case FunctionType.Commands:
@@ -266,21 +269,19 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   // handle click events
   const handleOnDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     setOpenDialog(true);
   };
 
   const handleOnRenameClick = (e: MouseEvent<HTMLButtonElement>) => {
-    setEditing(true);
     e.preventDefault();
-    e.stopPropagation();
+    setEditing(true);
   };
 
   const handleOnNewFileClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     setShowNewFileField(true);
-    sandpack.updateFile(`${filePath.slice(0, -1)}newFileeeee.tsx`);
+    // we need a placeholder here to make sure the input field is rendered
+    sandpack.updateFile(`${filePath.slice(0, -1)}/new-file`);
   };
 
   const getIcon = (): JSX.Element => {
@@ -329,6 +330,16 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
   return (
     <>
+      {/* TODO: add context menu for directory */}
+      {selectFile && (
+        <ContextMenu targetRef={fileRef}>
+          <ContextMenu.Group>
+            <ContextMenu.Item label="Rename file" onClick={handleOnRenameClick} />
+            <ContextMenu.Item label="Delete file" onClick={handleOnDeleteClick} />
+          </ContextMenu.Group>
+        </ContextMenu>
+      )}
+
       <Button
         isActive={active ? true : false}
         depth={depth}
@@ -337,6 +348,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
         role="handle"
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        ref={fileRef}
       >
         <FileContainer>
           {getIcon()}
@@ -363,7 +375,6 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
           )}
         </AnimatePresence>
       </Button>
-
       {showNewFileField && (
         <NewFileContainer depth={depth}>
           <JsIcon size={12} fill={theme.colors.secondary} />
@@ -381,7 +392,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
           <Dialog.Heading>Remove file</Dialog.Heading>
           <Dialog.Body>
             <p>
-              Are you sure you want to <strong>{fileName}</strong>? The file will be permanently removed.
+              Are you sure you want to delete <strong>{fileName}</strong>? The file will be permanently removed.
             </p>
             <ButtonContainer>
               <TakaroButton fullWidth onClick={handleDelete} text="Remove file" color="error" />
