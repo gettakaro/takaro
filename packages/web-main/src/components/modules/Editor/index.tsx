@@ -150,7 +150,11 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                 shortcut="Ctrl+Shift+I"
                 onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.formatDocument', null)}
               />
-              <ContextMenu.Item label="Refactor..." />
+              <ContextMenu.Item
+                label="Quick fix"
+                shortcut="Ctrl+L"
+                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.quickFix', null)}
+              />
             </ContextMenu.Group>
             <ContextMenu.Group divider>
               <ContextMenu.Item label="Cut" onClick={handleCutOperation} />
@@ -197,24 +201,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                 contextMenuGroupId: '2_correction',
                 contextMenuOrder: 1,
                 run: () => editor.getAction('editor.action.quickFix')?.run(),
-              });
-
-              editor.addAction({
-                id: 'goToDefinition',
-                label: 'Go to definition',
-                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F12], // Ctrl + F12
-                contextMenuGroupId: 'navigation',
-                contextMenuOrder: 1.5,
-                run: () => editor.getAction('editor.action.goToDefinitions')?.run(),
-              });
-
-              editor.addAction({
-                id: 'peekDefinition',
-                label: 'Peek definition',
-                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.F10], // Ctrl + Shift + F10
-                contextMenuGroupId: 'navigation',
-                contextMenuOrder: 1.5,
-                run: () => editor.getAction('editor.action.previewDeclaration')?.run(),
               });
 
               editor.addAction({
