@@ -1,4 +1,5 @@
 import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, traceableClass } from '@takaro/util';
+import { createLambda, deleteLambda } from '@takaro/aws';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
 import { randomBytes } from 'crypto';
 import { RoleCreateInputDTO, RoleOutputDTO, RoleService } from './RoleService.js';
@@ -107,6 +108,8 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await ory.deleteIdentitiesForDomain(id);
 
+    await deleteLambda({ domainId: existing.id });
+
     await this.repo.delete(id);
 
     return id;
@@ -147,6 +150,8 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     await userService.assignRole(rootUser.id, rootRole.id);
 
     await moduleService.seedBuiltinModules();
+
+    await createLambda({ domainId: domain.id });
 
     return new DomainCreateOutputDTO().construct({
       createdDomain: domain,

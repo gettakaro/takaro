@@ -40,6 +40,7 @@ services:
       - ./packages/lib-apiclient:/app/packages/lib-apiclient
       - ./packages/lib-auth:/app/packages/lib-auth
       - ./packages/lib-config:/app/packages/lib-config
+      - ./packages/lib-aws:/app/packages/lib-aws
       - ./packages/lib-db:/app/packages/lib-db
       - ./packages/lib-function-helpers:/app/packages/lib-function-helpers
       - ./packages/lib-gameserver:/app/packages/lib-gameserver
@@ -80,6 +81,7 @@ services:
       - ./packages/lib-auth:/app/packages/lib-auth
       - ./packages/lib-components:/app/packages/lib-components
       - ./packages/lib-config:/app/packages/lib-config
+      - ./packages/lib-aws:/app/packages/lib-aws
       - ./packages/lib-db:/app/packages/lib-db
       - ./packages/lib-function-helpers:/app/packages/lib-function-helpers
       - ./packages/lib-gameserver:/app/packages/lib-gameserver

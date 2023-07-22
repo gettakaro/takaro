@@ -9,8 +9,8 @@ import {
   PlayerOutputWithRolesDTO,
   PlayerUpdateDTO,
 } from '../service/PlayerService.js';
-import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './playerOnGameserver.js';
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
+import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 
 export const PLAYER_TABLE_NAME = 'players';
 const ROLE_ON_PLAYER_TABLE_NAME = 'roleOnPlayer';
@@ -67,6 +67,14 @@ export class PlayerModel extends TakaroModel {
             to: `${ROLE_ON_PLAYER_TABLE_NAME}.roleId`,
           },
           to: `${ROLE_TABLE_NAME}.id`,
+        },
+      },
+      playerOnGameServers: {
+        relation: Model.HasManyRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${PLAYER_TABLE_NAME}.id`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
         },
       },
     };

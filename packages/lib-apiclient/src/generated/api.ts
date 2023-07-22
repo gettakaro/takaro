@@ -3976,6 +3976,12 @@ export interface PlayerOutputDTO {
   epicOnlineServicesId?: string;
   /**
    *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOutputDTO
+   */
+  playerOnGameServers?: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOutputDTO
    */

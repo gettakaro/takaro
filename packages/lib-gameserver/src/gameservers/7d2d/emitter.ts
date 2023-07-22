@@ -31,6 +31,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private logger = logger('7D2D:SSE');
   private sdtd: SevenDaysToDie;
 
+  private recentMessages: Set<string> = new Set(); // To track recent messages
+
   constructor(private config: SdtdConnectionInfo) {
     super();
     this.sdtd = new SevenDaysToDie(config, {});
@@ -105,7 +107,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
-    const nameMatches = /PlayerName='(.+)'/.exec(logLine.msg);
+    const nameMatches = /PlayerName='([^']+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
     const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
@@ -131,7 +133,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     });
   }
   private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
-    const nameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
+    const nameMatch = /PlayerName='([^']+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
     const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
@@ -165,6 +167,11 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     const { platformId, entityId, name, message } = groups;
 
+    const trimmedMessage = message.trim();
+    if (this.recentMessages.has(trimmedMessage)) return; // Ignore if recently processed
+    this.recentMessages.add(trimmedMessage);
+    setTimeout(() => this.recentMessages.delete(trimmedMessage), 1000);
+
     const xboxLiveId = platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
     const steamId = platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
 
@@ -179,7 +186,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       if (player) {
         return new EventChatMessage().construct({
           player,
-          msg: message.trim(),
+          msg: trimmedMessage.trim(),
         });
       }
     }

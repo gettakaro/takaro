@@ -31,6 +31,7 @@
       "restart": true,
       "outFiles": [
         "${workspaceFolder}/packages/lib-http/**/*.js",
+        "${workspaceFolder}/packages/lib-aws/**/*.js",
         "${workspaceFolder}/packages/lib-queues/**/*.js",
         "${workspaceFolder}/packages/**/dist/*.js"
       ]

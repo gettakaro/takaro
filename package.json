@@ -30,7 +30,6 @@
   "license": "AGPL-3.0-or-later",
   "homepage": "https://takaro.app",
   "devDependencies": {
-    "@craco/craco": "7.0.0-alpha.7",
     "@types/body-parser": "^1.19.2",
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",
@@ -88,6 +87,8 @@
     ]
   },
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.370.0",
+    "@aws-sdk/client-s3": "^3.374.0",
     "@discordjs/rest": "^1.7.1",
     "@faker-js/faker": "^7.6.0",
     "@hookform/resolvers": "^3.0.1",
@@ -114,8 +115,6 @@
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-merge-refs": "^2.0.1",
-    "react-scripts": "5.0.1",
     "redis": "^4.6.5",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.10.1",
@@ -129,30 +128,6 @@
     "zod": "^3.21.4"
   },
   "overrides": {
-    "class-validator": "0.13.2",
-    "@docusaurus/core@2.2.0": {
-      "react": "17.0.2",
-      "react-dom": "17.0.2",
-      "@types/react": "17.0.2",
-      "@types/react-dom": "17.0.2"
-    },
-    "@docusaurus/preset-classic@2.2.0": {
-      "react": "17.0.2",
-      "react-dom": "17.0.2",
-      "@types/react": "17.0.2",
-      "@types/react-dom": "17.0.2"
-    },
-    "@docusaurus/theme-mermaid@2.2.0": {
-      "react": "17.0.2",
-      "react-dom": "17.0.2",
-      "@types/react": "17.0.2",
-      "@types/react-dom": "17.0.2"
-    },
-    "@docusaurus/module-type-aliases@2.2.0": {
-      "react": "17.0.2",
-      "react-dom": "17.0.2",
-      "@types/react": "17.0.2",
-      "@types/react-dom": "17.0.2"
-    }
+    "class-validator": "0.13.2"
   }
 }

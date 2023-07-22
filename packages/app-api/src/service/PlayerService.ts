@@ -5,7 +5,7 @@ import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
@@ -24,6 +24,11 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PlayerOnGameserverOutputDTO)
+  playerOnGameServers?: PlayerOnGameserverOutputDTO[];
 }
 
 export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
@@ -83,7 +88,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async sync(playerData: IGamePlayer, gameServerId: string) {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    const existingAssociations = await playerOnGameServerService.findAssociations(playerData.gameId);
+    const existingAssociations = await playerOnGameServerService.findAssociations(playerData.gameId, gameServerId);
     let player: PlayerOutputDTO;
 
     if (!existingAssociations.length) {
@@ -96,6 +101,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       });
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
+        this.log.debug('No existing associations found, creating new global player');
         player = await this.create(
           await new PlayerCreateDTO().construct({
             name: playerData.name,
@@ -108,6 +114,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         player = existingPlayers.results[0];
       }
 
+      this.log.debug('Creating new player association', { player, gameServerId });
       await playerOnGameServerService.insertAssociation(playerData.gameId, player.id, gameServerId);
     }
   }

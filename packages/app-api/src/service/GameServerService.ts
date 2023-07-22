@@ -373,18 +373,23 @@ export class GameServerService extends TakaroService<
     const players = await gameInstance.getPlayers();
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    await Promise.all(
-      players.map(async (player) =>
-        playerOnGameServerService.addInfo(
-          player,
-          gameServerId,
-          await new PlayerOnGameServerUpdateDTO().construct({
-            ping: player.ping,
-            ip: player.ip,
-          })
+
+    try {
+      await Promise.all(
+        players.map(async (player) =>
+          playerOnGameServerService.addInfo(
+            player,
+            gameServerId,
+            await new PlayerOnGameServerUpdateDTO().construct({
+              ping: player.ping,
+              ip: player.ip,
+            })
+          )
         )
-      )
-    );
+      );
+    } catch (error) {
+      this.log.warn('Failed to update player info', { error });
+    }
 
     return players;
   }
