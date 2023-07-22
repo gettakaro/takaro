@@ -25,7 +25,7 @@ export class HighPingKicker extends BuiltinModule {
     this.cronJobs = [
       {
         name: 'Ping check',
-        temporalValue: '* * * * *',
+        temporalValue: '*/5 * * * *',
         function: '',
       },
     ];
