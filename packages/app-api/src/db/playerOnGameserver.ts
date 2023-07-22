@@ -106,9 +106,9 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return new PlayerOnGameserverOutputDTO().construct(res);
   }
 
-  async findGameAssociations(gameId: string) {
+  async findGameAssociations(gameId: string, gameServerId: string) {
     const { query } = await this.getModel();
-    const foundProfiles = await query.where({ gameId });
+    const foundProfiles = await query.where({ gameId, gameServerId });
     return foundProfiles;
   }
 

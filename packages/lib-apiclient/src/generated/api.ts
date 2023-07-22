@@ -3886,6 +3886,12 @@ export interface PlayerOutputDTO {
   epicOnlineServicesId?: string;
   /**
    *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOutputDTO
+   */
+  playerOnGameServers?: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOutputDTO
    */
@@ -4352,6 +4358,12 @@ export interface SdtdConnectionInfo {
    * @memberof SdtdConnectionInfo
    */
   useTls: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SdtdConnectionInfo
+   */
+  useCPM: boolean;
 }
 /**
  *
