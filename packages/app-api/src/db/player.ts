@@ -4,7 +4,7 @@ import { errors, traceableClass } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
 import { PlayerCreateDTO, PlayerOutputDTO, PlayerUpdateDTO } from '../service/PlayerService.js';
-import { PLAYER_ON_GAMESERVER_TABLE_NAME } from './playerOnGameserver.js';
+import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 
 export const PLAYER_TABLE_NAME = 'players';
 
@@ -27,6 +27,14 @@ export class PlayerModel extends TakaroModel {
             to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
           },
           to: `${GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+      playerOnGameServers: {
+        relation: Model.HasManyRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${PLAYER_TABLE_NAME}.id`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.playerId`,
         },
       },
     };
