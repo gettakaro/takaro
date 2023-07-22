@@ -22,7 +22,6 @@ import {
   useTypeahead,
   FloatingPortal,
   FloatingFocusManager,
-  FloatingOverlay,
 } from '@floating-ui/react';
 import { MenuItem } from './MenuItem';
 import { ContextMenuGroup } from './Group';
@@ -151,34 +150,60 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
   return (
     <FloatingPortal>
       {isOpen && (
-        <FloatingOverlay lockScroll>
-          <FloatingFocusManager context={context} initialFocus={refs.floating}>
-            <Container className="ContextMenu" ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
-              {Children.map(
-                children,
-                (child, index) =>
-                  isValidElement(child) &&
-                  cloneElement(
-                    child,
-                    getItemProps({
-                      tabIndex: activeIndex === index ? 0 : -1,
-                      ref(node: HTMLButtonElement) {
-                        listItemsRef.current[index] = node;
-                      },
-                      onClick() {
-                        child.props.onClick?.();
-                        setIsOpen(false);
-                      },
-                      onMouseUp() {
-                        child.props.onClick?.();
-                        setIsOpen(false);
-                      },
-                    })
-                  )
-              )}
-            </Container>
-          </FloatingFocusManager>
-        </FloatingOverlay>
+        <FloatingFocusManager context={context} initialFocus={refs.floating}>
+          <Container className="ContextMenu" ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
+            {Children.map(children, (child, index) => {
+              if (isValidElement(child)) {
+                // If child is a Group, iterate over its children
+                if (child.type === ContextMenu.Group) {
+                  const newGroupChildren = Children.map(child.props.children, (groupChild, groupIndex) => {
+                    if (isValidElement(groupChild)) {
+                      return cloneElement(
+                        groupChild,
+                        getItemProps({
+                          tabIndex: activeIndex === index ? 0 : -1,
+                          ref(node: HTMLButtonElement) {
+                            listItemsRef.current[groupIndex] = node;
+                          },
+                          onClick(e: React.MouseEvent<HTMLButtonElement>) {
+                            (groupChild as any).props.onClick?.(e);
+                            setIsOpen(false);
+                          },
+                          onMouseUp(e) {
+                            (groupChild as any).props.onClick?.(e);
+                            setIsOpen(false);
+                          },
+                        })
+                      );
+                    }
+                    return groupChild;
+                  });
+
+                  return <ContextMenu.Group {...child.props}>{newGroupChildren}</ContextMenu.Group>;
+                }
+
+                // If child is not a Group, handle it as before
+                return cloneElement(
+                  child,
+                  getItemProps({
+                    tabIndex: activeIndex === index ? 0 : -1,
+                    ref(node: HTMLButtonElement) {
+                      listItemsRef.current[index] = node;
+                    },
+                    onClick(e) {
+                      child.props.onClick?.(e);
+                      setIsOpen(false);
+                    },
+                    onMouseUp(e) {
+                      child.props.onClick?.(e);
+                      setIsOpen(false);
+                    },
+                  })
+                );
+              }
+            })}
+          </Container>
+        </FloatingFocusManager>
       )}
     </FloatingPortal>
   );
