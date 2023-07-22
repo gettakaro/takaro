@@ -1,21 +1,12 @@
 import { FC, useEffect, useMemo } from 'react';
-import {
-  FileTabs,
-  SandpackStack,
-  SandpackThemeProvider,
-  useActiveCode,
-  useSandpack,
-} from '@codesandbox/sandpack-react';
+import { SandpackStack, SandpackThemeProvider, useActiveCode, useSandpack } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import { useModule } from 'hooks/useModule';
-import { useDebounce, styled } from '@takaro/lib-components';
+import { useDebounce } from '@takaro/lib-components';
+import { FileTabs } from './FileTabs';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
-
-const StyledFileTabs = styled(FileTabs)`
-  border-bottom: 0px;
-`;
 
 export type EditorProps = {
   readOnly?: boolean;
@@ -48,12 +39,12 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
         fn: { code: debouncedCode },
       });
     }
-  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap, updateFunction, readOnly]);
+  }, [debouncedCode]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
-        <StyledFileTabs closableTabs />
+        <FileTabs closableTabs />
         <MonacoEditor
           width="100%"
           height="100%"

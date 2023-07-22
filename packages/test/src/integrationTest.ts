@@ -132,7 +132,7 @@ export class IntegrationTest<SetupData> {
           } else {
             if (error.response?.data) {
               console.error(error.response?.data);
-              throw new Error(`Test failed: ${JSON.stringify(error.response?.data)}}`);
+              throw new Error(`Test failed: ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`);
             }
           }
         }

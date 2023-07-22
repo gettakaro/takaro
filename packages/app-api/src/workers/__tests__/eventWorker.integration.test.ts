@@ -44,6 +44,62 @@ const tests = [
       return players;
     },
   }),
+  new IntegrationTest<GameServerOutputDTO[]>({
+    group,
+    snapshot: false,
+    name: 'Handles player syncing correctly when same gameId exists for different servers',
+    setup: async function () {
+      const server1 = await this.client.gameserver.gameServerControllerCreate({
+        name: 'server1',
+        type: 'MOCK',
+        connectionInfo: JSON.stringify({
+          host: integrationConfig.get('mockGameserver.host'),
+        }),
+      });
+
+      const server2 = await this.client.gameserver.gameServerControllerCreate({
+        name: 'server2',
+        type: 'MOCK',
+        connectionInfo: JSON.stringify({
+          host: integrationConfig.get('mockGameserver.host'),
+        }),
+      });
+
+      return [server1.data.data, server2.data.data];
+    },
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
+
+      const MOCK_PLAYER = await new IGamePlayer().construct({
+        ip: '169.169.169.80',
+        name: 'jefke',
+        gameId: '1',
+        steamId: '76561198021481871',
+      });
+
+      await playerService.sync(MOCK_PLAYER, this.setupData[0].id);
+
+      const playersRes = await this.client.player.playerControllerSearch({
+        filters: {
+          steamId: MOCK_PLAYER.steamId,
+        },
+        extend: ['playerOnGameServers'],
+      });
+
+      expect(playersRes.data.data[0].playerOnGameServers).to.have.lengthOf(1);
+
+      await playerService.sync(MOCK_PLAYER, this.setupData[1].id);
+
+      const playersResAfter = await this.client.player.playerControllerSearch({
+        filters: {
+          steamId: MOCK_PLAYER.steamId,
+        },
+        extend: ['playerOnGameServers'],
+      });
+
+      expect(playersResAfter.data.data[0].playerOnGameServers).to.have.lengthOf(2);
+    },
+  }),
 ];
 
 describe(group, function () {
