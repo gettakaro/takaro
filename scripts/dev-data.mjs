@@ -127,11 +127,11 @@ async function main() {
     userRes.data.data.id,
     domainRes.data.data.rootRole.id
   );
-
-  await client.settings.settingsControllerSet('commandPrefix', {
-    value: '&'
-  });
-
+  /* 
+    await client.settings.settingsControllerSet('commandPrefix', {
+      value: '&'
+    });
+   */
   const gameserver = (
     await client.gameserver.gameServerControllerCreate({
       name: 'Test server',
