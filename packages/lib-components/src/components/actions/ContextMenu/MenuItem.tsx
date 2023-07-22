@@ -20,7 +20,7 @@ const Container = styled.button`
   }
 `;
 
-interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
   shortcut?: string;
   disabled?: boolean;

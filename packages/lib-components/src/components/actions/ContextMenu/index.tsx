@@ -8,6 +8,7 @@ import {
   useState,
   HTMLProps,
   RefObject,
+  ReactElement,
 } from 'react';
 import {
   useFloating,
@@ -23,7 +24,7 @@ import {
   FloatingPortal,
   FloatingFocusManager,
 } from '@floating-ui/react';
-import { MenuItem } from './MenuItem';
+import { MenuItem, MenuItemProps } from './MenuItem';
 import { ContextMenuGroup } from './Group';
 
 import { styled } from '../../../styled';
@@ -156,29 +157,31 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
               if (isValidElement(child)) {
                 // If child is a Group, iterate over its children
                 if (child.type === ContextMenu.Group) {
-                  const newGroupChildren = Children.map(child.props.children, (groupChild, groupIndex) => {
-                    if (isValidElement(groupChild)) {
-                      return cloneElement(
-                        groupChild,
-                        getItemProps({
-                          tabIndex: activeIndex === index ? 0 : -1,
-                          ref(node: HTMLButtonElement) {
-                            listItemsRef.current[groupIndex] = node;
-                          },
-                          onClick(e: React.MouseEvent<HTMLButtonElement>) {
-                            (groupChild as any).props.onClick?.(e);
-                            setIsOpen(false);
-                          },
-                          onMouseUp(e) {
-                            (groupChild as any).props.onClick?.(e);
-                            setIsOpen(false);
-                          },
-                        })
-                      );
+                  const newGroupChildren = Children.map(
+                    child.props.children,
+                    (groupChild: ReactElement<MenuItemProps>, groupIndex) => {
+                      if (isValidElement(groupChild)) {
+                        return cloneElement(
+                          groupChild,
+                          getItemProps({
+                            tabIndex: activeIndex === index ? 0 : -1,
+                            ref(node: HTMLButtonElement) {
+                              listItemsRef.current[groupIndex] = node;
+                            },
+                            onClick(e: React.MouseEvent<HTMLButtonElement>) {
+                              groupChild.props.onClick?.(e);
+                              setIsOpen(false);
+                            },
+                            onMouseUp(e: React.MouseEvent<HTMLButtonElement>) {
+                              groupChild.props.onClick?.(e);
+                              setIsOpen(false);
+                            },
+                          })
+                        );
+                      }
+                      return groupChild;
                     }
-                    return groupChild;
-                  });
-
+                  );
                   return <ContextMenu.Group {...child.props}>{newGroupChildren}</ContextMenu.Group>;
                 }
 
