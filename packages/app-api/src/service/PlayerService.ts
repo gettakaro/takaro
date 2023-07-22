@@ -94,9 +94,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       });
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
-        this.log.debug('No existing associations found, creating new global player', {
-          playerData: playerData.toJSON(),
-        });
+        this.log.debug('No existing associations found, creating new global player');
         player = await this.create(
           await new PlayerCreateDTO().construct({
             name: playerData.name,
