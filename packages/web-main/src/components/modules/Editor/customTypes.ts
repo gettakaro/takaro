@@ -36,7 +36,7 @@ export function handleCustomTypes(monaco: Monaco) {
     noSyntaxValidation: false,
   });
 
-  let extraLibs: { content: string; libUri: string }[] = [];
+  const extraLibs: { content: string; libUri: string }[] = [];
   extraLibs.push({
     content: libSource,
     libUri: libUri,

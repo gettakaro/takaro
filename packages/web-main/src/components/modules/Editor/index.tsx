@@ -1,28 +1,19 @@
-import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  FileTabs,
-  SandpackStack,
-  SandpackThemeProvider,
-  useActiveCode,
-  useSandpack,
-} from '@codesandbox/sandpack-react';
+import { FC, useMemo, useRef, useState } from 'react';
+import { SandpackStack, SandpackThemeProvider, useActiveCode, useSandpack } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import * as mon from 'monaco-editor';
 import { useModule } from 'hooks/useModule';
-import { useDebounce } from '@takaro/lib-components';
+import { styled, ContextMenu } from '@takaro/lib-components';
 import { FileTabs } from './FileTabs';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
 import { useSnackbar } from 'notistack';
+import * as Sentry from '@sentry/react';
 
 const StyledDiv = styled.div`
   width: 100%;
   height: 100%;
-
-  .glyph-error {
-    /* error icon */
-  }
 `;
 
 export type EditorProps = {
@@ -31,14 +22,48 @@ export type EditorProps = {
 
 export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const { code, updateCode } = useActiveCode();
-  const monaco = useMonaco();
-  const debouncedCode = useDebounce<string>(code, 2000);
+  const [dirtyFiles, setDirtyFiles] = useState<Set<string>>(new Set());
+  const [modelVersionId, setModelVersionId] = useState<number>();
   const { enqueueSnackbar } = useSnackbar();
+  const monaco = useMonaco();
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
   const { mutateAsync: updateFunction } = useFunctionUpdate();
   const editorInstance = useRef<mon.editor.IStandaloneCodeEditor>();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const monacoRef = useRef<typeof mon | null>(null);
+
+  const handleCopyOperation = async () => {
+    const editor = editorInstance.current;
+    if (editor) {
+      const model = editor.getModel();
+      const selection = editor.getSelection();
+      if (model && selection) {
+        const selectedText = model.getValueInRange(selection);
+        try {
+          await navigator.clipboard.writeText(selectedText);
+        } catch (e) {
+          enqueueSnackbar('Could not copy text to clipboard', { variant: 'default', type: 'error' });
+        }
+      }
+    }
+  };
+  const handleCutOperation = async () => {
+    const editor = editorInstance.current;
+    if (editor) {
+      const model = editor.getModel();
+      const selection = editor.getSelection();
+      if (model && selection) {
+        const selectedText = model.getValueInRange(selection);
+        try {
+          await navigator.clipboard.writeText(selectedText);
+          editor.executeEdits('', [{ range: selection, text: '' }]);
+        } catch (e) {
+          enqueueSnackbar('Could not cut text to clipboard', { variant: 'default', type: 'error' });
+        }
+      }
+    }
+  };
 
   useMemo(() => {
     if (monaco) {
@@ -52,78 +77,89 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     }
   }, [monaco]);
 
-  interface saveFileOptions {
-    manual?: boolean;
-    editor?: mon.editor.IStandaloneCodeEditor;
-    code: string;
-  }
-
-  const saveFile = useCallback(
-    async ({ manual, editor }: saveFileOptions) => {
-      const editorInstanceToUse = editor || editorInstance.current;
-
-      if (!editorInstanceToUse) {
-        return;
-      }
-
-      if (readOnly && manual) {
+  const saveFile = async () => {
+    try {
+      if (readOnly) {
         enqueueSnackbar('You cannot save a read-only file', { variant: 'default', type: 'error' });
         return;
       }
 
-      const model = editor!.getModel();
+      const model = editorInstance.current?.getModel();
 
       if (model) {
-        const markers = monaco?.editor.getModelMarkers({ resource: model.uri });
-        const hasSyntaxErrors = markers?.some((marker) => marker.severity === monaco?.MarkerSeverity.Error);
-
-        if (hasSyntaxErrors && manual) {
-          enqueueSnackbar('Cannot save file, it still contains syntax errors', { variant: 'default', type: 'error' });
+        /*
+         * We can not use this because the modelMarkers are updated async
+         * and are not immediately up to date. A better solution would be to
+         * use an actual typescript server to check the syntax errors.
+         
+        const markers = monacoRef.current?.editor.getModelMarkers({ resource: model.uri });
+        const hasSyntaxErrors = markers?.some((marker) => marker.severity === monacoRef.current?.MarkerSeverity.Error);
+        console.log(hasSyntaxErrors);
+ 
+        if (hasSyntaxErrors) {
+          enqueueSnackbar(<span>Cannot save file with syntax errors. Please fix the errors and try again.</span>, {
+            variant: 'default',
+            type: 'error',
+          });
           return;
-        }
+        }*/
+
+        await updateFunction({
+          functionId: moduleData.fileMap[sandpack.activeFile].functionId,
+          fn: { code: code },
+        });
+
+        // the new model version is now the one saved in the database
+        // so undoing to the first state is not equal to the saved state
+        setModelVersionId(model.getAlternativeVersionId());
+
+        setDirtyFiles((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(sandpack.activeFile);
+          return newSet;
+        });
       }
-
-      await updateFunction({
-        functionId: moduleData.fileMap[sandpack.activeFile].functionId,
-        fn: { code: debouncedCode },
-      });
-    },
-    [monaco]
-  );
-
-  useEffect(() => {
-    if (!readOnly && debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
-      saveFile({ manual: false, code: debouncedCode });
+    } catch (e) {
+      enqueueSnackbar('Something went wrong while saving the file', { variant: 'default', type: 'error' });
+      Sentry.captureException(e);
     }
-  }, [debouncedCode]);
+  };
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
-        <FileTabs closableTabs />
+        <FileTabs closableTabs dirtyFiles={dirtyFiles} setDirtyFiles={setDirtyFiles} />
         <StyledDiv>
           <ContextMenu targetRef={containerRef}>
             <ContextMenu.Group divider>
-              <ContextMenu.Item
-                shortcut="Ctrl+F12"
-                label="Go to definition"
-                onClick={() => editorInstance.current?.getAction('')?.run()}
-              />
-              <ContextMenu.Item shortcut="Ctrl+Shift+F10" label="Peek definition" />
-              <ContextMenu.Item label="Go to type defintion" />
-              <ContextMenu.Item shortcut="Shift+Alt+F12" label="Find all references" />
-              <ContextMenu.Item label="Peek all references" />
+              {/* TODO: These are not native and require a separate typescript language server */}
+              {/* <ContextMenu.Item shortcut="Shift+Alt+F12" label="Find all references" />*/}
+              {/*<ContextMenu.Item label="Peek all references" />*/}
+              {/*<ContextMenu.Item shortcut="Ctrl+F12" label="Go to definition" />*/}
+              {/*<ContextMenu.Item label="Go to type defintion" />*/}
+              {/*<ContextMenu.Item shortcut="Ctrl+Shift+F10" label="Peek definition"/>*/}
             </ContextMenu.Group>
             <ContextMenu.Group divider>
-              <ContextMenu.Item label="Rename symbol" shortcut="F2" />
-              <ContextMenu.Item label="Format document" shortcut="Ctrl+Shift+I" />
+              <ContextMenu.Item
+                label="Rename symbol"
+                shortcut="F2"
+                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.rename', null)}
+              />
+              <ContextMenu.Item
+                label="Format document"
+                shortcut="Ctrl+Shift+I"
+                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.formatDocument', null)}
+              />
               <ContextMenu.Item label="Refactor..." />
             </ContextMenu.Group>
             <ContextMenu.Group divider>
-              <ContextMenu.Item label="Cut" />
-              <ContextMenu.Item label="Copy" />
+              <ContextMenu.Item label="Cut" onClick={handleCutOperation} />
+
+              {/* Due to browser restrictions, custom paste is hard and is often not provided in context menu, only native ctrl+v is supported*/}
+              <ContextMenu.Item label="Copy" onClick={handleCopyOperation} />
             </ContextMenu.Group>
-            <ContextMenu.Item label="Command palette" shortcut="Ctrl+Shift+P" />
+            {/* TODO: Monaco only provides with all commands, but not the UI */}
+            {/*<ContextMenu.Item label="Command palette" shortcut="Ctrl+Shift+P" />*/}
           </ContextMenu>
 
           <MonacoEditor
@@ -133,15 +169,14 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             theme="takaro"
             key={sandpack.activeFile}
             defaultValue={code}
+            beforeMount={(monaco) => {
+              monacoRef.current = monaco;
+            }}
             onMount={(editor, monaco) => {
               containerRef.current = document.querySelector('.monaco-scrollable-element');
-
-              // Force Monaco to reconsider font size
-              editor.updateOptions({ fontSize: 13 }); // slightly smaller
-
-              setTimeout(() => {
-                editor.updateOptions({ fontSize: 14 }); // back to normal
-              }, 100);
+              if (!monaco) {
+                throw new Error('Monaco is not defined');
+              }
 
               editor.addAction({
                 id: 'save',
@@ -149,7 +184,10 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                 keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
                 contextMenuGroupId: 'navigation',
                 contextMenuOrder: 1.5,
-                run: () => saveFile({ manual: true, editor, code: editor.getValue() }),
+                run: async () => {
+                  await editor.getAction('editor.action.formatDocument')?.run();
+                  saveFile();
+                },
               });
 
               editor.addAction({
@@ -161,25 +199,77 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                 run: () => editor.getAction('editor.action.quickFix')?.run(),
               });
 
-              // keep this at bottom
+              editor.addAction({
+                id: 'goToDefinition',
+                label: 'Go to definition',
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F12], // Ctrl + F12
+                contextMenuGroupId: 'navigation',
+                contextMenuOrder: 1.5,
+                run: () => editor.getAction('editor.action.goToDefinitions')?.run(),
+              });
 
+              editor.addAction({
+                id: 'peekDefinition',
+                label: 'Peek definition',
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.F10], // Ctrl + Shift + F10
+                contextMenuGroupId: 'navigation',
+                contextMenuOrder: 1.5,
+                run: () => editor.getAction('editor.action.previewDeclaration')?.run(),
+              });
+
+              editor.addAction({
+                id: 'formatDocument',
+                label: 'Format Document',
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyI], // Ctrl + Shift + I
+                contextMenuGroupId: 'navigation',
+                contextMenuOrder: 1.5,
+                run: () => editor.getAction('editor.action.formatDocument')?.run(),
+              });
+
+              editor.addAction({
+                id: 'renameSymbol',
+                label: 'Rename Symbol',
+                keybindings: [monaco.KeyCode.F2], // F2
+                contextMenuGroupId: 'navigation',
+                contextMenuOrder: 1.5,
+                run: () => editor.getAction('editor.action.rename')?.run(),
+              });
+
+              setModelVersionId(editor.getModel()?.getAlternativeVersionId());
+
+              // keep this at bottom
               editorInstance.current = editor;
 
               /*
               const model = editor.getModel()!;
               monaco?.editor.setModelMarkers(model, 'owner', [
                 {
-                  startLineNumber: 2,
-                  startColumn: 1,
-                  endLineNumber: 2,
-                  endColumn: 5,
-                  message: 'Erorr!',
-                  severity: monaco.MarkerSeverity.Error,
+            startLineNumber: 2,
+          startColumn: 1,
+          endLineNumber: 2,
+          endColumn: 5,
+          message: 'Erorr!',
+          severity: monaco.MarkerSeverity.Error,
                 },
-              ]);
-              */
+          ]);
+          */
             }}
-            onChange={(value) => !readOnly && updateCode(value || '')}
+            onChange={(value) => {
+              if (readOnly) return;
+
+              // update the code in the sandpack
+              updateCode(value || '');
+
+              if (modelVersionId !== editorInstance.current?.getModel()?.getAlternativeVersionId()) {
+                setDirtyFiles((prev) => new Set([...prev, sandpack.activeFile]));
+              } else {
+                setDirtyFiles((prev) => {
+                  const newSet = new Set(prev);
+                  newSet.delete(sandpack.activeFile);
+                  return newSet;
+                });
+              }
+            }}
             options={{
               minimap: { enabled: false },
               wordWrap: 'on',
