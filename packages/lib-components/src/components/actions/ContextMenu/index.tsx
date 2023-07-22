@@ -25,9 +25,14 @@ import {
   FloatingOverlay,
 } from '@floating-ui/react';
 import { MenuItem } from './MenuItem';
+import { ContextMenuGroup } from './Group';
+
 import { styled } from '../../../styled';
 
 const Container = styled.div`
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  box-shadow: ${({ theme }) => theme.elevation[2]};
+  background-color: ${({ theme }) => theme.colors.background};
   &:focus-visible {
     outline: none;
   }
@@ -42,6 +47,7 @@ export interface ContextMenuProps extends HTMLProps<HTMLButtonElement> {
 type ContextMenuComponent = {
   (props: ContextMenuProps, ref: React.Ref<HTMLButtonElement>): JSX.Element;
   Item: typeof MenuItem;
+  Group: typeof ContextMenuGroup;
 };
 
 export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ children, targetRef }, _ref) => {
@@ -89,30 +95,31 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
     let timeout: number;
 
     function onContextMenu(e: MouseEvent) {
-      e.preventDefault();
+      if (targetRef?.current && targetRef?.current.contains(e.target as Node)) {
+        e.preventDefault();
+        refs.setPositionReference({
+          getBoundingClientRect() {
+            return {
+              width: 0,
+              height: 0,
+              x: e.clientX,
+              y: e.clientY,
+              top: e.clientY,
+              right: e.clientX,
+              bottom: e.clientY,
+              left: e.clientX,
+            };
+          },
+        });
 
-      refs.setPositionReference({
-        getBoundingClientRect() {
-          return {
-            width: 0,
-            height: 0,
-            x: e.clientX,
-            y: e.clientY,
-            top: e.clientY,
-            right: e.clientX,
-            bottom: e.clientY,
-            left: e.clientX,
-          };
-        },
-      });
+        setIsOpen(true);
+        clearTimeout(timeout);
 
-      setIsOpen(true);
-      clearTimeout(timeout);
-
-      allowMouseUpCloseRef.current = false;
-      timeout = window.setTimeout(() => {
-        allowMouseUpCloseRef.current = true;
-      }, 300);
+        allowMouseUpCloseRef.current = false;
+        timeout = window.setTimeout(() => {
+          allowMouseUpCloseRef.current = true;
+        }, 300);
+      }
     }
 
     function onMouseUp() {
@@ -178,3 +185,4 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
 }) as unknown as ContextMenuComponent;
 
 ContextMenu.Item = MenuItem;
+ContextMenu.Group = ContextMenuGroup;
