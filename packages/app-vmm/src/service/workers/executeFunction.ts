@@ -70,7 +70,7 @@ export async function executeFunction(
 
   try {
     let result;
-
+    data.url = config.get('takaro.url');
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
