@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { styled, Tooltip, useTheme } from '@takaro/lib-components';
 import { calculateNearestUniquePath, getFileName } from './utils';
