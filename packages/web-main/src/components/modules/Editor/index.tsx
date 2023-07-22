@@ -9,7 +9,8 @@ import {
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import * as mon from 'monaco-editor';
 import { useModule } from 'hooks/useModule';
-import { useDebounce, styled, ContextMenu } from '@takaro/lib-components';
+import { useDebounce } from '@takaro/lib-components';
+import { FileTabs } from './FileTabs';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
@@ -22,10 +23,6 @@ const StyledDiv = styled.div`
   .glyph-error {
     /* error icon */
   }
-`;
-
-const StyledFileTabs = styled(FileTabs)`
-  border-bottom: 0px;
 `;
 
 export type EditorProps = {
@@ -98,12 +95,12 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     if (!readOnly && debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
       saveFile({ manual: false, code: debouncedCode });
     }
-  }, [debouncedCode, sandpack.activeFile, moduleData.fileMap, updateFunction, readOnly]);
+  }, [debouncedCode]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
-        <StyledFileTabs closableTabs />
+        <FileTabs closableTabs />
         <StyledDiv>
           <ContextMenu targetRef={containerRef}>
             <ContextMenu.Group divider>

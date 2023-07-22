@@ -7,13 +7,14 @@ export function handleCustomTypes(monaco: Monaco) {
   // There's a lot of _weirdness_ in play here
   // We are importing "files" in Monaco, but Monaco cannot access a real file system
   // This "packages" up the exports we get from the ts build and makes it easier to access for Monaco
-  var libSource = [
+  const libSource = [
+    // eslint-disable-next-line quotes
     "declare module '@takaro/helpers' {",
     '    declare function getData(): Promise<any>',
     '    declare function getTakaro(data: Record<string, string>): Promise<Client>;',
     '}',
   ].join('\n');
-  var libUri = 'file:///node_modules/@takaro/helpers';
+  const libUri = 'file:///node_modules/@takaro/helpers';
 
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
   const compilerOptions = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
