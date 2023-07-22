@@ -30,6 +30,11 @@ export function handleCustomTypes(monaco: Monaco) {
     },
   });
 
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+  });
+
   let extraLibs: { content: string; libUri: string }[] = [];
   extraLibs.push({
     content: libSource,
