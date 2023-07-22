@@ -107,7 +107,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerConnected(logLine: I7DaysToDieEvent) {
-    const nameMatches = /PlayerName='(.+)'/.exec(logLine.msg);
+    const nameMatches = /PlayerName='([^']+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
     const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
@@ -133,7 +133,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     });
   }
   private async handlePlayerDisconnected(logLine: I7DaysToDieEvent) {
-    const nameMatch = /PlayerName='(.+)'/.exec(logLine.msg);
+    const nameMatch = /PlayerName='([^']+)/.exec(logLine.msg);
     const platformIdMatches = /PltfmId='(.+)', CrossId=/.exec(logLine.msg);
     const crossIdMatches = /CrossId='(.+)', OwnerID/.exec(logLine.msg);
 
