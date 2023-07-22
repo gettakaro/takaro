@@ -1,9 +1,10 @@
 import { config, EXECUTION_MODE } from '../../config.js';
-import { logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
 import { getVMM } from '../vmm/index.js';
 import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
+import { executeLambda } from '@takaro/aws';
 
 const log = logger('worker:function');
 
@@ -68,13 +69,23 @@ export async function executeFunction(
   }
 
   try {
-    if (config.get('functions.executionMode') === EXECUTION_MODE.LOCAL) {
-      const result = await executeFunctionLocal(functionRes.data.data.code, data, token);
-      eventData.meta['result'] = result;
-    } else {
-      const vmm = await getVMM();
-      const result = await vmm.executeFunction(functionRes.data.data.code, data, token);
-      eventData.meta['result'] = result;
+    let result;
+
+    switch (config.get('functions.executionMode')) {
+      case EXECUTION_MODE.LOCAL:
+        result = await executeFunctionLocal(functionRes.data.data.code, data, token);
+        eventData.meta['result'] = result;
+        break;
+      case EXECUTION_MODE.FIRECRACKER:
+        const vmm = await getVMM();
+        result = await vmm.executeFunction(functionRes.data.data.code, data, token);
+        eventData.meta['result'] = result;
+      case EXECUTION_MODE.LAMBDA:
+        await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
+        break;
+      default:
+        throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
+        break;
     }
 
     await client.event.eventControllerCreate(eventData);

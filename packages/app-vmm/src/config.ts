@@ -6,6 +6,7 @@ import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 export enum EXECUTION_MODE {
   FIRECRACKER = 'firecracker',
   LOCAL = 'local',
+  LAMBDA = 'lambda',
 }
 
 interface IAgentConfig extends IBaseConfig {
@@ -60,7 +61,7 @@ const configSchema = {
   functions: {
     executionMode: {
       doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
-      format: [EXECUTION_MODE.FIRECRACKER, EXECUTION_MODE.LOCAL],
+      format: Object.values(EXECUTION_MODE),
       default: EXECUTION_MODE.FIRECRACKER,
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
