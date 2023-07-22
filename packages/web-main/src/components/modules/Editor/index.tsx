@@ -106,7 +106,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
 
         await updateFunction({
           functionId: moduleData.fileMap[sandpack.activeFile].functionId,
-          fn: { code: code },
+          fn: { code: model.getValue() },
         });
 
         // the new model version is now the one saved in the database
