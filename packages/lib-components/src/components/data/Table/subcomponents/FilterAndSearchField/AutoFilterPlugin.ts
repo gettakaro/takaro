@@ -6,13 +6,12 @@
  *
  */
 
-import type { LinkAttributes } from '@lexical/link';
 import type { ElementNode, LexicalEditor, LexicalNode } from 'lexical';
+import { $isAutoFilterNode, $isFilterNode, AutoFilterNode } from './FilterNode';
 
-import { $createAutoLinkNode, $isAutoLinkNode, $isLinkNode, AutoLinkNode } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
-import { $createTextNode, $isElementNode, $isLineBreakNode, $isTextNode, TextNode } from 'lexical';
+import { $isElementNode, $isLineBreakNode, $isTextNode, TextNode } from 'lexical';
 import { useEffect } from 'react';
 
 // invariant(condition, message) will refine types based on "condition", and
@@ -32,43 +31,15 @@ export default function invariant(cond?: boolean, message?: string, ..._args: st
 
 type ChangeHandler = (url: string | null, prevUrl: string | null) => void;
 
-type LinkMatcherResult = {
-  attributes?: LinkAttributes;
+type FilterMatcherResult = {
   index: number;
+  column: string;
+  separator: string;
+  value: string;
   length: number;
-  text: string;
-  url: string;
 };
 
-export type FilterMatcher = (text: string) => LinkMatcherResult | null;
-
-export function createFilterMatcherWithRegExp(
-  regExp: RegExp,
-  urlTransformer: (text: string) => string = (text) => text
-) {
-  return (text: string) => {
-    const match = regExp.exec(text);
-    if (match === null) return null;
-    return {
-      index: match.index,
-      length: match[0].length,
-      text: match[0],
-      url: urlTransformer(text),
-    };
-  };
-}
-
-function findFirstMatch(text: string, matchers: Array<FilterMatcher>): LinkMatcherResult | null {
-  for (let i = 0; i < matchers.length; i++) {
-    const match = matchers[i](text);
-
-    if (match) {
-      return match;
-    }
-  }
-
-  return null;
-}
+export type FilterMatcher = (text: string) => FilterMatcherResult | null;
 
 const PUNCTUATION_OR_SPACE = /[.,;\s]/;
 
@@ -108,56 +79,7 @@ function isNextNodeValid(node: LexicalNode): boolean {
   );
 }
 
-function isContentAroundIsValid(matchStart: number, matchEnd: number, text: string, node: TextNode): boolean {
-  const contentBeforeIsValid = matchStart > 0 ? isSeparator(text[matchStart - 1]) : isPreviousNodeValid(node);
-  if (!contentBeforeIsValid) {
-    return false;
-  }
-
-  const contentAfterIsValid = matchEnd < text.length ? isSeparator(text[matchEnd]) : isNextNodeValid(node);
-  return contentAfterIsValid;
-}
-
-function handleFilterCreation(node: TextNode, matchers: Array<FilterMatcher>, onChange: ChangeHandler): void {
-  const nodeText = node.getTextContent();
-  let text = nodeText;
-  let invalidMatchEnd = 0;
-  let remainingTextNode = node;
-  let match;
-
-  while ((match = findFirstMatch(text, matchers)) && match !== null) {
-    const matchStart = match.index;
-    const matchLength = match.length;
-    const matchEnd = matchStart + matchLength;
-    const isValid = isContentAroundIsValid(invalidMatchEnd + matchStart, invalidMatchEnd + matchEnd, nodeText, node);
-
-    if (isValid) {
-      let linkTextNode;
-      if (invalidMatchEnd + matchStart === 0) {
-        [linkTextNode, remainingTextNode] = remainingTextNode.splitText(invalidMatchEnd + matchLength);
-      } else {
-        [, linkTextNode, remainingTextNode] = remainingTextNode.splitText(
-          invalidMatchEnd + matchStart,
-          invalidMatchEnd + matchStart + matchLength
-        );
-      }
-      const linkNode = $createAutoLinkNode(match.url, match.attributes);
-      const textNode = $createTextNode(match.text);
-      textNode.setFormat(linkTextNode.getFormat());
-      textNode.setDetail(linkTextNode.getDetail());
-      linkNode.append(textNode);
-      linkTextNode.replace(linkNode);
-      onChange(match.url, null);
-      invalidMatchEnd = 0;
-    } else {
-      invalidMatchEnd += matchEnd;
-    }
-
-    text = text.substring(matchEnd);
-  }
-}
-
-function handleFilterEdit(linkNode: AutoLinkNode, matchers: Array<FilterMatcher>, onChange: ChangeHandler): void {
+function handleFilterEdit(linkNode: AutoFilterNode, matchers: Array<FilterMatcher>, onChange: ChangeHandler): void {
   // Check children are simple text
   const children = linkNode.getChildren();
   const childrenLength = children.length;
@@ -169,58 +91,28 @@ function handleFilterEdit(linkNode: AutoLinkNode, matchers: Array<FilterMatcher>
       return;
     }
   }
-
-  // Check text content fully matches
-  const text = linkNode.getTextContent();
-  const match = findFirstMatch(text, matchers);
-  if (match === null || match.text !== text) {
-    replaceWithChildren(linkNode);
-    onChange(null, linkNode.getURL());
-    return;
-  }
-
   // Check neighbors
   if (!isPreviousNodeValid(linkNode) || !isNextNodeValid(linkNode)) {
     replaceWithChildren(linkNode);
     onChange(null, linkNode.getURL());
     return;
   }
-
-  const url = linkNode.getURL();
-  if (url !== match.url) {
-    linkNode.setURL(match.url);
-    onChange(match.url, url);
-  }
-
-  if (match.attributes) {
-    const rel = linkNode.getRel();
-    if (rel !== match.attributes.rel) {
-      linkNode.setRel(match.attributes.rel || null);
-      onChange(match.attributes.rel || null, rel);
-    }
-
-    const target = linkNode.getTarget();
-    if (target !== match.attributes.target) {
-      linkNode.setTarget(match.attributes.target || null);
-      onChange(match.attributes.target || null, target);
-    }
-  }
 }
 
 // Bad neighbours are edits in neighbor nodes that make AutoLinks incompatible.
 // Given the creation preconditions, these can only be simple text nodes.
-function handleBadNeighbors(textNode: TextNode, matchers: Array<LinkMatcher>, onChange: ChangeHandler): void {
+function handleBadNeighbors(textNode: TextNode, matchers: Array<FilterMatcher>, onChange: ChangeHandler): void {
   const previousSibling = textNode.getPreviousSibling();
   const nextSibling = textNode.getNextSibling();
   const text = textNode.getTextContent();
 
-  if ($isAutoLinkNode(previousSibling) && !startsWithSeparator(text)) {
+  if ($isAutoFilterNode(previousSibling) && !startsWithSeparator(text)) {
     previousSibling.append(textNode);
     handleFilterEdit(previousSibling, matchers, onChange);
     onChange(null, previousSibling.getURL());
   }
 
-  if ($isAutoLinkNode(nextSibling) && !endsWithSeparator(text)) {
+  if ($isAutoFilterNode(nextSibling) && !endsWithSeparator(text)) {
     replaceWithChildren(nextSibling);
     handleFilterEdit(nextSibling, matchers, onChange);
     onChange(null, nextSibling.getURL());
@@ -239,10 +131,10 @@ function replaceWithChildren(node: ElementNode): Array<LexicalNode> {
   return children.map((child) => child.getLatest());
 }
 
-function useAutoFilter(editor: LexicalEditor, matchers: Array<LinkMatcher>, onChange?: ChangeHandler): void {
+function useAutoFilter(editor: LexicalEditor, matchers: Array<FilterMatcher>, onChange?: ChangeHandler): void {
   useEffect(() => {
-    if (!editor.hasNodes([AutoLinkNode])) {
-      invariant(false, 'LexicalAutoLinkPlugin: AutoLinkNode not registered on editor');
+    if (!editor.hasNodes([AutoFilterNode])) {
+      invariant(false, 'AutoFilterPlugin: AutoFilterNode not registered on editor');
     }
 
     const onChangeWrapped = (url: string | null, prevUrl: string | null) => {
@@ -255,14 +147,13 @@ function useAutoFilter(editor: LexicalEditor, matchers: Array<LinkMatcher>, onCh
       editor.registerNodeTransform(TextNode, (textNode: TextNode) => {
         const parent = textNode.getParentOrThrow();
         const previous = textNode.getPreviousSibling();
-        if ($isAutoLinkNode(parent)) {
+        if ($isAutoFilterNode(parent)) {
           handleFilterEdit(parent, matchers, onChangeWrapped);
-        } else if (!$isLinkNode(parent)) {
+        } else if (!$isFilterNode(parent)) {
           if (
             textNode.isSimpleText() &&
-            (startsWithSeparator(textNode.getTextContent()) || !$isAutoLinkNode(previous))
+            (startsWithSeparator(textNode.getTextContent()) || !$isAutoFilterNode(previous))
           ) {
-            handleFilterCreation(textNode, matchers, onChangeWrapped);
           }
 
           handleBadNeighbors(textNode, matchers, onChangeWrapped);

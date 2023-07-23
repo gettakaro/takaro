@@ -1,4 +1,3 @@
-import { $getRoot, $getSelection } from 'lexical';
 import { InitialConfigType, LexicalComposer } from '@lexical/react/LexicalComposer';
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -6,10 +5,29 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { AutoFilterNode } from './FilterNode';
-import { AutoFilterPlugin } from './AutoFilterPlugin';
+import { AutoFilterPlugin, FilterMatcher } from './AutoFilterPlugin';
 
-const _FILTER_MATCHER = /(\w+)=:(\w+)/;
-const _SEARCH_MATCHER = /(\w+)*:(\w+)/;
+const FILTER_MATCHER = /(?<column>\w+)=:(?<value>\w+)/;
+
+// const SEARCH_MATCHER = /(\w+)*:(\w+)/;
+
+const MATCHERS: FilterMatcher[] = [
+  (text) => {
+    const match = FILTER_MATCHER.exec(text);
+    if (match === null || match.groups === undefined) {
+      return null;
+    }
+
+    const fullMatch = match[0];
+    return {
+      index: match.index,
+      length: fullMatch.length,
+      column: match.groups.column,
+      separator: '=:',
+      value: match.groups.value,
+    };
+  },
+];
 
 export const InputField = () => {
   const initialConfig: InitialConfigType = {
@@ -17,18 +35,13 @@ export const InputField = () => {
     namespace: 'filter-and-search',
     nodes: [AutoFilterNode],
     onError: (error: Error) => {
+      console.error(error);
       throw error;
     },
   };
 
   function onChange(editorState) {
-    editorState.read(() => {
-      // Read the contents of the EditorState here.
-      const root = $getRoot();
-      const selection = $getSelection();
-
-      console.log(root, selection);
-    });
+    editorState.read(() => {});
   }
 
   return (
@@ -36,11 +49,11 @@ export const InputField = () => {
       <div>
         <PlainTextPlugin
           contentEditable={<ContentEditable className="editor-input" />}
-          placeholder={<div>"Type here..."</div>}
+          placeholder={<div>Type here...</div>}
           ErrorBoundary={LexicalErrorBoundary}
         />
         <OnChangePlugin onChange={onChange} />
-        <AutoFilterPlugin />
+        <AutoFilterPlugin matchers={MATCHERS} />
         <HistoryPlugin />
       </div>
     </LexicalComposer>

@@ -127,9 +127,9 @@ export class FilterNode extends ElementNode {
   insertNewAfter(selection: RangeSelection, restoreSelection = true): null | ElementNode {
     const element = this.getParentOrThrow().insertNewAfter(selection, restoreSelection);
     if ($isElementNode(element)) {
-      const linkNode = $createFilterNode(this.__column, this.__separator, this.__value);
-      element.append(linkNode);
-      return linkNode;
+      const filterNode = $createFilterNode(this.__column, this.__separator, this.__value);
+      element.append(filterNode);
+      return filterNode;
     }
     return null;
   }
@@ -238,6 +238,6 @@ export function $createAutoFilterNode(column: string, separator: string, value: 
  * @param node - The node to be checked.
  * @returns true if node is an AutoLinkNode, false otherwise.
  */
-export function $isAutoLinkNode(node: LexicalNode | null | undefined): node is AutoFilterNode {
+export function $isAutoFilterNode(node: LexicalNode | null | undefined): node is AutoFilterNode {
   return node instanceof AutoFilterNode;
 }
