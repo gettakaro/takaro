@@ -1,20 +1,15 @@
-import { FC, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { SandpackStack, SandpackThemeProvider, useActiveCode, useSandpack } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import * as mon from 'monaco-editor';
 import { useModule } from 'hooks/useModule';
-import { styled, ContextMenu } from '@takaro/lib-components';
+import { ContextMenu } from '@takaro/lib-components';
 import { FileTabs } from './FileTabs';
-import { handleCustomTypes } from './customTypes';
+import { FunctionType, setExtraLibs } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
 import { useSnackbar } from 'notistack';
 import * as Sentry from '@sentry/react';
-
-const StyledDiv = styled.div`
-  width: 100%;
-  height: 100%;
-`;
 
 export type EditorProps = {
   readOnly?: boolean;
@@ -65,17 +60,11 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (monaco) {
-      defineTheme(monaco);
-      monaco.editor.setTheme('takaro');
-
       // only load monaco types if there is no model
-      if (monaco.editor.getModels().length === 0) {
-        handleCustomTypes(monaco);
-      }
     }
-  }, [monaco]);
+  }, [sandpack.activeFile]);
 
   const saveFile = async () => {
     try {
@@ -129,7 +118,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
         <FileTabs closableTabs dirtyFiles={dirtyFiles} setDirtyFiles={setDirtyFiles} />
-        <StyledDiv>
+        <div style={{ width: '100%', height: '100%' }}>
           <ContextMenu targetRef={containerRef}>
             <ContextMenu.Group divider>
               {/* TODO: These are not native and require a separate typescript language server */}
@@ -171,13 +160,51 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             height="100%"
             language="typescript"
             theme="takaro"
+            path={sandpack.activeFile}
             key={sandpack.activeFile}
             defaultValue={code}
+            defaultLanguage="typescript"
             beforeMount={(monaco) => {
+              // this is ran everytime the file changes
               monacoRef.current = monaco;
+              defineTheme(monaco);
+              monaco.editor.setTheme('takaro');
+
+              console.log('before mount');
+              monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
+              const compilerOptions = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
+
+              monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+                ...compilerOptions,
+                lib: ['es2020'],
+                module: mon.languages.typescript.ModuleKind.ESNext,
+                allowNonTsExtensions: true,
+                experimentalDecorators: true,
+                target: mon.languages.typescript.ScriptTarget.ES2020,
+                moduleResolution: mon.languages.typescript.ModuleResolutionKind.NodeJs,
+                paths: {
+                  '@takaro/helpers': ['index.d.ts'],
+                },
+              });
+
+              monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+                noSemanticValidation: false,
+                noSyntaxValidation: false,
+              });
+
+              if (sandpack.activeFile.startsWith('/commands/')) {
+                setExtraLibs(monaco, FunctionType.Command);
+              }
+              if (sandpack.activeFile.startsWith('/cronjobs/')) {
+                setExtraLibs(monaco, FunctionType.Cron);
+              }
+              if (sandpack.activeFile.startsWith('/hooks/')) {
+                setExtraLibs(monaco, FunctionType.Hook);
+              }
             }}
             onMount={(editor, monaco) => {
               containerRef.current = document.querySelector('.monaco-scrollable-element');
+
               if (!monaco) {
                 throw new Error('Monaco is not defined');
               }
@@ -336,7 +363,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               },
             }}
           />
-        </StyledDiv>
+        </div>
       </SandpackStack>
     </SandpackThemeProvider>
   );
