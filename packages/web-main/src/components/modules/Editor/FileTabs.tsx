@@ -152,7 +152,7 @@ const Tab: FC<TabProps> = ({
   const { setActiveFile, visibleFiles, closeFile, activeFile } = sandpack;
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const tabRef = useRef<HTMLButtonElement>(null);
+  const tabRef = useRef<HTMLButtonElement | null>(null);
   const originalIndex = useRef(index);
 
   const [, drag] = useDrag({
@@ -273,6 +273,7 @@ const Tab: FC<TabProps> = ({
         type="button"
         ref={(el) => {
           drag(drop(el));
+          tabRef.current = el;
         }}
       >
         <JsIcon size={11} style={{ fill: theme.colors.secondary }} />
