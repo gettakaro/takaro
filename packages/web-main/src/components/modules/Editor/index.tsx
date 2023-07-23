@@ -169,8 +169,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               monacoRef.current = monaco;
               defineTheme(monaco);
               monaco.editor.setTheme('takaro');
-
-              console.log('before mount');
               monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
               const compilerOptions = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
 
