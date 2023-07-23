@@ -3,13 +3,19 @@ import { InitialConfigType, LexicalComposer } from '@lexical/react/LexicalCompos
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
+import { AutoFilterNode } from './FilterNode';
+import { AutoFilterPlugin } from './AutoFilterPlugin';
+
+const _FILTER_MATCHER = /(\w+)=:(\w+)/;
+const _SEARCH_MATCHER = /(\w+)*:(\w+)/;
 
 export const InputField = () => {
   const initialConfig: InitialConfigType = {
     editorState: null,
     namespace: 'filter-and-search',
-    nodes: [],
+    nodes: [AutoFilterNode],
     onError: (error: Error) => {
       throw error;
     },
@@ -34,6 +40,8 @@ export const InputField = () => {
           ErrorBoundary={LexicalErrorBoundary}
         />
         <OnChangePlugin onChange={onChange} />
+        <AutoFilterPlugin />
+        <HistoryPlugin />
       </div>
     </LexicalComposer>
   );
