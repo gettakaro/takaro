@@ -257,7 +257,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               }
             }}
             options={{
-              minimap: { enabled: false },
+              minimap: { enabled: true },
               wordWrap: 'on',
               renderWhitespace: 'none',
               lineNumbers: 'on',
