@@ -164,7 +164,12 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             key={sandpack.activeFile}
             defaultValue={code}
             defaultLanguage="typescript"
-            beforeMount={(monaco) => {
+            beforeMount={async (monaco) => {
+              // Monaco is calculating positions based on the font size.
+              // If the font is not loaded yet, the positions will be wrong.
+              await document.fonts.ready;
+              monaco.editor.remeasureFonts();
+
               // this is ran everytime the file changes
               monacoRef.current = monaco;
               defineTheme(monaco);
