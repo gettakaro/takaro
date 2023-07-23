@@ -1,6 +1,8 @@
 import { getTakaro } from '@takaro/helpers';
 import vm, { Module } from 'node:vm';
 import { config } from '../../config.js';
+import axios from 'axios';
+import * as _ from 'lodash-es';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
@@ -34,10 +36,13 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
 
   await toEval.link((specifier: string, referencingModule: Module) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'getData'],
+      ['getTakaro', 'getData', 'axios', '_', 'lodash'],
       function () {
         this.setExport('getTakaro', getTakaro);
         this.setExport('getData', monkeyPatchedGetData);
+        this.setExport('axios', axios);
+        this.setExport('_', _);
+        this.setExport('lodash', _);
       },
       { context: referencingModule.context }
     );

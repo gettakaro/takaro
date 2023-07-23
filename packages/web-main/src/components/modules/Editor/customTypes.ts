@@ -10,8 +10,9 @@ export function handleCustomTypes(monaco: Monaco) {
   const libSource = [
     // eslint-disable-next-line quotes
     "declare module '@takaro/helpers' {",
-    '    declare function getData(): Promise<any>',
-    '    declare function getTakaro(data: Record<string, string>): Promise<Client>;',
+    '    declare function getData(): Promise<ICommandJobData>', // : Promise<ICommandJobData | IHookJobData | ICronJobData>
+    '    declare function getTakaro(data: ICommandJobData): Promise<Client>;',
+    '    export const axios: Axios',
     '}',
   ].join('\n');
   const libUri = 'file:///node_modules/@takaro/helpers';
