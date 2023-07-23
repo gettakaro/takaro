@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { PlayerOutputArrayDTOAPI, PlayerOutputDTO, PlayerOutputDTOAPI, PlayerSearchInputDTO } from '@takaro/apiclient';
+import { PlayerOutputArrayDTOAPI, PlayerOutputWithRolesDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
@@ -38,7 +38,7 @@ export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchI
 export const usePlayer = (id: string) => {
   const apiClient = useApiClient();
 
-  return useQuery<PlayerOutputDTO, AxiosError<PlayerOutputDTOAPI>>({
+  return useQuery<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
     queryKey: playerKeys.detail(id),
     queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
     useErrorBoundary: (error) => error.response!.status >= 500,

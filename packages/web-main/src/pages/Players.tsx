@@ -1,11 +1,13 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
 import { styled, Table, Loading, useTableActions } from '@takaro/lib-components';
 import { useApiClient } from 'hooks/useApiClient';
 import { useQuery } from '@tanstack/react-query';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { QueryKeys } from 'queryKeys';
+import { PATHS } from 'paths';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -36,6 +38,13 @@ const Players: FC = () => {
 
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
+    columnHelper.accessor('id', {
+      header: 'ID',
+      id: 'id',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: false,
+      enableSorting: true,
+    }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated',
       id: 'updatedAt',
@@ -46,7 +55,7 @@ const Players: FC = () => {
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue(),
+      cell: (info) => <Link to={PATHS.player.profile(info.row.getValue('id'))}>{info.getValue()}</Link>,
       enableColumnFilter: true,
       enableSorting: true,
     }),

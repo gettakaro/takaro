@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -12,10 +12,10 @@ import { Response } from 'express';
 import { ParamIdAndRoleId } from './UserController.js';
 import { RoleService } from '../service/RoleService.js';
 
-export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
-  @Type(() => PlayerOutputDTO)
+export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
+  @Type(() => PlayerOutputWithRolesDTO)
   @ValidateNested()
-  declare data: PlayerOutputDTO;
+  declare data: PlayerOutputWithRolesDTO;
 }
 
 export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {

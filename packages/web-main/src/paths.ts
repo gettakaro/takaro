@@ -45,4 +45,9 @@ export const PATHS = {
     module: (moduleId: string) => `/studio/${moduleId}`,
     settings: (moduleId: string) => `/studio/${moduleId}/settings`,
   },
+
+  player: {
+    profile: (playerId: string) => `/player/${playerId}`,
+    assignRole: (playerId: string) => `/player/${playerId}/assign-role`,
+  },
 };

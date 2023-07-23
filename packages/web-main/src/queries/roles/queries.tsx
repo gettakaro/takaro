@@ -9,6 +9,7 @@ import {
   RoleOutputDTOAPI,
   PermissionOutputDTOAPI,
   PermissionOutputDTO,
+  APIOutput,
 } from '@takaro/apiclient';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -195,5 +196,21 @@ export const useRoleRemove = () => {
       }
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+};
+
+interface RoleAssign {
+  id: string;
+  roleId: string;
+  gameServerId?: string;
+}
+
+export const useRoleAssign = () => {
+  const apiClient = useApiClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
+    mutationFn: async ({ id, roleId, gameServerId }) =>
+      (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data,
+    onSuccess: () => {},
   });
 };
