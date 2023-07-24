@@ -1,25 +1,11 @@
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
-import { Column, Table } from '@tanstack/react-table';
-import { Button, Divider, IconButton, Popover, Select, TextField, Tooltip } from '../../../../components';
-import { styled } from '../../../../styled';
+import { Table } from '@tanstack/react-table';
+import { Button, Divider, IconButton, Popover, Select, TextField, Tooltip } from '../../../../../components';
 import { AiOutlineFilter as FilterIcon, AiOutlineClose as RemoveIcon } from 'react-icons/ai';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-const FilterContainer = styled.div<{ hasMultipleFields: boolean }>`
-  display: grid;
-  grid-template-columns: ${({ hasMultipleFields }) => (hasMultipleFields ? '20px 1fr 1fr 1fr' : '1fr 1fr 1fr')};
-  gap: ${({ theme }) => theme.spacing['1_5']};
-  align-items: center;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing['1_5']};
-`;
+import { ButtonContainer, FilterContainer } from './style';
 
 enum operators {
   is = 'is',
@@ -34,16 +20,14 @@ interface IFormInputs {
   }[];
 }
 
-interface FilterAndSearchProps<DataType extends object> {
-  columns: Column<DataType, unknown>[];
+interface FilterProps<DataType extends object> {
   table: Table<DataType>;
 }
 
-export function FilterAndSearch<DataType extends object>({ columns, table }: FilterAndSearchProps<DataType>) {
+export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
 
-  // eslint-disable-next-line
-  const columnIds = columns.map((column) => column.id) as any;
+  const columnIds = table.getAllLeafColumns().map((column) => column.id);
 
   const validationSchema = useMemo(() => {
     return z.object({
@@ -193,14 +177,14 @@ export function FilterAndSearch<DataType extends object>({ columns, table }: Fil
                   label="Column"
                   inPortal
                   render={(selectedIndex) => {
-                    return columns[selectedIndex]?.id ?? 'Select a column';
+                    return columnIds[selectedIndex] ?? 'Select a column';
                   }}
                 >
                   <Select.OptionGroup>
-                    {columns.map((col) => (
-                      <Select.Option key={col.id} value={col.id}>
+                    {columnIds.map((col) => (
+                      <Select.Option key={col} value={col}>
                         <div>
-                          <span>{col.id}</span>
+                          <span>{col}</span>
                         </div>
                       </Select.Option>
                     ))}
