@@ -27,7 +27,9 @@ import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcompone
 export interface TableProps<DataType extends object> {
   data: DataType[];
   defaultDensity?: Density;
+
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
   sorting?: {
     sortingState: SortingState;
@@ -74,7 +76,7 @@ export function Table<DataType extends object>({
     })
   );
 
-  // handles the column visibility tooltip, showing when the first column is hidden
+  // handles the column visibility tooltip (shows tooltip when the first column is hidden)
   useEffect(() => {
     if (
       !hasShownColumnVisibilityTooltip &&
@@ -122,7 +124,6 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
     },
-
     state: {
       columnVisibility,
       columnOrder,
