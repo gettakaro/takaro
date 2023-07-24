@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
 export const Header = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
 `;

@@ -23,11 +23,10 @@ import {
   AiOutlinePicRight as TightDensityIcon,
 } from 'react-icons/ai';
 import { ColumnHeader } from './subcomponents/ColumnHeader';
+import { FilterAndSearch } from './subcomponents/FilterAndSearch';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
-import { TableContext } from './Context';
-import { useTable } from './useTable';
 
 // TODO: add id so we can save certain data in local storage
 export interface TableProps<DataType extends object> {
@@ -71,10 +70,6 @@ export function Table<DataType extends object>({
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
-
-  // this is a custom hook used in combination with context
-  // to pass down table state to bunch of components.
-  const manualTableState = useTable();
 
   useEffect(() => {
     if (
@@ -149,50 +144,68 @@ export function Table<DataType extends object>({
 
   return (
     <Wrapper>
-      <TableContext.Provider value={manualTableState}>
-        <Header>
-          {/* search */}
-          <ToggleButtonGroup
-            onChange={(val) => setDensity(val as Density)}
-            exclusive={true}
-            orientation="horizontal"
-            defaultValue={density}
-          >
-            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
-              <TightDensityIcon size={20} />
-            </ToggleButtonGroup.Button>
+      <Header>
+        {/* search */}
+        <FilterAndSearch columns={table.getAllLeafColumns()} table={table} />
+        <ToggleButtonGroup
+          onChange={(val) => setDensity(val as Density)}
+          exclusive={true}
+          orientation="horizontal"
+          defaultValue={density}
+        >
+          <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+            <TightDensityIcon size={20} />
+          </ToggleButtonGroup.Button>
 
-            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
-              <RelaxedDensityIcon size={20} />
-            </ToggleButtonGroup.Button>
-          </ToggleButtonGroup>
-        </Header>
+          <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
+            <RelaxedDensityIcon size={20} />
+          </ToggleButtonGroup.Button>
+        </ToggleButtonGroup>
+      </Header>
 
-        {/* table */}
-        <DndProvider backend={HTML5Backend}>
-          <StyledTable density={density}>
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
-                  ))}
-                  <th colSpan={1}>
-                    <Dropdown>
-                      <Dropdown.Trigger
-                        asChild
-                        tooltipOptions={{
-                          onOpenChange: setOpenColumnVisibilityTooltip,
-                          open: openColumnVisibilityTooltip,
-                          content: 'Show or hide columns',
-                          placement: 'right',
-                        }}
-                      >
-                        <IconButton icon={<PlusIcon />} ariaLabel="Change column visibility" />
-                      </Dropdown.Trigger>
-                      <Dropdown.Menu>
-                        <Dropdown.Menu.Group label="Visible columns">
-                          {table.getVisibleFlatColumns().map((column) => (
+      {/* table */}
+      <DndProvider backend={HTML5Backend}>
+        <StyledTable density={density}>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
+                ))}
+                <th colSpan={1}>
+                  <Dropdown>
+                    <Dropdown.Trigger
+                      asChild
+                      tooltipOptions={{
+                        onOpenChange: setOpenColumnVisibilityTooltip,
+                        open: openColumnVisibilityTooltip,
+                        content: 'Show or hide columns',
+                        placement: 'right',
+                      }}
+                    >
+                      <IconButton icon={<PlusIcon />} ariaLabel="Change column visibility" />
+                    </Dropdown.Trigger>
+                    <Dropdown.Menu>
+                      <Dropdown.Menu.Group label="Visible columns">
+                        {table.getVisibleFlatColumns().map((column) => (
+                          <Dropdown.Menu.Item
+                            key={column.id}
+                            onClick={() => {
+                              // In case they open the dropdown they already know about the column visibility
+                              setHasShownColumnVisibilityTooltip(true);
+                              column.toggleVisibility();
+                            }}
+                            label={column.id}
+                            activeStyle="checkbox"
+                            active={true}
+                          />
+                        ))}
+                      </Dropdown.Menu.Group>
+                      <Dropdown.Menu.Group label="Hidden columns">
+                        {table
+                          .getAllLeafColumns()
+                          .filter((column) => column.getIsVisible() === false)
+                          .map((column) => (
                             <Dropdown.Menu.Item
                               key={column.id}
                               onClick={() => {
@@ -202,75 +215,56 @@ export function Table<DataType extends object>({
                               }}
                               label={column.id}
                               activeStyle="checkbox"
-                              active={true}
+                              active={false}
                             />
                           ))}
-                        </Dropdown.Menu.Group>
-                        <Dropdown.Menu.Group label="Hidden columns">
-                          {table
-                            .getAllLeafColumns()
-                            .filter((column) => column.getIsVisible() === false)
-                            .map((column) => (
-                              <Dropdown.Menu.Item
-                                key={column.id}
-                                onClick={() => {
-                                  // In case they open the dropdown they already know about the column visibility
-                                  setHasShownColumnVisibilityTooltip(true);
-                                  column.toggleVisibility();
-                                }}
-                                label={column.id}
-                                activeStyle="checkbox"
-                                active={false}
-                              />
-                            ))}
-                        </Dropdown.Menu.Group>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </th>
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map(({ column, id, getContext }) => (
-                    <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
-                  ))}
-                  {/* Extra column which holds the column-visibilty dropdown*/}
-                  <td />
+                      </Dropdown.Menu.Group>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </th>
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(({ column, id, getContext }) => (
+                  <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
+                ))}
+                {/* Extra column which holds the column-visibilty dropdown*/}
+                <td />
 
-                  {row.getIsExpanded() && (
-                    <tr>
-                      {/* add + 1 because we have an extra column that holds the column visibility */}
-                      <td colSpan={table.getVisibleLeafColumns().length + 1} />
-                    </tr>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                {pagination && (
-                  <td colSpan={columns.length + 1}>
-                    <PaginationContainer>
-                      <span>{pagination.total} results</span>
-                      <Pagination
-                        pageCount={pagination.pageCount}
-                        hasNext={table.getCanNextPage()}
-                        hasPrevious={table.getCanPreviousPage()}
-                        previousPage={table.previousPage}
-                        nextPage={table.nextPage}
-                        pageIndex={table.getState().pagination.pageIndex}
-                        setPageIndex={table.setPageIndex}
-                      />
-                    </PaginationContainer>
-                  </td>
+                {row.getIsExpanded() && (
+                  <tr>
+                    {/* add + 1 because we have an extra column that holds the column visibility */}
+                    <td colSpan={table.getVisibleLeafColumns().length + 1} />
+                  </tr>
                 )}
               </tr>
-            </tfoot>
-          </StyledTable>
-        </DndProvider>
-      </TableContext.Provider>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              {pagination && (
+                <td colSpan={columns.length + 1}>
+                  <PaginationContainer>
+                    <span>{pagination.total} results</span>
+                    <Pagination
+                      pageCount={pagination.pageCount}
+                      hasNext={table.getCanNextPage()}
+                      hasPrevious={table.getCanPreviousPage()}
+                      previousPage={table.previousPage}
+                      nextPage={table.nextPage}
+                      pageIndex={table.getState().pagination.pageIndex}
+                      setPageIndex={table.setPageIndex}
+                    />
+                  </PaginationContainer>
+                </td>
+              )}
+            </tr>
+          </tfoot>
+        </StyledTable>
+      </DndProvider>
     </Wrapper>
   );
 }
