@@ -11,6 +11,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { ParamIdAndRoleId } from './UserController.js';
 import { RoleService } from '../service/RoleService.js';
+import { errors } from '@takaro/util';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -97,7 +98,18 @@ export class PlayerController {
     @Body() data: PlayerRoleAssignChangeDTO
   ) {
     const service = new RoleService(req.domainId);
-    return apiResponse(await service.assignRole(params.roleId, params.id, data.gameServerId));
+
+    try {
+      await service.assignRole(params.roleId, params.id, data.gameServerId);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'UniqueViolationError') {
+        throw new errors.BadRequestError('Role already assigned');
+      } else {
+        throw error;
+      }
+    }
+
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))

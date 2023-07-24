@@ -1,0 +1,15 @@
+{
+  "body": {
+    "meta": {},
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Assigning the same role for different gameservers should work",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
