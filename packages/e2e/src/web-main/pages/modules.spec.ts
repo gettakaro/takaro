@@ -52,7 +52,7 @@ basicTest('Creating a module but providing too short name, shows an error', asyn
 
   await page.getByRole('button', { name: 'Save changes' }).click();
 
-  await expect(page.getByText('name must be longer than or equal to 3 characters')).toBeVisible();
+  await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
 });
 
 basicTest('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
