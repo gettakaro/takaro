@@ -2,10 +2,7 @@ import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { TextField, Switch } from '@takaro/lib-components';
 import { Control } from 'react-hook-form';
 
-export const connectionInfoFieldsMap = (
-  isLoading: boolean,
-  control: Control<any>
-) => {
+export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any>) => {
   return {
     [GameServerCreateDTOTypeEnum.Sevendaystodie]: [
       <TextField
@@ -39,9 +36,19 @@ export const connectionInfoFieldsMap = (
           label="Use TLS"
           name="connectionInfo.useTls"
           key="seven-days-to-die-use-tls"
+          description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
           control={control}
           loading={isLoading}
-          required
+        />
+      </>,
+      <>
+        <Switch
+          label="Use CPM"
+          name="connectionInfo.useCPM"
+          key="seven-days-to-die-use-cpm"
+          control={control}
+          loading={isLoading}
+          description="CPM is a helper mod for 7 Days to Die. Download at https://cpm.7d2d.download"
         />
       </>,
     ],
@@ -88,10 +95,10 @@ export const connectionInfoFieldsMap = (
         <Switch
           label="Use TLS"
           name="connectionInfo.useTls"
+          description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
           key="use-tls"
           control={control}
           loading={isLoading}
-          required
         />
       </>,
     ],

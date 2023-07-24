@@ -2,13 +2,14 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "426f1807-4b41-4ed3-92e2-80a30de3ca82",
-      "createdAt": "2023-05-03T15:07:25.236Z",
-      "updatedAt": "2023-05-03T15:07:25.236Z",
+      "id": "43982c71-9942-4afd-8433-bfe3492676f2",
+      "createdAt": "2023-07-13T19:15:58.349Z",
+      "updatedAt": "2023-07-13T19:15:58.349Z",
       "key": "Variable",
       "value": "Test value",
-      "gameServerId": "05bc51ba-19b1-487c-8a74-4f42ebc217a5",
-      "playerId": "77458c17-c29e-4366-bc98-615f15a64cd2"
+      "gameServerId": "9b1c56ad-e531-49b1-9795-bbf60f7d98f7",
+      "playerId": "0941aee9-bca5-4ca8-87ee-3cdd0c75738c",
+      "moduleId": null
     }
   },
   "status": 200,

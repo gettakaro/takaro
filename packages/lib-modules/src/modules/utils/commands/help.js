@@ -13,16 +13,12 @@ async function main() {
   );
 
   if (data.arguments.command === 'all') {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: 'Available commands:',
-    });
+    await data.player.pm('Available commands:');
 
     for (const mod of moduleCommands) {
       await Promise.all(
         mod.map(async (command) => {
-          await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-            message: `${command.name}: ${command.helpText}`,
-          });
+          await data.player.pm(`${command.name}: ${command.helpText}`);
         })
       );
     }
@@ -33,13 +29,11 @@ async function main() {
     });
 
     if (!requestedCommand) {
-      await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-        message: `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`,
-      });
+      await data.player.pm(
+        `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`
+      );
     } else {
-      await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-        message: `${requestedCommand.name}: ${requestedCommand.helpText}`,
-      });
+      await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);
     }
   }
 }

@@ -85,10 +85,10 @@ build_vm_agent() {
 
 mkdir -p ./firecracker
 
-ensure_kernel
+# ensure_kernel
 
-build_vm_agent
+# build_vm_agent
 
 build_vm_node_helper
 
-create_rootfs
+# create_rootfs

@@ -96,6 +96,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
 
     if (response.connectable) {
       setConnectionOk(true);
+      setError(null);
     } else {
       setError(response.reason || 'Connection error');
     }

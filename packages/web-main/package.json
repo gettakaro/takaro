@@ -21,14 +21,7 @@
     "build": "tsc --noemit && NODE_OPTIONS=--max-old-space-size=8195 vite build",
     "preview": "vite preview",
     "test:unit": "CI=true vitest",
-    "test:watch": "echo 'no tests :('",
-    "eject": "craco eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "test:watch": "echo 'no tests :('"
   },
   "browserslist": {
     "production": [

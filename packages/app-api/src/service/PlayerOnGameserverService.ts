@@ -105,8 +105,8 @@ export class PlayerOnGameServerService extends TakaroService<
     return id;
   }
 
-  async findAssociations(gameId: string) {
-    return this.repo.findGameAssociations(gameId);
+  async findAssociations(gameId: string, gameServerId: string) {
+    return this.repo.findGameAssociations(gameId, gameServerId);
   }
 
   async insertAssociation(gameId: string, playerId: string, gameServerId: string) {

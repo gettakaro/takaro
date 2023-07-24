@@ -53,6 +53,7 @@ npm run-script -w packages/lib-config build
 npm run-script -w packages/lib-util build
 npm run-script -w packages/lib-apiclient build
 npm run-script -w packages/lib-auth build
+npm run-script -w packages/lib-aws build
 npm run-script -w packages/lib-db build
 npm run-script -w packages/lib-modules build
 npm run-script -w packages/lib-gameserver build

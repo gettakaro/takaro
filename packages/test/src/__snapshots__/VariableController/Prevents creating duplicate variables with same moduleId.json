@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ConflictError",
+        "message": "Unique constraint violation"
+      }
+    },
+    "data": {}
+  },
+  "status": 409,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Prevents creating duplicate variables with same moduleId",
+    "expectedStatus": 409,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -66,7 +66,7 @@ class GameServerManager {
     const gameServer = await getGameServer(domainId, gameServerId);
 
     const emitter = (
-      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>)
+      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {})
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 

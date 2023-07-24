@@ -61,6 +61,28 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
+test('Can install module with empty config', async ({ page }) => {
+  await page.getByRole('link', { name: 'Servers' }).click();
+  await page.getByText('Test server').click();
+  await page.getByText('Server Modules').click();
+
+  await page
+    .getByRole('list')
+    .locator('div')
+    .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
+    .getByRole('button', { name: 'Install' })
+    .click();
+
+  await page.getByRole('button', { name: 'Install' }).click();
+
+  await expect(
+    page
+      .getByRole('list')
+      .locator('div')
+      .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
+  ).toHaveCount(0);
+});
+
 pwTest.describe('Module config', () => {
   test('Can create string field', async ({}) => {
     /*

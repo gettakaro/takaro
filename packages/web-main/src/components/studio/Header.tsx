@@ -5,10 +5,7 @@ import { CopyModulePopOver } from './CopyModulePopOver';
 const Flex = styled.div`
   display: flex;
   align-items: center;
-
-  span {
-    padding-top: 0.4rem;
-  }
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
 `;
 
 const Container = styled.header`
@@ -16,7 +13,6 @@ const Container = styled.header`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => theme.spacing[1]};
   text-transform: capitalize;
 `;
 
