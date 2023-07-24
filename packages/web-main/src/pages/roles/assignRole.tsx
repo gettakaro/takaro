@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { roleAssignValidationSchema } from './validationSchema';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
+import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 
 interface IFormInputs {
   playerId: string;
@@ -15,14 +16,34 @@ interface IFormInputs {
   gameServerId?: string;
 }
 
-export const AssignRoleForm: FC = () => {
+interface IAssignRoleFormProps {
+  roles: RoleOutputDTO[];
+  gameServers: GameServerOutputDTO[];
+}
+
+export const AssignRole: FC = () => {
+  const { data: roles, isLoading: isLoadingRoles } = useRoles();
+  const { data: gameservers, isLoading: isLoadingGameServers } = useGameServers();
+
+  if (isLoadingRoles || isLoadingGameServers || !gameservers || !roles) {
+    return <Loading />;
+  }
+
+  const gameServerOptions = [
+    { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
+    ...gameservers.pages.flatMap((page) => page.data),
+  ];
+  const roleOptions = roles.pages.flatMap((page) => page.data);
+
+  return <AssignRoleForm gameServers={gameServerOptions} roles={roleOptions} />;
+};
+
+const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync, isLoading } = useRoleAssign();
   const navigate = useNavigate();
   const { playerId } = useParams<{ playerId: string }>();
-  const { data: roles, isLoading: isLoadingRoles } = useRoles();
-  const { data: gameservers, isLoading: isLoadingGameServers } = useGameServers();
 
   useEffect(() => {
     if (!playerId) {
@@ -40,8 +61,8 @@ export const AssignRoleForm: FC = () => {
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
       playerId,
-      roleId: '',
-      gameServerId: '',
+      roleId: roles[0].id,
+      gameServerId: gameServers[0].id,
     },
   });
 
@@ -54,10 +75,6 @@ export const AssignRoleForm: FC = () => {
       setError('Something went wrong, please try again later');
     }
   };
-
-  if (isLoadingRoles || isLoadingGameServers) {
-    return <Loading />;
-  }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -74,21 +91,15 @@ export const AssignRoleForm: FC = () => {
                   name="roleId"
                   label="Role"
                   render={(selectedIndex) => (
-                    <div>
-                      {selectedIndex !== -1
-                        ? roles?.pages.flatMap((page) => page.data)[selectedIndex].name
-                        : roles?.pages.flatMap((page) => page.data)[0].name}
-                    </div>
+                    <div>{selectedIndex !== -1 ? roles[selectedIndex].name : roles[0].name}</div>
                   )}
                 >
                   <Select.OptionGroup label="Roles">
-                    {roles?.pages
-                      .flatMap((page) => page.data)
-                      .map((role) => (
-                        <Select.Option key={role.id} value={role.id}>
-                          {role.name}
-                        </Select.Option>
-                      ))}
+                    {roles.map((role) => (
+                      <Select.Option key={role.id} value={role.id}>
+                        {role.name}
+                      </Select.Option>
+                    ))}
                   </Select.OptionGroup>
                 </Select>
 
@@ -98,21 +109,16 @@ export const AssignRoleForm: FC = () => {
                   label="Gameserver"
                   render={(selectedIndex) => (
                     <div>
-                      {selectedIndex !== -1
-                        ? gameservers?.pages.flatMap((page) => page.data)[selectedIndex].name
-                        : 'Global - applies to all gameservers'}
+                      {selectedIndex !== -1 ? gameServers[selectedIndex].name : 'Global - applies to all gameservers'}
                     </div>
                   )}
                 >
                   <Select.OptionGroup label="gameservers">
-                    <Select.Option value={''}>{'Global'}</Select.Option>
-                    {gameservers?.pages
-                      .flatMap((page) => page.data)
-                      .map((role) => (
-                        <Select.Option key={role.id} value={role.id}>
-                          {role.name}
-                        </Select.Option>
-                      ))}
+                    {gameServers.map((server) => (
+                      <Select.Option key={server.id} value={server.id}>
+                        {server.name}
+                      </Select.Option>
+                    ))}
                   </Select.OptionGroup>
                 </Select>
               </CollapseList.Item>

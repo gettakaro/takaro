@@ -4,6 +4,11 @@ import { usePlayer } from 'queries/players';
 import { FC } from 'react';
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
 
+interface ISlimmedDownAssignment {
+  gameServer?: string;
+  role: string;
+}
+
 export const PlayerProfile: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
   const navigate = useNavigate();
@@ -18,7 +23,21 @@ export const PlayerProfile: FC = () => {
     return <Loading />;
   }
 
-  const roleChips = data?.roles.map((role) => <Chip key={role.id} label={role.name} color={'primary'} />);
+  // Group assignments per server
+  const roleAssignments = data?.roleAssignments.reduce(
+    (acc, assignment) => {
+      if (assignment.gameServerId) {
+        if (!acc[assignment.gameServerId]) {
+          acc[assignment.gameServerId] = [];
+        }
+        acc[assignment.gameServerId].push({ gameServer: assignment.gameServerId, role: assignment.role.name });
+      } else {
+        acc.all.push({ gameServer: assignment.gameServerId, role: assignment.role.name });
+      }
+      return acc;
+    },
+    { all: [] as ISlimmedDownAssignment[] }
+  );
 
   return (
     <div>
@@ -32,7 +51,7 @@ export const PlayerProfile: FC = () => {
         <li>Xbox ID: {data?.xboxLiveId}</li>
       </ul>
       <h2>Roles</h2>
-      {roleChips}
+      <pre>{JSON.stringify(roleAssignments, null, 2)}</pre>
       <Chip label={'Add Role'} color={'secondary'} onClick={() => navigate(PATHS.player.assignRole(data.id))} />
       <Outlet />
     </div>

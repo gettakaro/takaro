@@ -26,7 +26,7 @@ import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';
 import { RolesUpdate } from './pages/roles/RolesUpdate';
 import { PlayerProfile } from 'pages/player/profile';
-import { AssignRoleForm } from 'pages/roles/assignRole';
+import { AssignRole } from 'pages/roles/assignRole';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -64,7 +64,7 @@ export const Router: FC = () => (
         <Route element={<Players />} path={PATHS.players()} />
 
         <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-          <Route element={<AssignRoleForm />} path={PATHS.player.assignRole(':playerId')} />
+          <Route element={<AssignRole />} path={PATHS.player.assignRole(':playerId')} />
         </Route>
 
         <Route element={<GameServers />} path="/server/" />
