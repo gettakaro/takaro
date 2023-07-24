@@ -1,7 +1,7 @@
 {
-  "name": "@takaro/helpers",
+  "name": "@takaro/aws",
   "version": "0.0.1",
-  "description": "A collection of helpers, used inside Takaro Functions",
+  "description": "AWS helper functions",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "type": "module",
@@ -16,10 +16,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/apiclient": "0.0.1",
-    "@takaro/config": "0.0.1",
-    "axios": "1.4.0",
-    "lodash-es": "4.17.21"
+    "@takaro/config": "0.0.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@takaro/test": "0.0.1",
+    "@types/convict": "^6.1.1"
+  }
 }

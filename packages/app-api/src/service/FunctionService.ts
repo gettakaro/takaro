@@ -29,7 +29,7 @@ async function main() {
  
     // TODO: write my function...
 }
-main();`;
+await main();`;
 
 @traceableClass('service:function')
 export class FunctionService extends TakaroService<

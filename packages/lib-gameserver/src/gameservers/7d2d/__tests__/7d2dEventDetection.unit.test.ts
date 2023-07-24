@@ -135,4 +135,33 @@ describe('7d2d event detection', () => {
       epicOnlineServicesId: undefined,
     });
   });
+
+  it('[ChatMessage] Can deduplicate messages when a mod handles it', async () => {
+    sandbox.stub(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').resolves(
+      await new IGamePlayer().construct({
+        name: 'Catalysm',
+        ping: undefined,
+        gameId: '0002b5d970954287afdcb5dc35af0424',
+        steamId: '76561198028175941',
+      })
+    );
+
+    const emitter = new SevenDaysToDieEmitter(await mockSdtdConnectionInfo);
+
+    await emitter.parseMessage({
+      // eslint-disable-next-line quotes
+      msg: `Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): 'Catalysm':&ping`,
+    });
+
+    await emitter.parseMessage({
+      // eslint-disable-next-line quotes
+      msg: `Chat handled by mod '1CSMM_Patrons': Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): 'Catalysm': &ping`,
+    });
+
+    expect(emitStub).to.have.been.calledThrice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+    expect(emitStub.getCalls()[2].args[0]).to.equal(GameEvents.LOG_LINE);
+  });
 });

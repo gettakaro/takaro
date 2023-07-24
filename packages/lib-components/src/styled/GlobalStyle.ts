@@ -34,6 +34,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     line-height: 1.5;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
+    font-size: ${({ theme }) => theme.fontSize.medium};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
@@ -48,7 +49,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend{
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
-    font-size: ${({ theme }) => theme.fontSize.medium};
     margin: 0;
     padding: 0;
     box-sizing: border-box;

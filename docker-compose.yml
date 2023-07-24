@@ -40,6 +40,7 @@ services:
       - ./packages/lib-apiclient:/app/packages/lib-apiclient
       - ./packages/lib-auth:/app/packages/lib-auth
       - ./packages/lib-config:/app/packages/lib-config
+      - ./packages/lib-aws:/app/packages/lib-aws
       - ./packages/lib-db:/app/packages/lib-db
       - ./packages/lib-function-helpers:/app/packages/lib-function-helpers
       - ./packages/lib-gameserver:/app/packages/lib-gameserver
@@ -80,6 +81,7 @@ services:
       - ./packages/lib-email:/app/packages/lib-email
       - ./packages/lib-components:/app/packages/lib-components
       - ./packages/lib-config:/app/packages/lib-config
+      - ./packages/lib-aws:/app/packages/lib-aws
       - ./packages/lib-db:/app/packages/lib-db
       - ./packages/lib-function-helpers:/app/packages/lib-function-helpers
       - ./packages/lib-gameserver:/app/packages/lib-gameserver
@@ -96,7 +98,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
-      NODE_OPTIONS: "--loader ts-node/esm"
+      NODE_OPTIONS: '--loader ts-node/esm'
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
 
@@ -143,7 +145,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
-      NODE_OPTIONS: "--loader ts-node/esm"
+      NODE_OPTIONS: '--loader ts-node/esm'
       POSTGRES_HOST: postgresql
 
   e2e:
@@ -242,9 +244,6 @@ services:
       - '4437:4437'
     volumes:
       - ./containers/mailslurper/config.json:/go/src/github.com/mailslurper/mailslurper/cmd/mailslurper/config.json
-
-volumes:
-  pgadmin:
 
 networks:
   default:

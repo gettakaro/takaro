@@ -1,21 +1,12 @@
 import { FC, useEffect, useMemo } from 'react';
-import {
-  FileTabs,
-  SandpackStack,
-  SandpackThemeProvider,
-  useActiveCode,
-  useSandpack,
-} from '@codesandbox/sandpack-react';
+import { SandpackStack, SandpackThemeProvider, useActiveCode, useSandpack } from '@codesandbox/sandpack-react';
 import MonacoEditor, { useMonaco } from '@monaco-editor/react';
 import { useModule } from 'hooks/useModule';
-import { useDebounce, styled } from '@takaro/lib-components';
+import { useDebounce } from '@takaro/lib-components';
+import { FileTabs } from './FileTabs';
 import { handleCustomTypes } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
-
-const StyledFileTabs = styled(FileTabs)`
-  border-bottom: 0px;
-`;
 
 export type EditorProps = {
   readOnly?: boolean;
@@ -42,28 +33,18 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   }, [monaco]);
 
   useEffect(() => {
-    if (
-      !readOnly &&
-      debouncedCode !== '' &&
-      moduleData.fileMap[sandpack.activeFile]
-    ) {
+    if (!readOnly && debouncedCode !== '' && moduleData.fileMap[sandpack.activeFile]) {
       updateFunction({
         functionId: moduleData.fileMap[sandpack.activeFile].functionId,
         fn: { code: debouncedCode },
       });
     }
-  }, [
-    debouncedCode,
-    sandpack.activeFile,
-    moduleData.fileMap,
-    updateFunction,
-    readOnly,
-  ]);
+  }, [debouncedCode]);
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
-        <StyledFileTabs closableTabs />
+        <FileTabs closableTabs />
         <MonacoEditor
           width="100%"
           height="100%"
@@ -80,9 +61,9 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             contextmenu: false,
             'semanticHighlighting.enabled': true,
             readOnly,
-            fontSize: 12,
-            fontFamily: 'Fira Code',
+            fontSize: 14,
             lineHeight: 22,
+            fontFamily: 'Fira Code',
             fontWeight: '400',
             fontLigatures: false,
           }}

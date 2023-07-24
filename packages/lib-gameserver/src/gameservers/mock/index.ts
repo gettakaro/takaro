@@ -14,6 +14,7 @@ import { MockEmitter } from './emitter.js';
 import { Socket, io } from 'socket.io-client';
 import assert from 'assert';
 import { MockConnectionInfo } from './connectionInfo.js';
+import { Settings } from '@takaro/apiclient';
 
 @traceableClass('game:mock')
 export class Mock implements IGameServer {
@@ -22,7 +23,7 @@ export class Mock implements IGameServer {
   emitter: MockEmitter;
   io: Socket;
 
-  constructor(config: MockConnectionInfo) {
+  constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
     this.io = io(this.connectionInfo.host);
     this.emitter = new MockEmitter(this.connectionInfo, this.io);

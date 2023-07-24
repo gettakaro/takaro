@@ -26,6 +26,7 @@ export const validationSchema = z
         adminUser: z.string().nonempty('Admin user cannot be empty'),
         adminToken: z.string().nonempty('Admin token cannot be empty'),
         useTls: z.boolean(),
+        useCPM: z.boolean(),
       }),
     }),
 

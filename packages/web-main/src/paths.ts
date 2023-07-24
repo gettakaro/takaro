@@ -19,7 +19,7 @@ export const PATHS = {
 
   gameServers: {
     overview: () => '/servers',
-    create: () => `/servers/create`,
+    create: () => '/servers/create',
     update: (serverId: string) => `/servers/update/${serverId}`,
   },
 
@@ -35,7 +35,7 @@ export const PATHS = {
 
   modules: {
     module: (moduleId: string) => `/modules/${moduleId}`,
-    create: () => `/modules/create`,
+    create: () => '/modules/create',
     update: (moduleId: string) => `/modules/update/${moduleId}`,
   },
 
