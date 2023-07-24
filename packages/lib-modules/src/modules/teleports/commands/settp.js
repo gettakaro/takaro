@@ -22,9 +22,7 @@ async function main() {
   });
 
   if (existingVariable.data.data.length > 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`,
-    });
+    await data.player.pm(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);
     return;
   }
 
@@ -40,14 +38,9 @@ async function main() {
   });
 
   if (allPlayerTeleports.data.data.length >= mod.userConfig.maxTeleports) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(
+      `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`
+    );
     return;
   }
 
@@ -64,14 +57,7 @@ async function main() {
     playerId: player.playerId,
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleport ${args.tp} set.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleport ${args.tp} set.`);
 }
 
 await main();
