@@ -62,7 +62,7 @@ You can combine filters, searches, and pagination in a single query. Here is an 
 
 {
   "filters": {
-    "email": "example.com"
+    "email": "john@example.com"
   },
   "search": {
     "name": "John"
