@@ -10,7 +10,7 @@ import {
   AiOutlineUser as ProfileIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineDelete as DeleteIcon,
-  AiOutlineMenu as MenuIcon,
+  AiOutlineRight as ActionIcon,
 } from 'react-icons/ai';
 
 const TableContainer = styled.div`
@@ -106,7 +106,7 @@ const Players: FC = () => {
       cell: (info) => (
         <Dropdown>
           <Dropdown.Trigger asChild>
-            <IconButton icon={<MenuIcon />} ariaLabel="player-actions" />
+            <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group divider>
