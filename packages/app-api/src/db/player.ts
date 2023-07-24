@@ -69,6 +69,14 @@ export class PlayerModel extends TakaroModel {
           to: `${ROLE_TABLE_NAME}.id`,
         },
       },
+      roleAssignments: {
+        relation: Model.HasManyRelation,
+        modelClass: RoleOnPlayerModel,
+        join: {
+          from: `${PLAYER_TABLE_NAME}.id`,
+          to: `${ROLE_ON_PLAYER_TABLE_NAME}.playerId`,
+        },
+      },
       playerOnGameServers: {
         relation: Model.HasManyRelation,
         modelClass: PlayerOnGameServerModel,
@@ -95,7 +103,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const { query } = await this.getModel();
     const result = await new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
       ...filters,
-      extend: ['roles.permissions'],
+      extend: ['roleAssignments.role.permissions'],
     }).build(query);
     return {
       total: result.total,
@@ -105,7 +113,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
   async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphFetched('roles.permissions');
+    const data = await query.findById(id).withGraphFetched('roleAssignments.role.permissions');
 
     if (!data) {
       throw new errors.NotFoundError();

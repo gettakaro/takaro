@@ -9,6 +9,7 @@ import {
   IsString,
   ValidateNested,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -79,6 +80,22 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @Type(() => PermissionOutputDTO)
   @ValidateNested({ each: true })
   permissions: PermissionOutputDTO[];
+}
+
+export class RoleAssignmentOutputDTO extends TakaroModelDTO<RoleAssignmentOutputDTO> {
+  @IsUUID()
+  playerId: string;
+
+  @IsUUID()
+  roleId: string;
+
+  @IsUUID()
+  @IsOptional()
+  gameServerId: string;
+
+  @Type(() => RoleOutputDTO)
+  @ValidateNested()
+  role: RoleOutputDTO;
 }
 
 @traceableClass('service:role')

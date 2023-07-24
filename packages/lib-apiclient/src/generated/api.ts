@@ -4033,10 +4033,10 @@ export interface PlayerOutputDTOAPI {
 export interface PlayerOutputWithRolesDTO {
     /**
      * 
-     * @type {Array<RoleOutputDTO>}
+     * @type {Array<RoleAssignmentOutputDTO>}
      * @memberof PlayerOutputWithRolesDTO
      */
-    'roles': Array<RoleOutputDTO>;
+    'roleAssignments': Array<RoleAssignmentOutputDTO>;
     /**
      * 
      * @type {string}
@@ -4218,6 +4218,55 @@ export interface RedirectQs {
      * @memberof RedirectQs
      */
     'redirect': string;
+}
+/**
+ * 
+ * @export
+ * @interface RoleAssignmentOutputDTO
+ */
+export interface RoleAssignmentOutputDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'playerId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'roleId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'gameServerId'?: string;
+    /**
+     * 
+     * @type {RoleOutputDTO}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'role': RoleOutputDTO;
+    /**
+     * 
+     * @type {string}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof RoleAssignmentOutputDTO
+     */
+    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 

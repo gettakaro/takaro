@@ -9,7 +9,7 @@ import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './Player
 import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
-import { RoleOutputDTO } from './RoleService.js';
+import { RoleAssignmentOutputDTO } from './RoleService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -32,9 +32,9 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
 }
 
 export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
-  @Type(() => RoleOutputDTO)
+  @Type(() => RoleAssignmentOutputDTO)
   @ValidateNested({ each: true })
-  roles: RoleOutputDTO[];
+  roleAssignments: RoleAssignmentOutputDTO[];
 }
 
 export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
