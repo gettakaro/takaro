@@ -35,7 +35,7 @@ export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>
       open: 0,
       close: 100,
     },
-    initial: ({ _side }) => ({
+    initial: () => ({
       opacity: 0,
       open: { opacity: 1 },
       close: { opacity: 0 },
