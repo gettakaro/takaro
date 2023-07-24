@@ -5,14 +5,10 @@ import {
   AiOutlineSortAscending as SortAscendingIcon,
   AiOutlineSortDescending as SortDescendingIcon,
   AiOutlineEyeInvisible as HideFieldIcon,
-  AiOutlineFilter as FilterIcon,
   AiOutlinePushpin as PinIcon,
-  AiOutlineSearch as SearchIcon,
   AiOutlineDelete as DeleteIcon,
 } from 'react-icons/ai';
 import { Dropdown, IconButton, Tooltip } from '../../../../../components';
-import { useTableContext } from '../../Context';
-import { getTokenChars, TokenType } from '../FilterAndSearchField/tokenizer';
 
 interface ColumnSettingsProps<DataType extends object> {
   header: Header<DataType, unknown>;
@@ -20,7 +16,6 @@ interface ColumnSettingsProps<DataType extends object> {
 }
 
 export function ColumnSettings<DataType extends object>({ header, table }: ColumnSettingsProps<DataType>) {
-  const { setSearchAndFilterInputValue, SearchAndFilterInputRef } = useTableContext();
   const toggleSorting = (desc: boolean) => {
     table.setSorting(() => [{ id: header.column.id, desc }]);
   };
@@ -118,26 +113,6 @@ export function ColumnSettings<DataType extends object>({ header, table }: Colum
               disabled={!header.column.getCanSort()}
               active={table.getState().sorting.some((sort) => sort.id === header.column.id && sort.desc)}
               label="Sort descending (Z..A)"
-            />
-          </Dropdown.Menu.Group>
-          <Dropdown.Menu.Group divider>
-            <Dropdown.Menu.Item
-              icon={<FilterIcon />}
-              label="Filter by values"
-              disabled={!header.column.getCanFilter()}
-              onClick={() => {
-                setSearchAndFilterInputValue(header.column.id + getTokenChars(TokenType.EXACT_COLUMN));
-                SearchAndFilterInputRef.current?.focus();
-              }}
-            />
-            <Dropdown.Menu.Item
-              icon={<SearchIcon />}
-              label="Search by values"
-              disabled={!header.column.getCanFilter()}
-              onClick={() => {
-                setSearchAndFilterInputValue(header.column.id + getTokenChars(TokenType.SEARCH_COLUMN));
-                SearchAndFilterInputRef.current?.focus();
-              }}
             />
           </Dropdown.Menu.Group>
           <Dropdown.Menu.Item
