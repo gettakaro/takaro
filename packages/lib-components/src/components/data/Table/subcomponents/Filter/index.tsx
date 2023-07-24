@@ -27,7 +27,10 @@ interface FilterProps<DataType extends object> {
 export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const columnIds = table.getAllLeafColumns().map((column) => column.id);
+  const columnIds = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanFilter() && column.getCanGlobalFilter())
+    .map((column) => column.id);
 
   const validationSchema = useMemo(() => {
     return z.object({

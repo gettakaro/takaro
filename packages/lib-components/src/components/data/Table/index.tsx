@@ -155,12 +155,12 @@ export function Table<DataType extends object>({
           orientation="horizontal"
           defaultValue={density}
         >
-          <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
-            <TightDensityIcon size={20} />
-          </ToggleButtonGroup.Button>
-
           <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
             <RelaxedDensityIcon size={20} />
+          </ToggleButtonGroup.Button>
+
+          <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+            <TightDensityIcon size={20} />
           </ToggleButtonGroup.Button>
         </ToggleButtonGroup>
       </Header>
@@ -194,7 +194,7 @@ export function Table<DataType extends object>({
           <tfoot>
             <tr>
               {pagination && (
-                <td colSpan={columns.length + 1}>
+                <td colSpan={columns.length}>
                   <PaginationContainer>
                     <span>{pagination.total} results</span>
                     <Pagination

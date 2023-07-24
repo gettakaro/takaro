@@ -19,7 +19,10 @@ export const StyledTable = styled.table<{ density: Density }>`
   background-color: ${({ theme }) => theme.colors.background};
   overflow: hidden;
 
-  &,td,th {
+  /* NOTE: The actual table heading style is in ColumnHeader's styles */
+  &,
+  td,
+  th {
     border-collapse: collapse;
   }
 
@@ -27,10 +30,10 @@ export const StyledTable = styled.table<{ density: Density }>`
   td {
     padding: ${({ theme, density }) => {
       if (density === 'tight') {
-        return `${theme.spacing['0_75']} ${theme.spacing['0_5']}`;
+        return `${theme.spacing['0_5']} 0`;
       }
-      return `${theme.spacing['2']} ${theme.spacing['1_5']};`;
-    }}
+      return `${theme.spacing['2_5']} 0`;
+    }};
 
     &:first-of-type {
       border-left: 1px solid transparent;
@@ -45,19 +48,12 @@ export const StyledTable = styled.table<{ density: Density }>`
   }
 
   th {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
-
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[2]}`};
-
-    &:last-of-type {
-      border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
-      border-bottom-right-radius: ${({ theme }) => theme.borderRadius.medium};
-    }
   }
 
   tfoot {
     tr {
       td {
+        border-bottom: none;
         padding-top: ${({ theme }) => theme.spacing[1]};
       }
     }
