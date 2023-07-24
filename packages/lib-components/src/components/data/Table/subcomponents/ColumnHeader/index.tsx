@@ -139,6 +139,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
           isResizing={header.column.getIsResizing()}
+          onDoubleClick={() => header.column.resetSize()}
         ></ResizeHandle>
       )}
     </Container>
