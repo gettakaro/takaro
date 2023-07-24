@@ -1,7 +1,8 @@
+import { GlobalGameServerSettings } from 'pages/settings/GlobalGameServerSettings';
 import { FC } from 'react';
 
 const GameServerSettings: FC = () => {
-  return <div>game server settings</div>;
+  return <GlobalGameServerSettings />;
 };
 
 export default GameServerSettings;
