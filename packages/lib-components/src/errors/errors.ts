@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import { BaseError } from './base';
 import * as Sentry from '@sentry/react';
+import { ValidationError } from 'class-validator';
 
 export function defineErrorType(apiError: AxiosError<any>) {
   const error = apiError.response?.data.meta.error;
@@ -22,8 +23,31 @@ export function defineErrorType(apiError: AxiosError<any>) {
 }
 
 export class ResponseValidationError extends BaseError {
-  constructor(message: string, public validationErrors: string[]) {
+  constructor(message: string, public validationErrors: ValidationError[]) {
     super(message, { meta: { validationErrors } });
+  }
+
+  parseValidationError(): string[] {
+    const errorMessages: string[] = [];
+    function extractErrors(validationError: ValidationError) {
+      if (validationError.constraints) {
+        for (const constraint in validationError.constraints) {
+          errorMessages.push(validationError.constraints[constraint]);
+        }
+      }
+
+      if (validationError.children) {
+        for (const child of validationError.children) {
+          extractErrors(child);
+        }
+      }
+    }
+
+    for (const detail of this.validationErrors) {
+      extractErrors(detail);
+    }
+
+    return errorMessages;
   }
 }
 
