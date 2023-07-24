@@ -26,7 +26,6 @@ import { ColumnHeader } from './subcomponents/ColumnHeader';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
-import { FilterAndSearchField } from './subcomponents/FilterAndSearchField';
 import { TableContext } from './Context';
 import { useTable } from './useTable';
 
@@ -153,8 +152,6 @@ export function Table<DataType extends object>({
       <TableContext.Provider value={manualTableState}>
         <Header>
           {/* search */}
-          <FilterAndSearchField data={table.getAllLeafColumns().map((col) => col.id)} table={table} />
-
           <ToggleButtonGroup
             onChange={(val) => setDensity(val as Density)}
             exclusive={true}
