@@ -175,7 +175,12 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Apply nf_conntrack_tcp_be_liberal kernel change
+        run: |
+          sudo sh -c "echo 1 > /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal"    
+            
+      - name: Checkout code      
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
