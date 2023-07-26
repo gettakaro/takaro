@@ -96,16 +96,12 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
       offset(5),
       size({
         apply({ availableHeight, elements, availableWidth }) {
-          elements.floating.style.width = 'fit-content';
-
-          // measure the width
-          const contentWidth = elements.floating.offsetWidth;
-          const width = Math.min(contentWidth, availableWidth);
+          const refWidth = elements.reference.getBoundingClientRect().width;
 
           Object.assign(elements.floating.style, {
             // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
             // fit-content isn't the perfect solution either, because if there is no space available it might render outside the viewport.
-            width: width,
+            width: availableWidth < refWidth ? `${availableWidth}px` : `${refWidth}px`,
             maxHeight: `${Math.max(150, availableHeight)}px`,
           });
         },
