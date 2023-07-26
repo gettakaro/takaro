@@ -39,6 +39,15 @@ const StyledLink = styled(Link)`
 //   }
 // `;
 
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -46,6 +55,7 @@ const Container = styled.div`
   justify-content: center;
 
   height: 100vh;
+  width: 100%;
 
   max-width: 600px;
   text-align: center;
@@ -96,7 +106,6 @@ const LogIn: FC = () => {
         setCsrfToken(csrfAttr.value);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginFlow]);
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
@@ -134,7 +143,7 @@ const LogIn: FC = () => {
   };
 
   return (
-    <>
+    <Wrapper>
       <Helmet>
         <title>Log in - Takaro </title>
       </Helmet>
@@ -173,7 +182,7 @@ const LogIn: FC = () => {
           />
         </form>
       </Container>
-    </>
+    </Wrapper>
   );
 };
 
