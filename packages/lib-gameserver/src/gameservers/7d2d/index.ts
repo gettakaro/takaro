@@ -91,8 +91,10 @@ export class SevenDaysToDie implements IGameServer {
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
-      await this.apiClient.getStats();
-      await this.executeConsoleCommand('version');
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 5000));
+
+      await Promise.race([this.apiClient.getStats(), timeout]);
+      await Promise.race([this.executeConsoleCommand('version'), timeout]);
     } catch (error) {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
@@ -108,6 +110,8 @@ export class SevenDaysToDie implements IGameServer {
             reason = 'Unauthorized, please check that the admin user and token are correct';
           }
         }
+      } else if (error instanceof Object && 'message' in error && error.message === 'Request timed out') {
+        reason = 'Request timed out, the server did not respond in the allocated time';
       }
 
       return new TestReachabilityOutputDTO().construct({
