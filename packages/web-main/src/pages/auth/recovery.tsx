@@ -1,15 +1,15 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
-import { RecoveryFlow } from '@ory/client';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-
-import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
+import { styled, Loading } from '@takaro/lib-components';
+import { UserAuthCard } from '@ory/elements';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
   height: 100vh;
@@ -22,33 +22,83 @@ const Container = styled.div`
 `;
 
 export const Recovery: FC = () => {
-  const { oryClient } = useAuth();
-  const [searchParams] = useSearchParams();
-  const [recoveryFlow, setRecoveryFlow] = useState<RecoveryFlow | null>(null);
+  const [flow, setFlow] = useState<RecoveryFlow | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { oryClient, oryError } = useAuth();
 
-  
+  const navigate = useNavigate();
+
+  const getFlow = useCallback(
+    (flowId: string) =>
+      oryClient
+        .getRecoveryFlow({ id: flowId })
+        .then(({ data: flow }) => setFlow(flow))
+        .catch(sdkErrorHandler),
+    []
+  );
+
+  // initialize the sdkError for generic handling of errors
+  const sdkErrorHandler = oryError(getFlow, setFlow, '/recovery');
+
+  // create a new recovery flow
+  const createFlow = () => {
+    oryClient
+      .createBrowserRecoveryFlow()
+      // flow contains the form fields, error messages and csrf token
+      .then(({ data: flow }) => {
+        // Update URI query params to include flow id
+        setSearchParams({ ['flow']: flow.id });
+        // Set the flow data
+        setFlow(flow);
+      })
+      .catch(sdkErrorHandler);
+  };
+
+  const submitFlow = (body: UpdateRecoveryFlowBody) => {
+    // something unexpected went wrong and the flow was not set
+    if (!flow) return navigate('/login', { replace: true });
+
+    oryClient
+      .updateRecoveryFlow({ flow: flow.id, updateRecoveryFlowBody: body })
+      .then(({ data: flow }) => {
+        // Form submission was successful, show the message to the user!
+        setFlow(flow);
+      })
+      .catch(sdkErrorHandler);
+  };
+
   useEffect(() => {
+    // we might redirect to this page after the flow is initialized, so we check for the flowId in the URL
     const flowId = searchParams.get('flow');
-    console.log(flowId)
-
-    if(!flowId) {
+    console.log('flowId', flowId);
+    // the flow already exists
+    if (flowId) {
+      getFlow(flowId).catch(createFlow); // if for some reason the flow has expired, we need to get a new one
       return;
     }
+    // we assume there was no flow, so we create a new one
+    createFlow();
+  }, []);
 
-    oryClient.getRecoveryFlow({id: flowId})
-    .then((flowRes) => {
-      setRecoveryFlow(flowRes.data);
-    })
-  }, [searchParams, oryClient]);
+  if (!flow) return <Loading />;
 
   return (
     <>
       <Helmet>
-        <title>Recovery - Takaro </title>
+        <title>Profile - Takaro</title>
       </Helmet>
       <Container>
-        <Company size="huge" />
-        </Container>
+        <UserAuthCard
+          title="Recovery"
+          flowType={'recovery'}
+          // the flow is always required since it contains the UI form elements, UI error messages and csrf token
+          flow={flow}
+          // the recovery form should allow users to navigate to the login page
+          additionalProps={{ loginURL: '/login' }}
+          // submit the form data to Ory
+          onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
+        />
+      </Container>
     </>
   );
 };

@@ -1,11 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
-import { SettingsFlow } from '@ory/client';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-import { filterNodesByGroups } from '@ory/integrations/ui';
-import { styled, Loading, mapUINode } from '@takaro/lib-components';
-import { useForm } from 'react-hook-form';
+import { styled, Loading } from '@takaro/lib-components';
+import { gridStyle, NodeMessages, UserSettingsCard, UserSettingsFlowType } from '@ory/elements';
 
 const Container = styled.div`
   display: flex;
@@ -23,48 +22,67 @@ const Container = styled.div`
 `;
 
 export const AuthSettings: FC = () => {
-  const { oryClient } = useAuth();
-  const [searchParams] = useSearchParams();
+  const { oryClient, oryError } = useAuth();
   const [flow, setFlow] = useState<SettingsFlow | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { control, handleSubmit } = useForm();
+  const navigate = useNavigate();
+
+  // Get the flow based on the flowId in the URL (.e.g redirect to this page after flow initialized)
+  const getFlow = useCallback(
+    (flowId: string) =>
+      oryClient
+        // the flow data contains the form fields, error messages and csrf token
+        .getSettingsFlow({ id: flowId })
+        .then(({ data: flow }) => setFlow(flow))
+        .catch(sdkErrorHandler),
+    []
+  );
+
+  // initialize the sdkError for generic handling of errors
+  const sdkErrorHandler = oryError(getFlow, setFlow, '/settings', true);
+
+  const createFlow = () => {
+    oryClient
+      // create a new settings flow
+      // the flow contains the form fields, error messages and csrf token
+      // depending on the Ory Network project settings, the form fields returned may vary
+      .createBrowserSettingsFlow()
+      .then(({ data: flow }) => {
+        // Update URI query params to include flow id
+        setSearchParams({ ['flow']: flow.id });
+        // Set the flow data
+        setFlow(flow);
+      })
+      .catch(sdkErrorHandler);
+  };
+
+  // submit any of the settings form data to Ory
+  const onSubmit = (body: UpdateSettingsFlowBody) => {
+    // something unexpected went wrong and the flow was not set
+    if (!flow) return navigate('/settings', { replace: true });
+
+    oryClient
+      // submit the form data the user provided to Ory
+      .updateSettingsFlow({ flow: flow.id, updateSettingsFlowBody: body })
+      .then(({ data: flow }) => {
+        setFlow(flow);
+      })
+      .catch(sdkErrorHandler);
+  };
 
   useEffect(() => {
+    // we might redirect to this page after the flow is initialized, so we check for the flowId in the URL
     const flowId = searchParams.get('flow');
-
-    try {
-      const createFlow = async () => {
-        setFlow((await oryClient.createBrowserSettingsFlow()).data);
-      };
-
-      if (!flowId) {
-        createFlow();
-        return;
-      }
-
-      oryClient.getSettingsFlow({ id: flowId }).then((flowRes) => {
-        setFlow(flowRes.data);
-      });
-    } catch (e) {
-      // failed to create flow error handling
-      console.log(e);
+    // the flow already exists
+    if (flowId) {
+      getFlow(flowId).catch(createFlow); // if for some reason the flow has expired, we need to get a new one
+      return;
     }
-  }, [oryClient, searchParams]);
+    createFlow();
+  }, []);
 
-  if (!flow) {
-    return <Loading />;
-  }
-
-  const onSubmit = async (formData: unknown) => {
-    // TODO:
-    /*oryClient.updateSettingsFlow({
-      flow: flow.id,
-      updateSettingsFlowBody: {
-        flow: flow.id,
-      },
-    });
-  */
-  };
+  if (!flow) return <Loading />;
 
   return (
     <>
@@ -72,15 +90,25 @@ export const AuthSettings: FC = () => {
         <title>Profile - Takaro</title>
       </Helmet>
       <Container>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {filterNodesByGroups({
-            nodes: flow.ui.nodes,
-            // we will also map default fields here such as csrf_token
-            // this only maps the `password` method
-            // other methods can also be mapped such as `oidc` or `webauthn`
-            groups: ['profile', 'password'],
-          }).map((node, idx) => mapUINode(node, idx, control))}
-        </form>
+        <div className={gridStyle({ gap: 16 })}>
+          <NodeMessages uiMessages={flow.ui.messages} />
+          {/* here we simply map all of the settings flows we could have. These flows won't render if they aren't enabled inside your Ory Network project */}
+          {(['profile', 'password', 'totp', 'webauthn', 'lookupSecret', 'oidc'] as UserSettingsFlowType[]).map(
+            (flowType: UserSettingsFlowType, index) => (
+              // here we render the settings flow using Ory Elements
+              <UserSettingsCard
+                key={index}
+                // we always need to pass the component the flow since it contains the form fields, error messages and csrf token
+                flow={flow}
+                flowType={flowType}
+                // include scripts for webauthn support
+                includeScripts={true}
+                // submit the form data the user provides to Ory
+                onSubmit={({ body }) => onSubmit(body)}
+              />
+            )
+          )}
+        </div>
       </Container>
     </>
   );

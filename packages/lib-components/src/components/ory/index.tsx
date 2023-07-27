@@ -37,7 +37,7 @@ export const mapUINode = (node: UiNode, key: number, control: Control<FieldValue
     return <NodeScript node={node} attributes={attrs} />;
   }
 
-  // these are not used by ori atm
+  // these are not used by ory atm
   // https://www.ory.sh/docs/kratos/concepts/ui-user-interface#ui-anchor-nodes
   if (isUiNodeAnchorAttributes(node.attributes)) {
   }
@@ -46,6 +46,7 @@ export const mapUINode = (node: UiNode, key: number, control: Control<FieldValue
   if (isUiNodeInputAttributes(node.attributes)) {
     const attrs = node.attributes as UiNodeInputAttributes;
     const nodeType = attrs.type;
+    const messages = node.messages.map((m) => m.text).join(' ');
     const label = getNodeLabel(node);
 
     switch (nodeType) {
@@ -67,6 +68,7 @@ export const mapUINode = (node: UiNode, key: number, control: Control<FieldValue
             type="email"
             required={attrs.required}
             label={label}
+            description={messages}
           />
         );
       case 'password':
@@ -78,6 +80,7 @@ export const mapUINode = (node: UiNode, key: number, control: Control<FieldValue
             type="password"
             required={attrs.required}
             label={label}
+            description={messages}
           />
         );
       case 'checkbox':
@@ -88,6 +91,7 @@ export const mapUINode = (node: UiNode, key: number, control: Control<FieldValue
             control={control}
             name={attrs.name}
             required={attrs.required}
+            description={messages}
           />
         );
       case 'hidden':
