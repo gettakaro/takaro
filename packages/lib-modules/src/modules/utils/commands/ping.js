@@ -2,16 +2,9 @@ import { getTakaro, getData } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const takaro = await getTakaro(data);
-
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: 'Pong!',
-    opts: {
-      recipient: {
-        gameId: data.player.gameId,
-      },
-    },
-  });
+  await data.player.pm('Pong!');
 }
 
 await main();

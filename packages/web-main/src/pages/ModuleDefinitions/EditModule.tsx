@@ -105,7 +105,8 @@ const EditModuleForm: FC<Props> = ({ mod }) => {
       setErrorMessage('A module with that name already exists.');
     }
     if (errorType instanceof errors.ResponseValidationError) {
-      // TODO: setup error messages for response validation errors
+      const msgs = errorType.parseValidationError();
+      setErrorMessage(msgs);
     }
     if (errorType instanceof errors.InternalServerError) {
       setErrorMessage(errorType.message);

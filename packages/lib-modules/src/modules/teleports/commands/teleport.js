@@ -39,14 +39,7 @@ async function main() {
   }
 
   if (teleports.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `Teleport ${args.tp} does not exist.`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(`Teleport ${args.tp} does not exist.`);
     return;
   }
 
@@ -79,14 +72,7 @@ async function main() {
     const diff = now.getTime() - lastExecutedTime.getTime();
 
     if (diff < timeout) {
-      await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-        message: 'You cannot teleport yet. Please wait before trying again.',
-        opts: {
-          recipient: {
-            gameId: player.gameId,
-          },
-        },
-      });
+      await data.player.pm('You cannot teleport yet. Please wait before trying again.');
       return;
     }
   }
@@ -99,14 +85,7 @@ async function main() {
     z: teleport.z,
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleported to ${teleport.name}.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleported to ${teleport.name}.`);
 
   await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {
     value: new Date().toISOString(),

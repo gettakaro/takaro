@@ -9,9 +9,7 @@ async function main() {
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   if (!mod.userConfig.allowPublicTeleports) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'Public teleports are disabled.',
-    });
+    await data.player.pm('Public teleports are disabled.');
     return;
   }
 
@@ -29,14 +27,7 @@ async function main() {
   const teleports = teleportRes.data.data;
 
   if (teleports.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
   }
 
   const teleportRecord = teleports[0];
@@ -49,14 +40,7 @@ async function main() {
     }),
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleport ${args.tp} is now public.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleport ${args.tp} is now public.`);
 }
 
 await main();

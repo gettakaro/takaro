@@ -52,7 +52,7 @@ export function ModulesList() {
     <div>
       {modules.map((mod, index) => (
         <div key={index}>
-          <h3>{mod.name}</h3>
+          <h3><u>{mod.name}</u></h3>
           <p>{mod.description}</p>
           <Commands commands={mod.commands} />
           <CronJobs cronJobs={mod.cronJobs} />
