@@ -2,7 +2,7 @@ name: Deploy docs to Pages
 
 on:
   push:
-    branches: ["main"]
+    #branches: ["main"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -43,6 +43,13 @@ jobs:
           command: ./scripts/dev-init.sh
 
       - run: npm -w packages/web-docs run export
+
+      - name: Generate API client docs
+        run: |
+          cd packages/lib-apiclient
+          npx typedoc src/main.ts
+          cd ../..
+          mv packages/lib-apiclient/docs packages/web-docs/build/apiclient
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
