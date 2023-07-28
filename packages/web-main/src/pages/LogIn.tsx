@@ -71,7 +71,7 @@ const LogIn: FC = () => {
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
-  const { logIn, createLoginFlow } = useAuth();
+  const { oryClient } = useAuth();
   const navigate = useNavigate();
 
   const validationSchema = useMemo(
@@ -82,6 +82,25 @@ const LogIn: FC = () => {
       }),
     []
   );
+
+  async function createLoginFlow() {
+    const res = await oryClient.createBrowserLoginFlow({
+      refresh: true,
+    });
+    return res.data;
+  }
+
+  async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
+    await oryClient.updateLoginFlow({
+      flow,
+      updateLoginFlowBody: {
+        csrf_token,
+        identifier: email,
+        password,
+        method: 'password',
+      },
+    });
+  }
 
   useEffect(() => {
     if (loginFlow) {
@@ -96,7 +115,6 @@ const LogIn: FC = () => {
         setCsrfToken(csrfAttr.value);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginFlow]);
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
