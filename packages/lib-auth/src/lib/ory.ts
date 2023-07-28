@@ -128,7 +128,6 @@ class Ory {
       metadata_public: {
         domainId,
       },
-
     };
 
     if (password) {
@@ -269,13 +268,12 @@ class Ory {
     const recoveryRes = await this.identityClient.createRecoveryLinkForIdentity({
       createRecoveryLinkForIdentityBody: {
         identity_id: id,
-        expires_in: '12h',
-      }
+        expires_in: '24h',
+      },
     });
 
     return recoveryRes.data;
   }
-
 }
 
 export const ory = new Ory();
