@@ -134,7 +134,7 @@ services:
         subtitle: "Dashboards!"
         url: "http://127.0.0.1:13007"
         target: "_blank"
-      - name: "Mailslurper"
+      - name: "Mailhog"
         icon: "fas fa-envelope"
         subtitle: "Mail server"
         url: "http://127.0.0.1:4436"

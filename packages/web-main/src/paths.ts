@@ -9,6 +9,7 @@ export const PATHS = {
   auth: {
     recovery: () => '/auth/recovery',
     profile: () => '/auth/profile',
+    verification: () => '/auth/verification',
   },
 
   settings: {

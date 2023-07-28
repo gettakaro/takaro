@@ -61,7 +61,7 @@ selfservice:
 
     verification:
       enabled: true
-      ui_url: http://127.0.0.1:13001/verification
+      ui_url: http://127.0.0.1:13001/auth/verification
       use: code
       after:
         default_browser_return_url: http://127.0.0.1:13001/
@@ -73,8 +73,12 @@ selfservice:
     login:
       ui_url: http://127.0.0.1:13001/login
       lifespan: 10m
+    #      after:
+    #        hooks:
+    #          - hook: require_verified_address
 
     registration:
+      enabled: false
       lifespan: 10m
       ui_url: http://127.0.0.1:13001/registration
       after:
@@ -83,7 +87,7 @@ selfservice:
             - hook: session
 
 log:
-  level: debug
+  level: trace
   format: text
   leak_sensitive_values: false
 
@@ -109,4 +113,6 @@ identity:
 
 courier:
   smtp:
-    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    connection_uri: "smtp://mailhog:1025/?disable_starttls=true"
+    from_address: noreply@takaro.io
+    from_name: Takaro

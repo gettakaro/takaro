@@ -23,6 +23,7 @@ import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
 import { Recovery } from 'pages/auth/recovery';
 import { AuthSettings } from 'pages/auth/profile';
+import { AuthVerification } from 'pages/auth/verification';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -52,6 +53,7 @@ export const Router: FC = () => (
       <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
         <Route element={<Dashboard />} path={PATHS.home()} />
         <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
+        <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
         <Route element={<SettingsFrame />}>
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.overview()} />
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
