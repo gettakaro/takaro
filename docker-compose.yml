@@ -254,7 +254,7 @@ services:
       # But keeping comment for 'documentation purposes'
       #  - 14000:1025
       # Web
-      - 4436:8025
+      - 8025:8025
     logging:
       driver: none
 

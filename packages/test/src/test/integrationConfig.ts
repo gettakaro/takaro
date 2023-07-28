@@ -13,6 +13,9 @@ interface IIntegrationTestConfig extends IBaseConfig {
   mockGameserver: {
     host: string;
   };
+  mailhog: {
+    url: string;
+  };
   overwriteSnapshots: boolean;
 }
 
@@ -67,6 +70,14 @@ const configSchema = {
       format: String,
       default: 'http://takaro:3002',
       env: 'MOCK_GAMESERVER_HOST',
+    },
+  },
+  mailhog: {
+    url: {
+      doc: 'The URL of the Mailhog server',
+      format: String,
+      default: 'http://mailhog:8025',
+      env: 'MAILHOG_URL',
     },
   },
   overwriteSnapshots: {

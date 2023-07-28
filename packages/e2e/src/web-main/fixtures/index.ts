@@ -1,6 +1,6 @@
 import playwright, { Page } from '@playwright/test';
 import { AdminClient, Client, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
-import { integrationConfig } from '@takaro/test';
+import { MailhogAPI, integrationConfig } from '@takaro/test';
 import humanId from 'human-id/dist/index.js';
 
 const { expect, test: base } = playwright;
@@ -27,7 +27,7 @@ export const getAdminClient = () => {
 };
 
 interface IFixtures {
-  takaro: { client: Client; adminClient: AdminClient };
+  takaro: { client: Client; adminClient: AdminClient; mailhog: MailhogAPI };
 }
 
 export const basicTest = base.extend<IFixtures>({
@@ -51,7 +51,11 @@ export const basicTest = base.extend<IFixtures>({
       });
       await client.login();
 
-      await use({ client, adminClient });
+      const mailhog = new MailhogAPI({
+        baseURL: integrationConfig.get('mailhog.url'),
+      });
+
+      await use({ client, adminClient, mailhog });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);
@@ -123,11 +127,15 @@ export const test = base.extend<IFixtures>({
         temporalValue: '* * * * *',
       });
 
+      const mailhog = new MailhogAPI({
+        baseURL: integrationConfig.get('mailhog.url'),
+      });
+
       /* TODO: should probably add more custom modules with complex config schemas
        * probably a good idea to add one for each type of config field
        */
 
-      await use({ client, adminClient });
+      await use({ client, adminClient, mailhog });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);
