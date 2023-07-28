@@ -43,7 +43,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   body{
     transition: background-color 0.2s linear;
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
     overflow: hidden;
   }
 

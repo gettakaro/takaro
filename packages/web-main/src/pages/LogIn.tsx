@@ -39,15 +39,6 @@ const StyledLink = styled(Link)`
 //   }
 // `;
 
-const Wrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.background};
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,7 +134,7 @@ const LogIn: FC = () => {
   };
 
   return (
-    <Wrapper>
+    <>
       <Helmet>
         <title>Log in - Takaro </title>
       </Helmet>
@@ -182,7 +173,7 @@ const LogIn: FC = () => {
           />
         </form>
       </Container>
-    </Wrapper>
+    </>
   );
 };
 

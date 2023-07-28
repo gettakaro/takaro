@@ -10,7 +10,6 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
   AiOutlineBook as DocumentationIcon,
-  // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
@@ -21,6 +20,7 @@ import { ErrorBoundary } from '@sentry/react';
 const Container = styled.div`
   display: flex;
   height: 100%;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 const ContentContainer = styled(motion.div)`
