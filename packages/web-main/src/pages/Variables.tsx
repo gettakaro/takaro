@@ -132,6 +132,10 @@ const Variables: FC = () => {
       <Helmet>
         <title>Variables - Takaro</title>
       </Helmet>
+      <p>
+        Variables allow you to store data in a key-value format, which is persisted between module runs. For example,
+        variables are the way that the teleports module stores the teleport locations.
+      </p>
 
       <TableContainer>
         <Table
