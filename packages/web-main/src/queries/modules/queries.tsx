@@ -103,9 +103,9 @@ export const useModuleCreate = () => {
   return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleCreateDTO>({
     mutationFn: async (moduleCreateDTO: ModuleCreateDTO) =>
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
-    onSuccess: (newModule: ModuleOutputDTO) => {
+    onSuccess: async (newModule: ModuleOutputDTO) => {
       // remove cache of list of modules
-      queryClient.invalidateQueries(moduleKeys.list());
+      await queryClient.invalidateQueries(moduleKeys.list());
 
       // Create detail cache of new module
       queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
@@ -125,13 +125,13 @@ export const useModuleRemove = () => {
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
     mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
-    onSuccess: (removedModule: IdUuidDTO) => {
+    onSuccess: async (removedModule: IdUuidDTO) => {
       try {
         // remove cache of list of modules
-        queryClient.invalidateQueries(moduleKeys.list());
+        await queryClient.invalidateQueries(moduleKeys.list());
 
         // Invalidate query of specific module
-        queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
+        await queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
       } catch (e) {
         Sentry.captureException(e);
       }
@@ -151,9 +151,9 @@ export const useModuleUpdate = () => {
   return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleUpdate>({
     mutationFn: async ({ id, moduleUpdate }) =>
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
-    onSuccess: (updatedModule: ModuleOutputDTO) => {
+    onSuccess: async (updatedModule: ModuleOutputDTO) => {
       try {
-        queryClient.invalidateQueries(moduleKeys.list());
+        await queryClient.invalidateQueries(moduleKeys.list());
 
         queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       } catch (e) {
@@ -185,10 +185,10 @@ export const useHookCreate = () => {
     mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
     onSuccess: async (newHook: HookOutputDTO) => {
       // invalidate list of hooks
-      queryClient.invalidateQueries(hookKeys.list());
+      await queryClient.invalidateQueries(hookKeys.list());
 
       // invalidate query of specific module which hook belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
 
       // add cache entry for new hook
       queryClient.setQueryData(hookKeys.detail(newHook.id), newHook);
@@ -209,10 +209,10 @@ export const useHookRemove = ({ moduleId }) => {
     mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
     onSuccess: async (removedHook: IdUuidDTO) => {
       // invalidate list of hooks
-      queryClient.invalidateQueries(hookKeys.list());
+      await queryClient.invalidateQueries(hookKeys.list());
 
       // Invalidate query of specific module which hook belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
       // remove cache of specific hook
       queryClient.removeQueries(hookKeys.detail(removedHook.id));
@@ -233,10 +233,10 @@ export const useHookUpdate = () => {
     mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
     onSuccess: async (updatedHook: HookOutputDTO) => {
       // invalidate list of hooks
-      queryClient.invalidateQueries(hookKeys.list());
+      await queryClient.invalidateQueries(hookKeys.list());
 
       // invalidate query of specific module which hook belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
 
       // update cache entry of specific hook
       queryClient.setQueryData(hookKeys.detail(updatedHook.id), updatedHook);
@@ -265,10 +265,10 @@ export const useCommandCreate = () => {
     mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
     onSuccess: async (newCommand: CommandOutputDTO) => {
       // invalidate list of commands
-      queryClient.invalidateQueries(commandKeys.list());
+      await queryClient.invalidateQueries(commandKeys.list());
 
       // invalidate query of specific module which command belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
 
       // add cache entry for new command
       queryClient.setQueryData(commandKeys.detail(newCommand.id), newCommand);
@@ -290,10 +290,10 @@ export const useCommandUpdate = () => {
       (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
     onSuccess: async (updatedCommand: CommandOutputDTO) => {
       // invalidate list of commands
-      queryClient.invalidateQueries(commandKeys.list());
+      await queryClient.invalidateQueries(commandKeys.list());
 
       // invalidate query of specific module which command belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
 
       // update cache entry of specific command
       queryClient.setQueryData(commandKeys.detail(updatedCommand.id), updatedCommand);
@@ -314,10 +314,10 @@ export const useCommandRemove = ({ moduleId }) => {
     mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
     onSuccess: async (removedCommand: IdUuidDTO) => {
       // invalidate list of commands
-      queryClient.invalidateQueries(commandKeys.list());
+      await queryClient.invalidateQueries(commandKeys.list());
 
       // Invalidate query of specific module which command belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
       // remove cache of specific command
       queryClient.removeQueries(commandKeys.detail(removedCommand.id));
@@ -347,10 +347,10 @@ export const useCronJobCreate = () => {
       (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
     onSuccess: async (newCronJob: CronJobOutputDTO) => {
       // invalidate list of cronjobs
-      queryClient.invalidateQueries(cronJobKeys.list());
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
       // invalidate query of specific module which cronjob belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
 
       // add cache entry for new cronjob
       queryClient.setQueryData(cronJobKeys.detail(newCronJob.id), newCronJob);
@@ -372,10 +372,10 @@ export const useCronJobUpdate = () => {
       (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
     onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
       // invalidate list of cronjob
-      queryClient.invalidateQueries(cronJobKeys.list());
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
       // invalidate query of specific module which cronjob belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
 
       // update cache entry of specific cronjob
       queryClient.setQueryData(cronJobKeys.detail(updatedCronJob.id), updatedCronJob);
@@ -396,10 +396,10 @@ export const useCronJobRemove = ({ moduleId }) => {
     mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
       (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
     onSuccess: async (removedCronJob: IdUuidDTO) => {
-      queryClient.invalidateQueries(cronJobKeys.list());
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
       // Invalidate query of specific module which cronjob belongs to
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
       // remove cache of specific cronjob
       queryClient.removeQueries(cronJobKeys.detail(removedCronJob.id));
@@ -428,7 +428,7 @@ export const useFunctionCreate = () => {
     mutationFn: async (fn) => (await apiClient.function.functionControllerCreate(fn)).data.data,
     onSuccess: async (newFn: FunctionOutputDTO) => {
       // invalidate list of functions
-      queryClient.invalidateQueries(functionKeys.list());
+      await queryClient.invalidateQueries(functionKeys.list());
 
       // add cache entry for new function
       queryClient.setQueryData(cronJobKeys.detail(newFn.id), newFn);
@@ -450,7 +450,7 @@ export const useFunctionUpdate = () => {
       (await apiClient.function.functionControllerUpdate(functionId, fn)).data.data,
     onSuccess: async (updatedFn: FunctionOutputDTO) => {
       // invalidate list of functions
-      queryClient.invalidateQueries(functionKeys.list());
+      await queryClient.invalidateQueries(functionKeys.list());
 
       // update cache entry of specific function
       queryClient.setQueryData(cronJobKeys.detail(updatedFn.id), updatedFn);
@@ -471,7 +471,7 @@ export const useFunctionRemove = () => {
     mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
     onSuccess: async (removedFn: IdUuidDTO) => {
       // invalidate list of functions
-      queryClient.invalidateQueries(functionKeys.list());
+      await queryClient.invalidateQueries(functionKeys.list());
 
       // remove cache of specific function
       queryClient.removeQueries(functionKeys.detail(removedFn.id));

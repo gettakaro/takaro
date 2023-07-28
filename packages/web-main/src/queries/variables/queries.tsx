@@ -1,6 +1,12 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { IdUuidDTO, VariableOutputArrayDTOAPI, VariableOutputDTO, VariableSearchInputDTO } from '@takaro/apiclient';
+import {
+  IdUuidDTO,
+  VariableOutputArrayDTOAPI,
+  VariableOutputDTO,
+  VariableSearchInputDTO,
+  VariableUpdateDTO,
+} from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
@@ -36,14 +42,56 @@ export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) 
   return { ...queryOpts, InfiniteScroll };
 };
 
+export const useVariableCreate = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation<VariableOutputDTO, AxiosError<VariableOutputDTO>, VariableOutputDTO>({
+    mutationFn: async (variable) => (await apiClient.variable.variableControllerCreate(variable)).data.data,
+    onSuccess: async (newVariable) => {
+      // update the list of variables to reflect the new variable
+      await queryClient.invalidateQueries(variableKeys.list());
+
+      // Create cache key for the new variable
+      queryClient.setQueryData(variableKeys.detail(newVariable.id), newVariable);
+    },
+  });
+};
+
+interface VariableUpdate {
+  variableId: string;
+  variableDetails: VariableUpdateDTO;
+}
+
+export const useVariableUpdate = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation<VariableOutputDTO, AxiosError<VariableOutputDTO>, VariableUpdate>({
+    mutationFn: async ({ variableId, variableDetails }) =>
+      (await apiClient.variable.variableControllerUpdate(variableId, variableDetails)).data.data,
+    onSuccess: async (updatedVar) => {
+      // renew the list of variables to reflect the new variable
+      await queryClient.invalidateQueries(variableKeys.list());
+
+      // update cache of updated variable
+      queryClient.setQueryData(variableKeys.detail(updatedVar.id), updatedVar);
+    },
+  });
+};
+
 export const useVariableDelete = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
   return useMutation<IdUuidDTO, AxiosError<VariableOutputDTO>, string>({
     mutationFn: async (variableId) => (await apiClient.variable.variableControllerDelete(variableId)).data.data,
-    onSuccess: async () => {
+    onSuccess: async (removedVar) => {
+      // update the list of variables to reflect the new variable
       await queryClient.invalidateQueries(variableKeys.list());
+
+      // Delete cache for the deleted variable
+      queryClient.removeQueries(variableKeys.detail(removedVar.id));
     },
   });
 };
