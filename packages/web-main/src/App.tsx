@@ -10,6 +10,8 @@ import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext
 import { EnvVars } from 'EnvVars';
 import { UserOutputDTO } from '@takaro/apiclient';
 
+import '@ory/elements/style.css';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
