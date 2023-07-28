@@ -21,10 +21,10 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
-  const { data, isLoading } = usePlayers({
+  const { data, isLoading, isPreviousData } = usePlayers({
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -125,7 +125,7 @@ const Players: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined) {
+  if (isLoading || data === undefined || isPreviousData) {
     return <Loading />;
   }
 
@@ -137,13 +137,14 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
+          id="players"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.pages[0].data}
+          rowSelection={rowSelection}
           pagination={{
-            ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            paginationState: pagination.paginationState,
+            setPaginationState: pagination.setPaginationState,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}

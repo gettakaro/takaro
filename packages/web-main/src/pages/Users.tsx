@@ -16,7 +16,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -33,6 +33,8 @@ const Users: FC = () => {
     search: {
       name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
       discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value as string,
+      updatedAt: columnSearch.columnSearchState.find((search) => search.id === 'updatedAt')?.value as string,
+      createdAt: columnSearch.columnSearchState.find((search) => search.id === 'createdAt')?.value as string,
     },
   });
 
@@ -42,36 +44,26 @@ const Users: FC = () => {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('email', {
       header: 'Email',
       id: 'email',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.display({
       header: 'Actions',
@@ -115,14 +107,14 @@ const Users: FC = () => {
 
       <TableContainer>
         <Table
+          id="users"
           columns={columnDefs}
-          defaultDensity="relaxed"
           data={data.pages[pagination.paginationState.pageIndex].data}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
+          rowSelection={rowSelection}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
           sorting={sorting}
