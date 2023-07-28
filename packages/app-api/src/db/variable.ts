@@ -3,6 +3,9 @@ import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { VariableCreateDTO, VariableOutputDTO, VariableUpdateDTO } from '../service/VariablesService.js';
 import { config } from '../config.js';
+import { GameServerModel } from './gameserver.js';
+import { ModuleModel } from './module.js';
+import { PlayerModel } from './player.js';
 
 export const VARIABLES_TABLE_NAME = 'variables';
 
@@ -14,6 +17,33 @@ export class VariablesModel extends TakaroModel {
   gameServerId?: string;
   playerId?: string;
   moduleId?: string;
+
+  static relationMappings = {
+    gameServer: {
+      relation: TakaroModel.BelongsToOneRelation,
+      modelClass: GameServerModel,
+      join: {
+        from: `${VARIABLES_TABLE_NAME}.gameServerId`,
+        to: `${GameServerModel.tableName}.id`,
+      },
+    },
+    player: {
+      relation: TakaroModel.BelongsToOneRelation,
+      modelClass: PlayerModel,
+      join: {
+        from: `${VARIABLES_TABLE_NAME}.playerId`,
+        to: `${PlayerModel.tableName}.id`,
+      },
+    },
+    module: {
+      relation: TakaroModel.BelongsToOneRelation,
+      modelClass: ModuleModel,
+      join: {
+        from: `${VARIABLES_TABLE_NAME}.moduleId`,
+        to: `${ModuleModel.tableName}.id`,
+      },
+    },
+  };
 }
 
 @traceableClass('repo:variable')
