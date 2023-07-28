@@ -180,7 +180,7 @@ const LogIn: FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
           <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
-          <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
+          <StyledLink to="/auth/recovery">Forgot your password?</StyledLink>
           {error && <FormError message={error} />}
           <Button
             icon={<Mail />}
