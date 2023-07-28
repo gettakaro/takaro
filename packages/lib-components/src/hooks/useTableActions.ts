@@ -1,19 +1,20 @@
-import { PaginationState, ColumnFiltersState, SortingState } from '@tanstack/react-table';
-import { AxiosResponse } from 'axios';
+import { PaginationState, ColumnFiltersState, SortingState, RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { APIOutput } from '@takaro/apiclient';
+import { InfiniteData } from '@tanstack/react-query';
 
 interface ExtendedAPIOutput<T> extends APIOutput {
   data: T[];
 }
 
-interface Paginated<T> {
-  rows: T[];
+export interface PageOptions {
+  // amount of pages items are spread across
   pageCount: number;
+  // total amount of items
   total: number;
 }
 
-export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
+export function useTableActions<T>(pageIndex = 0, pageSize = 9) {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex,
     pageSize,
@@ -21,28 +22,28 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
   const [columnFiltersState, setColumnFiltersState] = useState<ColumnFiltersState>([]);
   const [columnSearchState, setColumnSearchState] = useState<ColumnFiltersState>([]);
   const [sortingState, setSortingState] = useState<SortingState>([]);
+  const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
 
-  function paginate(response: AxiosResponse<ExtendedAPIOutput<T>>): Paginated<T> {
-    setPaginationState({
-      pageIndex: paginationState.pageIndex++,
-      pageSize: paginationState.pageSize,
-    });
+  function getPageOptions(data: InfiniteData<ExtendedAPIOutput<T>>): PageOptions {
+    const pageIndex = paginationState.pageIndex;
+    const limit = data.pages[pageIndex].meta.limit!;
+    const total = data.pages[pageIndex].meta.total!;
 
-    // non-null because this hook is only used when paginating.
-    // In that case the metadata will always be present.
+    const pageCount = data.pages[pageIndex].meta.total
+      ? Math.ceil(total / limit)
+      : Math.ceil(data.pages[pageIndex].data.length / limit);
+
     return {
-      rows: response.data.data,
-      pageCount: response.data.meta.total
-        ? Math.ceil(response.data.meta.total / response.data.meta.limit!)
-        : Math.ceil(response.data.data.length / response.data.meta.limit!),
-      total: response.data.meta.total!,
+      pageCount,
+      total,
     };
   }
 
   return {
-    pagination: { paginate, paginationState, setPaginationState },
+    pagination: { paginationState, setPaginationState, getPageOptions },
     columnFilters: { columnFiltersState, setColumnFiltersState },
     columnSearch: { columnSearchState, setColumnSearchState },
     sorting: { sortingState, setSortingState },
+    rowSelection: { rowSelectionState, setRowSelectionState },
   };
 }
