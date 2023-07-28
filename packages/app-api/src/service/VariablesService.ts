@@ -1,9 +1,13 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { TakaroService } from './Base.js';
 import { VariableRepo, VariablesModel } from '../db/variable.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
+import { GameServerOutputDTO } from './GameServerService.js';
+import { Type } from 'class-transformer';
+import { ModuleOutputDTO } from './ModuleService.js';
+import { PlayerOutputDTO } from './PlayerService.js';
 
 export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
   @IsString()
@@ -23,6 +27,21 @@ export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
   @IsOptional()
   @IsUUID()
   moduleId!: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GameServerOutputDTO)
+  gameServer?: GameServerOutputDTO;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ModuleOutputDTO)
+  module?: ModuleOutputDTO;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PlayerOutputDTO)
+  player?: PlayerOutputDTO;
 }
 
 export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
