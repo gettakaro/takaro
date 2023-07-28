@@ -84,7 +84,7 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
               append({
                 name: `Config field ${fields.length + 1}`,
                 type: InputType.string,
-                description: 'A helpful description',
+                description: '',
                 required: false,
               });
             }}

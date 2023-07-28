@@ -20,8 +20,7 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   justify-content: center;
   cursor: pointer;
   width: 3.2rem;
-  border: .1rem solid ${({ theme, isVisible }) =>
-    isVisible ? theme.colors.primary : theme.colors.backgroundAlt}};
+  border: .1rem solid ${({ theme, isVisible }) => (isVisible ? theme.colors.primary : theme.colors.backgroundAlt)}};
   border-top-right-radius: .5rem;
   border-bottom-right-radius: .5rem;
   
@@ -42,6 +41,7 @@ const CurrentAction = styled.div`
   font-weight: 500;
   cursor: pointer;
   min-width: 10rem;
+  height: 100%;
   color: ${({ theme }) => theme.colors.text};
   border-top: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-left: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
@@ -98,21 +98,12 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   return (
     <Wrapper ref={parentRef}>
       <Container ref={refs.setReference}>
-        <CurrentAction onClick={handleSelectedActionClicked}>
-          {children[selected].props.text}
-        </CurrentAction>
-        <DropdownActionContainer
-          onClick={() => setVisible(!visible)}
-          isVisible={visible}
-        >
-          <Arrow size={15} />
+        <CurrentAction onClick={handleSelectedActionClicked}>{children[selected].props.text}</CurrentAction>
+        <DropdownActionContainer onClick={() => setVisible(!visible)} isVisible={visible}>
+          <Arrow size={20} />
         </DropdownActionContainer>
         {visible && (
-          <ActionMenu
-            selectedState={[selected, setSelected]}
-            attributes={{ x, y, strategy }}
-            ref={refs.setFloating}
-          >
+          <ActionMenu selectedState={[selected, setSelected]} attributes={{ x, y, strategy }} ref={refs.setFloating}>
             {children}
           </ActionMenu>
         )}

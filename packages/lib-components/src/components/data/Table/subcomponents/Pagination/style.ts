@@ -1,0 +1,40 @@
+import { styled } from '../../../../../styled';
+
+export const PaginationContainer = styled.div<{ border?: boolean }>`
+  display: flex;
+  justify-content: flex-end;
+
+  span {
+    color: ${({ theme }) => theme.colors.text};
+  }
+
+  button {
+    background-color: ${({ theme }) => theme.colors.background};
+    padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
+    font-weight: 400;
+    border-color: ${({ theme }) => theme.colors.textAlt};
+    border-right: 0;
+    border-radius: 0;
+
+    &.active {
+      background-color: ${({ theme }) => theme.colors.primary};
+      border-color: ${({ theme }) => theme.colors.primary};
+      span {
+        color: ${({ theme }) => theme.colors.text};
+      }
+    }
+
+    ${({ border }) => !border && 'border: 0;'}
+  }
+
+  button:first-of-type {
+    border-radius: 0.25rem 0 0 0.25rem;
+  }
+
+  button:last-of-type {
+    border-right: ${({ theme }) => `solid 1px ${theme.colors.textAlt}`};
+    border-radius: 0 0.25rem 0.25rem 0;
+
+    ${({ border }) => !border && 'border: 0;'}
+  }
+`;

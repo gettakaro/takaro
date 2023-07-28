@@ -34,7 +34,7 @@ export function usePopover({
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = setControlledOpen ?? setUncontrolledOpen;
 
-  const data = useFloating({
+  const { context, ...data } = useFloating({
     placement,
     open,
     onOpenChange: setOpen,
@@ -50,21 +50,20 @@ export function usePopover({
     ],
   });
 
-  const context = data.context;
-
-  const click = useClick(context, {
-    enabled: controlledOpen == null,
-  });
-  const dismiss = useDismiss(context);
-  const role = useRole(context);
-
-  const interactions = useInteractions([click, dismiss, role]);
+  const interactions = useInteractions([
+    useClick(context, {
+      enabled: controlledOpen == null,
+    }),
+    useDismiss(context),
+    useRole(context),
+  ]);
 
   return useMemo(
     () => ({
       open,
       setOpen,
       ...interactions,
+      context,
       ...data,
       modal,
       labelId,

@@ -18,12 +18,27 @@ const defaultsApplier = defaultInputPropsFactory<GenericCheckBoxProps>(defaultIn
 
 // TODO: write a test that checks if the value is being processed as a boolean.
 export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProps>((props, ref) => {
-  const { readOnly, disabled, value, hasError, onChange, id, name, hasDescription } = defaultsApplier(props);
+  const { readOnly, disabled, value, hasError, onChange, id, name, hasDescription, size } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOnClick(): void {
     if (readOnly || disabled) return;
     inputRef.current?.click();
+  }
+
+  function getIconSize() {
+    switch (size) {
+      case 'tiny':
+        return 16;
+      case 'small':
+        return 14;
+      case 'medium':
+        return 16;
+      case 'large':
+        return 18;
+      case 'huge':
+        return 20;
+    }
   }
 
   return (
@@ -54,9 +69,14 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
         tabIndex={readOnly || disabled ? -1 : 0}
         type="button"
       >
-        <BackgroundContainer animate={value ? 'checked' : 'unchecked'} transition={getTransition()} variants={variants}>
+        <BackgroundContainer
+          size={size}
+          animate={value ? 'checked' : 'unchecked'}
+          transition={getTransition()}
+          variants={variants}
+        >
           <CheckMarkContainer isChecked={value}>
-            <Icon size={15} />
+            <Icon size={getIconSize()} />
           </CheckMarkContainer>
         </BackgroundContainer>
       </CheckboxContainer>

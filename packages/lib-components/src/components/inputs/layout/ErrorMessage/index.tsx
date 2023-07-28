@@ -1,19 +1,23 @@
-import { FC } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
-const Container = styled(motion.div)`
+const Container = styled(motion.div)<{ isWrapped: boolean }>`
   position: absolute;
-  min-height: ${({ theme }) => theme.spacing[3]};
   display: flex;
   align-items: center;
   bottom: ${({ theme }) => `-${theme.spacing['5']}`};
   left: 0;
+  width: 100%;
   height: auto;
   background-color: ${({ theme }): string => theme.colors.error};
   overflow: hidden;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   z-index: ${({ theme }) => theme.zIndex.errorMessage};
+  padding: ${({ theme, isWrapped }) =>
+    isWrapped
+      ? `${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`
+      : `${theme.spacing['0_25']} ${theme.spacing['1_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
 `;
 
 const Content = styled.span`
@@ -21,22 +25,33 @@ const Content = styled.span`
   align-items: center;
   min-width: 100%;
   width: 100%;
-  padding: ${({ theme }) =>
-    `${theme.spacing['0_25']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
-  height: ${({ theme }) => theme.spacing[4]};
   color: white;
   font-weight: 500;
-  white-space: nowrap;
+  line-height: 1.2;
+  min-height: ${({ theme }) => theme.spacing[4]};
+  white-space: normal;
 `;
 
-export interface ErrorProps {
+export interface ErrorMessageProps {
   message: string;
 }
 
-export const ErrorMessage: FC<ErrorProps> = ({ message }) => {
+export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
+  const [isWrapped, setIsWrapped] = useState<boolean>(false);
+  const contentRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsWrapped(contentRef.current.offsetWidth < contentRef.current.scrollWidth);
+    }
+  }, [message]);
+
   return (
-    <Container initial={{ width: 0 }} animate={{ width: '100%' }}>
-      <Content>{message}</Content>
+    <Container initial={{ y: -10 }} animate={{ y: 0 }} isWrapped={isWrapped}>
+      <Content ref={contentRef}>
+        {message}
+        {isWrapped}
+      </Content>
     </Container>
   );
 };

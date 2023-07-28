@@ -90,9 +90,7 @@ const columns = [
   columnHelper.accessor('status', {
     id: 'status',
     header: 'Status',
-    cell: (info) => (
-      <Chip variant="outline" color="primary" label={info.getValue()} />
-    ),
+    cell: (info) => <Chip variant="outline" color="primary" label={info.getValue()} />,
   }),
   columnHelper.accessor('progress', {
     id: 'progress',
@@ -109,7 +107,7 @@ export default {
   },
 } as Meta<TableProps<User>>;
 
-const Users: FC<TableProps<User>> = (props) => {
+const Users: FC<TableProps<User>> = () => {
   const { pagination } = useTableActions<User>();
 
   useEffect(() => {
@@ -123,8 +121,6 @@ const Users: FC<TableProps<User>> = (props) => {
     <Table
       data={data}
       columns={columns}
-      refetch={async () => {}}
-      refetching={props.refetching}
       pagination={{
         ...pagination,
         pageCount: 20,
@@ -134,6 +130,4 @@ const Users: FC<TableProps<User>> = (props) => {
   );
 };
 
-export const TableExample: StoryFn<TableProps<User>> = (args) => (
-  <Users {...args} />
-);
+export const TableExample: StoryFn<TableProps<User>> = (args) => <Users {...args} />;

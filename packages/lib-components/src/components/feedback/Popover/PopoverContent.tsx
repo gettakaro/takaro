@@ -1,9 +1,5 @@
 import { forwardRef, HTMLProps } from 'react';
-import {
-  useMergeRefs,
-  FloatingPortal,
-  FloatingFocusManager,
-} from '@floating-ui/react';
+import { useMergeRefs, FloatingPortal, FloatingFocusManager } from '@floating-ui/react';
 import { usePopoverContext } from './PopoverContext';
 import { styled } from '../../../styled';
 
@@ -14,10 +10,7 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[1]};
 `;
 
-export const PopoverContent = forwardRef<
-  HTMLDivElement,
-  HTMLProps<HTMLDivElement>
->(({ style, ...props }, propRef) => {
+export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
   const { context: floatingContext, ...context } = usePopoverContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 

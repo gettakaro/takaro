@@ -19,6 +19,7 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
     pageSize,
   });
   const [columnFiltersState, setColumnFiltersState] = useState<ColumnFiltersState>([]);
+  const [columnSearchState, setColumnSearchState] = useState<ColumnFiltersState>([]);
   const [sortingState, setSortingState] = useState<SortingState>([]);
 
   function paginate(response: AxiosResponse<ExtendedAPIOutput<T>>): Paginated<T> {
@@ -41,6 +42,7 @@ export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
   return {
     pagination: { paginate, paginationState, setPaginationState },
     columnFilters: { columnFiltersState, setColumnFiltersState },
+    columnSearch: { columnSearchState, setColumnSearchState },
     sorting: { sortingState, setSortingState },
   };
 }

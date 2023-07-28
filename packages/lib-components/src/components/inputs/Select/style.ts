@@ -3,9 +3,8 @@ import { styled } from '../../../styled';
 import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 // This wraps everything
-export const Container = styled.div<{ minWidth?: string }>`
-  display: relative;
-  min-width: ${({ minWidth }) => minWidth || 'auto'};
+export const Container = styled.div`
+  position: relative;
 `;
 
 export const SelectButton = styled.div<{
@@ -71,7 +70,6 @@ export const SelectContainer = styled.div`
 `;
 
 export const GroupLabel = styled.li`
-  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[0]}`};
   opacity: 0.5;
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
 `;
