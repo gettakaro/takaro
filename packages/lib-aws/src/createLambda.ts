@@ -34,7 +34,7 @@ export async function createLambda({ domainId }: CreateLambdaOptions) {
       domainId,
     },
     Code: {
-      S3Bucket: 'takaro-template-code',
+      S3Bucket: config.get('aws.s3Bucket'),
       S3Key: 'code',
     },
   });
