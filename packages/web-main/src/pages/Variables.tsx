@@ -160,6 +160,12 @@ interface IVariableDeleteProps {
   setOpenDialog: (open: boolean) => void;
 }
 
+const DeleteDialogContainer = styled(Dialog.Body)`
+  h2 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
+
 const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
   const { mutateAsync, isLoading: isDeleting } = useVariableDelete();
 
@@ -179,7 +185,7 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
         <Dialog.Heading>
           <h1>Delete variable</h1>
         </Dialog.Heading>
-        <div>
+        <DeleteDialogContainer>
           <h2>Delete variable</h2>
           <p>
             Are you sure you want to delete the variable <strong>{variable.key}</strong>? This action is irreversible!
@@ -191,7 +197,7 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
             text={'Delete variable'}
             color="error"
           />
-        </div>
+        </DeleteDialogContainer>
       </Dialog.Content>
     </Dialog>
   );
