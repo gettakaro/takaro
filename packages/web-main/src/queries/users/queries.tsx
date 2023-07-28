@@ -17,15 +17,15 @@ interface RoleInput {
   roleId: string;
 }
 
-export const useUsers = ({ page = 0, ...userSearchInputArgs }: UserSearchInputDTO = {}) => {
+export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
-    queryKey: userKeys.list(),
-    queryFn: async ({ pageParam = page }) =>
+    queryKey: [...userKeys.list(), { ...queryParams }],
+    queryFn: async ({ pageParam = queryParams.page }) =>
       (
         await apiClient.user.userControllerSearch({
-          ...userSearchInputArgs,
+          ...queryParams,
           page: pageParam,
         })
       ).data,

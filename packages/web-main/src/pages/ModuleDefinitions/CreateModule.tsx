@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   SchemaGenerator,
   errors,
   FormError,
+  TextAreaField,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -17,11 +18,11 @@ import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { useModuleCreate } from 'queries/modules';
+import { AnySchema } from 'ajv';
 
 interface IFormInputs {
   name: string;
   description?: string;
-  configFields: string;
 }
 
 const ButtonContainer = styled.div`
@@ -32,8 +33,10 @@ const ButtonContainer = styled.div`
 
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
+  const [generalData, setGeneralData] = useState<IFormInputs>();
   const [errorMessage, setErrorMessage] = useState<string | string[] | undefined>();
-  const [schema, setSchema] = useState({});
+  const [schema, setSchema] = useState<null | AnySchema>(null);
+  const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   const { mutateAsync, isLoading, error: createModuleError } = useModuleCreate();
 
@@ -43,26 +46,39 @@ const CreateModule: FC = () => {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit, formState } = useForm<IFormInputs>({
+  const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(moduleValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
-    try {
-      setErrorMessage(undefined);
-      await mutateAsync({
-        name,
-        description,
-        configSchema: JSON.stringify(schema),
-      });
-
-      navigate(PATHS.moduleDefinitions());
-    } catch (error) {
-      console.log(error);
-      Sentry.captureException(error);
-    }
+  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
+    setGeneralData({ name, description });
   };
+
+  const onGeneratorSubmit = async (schema: AnySchema) => {
+    if (schema) setSchema(schema);
+  };
+
+  useEffect(() => {
+    const createModule = async () => {
+      if (generalData && Object.keys(generalData).length !== 0 && schema && Object.keys(schema).length !== 0) {
+        try {
+          await mutateAsync({
+            name: generalData.name,
+            description: generalData.description,
+            configSchema: JSON.stringify(schema),
+          });
+
+          navigate(PATHS.moduleDefinitions());
+        } catch (error) {
+          console.log(error);
+          Sentry.captureException(error);
+        }
+      }
+    };
+
+    createModule();
+  }, [generalData, setGeneralData, mutateAsync, navigate, schema, setSchema]);
 
   if (!errorMessage && createModuleError) {
     const errorType = errors.defineErrorType(createModuleError);
@@ -70,7 +86,8 @@ const CreateModule: FC = () => {
       setErrorMessage('A module with that name already exists.');
     }
     if (errorType instanceof errors.ResponseValidationError) {
-      // TODO: setup error messages for response validation errors
+      const msgs = errorType.parseValidationError();
+      setErrorMessage(msgs);
     }
     if (errorType instanceof errors.InternalServerError) {
       setErrorMessage(errorType.message);
@@ -84,7 +101,7 @@ const CreateModule: FC = () => {
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="General">
-              <form onSubmit={handleSubmit(onSubmit)} id="create-module-form">
+              <form id="create-module-form">
                 <TextField
                   control={control}
                   label="Name"
@@ -93,7 +110,7 @@ const CreateModule: FC = () => {
                   placeholder="My cool module"
                   required
                 />
-                <TextField
+                <TextAreaField
                   control={control}
                   label="Description"
                   loading={isLoading}
@@ -103,7 +120,7 @@ const CreateModule: FC = () => {
               </form>
             </CollapseList.Item>
             <CollapseList.Item title="Config">
-              <SchemaGenerator onSchemaChange={setSchema} />
+              <SchemaGenerator onSchemaChange={onGeneratorSubmit} ref={SchemaGeneratorFormRef} />
             </CollapseList.Item>
           </CollapseList>
           {errorMessage && <FormError message={errorMessage} />}
@@ -114,9 +131,10 @@ const CreateModule: FC = () => {
             <Button
               fullWidth
               text="Save changes"
-              type="submit"
-              form="create-module-form"
-              disabled={!!errorMessage && !formState.isDirty}
+              onClick={() => {
+                SchemaGeneratorFormRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                handleSubmit(onGeneralSubmit)();
+              }}
             />
           </ButtonContainer>
         </Drawer.Footer>

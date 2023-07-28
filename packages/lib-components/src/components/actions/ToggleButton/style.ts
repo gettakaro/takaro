@@ -9,6 +9,7 @@ export const Container = styled.div<{
   flex-direction: ${({ orientation }) => (orientation === 'horizontal' ? 'row' : 'column')};
   align-items: center;
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
+  height: 100%;
 
   button {
     padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};

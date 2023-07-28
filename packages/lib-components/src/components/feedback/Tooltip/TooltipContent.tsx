@@ -1,7 +1,8 @@
 import { forwardRef, HTMLProps } from 'react';
-import { useMergeRefs, FloatingPortal } from '@floating-ui/react';
+import { useMergeRefs, FloatingPortal, FloatingArrow } from '@floating-ui/react';
 import { useTooltipContext } from './TooltipContext';
 import { Elevation, styled } from '../../../styled';
+import { useTheme } from '../../../hooks';
 
 const Container = styled.div<{ elevation: Elevation }>`
   background: ${({ theme }) => theme.colors.background};
@@ -15,14 +16,12 @@ const Container = styled.div<{ elevation: Elevation }>`
   z-index: ${({ theme }) => theme.zIndex.tooltip};
 `;
 
-export const TooltipContent = forwardRef<
-  HTMLDivElement,
-  HTMLProps<HTMLDivElement>
->(({ style, ...props }, propRef) => {
-  const context = useTooltipContext();
+export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
+  const theme = useTheme();
+  const { floatingStyles, open, arrowRef, context, getFloatingProps } = useTooltipContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-  if (!context.open) return null;
+  if (!open) return null;
 
   return (
     <FloatingPortal>
@@ -30,11 +29,14 @@ export const TooltipContent = forwardRef<
         elevation={1}
         ref={ref}
         style={{
-          ...context.floatingStyles,
+          ...floatingStyles,
           ...style,
         }}
-        {...context.getFloatingProps(props)}
-      />
+        {...getFloatingProps(props)}
+      >
+        {props.children}
+        <FloatingArrow ref={arrowRef} context={context} fill={theme.colors.background} />
+      </Container>
     </FloatingPortal>
   );
 });

@@ -136,7 +136,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           name={`arguments.${index}.type`}
                           label="Type"
                           readOnly={readOnly}
-                          minWidth="120px"
                           render={(selectedIndex) => (
                             <>{argumentTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</>
                           )}

@@ -31,7 +31,7 @@ interface ISchemaGeneratorProps {
 }
 
 export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps>(
-  ({ initialSchema, onSubmit }, ref) => {
+  ({ initialSchema, onSubmit, onSchemaChange }, ref) => {
     const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>({
       mode: 'onChange',
       resolver: zodResolver(validationSchema),
@@ -48,14 +48,14 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
     const onSubmitWrapper: SubmitHandler<IFormInputs> = ({ configFields }) => {
       const schema = inputsToSchema(configFields);
       onSubmit && onSubmit(schema);
+      onSchemaChange && onSchemaChange(schema);
     };
 
     const formValues = getValues();
-    console.log(formValues);
 
     return (
       <>
-        <Alert text="It is crucial that each and every config field names is unique!" variant="warning" />
+        <Alert text="Every config field name should be unique!" variant="warning" />
         <Form onSubmit={handleSubmit(onSubmitWrapper)} ref={ref}>
           {formValues.configFields
             ? fields.map((field, index) => {
@@ -84,7 +84,7 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
               append({
                 name: `Config field ${fields.length + 1}`,
                 type: InputType.string,
-                description: 'A helpful description',
+                description: '',
                 required: false,
               });
             }}

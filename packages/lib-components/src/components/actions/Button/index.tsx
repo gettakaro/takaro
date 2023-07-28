@@ -63,6 +63,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         fullWidth: fullWidth,
         type: type,
         ref: ref,
+        tabIndex: disabled ? -1 : 0,
       };
 
       switch (variant) {

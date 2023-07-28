@@ -44,7 +44,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         type="button"
       >
         <Dot
-          animate={{ right: isChecked ? '3px' : '23px' }}
+          animate={{ right: isChecked ? '0px' : '27px' }}
           readOnly={readOnly}
           isChecked={isChecked}
           layout

@@ -46,6 +46,7 @@ const Container = styled.div`
   justify-content: center;
 
   height: 100vh;
+  width: 100%;
 
   max-width: 600px;
   text-align: center;

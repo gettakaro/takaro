@@ -12,18 +12,19 @@ export const playerKeys = {
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
 };
 
-export const usePlayers = ({ page = 0, ...playerSearchInputArgs }: PlayerSearchInputDTO = {}) => {
+export const usePlayers = (queryParams: PlayerSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: playerKeys.list(),
-    queryFn: async ({ pageParam = page }) =>
+    queryKey: [...playerKeys.list(), { ...queryParams }],
+    queryFn: async ({ pageParam = queryParams.page }) =>
       (
         await apiClient.player.playerControllerSearch({
-          ...playerSearchInputArgs,
+          ...queryParams,
           page: pageParam,
         })
       ).data,
+    keepPreviousData: true,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     useErrorBoundary: (error) => error.response!.status >= 500,
   });

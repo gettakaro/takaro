@@ -1,7 +1,6 @@
-import { styled } from '../../../styled';
-import { darken } from 'polished';
+import { Density, styled } from '../../../styled';
 
-export const Wrapper = styled.div<{ refetching: boolean }>`
+export const Wrapper = styled.div`
   width: 100%;
   overflow-x: auto;
 `;
@@ -9,58 +8,53 @@ export const Wrapper = styled.div<{ refetching: boolean }>`
 export const Header = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-  gap: 1rem;
+  justify-content: space-between;
   margin-bottom: 1rem;
+  gap: 1rem;
 `;
 
-export const FilterContainer = styled.div`
-  padding: 2rem 0;
-`;
-
-export const StyledTable = styled.table<{ spacing: 'tight' | 'relaxed' }>`
+export const StyledTable = styled.table<{ density: Density }>`
   width: 100%;
-  border-spacing: 0; /* disable inner borders */
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
   text-align: left;
   background-color: ${({ theme }) => theme.colors.background};
+  overflow: hidden;
 
-  thead {
-    color: ${({ theme }) => theme.colors.text};
-    th {
-      background-color: ${({ theme }) => theme.colors.backgroundAlt};
-      color: ${({ theme }) => darken(0.3, theme.colors.text)};
+  /* NOTE: The actual table heading style is in ColumnHeader's styles */
+  &,
+  td,
+  th {
+    border-collapse: collapse;
+  }
 
-      padding: ${({ theme }) => theme.spacing[2]};
-
-      & > div {
-        font-weight: 600;
+  &,
+  td {
+    padding: ${({ theme, density }) => {
+      if (density === 'tight') {
+        return `${theme.spacing['0_5']} 0`;
       }
+      return `${theme.spacing['2_5']} 0`;
+    }};
+
+    &:first-of-type {
+      border-left: 1px solid transparent;
+    }
+    &:last-of-type {
+      border-right: 1px solid transparent;
     }
   }
 
-  tbody {
-    background-color: ${({ theme }) => theme.colors.background};
+  td {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
+  }
 
-    tr {
-      text-align: left;
-
-      &:last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-
-      td {
-        padding: ${({ theme }) => theme.spacing[2]};
-      }
-    }
+  th {
   }
 
   tfoot {
     tr {
       td {
-        padding-top: ${({ theme }) => theme.spacing[4]};
+        border-bottom: none;
+        padding-top: ${({ theme }) => theme.spacing[1]};
       }
     }
   }
@@ -71,4 +65,10 @@ export const PaginationContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+`;
+
+export const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
