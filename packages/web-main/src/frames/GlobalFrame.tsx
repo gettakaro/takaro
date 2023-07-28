@@ -11,6 +11,8 @@ import {
   AiOutlineDatabase as GameServersIcon,
   AiOutlineBook as DocumentationIcon,
   AiOutlineIdcard as PlayersIcon,
+  AiOutlineUser as UsersIcon,
+  AiOutlineEdit as VariablesIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -50,17 +52,20 @@ const links: NavbarLink[] = [
     path: PATHS.players(),
     icon: <PlayersIcon />,
   },
-  /*
   {
     label: 'Users',
     path: PATHS.users(),
     icon: <UsersIcon />,
   },
-  */
   {
     label: 'Modules',
     path: PATHS.moduleDefinitions(),
     icon: <ModulesIcon />,
+  },
+  {
+    label: 'Variables',
+    path: PATHS.variables(),
+    icon: <VariablesIcon />,
   },
   {
     label: 'Settings',

@@ -21,6 +21,8 @@ import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
+import Users from 'pages/Users';
+import Variables from 'pages/Variables';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -55,6 +57,8 @@ export const Router: FC = () => (
           <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
         <Route element={<GameServers />} path="/server/" />
+        <Route element={<Users />} path={PATHS.users()} />
+        <Route element={<Variables />} path={PATHS.variables()} />
 
         <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
           <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
