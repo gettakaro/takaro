@@ -4811,6 +4811,18 @@ export interface UserSearchInputAllowedFilters {
      * @memberof UserSearchInputAllowedFilters
      */
     'name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserSearchInputAllowedFilters
+     */
+    'idpId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserSearchInputAllowedFilters
+     */
+    'discordId'?: string;
 }
 /**
  * 
@@ -4987,6 +4999,24 @@ export interface VariableOutputDTO {
      * @memberof VariableOutputDTO
      */
     'moduleId'?: string;
+    /**
+     * 
+     * @type {GameServerOutputDTO}
+     * @memberof VariableOutputDTO
+     */
+    'gameServer'?: GameServerOutputDTO;
+    /**
+     * 
+     * @type {ModuleOutputDTO}
+     * @memberof VariableOutputDTO
+     */
+    'module'?: ModuleOutputDTO;
+    /**
+     * 
+     * @type {PlayerOutputDTO}
+     * @memberof VariableOutputDTO
+     */
+    'player'?: PlayerOutputDTO;
     /**
      * 
      * @type {string}

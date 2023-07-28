@@ -56,6 +56,14 @@ class UserSearchInputAllowedFilters {
   @IsOptional()
   @IsString()
   name!: string;
+
+  @IsOptional()
+  @IsString()
+  idpId!: string;
+
+  @IsOptional()
+  @IsString()
+  discordId!: string;
 }
 
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {

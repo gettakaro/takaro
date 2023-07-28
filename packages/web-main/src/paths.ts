@@ -4,6 +4,7 @@ export const PATHS = {
   users: () => '/users',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
+  variables: () => '/variables',
   notFound: () => '/404',
 
   auth: {
