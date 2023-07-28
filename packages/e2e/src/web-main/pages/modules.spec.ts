@@ -29,6 +29,9 @@ basicTest('Creating module with config, saves the config', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
+
+  await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
+
   await page.getByLabel('Default value').fill('my string default value');
 
   await page.getByRole('button', { name: 'Save changes' }).click();
@@ -63,6 +66,7 @@ basicTest('Creating a module with config but not providing a default value, show
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
+  await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
 
   await page.getByRole('button', { name: 'Save changes' }).click();
 
