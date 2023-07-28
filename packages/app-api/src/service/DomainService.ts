@@ -93,7 +93,11 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await ory.deleteIdentitiesForDomain(id);
 
-    await deleteLambda({ domainId: existing.id });
+    try {
+      await deleteLambda({ domainId: existing.id });
+    } catch (e) {
+      this.log.error(`Failed to delete lambda for domain ${existing.id}`, e);
+    }
 
     await this.repo.delete(id);
 
