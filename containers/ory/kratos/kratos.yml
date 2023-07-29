@@ -87,7 +87,7 @@ selfservice:
             - hook: session
 
 log:
-  level: trace
+  level: debug
   format: text
   leak_sensitive_values: false
 
