@@ -28,7 +28,7 @@ describe('API client', () => {
       expect(domain.data.data.createdDomain.name).to.equal(TEST_DOMAIN_NAME);
 
       const domainsRes = await adminClient.domain.domainControllerSearch({
-        filters: { name: TEST_DOMAIN_NAME },
+        filters: { name: [TEST_DOMAIN_NAME] },
       });
 
       expect(domainsRes.data.data).to.have.lengthOf(1);

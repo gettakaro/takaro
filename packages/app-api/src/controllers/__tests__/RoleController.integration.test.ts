@@ -105,7 +105,7 @@ const tests = [
     },
     test: async function () {
       return this.client.role.roleControllerSearch({
-        filters: { name: 'Test role' },
+        filters: { name: ['Test role'] },
       });
     },
     filteredFields: ['roleId'],

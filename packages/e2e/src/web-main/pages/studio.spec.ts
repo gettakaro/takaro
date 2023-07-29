@@ -37,7 +37,7 @@ test.fixme('should redirect when surfed to non existing module', async ({ page }
 test('Can create hook', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 
@@ -54,7 +54,7 @@ test('Can create hook', async ({ page, takaro }) => {
 test('Can delete hook', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 
@@ -71,7 +71,7 @@ test('Can delete hook', async ({ page, takaro }) => {
 test('Can create command', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 
@@ -88,7 +88,7 @@ test('Can create command', async ({ page, takaro }) => {
 test('Can delete command', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 
@@ -106,7 +106,7 @@ test.fixme('Can save command config', async ({}) => {});
 test('Can create cronjob', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 
@@ -122,7 +122,7 @@ test('Can create cronjob', async ({ page, takaro }) => {
 test('Can delete cronjob', async ({ page, takaro }) => {
   const mod = (
     await takaro.client.module.moduleControllerSearch({
-      filters: { name: 'Module with functions' },
+      filters: { name: ['Module with functions'] },
     })
   ).data.data[0];
 

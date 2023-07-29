@@ -63,18 +63,22 @@ class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputD
 
 class GameServerSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsEnum(GAME_SERVER_TYPE)
-  type!: GAME_SERVER_TYPE;
+  @IsEnum(GAME_SERVER_TYPE, { each: true })
+  type!: GAME_SERVER_TYPE[];
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedFilters)
   declare filters: GameServerSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => GameServerSearchInputAllowedFilters)
+  declare search: GameServerSearchInputAllowedFilters;
 }
 
 class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {

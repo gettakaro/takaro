@@ -29,14 +29,18 @@ export class RoleOutputArrayDTOAPI extends APIOutput<RoleOutputDTO[]> {
 
 export class RoleSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 }
 
 export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedFilters)
   declare filters: RoleSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => RoleSearchInputAllowedFilters)
+  declare search: RoleSearchInputAllowedFilters;
 }
 
 @OpenAPI({
