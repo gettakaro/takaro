@@ -36,8 +36,14 @@ export class SdtdApiClient {
             url: error.config.url,
           });
           return Promise.reject(simplifiedError);
+        } else {
+          const simplifiedError = new errors.BadRequestError('Axios error', {
+            extra: 'A request to the 7D2D server failed',
+            message: error.message,
+            url: error.config.url,
+          });
+          return Promise.reject(simplifiedError);
         }
-        return Promise.reject(error);
       }
     );
   }
