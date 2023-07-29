@@ -87,7 +87,7 @@ export const useGameServerCreate = () => {
     mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
     onSuccess: async (newGameServer: GameServerOutputDTO) => {
       // invalidate all queries that have list in the key
-      queryClient.invalidateQueries(gameServerKeys.list());
+      await queryClient.invalidateQueries(gameServerKeys.list());
 
       // create cache for new game server
       queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
@@ -110,7 +110,6 @@ export const useGameServerSendMessage = () => {
   });
 };
 
-// TODO: implement pagination
 export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
   return useQuery<ModuleInstallationOutputDTO[]>({
@@ -144,7 +143,7 @@ export const useGameServerModuleInstall = () => {
       (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
     onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
       // invalidate list of installed modules
-      queryClient.invalidateQueries(installedModuleKeys.list(moduleInstallation.gameserverId));
+      await queryClient.invalidateQueries(installedModuleKeys.list(moduleInstallation.gameserverId));
 
       // update installed module cache
       queryClient.setQueryData(
@@ -186,7 +185,9 @@ export const useGameServerModuleUninstall = () => {
         }
       );
 
-      queryClient.invalidateQueries(installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId));
+      await queryClient.invalidateQueries(
+        installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId)
+      );
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -218,7 +219,7 @@ export const useGameServerUpdate = () => {
     onSuccess: async (updatedGameServer) => {
       try {
         // remove cache of gameserver list
-        queryClient.invalidateQueries(gameServerKeys.list());
+        await queryClient.invalidateQueries(gameServerKeys.list());
 
         // update cache of gameserver
         queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
@@ -241,12 +242,12 @@ export const useGameServerRemove = () => {
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, GameServerRemove>({
     mutationFn: async ({ id }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
-    onSuccess: (removedGameServer: IdUuidDTO) => {
+    onSuccess: async (removedGameServer: IdUuidDTO) => {
       try {
         // remove all cached information of game server list.
-        queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         // remove all cached information about specific game server.
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(removedGameServer.id),
         });
         queryClient.removeQueries({

@@ -21,7 +21,7 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = usePlayers({
@@ -148,13 +148,14 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
+          id="players"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
+          rowSelection={rowSelection}
           pagination={{
-            ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            paginationState: pagination.paginationState,
+            setPaginationState: pagination.setPaginationState,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
