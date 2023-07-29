@@ -39,7 +39,7 @@ selfservice:
         issuer: Kratos
       enabled: false
     lookup_secret:
-      enabled: true
+      enabled: false
     link:
       enabled: true
     code:
