@@ -63,12 +63,12 @@ export const functionKeys = {
   detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
-export const useModules = (queryParams: ModuleSearchInputDTO = { page: 0 }) => {
+export const useInfiniteModules = ({ page, ...queryParams }: ModuleSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: [...moduleKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.module.moduleControllerSearch({
           ...queryParams,
@@ -84,6 +84,18 @@ export const useModules = (queryParams: ModuleSearchInputDTO = { page: 0 }) => {
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const useModules = (queryParams: ModuleSearchInputDTO = {}) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.module.moduleControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };
 
 export const useModule = (id: string) => {

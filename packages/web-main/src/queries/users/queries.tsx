@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
@@ -17,7 +17,7 @@ interface RoleInput {
   roleId: string;
 }
 
-export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
+export const useInfiniteUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
@@ -38,6 +38,18 @@ export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
+    queryKey: [...userKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.user.userControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };
 
 export const useUserAssignRole = () => {

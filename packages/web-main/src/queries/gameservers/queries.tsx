@@ -110,7 +110,6 @@ export const useGameServerSendMessage = () => {
   });
 };
 
-// TODO: implement pagination
 export const useGameServerModuleInstallations = (gameServerId: string) => {
   const apiClient = useApiClient();
   return useQuery<ModuleInstallationOutputDTO[]>({

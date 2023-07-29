@@ -109,7 +109,7 @@ const Users: FC = () => {
         <Table
           id="users"
           columns={columnDefs}
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
             pageOptions: pagination.getPageOptions(data),

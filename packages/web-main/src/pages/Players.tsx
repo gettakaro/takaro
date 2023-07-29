@@ -24,7 +24,7 @@ const Players: FC = () => {
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
-  const { data, isLoading, isPreviousData } = usePlayers({
+  const { data, isLoading } = usePlayers({
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -125,7 +125,7 @@ const Players: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined || isPreviousData) {
+  if (isLoading || data === undefined) {
     return <Loading />;
   }
 
@@ -139,7 +139,7 @@ const Players: FC = () => {
         <Table
           id="players"
           columns={columnDefs}
-          data={data.pages[0].data}
+          data={data.data}
           rowSelection={rowSelection}
           pagination={{
             paginationState: pagination.paginationState,

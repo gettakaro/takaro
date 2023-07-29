@@ -6,7 +6,6 @@ import { Density } from '../../../styled';
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   OnChangeFn,
   PaginationState,
   useReactTable,
@@ -16,7 +15,6 @@ import {
   ColumnOrderState,
   VisibilityState,
   ColumnPinningState,
-  getPaginationRowModel,
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style';
@@ -25,7 +23,7 @@ import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDen
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
 import { PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
-import { useLocalStorage } from 'hooks';
+import { useLocalStorage } from '../../../hooks';
 
 export interface TableProps<DataType extends object> {
   id: string;
@@ -113,8 +111,6 @@ export function Table<DataType extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     pageCount: pagination?.pageOptions.pageCount ?? -1,
 
     manualPagination: true,
@@ -122,7 +118,7 @@ export function Table<DataType extends object>({
     manualFiltering: true,
     manualSorting: true,
     enableExpanding: true,
-    enableFilters: !!columnFiltering,
+    enableColumnFilters: !!columnFiltering,
     enableGlobalFilter: !!columnSearch,
     enableSorting: !!sorting,
     enableSortingRemoval: false,
@@ -130,6 +126,7 @@ export function Table<DataType extends object>({
     enableHiding: !!columnVisibility,
     enableRowSelection: !!rowSelection,
     autoResetPageIndex: false,
+
     columnResizeMode: 'onChange',
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
@@ -250,7 +247,7 @@ export function Table<DataType extends object>({
                     <span>
                       showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
                       {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                        table.getState().pagination.pageSize}{' '}
+                        table.getRowModel().rows.length}{' '}
                       of {pagination.pageOptions.total} entries
                     </span>
                     <Pagination

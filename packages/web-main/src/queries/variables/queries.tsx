@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   IdUuidDTO,
@@ -18,14 +18,14 @@ export const variableKeys = {
   detail: (id: string) => [...variableKeys.all, 'detail', id] as const,
 };
 
-export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) => {
+export const useInfiniteVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
     queryKey: [...variableKeys.list(), { ...queryParams }],
     queryFn: async ({ pageParam = queryParams.page }) =>
       (
-        await apiClient.variable.variableControllerFind({
+        await apiClient.variable.variableControllerSearch({
           ...queryParams,
           page: pageParam,
           extend: ['module', 'player', 'gameServer'],
@@ -40,6 +40,18 @@ export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) 
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
+    queryKey: [...variableKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.variable.variableControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };
 
 export const useVariableCreate = () => {

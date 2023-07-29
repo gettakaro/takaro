@@ -140,7 +140,7 @@ const Variables: FC = () => {
           id="variables"
           rowSelection={rowSelection}
           columns={columnDefs}
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
             pageOptions: pagination.getPageOptions(data),
