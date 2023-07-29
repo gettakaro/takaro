@@ -13,7 +13,7 @@ async function main() {
     return;
   }
 
-  const starterKitLockRes = await takaro.variable.variableControllerFind({
+  const starterKitLockRes = await takaro.variable.variableControllerSearch({
     filters: {
       key: VARIABLE_KEY,
       gameServerId: data.gameServerId,

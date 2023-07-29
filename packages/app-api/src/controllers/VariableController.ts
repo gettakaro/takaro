@@ -67,7 +67,7 @@ export class VariableController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @Post('/variables/search')
-  async find(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
     const service = new VariablesService(req.domainId);
     const result = await service.find({
       ...query,

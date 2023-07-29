@@ -13,7 +13,7 @@ async function main() {
     return;
   }
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
       gameServerId,
       playerId: player.playerId,

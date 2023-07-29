@@ -6,7 +6,7 @@ async function main() {
 
   const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const existingVariable = await takaro.variable.variableControllerFind({
+  const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
       key: `tp_${args.tp}`,
       gameServerId,
