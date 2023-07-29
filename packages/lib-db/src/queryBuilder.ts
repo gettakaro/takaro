@@ -53,18 +53,20 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
     qry = this.filters(tableName, qry);
 
     if (this.query.search) {
-      for (const search in this.query.search) {
-        if (Object.prototype.hasOwnProperty.call(this.query.search, search)) {
-          const searchVal = this.query.search[search];
-          if (searchVal && Array.isArray(searchVal)) {
-            searchVal.forEach((val) => {
-              if (val) {
-                qry.andWhere(`${tableName}.${search}`, 'ilike', `%${val}%`);
-              }
-            });
+      qry.where((builder) => {
+        for (const search in this.query.search) {
+          if (Object.prototype.hasOwnProperty.call(this.query.search, search)) {
+            const searchVal = this.query.search[search];
+            if (Array.isArray(searchVal)) {
+              searchVal.forEach((val) => {
+                if (val) {
+                  builder.orWhere(`${tableName}.${search}`, 'ilike', `%${val}%`);
+                }
+              });
+            }
           }
         }
-      }
+      });
     }
 
     for (const extend of this.query.extend ?? []) {
