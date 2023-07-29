@@ -41,5 +41,7 @@ jobs:
       - name: Commit and push if changed
         if: steps.git-diff-check.outputs.modified == 'true'
         run: |
+          git config --global user.name 'takaro-ci-bot[bot]'
+          git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
           git commit -am "fix: code style"
           git push
