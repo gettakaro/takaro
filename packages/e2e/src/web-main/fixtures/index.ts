@@ -1,7 +1,15 @@
 import playwright, { Page } from '@playwright/test';
-import { AdminClient, Client, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
+import {
+  AdminClient,
+  Client,
+  GameServerCreateDTOTypeEnum,
+  HookCreateDTOEventTypeEnum,
+  ModuleOutputDTO,
+} from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import humanId from 'human-id/dist/index.js';
+import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
+import { StudioPage } from './StudioPage.js';
 
 const { expect, test: base } = playwright;
 
@@ -27,7 +35,13 @@ export const getAdminClient = () => {
 };
 
 interface IFixtures {
-  takaro: { client: Client; adminClient: AdminClient };
+  takaro: {
+    client: Client;
+    adminClient: AdminClient;
+    studioPage: StudioPage;
+    moduleDefinitionsPage: ModuleDefinitionsPage;
+    builtinModule: ModuleOutputDTO;
+  };
 }
 
 export const basicTest = base.extend<IFixtures>({
@@ -51,7 +65,30 @@ export const basicTest = base.extend<IFixtures>({
       });
       await client.login();
 
-      await use({ client, adminClient });
+      await client.gameserver.gameServerControllerCreate({
+        name: 'Test server',
+        type: GameServerCreateDTOTypeEnum.Mock,
+        connectionInfo: JSON.stringify({
+          host: integrationConfig.get('mockGameserver.host'),
+        }),
+      });
+
+      // empty module
+      const mod = await client.module.moduleControllerCreate({
+        name: 'Module without functions',
+        configSchema: JSON.stringify({}),
+        description: 'Empty module with no functions',
+      });
+
+      const mods = await client.module.moduleControllerSearch({ filters: { name: 'utils' } });
+
+      await use({
+        client,
+        adminClient,
+        builtinModule: mods.data.data[0],
+        studioPage: new StudioPage(page, mod.data.data),
+        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+      });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);
@@ -88,46 +125,40 @@ export const test = base.extend<IFixtures>({
         }),
       });
 
-      // empty module
-      await client.module.moduleControllerCreate({
-        name: 'Module without functions',
+      const mod = await client.module.moduleControllerCreate({
+        name: 'Module with functions',
         configSchema: JSON.stringify({}),
-        description: 'Empty module with no functions',
-      });
-
-      const mod = (
-        await client.module.moduleControllerCreate({
-          name: 'Module with functions',
-          configSchema: JSON.stringify({}),
-          description: 'Module with functions',
-        })
-      ).data.data;
-
-      await client.hook.hookControllerCreate({
-        name: 'test-hook',
-        eventType: 'player-connected',
-        regex: '.*',
-        moduleId: mod.id,
+        description: 'Module with functions',
       });
 
       await client.command.commandControllerCreate({
-        moduleId: mod.id,
-        name: 'test-command',
-        trigger: 'test-command',
-        helpText: 'help text',
+        moduleId: mod.data.data.id,
+        name: 'my-command',
+        trigger: 'test',
+      });
+
+      await client.hook.hookControllerCreate({
+        moduleId: mod.data.data.id,
+        name: 'my-hook',
+        regex: 'test',
+        eventType: HookCreateDTOEventTypeEnum.Log,
       });
 
       await client.cronjob.cronJobControllerCreate({
-        moduleId: mod.id,
-        name: 'test-cronjob',
+        moduleId: mod.data.data.id,
+        name: 'my-cron',
         temporalValue: '* * * * *',
       });
 
-      /* TODO: should probably add more custom modules with complex config schemas
-       * probably a good idea to add one for each type of config field
-       */
+      const mods = await client.module.moduleControllerSearch({ filters: { name: 'utils' } });
 
-      await use({ client, adminClient });
+      await use({
+        client,
+        adminClient,
+        builtinModule: mods.data.data[0],
+        studioPage: new StudioPage(page, mod.data.data),
+        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+      });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);

@@ -282,6 +282,7 @@ const Tab: FC<TabProps> = ({
           <Tooltip>
             <Tooltip.Trigger asChild>
               <CloseIcon
+                data-testid={`close-${getFileName(filePath)}-${isDirty ? 'dirty' : 'clean'}`}
                 isDirty={isDirty}
                 isActive={isActive}
                 onClick={(e) => {
