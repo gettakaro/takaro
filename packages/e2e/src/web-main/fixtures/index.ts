@@ -150,7 +150,7 @@ export const test = base.extend<IFixtures>({
         temporalValue: '* * * * *',
       });
 
-      const mods = await client.module.moduleControllerSearch({ filters: { name: 'utils' } });
+      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
 
       await use({
         client,
