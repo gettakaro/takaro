@@ -75,7 +75,7 @@ export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions): API
       if (opts.error instanceof errors.ValidationError) {
         returnVal.meta.error.details = opts.error.details as ClassValidatorError[];
       } else {
-        returnVal.meta.error.details = String(opts.error.details);
+        returnVal.meta.error.details = opts.error.details as string;
       }
     } else {
       returnVal.meta.error.message = String(opts.error.message);
