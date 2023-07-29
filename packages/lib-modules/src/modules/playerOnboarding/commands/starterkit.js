@@ -15,9 +15,9 @@ async function main() {
 
   const starterKitLockRes = await takaro.variable.variableControllerFind({
     filters: {
-      key: VARIABLE_KEY,
-      gameServerId: data.gameServerId,
-      playerId: data.player.playerId,
+      key: [VARIABLE_KEY],
+      gameServerId: [data.gameServerId],
+      playerId: [data.player.playerId],
     },
   });
 

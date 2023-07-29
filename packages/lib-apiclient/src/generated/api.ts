@@ -503,28 +503,28 @@ export interface CommandOutputDTOAPI {
 export interface CommandSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {boolean}
+   * @type {Array<boolean>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  enabled?: boolean;
+  enabled?: Array<boolean>;
 }
 /**
  *
@@ -540,10 +540,10 @@ export interface CommandSearchInputDTO {
   filters?: CommandSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {CommandSearchInputAllowedFilters}
    * @memberof CommandSearchInputDTO
    */
-  search?: any;
+  search?: CommandSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -766,22 +766,22 @@ export interface CronJobOutputDTOAPI {
 export interface CronJobSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -797,10 +797,10 @@ export interface CronJobSearchInputDTO {
   filters?: CronJobSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {CronJobSearchInputAllowedFilters}
    * @memberof CronJobSearchInputDTO
    */
-  search?: any;
+  search?: CronJobSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1069,10 +1069,10 @@ export interface DomainOutputDTOAPI {
 export interface DomainSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof DomainSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -1088,10 +1088,10 @@ export interface DomainSearchInputDTO {
   filters?: DomainSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {DomainSearchInputAllowedFilters}
    * @memberof DomainSearchInputDTO
    */
-  search?: any;
+  search?: DomainSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1464,28 +1464,28 @@ export type EventPlayerDisconnectedTypeEnum =
 export interface EventSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  eventName?: string;
+  eventName?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  playerId?: string;
+  playerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  gameserverId?: string;
+  gameserverId?: Array<string>;
 }
 /**
  *
@@ -1501,10 +1501,10 @@ export interface EventSearchInputDTO {
   filters?: EventSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {EventSearchInputAllowedFilters}
    * @memberof EventSearchInputDTO
    */
-  search?: any;
+  search?: EventSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1635,10 +1635,10 @@ export interface FunctionOutputDTOAPI {
 export interface FunctionSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof FunctionSearchInputAllowedFilters
    */
-  id: string;
+  id: Array<string>;
 }
 /**
  *
@@ -1654,10 +1654,10 @@ export interface FunctionSearchInputDTO {
   filters?: FunctionSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {FunctionSearchInputAllowedFilters}
    * @memberof FunctionSearchInputDTO
    */
-  search?: any;
+  search?: FunctionSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1845,16 +1845,16 @@ export interface GameServerOutputDTOAPI {
 export interface GameServerSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  type?: GameServerSearchInputAllowedFiltersTypeEnum;
+  type?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {
@@ -1880,10 +1880,10 @@ export interface GameServerSearchInputDTO {
   filters?: GameServerSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {GameServerSearchInputAllowedFilters}
    * @memberof GameServerSearchInputDTO
    */
-  search?: any;
+  search?: GameServerSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -2248,22 +2248,22 @@ export interface GuildOutputDTOAPI {
 export interface GuildSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  discordId?: string;
+  discordId?: Array<string>;
   /**
    *
-   * @type {boolean}
+   * @type {Array<boolean>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  takaroEnabled?: boolean;
+  takaroEnabled?: Array<boolean>;
 }
 /**
  *
@@ -2279,10 +2279,10 @@ export interface GuildSearchInputDTO {
   filters?: GuildSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {GuildSearchInputAllowedFilters}
    * @memberof GuildSearchInputDTO
    */
-  search?: any;
+  search?: GuildSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -2558,28 +2558,28 @@ export interface HookOutputDTOAPI {
 export interface HookSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  eventType?: HookSearchInputAllowedFiltersEventTypeEnum;
+  eventType?: Array<HookSearchInputAllowedFiltersEventTypeEnum>;
 }
 
 export const HookSearchInputAllowedFiltersEventTypeEnum = {
@@ -2607,10 +2607,10 @@ export interface HookSearchInputDTO {
   filters?: HookSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {HookSearchInputAllowedFilters}
    * @memberof HookSearchInputDTO
    */
-  search?: any;
+  search?: HookSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -3371,16 +3371,16 @@ export interface ModuleOutputDTOAPI {
 export interface ModuleSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -3396,10 +3396,10 @@ export interface ModuleSearchInputDTO {
   filters?: ModuleSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {ModuleSearchInputAllowedFilters}
    * @memberof ModuleSearchInputDTO
    */
-  search?: any;
+  search?: ModuleSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -3936,34 +3936,34 @@ export interface PlayerOutputDTOAPI {
 export interface PlayerSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  steamId?: string;
+  steamId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  epicOnlineServicesId?: string;
+  epicOnlineServicesId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  xboxLiveId?: string;
+  xboxLiveId?: Array<string>;
 }
 /**
  *
@@ -3979,10 +3979,10 @@ export interface PlayerSearchInputDTO {
   filters?: PlayerSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {PlayerSearchInputAllowedFilters}
    * @memberof PlayerSearchInputDTO
    */
-  search?: any;
+  search?: PlayerSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -4183,10 +4183,10 @@ export interface RoleOutputDTOAPI {
 export interface RoleSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof RoleSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -4202,10 +4202,10 @@ export interface RoleSearchInputDTO {
   filters?: RoleSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {RoleSearchInputAllowedFilters}
    * @memberof RoleSearchInputDTO
    */
-  search?: any;
+  search?: RoleSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -4829,22 +4829,22 @@ export interface UserOutputWithRolesDTO {
 export interface UserSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  idpId?: string;
+  idpId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  discordId?: string;
+  discordId?: Array<string>;
 }
 /**
  *
@@ -4860,10 +4860,10 @@ export interface UserSearchInputDTO {
   filters?: UserSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {UserSearchInputAllowedFilters}
    * @memberof UserSearchInputDTO
    */
-  search?: any;
+  search?: UserSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -5086,34 +5086,34 @@ export interface VariableOutputDTOAPI {
 export interface VariableSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  key?: string;
+  key?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  gameServerId?: string;
+  gameServerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  playerId?: string;
+  playerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
 }
 /**
  *
