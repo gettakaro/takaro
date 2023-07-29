@@ -53,7 +53,7 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
             name: 'my-hook',
             eventType: 'log',
             moduleId: moduleId!,
-            regex: `/w/*/`,
+            regex: '\\w',
           });
           break;
         case 'cronjob':
