@@ -1,9 +1,8 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { SandpackStack, SandpackThemeProvider, useActiveCode, useSandpack } from '@codesandbox/sandpack-react';
-import MonacoEditor, { useMonaco } from '@monaco-editor/react';
+import MonacoEditor from '@monaco-editor/react';
 import * as mon from 'monaco-editor';
 import { useModule } from 'hooks/useModule';
-import { ContextMenu } from '@takaro/lib-components';
 import { FileTabs } from './FileTabs';
 import { FunctionType, setExtraLibs } from './customTypes';
 import { defineTheme } from './theme';
@@ -20,51 +19,12 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const [dirtyFiles, setDirtyFiles] = useState<Set<string>>(new Set());
   const [modelVersionId, setModelVersionId] = useState<number>();
   const { enqueueSnackbar } = useSnackbar();
-  const monaco = useMonaco();
   const { moduleData } = useModule();
   const { sandpack } = useSandpack();
   const { mutateAsync: updateFunction } = useFunctionUpdate();
   const editorInstance = useRef<mon.editor.IStandaloneCodeEditor>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const monacoRef = useRef<typeof mon | null>(null);
-
-  const handleCopyOperation = async () => {
-    const editor = editorInstance.current;
-    if (editor) {
-      const model = editor.getModel();
-      const selection = editor.getSelection();
-      if (model && selection) {
-        const selectedText = model.getValueInRange(selection);
-        try {
-          await navigator.clipboard.writeText(selectedText);
-        } catch (e) {
-          enqueueSnackbar('Could not copy text to clipboard', { variant: 'default', type: 'error' });
-        }
-      }
-    }
-  };
-  const handleCutOperation = async () => {
-    const editor = editorInstance.current;
-    if (editor) {
-      const model = editor.getModel();
-      const selection = editor.getSelection();
-      if (model && selection) {
-        const selectedText = model.getValueInRange(selection);
-        try {
-          await navigator.clipboard.writeText(selectedText);
-          editor.executeEdits('', [{ range: selection, text: '' }]);
-        } catch (e) {
-          enqueueSnackbar('Could not cut text to clipboard', { variant: 'default', type: 'error' });
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (monaco) {
-      // only load monaco types if there is no model
-    }
-  }, [sandpack.activeFile]);
 
   const saveFile = async () => {
     try {
@@ -119,42 +79,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
         <FileTabs closableTabs dirtyFiles={dirtyFiles} setDirtyFiles={setDirtyFiles} />
         <div style={{ width: '100%', height: '100%' }}>
-          <ContextMenu targetRef={containerRef}>
-            <ContextMenu.Group divider>
-              {/* TODO: These are not native and require a separate typescript language server */}
-              {/* <ContextMenu.Item shortcut="Shift+Alt+F12" label="Find all references" />*/}
-              {/*<ContextMenu.Item label="Peek all references" />*/}
-              {/*<ContextMenu.Item shortcut="Ctrl+F12" label="Go to definition" />*/}
-              {/*<ContextMenu.Item label="Go to type defintion" />*/}
-              {/*<ContextMenu.Item shortcut="Ctrl+Shift+F10" label="Peek definition"/>*/}
-            </ContextMenu.Group>
-            <ContextMenu.Group divider>
-              <ContextMenu.Item
-                label="Rename symbol"
-                shortcut="F2"
-                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.rename', null)}
-              />
-              <ContextMenu.Item
-                label="Format document"
-                shortcut="Ctrl+Shift+I"
-                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.formatDocument', null)}
-              />
-              <ContextMenu.Item
-                label="Quick fix"
-                shortcut="Ctrl+L"
-                onClick={() => editorInstance.current?.trigger('contextmenu', 'editor.action.quickFix', null)}
-              />
-            </ContextMenu.Group>
-            <ContextMenu.Group divider>
-              <ContextMenu.Item label="Cut" onClick={handleCutOperation} />
-
-              {/* Due to browser restrictions, custom paste is hard and is often not provided in context menu, only native ctrl+v is supported*/}
-              <ContextMenu.Item label="Copy" onClick={handleCopyOperation} />
-            </ContextMenu.Group>
-            {/* TODO: Monaco only provides with all commands, but not the UI */}
-            {/*<ContextMenu.Item label="Command palette" shortcut="Ctrl+Shift+P" />*/}
-          </ContextMenu>
-
           <MonacoEditor
             width="100%"
             height="100%"
@@ -212,12 +136,15 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                 throw new Error('Monaco is not defined');
               }
 
+              editor.createContextKey('canEdit', !readOnly);
+
               editor.addAction({
+                precondition: 'canEdit',
                 id: 'save',
                 label: 'Save File',
                 keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-                contextMenuGroupId: 'navigation',
-                contextMenuOrder: 1.5,
+                contextMenuOrder: 1,
+                contextMenuGroupId: '8_modification',
                 run: async () => {
                   await editor.getAction('editor.action.formatDocument')?.run();
                   saveFile();
@@ -225,30 +152,13 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               });
 
               editor.addAction({
+                precondition: 'canEdit',
                 id: 'my-unique-id',
                 label: 'Quick Fix',
+                contextMenuOrder: 2,
+                contextMenuGroupId: '8_modification',
                 keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL],
-                contextMenuGroupId: '2_correction',
-                contextMenuOrder: 1,
                 run: () => editor.getAction('editor.action.quickFix')?.run(),
-              });
-
-              editor.addAction({
-                id: 'formatDocument',
-                label: 'Format Document',
-                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyI], // Ctrl + Shift + I
-                contextMenuGroupId: 'navigation',
-                contextMenuOrder: 1.5,
-                run: () => editor.getAction('editor.action.formatDocument')?.run(),
-              });
-
-              editor.addAction({
-                id: 'renameSymbol',
-                label: 'Rename Symbol',
-                keybindings: [monaco.KeyCode.F2], // F2
-                contextMenuGroupId: 'navigation',
-                contextMenuOrder: 1.5,
-                run: () => editor.getAction('editor.action.rename')?.run(),
               });
 
               setModelVersionId(editor.getModel()?.getAlternativeVersionId());
@@ -291,7 +201,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               wordWrap: 'on',
               renderWhitespace: 'none',
               lineNumbers: 'on',
-              contextmenu: false,
+              contextmenu: true,
               'semanticHighlighting.enabled': true,
               tabSize: 2,
               readOnly,
