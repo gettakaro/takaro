@@ -18,6 +18,15 @@ const Container = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.colors.background};
+    }
+  }
 `;
 
 export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
