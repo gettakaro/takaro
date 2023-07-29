@@ -167,7 +167,7 @@ export class DiscordService extends TakaroService<
   async sendMessage(channelId: string, message: SendMessageInputDTO) {
     const channel = await discordBot.getChannel(channelId);
 
-    const guild = await this.find({ filters: { discordId: channel.guildId } });
+    const guild = await this.find({ filters: { discordId: [channel.guildId] } });
 
     if (!guild.results.length) {
       throw new errors.BadRequestError(`Guild not found for channel ${channelId}`);
