@@ -14,10 +14,10 @@ async function main() {
 
   const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
-      key: getVariableKey(args.tp),
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [getVariableKey(args.tp)],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 
@@ -31,9 +31,9 @@ async function main() {
       key: getVariableKey(''),
     },
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 

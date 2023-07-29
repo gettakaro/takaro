@@ -29,24 +29,24 @@ export class VariableOutputArrayDTOAPI extends APIOutput<VariableOutputDTO[]> {
 
 class VariableSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  id!: string;
+  @IsString({ each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsString()
-  key!: string;
+  @IsString({ each: true })
+  key!: string[];
 
   @IsOptional()
-  @IsUUID()
-  gameServerId!: string;
+  @IsUUID(4, { each: true })
+  gameServerId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  playerId!: string;
+  @IsUUID(4, { each: true })
+  playerId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 }
 
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {

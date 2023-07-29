@@ -26,16 +26,28 @@ const Variables: FC = () => {
       ? VariableSearchInputDTOSortDirectionEnum.Desc
       : VariableSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      key: columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value as string,
-      gameServerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value as string,
-      playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value as string,
-      moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value as string,
+      key: [columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value].filter(Boolean) as string[],
+      gameServerId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value].filter(
+        Boolean
+      ) as string[],
+      playerId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value].filter(
+        Boolean
+      ) as string[],
+      moduleId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value].filter(
+        Boolean
+      ) as string[],
     },
     search: {
-      key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value as string,
-      gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value as string,
-      playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value as string,
-      moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value as string,
+      key: [columnSearch.columnSearchState.find((search) => search.id === 'key')?.value].filter(Boolean) as string[],
+      gameServerId: [columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value].filter(
+        Boolean
+      ) as string[],
+      playerId: [columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value].filter(
+        Boolean
+      ) as string[],
+      moduleId: [columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value].filter(
+        Boolean
+      ) as string[],
     },
   });
 
@@ -52,7 +64,6 @@ const Variables: FC = () => {
       header: 'Value',
       id: 'value',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
@@ -80,14 +91,12 @@ const Variables: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.display({
