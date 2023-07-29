@@ -3,13 +3,13 @@ import { Helmet } from 'react-helmet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-import { styled, Loading } from '@takaro/lib-components';
+import { styled, Loading, Company } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 
   height: 100vh;
@@ -19,6 +19,11 @@ const Container = styled.div`
   margin: -200px auto 0 auto;
 
   gap: ${({ theme }) => theme.spacing[6]};
+`;
+
+const StyledUserCard = styled(UserAuthCard)`
+  width: 800px;
+  max-width: none;
 `;
 
 export const Recovery: FC = () => {
@@ -88,7 +93,9 @@ export const Recovery: FC = () => {
         <title>Recovery - Takaro</title>
       </Helmet>
       <Container>
-        <UserAuthCard
+        <Company size="huge" />
+
+        <StyledUserCard
           title="Recovery"
           flowType={'recovery'}
           // the flow is always required since it contains the UI form elements, UI error messages and csrf token

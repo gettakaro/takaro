@@ -72,7 +72,7 @@ export const UserDropdown = () => {
         </User>
       </Dropdown.Trigger>
       <Dropdown.Menu>
-        <Dropdown.Menu.Item onClick={() => navigate(PATHS.login())} label="Profile" icon={<ProfileIcon />} />
+        <Dropdown.Menu.Item onClick={() => navigate(PATHS.auth.profile())} label="Profile" icon={<ProfileIcon />} />
         <Dropdown.Menu.Item onClick={async () => await logOut()} label="Logout" icon={<LogoutIcon />} />
       </Dropdown.Menu>
     </Dropdown>
