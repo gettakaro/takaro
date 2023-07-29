@@ -73,11 +73,26 @@ describe('QueryBuilder', () => {
     await TestUserModel.query().insert({ name: 'test3' });
 
     const res = await new QueryBuilder<TestUserModel, TestUserModel>({
-      filters: { name: 'test2' },
+      filters: { name: ['test2'] },
     }).build(TestUserModel.query());
 
     expect(res.results).to.have.lengthOf(1);
     expect(res.results[0].name).to.equal('test2');
+  });
+
+  it('Can filter based on multiple values', async () => {
+    await TestUserModel.query().insert({ name: 'test1' });
+    await TestUserModel.query().insert({ name: 'test2' });
+    await TestUserModel.query().insert({ name: 'test3' });
+
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
+      filters: { name: ['test2', 'test3'] },
+      sortBy: 'name',
+    }).build(TestUserModel.query());
+
+    expect(res.results).to.have.lengthOf(2);
+    expect(res.results[0].name).to.equal('test2');
+    expect(res.results[1].name).to.equal('test3');
   });
 
   it('Can do paging', async () => {
@@ -134,7 +149,7 @@ describe('QueryBuilder', () => {
 
     const res = await new QueryBuilder<TestUserModel, TestUserModel>({
       search: {
-        name: 'test',
+        name: ['test'],
       },
     }).build(TestUserModel.query());
 
@@ -142,10 +157,24 @@ describe('QueryBuilder', () => {
 
     const res2 = await new QueryBuilder<TestUserModel, TestUserModel>({
       search: {
-        name: '1',
+        name: ['1'],
       },
     }).build(TestUserModel.query());
 
     expect(res2.results).to.have.lengthOf(1);
+  });
+
+  it('Can search for multiple values, ORs them', async () => {
+    await TestUserModel.query().insert({ name: 'test1' });
+    await TestUserModel.query().insert({ name: 'test2' });
+    await TestUserModel.query().insert({ name: 'test3' });
+
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
+      search: {
+        name: ['st1', 'st2'],
+      },
+    }).build(TestUserModel.query());
+
+    expect(res.results).to.have.lengthOf(2);
   });
 });

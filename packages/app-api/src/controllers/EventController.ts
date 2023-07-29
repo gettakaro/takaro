@@ -11,26 +11,30 @@ import { EventCreateDTO, EventOutputDTO, EventService } from '../service/EventSe
 
 class EventSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  eventName!: string;
+  @IsString({ each: true })
+  eventName!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  playerId!: string;
+  @IsUUID(4, { each: true })
+  playerId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  gameserverId!: string;
+  @IsUUID(4, { each: true })
+  gameserverId!: string[];
 }
 
 class EventSearchInputDTO extends ITakaroQuery<EventSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => EventSearchInputAllowedFilters)
   declare filters: EventSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => EventSearchInputAllowedFilters)
+  declare search: EventSearchInputAllowedFilters;
 }
 
 export class EventOutputArrayDTOAPI extends APIOutput<EventOutputDTO[]> {

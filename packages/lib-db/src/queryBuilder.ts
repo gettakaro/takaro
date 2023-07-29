@@ -1,15 +1,15 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { QueryBuilder as ObjectionQueryBuilder, Model as ObjectionModel, Page } from 'objection';
+import { QueryBuilder as ObjectionQueryBuilder, Model as ObjectionModel, Page, AnyQueryBuilder } from 'objection';
 
 export class ITakaroQuery<T> {
   @IsOptional()
   filters?: {
-    [key in keyof T]?: unknown;
+    [key in keyof T]?: unknown[];
   };
 
   @IsOptional()
   search?: {
-    [key in keyof T]?: string;
+    [key in keyof T]?: unknown[];
   };
 
   @IsOptional()
@@ -45,21 +45,23 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
   build(query: ObjectionQueryBuilder<Model, Model[]>): ObjectionQueryBuilder<Model, Page<Model>> {
     const tableName = query.modelClass().tableName;
 
-    const filters = this.filters(tableName);
     const pagination = this.pagination();
     const sorting = this.sorting();
 
-    const qry = query
-      .where(filters)
-      .page(pagination.page, pagination.limit)
-      .orderBy(sorting.sortBy, sorting.sortDirection);
+    let qry = query.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
+
+    qry = this.filters(tableName, qry);
 
     if (this.query.search) {
       for (const search in this.query.search) {
         if (Object.prototype.hasOwnProperty.call(this.query.search, search)) {
           const searchVal = this.query.search[search];
-          if (searchVal) {
-            qry.andWhere(`${tableName}.${search}`, 'ilike', `%${searchVal}%`);
+          if (searchVal && Array.isArray(searchVal)) {
+            searchVal.forEach((val) => {
+              if (val) {
+                qry.andWhere(`${tableName}.${search}`, 'ilike', `%${val}%`);
+              }
+            });
           }
         }
       }
@@ -72,19 +74,24 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
     return qry;
   }
 
-  private filters(tableName: string) {
-    const filters: Record<string, unknown> = {};
-
+  private filters(
+    tableName: string,
+    query: ObjectionQueryBuilder<Model, Page<Model>>
+  ): ObjectionQueryBuilder<Model, Page<Model>> {
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
+
         if (searchVal) {
-          filters[`${tableName}.${filter}`] = searchVal;
+          const filtered = searchVal.filter(Boolean);
+          if (filtered.length) {
+            query.whereIn(`${tableName}.${filter}`, searchVal.filter(Boolean) as unknown as AnyQueryBuilder);
+          }
         }
       }
     }
 
-    return filters;
+    return query;
   }
 
   private sorting(): { sortBy: string; sortDirection: SortDirection } {

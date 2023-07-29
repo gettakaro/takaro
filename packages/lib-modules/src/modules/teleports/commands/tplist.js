@@ -11,9 +11,9 @@ async function main() {
   const ownedTeleports = (
     await takaro.variable.variableControllerFind({
       filters: {
-        gameServerId,
-        playerId: player.playerId,
-        moduleId: mod.moduleId,
+        gameServerId: [gameServerId],
+        playerId: [player.playerId],
+        moduleId: [mod.moduleId],
       },
       search: {
         key: 'tp',
@@ -26,11 +26,11 @@ async function main() {
   const maybePublicTeleports = (
     await takaro.variable.variableControllerFind({
       filters: {
-        gameServerId,
-        moduleId: mod.moduleId,
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
       },
       search: {
-        key: 'tp',
+        key: ['tp'],
       },
       sortBy: 'key',
       sortDirection: 'asc',

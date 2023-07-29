@@ -48,22 +48,26 @@ class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
 
 class UserSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsString()
-  idpId!: string;
+  @IsString({ each: true })
+  idpId!: string[];
 
   @IsOptional()
-  @IsString()
-  discordId!: string;
+  @IsString({ each: true })
+  discordId!: string[];
 }
 
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare filters: UserSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedFilters)
+  declare search: UserSearchInputAllowedFilters;
 }
 
 @OpenAPI({
