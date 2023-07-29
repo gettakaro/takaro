@@ -39,14 +39,18 @@ export class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
 
 export class DomainSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 }
 
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
   @ValidateNested()
   @Type(() => DomainSearchInputAllowedFilters)
   declare filters: DomainSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => DomainSearchInputAllowedFilters)
+  declare search: DomainSearchInputAllowedFilters;
 }
 export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
   @Type(() => TokenOutputDTO)

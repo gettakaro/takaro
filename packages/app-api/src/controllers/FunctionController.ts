@@ -32,14 +32,18 @@ class FunctionOutputArrayDTOAPI extends APIOutput<FunctionOutputDTO[]> {
 }
 
 class FunctionSearchInputAllowedFilters {
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 }
 
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedFilters)
   declare filters: FunctionSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => FunctionSearchInputAllowedFilters)
+  declare search: FunctionSearchInputAllowedFilters;
 }
 
 @OpenAPI({

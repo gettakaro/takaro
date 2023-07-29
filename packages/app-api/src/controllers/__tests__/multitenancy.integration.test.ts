@@ -28,7 +28,7 @@ const tests = [
     },
     test: async function () {
       const res = await this.client.role.roleControllerSearch({
-        filters: { name: 'Test role' },
+        filters: { name: ['Test role'] },
       });
 
       expect(res.data.data).to.have.length(0);
@@ -39,7 +39,7 @@ const tests = [
       await this.client.login();
 
       const res2 = await this.client.role.roleControllerSearch({
-        filters: { name: 'Test role' },
+        filters: { name: ['Test role'] },
       });
 
       expect(res2.data.data).to.have.length(1);

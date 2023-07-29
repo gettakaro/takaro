@@ -8,10 +8,10 @@ async function main() {
 
   const existingVariable = await takaro.variable.variableControllerFind({
     filters: {
-      key: `tp_${args.tp}`,
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [`tp_${args.tp}`],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 

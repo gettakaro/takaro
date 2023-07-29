@@ -27,12 +27,18 @@ const Users: FC = () => {
       ? UserSearchInputDTOSortDirectionEnum.Desc
       : UserSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
-      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value as string,
+      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
+        Boolean
+      ) as string[],
+      discordId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value].filter(
+        Boolean
+      ) as string[],
     },
     search: {
-      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
-      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value as string,
+      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
+      discordId: [columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value].filter(
+        Boolean
+      ) as string[],
     },
   });
 
@@ -48,8 +54,6 @@ const Users: FC = () => {
     columnHelper.accessor('email', {
       header: 'Email',
       id: 'email',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('discordId', {
@@ -63,14 +67,12 @@ const Users: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.display({

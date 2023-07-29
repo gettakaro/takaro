@@ -31,22 +31,26 @@ export class CronJobOutputArrayDTOAPI extends APIOutput<CronJobOutputDTO[]> {
 
 class CronJobSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 }
 
 class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
   declare filters: CronJobSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => CronJobSearchInputAllowedFilters)
+  declare search: CronJobSearchInputAllowedFilters;
 }
 
 @OpenAPI({
