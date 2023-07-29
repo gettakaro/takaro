@@ -269,16 +269,19 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   // handle click events
   const handleOnDeleteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setOpenDialog(true);
   };
 
   const handleOnRenameClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setEditing(true);
   };
 
   const handleOnNewFileClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
     sandpack.updateFile(`${filePath.slice(0, -1)}/new-file`);
@@ -328,10 +331,12 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
     }
   };
 
+  const readOnly = moduleData.isBuiltIn;
+
   return (
     <>
       {/* TODO: add context menu for directory */}
-      {selectFile && (
+      {selectFile && !readOnly && (
         <ContextMenu targetRef={fileRef}>
           <ContextMenu.Group>
             <ContextMenu.Item label="Rename file" onClick={handleOnRenameClick} />
