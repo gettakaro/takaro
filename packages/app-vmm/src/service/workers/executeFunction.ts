@@ -1,4 +1,5 @@
-import { config, EXECUTION_MODE } from '../../config.js';
+import { config } from '../../config.js';
+import { EXECUTION_MODE } from '@takaro/config';
 import { errors, logger } from '@takaro/util';
 import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
@@ -85,7 +86,6 @@ export async function executeFunction(
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
-        break;
     }
 
     await client.event.eventControllerCreate(eventData);
