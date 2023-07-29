@@ -7,7 +7,7 @@ import { config } from './config.js';
 export interface ISendOptions {
   address: string;
   template: keyof typeof EMAIL_TEMPLATES;
-  data: Record<string, unknown>
+  data: Record<string, unknown>;
 }
 
 const log = logger('email:send');
@@ -27,7 +27,7 @@ export async function send(opts: ISendOptions) {
     from: '"noreply@takaro.io" <noreply@takaro.io>',
     to: opts.address,
     subject: template.subject,
-    html
+    html,
   });
 
   log.info('Sent an email', { ...opts });

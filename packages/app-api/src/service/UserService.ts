@@ -8,7 +8,6 @@ import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { RoleOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
-import { config } from '../config.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -128,7 +127,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       template: 'invite',
       data: {
         inviteLink: recoveryFlow.recovery_link,
-      }
+      },
     });
   }
 }
