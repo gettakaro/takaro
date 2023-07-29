@@ -233,7 +233,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
             moduleId: moduleData.id!,
             name: newFileName,
             eventType: 'log',
-            regex: `/w+/`,
+            regex: '\\w',
           });
           break;
         case FunctionType.Commands:
