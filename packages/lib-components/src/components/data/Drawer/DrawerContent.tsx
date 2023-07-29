@@ -4,12 +4,7 @@ import { getTransition } from '../../../helpers';
 import { motion } from 'framer-motion';
 import SimpleBar from 'simplebar-react';
 
-import {
-  FloatingFocusManager,
-  FloatingOverlay,
-  FloatingPortal,
-  useMergeRefs,
-} from '@floating-ui/react';
+import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useMergeRefs } from '@floating-ui/react';
 import { useDrawerContext } from './DrawerContext';
 
 const StyledFloatingOverlay = styled(FloatingOverlay)`
@@ -24,51 +19,50 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
 const Container = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.background};
   width: 640px;
-  height: 100vh;
-  max-height: 100vh;
-  min-height: 100%;
+  margin-top: ${({ theme }) => theme.spacing[1]};
+  margin-right: ${({ theme }) => theme.spacing['0_75']};
+  min-height: 98vh;
+  max-height: 98vh;
+  border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
+  border-top-right-radius: ${({ theme }) => theme.borderRadius.large};
   z-index: ${({ theme }) => theme.zIndex.drawer};
+  box-shadow: ${({ theme }) => theme.elevation[3]};
 `;
 
-export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
-  (props, propRef) => {
-    const { context, labelId, descriptionId, getFloatingProps } =
-      useDrawerContext();
+export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>((props, propRef) => {
+  const { context, labelId, descriptionId, getFloatingProps } = useDrawerContext();
 
-    const ref = useMergeRefs([context.refs.setFloating, propRef]);
+  const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-    const root = document.getElementById('drawer');
-    if (!root) {
-      throw new Error('Drawer needs to render in a <div id="drawer"></div>');
-    }
-
-    return (
-      <FloatingPortal root={root}>
-        {context.open && (
-          <StyledFloatingOverlay lockScroll>
-            <FloatingFocusManager context={context}>
-              <Container
-                ref={ref}
-                aria-labelledby={labelId}
-                aria-describedby={descriptionId}
-                {...getFloatingProps(props)}
-                initial={{ x: '100%' }}
-                animate={{
-                  x: 0,
-                }}
-                exit={{
-                  x: '100%',
-                }}
-                transition={getTransition()}
-              >
-                <SimpleBar style={{ maxHeight: '92vh' }}>
-                  {props.children}
-                </SimpleBar>
-              </Container>
-            </FloatingFocusManager>
-          </StyledFloatingOverlay>
-        )}
-      </FloatingPortal>
-    );
+  const root = document.getElementById('drawer');
+  if (!root) {
+    throw new Error('Drawer needs to render in a <div id="drawer"></div>');
   }
-);
+
+  return (
+    <FloatingPortal root={root}>
+      {context.open && (
+        <StyledFloatingOverlay lockScroll>
+          <FloatingFocusManager context={context}>
+            <Container
+              ref={ref}
+              aria-labelledby={labelId}
+              aria-describedby={descriptionId}
+              {...getFloatingProps(props)}
+              initial={{ x: '100%' }}
+              animate={{
+                x: 0,
+              }}
+              exit={{
+                x: '100%',
+              }}
+              transition={getTransition()}
+            >
+              <SimpleBar style={{ maxHeight: '92vh' }}>{props.children}</SimpleBar>
+            </Container>
+          </FloatingFocusManager>
+        </StyledFloatingOverlay>
+      )}
+    </FloatingPortal>
+  );
+});

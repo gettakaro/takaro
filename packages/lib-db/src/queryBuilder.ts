@@ -59,7 +59,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
         if (Object.prototype.hasOwnProperty.call(this.query.search, search)) {
           const searchVal = this.query.search[search];
           if (searchVal) {
-            qry.andWhere(`${tableName}.${search}`, 'like', `%${searchVal}%`);
+            qry.andWhere(`${tableName}.${search}`, 'ilike', `%${searchVal}%`);
           }
         }
       }

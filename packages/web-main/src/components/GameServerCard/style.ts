@@ -5,7 +5,11 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
 
-  &:active {
+  &:focus-within {
+    border-color: none;
+  }
+
+  &:focus {
     border-color: ${({ theme }) => theme.colors.primary};
   }
 `;

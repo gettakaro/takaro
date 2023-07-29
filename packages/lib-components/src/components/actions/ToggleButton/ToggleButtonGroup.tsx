@@ -27,6 +27,7 @@ export interface ToggleButtonGroupProps {
   /// The currently selected value within the group or an array of selected values when `exclusive` is false
   defaultValue?: string;
   fullWidth?: boolean;
+  canSelectNone?: boolean;
 }
 
 export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
@@ -35,6 +36,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
   exclusive,
   onChange = () => {},
   orientation = 'horizontal',
+  canSelectNone = false,
   fullWidth = false,
 }) => {
   const [selected, setSelected] = useState<string | Map<string, boolean>>(
@@ -55,6 +57,10 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
 
   const clickEvent = (value: string) => {
     if (exclusive) {
+      if (!canSelectNone && selected === value) {
+        return;
+      }
+
       // handle exclusive (one value return)
       if (selected === value) {
         return setSelected('');
@@ -63,12 +69,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
     } else {
       // handle case that each button has a seperate state
       setSelected(
-        new Map(
-          (selected as Map<string, boolean>).set(
-            value,
-            !(selected as Map<string, boolean>).get(value)
-          )
-        )
+        new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value)))
       );
     }
   };
@@ -78,19 +79,16 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
   }, [selected]);
 
   return (
-    <Container orientation={orientation} fullWidth={fullWidth}>
+    <Container orientation={orientation} fullWidth={fullWidth} aria-orientation={orientation}>
       {Children.map(children, (child) => {
         if (isValidElement(child)) {
-          return cloneElement(
-            child as ReactElement<ToggleButtonProps | Record<string, unknown>>,
-            {
-              selected: exclusive
-                ? selected == child.props.value
-                : (selected as Map<string, boolean>).get(child.props.value),
-              parentClickEvent: clickEvent,
-              orientation: orientation,
-            }
-          );
+          return cloneElement(child as ReactElement<ToggleButtonProps | Record<string, unknown>>, {
+            selected: exclusive
+              ? selected == child.props.value
+              : (selected as Map<string, boolean>).get(child.props.value),
+            parentClickEvent: clickEvent,
+            orientation: orientation,
+          });
         }
         return child;
       })}

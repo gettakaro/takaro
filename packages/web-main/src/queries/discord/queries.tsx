@@ -19,15 +19,28 @@ export const discordKeys = {
   invite: ['discordInvite'] as const,
 };
 
-export const useDiscordGuilds = ({ page = 0, ...guildSearchInputArgs }: GuildSearchInputDTO = {}) => {
+export const useDiscordGuilds = ({
+  page = 0,
+  sortDirection,
+  sortBy,
+  limit,
+  search,
+  filters,
+  extend,
+}: GuildSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   const query = useInfiniteQuery<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
-    queryKey: discordKeys.guilds,
+    queryKey: [...discordKeys.guilds, page, sortBy, sortDirection, filters, search],
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.discord.discordControllerSearch({
-          ...guildSearchInputArgs,
+          limit,
+          sortBy,
+          sortDirection,
+          filters,
+          search,
+          extend,
           page: pageParam,
         })
       ).data,

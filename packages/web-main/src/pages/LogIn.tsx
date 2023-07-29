@@ -46,6 +46,7 @@ const Container = styled.div`
   justify-content: center;
 
   height: 100vh;
+  width: 100%;
 
   max-width: 600px;
   text-align: center;
@@ -96,7 +97,6 @@ const LogIn: FC = () => {
         setCsrfToken(csrfAttr.value);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginFlow]);
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({

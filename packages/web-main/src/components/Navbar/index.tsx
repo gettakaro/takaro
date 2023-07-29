@@ -1,12 +1,12 @@
 import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
-import { darken } from 'polished';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Company, styled } from '@takaro/lib-components';
-import { PATHS } from 'paths';
 import { AiOutlineLink as ExternalLinkIcon } from 'react-icons/ai';
-import { GameServerSelectNav } from './GameServerSelectNav';
+import { GameServerSelectNav } from '../GameServerSelectNav';
+import { UserDropdown } from './UserDropdown';
+import { PATHS } from 'paths';
 
 const Container = styled(motion.div)`
   width: 0;
@@ -16,9 +16,7 @@ const Container = styled(motion.div)`
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: ${({ theme }) => theme.spacing[8]};
-  border-right: 1px solid ${({ theme }) => theme.colors.secondary};
+  justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]}`};
 
   .company-icon {
@@ -41,11 +39,12 @@ const Nav = styled.nav`
   gap: ${({ theme }) => theme.spacing[1]};
   width: 100%;
   flex-direction: column;
+  margin-top: ${({ theme }) => theme.spacing[8]};
 
   a {
     width: 100%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: ${({ theme }) => theme.spacing['1_5']};
+    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -70,15 +69,10 @@ const Nav = styled.nav`
     }
 
     &.active {
-      background-color: ${({ theme }) => theme.colors.primary};
-
-      &:hover {
-        background-color: ${({ theme }) => darken(0.05, theme.colors.primary)};
+      svg {
+        fill: ${({ theme }) => theme.colors.primary};
       }
-
-      svg,
       p {
-        fill: white;
         color: white;
       }
     }
@@ -91,6 +85,14 @@ export interface NavbarLink {
   icon: ReactElement;
   external?: boolean;
   end?: boolean;
+  subLinks?: SubLink[];
+}
+
+interface SubLink {
+  path: string;
+  label: string;
+  external?: boolean;
+  end?: boolean;
 }
 
 interface NavbarProps {
@@ -99,37 +101,37 @@ interface NavbarProps {
 }
 
 export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
+  const renderLink = ({ path, icon, external, label, end }: NavbarLink) => {
+    return external ? (
+      <a key={path} target="_blank" rel="noopener noreferrer" href={path}>
+        <span>
+          {cloneElement(icon, { size: 20 })}
+          <p>{label}</p>
+        </span>
+        <ExternalLinkIcon size={16} />
+      </a>
+    ) : (
+      <div>
+        <NavLink to={path} key={path} end={end}>
+          <span>
+            {cloneElement(icon, { size: 20 })}
+            <p>{label}</p>
+          </span>
+        </NavLink>
+      </div>
+    );
+  };
+
   return (
-    <Container
-      animate={{ width: 325 }}
-      transition={{ duration: 1, type: 'spring', bounce: 0.5 }}
-    >
-      <Link className="company-icon" to={PATHS.home()}>
-        <Company />
-      </Link>
-
-      {gameServerNav && <GameServerSelectNav />}
-
-      <Nav>
-        {links.map(({ path, label, icon, external = false, end = true }) =>
-          external ? (
-            <a key={path} target="_blank" rel="noopener noreferrer" href={path}>
-              <span>
-                {cloneElement(icon, { size: 20 })}
-                <p>{label}</p>
-              </span>
-              <ExternalLinkIcon size={16} />
-            </a>
-          ) : (
-            <NavLink to={path} key={path} end={end}>
-              <span>
-                {cloneElement(icon, { size: 20 })}
-                <p>{label}</p>
-              </span>
-            </NavLink>
-          )
-        )}
-      </Nav>
+    <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
+      <div style={{ width: '100%' }}>
+        <Link className="company-icon" to={PATHS.home()}>
+          <Company />
+        </Link>
+        {gameServerNav && <GameServerSelectNav />}
+        <Nav>{links.map((link) => renderLink(link))}</Nav>
+      </div>
+      <UserDropdown />
     </Container>
   );
 };

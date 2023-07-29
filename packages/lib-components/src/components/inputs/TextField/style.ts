@@ -20,7 +20,7 @@ export const InputContainer = styled.div`
     top: 0;
     bottom: 0;
     margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
-    left: ${({ theme }) => theme.spacing[2]};
+    left: ${({ theme }) => theme.spacing['0_75']};
   }
 
   &:focus {
@@ -36,7 +36,7 @@ export const InputContainer = styled.div`
     top: 0;
     bottom: 0;
     margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
-    right: ${({ theme }) => theme.spacing[2]};
+    right: ${({ theme }) => theme.spacing['1']};
     cursor: pointer;
     fill: ${({ theme }) => theme.colors.text};
   }
@@ -47,7 +47,7 @@ export const PrefixContainer = styled.div<{ hasError: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `0 ${theme.spacing['0_75']}`};
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 `;
@@ -57,7 +57,7 @@ export const SuffixContainer = styled.div<{ hasError: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `0 ${theme.spacing['0_75']}`};
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
 `;
@@ -70,9 +70,9 @@ export const Input = styled.input<{
   isPassword: boolean;
 }>`
   width: 100%;
-  padding-left: ${({ hasIcon, theme }): string => (hasIcon ? theme.spacing[7] : theme.spacing['1_5'])};
+  padding-left: ${({ hasIcon, theme }): string => (hasIcon ? theme.spacing[4] : theme.spacing['1'])};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding-right: ${({ theme, isPassword }) => (isPassword ? theme.spacing[6] : 0)};
+  padding-right: ${({ theme, isPassword }) => (isPassword ? theme.spacing[4] : theme.spacing['1'])};
   border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
   color: ${({ theme }) => theme.colors.text};
 

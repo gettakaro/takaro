@@ -5,6 +5,7 @@ interface IAwsConfig extends IBaseConfig {
     region: string;
     accessKeyId: string;
     secretAccessKey: string;
+    s3Bucket: string;
   };
 }
 
@@ -15,6 +16,12 @@ const configSchema = {
       format: String,
       default: 'eu-west-3',
       env: 'AWS_REGION',
+    },
+    s3Bucket: {
+      doc: 'The AWS S3 bucket to use',
+      format: String,
+      default: 'takaro-template-code',
+      env: 'AWS_S3_BUCKET',
     },
     accessKeyId: {
       doc: 'The AWS access key id to use',

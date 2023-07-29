@@ -1,19 +1,9 @@
 import { Control, useWatch } from 'react-hook-form';
 import { Input, InputType } from '../InputTypes';
-import {
-  TextField,
-  TagField,
-  CheckBox,
-  Select,
-} from '../../../../../components';
+import { TextField, TagField, CheckBox, Select } from '../../../../../components';
 import { IFormInputs } from '..';
 
-export const TypeSpecificFieldsMap = (
-  control: Control<IFormInputs>,
-  input: Input,
-  index: number,
-  id: string
-) => {
+export const TypeSpecificFieldsMap = (control: Control<IFormInputs>, input: Input, index: number, id: string) => {
   const enumValues = useWatch<IFormInputs>({
     name: `configFields.${index}.enum`,
     control,
@@ -27,6 +17,7 @@ export const TypeSpecificFieldsMap = (
         control={control}
         type="text"
         label="Default value"
+        description="When a user installs the module, this will be the default value for this field."
       />,
       <TextField
         name={`configFields.${index}.minLength`}
@@ -34,12 +25,14 @@ export const TypeSpecificFieldsMap = (
         control={control}
         type="number"
         label="Minimum length"
+        placeholder="0"
       />,
       <TextField
         name={`configFields.${index}.maxLength`}
         key={`${input.type}-maxLength-${id}`}
         control={control}
         type="number"
+        placeholder="100"
         label="Maximum length"
       />,
       <CheckBox
@@ -48,6 +41,7 @@ export const TypeSpecificFieldsMap = (
         label="Is Field required?"
         labelPosition="left"
         name={`configFields.${index}.required`}
+        description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
       />,
     ],
     [InputType.number]: [
@@ -57,6 +51,7 @@ export const TypeSpecificFieldsMap = (
         control={control}
         type="number"
         label="Default value"
+        description="When a user installs the module, this will be the default value for this field."
       />,
       <TextField
         name={`configFields.${index}.minimum`}
@@ -87,6 +82,7 @@ export const TypeSpecificFieldsMap = (
         control={control}
         labelPosition="left"
         label="Default value"
+        description="When a user installs the module, this will be the default value for this field."
       />,
     ],
     [InputType.enum]: [
@@ -104,11 +100,7 @@ export const TypeSpecificFieldsMap = (
           control={control}
           name={`configFields.${index}.default`}
           label="Default value"
-          render={(selectedIndex) => (
-            <div>
-              {selectedIndex !== -1 ? enumValues[selectedIndex] : enumValues[0]}
-            </div>
-          )}
+          render={(selectedIndex) => <div>{selectedIndex !== -1 ? enumValues[selectedIndex] : enumValues[0]}</div>}
         >
           <Select.OptionGroup>
             {enumValues.map((enumValue: string) => (
@@ -135,6 +127,7 @@ export const TypeSpecificFieldsMap = (
         label="Is Field required?"
         labelPosition="left"
         name={`configFields.${index}.required`}
+        description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
       />,
     ],
   };

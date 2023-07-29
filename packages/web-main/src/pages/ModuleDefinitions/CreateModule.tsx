@@ -9,6 +9,7 @@ import {
   SchemaGenerator,
   errors,
   FormError,
+  TextAreaField,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -109,7 +110,7 @@ const CreateModule: FC = () => {
                   placeholder="My cool module"
                   required
                 />
-                <TextField
+                <TextAreaField
                   control={control}
                   label="Description"
                   loading={isLoading}

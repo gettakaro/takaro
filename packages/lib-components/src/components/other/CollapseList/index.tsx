@@ -21,6 +21,7 @@ export const CollapseList: FC<PropsWithChildren> & {
 interface ItemProps {
   collapsed?: boolean;
   title: string;
+  description?: string;
 }
 
 const Header = styled.div<{ isCollapsed: boolean }>`
@@ -40,7 +41,7 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   }
 `;
 
-const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, children }) => {
+const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, children, description }) => {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const theme = useTheme();
 
@@ -50,6 +51,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
         <h3>{title}</h3>
         <ArrowUp size={18} />
       </Header>
+      {description && <p>{description}</p>}
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div

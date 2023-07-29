@@ -27,7 +27,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     name,
     control,
     loading,
-    minWidth,
+    inPortal = false,
   } = defaultsApplier(props);
 
   const {
@@ -38,10 +38,14 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     control,
   });
 
-  const [showError, setShowError] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(true);
 
   const handleOnBlur = () => {
     field.onBlur();
+    setShowError(true);
+  };
+
+  const handleOnFocus = () => {
     setShowError(false);
   };
 
@@ -51,7 +55,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
 
   return (
     <Wrapper>
-      <Container minWidth={minWidth}>
+      <Container>
         {label && (
           <Label
             error={!!error}
@@ -74,8 +78,10 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
           size={componentSize}
           onChange={field.onChange}
           onBlur={handleOnBlur}
+          onFocus={handleOnFocus}
           render={render}
           value={field.value}
+          inPortal={inPortal}
         >
           {children}
         </GenericSelect>

@@ -35,10 +35,13 @@ const OptionContainer = styled.div<{ isSelected: boolean }>`
     gap: ${({ theme }) => theme.spacing[1]};
 
     span {
-      color: ${({ theme, isSelected }) =>
-        isSelected ? theme.colors.white : theme.colors.text};
+      color: ${({ theme, isSelected }) => (isSelected ? theme.colors.white : theme.colors.text)};
     }
   }
+`;
+
+const StyledCheckIcon = styled(CheckIcon)`
+  margin-left: ${({ theme }) => theme.spacing[1]};
 `;
 
 export interface OptionProps extends PropsWithChildren {
@@ -47,22 +50,9 @@ export interface OptionProps extends PropsWithChildren {
   onChange?: (value: string) => unknown;
 }
 
-export const Option: FC<OptionProps> = ({
-  children,
-  index = 0,
-  value,
-  onChange,
-}) => {
-  const {
-    selectedIndex,
-    setSelectedIndex,
-    listRef,
-    setOpen,
-    activeIndex,
-    setActiveIndex,
-    getItemProps,
-    dataRef,
-  } = useContext(SelectContext);
+export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }) => {
+  const { selectedIndex, setSelectedIndex, listRef, setOpen, activeIndex, setActiveIndex, getItemProps, dataRef } =
+    useContext(SelectContext);
 
   function handleSelect() {
     setSelectedIndex(index);
@@ -103,8 +93,7 @@ export const Option: FC<OptionProps> = ({
         onKeyUp: handleKeyUp,
       })}
     >
-      <span>{children}</span>{' '}
-      {selectedIndex === index && <CheckIcon size={15} />}
+      <span>{children}</span> {selectedIndex === index && <StyledCheckIcon size={15} />}
     </OptionContainer>
   );
 };
