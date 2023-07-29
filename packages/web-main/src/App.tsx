@@ -87,10 +87,10 @@ function App() {
       emphasis: darkTheme.colors.error,
     },
     success: {
-      emphasis: darkTheme.colors.success,
+      emphasis: darkTheme.colors.primary,
     },
     border: {
-      def: darkTheme.colors.secondary,
+      def: darkTheme.colors.background,
     },
     text: {
       def: darkTheme.colors.text,

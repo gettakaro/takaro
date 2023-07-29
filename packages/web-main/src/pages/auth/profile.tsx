@@ -10,15 +10,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-
+  justify-content: flex-start;
   height: 100vh;
+  text-align: start;
+`;
 
-  max-width: 600px;
-  text-align: center;
-  margin: -200px auto 0 auto;
-
-  gap: ${({ theme }) => theme.spacing[6]};
+const StyledUserCard = styled(UserSettingsCard)`
+  width: 800px;
+  max-width: none;
 `;
 
 export const AuthSettings: FC = () => {
@@ -96,7 +95,7 @@ export const AuthSettings: FC = () => {
           {(['profile', 'password', 'totp', 'webauthn', 'lookupSecret', 'oidc'] as UserSettingsFlowType[]).map(
             (flowType: UserSettingsFlowType, index) => (
               // here we render the settings flow using Ory Elements
-              <UserSettingsCard
+              <StyledUserCard
                 key={index}
                 // we always need to pass the component the flow since it contains the form fields, error messages and csrf token
                 flow={flow}

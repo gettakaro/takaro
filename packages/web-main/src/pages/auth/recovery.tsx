@@ -14,8 +14,7 @@ const Container = styled.div`
 
   height: 100vh;
 
-  max-width: 600px;
-  text-align: center;
+  text-align: start;
   margin: -200px auto 0 auto;
 
   gap: ${({ theme }) => theme.spacing[6]};
