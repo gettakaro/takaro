@@ -59,7 +59,10 @@ export class WsTimeOutError extends TakaroError {
 }
 
 export class BadRequestError extends TakaroError {
-  constructor(message: string = 'Bad request') {
+  constructor(
+    message: string = 'Bad request',
+    public details: Record<string, string | number> | undefined = undefined
+  ) {
     super(message);
     this.http = 400;
   }
