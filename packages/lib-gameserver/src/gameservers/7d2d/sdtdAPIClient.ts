@@ -2,6 +2,7 @@ import { Axios, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import { CommandResponse, OnlinePlayerResponse, PlayerLocation, StatsResponse } from './apiResponses.js';
+import { errors } from '@takaro/util';
 
 export class SdtdApiClient {
   private client: Axios;
@@ -20,6 +21,25 @@ export class SdtdApiClient {
 
       return config;
     });
+
+    this.client.interceptors.response.use(
+      function (response) {
+        return response;
+      },
+      function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        if (error.response) {
+          const simplifiedError = new errors.BadRequestError('Axios error', {
+            extra: 'A request to the 7D2D server failed',
+            status: error.response.status,
+            statusText: error.response.statusText,
+            url: error.config.url,
+          });
+          return Promise.reject(simplifiedError);
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   private get url() {

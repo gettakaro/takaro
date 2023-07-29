@@ -1,9 +1,9 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-10-23T18:33:01.789Z",
       "error": {
         "code": "ValidationError",
+        "message": "Validation error",
         "details": [
           {
             "target": {
