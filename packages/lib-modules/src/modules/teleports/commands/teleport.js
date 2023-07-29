@@ -58,7 +58,7 @@ async function main() {
   const lastExecutedRecord = lastExecuted.data.data[0];
 
   if (!lastExecutedRecord) {
-    await takaro.variable.variableControllerSearch({
+    await takaro.variable.variableControllerCreate({
       key: 'lastExecuted',
       gameServerId,
       playerId: player.playerId,
