@@ -80,6 +80,12 @@ test.describe('filetab', () => {
     await studioPage.closeTab(fileName);
     await expect(studioPage.page.getByRole('tab', { name: fileName })).not.toBeVisible();
   });
+
+  test.describe('context menu', () => {
+    test.fixme('should close all tabs to the right', async ({}) => {});
+    test.fixme('should close all saved tabs', async ({}) => {});
+    test.fixme('should close all ohter tabs', async ({}) => {});
+  });
 });
 
 test.describe('filetree', () => {
