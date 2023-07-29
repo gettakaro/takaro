@@ -1,0 +1,47 @@
+name: Code style
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  style-fix:
+    name: Run Prettier and Commit Changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+  
+      - run: ./scripts/dev-init.sh
+
+      - name: Run Prettier
+        run: npm run test:style:fix
+
+      - name: Check for modifications
+        id: git-diff-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+
+      - name: Commit and push if changed
+        if: steps.git-diff-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'Takaro CI'
+          git config --global user.email 'ci@takaro.io'
+          git commit -am "fix: code style"
+          git push
+        env:
+          GIT_HTTP_BASICAUTH_PASSWORD: ${{ steps.generate_token.outputs.token }}
