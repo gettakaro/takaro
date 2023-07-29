@@ -101,9 +101,10 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
   }
   async find(filters: ITakaroQuery<PlayerOutputWithRolesDTO>) {
     const { query } = await this.getModel();
+    const extend = filters.extend || [];
     const result = await new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
       ...filters,
-      extend: ['roleAssignments.role.permissions'],
+      extend: ['roleAssignments.role.permissions', ...extend],
     }).build(query);
     return {
       total: result.total,
