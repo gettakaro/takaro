@@ -14,13 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
-          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
-
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -43,5 +36,3 @@ jobs:
           git config --global user.email 'ci@takaro.io'
           git commit -am "fix: code style"
           git push
-        env:
-          GIT_HTTP_BASICAUTH_PASSWORD: ${{ steps.generate_token.outputs.token }}
