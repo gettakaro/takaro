@@ -3,19 +3,10 @@ import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 
-export enum EXECUTION_MODE {
-  FIRECRACKER = 'firecracker',
-  LOCAL = 'local',
-  LAMBDA = 'lambda',
-}
-
 interface IAgentConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
-  };
-  functions: {
-    executionMode: EXECUTION_MODE;
   };
   firecracker: {
     binary: string;
@@ -56,14 +47,6 @@ const configSchema = {
       format: Array,
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
-    },
-  },
-  functions: {
-    executionMode: {
-      doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
-      format: Object.values(EXECUTION_MODE),
-      default: EXECUTION_MODE.FIRECRACKER,
-      env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
   firecracker: {
