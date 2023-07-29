@@ -1,6 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
+import { AxiosError } from 'axios';
 
 const group = 'RoleController';
 
@@ -107,6 +108,74 @@ const tests = [
 
       return newRoleRes;
     },
+  }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Does not allow deleting the root role',
+    test: async function () {
+      try {
+        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: 'root' } });
+        await this.client.role.roleControllerRemove(rolesRes.data.data[0].id);
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).to.eq(400);
+          expect(error.response?.data.meta.error.message).to.be.eq('Cannot delete root role');
+          return error.response;
+        } else {
+          throw error;
+        }
+      }
+    },
+    expectedStatus: 400,
+  }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Cannot create root role if it already exists',
+    test: async function () {
+      try {
+        await this.client.role.roleControllerCreate({
+          name: 'root',
+          permissions: [],
+        });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).to.eq(409);
+          expect(error.response?.data.meta.error.message).to.be.eq('Unique constraint violation');
+          return error.response;
+        } else {
+          throw error;
+        }
+      }
+    },
+    expectedStatus: 409,
+  }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Cannot update root role',
+    test: async function () {
+      try {
+        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: 'root' } });
+        await this.client.role.roleControllerUpdate(rolesRes.data.data[0].id, {
+          name: 'New name',
+          permissions: [],
+        });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).to.eq(400);
+          expect(error.response?.data.meta.error.message).to.be.eq('Cannot update root role');
+          return error.response;
+        } else {
+          throw error;
+        }
+      }
+    },
+    expectedStatus: 400,
   }),
 ];
 

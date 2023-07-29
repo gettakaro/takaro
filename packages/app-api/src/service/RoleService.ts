@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
 import {
@@ -117,10 +117,22 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   }
 
   async update(id: string, item: RoleUpdateInputDTO): Promise<RoleOutputDTO> {
+    const toUpdate = await this.repo.findOne(id);
+
+    if (toUpdate?.name === 'root') {
+      throw new errors.BadRequestError('Cannot update root role');
+    }
+
     return this.repo.update(id, item);
   }
 
   async delete(id: string) {
+    const toDelete = await this.repo.findOne(id);
+
+    if (toDelete?.name === 'root') {
+      throw new errors.BadRequestError('Cannot delete root role');
+    }
+
     await this.repo.delete(id);
     return id;
   }
