@@ -60,7 +60,7 @@ selfservice:
       use: code
 
     verification:
-      enabled: true
+      enabled: false
       ui_url: http://127.0.0.1:13001/auth/verification
       use: code
       after:
