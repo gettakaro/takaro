@@ -77,9 +77,9 @@ export function apiResponse(data: unknown = {}, opts?: IApiResponseOptions): API
       } else {
         returnVal.meta.error.details = opts.error.details as string;
       }
-    } else {
-      returnVal.meta.error.message = String(opts.error.message);
     }
+
+    returnVal.meta.error.message = String(opts.error.message);
   }
 
   if (opts?.meta) {
