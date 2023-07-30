@@ -101,7 +101,7 @@ test.describe('filetree', () => {
     test('should open', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
-      file.click({ button: 'right' });
+      await file.click({ button: 'right' });
 
       await expect(studioPage.page.getByRole('menu')).toBeVisible();
       await expect(studioPage.page.getByRole('menuitem', { name: 'Rename file' })).toBeVisible();

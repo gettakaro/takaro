@@ -24,7 +24,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
     setOpenDialog(true);
   };
 
-  const handleOnDelete = async (e: MouseEvent) => {
+  const handleOnDelete = async (_e: MouseEvent) => {
     await mutateAsync({ id });
   };
 
@@ -32,7 +32,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
   return (
     <>
-      <Container onClick={() => navigate(PATHS.gameServer.dashboard(id))} tabIndex={0}>
+      <Container
+        onClick={() => navigate(PATHS.gameServer.dashboard(id))}
+        tabIndex={0}
+        data-testid={`gameserver-${id}-card`}
+      >
         <Body>
           <Header>
             {isLoading || !data ? (
@@ -79,7 +83,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}
               fullWidth
-              text={`Delete gameserver`}
+              text={'Delete gameserver'}
               color="error"
             />
           </StyledDialogBody>
