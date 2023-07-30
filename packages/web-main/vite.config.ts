@@ -5,8 +5,13 @@ import checker from 'vite-plugin-checker';
 
 export default defineConfig({
   build: {
+    minify: 'esbuild',
     manifest: true,
     sourcemap: true,
+    cssMinify: 'lightningcss',
+  },
+  css: {
+    transformer: 'lightningcss',
   },
   plugins: [react(), tsconfigPaths(), checker({ typescript: true })],
   envDir: '../../',
