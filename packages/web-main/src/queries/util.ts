@@ -6,10 +6,7 @@ export function hasNextPage(pageInfo: MetadataOutput, pageIndex: number) {
   }
 
   if (pageIndex < pageInfo.total! / pageInfo.limit!) {
-    console.log('this is triggered');
-    return [pageIndex++];
+    return pageIndex++;
   }
-
-  console.log('undefined triggered');
-  return [undefined];
+  return undefined;
 }
