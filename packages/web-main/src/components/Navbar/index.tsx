@@ -111,11 +111,11 @@ interface NavbarProps {
 
 export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
   const renderLink = ({ path, icon, label, end }: NavbarLink) => (
-    <div>
-      <NavLink to={path} key={path} end={end}>
-        <span>
-          {cloneElement(icon, { size: 20 })}
-          <p>{label}</p>
+    <div key={`wrapper-${path}`}>
+      <NavLink to={path} key={`link-${path}`} end={end}>
+        <span key={`inner-${path}`}>
+          {cloneElement(icon, { size: 20, key: `icon-${path}` })}
+          <p key={`label-${path}`}>{label}</p>
         </span>
       </NavLink>
     </div>
