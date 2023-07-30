@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
@@ -56,5 +56,18 @@ export const useUserRemoveRole = () => {
     mutationFn: async ({ userId, roleId }: RoleInput) =>
       (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
     useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+};
+
+export const useInviteUser = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, { email: string }>({
+    mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(userKeys.list());
+    },
   });
 };

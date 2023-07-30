@@ -38,10 +38,11 @@ basicTest('Logging in with invalid credentials shows error message', async ({ pa
 
 basicTest('Invite user - happy path', async ({ page, takaro }) => {
   const newUserEmail = `test_user_${randomUUID()}+e2e@takaro.dev`;
-  // TODO: replace this with playwright actions
-  await takaro.client.user.userControllerInvite({
-    email: newUserEmail,
-  });
+
+  await page.getByRole('link', { name: 'Users' }).click();
+  await page.getByText('Invite user').click();
+  await page.getByPlaceholder('example@example.com').type(newUserEmail);
+  await page.getByRole('button', { name: 'Send Invitation' }).click();
 
   const user = (await takaro.client.user.userControllerMe()).data.data;
 
