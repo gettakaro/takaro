@@ -32,9 +32,11 @@ export class HTTP {
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
     this.app.use(paginationMiddleware);
+    this.app.set('x-powered-by', false);
     this.app.use(
       cors({
         credentials: true,
+        exposedHeaders: ['X-Trace-Id'],
         origin: (origin: string | undefined, callback: CallableFunction) => {
           if (!origin) return callback(null, true);
           const allowedOrigins = this.httpOptions.allowedOrigins ?? [];

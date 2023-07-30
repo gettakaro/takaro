@@ -1,1 +1,1 @@
-export { usePlayers, usePlayer, playerKeys } from './queries';
+export { usePlayers, usePlayer, useInfinitePlayers } from './queries';

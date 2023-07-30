@@ -9,13 +9,11 @@ import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRigh
 
 const TableContainer = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
   margin-top: 2rem;
 `;
 
 const Variables: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<VariableOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [activeVar, setActiveVar] = useState<VariableOutputDTO | null>(null);
@@ -148,13 +146,13 @@ const Variables: FC = () => {
 
       <TableContainer>
         <Table
+          id="variables"
+          rowSelection={rowSelection}
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
@@ -173,12 +171,6 @@ interface IVariableDeleteProps {
   setOpenDialog: (open: boolean) => void;
 }
 
-const DeleteDialogContainer = styled(Dialog.Body)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
-
 const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
   const { mutateAsync, isLoading: isDeleting } = useVariableDelete();
 
@@ -196,12 +188,12 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <Dialog.Content>
         <Dialog.Heading>
-          <h1>Delete variable</h1>
+          <span>Delete variable</span>
         </Dialog.Heading>
-        <DeleteDialogContainer>
+        <Dialog.Body>
           <h2>Delete variable</h2>
           <p>
-            Are you sure you want to delete the variable <strong>{variable.key}</strong>? This action is irreversible!
+            Are you sure you want to delete the variable <strong>{variable.key}</strong>?
           </p>
           <Button
             isLoading={isDeleting}
@@ -210,7 +202,7 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
             text={'Delete variable'}
             color="error"
           />
-        </DeleteDialogContainer>
+        </Dialog.Body>
       </Dialog.Content>
     </Dialog>
   );
