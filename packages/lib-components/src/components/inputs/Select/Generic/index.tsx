@@ -44,13 +44,23 @@ import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
 import { Label, setAriaDescribedBy } from '../../layout';
 
-export interface SelectProps {
-  render: (selectedIndex: number) => React.ReactNode;
+export type SelectProps = {
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
   showFilter?: boolean;
-}
+  type: 'single' | 'multiple';
+} & (SingleSelectProps | MultipleSelectProps);
+
+type SingleSelectProps = {
+  type: 'single';
+  render: (selectedIndex: number) => React.ReactNode;
+};
+
+type MultipleSelectProps = {
+  type: 'multiple';
+  render: (selectedIndices: number[]) => React.ReactNode;
+};
 
 export type GenericSelectProps = PropsWithChildren<SelectProps & GenericInputProps<string, HTMLDivElement>>;
 
