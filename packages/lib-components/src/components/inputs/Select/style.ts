@@ -63,10 +63,14 @@ export const SelectContainer = styled.div`
   outline: 0;
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.background};
   box-shadow: ${({ theme }) => theme.elevation[4]};
   text-transform: capitalize;
   z-index: ${({ theme }) => theme.zIndex.dropdown};
+
+  input {
+    width: 100%;
+  }
 `;
 
 export const GroupLabel = styled.li`

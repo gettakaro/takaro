@@ -27,6 +27,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     name,
     control,
     loading,
+    showFilter = false,
     inPortal = false,
   } = defaultsApplier(props);
 
@@ -81,6 +82,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
           onFocus={handleOnFocus}
           render={render}
           value={field.value}
+          showFilter={showFilter}
           inPortal={inPortal}
         >
           {children}

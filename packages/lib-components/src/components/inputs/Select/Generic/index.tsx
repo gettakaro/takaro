@@ -34,13 +34,14 @@ import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '
 import { Option } from './Option';
 import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
-import { setAriaDescribedBy } from '../../layout';
+import { Label, setAriaDescribedBy } from '../../layout';
 
 export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
+  showFilter?: boolean;
 }
 
 export type GenericSelectProps = PropsWithChildren<SelectProps & GenericInputProps<string, HTMLDivElement>>;
@@ -62,8 +63,13 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasError,
     hasDescription,
     name,
-    inPortal = true,
+    inPortal = false,
+    showFilter = false,
   } = defaultsApplier(props);
+
+  console.log(showFilter);
+
+  const [filterInput, setFilterInput] = useState<string>('');
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
@@ -113,7 +119,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     ],
   });
 
-  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+  const interactions = [
     useClick(context),
     useRole(context, { role: 'listbox' }),
     useDismiss(context),
@@ -123,13 +129,20 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
       selectedIndex,
       onNavigate: setActiveIndex,
     }),
-    useTypeahead(context, {
-      listRef: listContentRef,
-      onMatch: open ? setActiveIndex : setSelectedIndex,
-      activeIndex,
-      selectedIndex,
-    }),
-  ]);
+  ];
+
+  if (!showFilter) {
+    interactions.push(
+      useTypeahead(context, {
+        listRef: listContentRef,
+        onMatch: open ? setActiveIndex : setSelectedIndex,
+        activeIndex,
+        selectedIndex,
+      })
+    );
+  }
+
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(interactions);
 
   const values = useMemo(() => {
     return (
@@ -175,12 +188,15 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
                 {child.props.label}
               </GroupLabel>
             )}
-            {Children.map(child.props.children, (child) =>
-              cloneElement(child, {
-                index: 1 + optionIndex++,
-                onChange: onChange,
-              })
-            )}
+            {Children.map(child.props.children, (child) => {
+              /* I think we need to add fuzzy search here based on the filterInputValue */
+              if (child.props.value.toLowerCase().includes(filterInput.toLowerCase())) {
+                return cloneElement(child, {
+                  index: 1 + optionIndex++,
+                  onChange: onChange,
+                });
+              }
+            })}
           </ul>
         )
     ) ?? []),
@@ -205,6 +221,25 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           }}
           {...getFloatingProps()}
         >
+          {showFilter && (
+            <>
+              <Label
+                htmlFor={`select-filter-${id}`}
+                position="top"
+                required={false}
+                disabled={false}
+                text="filter"
+                error={false}
+                size="medium"
+              />
+              <input
+                id={`select-filter-${id}`}
+                value={filterInput}
+                onChange={(e) => setFilterInput(e.target.value)}
+                placeholder="Filter options"
+              />
+            </>
+          )}
           {options}
         </SelectContainer>
       </FloatingFocusManager>

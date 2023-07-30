@@ -19,6 +19,7 @@ export default {
     description: 'This is the description',
     hint: 'This is the hint',
     optionGroupLabel: 'Films',
+    showFilter: true,
   },
 } as Meta<SelectProps & ExtraStoryProps>;
 
@@ -42,12 +43,11 @@ export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
         label={args.label}
         control={control}
         name="film"
+        showFilter={args.showFilter}
         hint={args.hint}
         render={(selectedIndex) => (
           <div>
-            {films[selectedIndex] && (
-              <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
-            )}
+            {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
             {films[selectedIndex]?.name ?? 'Select...'}
           </div>
         )}
@@ -74,10 +74,7 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        film: z.enum([
-          'not-sure-how-this-works',
-          ...films.map((film) => film.name),
-        ]),
+        film: z.enum(['not-sure-how-this-works', ...films.map((film) => film.name)]),
       }),
     []
   );
@@ -92,20 +89,18 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
 
   return (
     <>
-      NOTE: You can ignore the width changing when opening the select. This is
-      due to the select being rendered in a storybook iframe which has incorrect
-      gutter size.
+      NOTE: You can ignore the width changing when opening the select. This is due to the select being rendered in a
+      storybook iframe which has incorrect gutter size.
       <form onSubmit={handleSubmit(submit)}>
         <Select
           control={control}
           name="film"
           label={args.label}
+          showFilter={args.showFilter}
           description={args.description}
           render={(selectedIndex) => (
             <div>
-              {films[selectedIndex] && (
-                <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
-              )}
+              {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
               {films[selectedIndex]?.name ?? 'Select...'}
             </div>
           )}
