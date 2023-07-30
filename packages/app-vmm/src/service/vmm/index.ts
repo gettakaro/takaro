@@ -4,13 +4,18 @@ import { logger, traceableClass } from '@takaro/util';
 import promClient from 'prom-client';
 import fs from 'node:fs/promises';
 import { config } from '../../config.js';
+import { FunctionExecutor } from '../workers/executeFunction.js';
+
+interface IVMM {
+  executeFunction: FunctionExecutor;
+}
 
 /*
  * Virtual Machine Manager
  * Responsible for managing firecracker microVMs
  */
 @traceableClass('VMM')
-export class VMM {
+export class VMM implements IVMM {
   log = logger('VMM');
 
   hotVMs: Array<FirecrackerClient> = [];

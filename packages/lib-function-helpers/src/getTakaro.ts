@@ -1,11 +1,15 @@
 import { Client } from '@takaro/apiclient';
 
-export async function getTakaro(data: Record<string, any>): Promise<Client> {
+export async function getTakaro(
+  data: Record<string, any>,
+  logger?: Pick<Console, 'log' | 'debug' | 'error' | 'warn' | 'info'>
+): Promise<Client> {
   const takaro = new Client({
     url: data.url,
     auth: {
       token: data.token,
     },
+    log: logger ? logger : console,
   });
 
   if (data.player) {

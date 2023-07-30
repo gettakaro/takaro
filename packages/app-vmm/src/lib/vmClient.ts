@@ -155,10 +155,7 @@ export class VmClient {
 
     return {
       success: output.exit_code === 0,
-      logs: {
-        stdout: output.stdout,
-        stderr: output.stderr,
-      },
+      logs: [],
     };
   }
 }
