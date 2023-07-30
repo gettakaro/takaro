@@ -1,9 +1,9 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-11T20:36:45.603Z",
       "error": {
         "code": "ValidationError",
+        "message": "Validation error",
         "details": [
           {
             "target": {
@@ -24,6 +24,7 @@
   "status": 400,
   "test": {
     "group": "RoleController",
+    "snapshot": true,
     "name": "Update by ID with invalid ID",
     "expectedStatus": 400,
     "filteredFields": [],

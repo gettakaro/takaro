@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { logger, ctx } from '@takaro/util';
 
 const SUPPRESS_BODY_KEYWORDS = ['password', 'newPassword'];
-
+import { context, trace } from '@opentelemetry/api';
 const log = logger('http');
 
 /**
@@ -22,6 +22,15 @@ async function loggingMiddleware(req: Request, res: Response, next: NextFunction
     path: req.originalUrl,
     body: hideData ? { suppressed_output: true } : req.body,
   });
+
+  const span = trace.getSpan(context.active());
+
+  if (span) {
+    // get the trace ID from the span and set it in the headers
+    const traceId = span.spanContext().traceId;
+    res.header('X-Trace-Id', traceId);
+  }
+
   // Log on API Call Finish to add responseTime
   res.once('finish', () => {
     const responseTime = Date.now() - requestStartMs;

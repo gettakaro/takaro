@@ -21,7 +21,7 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = usePlayers({
@@ -32,17 +32,30 @@ const Players: FC = () => {
       ? PlayerSearchInputDTOSortDirectionEnum.Desc
       : PlayerSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
-      steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value as string,
-      epicOnlineServicesId: columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')
-        ?.value as string,
-      xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value as string,
+      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
+        Boolean
+      ) as string[],
+      steamId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value].filter(Boolean) as [
+        string
+      ],
+      epicOnlineServicesId: [
+        columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')?.value,
+      ].filter(Boolean) as string[],
+      xboxLiveId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value].filter(
+        Boolean
+      ) as string[],
     },
     search: {
-      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
-      steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value as string,
-      epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId'),
-      xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value as string,
+      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
+      steamId: [columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value].filter(
+        Boolean
+      ) as string[],
+      epicOnlineServicesId: [
+        columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')?.value,
+      ].filter(Boolean) as string[],
+      xboxLiveId: [columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value].filter(
+        Boolean
+      ) as string[],
     },
   });
 
@@ -81,14 +94,12 @@ const Players: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
 
@@ -137,13 +148,14 @@ const Players: FC = () => {
 
       <TableContainer>
         <Table
+          id="players"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
+          rowSelection={rowSelection}
           pagination={{
-            ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            paginationState: pagination.paginationState,
+            setPaginationState: pagination.setPaginationState,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}

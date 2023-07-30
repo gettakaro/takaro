@@ -12,12 +12,12 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
-  const existingVariable = await takaro.variable.variableControllerFind({
+  const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
-      key: getVariableKey(args.tp),
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [getVariableKey(args.tp)],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 
@@ -26,14 +26,14 @@ async function main() {
     return;
   }
 
-  const allPlayerTeleports = await takaro.variable.variableControllerFind({
+  const allPlayerTeleports = await takaro.variable.variableControllerSearch({
     search: {
       key: getVariableKey(''),
     },
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 

@@ -92,7 +92,7 @@ const tests = [
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
-        filters: { name: mockCronjob(this.setupData.data.moduleId).name },
+        filters: { name: [mockCronjob(this.setupData.data.moduleId).name] },
       });
     },
     filteredFields: ['moduleId', 'functionId'],

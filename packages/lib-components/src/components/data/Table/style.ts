@@ -32,7 +32,7 @@ export const StyledTable = styled.table<{ density: Density }>`
       if (density === 'tight') {
         return `${theme.spacing['0_5']} 0`;
       }
-      return `${theme.spacing['2_5']} 0`;
+      return `${theme.spacing['1_5']} 0`;
     }};
 
     &:first-of-type {

@@ -1,9 +1,9 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2022-09-11T20:36:46.226Z",
       "error": {
         "code": "ValidationError",
+        "message": "Validation error",
         "details": [
           {
             "target": {
@@ -24,6 +24,7 @@
   "status": 400,
   "test": {
     "group": "RoleController",
+    "snapshot": true,
     "name": "Delete with invalid ID",
     "expectedStatus": 400,
     "filteredFields": [],

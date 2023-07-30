@@ -108,7 +108,7 @@ export default {
 } as Meta<TableProps<User>>;
 
 const Users: FC<TableProps<User>> = () => {
-  const { pagination } = useTableActions<User>();
+  const { pagination, sorting, columnSearch, columnFilters, rowSelection } = useTableActions<User>();
 
   useEffect(() => {
     pagination.setPaginationState({
@@ -119,13 +119,20 @@ const Users: FC<TableProps<User>> = () => {
 
   return (
     <Table
+      id="story-table"
       data={data}
       columns={columns}
       pagination={{
         ...pagination,
-        pageCount: 20,
-        total: 10,
+        pageOptions: {
+          pageCount: 10,
+          total: 20,
+        },
       }}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      rowSelection={rowSelection}
+      sorting={sorting}
     />
   );
 };

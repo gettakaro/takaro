@@ -5,7 +5,7 @@ import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlinePlus as AddIcon, AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import { useNavigate, Link } from 'react-router-dom';
-import { ModuleCardContainer, SpacedRow, ActionIconsContainer, DeleteDialogContainer, AddModuleCard } from './style';
+import { ModuleCardContainer, SpacedRow, ActionIconsContainer, AddModuleCard } from './style';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -78,7 +78,7 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({ mod }) => {
           <Dialog.Heading size={4}>
             Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
-          <DeleteDialogContainer>
+          <Dialog.Body>
             <h2>Delete module</h2>
             <p>
               Are you sure you want to delete the module <strong>{mod.name}</strong>? This action is irreversible!{' '}
@@ -87,10 +87,10 @@ export const ModuleCardDefinition: FC<IModuleCardProps> = ({ mod }) => {
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}
               fullWidth
-              text={`Delete module`}
+              text={'Delete module'}
               color="error"
             />
-          </DeleteDialogContainer>
+          </Dialog.Body>
         </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>

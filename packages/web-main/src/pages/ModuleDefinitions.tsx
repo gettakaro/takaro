@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Divider, Loading, styled } from '@takaro/lib-components';
 import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
-import { useModules } from 'queries/modules';
+import { useInfiniteModules } from 'queries/modules';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
@@ -16,7 +16,7 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
-  const { data: modules, isLoading, InfiniteScroll } = useModules();
+  const { data: modules, isLoading, InfiniteScroll } = useInfiniteModules();
 
   const navigate = useNavigate();
 

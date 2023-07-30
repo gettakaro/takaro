@@ -24,30 +24,34 @@ export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {
 
 class PlayerSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsString()
-  steamId!: string;
+  @IsString({ each: true })
+  steamId!: string[];
 
   @IsOptional()
-  @IsString()
-  epicOnlineServicesId!: string;
+  @IsString({ each: true })
+  epicOnlineServicesId!: string[];
 
   @IsOptional()
-  @IsString()
-  xboxLiveId!: string;
+  @IsString({ each: true })
+  xboxLiveId!: string[];
 }
 
 class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedFilters)
+  declare search: PlayerSearchInputAllowedFilters;
 }
 
 @OpenAPI({

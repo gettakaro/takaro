@@ -4,7 +4,7 @@ import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlineDelete as DeleteIcon, AiOutlineSetting as ConfigIcon } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import { ModuleCardContainer, SpacedRow, ActionIconsContainer, DeleteDialogContainer } from './style';
+import { ModuleCardContainer, SpacedRow, ActionIconsContainer } from './style';
 
 import { useGameServerModuleUninstall } from 'queries/gameservers';
 import { useGameServerOutletContext } from 'frames/GameServerFrame';
@@ -88,7 +88,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
           <Dialog.Heading>
             Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
-          <DeleteDialogContainer>
+          <Dialog.Body>
             <h2>Uninstall module</h2>
             <p>
               Are you sure you want to uninstall the module <strong>{mod.name}</strong>? This action is irreversible!
@@ -97,10 +97,10 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}
               fullWidth
-              text={`Uninstall module`}
+              text="Uninstall module"
               color="error"
             />
-          </DeleteDialogContainer>
+          </Dialog.Body>
         </Dialog.Content>
       </Dialog>
     </ModuleCardContainer>
