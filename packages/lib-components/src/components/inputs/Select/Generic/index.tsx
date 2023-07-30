@@ -10,6 +10,7 @@ import {
   useEffect,
   ReactNode,
   useMemo,
+  ChangeEvent,
 } from 'react';
 import { SelectContext } from './context';
 import { GroupLabel, SelectButton, SelectContainer, StyledFloatingOverlay, StyledArrowIcon } from '../style';
@@ -66,8 +67,6 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     inPortal = false,
     showFilter = false,
   } = defaultsApplier(props);
-
-  console.log(showFilter);
 
   const [filterInput, setFilterInput] = useState<string>('');
 
@@ -193,7 +192,11 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
               if (child.props.value.toLowerCase().includes(filterInput.toLowerCase())) {
                 return cloneElement(child, {
                   index: 1 + optionIndex++,
-                  onChange: onChange,
+                  onChange: (e: ChangeEvent<HTMLDivElement>) => {
+                    // when the onChange is called, we clear the filterInput
+                    setFilterInput('');
+                    onChange(e);
+                  },
                 });
               }
             })}
