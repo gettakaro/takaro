@@ -9,3 +9,6 @@ const List = styled.ol`
 export const EventFeed: FC<PropsWithChildren> = ({ children }) => {
   return <List>{children}</List>;
 };
+
+export { EventItem } from './EventItem';
+export type { EventItemProps } from './EventItem';

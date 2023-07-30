@@ -1,6 +1,5 @@
 import { styled } from '@takaro/lib-components';
-import { EventFeed } from 'components/EventFeed';
-import { EventFeedItem } from 'components/EventFeed/EventFeedItem';
+import { EventFeed, EventItem } from 'components/EventFeed';
 import { FC } from 'react';
 
 const Wrapper = styled.div`
@@ -12,7 +11,7 @@ export const Events: FC = () => {
   return (
     <Wrapper>
       <EventFeed>
-        <EventFeedItem
+        <EventItem
           eventType="chat-message"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -24,7 +23,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="player-disconnected"
           createdAt="2023-07-30T00:00:00.000Z"
           data={{
@@ -35,7 +34,7 @@ export const Events: FC = () => {
             console.log('second');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="player-connected"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -46,7 +45,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="user-login"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -56,7 +55,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="chat-message"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -68,7 +67,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="player-disconnected"
           createdAt="2023-07-30T00:00:00.000Z"
           data={{
@@ -79,7 +78,7 @@ export const Events: FC = () => {
             console.log('second');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="player-connected"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -90,7 +89,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="user-login"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{
@@ -100,7 +99,7 @@ export const Events: FC = () => {
             console.log('first');
           }}
         />
-        <EventFeedItem
+        <EventItem
           eventType="chat-message"
           createdAt="2023-07-30T11:12:00.000Z"
           data={{

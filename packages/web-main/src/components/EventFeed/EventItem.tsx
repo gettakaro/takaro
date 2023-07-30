@@ -64,7 +64,7 @@ const EventProperty: FC<{ name: string; value: string }> = ({ name, value }) => 
   );
 };
 
-export type EventFeedItemProps = {
+export type EventItemProps = {
   eventType: string;
   createdAt: string;
   data: Record<string, string>;
@@ -104,7 +104,7 @@ function getTimeAgo(timestamp: number) {
   return format(yearsPast, 'year');
 }
 
-export const EventFeedItem: FC<EventFeedItemProps> = ({ eventType, createdAt, data, onDetailClick }) => {
+export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, onDetailClick }) => {
   const timestamp = Date.parse(createdAt);
   const timeAgo = getTimeAgo(timestamp);
 
