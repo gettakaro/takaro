@@ -12,19 +12,18 @@ export const playerKeys = {
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
 };
 
-export const usePlayers = (queryParams: PlayerSearchInputDTO = { page: 0 }) => {
+export const useInfinitePlayers = ({ page, ...queryParams }: PlayerSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.player.playerControllerSearch({
           ...queryParams,
           page: pageParam,
         })
       ).data,
-    keepPreviousData: true,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -34,6 +33,18 @@ export const usePlayers = (queryParams: PlayerSearchInputDTO = { page: 0 }) => {
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const usePlayers = (queryParams: PlayerSearchInputDTO = {}) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
+    queryKey: [...playerKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.player.playerControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };
 
 export const usePlayer = (id: string) => {

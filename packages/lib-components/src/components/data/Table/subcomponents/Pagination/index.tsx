@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Button } from '../../../../../components';
 import { PaginationContainer } from './style';
 
@@ -45,8 +45,13 @@ export const Pagination: FC<PaginationProps> = ({
 
   const pages = range(pageWindow.start, pageWindow.end);
 
-  const showButtons = pageCount > 1;
-  const showJumps = showButtons && pageCount > windowSize;
+  const showButtons = useMemo(() => {
+    return pageCount > 1;
+  }, [pageCount]);
+
+  const showJumps = useMemo(() => {
+    return showButtons && pageCount > windowSize;
+  }, [showButtons, pageCount, windowSize]);
 
   return (
     <PaginationContainer border={false}>

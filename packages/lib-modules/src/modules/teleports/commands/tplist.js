@@ -9,7 +9,7 @@ async function main() {
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   const ownedTeleports = (
-    await takaro.variable.variableControllerFind({
+    await takaro.variable.variableControllerSearch({
       filters: {
         gameServerId: [gameServerId],
         playerId: [player.playerId],
@@ -24,7 +24,7 @@ async function main() {
   ).data.data;
 
   const maybePublicTeleports = (
-    await takaro.variable.variableControllerFind({
+    await takaro.variable.variableControllerSearch({
       filters: {
         gameServerId: [gameServerId],
         moduleId: [mod.moduleId],
