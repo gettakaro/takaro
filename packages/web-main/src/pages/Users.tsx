@@ -16,7 +16,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -48,8 +48,6 @@ const Users: FC = () => {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('email', {
       header: 'Email',
@@ -60,8 +58,6 @@ const Users: FC = () => {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -117,14 +113,14 @@ const Users: FC = () => {
 
       <TableContainer>
         <Table
+          id="users"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
+          rowSelection={rowSelection}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
           sorting={sorting}

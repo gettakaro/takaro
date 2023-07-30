@@ -13133,12 +13133,45 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
     },
     /**
      *
-     * @summary Find
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerFindOne', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    variableControllerFind: async (
+    variableControllerSearch: async (
       variableSearchInputDTO?: VariableSearchInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
@@ -13166,39 +13199,6 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
         localVarRequestOptions,
         configuration
       );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Find one
-     * @param {string} id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    variableControllerFindOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('variableControllerFindOne', 'id', id);
-      const localVarPath = `/variables/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
       return {
         url: toPathString(localVarUrlObj),
@@ -13286,20 +13286,6 @@ export const VariableApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Find
-     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async variableControllerFind(
-      variableSearchInputDTO?: VariableSearchInputDTO,
-      options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerFind(variableSearchInputDTO, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13310,6 +13296,23 @@ export const VariableApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerFindOne(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerSearch(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerSearch(
+        variableSearchInputDTO,
+        options
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -13366,21 +13369,6 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
     },
     /**
      *
-     * @summary Find
-     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    variableControllerFind(
-      variableSearchInputDTO?: VariableSearchInputDTO,
-      options?: any
-    ): AxiosPromise<VariableOutputArrayDTOAPI> {
-      return localVarFp
-        .variableControllerFind(variableSearchInputDTO, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13388,6 +13376,21 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
      */
     variableControllerFindOne(id: string, options?: any): AxiosPromise<VariableOutputDTOAPI> {
       return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerSearch(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputArrayDTOAPI> {
+      return localVarFp
+        .variableControllerSearch(variableSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -13446,20 +13449,6 @@ export class VariableApi extends BaseAPI {
 
   /**
    *
-   * @summary Find
-   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof VariableApi
-   */
-  public variableControllerFind(variableSearchInputDTO?: VariableSearchInputDTO, options?: AxiosRequestConfig) {
-    return VariableApiFp(this.configuration)
-      .variableControllerFind(variableSearchInputDTO, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
    * @summary Find one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -13469,6 +13458,20 @@ export class VariableApi extends BaseAPI {
   public variableControllerFindOne(id: string, options?: AxiosRequestConfig) {
     return VariableApiFp(this.configuration)
       .variableControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerSearch(variableSearchInputDTO?: VariableSearchInputDTO, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerSearch(variableSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

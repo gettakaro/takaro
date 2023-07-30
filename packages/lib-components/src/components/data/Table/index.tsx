@@ -6,7 +6,6 @@ import { Density } from '../../../styled';
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   OnChangeFn,
   PaginationState,
   useReactTable,
@@ -16,54 +15,62 @@ import {
   ColumnOrderState,
   VisibilityState,
   ColumnPinningState,
-  getPaginationRowModel,
+  RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style';
 import { ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
+import { PageOptions } from '../../../hooks/useTableActions';
+import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
+import { useLocalStorage } from '../../../hooks';
 
-// TODO: add id so we can save certain data in local storage
 export interface TableProps<DataType extends object> {
+  id: string;
+
   data: DataType[];
-  defaultDensity?: Density;
 
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
-  sorting?: {
+
+  rowSelection: {
+    rowSelectionState: RowSelectionState;
+    setRowSelectionState: OnChangeFn<RowSelectionState>;
+  };
+
+  sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
   };
-  pagination?: {
+  pagination: {
     paginationState: PaginationState;
     setPaginationState: OnChangeFn<PaginationState>;
-    pageCount: number;
-    total: number;
-    pageSize?: number;
+    pageOptions: PageOptions;
   };
-  columnFiltering?: {
+  columnFiltering: {
     columnFiltersState: ColumnFiltersState;
     setColumnFiltersState: OnChangeFn<ColumnFiltersState>;
   };
-  columnSearch?: {
+  columnSearch: {
     columnSearchState: ColumnFiltersState;
     setColumnSearchState: OnChangeFn<ColumnFiltersState>;
   };
 }
 
 export function Table<DataType extends object>({
+  id,
   data,
   columns,
   sorting,
-  defaultDensity = 'tight',
   pagination,
   columnFiltering,
+  rowSelection,
   columnSearch,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
-  const [density, setDensity] = useState<Density>(defaultDensity);
+  const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
@@ -75,6 +82,15 @@ export function Table<DataType extends object>({
       return column.id;
     })
   );
+
+  // table size
+  useEffect(() => {
+    if (density === 'tight') {
+      table.setPageSize(19);
+    } else {
+      table.resetPageSize(true);
+    }
+  }, [density]);
 
   // handles the column visibility tooltip (shows tooltip when the first column is hidden)
   useEffect(() => {
@@ -95,20 +111,22 @@ export function Table<DataType extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    pageCount: pagination?.pageCount ?? -1,
+    pageCount: pagination?.pageOptions.pageCount ?? -1,
+
     manualPagination: true,
+    paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
     manualFiltering: true,
     manualSorting: true,
     enableExpanding: true,
-    enableFilters: true,
-    enableGlobalFilter: true,
+    enableColumnFilters: !!columnFiltering,
+    enableGlobalFilter: !!columnSearch,
     enableSorting: !!sorting,
     enableSortingRemoval: false,
     enableColumnResizing: true,
-    enableHiding: true,
+    enableHiding: !!columnVisibility,
+    enableRowSelection: !!rowSelection,
     autoResetPageIndex: false,
+
     columnResizeMode: 'onChange',
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
@@ -117,13 +135,17 @@ export function Table<DataType extends object>({
     onGlobalFilterChange: columnSearch?.setColumnSearchState,
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
+    onRowSelectionChange: rowSelection?.setRowSelectionState,
 
     initialState: {
       columnVisibility,
-      sorting: sorting?.sortingState,
-      columnFilters: columnFiltering?.columnFiltersState,
-      globalFilter: columnSearch?.columnSearchState,
+      sorting: sorting.sortingState,
+      columnFilters: columnFiltering.columnFiltersState,
+      globalFilter: columnSearch.columnSearchState,
+      pagination: pagination.paginationState,
+      rowSelection: rowSelection.rowSelectionState,
     },
+
     state: {
       columnVisibility,
       columnOrder,
@@ -131,6 +153,7 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
       pagination: pagination?.paginationState,
+      rowSelection: rowSelection.rowSelectionState,
       columnPinning,
     },
   });
@@ -171,6 +194,17 @@ export function Table<DataType extends object>({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
+                <th style={{ width: '10px' }}>
+                  <CheckBox
+                    hasDescription={false}
+                    hasError={false}
+                    id={`select-all-header-${headerGroup.id}`}
+                    name={`select-all-header-${headerGroup.id}`}
+                    onChange={() => table.toggleAllRowsSelected()}
+                    size="small"
+                    value={table.getIsAllRowsSelected()}
+                  />
+                </th>
                 {headerGroup.headers.map((header) => (
                   <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
                 ))}
@@ -180,6 +214,20 @@ export function Table<DataType extends object>({
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
+                {row.getCanSelect() && (
+                  <td style={{ paddingRight: '10px', width: '15px' }}>
+                    <CheckBox
+                      value={row.getIsSelected()}
+                      id={row.id}
+                      name={row.id}
+                      hasError={false}
+                      disabled={!row.getCanSelect()}
+                      onChange={() => row.toggleSelected()}
+                      hasDescription={false}
+                      size="small"
+                    />
+                  </td>
+                )}
                 {row.getVisibleCells().map(({ column, id, getContext }) => (
                   <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
                 ))}
@@ -194,11 +242,16 @@ export function Table<DataType extends object>({
           <tfoot>
             <tr>
               {pagination && (
-                <td colSpan={columns.length}>
+                <td colSpan={columns.length + 1 /* +1 here is because we have an extra column for the selection */}>
                   <PaginationContainer>
-                    <span>{pagination.total} results</span>
+                    <span>
+                      showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+                      {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                        table.getRowModel().rows.length}{' '}
+                      of {pagination.pageOptions.total} entries
+                    </span>
                     <Pagination
-                      pageCount={pagination.pageCount}
+                      pageCount={table.getPageCount()}
                       hasNext={table.getCanNextPage()}
                       hasPrevious={table.getCanPreviousPage()}
                       previousPage={table.previousPage}
