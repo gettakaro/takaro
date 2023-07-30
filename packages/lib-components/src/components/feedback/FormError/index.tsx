@@ -1,10 +1,12 @@
 import { FC, useEffect, useRef } from 'react';
 
 import { styled } from '../../../styled';
+import axios from 'axios';
 
 const Container = styled.div`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
   background-color: ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   p,
@@ -14,27 +16,47 @@ const Container = styled.div`
 `;
 
 export interface FormErrorProps {
-  message: string | string[];
+  message?: string | string[];
+  error?: unknown;
 }
 
-export const FormError: FC<FormErrorProps> = ({ message }) => {
+export const FormError: FC<FormErrorProps> = ({ message, error }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     containerRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [containerRef, message]);
 
+  // If error provided and no custom message
+  // Try to parse error message from error object
+  if (error && !message) {
+    if (axios.isAxiosError(error)) {
+      message = error.response?.data?.meta.error.message ?? error.response?.data?.meta.error.code;
+
+      if (error.response?.data?.meta.error.code === 'ValidationError') {
+        const details = error.response?.data?.meta.error.details;
+        if (Array.isArray(details)) {
+          message = details.flatMap((detail) => Object.values(detail.constraints || {}));
+        }
+      }
+    }
+  }
+
+  if (!message) {
+    message = ['Something went wrong'];
+  }
+
+  if (!Array.isArray(message)) {
+    message = [message];
+  }
+
   return (
     <Container ref={containerRef} autoFocus>
-      {typeof message === 'string' ? (
-        <p>{message}</p>
-      ) : (
-        <ul>
-          {message.map((m, i) => (
-            <li key={`form-error-message-${i}`}>{m}</li>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {message.map((m, i) => (
+          <li key={`form-error-message-${i}`}>{m}</li>
+        ))}
+      </ul>
     </Container>
   );
 };
