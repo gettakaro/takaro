@@ -124,12 +124,12 @@ const Users: FC = () => {
       <Helmet>
         <title>Users - Takaro</title>
       </Helmet>
-      <InviteUser />
       <TableContainer>
         <Table
           id="users"
           columns={columnDefs}
           data={data.data}
+          renderToolbar={() => <InviteUser />}
           pagination={{
             ...pagination,
             pageOptions: pagination.getPageOptions(data),
