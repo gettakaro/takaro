@@ -13,7 +13,14 @@ import {
   ChangeEvent,
 } from 'react';
 import { SelectContext } from './context';
-import { GroupLabel, SelectButton, SelectContainer, StyledFloatingOverlay, StyledArrowIcon } from '../style';
+import {
+  GroupLabel,
+  SelectButton,
+  SelectContainer,
+  StyledFloatingOverlay,
+  StyledArrowIcon,
+  FilterContainer,
+} from '../style';
 
 import {
   useFloating,
@@ -225,7 +232,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           {...getFloatingProps()}
         >
           {showFilter && (
-            <>
+            <FilterContainer>
               <Label
                 htmlFor={`select-filter-${id}`}
                 position="top"
@@ -241,7 +248,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
                 onChange={(e) => setFilterInput(e.target.value)}
                 placeholder="Filter options"
               />
-            </>
+            </FilterContainer>
           )}
           {options}
         </SelectContainer>

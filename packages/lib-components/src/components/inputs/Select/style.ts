@@ -57,6 +57,7 @@ export const StyledFloatingOverlay = styled(FloatingOverlay)`
 `;
 
 export const SelectContainer = styled.div`
+  position: relative;
   list-style-type: none;
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing['0_75']};
@@ -76,4 +77,8 @@ export const SelectContainer = styled.div`
 export const GroupLabel = styled.li`
   opacity: 0.5;
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
+`;
+
+export const FilterContainer = styled.div`
+  width: 100%;
 `;
