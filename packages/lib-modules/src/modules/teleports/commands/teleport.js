@@ -6,12 +6,12 @@ async function main() {
 
   const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const ownedTeleportRes = await takaro.variable.variableControllerFind({
+  const ownedTeleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      key: `tp_${args.tp}`,
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [`tp_${args.tp}`],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -20,11 +20,11 @@ async function main() {
   let teleports = ownedTeleportRes.data.data;
 
   if (mod.userConfig.allowPublicTeleports) {
-    const maybePublicTeleportRes = await takaro.variable.variableControllerFind({
+    const maybePublicTeleportRes = await takaro.variable.variableControllerSearch({
       filters: {
-        key: `tp_${args.tp}`,
-        gameServerId,
-        moduleId: mod.moduleId,
+        key: [`tp_${args.tp}`],
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
       },
       sortBy: 'key',
       sortDirection: 'asc',
@@ -45,12 +45,12 @@ async function main() {
 
   const timeout = mod.userConfig.timeout;
 
-  const lastExecuted = await takaro.variable.variableControllerFind({
+  const lastExecuted = await takaro.variable.variableControllerSearch({
     filters: {
-      key: 'lastExecuted',
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: ['lastExecuted'],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',

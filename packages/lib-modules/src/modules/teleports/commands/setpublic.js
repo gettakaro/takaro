@@ -13,12 +13,12 @@ async function main() {
     return;
   }
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
-      key: `tp_${args.tp}`,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
+      key: [`tp_${args.tp}`],
     },
     sortBy: 'key',
     sortDirection: 'asc',

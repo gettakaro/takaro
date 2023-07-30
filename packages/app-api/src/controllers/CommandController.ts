@@ -40,26 +40,30 @@ export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
 
 class CommandSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsBoolean()
-  enabled!: boolean;
+  @IsBoolean({ each: true })
+  enabled!: boolean[];
 }
 
 export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   @ValidateNested()
   @Type(() => CommandSearchInputAllowedFilters)
   declare filters: CommandSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => CommandSearchInputAllowedFilters)
+  declare search: CommandSearchInputAllowedFilters;
 }
 
 @OpenAPI({

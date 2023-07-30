@@ -16,7 +16,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -27,12 +27,18 @@ const Users: FC = () => {
       ? UserSearchInputDTOSortDirectionEnum.Desc
       : UserSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
-      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value as string,
+      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
+        Boolean
+      ) as string[],
+      discordId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value].filter(
+        Boolean
+      ) as string[],
     },
     search: {
-      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
-      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value as string,
+      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
+      discordId: [columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value].filter(
+        Boolean
+      ) as string[],
     },
   });
 
@@ -42,35 +48,27 @@ const Users: FC = () => {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('email', {
       header: 'Email',
       id: 'email',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -115,14 +113,14 @@ const Users: FC = () => {
 
       <TableContainer>
         <Table
+          id="users"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
+          rowSelection={rowSelection}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
           sorting={sorting}

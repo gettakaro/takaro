@@ -79,6 +79,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
         }
 
         this.log.error('☠️ Request errored', {
+          traceId: error.response?.headers['x-trace-id'],
           details,
           status: error.response?.status,
           statusText: error.response?.statusText,
