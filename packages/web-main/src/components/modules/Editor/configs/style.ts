@@ -44,5 +44,9 @@ export const Flex = styled.div`
   display: flex;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing[1]};
-  justify-content: flex-start;
+  justify-content: space-between;
+  /* first item takes available width*/
+  & > *:first-child {
+    flex-grow: 1;
+  }
 `;

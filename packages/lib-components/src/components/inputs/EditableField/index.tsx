@@ -1,11 +1,4 @@
-import {
-  FC,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Container } from './style';
 
@@ -108,6 +101,7 @@ export const EditableField: FC<EditableFieldProps> = ({
       {editing ? (
         <div onBlur={handleOnBlur} onKeyDown={(e) => handleKeyDown(e)}>
           <input
+            type="text"
             ref={inputRef}
             name={name}
             value={inputValue}

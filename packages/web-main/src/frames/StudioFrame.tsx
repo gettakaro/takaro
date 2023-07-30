@@ -54,9 +54,16 @@ export const StudioFrame: FC = () => {
 
   useEffect(() => {
     if (isSuccess && mod) {
-      const nameToId = mod.hooks.reduce(moduleItemPropertiesReducer(FunctionType.Hooks), {});
-      mod.cronJobs.reduce(moduleItemPropertiesReducer(FunctionType.CronJobs), nameToId);
-      mod.commands.reduce(moduleItemPropertiesReducer(FunctionType.Commands), nameToId);
+      // This first sorts
+      const nameToId = mod.hooks
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .reduce(moduleItemPropertiesReducer(FunctionType.Hooks), {});
+      mod.cronJobs
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .reduce(moduleItemPropertiesReducer(FunctionType.CronJobs), nameToId);
+      mod.commands
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .reduce(moduleItemPropertiesReducer(FunctionType.Commands), nameToId);
 
       setModuleData((moduleData) => ({
         ...moduleData,
@@ -85,7 +92,7 @@ export const StudioFrame: FC = () => {
     return <Loading />;
   }
 
-  if (isError) {
+  if (isError && !isLoading) {
     navigate(PATHS.notFound());
     return <></>;
   }
