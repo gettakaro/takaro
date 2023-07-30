@@ -7,6 +7,7 @@ export const PATHS = {
   moduleDefinitions: () => '/modules',
   variables: () => '/variables',
   notFound: () => '/404',
+  events: () => '/events',
 
   settings: {
     overview: () => '/settings',
