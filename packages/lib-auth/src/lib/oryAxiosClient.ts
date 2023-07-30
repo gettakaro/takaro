@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 
 const log = logger('ory:http');
 
@@ -53,6 +53,11 @@ export function createAxiosClient(baseURL: string) {
         headers: error.response?.headers,
         response: error.response?.data,
       });
+
+      if (error.response?.status === 409) {
+        return Promise.reject(new errors.ConflictError('User with this identifier already exists'));
+      }
+
       return Promise.reject(error);
     }
   );

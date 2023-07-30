@@ -1,4 +1,5 @@
 import playwright, { Page } from '@playwright/test';
+import { MailhogAPI, integrationConfig } from '@takaro/test';
 import {
   AdminClient,
   Client,
@@ -6,7 +7,6 @@ import {
   HookCreateDTOEventTypeEnum,
   ModuleOutputDTO,
 } from '@takaro/apiclient';
-import { integrationConfig } from '@takaro/test';
 import humanId from 'human-id/dist/index.js';
 import { GameServersPage } from './GameServersPage.js';
 import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
@@ -45,6 +45,7 @@ interface IFixtures {
     moduleDefinitionsPage: ModuleDefinitionsPage;
     GameServersPage: GameServersPage;
     builtinModule: ModuleOutputDTO;
+    mailhog: MailhogAPI;
   };
 }
 
@@ -68,6 +69,10 @@ export const basicTest = base.extend<IFixtures>({
         },
       });
       await client.login();
+
+      const mailhog = new MailhogAPI({
+        baseURL: integrationConfig.get('mailhog.url'),
+      });
 
       const gameServer = await client.gameserver.gameServerControllerCreate({
         name: 'Test server',
@@ -93,6 +98,7 @@ export const basicTest = base.extend<IFixtures>({
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+        mailhog,
       });
 
       // fixture teardown
@@ -155,6 +161,14 @@ export const test = base.extend<IFixtures>({
         temporalValue: '* * * * *',
       });
 
+      const mailhog = new MailhogAPI({
+        baseURL: integrationConfig.get('mailhog.url'),
+      });
+
+      /* TODO: should probably add more custom modules with complex config schemas
+       * probably a good idea to add one for each type of config field
+       */
+
       const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
 
       await use({
@@ -164,6 +178,7 @@ export const test = base.extend<IFixtures>({
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+        mailhog,
       });
 
       // fixture teardown
