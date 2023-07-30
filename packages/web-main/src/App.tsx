@@ -105,8 +105,8 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <OryThemeProvider themeOverrides={oryThemeOverrides}>
+    <OryThemeProvider themeOverrides={oryThemeOverrides}>
+      <ThemeProvider theme={darkTheme}>
         <UserContext.Provider value={providerUserData}>
           <ConfigContext.Provider value={config}>
             <SnackbarProvider>
@@ -137,13 +137,13 @@ function App() {
                   // React query devtools are only included in bundles with NODE_ENV === 'development'.
                   // No need to manually exclude them.
                 }
-                <ReactQueryDevtools initialIsOpen={false} />
+                <ReactQueryDevtools initialIsOpen={false} position="top-left" />
               </QueryClientProvider>
             </SnackbarProvider>
           </ConfigContext.Provider>
         </UserContext.Provider>
-      </OryThemeProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </OryThemeProvider>
   );
 }
 

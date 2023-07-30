@@ -11,14 +11,8 @@ export interface InfiniteScrollProps {
   hasNextPage?: boolean;
 }
 
-export const InfiniteScroll = forwardRef<
-  HTMLButtonElement,
-  InfiniteScrollProps
->(
-  (
-    { hasNextPage = false, isFetching, isFetchingNextPage, fetchNextPage },
-    propRef
-  ) => {
+export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>(
+  ({ hasNextPage = false, isFetching, isFetchingNextPage, fetchNextPage }, propRef) => {
     const { ref: viewRef, inView } = useInView();
     const ref = useMergeRefs([propRef, viewRef]);
 
@@ -44,9 +38,7 @@ export const InfiniteScroll = forwardRef<
             onClick={handleOnClick}
           />
         )}
-        <div>
-          {isFetching && !isFetchingNextPage ? 'background updating' : null}
-        </div>
+        <div>{isFetching && !isFetchingNextPage ? 'background updating' : null}</div>
       </div>
     );
   }

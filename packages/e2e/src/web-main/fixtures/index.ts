@@ -1,15 +1,26 @@
 import playwright, { Page } from '@playwright/test';
-import { AdminClient, Client, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { MailhogAPI, integrationConfig } from '@takaro/test';
+import {
+  AdminClient,
+  Client,
+  GameServerCreateDTOTypeEnum,
+  HookCreateDTOEventTypeEnum,
+  ModuleOutputDTO,
+} from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
+import { GameServersPage } from './GameServersPage.js';
+import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
+import { StudioPage } from './StudioPage.js';
 
 const { expect, test: base } = playwright;
 
 export async function login(page: Page, username: string, password: string) {
   await page.goto('/login');
-  await page.getByPlaceholder('hi cutie').click();
-  await page.getByPlaceholder('hi cutie').fill(username);
-  await page.getByPlaceholder('hi cutie').press('Tab');
+  const emailInput = page.getByPlaceholder('hi cutie');
+  await emailInput.click();
+  await emailInput.fill(username);
+  emailInput.press('Tab');
+  await emailInput.press('Tab');
   await page.getByLabel('PasswordRequired').fill(password);
   await page.getByRole('button', { name: 'Log in with Email' }).click();
   await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
@@ -27,7 +38,15 @@ export const getAdminClient = () => {
 };
 
 interface IFixtures {
-  takaro: { client: Client; adminClient: AdminClient; mailhog: MailhogAPI };
+  takaro: {
+    client: Client;
+    adminClient: AdminClient;
+    studioPage: StudioPage;
+    moduleDefinitionsPage: ModuleDefinitionsPage;
+    GameServersPage: GameServersPage;
+    builtinModule: ModuleOutputDTO;
+    mailhog: MailhogAPI;
+  };
 }
 
 export const basicTest = base.extend<IFixtures>({
@@ -55,7 +74,32 @@ export const basicTest = base.extend<IFixtures>({
         baseURL: integrationConfig.get('mailhog.url'),
       });
 
-      await use({ client, adminClient, mailhog });
+      const gameServer = await client.gameserver.gameServerControllerCreate({
+        name: 'Test server',
+        type: GameServerCreateDTOTypeEnum.Mock,
+        connectionInfo: JSON.stringify({
+          host: integrationConfig.get('mockGameserver.host'),
+        }),
+      });
+
+      // empty module
+      const mod = await client.module.moduleControllerCreate({
+        name: 'Module without functions',
+        configSchema: JSON.stringify({}),
+        description: 'Empty module with no functions',
+      });
+
+      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
+
+      await use({
+        client,
+        adminClient,
+        builtinModule: mods.data.data[0],
+        studioPage: new StudioPage(page, mod.data.data),
+        GameServersPage: new GameServersPage(page, gameServer.data.data),
+        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+        mailhog,
+      });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);
@@ -84,7 +128,7 @@ export const test = base.extend<IFixtures>({
       });
       await client.login();
 
-      await client.gameserver.gameServerControllerCreate({
+      const gameServer = await client.gameserver.gameServerControllerCreate({
         name: 'Test server',
         type: GameServerCreateDTOTypeEnum.Mock,
         connectionInfo: JSON.stringify({
@@ -92,38 +136,28 @@ export const test = base.extend<IFixtures>({
         }),
       });
 
-      // empty module
-      await client.module.moduleControllerCreate({
-        name: 'Module without functions',
+      const mod = await client.module.moduleControllerCreate({
+        name: 'Module with functions',
         configSchema: JSON.stringify({}),
-        description: 'Empty module with no functions',
-      });
-
-      const mod = (
-        await client.module.moduleControllerCreate({
-          name: 'Module with functions',
-          configSchema: JSON.stringify({}),
-          description: 'Module with functions',
-        })
-      ).data.data;
-
-      await client.hook.hookControllerCreate({
-        name: 'test-hook',
-        eventType: 'player-connected',
-        regex: '.*',
-        moduleId: mod.id,
+        description: 'Module with functions',
       });
 
       await client.command.commandControllerCreate({
-        moduleId: mod.id,
-        name: 'test-command',
-        trigger: 'test-command',
-        helpText: 'help text',
+        moduleId: mod.data.data.id,
+        name: 'my-command',
+        trigger: 'test',
+      });
+
+      await client.hook.hookControllerCreate({
+        moduleId: mod.data.data.id,
+        name: 'my-hook',
+        regex: 'test',
+        eventType: HookCreateDTOEventTypeEnum.Log,
       });
 
       await client.cronjob.cronJobControllerCreate({
-        moduleId: mod.id,
-        name: 'test-cronjob',
+        moduleId: mod.data.data.id,
+        name: 'my-cron',
         temporalValue: '* * * * *',
       });
 
@@ -135,7 +169,17 @@ export const test = base.extend<IFixtures>({
        * probably a good idea to add one for each type of config field
        */
 
-      await use({ client, adminClient, mailhog });
+      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
+
+      await use({
+        client,
+        adminClient,
+        builtinModule: mods.data.data[0],
+        studioPage: new StudioPage(page, mod.data.data),
+        GameServersPage: new GameServersPage(page, gameServer.data.data),
+        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+        mailhog,
+      });
 
       // fixture teardown
       await adminClient.domain.domainControllerRemove(data.createdDomain.id);

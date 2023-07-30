@@ -30,7 +30,6 @@ export const Target: StoryFn<ContextMenuProps> = () => {
 
   return (
     <Container ref={targetRef}>
-      The context menu does not receive a targetRef prop, so it is triggered on the entire document.
       <ContextMenu targetRef={targetRef}>
         <ContextMenu.Item label="Item 1" />
         <ContextMenu.Item label="Item 2" />
