@@ -18,22 +18,28 @@ export const executeFunctionLocal: FunctionExecutor = async (
 
   const logs: ILog[] = [];
 
-  const toEval = new vm.SourceTextModule(fn);
+  function pushLog(...args: string[]) {
+    logs.push({ msg: args[0], details: { args: args.slice(1) } });
+  }
+
+  const patchedConsole = {
+    log: pushLog,
+    error: pushLog,
+    warn: pushLog,
+    info: pushLog,
+    debug: pushLog,
+  };
+
+  const contextifiedObject = vm.createContext({
+    console: patchedConsole,
+  });
+
+  const toEval = new vm.SourceTextModule(fn, { context: contextifiedObject });
   const monkeyPatchedGetData = () => {
     return data;
   };
 
   const monkeyPatchedGetTakaro = function () {
-    function pushLog(...args: string[]) {
-      logs.push({ msg: args[0], details: { args: args.slice(1) } });
-    }
-    const patchedConsole = {
-      log: pushLog,
-      error: pushLog,
-      warn: pushLog,
-      info: pushLog,
-      debug: pushLog,
-    };
     return getTakaro(data, patchedConsole);
   };
 
@@ -64,11 +70,10 @@ export const executeFunctionLocal: FunctionExecutor = async (
       success: true,
     };
   } catch (error) {
-    if (error instanceof Error)
-      logs.push({
-        msg: error.message,
-        details: error.stack,
-      });
+    logs.push({
+      msg: (error as Error).message,
+      details: (error as Error).stack,
+    });
 
     return {
       logs,
