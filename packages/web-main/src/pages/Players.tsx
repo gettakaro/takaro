@@ -32,30 +32,18 @@ const Players: FC = () => {
       ? PlayerSearchInputDTOSortDirectionEnum.Desc
       : PlayerSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
-        Boolean
-      ) as string[],
-      steamId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value].filter(Boolean) as [
-        string
-      ],
-      epicOnlineServicesId: [
-        columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')?.value,
-      ].filter(Boolean) as string[],
-      xboxLiveId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+      steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value,
+      epicOnlineServicesId: columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')
+        ?.value,
+      xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value,
     },
     search: {
-      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
-      steamId: [columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value].filter(
-        Boolean
-      ) as string[],
-      epicOnlineServicesId: [
-        columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')?.value,
-      ].filter(Boolean) as string[],
-      xboxLiveId: [columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+      steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
+      epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
+        ?.value,
+      xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
     },
   });
 
