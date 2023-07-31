@@ -16,7 +16,7 @@ import {
   ColumnPinningState,
   RowSelectionState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style';
+import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex } from './style';
 import { Empty, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
@@ -35,11 +35,12 @@ export interface TableProps<DataType extends object> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
 
+  renderToolbar?: () => JSX.Element;
+
   rowSelection: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
-
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
@@ -68,6 +69,7 @@ export function Table<DataType extends object>({
   columnFiltering,
   rowSelection,
   columnSearch,
+  renderToolbar,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
@@ -161,8 +163,10 @@ export function Table<DataType extends object>({
 
   return (
     <Wrapper>
-      <Header>
-        {/* search */}
+      <Toolbar role="toolbar">
+        {/* custom toolbar is rendered on left side*/}
+        <Flex>{renderToolbar && renderToolbar()}</Flex>
+
         <Flex>
           <Filter table={table} />
           <ColumnVisibility
@@ -172,22 +176,21 @@ export function Table<DataType extends object>({
             setOpenColumnVisibilityTooltip={setOpenColumnVisibilityTooltip}
             hasShownColumnVisibilityTooltip={hasShownColumnVisibilityTooltip}
           />
+          <ToggleButtonGroup
+            onChange={(val) => setDensity(val as Density)}
+            exclusive={true}
+            orientation="horizontal"
+            defaultValue={density}
+          >
+            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
+              <RelaxedDensityIcon size={20} />
+            </ToggleButtonGroup.Button>
+            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+              <TightDensityIcon size={20} />
+            </ToggleButtonGroup.Button>
+          </ToggleButtonGroup>
         </Flex>
-        <ToggleButtonGroup
-          onChange={(val) => setDensity(val as Density)}
-          exclusive={true}
-          orientation="horizontal"
-          defaultValue={density}
-        >
-          <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
-            <RelaxedDensityIcon size={20} />
-          </ToggleButtonGroup.Button>
-
-          <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
-            <TightDensityIcon size={20} />
-          </ToggleButtonGroup.Button>
-        </ToggleButtonGroup>
-      </Header>
+      </Toolbar>
 
       {/* table */}
       <DndProvider backend={HTML5Backend}>
