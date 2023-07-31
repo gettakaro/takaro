@@ -17,12 +17,14 @@ import {
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style';
-import { ToggleButtonGroup } from '../../../components';
+import { Empty, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
 import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
+
+const ROW_SELECTION_COL_SPAN = 1;
 
 export interface TableProps<DataType extends object> {
   id: string;
@@ -211,6 +213,17 @@ export function Table<DataType extends object>({
             ))}
           </thead>
           <tbody>
+            {/* empty state */}
+            {table.getRowModel().rows.length === 0 && (
+              <tr>
+                <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                  <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
+                  </div>
+                </td>
+              </tr>
+            )}
+
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getCanSelect() && (
@@ -238,31 +251,38 @@ export function Table<DataType extends object>({
               </tr>
             ))}
           </tbody>
-          <tfoot>
-            <tr>
-              {pagination && (
-                <td colSpan={columns.length + 1 /* +1 here is because we have an extra column for the selection */}>
-                  <PaginationContainer>
-                    <span>
-                      showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
-                      {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                        table.getRowModel().rows.length}{' '}
-                      of {pagination.pageOptions.total} entries
-                    </span>
-                    <Pagination
-                      pageCount={table.getPageCount()}
-                      hasNext={table.getCanNextPage()}
-                      hasPrevious={table.getCanPreviousPage()}
-                      previousPage={table.previousPage}
-                      nextPage={table.nextPage}
-                      pageIndex={table.getState().pagination.pageIndex}
-                      setPageIndex={table.setPageIndex}
-                    />
-                  </PaginationContainer>
-                </td>
-              )}
-            </tr>
-          </tfoot>
+          {table.getRowModel().rows.length > 1 && (
+            <tfoot>
+              <tr>
+                {pagination && (
+                  <td
+                    colSpan={
+                      columns.length +
+                      ROW_SELECTION_COL_SPAN /* +1 here is because we have an extra column for the selection */
+                    }
+                  >
+                    <PaginationContainer>
+                      <span>
+                        showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+                        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                          table.getRowModel().rows.length}{' '}
+                        of {pagination.pageOptions.total} entries
+                      </span>
+                      <Pagination
+                        pageCount={table.getPageCount()}
+                        hasNext={table.getCanNextPage()}
+                        hasPrevious={table.getCanPreviousPage()}
+                        previousPage={table.previousPage}
+                        nextPage={table.nextPage}
+                        pageIndex={table.getState().pagination.pageIndex}
+                        setPageIndex={table.setPageIndex}
+                      />
+                    </PaginationContainer>
+                  </td>
+                )}
+              </tr>
+            </tfoot>
+          )}
         </StyledTable>
       </DndProvider>
     </Wrapper>
