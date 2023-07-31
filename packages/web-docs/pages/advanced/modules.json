@@ -1,0 +1,211 @@
+[
+  {
+    "name": "utils",
+    "description": "A collection of useful commands",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+    "commands": [
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    // eslint-disable-next-line @typescript-eslint/no-unused-vars\n    const takaro = await getTakaro(data);\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
+        "name": "ping",
+        "trigger": "ping",
+        "helpText": "Replies with pong, useful for testing if the connection works",
+        "arguments": []
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data.data.commands;\n    }));\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        for (const mod of moduleCommands) {\n            await Promise.all(mod.map(async (command) => {\n                await data.player.pm(`${command.name}: ${command.helpText}`);\n            }));\n        }\n    }\n    else {\n        const allCommandsFlat = moduleCommands.flat();\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            await data.player.pm(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
+        "name": "help",
+        "trigger": "help",
+        "helpText": "The text you are reading right now, displays information about commands",
+        "arguments": [
+          {
+            "name": "command",
+            "type": "string",
+            "defaultValue": "all",
+            "helpText": "The command to get help for",
+            "position": 0
+          }
+        ]
+      }
+    ],
+    "hooks": [],
+    "cronJobs": []
+  },
+  {
+    "name": "teleports",
+    "description": "A set of commands to allow players to set their own teleport points and teleport to them",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"maxTeleports\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":50,\"default\":5},\"timeout\":{\"type\":\"integer\",\"description\":\"The time in milliseconds required between teleports\",\"minimum\":0,\"default\":1000},\"allowPublicTeleports\":{\"type\":\"boolean\",\"default\":false}},\"required\":[\"maxTeleports\"],\"additionalProperties\":false}",
+    "commands": [
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, arguments: args, module: mod } = data;\n    const ownedTeleportRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [`tp_${args.tp}`],\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    let teleports = ownedTeleportRes.data.data;\n    if (mod.userConfig.allowPublicTeleports) {\n        const maybePublicTeleportRes = await takaro.variable.variableControllerSearch({\n            filters: {\n                key: [`tp_${args.tp}`],\n                gameServerId: [gameServerId],\n                moduleId: [mod.moduleId],\n            },\n            sortBy: 'key',\n            sortDirection: 'asc',\n        });\n        const publicTeleports = maybePublicTeleportRes.data.data.filter((tele) => {\n            const teleport = JSON.parse(tele.value);\n            return teleport.public;\n        });\n        teleports = teleports.concat(publicTeleports);\n    }\n    if (teleports.length === 0) {\n        await data.player.pm(`Teleport ${args.tp} does not exist.`);\n        return;\n    }\n    const timeout = mod.userConfig.timeout;\n    const lastExecuted = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: ['lastExecuted'],\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    let lastExecutedRecord = lastExecuted.data.data[0];\n    if (!lastExecutedRecord) {\n        const createRes = await takaro.variable.variableControllerCreate({\n            key: 'lastExecuted',\n            gameServerId,\n            playerId: player.playerId,\n            moduleId: mod.moduleId,\n            value: new Date().toISOString(),\n        });\n        lastExecutedRecord = createRes.data.data;\n    }\n    else {\n        const lastExecutedTime = new Date(lastExecutedRecord.value);\n        const now = new Date();\n        const diff = now.getTime() - lastExecutedTime.getTime();\n        if (diff < timeout) {\n            await data.player.pm('You cannot teleport yet. Please wait before trying again.');\n            return;\n        }\n    }\n    const teleport = JSON.parse(teleports[0].value);\n    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, player.playerId, {\n        x: teleport.x,\n        y: teleport.y,\n        z: teleport.z,\n    });\n    await data.player.pm(`Teleported to ${teleport.name}.`);\n    await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {\n        value: new Date().toISOString(),\n    });\n}\nawait main();\n//# sourceMappingURL=teleport.js.map",
+        "name": "teleport",
+        "trigger": "tp",
+        "helpText": "Teleports to one of your set locations",
+        "arguments": [
+          {
+            "name": "tp",
+            "type": "string",
+            "helpText": "The location to teleport to",
+            "position": 0
+          }
+        ]
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    const ownedTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: 'tp',\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    const maybePublicTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: ['tp'],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    const teleports = maybePublicTeleports.filter((tele) => {\n        const teleport = JSON.parse(tele.value);\n        const isPublic = teleport.public && teleport.playerId !== player.playerId;\n        const isOwned = ownedTeleports.find((t) => t.playerId === player.playerId);\n        return isPublic || isOwned;\n    });\n    if (teleports.length === 0) {\n        await data.player.pm(`You have no teleports set, use ${prefix}settp <name> to set one.`);\n        return;\n    }\n    await data.player.pm(`You have ${teleports.length} teleport${teleports.length === 1 ? '' : 's'} available`);\n    for (const rawTeleport of teleports) {\n        const teleport = JSON.parse(rawTeleport.value);\n        await data.player.pm(` - ${teleport.name}: ${teleport.x}, ${teleport.y}, ${teleport.z} ${teleport.public ? '(public)' : ''}`);\n    }\n}\nawait main();\n//# sourceMappingURL=tplist.js.map",
+        "name": "tplist",
+        "trigger": "tplist",
+        "helpText": "Lists all your set locations"
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nfunction getVariableKey(tpName) {\n    return `tp_${tpName}`;\n}\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, module: mod, arguments: args } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    const existingVariable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getVariableKey(args.tp)],\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingVariable.data.data.length > 0) {\n        await data.player.pm(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);\n        return;\n    }\n    const allPlayerTeleports = await takaro.variable.variableControllerSearch({\n        search: {\n            key: getVariableKey(''),\n        },\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (allPlayerTeleports.data.data.length >= mod.userConfig.maxTeleports) {\n        await data.player.pm(`You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`);\n        return;\n    }\n    await takaro.variable.variableControllerCreate({\n        key: getVariableKey(args.tp),\n        value: JSON.stringify({\n            name: args.tp,\n            x: data.player.positionX,\n            y: data.player.positionY,\n            z: data.player.positionZ,\n        }),\n        gameServerId,\n        moduleId: mod.moduleId,\n        playerId: player.playerId,\n    });\n    await data.player.pm(`Teleport ${args.tp} set.`);\n}\nawait main();\n//# sourceMappingURL=settp.js.map",
+        "name": "settp",
+        "trigger": "settp",
+        "helpText": "Sets a location to teleport to",
+        "arguments": [
+          {
+            "name": "tp",
+            "type": "string",
+            "helpText": "The location name",
+            "position": 0
+          }
+        ]
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, arguments: args, module: mod } = data;\n    const existingVariable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [`tp_${args.tp}`],\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingVariable.data.data.length === 0) {\n        await data.player.pm(`Teleport ${args.tp} does not exist.`);\n        return;\n    }\n    await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);\n    await data.player.pm(`Teleport ${args.tp} deleted.`);\n}\nawait main();\n//# sourceMappingURL=deletetp.js.map",
+        "name": "deletetp",
+        "trigger": "deletetp",
+        "helpText": "Deletes a location",
+        "arguments": [
+          {
+            "name": "tp",
+            "type": "string",
+            "helpText": "The location name",
+            "position": 0
+          }
+        ]
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, module: mod, arguments: args } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    if (!mod.userConfig.allowPublicTeleports) {\n        await data.player.pm('Public teleports are disabled.');\n        return;\n    }\n    const teleportRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            moduleId: [mod.moduleId],\n            key: [`tp_${args.tp}`],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    const teleports = teleportRes.data.data;\n    if (teleports.length === 0) {\n        await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        value: JSON.stringify({\n            ...teleport,\n            public: true,\n        }),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now public.`);\n}\nawait main();\n//# sourceMappingURL=setpublic.js.map",
+        "name": "setpublic",
+        "trigger": "setpublic",
+        "helpText": "Sets a teleport to be public, allowing other players to teleport to it",
+        "arguments": [
+          {
+            "name": "tp",
+            "type": "string",
+            "helpText": "The location name",
+            "position": 0
+          }
+        ]
+      },
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const { player, gameServerId, arguments: args, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    const teleportRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [player.playerId],\n            key: [`tp_${args.tp}`],\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    const teleports = teleportRes.data.data;\n    if (teleports.length === 0) {\n        await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        value: JSON.stringify({\n            ...teleport,\n            public: false,\n        }),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now private.`);\n}\nawait main();\n//# sourceMappingURL=setprivate.js.map",
+        "name": "setprivate",
+        "trigger": "setprivate",
+        "helpText": "Sets a teleport to be private, only the teleport owner can teleport to it",
+        "arguments": [
+          {
+            "name": "tp",
+            "type": "string",
+            "helpText": "The location name",
+            "position": 0
+          }
+        ]
+      }
+    ],
+    "hooks": [],
+    "cronJobs": []
+  },
+  {
+    "name": "playerOnboarding",
+    "description": "Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":256,\"default\":\"Welcome {player} to the server!\"},\"starterKitItems\":{\"type\":\"array\",\"items\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":512},\"default\":[]}},\"additionalProperties\":false}",
+    "commands": [
+      {
+        "name": "starterkit",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nconst VARIABLE_KEY = 't_starterkit_lock';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const items = data.module.userConfig.starterKitItems;\n    if (!items.length) {\n        await data.player.pm('No starter kit items configured. Please ask your server administrator to configure this.');\n        return;\n    }\n    const starterKitLockRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [VARIABLE_KEY],\n            gameServerId: [data.gameServerId],\n            playerId: [data.player.playerId],\n        },\n    });\n    if (starterKitLockRes.data.data.length > 0) {\n        await data.player.pm('You already used starterkit on this server');\n        return;\n    }\n    await data.player.pm('You are about to receive your starter kit...');\n    await Promise.all(items.map(async (item) => {\n        return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.playerId, {\n            name: item,\n            amount: 1,\n        });\n    }));\n    await takaro.variable.variableControllerCreate({\n        key: VARIABLE_KEY,\n        value: '1',\n        gameServerId: data.gameServerId,\n        playerId: data.player.playerId,\n    });\n    await data.player.pm(`Gave ${items.length} items, enjoy!`);\n}\nawait main();\n//# sourceMappingURL=starterkit.js.map",
+        "trigger": "starterkit",
+        "helpText": "Get a starter kit, you can only execute this once on a server!"
+      }
+    ],
+    "hooks": [
+      {
+        "eventType": "player-connected",
+        "name": "playerConnected",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const player = data.eventData.player;\n    const rawMessage = data.module.userConfig.message;\n    const message = rawMessage.replace('{player}', player.name);\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message,\n    });\n}\nawait main();\n//# sourceMappingURL=playerConnected.js.map"
+      }
+    ],
+    "cronJobs": []
+  },
+  {
+    "name": "serverMessages",
+    "description": "Send automated, rotated, configurable messages to players on the server",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"messages\":{\"type\":\"array\",\"default\":[\"This is an automated message, don't forget to read the server rules!\"],\"items\":{\"type\":\"string\",\"minLength\":5,\"maxLength\":1024},\"minItems\":1}},\"required\":[\"messages\"]}",
+    "commands": [],
+    "hooks": [],
+    "cronJobs": [
+      {
+        "name": "Automated message",
+        "temporalValue": "*/30 * * * *",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const randomMessage = data.module.userConfig.messages[Math.floor(Math.random() * data.module.userConfig.messages.length)];\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: randomMessage,\n    });\n}\nawait main();\n//# sourceMappingURL=Automated%20message.js.map"
+      }
+    ]
+  },
+  {
+    "name": "chatBridge",
+    "description": "Connect chat to other services like Discord.",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"sendPlayerConnected\":{\"type\":\"boolean\",\"description\":\"Send a message when a player connects.\",\"default\":true},\"sendPlayerDisconnected\":{\"type\":\"boolean\",\"description\":\"Send a message when a player disconnects.\",\"default\":true}},\"additionalProperties\":false}",
+    "commands": [],
+    "hooks": [
+      {
+        "eventType": "discord-message",
+        "name": "DiscordToGame",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    if (data.eventData.author.isBot)\n        return;\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: `[D] ${data.eventData.author.displayName}:  ${data.eventData.msg}`,\n    });\n}\nawait main();\n//# sourceMappingURL=DiscordToGame.js.map"
+      },
+      {
+        "eventType": "chat-message",
+        "name": "GameToDiscord",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];\n    const sender = data.eventData.player ? data.eventData.player.name : 'Non-player';\n    const message = `**${sender}**: ${data.eventData.msg}`;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: message,\n    });\n}\nawait main();\n//# sourceMappingURL=GameToDiscord.js.map"
+      },
+      {
+        "eventType": "player-connected",
+        "name": "PlayerConnected",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[🔌 Connected]: ${data.eventData.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerConnected.js.map"
+      },
+      {
+        "eventType": "player-disconnected",
+        "name": "PlayerDisconnected",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[👋 Disconnected]: ${data.eventData.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerDisconnected.js.map"
+      }
+    ],
+    "cronJobs": []
+  },
+  {
+    "name": "gimme",
+    "description": "A module that randomly selects item from a list of items and entities",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"default\":[\"apple\"],\"items\":{\"type\":\"string\"}},\"commands\":{\"type\":\"array\",\"default\":[\"say hello from gimme\"],\"items\":{\"type\":\"string\"}}},\"required\":[\"items\"],\"additionalProperties\":false}",
+    "commands": [
+      {
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const items = data.module.userConfig.items;\n    const commands = data.module.userConfig.commands;\n    if (items.length + commands.length === 0) {\n        await data.player.pm('No items or commands configured, please ask your server administrator to configure this module.');\n        return;\n    }\n    // pick a random item between 0 and the length of both the items and commands arrays\n    const randomIndex = Math.floor(Math.random() * (items.length + commands.length));\n    const randomOption = items.concat(commands)[randomIndex];\n    if (randomIndex < items.length) {\n        await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.playerId, {\n            name: randomOption,\n            amount: 1,\n        });\n        await data.player.pm(`You received ${randomOption}!`);\n    }\n    else {\n        await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });\n    }\n}\nawait main();\n//# sourceMappingURL=gimme.js.map",
+        "name": "gimme",
+        "trigger": "gimme",
+        "helpText": "Randomly selects item from a list of items and entities"
+      }
+    ],
+    "hooks": [],
+    "cronJobs": []
+  },
+  {
+    "name": "highPingKicker",
+    "description": "Automatically kick players with high ping, with warnings and configurable thresholds",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pingThreshold\":{\"type\":\"integer\",\"default\":200},\"warningsBeforeKick\":{\"type\":\"integer\",\"default\":3}},\"required\":[]}",
+    "commands": [],
+    "hooks": [],
+    "cronJobs": [
+      {
+        "name": "Ping check",
+        "temporalValue": "*/5 * * * *",
+        "function": "import { getTakaro, getData } from '@takaro/helpers';\nconst VARIABLE_KEY = 'highPingKicker:warnings';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n    const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(data.gameServerId);\n    await Promise.all(currentPlayers.data.data.map(async (player) => {\n        if (player.ping > data.module.userConfig.pingThreshold) {\n            const takaroPlayerRes = await takaro.player.playerControllerSearch({\n                filters: {\n                    steamId: player.steamId,\n                },\n            });\n            const takaroPlayer = takaroPlayerRes.data.data[0];\n            const currentWarningsRes = await takaro.variable.variableControllerFind({\n                filters: {\n                    playerId: takaroPlayer.id,\n                    key: VARIABLE_KEY,\n                },\n            });\n            const currentWarningsRecords = currentWarningsRes.data.data;\n            let currentWarnings = 1;\n            if (!currentWarningsRecords.length) {\n                await takaro.variable.variableControllerCreate({\n                    playerId: takaroPlayer.id,\n                    key: VARIABLE_KEY,\n                    value: '1',\n                });\n            }\n            else {\n                currentWarnings = parseInt(currentWarningsRecords[0].value, 10);\n            }\n            if (currentWarningsRecords.length === 1) {\n                await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {\n                    value: (currentWarnings + 1).toString(),\n                });\n                await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n                    message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,\n                    opts: {\n                        recipient: {\n                            gameId: player.gameId,\n                        },\n                    },\n                });\n            }\n            if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {\n                await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {\n                    reason: `Your ping (${player.ping}) is too high, please try again later.`,\n                });\n                await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);\n            }\n        }\n    }));\n}\nawait main();\n//# sourceMappingURL=Ping%20check.js.map"
+      }
+    ]
+  }
+]
