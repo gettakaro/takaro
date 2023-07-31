@@ -26,28 +26,16 @@ const Variables: FC = () => {
       ? VariableSearchInputDTOSortDirectionEnum.Desc
       : VariableSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      key: [columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value].filter(Boolean) as string[],
-      gameServerId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value].filter(
-        Boolean
-      ) as string[],
-      playerId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value].filter(
-        Boolean
-      ) as string[],
-      moduleId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value].filter(
-        Boolean
-      ) as string[],
+      key: columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value,
+      gameServerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value,
+      playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
+      moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value,
     },
     search: {
-      key: [columnSearch.columnSearchState.find((search) => search.id === 'key')?.value].filter(Boolean) as string[],
-      gameServerId: [columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value].filter(
-        Boolean
-      ) as string[],
-      playerId: [columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value].filter(
-        Boolean
-      ) as string[],
-      moduleId: [columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value].filter(
-        Boolean
-      ) as string[],
+      key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value,
+      gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value,
+      playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
+      moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
     },
   });
 

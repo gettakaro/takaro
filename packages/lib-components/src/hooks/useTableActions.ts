@@ -1,4 +1,4 @@
-import { PaginationState, ColumnFiltersState, SortingState, RowSelectionState } from '@tanstack/react-table';
+import { PaginationState, SortingState, RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { APIOutput } from '@takaro/apiclient';
 
@@ -18,13 +18,18 @@ interface TableActionOptions {
   pageSize: number;
 }
 
+export interface ColumnFilter {
+  id: string;
+  value: string[];
+}
+
 export function useTableActions<T>({ pageIndex, pageSize }: TableActionOptions = { pageIndex: 0, pageSize: 9 }) {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex,
     pageSize,
   });
-  const [columnFiltersState, setColumnFiltersState] = useState<ColumnFiltersState>([]);
-  const [columnSearchState, setColumnSearchState] = useState<ColumnFiltersState>([]);
+  const [columnFiltersState, setColumnFiltersState] = useState<ColumnFilter[]>([]);
+  const [columnSearchState, setColumnSearchState] = useState<ColumnFilter[]>([]);
   const [sortingState, setSortingState] = useState<SortingState>([]);
   const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
 

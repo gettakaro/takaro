@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
@@ -11,7 +11,6 @@ import {
   useReactTable,
   ColumnDef,
   SortingState,
-  ColumnFiltersState,
   ColumnOrderState,
   VisibilityState,
   ColumnPinningState,
@@ -21,7 +20,7 @@ import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style
 import { ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
-import { PageOptions } from '../../../hooks/useTableActions';
+import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
@@ -49,12 +48,12 @@ export interface TableProps<DataType extends object> {
     pageOptions: PageOptions;
   };
   columnFiltering: {
-    columnFiltersState: ColumnFiltersState;
-    setColumnFiltersState: OnChangeFn<ColumnFiltersState>;
+    columnFiltersState: ColumnFilter[];
+    setColumnFiltersState: Dispatch<SetStateAction<ColumnFilter[]>>;
   };
   columnSearch: {
-    columnSearchState: ColumnFiltersState;
-    setColumnSearchState: OnChangeFn<ColumnFiltersState>;
+    columnSearchState: ColumnFilter[];
+    setColumnSearchState: OnChangeFn<ColumnFilter[]>;
   };
 }
 
@@ -131,8 +130,8 @@ export function Table<DataType extends object>({
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
     onPaginationChange: pagination?.setPaginationState,
-    onColumnFiltersChange: columnFiltering?.setColumnFiltersState,
-    onGlobalFilterChange: columnSearch?.setColumnSearchState,
+    onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
+    onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: rowSelection?.setRowSelectionState,

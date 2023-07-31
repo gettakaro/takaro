@@ -41,18 +41,12 @@ const Users: FC = () => {
       ? UserSearchInputDTOSortDirectionEnum.Desc
       : UserSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
-        Boolean
-      ) as string[],
-      discordId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
     },
     search: {
-      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
-      discordId: [columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
     },
   });
 
