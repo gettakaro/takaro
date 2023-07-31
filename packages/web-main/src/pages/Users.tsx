@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useState } from 'react';
+import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
@@ -21,6 +21,8 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useInviteUser } from 'queries/users/queries';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -150,7 +152,19 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { control, handleSubmit } = useForm<IFormInputs>();
+
+  const validationSchema = useMemo(
+    () =>
+      z.object({
+        userEmail: z.string().email('Email is not valid.').nonempty(),
+      }),
+    []
+  );
+
+  const { control, handleSubmit } = useForm<IFormInputs>({
+    resolver: zodResolver(validationSchema),
+    mode: 'onSubmit',
+  });
   const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
@@ -176,7 +190,13 @@ const InviteUser: FC = () => {
               set their password.
             </p>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <TextField label="User email" name="userEmail" placeholder="example@example.com" control={control} />
+              <TextField
+                label="User email"
+                name="userEmail"
+                placeholder="example@example.com"
+                control={control}
+                required
+              />
               {isError && <FormError error={error} />}
               <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
             </form>
