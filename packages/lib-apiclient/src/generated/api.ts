@@ -2935,6 +2935,19 @@ export interface IdUuidDTOAPI {
 /**
  *
  * @export
+ * @interface InviteCreateDTO
+ */
+export interface InviteCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof InviteCreateDTO
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface InviteOutputDTO
  */
 export interface InviteOutputDTO {
@@ -12395,6 +12408,43 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerInvite: async (
+      inviteCreateDTO?: InviteCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/user/invite`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(inviteCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12696,6 +12746,20 @@ export const UserApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerInvite(
+      inviteCreateDTO?: InviteCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12835,6 +12899,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12953,6 +13027,20 @@ export class UserApi extends BaseAPI {
   public userControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Invite
+   * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: AxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerInvite(inviteCreateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

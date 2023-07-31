@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["packages/*"],
+  "name": "Packages Example",
+  "entryPointStrategy": "packages",
+  "includeVersion": true,
+  "out": "./reports/api-docs"
+
+  // Potentially useful for debugging
+  // "logLevel": "Verbose"
+}

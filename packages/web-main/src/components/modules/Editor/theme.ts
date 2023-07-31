@@ -1,5 +1,5 @@
 import { Monaco } from '@monaco-editor/react';
-import { lightTheme as theme } from '@takaro/lib-components';
+import { darkTheme as theme } from '@takaro/lib-components';
 
 /* eventually all used colors should become part of editorTheme but for now playing around with default colors to define what key has impact on what.
 const editorTheme = {
@@ -88,6 +88,9 @@ export function defineTheme(monaco: Monaco) {
       'editor.background': '#151515',
       'editorLineNumber.foreground': '#858585',
       'editorLineNumber.activeForeground': '#c6c6c6',
+
+      'editor.lineHighlightBackground': theme.colors.backgroundAlt,
+      'editor.lineHighlightBorder': theme.colors.backgroundAlt,
 
       'breadcrumb.background': '#151515',
       'breadcrumb.foreground': '#999',

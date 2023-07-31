@@ -1,12 +1,26 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import {
+  styled,
+  Table,
+  Loading,
+  useTableActions,
+  IconButton,
+  Dropdown,
+  Dialog,
+  Button,
+  TextField,
+  FormError,
+} from '@takaro/lib-components';
 import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useInviteUser } from 'queries/users/queries';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -110,12 +124,12 @@ const Users: FC = () => {
       <Helmet>
         <title>Users - Takaro</title>
       </Helmet>
-
       <TableContainer>
         <Table
           id="users"
           columns={columnDefs}
           data={data.data}
+          renderToolbar={() => <InviteUser />}
           pagination={{
             ...pagination,
             pageOptions: pagination.getPageOptions(data),
@@ -127,6 +141,49 @@ const Users: FC = () => {
         />
       </TableContainer>
     </Fragment>
+  );
+};
+
+interface IFormInputs {
+  userEmail: string;
+}
+
+const InviteUser: FC = () => {
+  const [open, setOpen] = useState<boolean>(false);
+  const { control, handleSubmit } = useForm<IFormInputs>();
+  const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
+
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+    mutate({ email: data.userEmail });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess]);
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)} text="Invite user" icon={<PlusIcon />} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog.Content>
+          <Dialog.Heading />
+          <Dialog.Body>
+            <h2>Invite user</h2>
+            <p>
+              Inviting users allows them to login to the Takaro dashboard. The user wil receive an email with a link to
+              set their password.
+            </p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <TextField label="User email" name="userEmail" placeholder="example@example.com" control={control} />
+              {isError && <FormError error={error} />}
+              <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
+            </form>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+    </>
   );
 };
 

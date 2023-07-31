@@ -150,3 +150,15 @@ services:
       FUNCTIONS_EXECUTION_MODE: 'local'
     ports:
       - 13004:3001
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      # SMTP
+      # Doesnt need to be exposed outside the container network
+      # But keeping comment for 'documentation purposes'
+      #  - 14000:1025
+      # Web
+      - 8025:8025
+    logging:
+      driver: none
