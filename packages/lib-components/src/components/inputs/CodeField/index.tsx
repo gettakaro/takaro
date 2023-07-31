@@ -150,6 +150,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             id={`${name}-${i}`}
             maxLength={1}
             name={`${name}-${i}`}
+            aria-required={required}
             onChange={handleOnChange}
             onFocus={handleOnFocus}
             onBlur={handleOnBlur}

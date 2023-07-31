@@ -19,13 +19,6 @@ export interface EditableFieldProps {
   value?: string;
 }
 
-/*
-const defaultsApplier = defaultInputPropsFactory<EditableFieldProps>({
-  ...defaultInputProps,
-  required: true,
-});
-*/
-
 export const EditableField: FC<EditableFieldProps> = ({
   isEditing = false,
   required = false,
@@ -105,6 +98,7 @@ export const EditableField: FC<EditableFieldProps> = ({
             ref={inputRef}
             name={name}
             value={inputValue}
+            aria-required={required}
             onChange={(e) => setInputValue(e.currentTarget.value)}
           />
         </div>
