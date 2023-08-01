@@ -78,6 +78,7 @@ export function usePopover({
       descriptionId,
       setLabelId,
       setDescriptionId,
+      arrowRef,
     }),
     [open, setOpen, interactions, data, modal, labelId, descriptionId]
   );

@@ -1,7 +1,8 @@
 import { forwardRef, HTMLProps } from 'react';
-import { useMergeRefs, FloatingPortal, FloatingFocusManager } from '@floating-ui/react';
+import { useMergeRefs, FloatingPortal, FloatingFocusManager, FloatingArrow } from '@floating-ui/react';
 import { usePopoverContext } from './PopoverContext';
 import { styled } from '../../../styled';
+import { useTheme } from '../../../hooks';
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
@@ -11,7 +12,8 @@ const Container = styled.div`
 `;
 
 export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
-  const { context: floatingContext, ...context } = usePopoverContext();
+  const theme = useTheme();
+  const { context: floatingContext, arrowRef, ...context } = usePopoverContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
   if (!floatingContext.open) return null;
@@ -27,6 +29,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
           {...context.getFloatingProps(props)}
         >
           {props.children}
+          <FloatingArrow ref={arrowRef} context={floatingContext} fill={theme.colors.background} />
         </Container>
       </FloatingFocusManager>
     </FloatingPortal>
