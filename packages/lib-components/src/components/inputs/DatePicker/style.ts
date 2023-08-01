@@ -29,3 +29,8 @@ export const Container = styled.div<{
     border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   }
 `;
+
+export const QuickSelectContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;

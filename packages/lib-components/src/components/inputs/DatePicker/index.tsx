@@ -1,9 +1,13 @@
 import { FC, useReducer } from 'react';
 import { DateTime } from 'luxon';
-import { AiOutlineCalendar as CalendarIcon, AiOutlineDown as DownIcon } from 'react-icons/ai';
+import {
+  AiOutlineCalendar as CalendarIcon,
+  AiOutlineDown as DownIcon,
+  AiOutlineArrowRight as ArrowRightIcon,
+} from 'react-icons/ai';
 import { Popover } from '../../../components';
 import { QuickSelect } from './QuickSelect';
-import { Container } from './style';
+import { Container, QuickSelectContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { Action, DatePickerContext, DatePickerDispatchContext, DatePickerState } from './Context';
 
@@ -42,11 +46,17 @@ function datePickerReducer(state: DatePickerState, action: Action): DatePickerSt
       return {
         ...state,
         start: action.payload.startDate,
+        showBeginDate: false,
+        showEndDate: false,
+        showQuickSelect: false,
       };
     case 'set_end_date':
       return {
         ...state,
         end: action.payload.endDate,
+        showBeginDate: false,
+        showEndDate: false,
+        showQuickSelect: false,
       };
   }
 }
@@ -75,7 +85,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
             }
           >
             <Popover.Trigger asChild>
-              <div
+              <QuickSelectContainer
                 onClick={() =>
                   dispatch({
                     type: 'toggle_quick_select_popover',
@@ -85,7 +95,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
               >
                 <CalendarIcon size={18} />
                 <DownIcon size={18} />
-              </div>
+              </QuickSelectContainer>
             </Popover.Trigger>
             <Popover.Content>
               <QuickSelect id={`quick-select-${id}`} />
@@ -108,6 +118,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
               <DateSelector />
             </Popover.Content>
           </Popover>
+          <ArrowRightIcon size={18} style={{ marginLeft: '10px', marginRight: '10px' }} />
           <Popover
             open={state.showEndDate}
             onOpenChange={(open) => {

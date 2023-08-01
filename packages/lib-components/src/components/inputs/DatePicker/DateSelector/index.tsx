@@ -3,7 +3,7 @@ import { Calendar } from '../Calendar';
 
 export const DateSelector = () => {
   return (
-    <Tabs defaultValue="">
+    <Tabs defaultValue="absolute">
       <Tabs.List>
         <Tabs.Trigger value="absolute">Absolute</Tabs.Trigger>
         <Tabs.Trigger value="relative">Relative</Tabs.Trigger>
