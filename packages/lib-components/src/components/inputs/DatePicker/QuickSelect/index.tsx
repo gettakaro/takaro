@@ -4,6 +4,8 @@ import { styled } from '../../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDatePickerDispatchContext } from '../Context';
+import { DateTime, DateTimeUnit } from 'luxon';
 
 enum Tense {
   Last = 'Last',
@@ -59,6 +61,12 @@ interface QuickSelectProps {
 }
 
 export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
+  const dispatch = useDatePickerDispatchContext();
+
+  if (!dispatch) {
+    throw new Error('useDatePickerDispatchContext must be used within a DatePickerProvider');
+  }
+
   const validationSchema = useMemo(
     () =>
       z.object({
@@ -80,7 +88,24 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
   });
 
   const onSubmit: SubmitHandler<FormInputs> = ({ tense, step, unit }) => {
-    console.log(tense, step, unit);
+    const baseDate =
+      tense === Tense.Last ? DateTime.local() : DateTime.local().startOf(unit.toLowerCase() as DateTimeUnit);
+    const action = tense === Tense.Last ? 'minus' : 'plus';
+    const range = { [unit.toLowerCase()]: step };
+    const otherDate = baseDate[action](range);
+
+    const startDate = tense === Tense.Last ? otherDate : baseDate;
+    const endDate = tense === Tense.Last ? baseDate : otherDate;
+    const friendlyRangeName = `${tense} ${step} ${unit.toLowerCase()}`;
+
+    dispatch({
+      type: 'set_range',
+      payload: {
+        startDate,
+        endDate,
+        friendlyRange: friendlyRangeName,
+      },
+    });
   };
 
   return (
@@ -130,16 +155,124 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
       <Divider fullWidth />
       <h4>Commonly used</h4>
       <CommonlyUsedGrid>
-        <li>Today</li>
-        <li>This week</li>
-        <li>Last 15 minutes</li>
-        <li>Last 30 minutes</li>
-        <li>Last 1 hour</li>
-        <li>Last 24 hours</li>
-        <li>Last 7 days</li>
-        <li>Last 30 days</li>
-        <li>Last 90 days</li>
-        <li>Last 1 year</li>
+        <li
+          onClick={() =>
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().startOf('day'),
+                endDate: DateTime.local().endOf('day'),
+                friendlyRange: 'Today',
+              },
+            })
+          }
+        >
+          Today
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().startOf('week'),
+                endDate: DateTime.local().endOf('week'),
+                friendlyRange: 'This week',
+              },
+            });
+          }}
+        >
+          This week
+        </li>
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ minutes: 15 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last 15 minutes',
+              },
+            });
+          }}
+        >
+          Last 15 minutes
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ minutes: 30 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last 30 minutes',
+              },
+            });
+          }}
+        >
+          Last 30 minutes
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ hours: 1 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last hour',
+              },
+            });
+          }}
+        >
+          Last 1 hour
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ hours: 24 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last 24 hours',
+              },
+            });
+          }}
+        >
+          Last 24 hours
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ days: 7 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last 7 days',
+              },
+            });
+          }}
+        >
+          Last 7 days
+        </li>
+
+        <li
+          onClick={() => {
+            dispatch({
+              type: 'set_range',
+              payload: {
+                startDate: DateTime.local().minus({ days: 30 }),
+                endDate: DateTime.local(),
+                friendlyRange: 'Last 30 days',
+              },
+            });
+          }}
+        >
+          Last 30 days
+        </li>
       </CommonlyUsedGrid>
     </Container>
   );

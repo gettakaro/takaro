@@ -1,22 +1,27 @@
 import { DateTime, Interval } from 'luxon';
 import { FC, useCallback, useState } from 'react';
 import { Header, Wrapper, DaysGrid, DayButton, DayWrapper, DayOfWeekGrid } from './style';
-import { IconButton } from '../../../../components';
-
-interface CalendarProps {
-  isBegin: boolean;
-}
-
+import { IconButton, Tooltip } from '../../../../components';
 import { AiOutlineRight as ChevronRightIcon, AiOutlineLeft as ChevronLeftIcon } from 'react-icons/ai';
 import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
 
-export const Calendar: FC<CalendarProps> = ({}) => {
+interface CalendarProps {
+  onDateClick: (date: DateTime) => void;
+  selectedDate: DateTime;
+  id: string;
+}
+
+export const Calendar: FC<CalendarProps> = ({ onDateClick, selectedDate, id }) => {
   const today = DateTime.local().startOf('day');
-  const [currentMonth, setCurrentMonth] = useState<string>(today.toFormat('MMM-YYYY'));
+  const [currentMonth, setCurrentMonth] = useState<string>(selectedDate.toFormat('MMM-YYYY'));
   const firstDayCurrentMonth = DateTime.fromFormat(currentMonth, 'MMM-YYYY').startOf('month');
 
-  const dispatch = useDatePickerDispatchContext()!;
-  const state = useDatePickerContext()!;
+  const dispatch = useDatePickerDispatchContext();
+  const state = useDatePickerContext();
+
+  if (!dispatch || !state) {
+    throw new Error('useDatePickerDispatchContext and useDatePickerContext must be used within a DatePickerProvider');
+  }
 
   // days of month
   const days = Interval.fromDateTimes(firstDayCurrentMonth, firstDayCurrentMonth.endOf('month'))
@@ -25,20 +30,31 @@ export const Calendar: FC<CalendarProps> = ({}) => {
 
   const previousMonth = useCallback(() => {
     const firstDayPreviousMonth = firstDayCurrentMonth.minus({ months: 1 });
-    setCurrentMonth(firstDayPreviousMonth.toFormat('LLL-yyyy'));
+    setCurrentMonth(firstDayPreviousMonth.toFormat('MMM-YYYY'));
   }, [firstDayCurrentMonth]);
 
   const nextMonth = useCallback(() => {
     const firstDayNextMonth = firstDayCurrentMonth.plus({ months: 1 });
-    setCurrentMonth(firstDayNextMonth.toFormat('LLL-yyyy'));
+    setCurrentMonth(firstDayNextMonth.toFormat('MMM-YYYY'));
   }, [firstDayCurrentMonth]);
 
   return (
     <Wrapper>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
         <h2 style={{ flex: '1 1 auto' }}>{firstDayCurrentMonth.toFormat('MMMM yyyy')}</h2>
-        <IconButton onClick={previousMonth} icon={<ChevronLeftIcon />} ariaLabel="Previous month" />
-        <IconButton onClick={nextMonth} icon={<ChevronRightIcon />} ariaLabel="Next month" />
+        <Tooltip>
+          <Tooltip.Trigger>
+            <IconButton onClick={previousMonth} icon={<ChevronLeftIcon />} ariaLabel="Previous month" />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Previous month</Tooltip.Content>
+        </Tooltip>
+
+        <Tooltip>
+          <Tooltip.Trigger>
+            <IconButton onClick={nextMonth} icon={<ChevronRightIcon />} ariaLabel="Next month" />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Next month</Tooltip.Content>
+        </Tooltip>
       </Header>
       <DayOfWeekGrid>
         <div>S</div>
@@ -51,15 +67,26 @@ export const Calendar: FC<CalendarProps> = ({}) => {
       </DayOfWeekGrid>
       <DaysGrid>
         {days.map((day, dayIdx) => (
-          <DayWrapper key={day?.toString()} isFirstDay={dayIdx === 0} dayNumber={day!.weekday}>
+          <DayWrapper key={`${id}-${day?.toString()}`} isFirstDay={dayIdx === 0} dayNumber={day!.weekday}>
             <DayButton
+              key={`${id}-day-button`}
               type="button"
-              onClick={() => dispatch({ type: 'set_start_date', payload: { startDate: day! } })}
+              onClick={() => {
+                const newDate = day!.set({
+                  hour: selectedDate.hour,
+                  minute: selectedDate.minute,
+                  second: selectedDate.second,
+                  millisecond: selectedDate.millisecond,
+                });
+                onDateClick(newDate);
+              }}
               isSelected={day?.hasSame(state.start, 'day') ?? false}
               isToday={day?.hasSame(today, 'day') ?? false}
               isSameMonth={day?.hasSame(firstDayCurrentMonth, 'month') ?? false}
             >
-              <time dateTime={day?.toFormat('yyyy-MM-dd')}>{day?.toFormat('d')}</time>
+              <time key={`${id}-time`} dateTime={day?.toFormat('yyyy-MM-dd')}>
+                {day?.toFormat('d')}
+              </time>
             </DayButton>
           </DayWrapper>
         ))}

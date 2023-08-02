@@ -29,7 +29,13 @@ export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
           {...context.getFloatingProps(props)}
         >
           {props.children}
-          <FloatingArrow ref={arrowRef} context={floatingContext} fill={theme.colors.background} />
+          <FloatingArrow
+            ref={arrowRef}
+            context={floatingContext}
+            fill={theme.colors.background}
+            stroke={theme.colors.backgroundAlt}
+            strokeWidth={1}
+          />
         </Container>
       </FloatingFocusManager>
     </FloatingPortal>

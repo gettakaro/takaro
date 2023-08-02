@@ -1,6 +1,11 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { DatePicker, DatePickerProps } from '.';
+import { styled } from '../../../styled';
+
+const Wrapper = styled.div`
+  height: 100vh;
+`;
 
 export default {
   title: 'Inputs/DatePicker',
@@ -14,13 +19,15 @@ export default {
 
 export const Default: StoryFn<DatePickerProps> = (args) => {
   return (
-    <DatePicker
-      readOnly={args.readOnly}
-      hasDescription={args.hasDescription}
-      hasError={args.hasError}
-      id="date"
-      onChange={(value) => console.log(value)}
-      value="2021-01-01"
-    />
+    <Wrapper>
+      <DatePicker
+        readOnly={args.readOnly}
+        hasDescription={args.hasDescription}
+        hasError={args.hasError}
+        id="date"
+        onChange={(value) => console.log(value)}
+        value="2021-01-01"
+      />
+    </Wrapper>
   );
 };

@@ -7,9 +7,9 @@ import {
 } from 'react-icons/ai';
 import { Popover } from '../../../components';
 import { QuickSelect } from './QuickSelect';
-import { Container, QuickSelectContainer } from './style';
+import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
-import { Action, DatePickerContext, DatePickerDispatchContext, DatePickerState } from './Context';
+import { DatePickerContext, DatePickerDispatchContext, reducer } from './Context';
 
 export interface DateRange {
   start: DateTime;
@@ -25,50 +25,17 @@ export interface DatePickerProps {
   onChange: (value: string) => void;
 }
 
-function datePickerReducer(state: DatePickerState, action: Action): DatePickerState {
-  switch (action.type) {
-    case 'toggle_quick_select_popover':
-      return {
-        ...state,
-        showQuickSelect: action.payload.toggleQuickSelect,
-      };
-    case 'toggle_begin_date_popover':
-      return {
-        ...state,
-        showBeginDate: action.payload.toggleBeginDate,
-      };
-    case 'toggle_end_date_popover':
-      return {
-        ...state,
-        showEndDate: action.payload.toggleEndDate,
-      };
-    case 'set_start_date':
-      return {
-        ...state,
-        start: action.payload.startDate,
-        showBeginDate: false,
-        showEndDate: false,
-        showQuickSelect: false,
-      };
-    case 'set_end_date':
-      return {
-        ...state,
-        end: action.payload.endDate,
-        showBeginDate: false,
-        showEndDate: false,
-        showQuickSelect: false,
-      };
-  }
-}
-
 export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = false, id }) => {
-  const [state, dispatch] = useReducer(datePickerReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     showQuickSelect: false,
-    showBeginDate: false,
+    showStartDate: false,
     showEndDate: false,
     start: DateTime.local().startOf('day'),
     end: DateTime.local().endOf('day'),
+    friendlyRange: 'Today',
   });
+
+  // TODO: add a useeffect that propogates the start end end dates controlled.
 
   return (
     <DatePickerContext.Provider value={state}>
@@ -76,7 +43,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
         <Container
           readOnly={readOnly}
           hasError={hasError}
-          isOpen={state.showQuickSelect || state.showBeginDate || state.showEndDate}
+          isOpen={state.showQuickSelect || state.showStartDate || state.showEndDate}
         >
           <Popover
             open={state.showQuickSelect}
@@ -85,59 +52,68 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
             }
           >
             <Popover.Trigger asChild>
-              <QuickSelectContainer
-                onClick={() =>
-                  dispatch({
-                    type: 'toggle_quick_select_popover',
-                    payload: { toggleQuickSelect: !state.showQuickSelect },
-                  })
-                }
-              >
-                <CalendarIcon size={18} />
-                <DownIcon size={18} />
-              </QuickSelectContainer>
+              <ItemContainer>
+                <QuickSelectContainer
+                  onClick={() =>
+                    dispatch({
+                      type: 'toggle_quick_select_popover',
+                      payload: { toggleQuickSelect: !state.showQuickSelect },
+                    })
+                  }
+                >
+                  <CalendarIcon size={18} />
+                  <DownIcon size={18} />
+                </QuickSelectContainer>
+              </ItemContainer>
             </Popover.Trigger>
             <Popover.Content>
               <QuickSelect id={`quick-select-${id}`} />
             </Popover.Content>
           </Popover>
           <Popover
-            open={state.showBeginDate}
-            onOpenChange={(open) => dispatch({ type: 'toggle_begin_date_popover', payload: { toggleBeginDate: open } })}
+            open={state.showStartDate}
+            onOpenChange={(open) => dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: open } })}
           >
             <Popover.Trigger asChild>
-              <div
+              <ItemContainer
                 onClick={() => {
-                  dispatch({ type: 'toggle_begin_date_popover', payload: { toggleBeginDate: !state.showBeginDate } });
+                  dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
                 }}
               >
-                begin date
-              </div>
+                {state.friendlyStartDate ??
+                  state.friendlyRange ??
+                  // e.g. Aug 2, 2023 @ 00:00:00.000
+                  state.start.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')}
+              </ItemContainer>
             </Popover.Trigger>
             <Popover.Content>
-              <DateSelector />
+              <DateSelector isStart />
             </Popover.Content>
           </Popover>
-          <ArrowRightIcon size={18} style={{ marginLeft: '10px', marginRight: '10px' }} />
-          <Popover
-            open={state.showEndDate}
-            onOpenChange={(open) => {
-              dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
-            }}
-          >
-            <Popover.Trigger asChild>
-              <div
-                onClick={() => {
-                  dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
+          {!state.friendlyRange && (
+            <>
+              <ArrowRightIcon size={18} style={{ marginLeft: '10px', marginRight: '10px' }} />
+              <Popover
+                open={state.showEndDate}
+                onOpenChange={(open) => {
+                  dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
                 }}
               >
-                end date
-              </div>
-            </Popover.Trigger>
-            <Popover.Content>
-              <DateSelector />{' '}
-            </Popover.Content>
-          </Popover>
+                <Popover.Trigger asChild>
+                  <ItemContainer
+                    onClick={() => {
+                      dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
+                    }}
+                  >
+                    {state.friendlyEndDate ?? state.end.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')}
+                  </ItemContainer>
+                </Popover.Trigger>
+                <Popover.Content>
+                  <DateSelector isStart={false} />
+                </Popover.Content>
+              </Popover>
+            </>
+          )}
         </Container>
       </DatePickerDispatchContext.Provider>
     </DatePickerContext.Provider>

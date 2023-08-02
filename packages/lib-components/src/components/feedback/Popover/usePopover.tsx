@@ -37,7 +37,7 @@ export function usePopover({
 
   const arrowRef = useRef(null);
   const ARROW_HEIGHT = 7;
-  const GAP = 2;
+  const GAP = 7;
 
   const { context, ...data } = useFloating({
     placement,

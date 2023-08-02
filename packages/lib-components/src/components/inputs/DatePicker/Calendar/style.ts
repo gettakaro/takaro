@@ -11,20 +11,22 @@ export const Header = styled.div`
   align-items: center;
 `;
 
-export const CalendarContainer = styled.div``;
-
 export const DayButton = styled.button<{ isSelected: boolean; isToday: boolean; isSameMonth?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
+  border-radius: 999999px;
   height: 2rem;
   width: 2rem;
   margin-left: auto;
   margin-right: auto;
-  padding: 0;
-  background-color: transparent;
+  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   color: white;
+  padding: ${({ theme }) => theme.spacing['1']};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+  }
 `;
 
 export const DayOfWeekGrid = styled.div`
