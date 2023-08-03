@@ -100,6 +100,11 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     }
 
     const created = await this.repo.create(await new CronJobCreateDTO().construct({ ...item, function: fnIdToAdd }));
+
+    const gameServerService = new GameServerService(this.domainId);
+    const installedModules = await gameServerService.getInstalledModules({ moduleId: item.moduleId });
+    await Promise.all(installedModules.map((mod) => this.addCronjobToQueue(created, mod)));
+
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
@@ -125,11 +130,23 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     }
 
     const updated = await this.repo.update(id, item);
+
+    const gameServerService = new GameServerService(this.domainId);
+    const installedModules = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    await Promise.all(installedModules.map((mod) => this.syncModuleCronjobs(mod)));
+
     return updated;
   }
 
   async delete(id: string) {
+    const existing = await this.repo.findOne(id);
+
+    const gameServerService = new GameServerService(this.domainId);
+    const installedModules = await gameServerService.getInstalledModules({ moduleId: existing.moduleId });
+    await Promise.all(installedModules.map((mod) => this.removeCronjobFromQueue(existing, mod)));
+
     await this.repo.delete(id);
+
     return id;
   }
 
@@ -173,6 +190,8 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
   private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
     const jobId = this.getJobId(modInstallation, cronJob);
+    const systemConfig = modInstallation.systemConfig.cronJobs;
+
     await queueService.queues.cronjobs.queue.add(
       {
         functionId: cronJob.function.id,
@@ -184,7 +203,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       {
         jobId,
         repeat: {
-          pattern: modInstallation.systemConfig.cronJobs[cronJob.name],
+          pattern: systemConfig ? modInstallation.systemConfig.cronJobs[cronJob.name] : cronJob.temporalValue,
           jobId,
         },
       }
