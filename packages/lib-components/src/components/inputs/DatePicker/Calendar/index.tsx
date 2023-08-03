@@ -3,7 +3,6 @@ import { FC, useCallback, useState } from 'react';
 import { Header, Wrapper, DaysGrid, DayButton, DayWrapper, DayOfWeekGrid } from './style';
 import { IconButton, Tooltip } from '../../../../components';
 import { AiOutlineRight as ChevronRightIcon, AiOutlineLeft as ChevronLeftIcon } from 'react-icons/ai';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
 
 interface CalendarProps {
   onDateClick: (date: DateTime) => void;
@@ -16,17 +15,10 @@ export const Calendar: FC<CalendarProps> = ({ onDateClick, selectedDate, id }) =
   const [currentMonth, setCurrentMonth] = useState<string>(selectedDate.toFormat('MMM-YYYY'));
   const firstDayCurrentMonth = DateTime.fromFormat(currentMonth, 'MMM-YYYY').startOf('month');
 
-  const dispatch = useDatePickerDispatchContext();
-  const state = useDatePickerContext();
-
-  if (!dispatch || !state) {
-    throw new Error('useDatePickerDispatchContext and useDatePickerContext must be used within a DatePickerProvider');
-  }
-
   // days of month
   const days = Interval.fromDateTimes(firstDayCurrentMonth, firstDayCurrentMonth.endOf('month'))
     .splitBy({ days: 1 })
-    .map((day) => day.start);
+    .map((day) => day.start!);
 
   const previousMonth = useCallback(() => {
     const firstDayPreviousMonth = firstDayCurrentMonth.minus({ months: 1 });
@@ -66,30 +58,32 @@ export const Calendar: FC<CalendarProps> = ({ onDateClick, selectedDate, id }) =
         <div>S</div>
       </DayOfWeekGrid>
       <DaysGrid>
-        {days.map((day, dayIdx) => (
-          <DayWrapper key={`${id}-${day?.toString()}`} isFirstDay={dayIdx === 0} dayNumber={day!.weekday}>
-            <DayButton
-              key={`${id}-day-button`}
-              type="button"
-              onClick={() => {
-                const newDate = day!.set({
-                  hour: selectedDate.hour,
-                  minute: selectedDate.minute,
-                  second: selectedDate.second,
-                  millisecond: selectedDate.millisecond,
-                });
-                onDateClick(newDate);
-              }}
-              isSelected={day?.hasSame(state.start, 'day') ?? false}
-              isToday={day?.hasSame(today, 'day') ?? false}
-              isSameMonth={day?.hasSame(firstDayCurrentMonth, 'month') ?? false}
-            >
-              <time key={`${id}-time`} dateTime={day?.toFormat('yyyy-MM-dd')}>
-                {day?.toFormat('d')}
-              </time>
-            </DayButton>
-          </DayWrapper>
-        ))}
+        {days.map((day, dayIdx) => {
+          return (
+            <DayWrapper key={`${id}-${day?.toString()}`} isFirstDay={dayIdx === 0} dayNumber={day.weekday}>
+              <DayButton
+                key={`${id}-day-button`}
+                type="button"
+                onClick={() => {
+                  const newDate = day.set({
+                    hour: selectedDate.hour,
+                    minute: selectedDate.minute,
+                    second: selectedDate.second,
+                    millisecond: selectedDate.millisecond,
+                  });
+                  onDateClick(newDate);
+                }}
+                isSelected={day.hasSame(selectedDate, 'day') ?? false}
+                isToday={day.hasSame(today, 'day') ?? false}
+                isSameMonth={day.hasSame(firstDayCurrentMonth, 'month') ?? false}
+              >
+                <time key={`${id}-time`} dateTime={day?.toFormat('yyyy-MM-dd')}>
+                  {day?.toFormat('d')}
+                </time>
+              </DayButton>
+            </DayWrapper>
+          );
+        })}
       </DaysGrid>
     </Wrapper>
   );
