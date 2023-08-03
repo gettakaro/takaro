@@ -94,9 +94,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (!existingAssociations.length) {
       const existingPlayers = await this.find({
         filters: {
-          steamId: playerData.steamId,
-          epicOnlineServicesId: playerData.epicOnlineServicesId,
-          xboxLiveId: playerData.xboxLiveId,
+          steamId: [playerData.steamId],
+          epicOnlineServicesId: [playerData.epicOnlineServicesId],
+          xboxLiveId: [playerData.xboxLiveId],
         },
       });
       if (!existingPlayers.results.length) {

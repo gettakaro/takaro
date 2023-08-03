@@ -9,9 +9,9 @@ async function main() {
   const commands = data.module.userConfig.commands;
 
   if (items.length + commands.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: 'No items or commands configured, please ask your server administrator to configure this module.',
-    });
+    await data.player.pm(
+      'No items or commands configured, please ask your server administrator to configure this module.'
+    );
     return;
   }
 
@@ -24,9 +24,7 @@ async function main() {
       name: randomOption,
       amount: 1,
     });
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `You received ${randomOption}!`,
-    });
+    await data.player.pm(`You received ${randomOption}!`);
   } else {
     await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });
   }

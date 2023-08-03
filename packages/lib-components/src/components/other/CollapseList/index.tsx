@@ -15,12 +15,13 @@ const StyledList = styled.div`
 export const CollapseList: FC<PropsWithChildren> & {
   Item: FC<PropsWithChildren<ItemProps>>;
 } = ({ children }) => {
-  return <StyledList>{children}</StyledList>;
+  return <StyledList role="tree">{children}</StyledList>;
 };
 
 interface ItemProps {
   collapsed?: boolean;
   title: string;
+  description?: string;
 }
 
 const Header = styled.div<{ isCollapsed: boolean }>`
@@ -32,33 +33,25 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  margin-bottom: ${({ theme, isCollapsed }) =>
-    isCollapsed ? theme.spacing['0_75'] : 0};
+  margin-bottom: ${({ theme, isCollapsed }) => (isCollapsed ? theme.spacing['0_75'] : 0)};
 
   svg {
-    transform: ${({ isCollapsed }) =>
-      isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'};
+    transform: ${({ isCollapsed }) => (isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)')};
     transition: transform 0.1s ease-in-out;
   }
 `;
 
-const Item: FC<PropsWithChildren<ItemProps>> = ({
-  collapsed = false,
-  title,
-  children,
-}) => {
+const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, children, description }) => {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const theme = useTheme();
 
   return (
-    <div style={{ width: '100%' }}>
-      <Header
-        isCollapsed={isCollapsed}
-        onClick={() => setIsCollapsed((prev) => !prev)}
-      >
+    <div style={{ width: '100%' }} role="treeitem">
+      <Header isCollapsed={isCollapsed} onClick={() => setIsCollapsed((prev) => !prev)}>
         <h3>{title}</h3>
         <ArrowUp size={18} />
       </Header>
+      {description && <p>{description}</p>}
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div

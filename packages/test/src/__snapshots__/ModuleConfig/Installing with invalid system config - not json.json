@@ -3,6 +3,7 @@
     "meta": {
       "error": {
         "code": "ValidationError",
+        "message": "Validation error",
         "details": [
           {
             "target": {

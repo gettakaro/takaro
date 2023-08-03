@@ -24,42 +24,35 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
-  const existingVariable = await takaro.variable.variableControllerFind({
+  const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
-      key: getVariableKey(args.tp),
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [getVariableKey(args.tp)],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 
   if (existingVariable.data.data.length > 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`,
-    });
+    await data.player.pm(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);
     return;
   }
 
-  const allPlayerTeleports = await takaro.variable.variableControllerFind({
+  const allPlayerTeleports = await takaro.variable.variableControllerSearch({
     search: {
       key: getVariableKey(''),
     },
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 
   if (allPlayerTeleports.data.data.length >= mod.userConfig.maxTeleports) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(
+      `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`
+    );
     return;
   }
 
@@ -76,14 +69,7 @@ async function main() {
     playerId: player.playerId,
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleport ${args.tp} set.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleport ${args.tp} set.`);
 }
 
 await main();

@@ -136,7 +136,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           name={`arguments.${index}.type`}
                           label="Type"
                           readOnly={readOnly}
-                          minWidth="120px"
                           render={(selectedIndex) => (
                             <>{argumentTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</>
                           )}
@@ -150,18 +149,25 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           </Select.OptionGroup>
                         </Select>
                       </Flex>
-                      <TextField control={control} label="Help text" name={`arguments.${index}.helpText`} />
+                      <TextField
+                        control={control}
+                        label="Help text"
+                        readOnly={readOnly}
+                        name={`arguments.${index}.helpText`}
+                      />
                     </Fields>
-                    <Tooltip>
-                      <Tooltip.Trigger asChild>
-                        <IconButton
-                          onClick={() => remove(index)}
-                          icon={<CloseIcon size={16} cursor="pointer" />}
-                          ariaLabel="Remove argument"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Remove argument</Tooltip.Content>
-                    </Tooltip>
+                    {!readOnly && (
+                      <Tooltip>
+                        <Tooltip.Trigger asChild>
+                          <IconButton
+                            onClick={() => remove(index)}
+                            icon={<CloseIcon size={16} cursor="pointer" />}
+                            ariaLabel="Remove argument"
+                          />
+                        </Tooltip.Trigger>
+                        <Tooltip.Content>Remove argument</Tooltip.Content>
+                      </Tooltip>
+                    )}
                   </ArgumentCard>
                 ))}
               </ArgumentList>

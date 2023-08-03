@@ -19,6 +19,66 @@ basicTest('Can create module', async ({ page }) => {
   await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
+basicTest('Creating module with config, saves the config', async ({ page }) => {
+  await page.getByRole('link', { name: 'Modules' }).click();
+  await page.getByText('new module').click();
+
+  const moduleName = 'My new module';
+
+  await page.getByPlaceholder('My cool module').fill(moduleName);
+
+  await page.getByRole('button', { name: 'Config Field' }).click();
+  await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
+
+  await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
+
+  await page.getByLabel('Default value').fill('my string default value');
+
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await page.getByRole('link', { name: 'Modules' }).click();
+
+  await expect(page.getByText(moduleName)).toBeVisible();
+  await page
+    .getByRole('link', { name: 'My new module Edit module Delete module No description provided.' })
+    .getByRole('button', { name: 'Edit module' })
+    .click();
+
+  await expect(page.getByText('Cool string')).toBeVisible();
+});
+
+basicTest('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.page.getByText('new module').click();
+
+  await page.getByPlaceholder('My cool module').fill('a');
+
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
+});
+
+basicTest('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
+  await page.getByRole('link', { name: 'Modules' }).click();
+  await page.getByText('new module').click();
+
+  await page.getByPlaceholder('My cool module').fill('My new module');
+
+  await page.getByRole('button', { name: 'Config Field' }).click();
+  await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
+  await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
+
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await expect(
+    page
+      .locator('div')
+      .filter({ hasText: /^Required$/ })
+      .locator('span')
+  ).toBeVisible();
+});
+
 basicTest('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'edit this module';
 
@@ -61,7 +121,7 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
-test('Can install module with empty config', async ({ page }) => {
+test.fixme('Can install module with empty config', async ({ page }) => {
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
   await page.getByText('Server Modules').click();

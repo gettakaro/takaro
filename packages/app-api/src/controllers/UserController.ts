@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserService, UserUpdateDTO } from '../service/UserService.js';
@@ -29,6 +29,12 @@ export class ParamIdAndRoleId extends ParamId {
   roleId!: string;
 }
 
+export class InviteCreateDTO {
+  @IsString()
+  @IsEmail()
+  email!: string;
+}
+
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   @Type(() => LoginOutputDTO)
   @ValidateNested()
@@ -49,14 +55,26 @@ class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
 
 class UserSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  idpId!: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  discordId!: string[];
 }
 
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare filters: UserSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedFilters)
+  declare search: UserSearchInputAllowedFilters;
 }
 
 @OpenAPI({
@@ -148,5 +166,14 @@ export class UserController {
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
     const service = new RoleService(req.domainId);
     return apiResponse(await service.removeRole(params.roleId, params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @Post('/user/invite')
+  @ResponseSchema(APIOutput)
+  async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
+    const service = new UserService(req.domainId);
+    await service.inviteUser(data.email);
+    return apiResponse();
   }
 }

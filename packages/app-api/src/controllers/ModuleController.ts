@@ -26,18 +26,22 @@ export class ModuleOutputArrayDTOAPI extends APIOutput<ModuleOutputDTO[]> {
 
 class ModuleSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
   declare filters: ModuleSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => ModuleSearchInputAllowedFilters)
+  declare search: ModuleSearchInputAllowedFilters;
 }
 
 @OpenAPI({

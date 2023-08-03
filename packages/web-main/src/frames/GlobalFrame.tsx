@@ -9,10 +9,10 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
-  AiOutlineBook as DocumentationIcon,
-  // AiOutlineUser as UsersIcon,
   AiOutlineIdcard as PlayersIcon,
   AiOutlineUsergroupAdd as RolesIcon,
+  AiOutlineUser as UsersIcon,
+  AiOutlineEdit as VariablesIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -22,63 +22,65 @@ import { ErrorBoundary } from '@sentry/react';
 const Container = styled.div`
   display: flex;
   height: 100%;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 const ContentContainer = styled(motion.div)`
   background-color: ${({ theme }): string => theme.colors.background};
+  margin-top: ${({ theme }) => theme.spacing[1]};
+  border-left: 1px solid ${({ theme }) => theme.colors.secondary};
+  border-top: 1px solid ${({ theme }) => theme.colors.secondary};
+  border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
   width: 100%;
   opacity: 0;
   overflow-y: auto;
 `;
 
-export const GlobalFrame: FC = () => {
-  const links: NavbarLink[] = [
-    {
-      label: 'Dashboard',
-      path: PATHS.home(),
-      icon: <DashboardIcon />,
-    },
-    {
-      label: 'Servers',
-      path: PATHS.gameServers.overview(),
-      icon: <GameServersIcon />,
-    },
-    {
-      label: 'Roles',
-      path: PATHS.roles.overview(),
-      icon: <RolesIcon />,
-    },
-    {
-      label: 'Players',
-      path: PATHS.players(),
-      icon: <PlayersIcon />,
-    },
-    /*
-    {
-      label: 'Users',
-      path: PATHS.users(),
-      icon: <UsersIcon />,
-    },
-    */
-    {
-      label: 'Modules',
-      path: PATHS.moduleDefinitions(),
-      icon: <ModulesIcon />,
-    },
-    {
-      label: 'Settings',
-      path: PATHS.settings.overview(),
-      icon: <SettingsIcon />,
-      end: false,
-    },
-    {
-      label: 'Documentation',
-      path: 'https://docs.takaro.io',
-      icon: <DocumentationIcon />,
-      external: true,
-    },
-  ];
+const links: NavbarLink[] = [
+  {
+    label: 'Dashboard',
+    path: PATHS.home(),
+    icon: <DashboardIcon />,
+  },
+  {
+    label: 'Servers',
+    path: PATHS.gameServers.overview(),
+    icon: <GameServersIcon />,
+  },
+  {
+    label: 'Players',
+    path: PATHS.players(),
+    icon: <PlayersIcon />,
+  },
+  {
+    label: 'Users',
+    path: PATHS.users(),
+    icon: <UsersIcon />,
+  },
+  {
+    label: 'Roles',
+    path: PATHS.roles.overview(),
+    icon: <RolesIcon />,
+  },
+  {
+    label: 'Modules',
+    path: PATHS.moduleDefinitions(),
+    icon: <ModulesIcon />,
+  },
+  {
+    label: 'Variables',
+    path: PATHS.variables(),
+    icon: <VariablesIcon />,
+  },
+  {
+    label: 'Settings',
+    path: PATHS.settings.overview(),
+    icon: <SettingsIcon />,
+    end: false,
+  },
+];
 
+export const GlobalFrame: FC = () => {
   return (
     <Container>
       <Navbar links={links} />

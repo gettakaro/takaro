@@ -55,7 +55,7 @@ if (config.get('mode') === 'test' && process.env.LOGGING_LEVEL === undefined) {
 
 const transports = [
   new winston.transports.Console({
-    level: level,
+    level,
     format: config.get('logging.json') ? jsonFormat : simpleFormat,
     silent: level === 'none',
   }),

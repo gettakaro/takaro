@@ -1,30 +1,37 @@
 import { getTakaro, checkPermission } from '@takaro/helpers';
-import vm, { Module } from 'node:vm';
+import vm from 'node:vm';
 import { config } from '../../config.js';
+import axios from 'axios';
+import * as _ from 'lodash-es';
+import { FunctionExecutor, ILog } from './executeFunction.js';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
  */
-
-export async function executeFunctionLocal(fn: string, data: Record<string, unknown>, token: string) {
+export const executeFunctionLocal: FunctionExecutor = async (
+  fn: string,
+  data: Record<string, unknown>,
+  token: string
+) => {
   data.token = token;
   data.url = config.get('takaro.url');
 
-  const logs = {
-    stdout: [] as string[],
-    stderr: [] as string[],
+  const logs: ILog[] = [];
+
+  function pushLog(...args: string[]) {
+    logs.push({ msg: args[0], details: { args: args.slice(1) } });
+  }
+
+  const patchedConsole = {
+    log: pushLog,
+    error: pushLog,
+    warn: pushLog,
+    info: pushLog,
+    debug: pushLog,
   };
 
   const contextifiedObject = vm.createContext({
-    process: { env: { DATA: JSON.stringify(data) } },
-    console: {
-      log: (...args: string[]) => {
-        logs.stdout.push(...args);
-      },
-      error: (...args: string[]) => {
-        logs.stderr.push(...args);
-      },
-    },
+    console: patchedConsole,
   });
 
   const toEval = new vm.SourceTextModule(fn, { context: contextifiedObject });
@@ -32,13 +39,20 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
     return data;
   };
 
-  await toEval.link((specifier: string, referencingModule: Module) => {
+  const monkeyPatchedGetTakaro = function () {
+    return getTakaro(data, patchedConsole);
+  };
+
+  await toEval.link((specifier: string, referencingModule) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'getData', 'checkPermission'],
+      ['getTakaro', 'getData', 'axios', '_', 'lodash'],
       function () {
-        this.setExport('getTakaro', getTakaro);
+        this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
         this.setExport('getData', monkeyPatchedGetData);
+        this.setExport('axios', axios);
+        this.setExport('_', _);
+        this.setExport('lodash', _);
       },
       { context: referencingModule.context }
     );
@@ -57,11 +71,14 @@ export async function executeFunctionLocal(fn: string, data: Record<string, unkn
       success: true,
     };
   } catch (error) {
-    if (error instanceof Error) logs.stderr.push(error.message);
+    logs.push({
+      msg: (error as Error).message,
+      details: (error as Error).stack,
+    });
 
     return {
       logs,
       success: false,
     };
   }
-}
+};

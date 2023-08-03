@@ -9,7 +9,6 @@ import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
-  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { useParams, redirect, useOutletContext } from 'react-router-dom';
@@ -59,34 +58,16 @@ export const ServerFrame: FC = () => {
       path: PATHS.gameServer.settings(serverId!),
       icon: <SettingsIcon />,
     },
-    {
-      label: 'Documentation',
-      path: 'https://docs.takaro.io',
-      icon: <DocumentationIcon />,
-      external: true,
-    },
   ];
 
   return (
     <Container>
       <Navbar links={links} gameServerNav />
-      <ContentContainer
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
-        <Header
-          isLoading={isLoading}
-          idToNameMap={
-            gameserver ? { [serverId!]: gameserver.name } : undefined
-          }
-        />
+      <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
+        <Header isLoading={isLoading} idToNameMap={gameserver ? { [serverId!]: gameserver.name } : undefined} />
         <Page>
           <ErrorBoundary fallback={<ErrorFallback />}>
-            {isError ? (
-              <div>Server not found</div>
-            ) : (
-              <Outlet context={{ gameServerId: serverId }} />
-            )}
+            {isError ? <div>Server not found</div> : <Outlet context={{ gameServerId: serverId }} />}
           </ErrorBoundary>
         </Page>
       </ContentContainer>

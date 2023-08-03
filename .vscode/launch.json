@@ -13,6 +13,7 @@
       "restart": true,
       "outFiles": [
         "${workspaceFolder}/packages/lib-http/**/*.js",
+        "${workspaceFolder}/packages/lib-auth/**/*.js",
         "${workspaceFolder}/packages/lib-queues/**/*.js",
         "${workspaceFolder}/packages/lib-util/**/*.js",
         "${workspaceFolder}/packages/lib-gameserver/**/*.js",
@@ -68,6 +69,19 @@
         "${workspaceFolder}/packages/lib-gameserver/**/*.js",
         "${workspaceFolder}/packages/**/dist/*.js"
       ]
+    },
+    {
+      "name": "Playwright",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "outFiles": ["${workspaceFolder}/dist/extension.js"],
+      "preLaunchTask": "${defaultBuildTask}",
+      "env": {
+        "DEBUG": "true",
+        "TAKARO_OAUTH_HOST": "http://127.0.0.1:14444"
+      }
     }
   ]
 }

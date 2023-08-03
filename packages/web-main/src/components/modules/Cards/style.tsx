@@ -1,4 +1,4 @@
-import { styled, Dialog, Button } from '@takaro/lib-components';
+import { styled, Button } from '@takaro/lib-components';
 
 export const ModuleCards = styled.ul`
   display: grid;
@@ -48,12 +48,6 @@ export const ActionIconsContainer = styled.span`
 
   svg:hover {
     color: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-export const DeleteDialogContainer = styled(Dialog.Body)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 `;
 

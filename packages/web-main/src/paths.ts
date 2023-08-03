@@ -2,15 +2,20 @@ export const PATHS = {
   home: () => '/',
   login: () => '/login',
   users: () => '/users',
-  profile: () => '/profile',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
+  variables: () => '/variables',
   notFound: () => '/404',
 
   roles: {
     overview: () => '/roles',
     create: () => '/roles/create',
     update: (roleId: string) => `/roles/update/${roleId}`,
+  },
+  auth: {
+    recovery: () => '/auth/recovery',
+    profile: () => '/auth/profile',
+    verification: () => '/auth/verification',
   },
 
   settings: {

@@ -51,7 +51,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
   return (
     <InputContainer>
       {prefix && <PrefixContainer hasError={hasError}>{prefix}</PrefixContainer>}
-      {icon && cloneElement(icon, { size: 22, className: 'icon' })}
+      {icon && cloneElement(icon, { size: 18, className: 'icon' })}
       <Input
         autoCapitalize="off"
         autoComplete={type === 'password' ? 'new-password' : 'off'}
@@ -62,7 +62,6 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         isPassword={type === 'password'}
         id={id}
         name={name}
-        required={required}
         onChange={handleOnChange}
         onBlur={onBlur}
         onFocus={onFocus}
@@ -74,6 +73,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         type={getFieldType(type, showPassword)}
         ref={ref}
         value={value}
+        aria-required={required}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
       {type === 'password' &&
@@ -83,7 +83,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
             onClick={() => {
               setShowPassword(false);
             }}
-            size="22"
+            size={18}
           />
         ) : (
           <ShowPasswordIcon
@@ -91,7 +91,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
             onClick={() => {
               setShowPassword(true);
             }}
-            size="22"
+            size={18}
           />
         ))}
       {suffix && <SuffixContainer hasError={hasError}>{suffix}</SuffixContainer>}

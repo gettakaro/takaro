@@ -9,11 +9,11 @@ async function main() {
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   const ownedTeleports = (
-    await takaro.variable.variableControllerFind({
+    await takaro.variable.variableControllerSearch({
       filters: {
-        gameServerId,
-        playerId: player.playerId,
-        moduleId: mod.moduleId,
+        gameServerId: [gameServerId],
+        playerId: [player.playerId],
+        moduleId: [mod.moduleId],
       },
       search: {
         key: 'tp',
@@ -24,13 +24,13 @@ async function main() {
   ).data.data;
 
   const maybePublicTeleports = (
-    await takaro.variable.variableControllerFind({
+    await takaro.variable.variableControllerSearch({
       filters: {
-        gameServerId,
-        moduleId: mod.moduleId,
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
       },
       search: {
-        key: 'tp',
+        key: ['tp'],
       },
       sortBy: 'key',
       sortDirection: 'asc',
@@ -47,36 +47,17 @@ async function main() {
   });
 
   if (teleports.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `You have no teleports set, use ${prefix}settp <name> to set one.`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(`You have no teleports set, use ${prefix}settp <name> to set one.`);
     return;
   }
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `You have ${teleports.length} teleport${teleports.length === 1 ? '' : 's'} available`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`You have ${teleports.length} teleport${teleports.length === 1 ? '' : 's'} available`);
 
   for (const rawTeleport of teleports) {
     const teleport = JSON.parse(rawTeleport.value);
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: ` - ${teleport.name}: ${teleport.x}, ${teleport.y}, ${teleport.z} ${teleport.public ? '(public)' : ''}`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(
+      ` - ${teleport.name}: ${teleport.x}, ${teleport.y}, ${teleport.z} ${teleport.public ? '(public)' : ''}`
+    );
   }
 }
 

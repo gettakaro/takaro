@@ -6,32 +6,23 @@ async function main() {
 
   const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const existingVariable = await takaro.variable.variableControllerFind({
+  const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
-      key: `tp_${args.tp}`,
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [`tp_${args.tp}`],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
   });
 
   if (existingVariable.data.data.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `Teleport ${args.tp} does not exist.`,
-    });
+    await data.player.pm(`Teleport ${args.tp} does not exist.`);
     return;
   }
 
   await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleport ${args.tp} deleted.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleport ${args.tp} deleted.`);
 }
 
 await main();

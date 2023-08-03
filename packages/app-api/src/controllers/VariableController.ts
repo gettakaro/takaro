@@ -29,24 +29,24 @@ export class VariableOutputArrayDTOAPI extends APIOutput<VariableOutputDTO[]> {
 
 class VariableSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  id!: string;
+  @IsString({ each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsString()
-  key!: string;
+  @IsString({ each: true })
+  key!: string[];
 
   @IsOptional()
-  @IsUUID()
-  gameServerId!: string;
+  @IsUUID(4, { each: true })
+  gameServerId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  playerId!: string;
+  @IsUUID(4, { each: true })
+  playerId!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 }
 
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {
@@ -67,7 +67,7 @@ export class VariableController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_VARIABLES]))
   @ResponseSchema(VariableOutputArrayDTOAPI)
   @Post('/variables/search')
-  async find(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: VariableSearchInputDTO) {
     const service = new VariablesService(req.domainId);
     const result = await service.find({
       ...query,

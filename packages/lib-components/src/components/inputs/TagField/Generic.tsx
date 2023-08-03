@@ -40,6 +40,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       onBlur = () => {},
       onFocus = () => {},
       onChange,
+      required,
       hasDescription,
     },
     ref
@@ -115,6 +116,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
           onPaste={handleOnPaste}
           onFocus={onFocus}
           aria-describedby={setAriaDescribedBy(name, hasDescription)}
+          aria-required={required}
         />
       </TagsContainer>
     );

@@ -1,10 +1,19 @@
 import convict, { Path, PathValue, Schema } from 'convict';
 
+export enum EXECUTION_MODE {
+  FIRECRACKER = 'firecracker',
+  LOCAL = 'local',
+  LAMBDA = 'lambda',
+}
+
 export interface IBaseConfig {
   app: {
     name: string;
   };
   mode: 'development' | 'production' | 'test';
+  functions: {
+    executionMode: EXECUTION_MODE;
+  };
 }
 
 export const baseConfigConvict: Schema<IBaseConfig> = {
@@ -21,6 +30,14 @@ export const baseConfigConvict: Schema<IBaseConfig> = {
     format: ['development', 'production', 'test'],
     default: 'production',
     env: 'NODE_ENV',
+  },
+  functions: {
+    executionMode: {
+      doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
+      format: Object.values(EXECUTION_MODE),
+      default: EXECUTION_MODE.FIRECRACKER,
+      env: 'FUNCTIONS_EXECUTION_MODE',
+    },
   },
 };
 

@@ -1,3 +1,4 @@
-export { Sorting } from './Sorting';
-export { ColumnController } from './ColumnController';
 export { Pagination } from './Pagination';
+export { Filter } from './Filter';
+export { ColumnHeader } from './ColumnHeader';
+export { ColumnVisibility } from './ColumnVisibility';

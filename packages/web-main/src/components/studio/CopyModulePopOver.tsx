@@ -70,62 +70,67 @@ export const CopyModulePopOver = () => {
 
     const createdModule = await createModule({ name: newName, configSchema: mod.configSchema });
 
+    if (moduleCreateError) {
+      console.log('this fires');
+      const err = errors.defineErrorType(moduleCreateError);
+
+      console.log(err, err instanceof errors.UniqueConstraintError);
+      if (err instanceof errors.UniqueConstraintError) {
+        setError('Module name already exists');
+      } else {
+        setError('Failed to copy module');
+      }
+    }
+
     try {
-      await Promise.all([
-        Promise.all(
-          mod.hooks.map((hook) =>
-            createHook({
-              moduleId: createdModule.id,
-              name: hook.name,
-              eventType: hook.eventType,
-              regex: hook.regex ?? '',
-              function: hook.function.code,
-            })
-          )
-        ),
-        Promise.all(
-          mod.commands.map((command) =>
-            createCommand({
-              moduleId: createdModule.id,
-              name: command.name,
-              trigger: command.trigger,
-              helpText: command.helpText,
-              function: command.function.code,
-              arguments: command.arguments.map((arg) => ({
-                name: arg.name,
-                type: arg.type,
-                helpText: arg.helpText,
-                position: arg.position,
-              })),
-            })
-          )
-        ),
-        Promise.all(
-          mod.cronJobs.map((cronJob) =>
-            createCronJob({
-              moduleId: createdModule.id,
-              name: cronJob.name,
-              temporalValue: cronJob.temporalValue,
-              function: cronJob.function.code,
-            })
-          )
-        ),
-      ]);
-      enqueueSnackbar('Module copied successfully. ', { variant: 'default', type: 'success' });
-      navigate(PATHS.studio.module(createdModule.id));
+      if (!moduleCreateError) {
+        await Promise.all([
+          Promise.all(
+            mod.hooks.map((hook) =>
+              createHook({
+                moduleId: createdModule.id,
+                name: hook.name,
+                eventType: hook.eventType,
+                regex: hook.regex ?? '',
+                function: hook.function.code,
+              })
+            )
+          ),
+          Promise.all(
+            mod.commands.map((command) =>
+              createCommand({
+                moduleId: createdModule.id,
+                name: command.name,
+                trigger: command.trigger,
+                helpText: command.helpText,
+                function: command.function.code,
+                arguments: command.arguments.map((arg) => ({
+                  name: arg.name,
+                  type: arg.type,
+                  helpText: arg.helpText,
+                  position: arg.position,
+                })),
+              })
+            )
+          ),
+          Promise.all(
+            mod.cronJobs.map((cronJob) =>
+              createCronJob({
+                moduleId: createdModule.id,
+                name: cronJob.name,
+                temporalValue: cronJob.temporalValue,
+                function: cronJob.function.code,
+              })
+            )
+          ),
+        ]);
+        enqueueSnackbar('Module copied successfully. ', { variant: 'default', type: 'success' });
+        navigate(PATHS.studio.module(createdModule.id));
+      }
     } catch (error) {
       await removeModule({ id: createdModule.id });
     }
   };
-
-  if (moduleCreateError) {
-    const err = errors.defineErrorType(moduleCreateError);
-    if (err instanceof errors.UniqueConstraintError) {
-      setError('Module name already exists');
-    } else {
-      setError('Failed to copy module');
-    }
-  }
 
   return (
     <Popover placement="bottom">
@@ -139,7 +144,7 @@ export const CopyModulePopOver = () => {
           </PopoverHeading>
           <Alert
             variant="info"
-            text="Copying a module copies commands with their original name. Leading to a simultaneious trigger if both modules are installed."
+            text="Copying a module copies commands with their original name. Leading to a simultaneous trigger if both modules are installed."
           />
 
           <form onSubmit={handleSubmit(onSubmit)}>

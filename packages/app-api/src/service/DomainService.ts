@@ -14,6 +14,8 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
 import { ory, PERMISSIONS } from '@takaro/auth';
+import { config } from '../config.js';
+import { EXECUTION_MODE } from '@takaro/config';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -108,7 +110,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await ory.deleteIdentitiesForDomain(id);
 
-    await deleteLambda({ domainId: existing.id });
+    if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
+      await deleteLambda({ domainId: existing.id });
+    }
 
     await this.repo.delete(id);
 
@@ -151,7 +155,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await moduleService.seedBuiltinModules();
 
-    await createLambda({ domainId: domain.id });
+    if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
+      await createLambda({ domainId: domain.id });
+    }
 
     return new DomainCreateOutputDTO().construct({
       createdDomain: domain,

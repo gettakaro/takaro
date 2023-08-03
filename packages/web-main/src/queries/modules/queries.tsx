@@ -1,4 +1,4 @@
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,
@@ -63,16 +63,16 @@ export const functionKeys = {
   detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
-export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchInputDTO = {}) => {
+export const useInfiniteModules = ({ page, ...queryParams }: ModuleSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: moduleKeys.list(),
+    queryKey: [...moduleKeys.list(), { ...queryParams }],
     queryFn: async ({ pageParam = page }) =>
       (
         await apiClient.module.moduleControllerSearch({
+          ...queryParams,
           page: pageParam,
-          ...moduleSearchInputArgs,
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
@@ -84,6 +84,18 @@ export const useModules = ({ page = 0, ...moduleSearchInputArgs }: ModuleSearchI
   }, [queryOpts]);
 
   return { ...queryOpts, InfiniteScroll };
+};
+
+export const useModules = (queryParams: ModuleSearchInputDTO = {}) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.module.moduleControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };
 
 export const useModule = (id: string) => {
@@ -103,37 +115,14 @@ export const useModuleCreate = () => {
   return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleCreateDTO>({
     mutationFn: async (moduleCreateDTO: ModuleCreateDTO) =>
       (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
-    onSuccess: (newModule: ModuleOutputDTO) => {
-      queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(moduleKeys.list(), (prev) => {
-        // in case there are no modules yet
-        if (!prev) {
-          return {
-            pages: [
-              {
-                data: [newModule],
-                meta: {
-                  page: 0,
-                  total: 1,
-                  limit: 100,
-                  error: { code: '', message: '', details: '' },
-                  serverTime: '',
-                },
-              },
-            ],
-            pageParams: [0],
-          };
-        }
+    onSuccess: async (newModule: ModuleOutputDTO) => {
+      // remove cache of list of modules
+      await queryClient.invalidateQueries(moduleKeys.list());
 
-        const newData = {
-          ...prev,
-          pages: prev?.pages.map((page) => ({
-            ...page,
-            data: [...page.data, newModule],
-          })),
-        };
-        return newData;
-      });
+      // Create detail cache of new module
+      queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
     },
+
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
@@ -148,25 +137,13 @@ export const useModuleRemove = () => {
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
     mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
-    onSuccess: (removedModule: IdUuidDTO) => {
+    onSuccess: async (removedModule: IdUuidDTO) => {
       try {
-        // Remove item from list of modules
-        queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(moduleKeys.list(), (prev) => {
-          if (!prev) {
-            throw new Error('Cannot remove module from list, because list does not exist');
-          }
-
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.filter((mod) => mod.id !== removedModule.id),
-            })),
-          };
-        });
+        // remove cache of list of modules
+        await queryClient.invalidateQueries(moduleKeys.list());
 
         // Invalidate query of specific module
-        queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
+        await queryClient.invalidateQueries(moduleKeys.detail(removedModule.id));
       } catch (e) {
         Sentry.captureException(e);
       }
@@ -186,30 +163,10 @@ export const useModuleUpdate = () => {
   return useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleUpdate>({
     mutationFn: async ({ id, moduleUpdate }) =>
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
-    onSuccess: (updatedModule: ModuleOutputDTO) => {
+    onSuccess: async (updatedModule: ModuleOutputDTO) => {
       try {
-        // update module in list ofm modules
-        queryClient.setQueryData<InfiniteData<ModuleOutputArrayDTOAPI>>(moduleKeys.list(), (prev) => {
-          if (!prev) {
-            queryClient.invalidateQueries(moduleKeys.list());
-            throw new Error('Cannot update module list, because it does not exist');
-          }
+        await queryClient.invalidateQueries(moduleKeys.list());
 
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.map((gameServer) => {
-                if (gameServer.id === updatedModule.id) {
-                  return updatedModule;
-                }
-                return gameServer;
-              }),
-            })),
-          };
-        });
-
-        // Cache the returned module as new data in case that specific module is queried.
         queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       } catch (e) {
         Sentry.captureException(e);
@@ -239,10 +196,14 @@ export const useHookCreate = () => {
   return useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreateDTO>({
     mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
     onSuccess: async (newHook: HookOutputDTO) => {
-      // add item to list of hooks
-      queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) => (hooks ? [...hooks, newHook] : hooks!));
+      // invalidate list of hooks
+      await queryClient.invalidateQueries(hookKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
+      // invalidate query of specific module which hook belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(newHook.moduleId));
+
+      // add cache entry for new hook
+      queryClient.setQueryData(hookKeys.detail(newHook.id), newHook);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -259,15 +220,14 @@ export const useHookRemove = ({ moduleId }) => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, HookRemove>({
     mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
     onSuccess: async (removedHook: IdUuidDTO) => {
-      // Remove item from list of hooks
-      queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
-        hooks ? hooks.filter((hook) => hook.id !== removedHook.id) : hooks!
-      );
+      // invalidate list of hooks
+      await queryClient.invalidateQueries(hookKeys.list());
 
-      // Invalidate removed hook's query
-      queryClient.invalidateQueries(hookKeys.detail(removedHook.id));
+      // Invalidate query of specific module which hook belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      // remove cache of specific hook
+      queryClient.removeQueries(hookKeys.detail(removedHook.id));
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -284,12 +244,14 @@ export const useHookUpdate = () => {
   return useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookUpdate>({
     mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
     onSuccess: async (updatedHook: HookOutputDTO) => {
-      // add item to list of hooks
-      queryClient.setQueryData<HookOutputDTO[]>(hookKeys.list(), (hooks) =>
-        hooks ? hooks.map((hook) => (hook.id === updatedHook.id ? updatedHook : hook)) : hooks!
-      );
+      // invalidate list of hooks
+      await queryClient.invalidateQueries(hookKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
+      // invalidate query of specific module which hook belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedHook.moduleId));
+
+      // update cache entry of specific hook
+      queryClient.setQueryData(hookKeys.detail(updatedHook.id), updatedHook);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -314,12 +276,14 @@ export const useCommandCreate = () => {
   return useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreateDTO>({
     mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
     onSuccess: async (newCommand: CommandOutputDTO) => {
-      // add item to command list
-      queryClient.setQueryData<CommandOutputDTO[]>(commandKeys.list(), (commands) =>
-        commands ? [...commands, newCommand] : commands!
-      );
+      // invalidate list of commands
+      await queryClient.invalidateQueries(commandKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
+      // invalidate query of specific module which command belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(newCommand.moduleId));
+
+      // add cache entry for new command
+      queryClient.setQueryData(commandKeys.detail(newCommand.id), newCommand);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -337,12 +301,14 @@ export const useCommandUpdate = () => {
     mutationFn: async ({ commandId, command }) =>
       (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
     onSuccess: async (updatedCommand: CommandOutputDTO) => {
-      // add item to command list
-      queryClient.setQueryData<CommandOutputDTO[]>(commandKeys.list(), (commands) =>
-        commands ? commands.map((command) => (command.id === updatedCommand.id ? updatedCommand : command)) : commands!
-      );
+      // invalidate list of commands
+      await queryClient.invalidateQueries(commandKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
+      // invalidate query of specific module which command belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedCommand.moduleId));
+
+      // update cache entry of specific command
+      queryClient.setQueryData(commandKeys.detail(updatedCommand.id), updatedCommand);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -359,15 +325,14 @@ export const useCommandRemove = ({ moduleId }) => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CommandRemove>({
     mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
     onSuccess: async (removedCommand: IdUuidDTO) => {
-      // Remove item from list of commands
-      queryClient.setQueryData<CommandOutputDTO[]>(commandKeys.list(), (commands) =>
-        commands ? commands.filter((command) => command.id !== removedCommand.id) : commands!
-      );
+      // invalidate list of commands
+      await queryClient.invalidateQueries(commandKeys.list());
 
-      // Invalidate removed hook's query
-      queryClient.invalidateQueries(hookKeys.detail(removedCommand.id));
+      // Invalidate query of specific module which command belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      // remove cache of specific command
+      queryClient.removeQueries(commandKeys.detail(removedCommand.id));
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -393,12 +358,14 @@ export const useCronJobCreate = () => {
     mutationFn: async (cronjob: CronJobCreateDTO) =>
       (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
     onSuccess: async (newCronJob: CronJobOutputDTO) => {
-      // add item to command list
-      queryClient.setQueryData<CronJobOutputDTO[]>(cronJobKeys.list(), (cronJobs) =>
-        cronJobs ? [...cronJobs, newCronJob] : cronJobs!
-      );
+      // invalidate list of cronjobs
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
+      // invalidate query of specific module which cronjob belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(newCronJob.moduleId));
+
+      // add cache entry for new cronjob
+      queryClient.setQueryData(cronJobKeys.detail(newCronJob.id), newCronJob);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -416,12 +383,14 @@ export const useCronJobUpdate = () => {
     mutationFn: async ({ cronJobId, cronJob }) =>
       (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
     onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
-      // add item to command list
-      queryClient.setQueryData<CronJobOutputDTO[]>(cronJobKeys.list(), (cronJobs) =>
-        cronJobs ? cronJobs.map((cronJob) => (cronJob.id === updatedCronJob.id ? updatedCronJob : cronJob)) : cronJobs!
-      );
+      // invalidate list of cronjob
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
-      queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
+      // invalidate query of specific module which cronjob belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(updatedCronJob.moduleId));
+
+      // update cache entry of specific cronjob
+      queryClient.setQueryData(cronJobKeys.detail(updatedCronJob.id), updatedCronJob);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -439,15 +408,13 @@ export const useCronJobRemove = ({ moduleId }) => {
     mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
       (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
     onSuccess: async (removedCronJob: IdUuidDTO) => {
-      // Remove item from list of cronjobs
-      queryClient.setQueryData<CronJobOutputDTO[]>(commandKeys.list(), (cronJobs) =>
-        cronJobs ? cronJobs.filter((cronjob) => cronjob.id !== removedCronJob.id) : cronJobs!
-      );
+      await queryClient.invalidateQueries(cronJobKeys.list());
 
-      // Invalidate removed cronjob's query
-      queryClient.invalidateQueries(cronJobKeys.detail(removedCronJob.id));
+      // Invalidate query of specific module which cronjob belongs to
+      await queryClient.invalidateQueries(moduleKeys.detail(moduleId));
 
-      queryClient.invalidateQueries(moduleKeys.detail(moduleId));
+      // remove cache of specific cronjob
+      queryClient.removeQueries(cronJobKeys.detail(removedCronJob.id));
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -472,9 +439,11 @@ export const useFunctionCreate = () => {
   return useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionCreateDTO>({
     mutationFn: async (fn) => (await apiClient.function.functionControllerCreate(fn)).data.data,
     onSuccess: async (newFn: FunctionOutputDTO) => {
-      queryClient.setQueryData<FunctionOutputDTO[]>(functionKeys.list(), (functions) =>
-        functions ? [...functions, newFn] : functions!
-      );
+      // invalidate list of functions
+      await queryClient.invalidateQueries(functionKeys.list());
+
+      // add cache entry for new function
+      queryClient.setQueryData(cronJobKeys.detail(newFn.id), newFn);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -491,10 +460,12 @@ export const useFunctionUpdate = () => {
   return useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionUpdate>({
     mutationFn: async ({ functionId, fn }: FunctionUpdate) =>
       (await apiClient.function.functionControllerUpdate(functionId, fn)).data.data,
-    onSuccess: async (updated: FunctionOutputDTO) => {
-      queryClient.setQueryData<FunctionOutputDTO[]>(functionKeys.list(), (fns) =>
-        fns ? fns.map((fn) => (fn.id === updated.id ? updated : fn)) : fns!
-      );
+    onSuccess: async (updatedFn: FunctionOutputDTO) => {
+      // invalidate list of functions
+      await queryClient.invalidateQueries(functionKeys.list());
+
+      // update cache entry of specific function
+      queryClient.setQueryData(cronJobKeys.detail(updatedFn.id), updatedFn);
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
@@ -510,11 +481,12 @@ export const useFunctionRemove = () => {
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, FunctionRemove>({
     mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
-    onSuccess: async (removed: IdUuidDTO) => {
-      // Remove item from list of cronjobs
-      queryClient.setQueryData<FunctionOutputDTO[]>(functionKeys.list(), (fns) =>
-        fns ? fns.filter((fn) => fn.id !== removed.id) : fns!
-      );
+    onSuccess: async (removedFn: IdUuidDTO) => {
+      // invalidate list of functions
+      await queryClient.invalidateQueries(functionKeys.list());
+
+      // remove cache of specific function
+      queryClient.removeQueries(functionKeys.detail(removedFn.id));
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });

@@ -90,7 +90,7 @@ export class AuthService extends DomainScoped {
     const userService = new UserService(this.domainId);
 
     const rootUser = await userService.find({
-      filters: { name: 'root' },
+      filters: { name: ['root'] },
     });
 
     if (!rootUser.results.length) {
@@ -158,7 +158,7 @@ export class AuthService extends DomainScoped {
       req.domainId = payload.domainId;
 
       const service = new UserService(payload.domainId);
-      const users = await service.find({ filters: { id: payload.sub } });
+      const users = await service.find({ filters: { id: [payload.sub] } });
       if (!users.results.length) return null;
       user = users.results[0];
     }
@@ -169,7 +169,7 @@ export class AuthService extends DomainScoped {
         const identity = await ory.getIdentityFromReq(req);
         if (identity) {
           const service = new UserService(identity.domainId);
-          const users = await service.find({ filters: { idpId: identity.id } });
+          const users = await service.find({ filters: { idpId: [identity.id] } });
           if (!users.results.length) return null;
 
           user = users.results[0];

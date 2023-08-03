@@ -1,11 +1,4 @@
-import {
-  FC,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { Container } from './style';
 
@@ -25,13 +18,6 @@ export interface EditableFieldProps {
   // defaultval
   value?: string;
 }
-
-/*
-const defaultsApplier = defaultInputPropsFactory<EditableFieldProps>({
-  ...defaultInputProps,
-  required: true,
-});
-*/
 
 export const EditableField: FC<EditableFieldProps> = ({
   isEditing = false,
@@ -108,9 +94,11 @@ export const EditableField: FC<EditableFieldProps> = ({
       {editing ? (
         <div onBlur={handleOnBlur} onKeyDown={(e) => handleKeyDown(e)}>
           <input
+            type="text"
             ref={inputRef}
             name={name}
             value={inputValue}
+            aria-required={required}
             onChange={(e) => setInputValue(e.currentTarget.value)}
           />
         </div>

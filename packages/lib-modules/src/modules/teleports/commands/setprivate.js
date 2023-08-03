@@ -8,12 +8,12 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      key: `tp_${args.tp}`,
-      moduleId: mod.moduleId,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      key: [`tp_${args.tp}`],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -22,14 +22,7 @@ async function main() {
   const teleports = teleportRes.data.data;
 
   if (teleports.length === 0) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: `No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`,
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
   }
 
   const teleportRecord = teleports[0];
@@ -42,14 +35,7 @@ async function main() {
     }),
   });
 
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `Teleport ${args.tp} is now private.`,
-    opts: {
-      recipient: {
-        gameId: player.gameId,
-      },
-    },
-  });
+  await data.player.pm(`Teleport ${args.tp} is now private.`);
 }
 
 await main();

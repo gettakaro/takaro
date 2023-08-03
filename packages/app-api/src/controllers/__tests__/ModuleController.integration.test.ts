@@ -73,7 +73,7 @@ const tests = [
       const utilsModule = (
         await this.client.module.moduleControllerSearch({
           filters: {
-            name: 'utils',
+            name: ['utils'],
           },
         })
       ).data.data[0];
@@ -114,7 +114,7 @@ const tests = [
       const utilsModule = (
         await this.client.module.moduleControllerSearch({
           filters: {
-            name: 'utils',
+            name: ['utils'],
           },
         })
       ).data.data[0];

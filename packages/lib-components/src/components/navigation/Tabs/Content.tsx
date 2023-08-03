@@ -3,16 +3,17 @@ import { styled } from '../../../styled';
 import { useTabsContext } from './Context';
 import { motion } from 'framer-motion';
 
-const Container = styled(motion.div)``;
+const Container = styled(motion.div)`
+  padding: ${({ theme }) => theme.spacing['2']};
+`;
 
 interface ContentProps {
-  asChild?: boolean;
   value: string;
 }
 
 const variants = {
-  visible: { opacity: 1, y: 0 },
-  hidden: { opacity: 0, y: '20px' },
+  visible: { opacity: 1, x: 0 },
+  hidden: { opacity: 0, x: '20px' },
 };
 
 export const Content = forwardRef<HTMLDivElement, PropsWithChildren<ContentProps>>(({ children, value }, ref) => {

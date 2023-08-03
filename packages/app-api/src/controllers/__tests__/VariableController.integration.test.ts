@@ -252,9 +252,9 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      const res = await this.client.variable.variableControllerFind({
+      const res = await this.client.variable.variableControllerSearch({
         filters: {
-          playerId: this.setupData.players[0].id,
+          playerId: [this.setupData.players[0].id],
         },
       });
 
@@ -283,9 +283,9 @@ const tests = [
         gameServerId: this.setupData.gameServer2.id,
       });
 
-      const res = await this.client.variable.variableControllerFind({
+      const res = await this.client.variable.variableControllerSearch({
         filters: {
-          gameServerId: this.setupData.gameServer1.id,
+          gameServerId: [this.setupData.gameServer1.id],
         },
       });
 

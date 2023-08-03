@@ -1,0 +1,27 @@
+{
+  "name": "@takaro/email",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
+    "build": "tsc -p ./tsconfig.build.json",
+    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
+    "test:unit": "echo 'No tests (yet :))'",
+    "test:integration": "echo 'No tests (yet :))'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@takaro/config": "0.0.1",
+    "@takaro/util": "0.0.1",
+    "ejs": "^3.1.9",
+    "nodemailer": "^6.9.3"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.2",
+    "@types/nodemailer": "^6.4.8"
+  }
+}

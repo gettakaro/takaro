@@ -14,7 +14,6 @@ import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
 import { Settings } from '@takaro/apiclient';
 
-import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 
 @traceableClass('game:7d2d')
@@ -91,23 +90,27 @@ export class SevenDaysToDie implements IGameServer {
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
-      await this.apiClient.getStats();
-      await this.executeConsoleCommand('version');
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 5000));
+
+      await Promise.race([this.apiClient.getStats(), timeout]);
+      await Promise.race([this.executeConsoleCommand('version'), timeout]);
     } catch (error) {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
 
-      if (axios.isAxiosError(error)) {
-        reason = 'Network error';
-
-        if (!error.response) {
-          reason =
-            'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
-        } else {
-          if (error.response?.status === 403 || error.response?.status === 401) {
-            reason = 'Unauthorized, please check that the admin user and token are correct';
+      if (error instanceof Object && 'details' in error) {
+        reason =
+          'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
+        console.log(error);
+        if (error.details instanceof Object) {
+          if ('status' in error.details) {
+            if (error.details.status === 403 || error.details.status === 401) {
+              reason = 'Unauthorized, please check that the admin user and token are correct';
+            }
           }
         }
+      } else if (error instanceof Object && 'message' in error && error.message === 'Request timed out') {
+        reason = 'Request timed out, the server did not respond in the allocated time';
       }
 
       return new TestReachabilityOutputDTO().construct({

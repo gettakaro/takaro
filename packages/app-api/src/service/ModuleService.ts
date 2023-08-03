@@ -155,7 +155,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
     const existing = await this.repo.find({
-      filters: { builtin: builtin.name },
+      filters: { builtin: [builtin.name] },
     });
 
     let mod = existing.results[0];
@@ -181,7 +181,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const commands = Promise.all(
       builtin.commands.map(async (c) => {
         const existing = await commandService.find({
-          filters: { name: c.name, moduleId: mod.id },
+          filters: { name: [c.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {
@@ -200,7 +200,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const hooks = Promise.all(
       builtin.hooks.map(async (h) => {
         const existing = await hookService.find({
-          filters: { name: h.name, moduleId: mod.id },
+          filters: { name: [h.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {
@@ -219,7 +219,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const cronjobs = Promise.all(
       builtin.cronJobs.map(async (c) => {
         const existing = await cronjobService.find({
-          filters: { name: c.name, moduleId: mod.id },
+          filters: { name: [c.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {
