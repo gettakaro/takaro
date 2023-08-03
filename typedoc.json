@@ -1,6 +1,6 @@
 {
   "entryPoints": ["packages/*"],
-  "name": "Packages Example",
+  "name": "Takaro",
   "entryPointStrategy": "packages",
   "includeVersion": true,
   "out": "./reports/api-docs"
