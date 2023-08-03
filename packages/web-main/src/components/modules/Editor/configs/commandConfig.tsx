@@ -192,7 +192,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           </ContentContainer>
         </CollapseList.Item>
       )}
-      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save command config" />}
     </form>
   );
 };
