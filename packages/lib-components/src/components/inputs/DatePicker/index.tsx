@@ -1,4 +1,4 @@
-import { FC, useReducer } from 'react';
+import { FC, useEffect, useReducer, useState } from 'react';
 import { DateTime } from 'luxon';
 import {
   AiOutlineCalendar as CalendarIcon,
@@ -11,21 +11,14 @@ import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { DatePickerContext, DatePickerDispatchContext, reducer } from './Context';
 
-export interface DateRange {
-  start: DateTime;
-  end: DateTime;
-}
-
 export interface DatePickerProps {
   value: string;
   readOnly?: boolean;
-  hasError?: boolean;
   id: string;
-  hasDescription: boolean;
   onChange: (start: DateTime, end: DateTime) => void;
 }
 
-export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = false, id }) => {
+export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange }) => {
   const [state, dispatch] = useReducer(reducer, {
     showQuickSelect: false,
     showStartDate: false,
@@ -34,6 +27,18 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
     end: DateTime.local().endOf('day'),
     friendlyRange: 'Today',
   });
+
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (state.start > state.end) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+    }
+
+    onChange(state.start, state.end);
+  }, [state.start, state.end]);
 
   return (
     <DatePickerContext.Provider value={state}>

@@ -23,8 +23,6 @@ export const Default: StoryFn<DatePickerProps> = (args) => {
     <Wrapper>
       <DatePicker
         readOnly={args.readOnly}
-        hasDescription={args.hasDescription}
-        hasError={args.hasError}
         id="date"
         onChange={(start, end) => console.log(start, end)}
         value="2021-01-01"
