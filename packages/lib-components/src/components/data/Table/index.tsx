@@ -24,8 +24,6 @@ import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
-const ROW_SELECTION_COL_SPAN = 1;
-
 export interface TableProps<DataType extends object> {
   id: string;
 
@@ -37,7 +35,7 @@ export interface TableProps<DataType extends object> {
 
   renderToolbar?: () => JSX.Element;
 
-  rowSelection: {
+  rowSelection?: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
@@ -85,6 +83,8 @@ export function Table<DataType extends object>({
       return column.id;
     })
   );
+
+  const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
 
   // table size
   useEffect(() => {
@@ -138,7 +138,7 @@ export function Table<DataType extends object>({
     onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
-    onRowSelectionChange: rowSelection?.setRowSelectionState,
+    onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
     initialState: {
       columnVisibility,
@@ -146,7 +146,7 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
       pagination: pagination.paginationState,
-      rowSelection: rowSelection.rowSelectionState,
+      rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
     state: {
@@ -156,7 +156,7 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
       pagination: pagination?.paginationState,
-      rowSelection: rowSelection.rowSelectionState,
+      rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
     },
   });
@@ -198,17 +198,19 @@ export function Table<DataType extends object>({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                <th style={{ width: '10px' }}>
-                  <CheckBox
-                    hasDescription={false}
-                    hasError={false}
-                    id={`select-all-header-${headerGroup.id}`}
-                    name={`select-all-header-${headerGroup.id}`}
-                    onChange={() => table.toggleAllRowsSelected()}
-                    size="small"
-                    value={table.getIsAllRowsSelected()}
-                  />
-                </th>
+                {rowSelection && (
+                  <th style={{ width: '10px' }}>
+                    <CheckBox
+                      hasDescription={false}
+                      hasError={false}
+                      id={`select-all-header-${headerGroup.id}`}
+                      name={`select-all-header-${headerGroup.id}`}
+                      onChange={() => table.toggleAllRowsSelected()}
+                      size="small"
+                      value={table.getIsAllRowsSelected()}
+                    />
+                  </th>
+                )}
                 {headerGroup.headers.map((header) => (
                   <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
                 ))}

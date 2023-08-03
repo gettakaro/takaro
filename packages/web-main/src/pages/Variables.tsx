@@ -13,7 +13,7 @@ const TableContainer = styled.div`
 `;
 
 const Variables: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [activeVar, setActiveVar] = useState<VariableOutputDTO | null>(null);
@@ -136,7 +136,6 @@ const Variables: FC = () => {
       <TableContainer>
         <Table
           id="variables"
-          rowSelection={rowSelection}
           columns={columnDefs}
           data={data.data}
           pagination={{
