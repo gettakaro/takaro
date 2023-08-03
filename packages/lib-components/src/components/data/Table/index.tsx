@@ -121,6 +121,7 @@ export function Table<DataType extends object>({
     manualFiltering: true,
     manualSorting: true,
     enableExpanding: true,
+    enableFilters: true,
     enableColumnFilters: !!columnFiltering,
     enableGlobalFilter: !!columnSearch,
     enableSorting: !!sorting,
