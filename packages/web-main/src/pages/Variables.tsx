@@ -22,6 +22,7 @@ const Variables: FC = () => {
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
+    extend: ['module', 'player', 'gameServer'],
     sortDirection: sorting.sortingState[0]?.desc
       ? VariableSearchInputDTOSortDirectionEnum.Desc
       : VariableSearchInputDTOSortDirectionEnum.Asc,
