@@ -172,8 +172,8 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
 
-    const userRes = await userService.find({ filters: { id: targetId } });
-    const playerRes = await playerService.find({ filters: { id: targetId } });
+    const userRes = await userService.find({ filters: { id: [targetId] } });
+    const playerRes = await playerService.find({ filters: { id: [targetId] } });
 
     if (userRes.total) {
       this.log.info('Assigning role to user');
@@ -189,8 +189,8 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
 
-    const userRes = await userService.find({ filters: { id: targetId } });
-    const playerRes = await playerService.find({ filters: { id: targetId } });
+    const userRes = await userService.find({ filters: { id: [targetId] } });
+    const playerRes = await playerService.find({ filters: { id: [targetId] } });
 
     if (userRes.total) {
       this.log.info('Removing role from user');
