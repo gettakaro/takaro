@@ -1,15 +1,14 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Dialog, Dropdown, MenuList, IconButton, Tooltip } from '@takaro/lib-components';
+import { Button, Dialog, Dropdown, IconButton } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { useNavigate } from 'react-router-dom';
 
-import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { AiOutlinePlus as PlusIcon, AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
-  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -18,12 +17,10 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
     navigate(PATHS.roles.update(id));
-    setOpenDropdown(false);
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
-    setOpenDropdown(false);
   };
 
   const handleOnDelete = (e: MouseEvent) => {
@@ -38,28 +35,17 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
       <Container>
         <Body>
           <Header>
-            {/* TODO: add featuere to enable/disable roles*/}
-            <>enabled</>
-            <Dropdown
-              open={openDropdown}
-              setOpen={setOpenDropdown}
-              renderReference={
-                <Tooltip>
-                  <Tooltip.Trigger asChild>
-                    <IconButton icon={<MenuIcon />} ariaLabel="Actions" />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>Actions</Tooltip.Content>
-                </Tooltip>
-              }
-              renderFloating={
-                <MenuList>
-                  <MenuList.Item onClick={handleOnEditClick}>Edit role</MenuList.Item>
-                  <MenuList.Item onClick={handleOnDeleteClick}>Delete role</MenuList.Item>
-                  <MenuList.Item onClick={() => {}}>Manage users</MenuList.Item>
-                  <MenuList.Item onClick={() => {}}>Manage players</MenuList.Item>
-                </MenuList>
-              }
-            />
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" />
+                <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" />
+                <Dropdown.Menu.Item onClick={() => {}} label="Manage users" />
+                <Dropdown.Menu.Item onClick={() => {}} label="Manage players" />
+              </Dropdown.Menu>
+            </Dropdown>
           </Header>
           <TitleContainer>
             <h3>Role: {name}</h3>
@@ -81,7 +67,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}
               fullWidth
-              text={`Delete role`}
+              text={'Delete role'}
               color="error"
             />
           </StyledDialogBody>
