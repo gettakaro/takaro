@@ -7,17 +7,19 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
-  padding: ${({ theme }) => `${theme.spacing['1_5']} 0`};
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom: 1px solid ${({ theme, isActive }) => (isActive ? theme.colors.primary : theme.colors.background)};
-
-  &:first-child {
-    border-right: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
-  }
-
+  padding: ${({ theme }) => `${theme.spacing['1']} 0`};
+  border-radius: 0;
+  border-bottom: 1px solid ${({ theme, isActive }) => (isActive ? theme.colors.background : theme.colors.backgroundAlt)};
   color: ${({ theme, isActive }) => (isActive ? theme.colors.text : theme.colors.textAlt)};
+
+  ${({ theme, isActive }) => {
+    if (!isActive) return;
+
+    return `
+        border-left: 1px solid ${theme.colors.backgroundAlt};
+        border-right: 1px solid ${theme.colors.backgroundAlt};
+      `;
+  }}
 `;
 
 interface TriggerProps {
