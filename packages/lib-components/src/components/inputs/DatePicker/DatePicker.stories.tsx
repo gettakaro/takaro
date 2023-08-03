@@ -5,6 +5,7 @@ import { styled } from '../../../styled';
 
 const Wrapper = styled.div`
   height: 100vh;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
 export default {
@@ -25,7 +26,7 @@ export const Default: StoryFn<DatePickerProps> = (args) => {
         hasDescription={args.hasDescription}
         hasError={args.hasError}
         id="date"
-        onChange={(value) => console.log(value)}
+        onChange={(start, end) => console.log(start, end)}
         value="2021-01-01"
       />
     </Wrapper>

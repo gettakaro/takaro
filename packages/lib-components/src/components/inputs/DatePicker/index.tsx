@@ -22,7 +22,7 @@ export interface DatePickerProps {
   hasError?: boolean;
   id: string;
   hasDescription: boolean;
-  onChange: (value: string) => void;
+  onChange: (start: DateTime, end: DateTime) => void;
 }
 
 export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = false, id }) => {
@@ -34,8 +34,6 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
     end: DateTime.local().endOf('day'),
     friendlyRange: 'Today',
   });
-
-  // TODO: add a useeffect that propogates the start end end dates controlled.
 
   return (
     <DatePickerContext.Provider value={state}>

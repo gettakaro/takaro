@@ -88,7 +88,7 @@ export const Absolute: FC<AbsoluteProps> = ({ isStart }) => {
         />
       </Container>
       <Divider fullWidth />
-      <StyledForm hasError={formState.errors.date?.message ? true : false} onSubmit={handleSubmit(onSubmit)}>
+      <StyledForm hasError={formState.errors.date?.message ? true : false} onChange={handleSubmit(onSubmit)}>
         <TextField prefix={isStart ? 'Start date' : 'End date'} control={control} name="date" type="text" />
       </StyledForm>
     </>

@@ -28,7 +28,7 @@ export const Container = styled.div<{
 `;
 
 export const ItemContainer = styled.div<{ readOnly: boolean }>`
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
   cursor: ${({ readOnly }) => (readOnly ? 'default' : 'pointer')};
 `;
 
@@ -36,5 +36,5 @@ export const QuickSelectContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-right: ${({ theme }) => theme.spacing['0_5']};
+  padding-left: ${({ theme }) => theme.spacing['0_5']};
 `;
