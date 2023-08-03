@@ -1,16 +1,19 @@
 import playwright, { Page } from '@playwright/test';
-import { MailhogAPI, integrationConfig } from '@takaro/test';
+import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
 import {
   AdminClient,
   Client,
   GameServerCreateDTOTypeEnum,
+  GameServerOutputDTO,
   HookCreateDTOEventTypeEnum,
   ModuleOutputDTO,
+  PlayerOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
 import { GameServersPage } from './GameServersPage.js';
 import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
 import { StudioPage } from './StudioPage.js';
+import { EventTypes } from '@takaro/modules';
 
 const { expect, test: base } = playwright;
 
@@ -45,7 +48,9 @@ interface IFixtures {
     moduleDefinitionsPage: ModuleDefinitionsPage;
     GameServersPage: GameServersPage;
     builtinModule: ModuleOutputDTO;
+    gameServer: GameServerOutputDTO;
     mailhog: MailhogAPI;
+    players: PlayerOutputDTO[];
   };
 }
 
@@ -95,10 +100,12 @@ export const basicTest = base.extend<IFixtures>({
         client,
         adminClient,
         builtinModule: mods.data.data[0],
+        gameServer: gameServer.data.data,
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         mailhog,
+        players: [],
       });
 
       // fixture teardown
@@ -136,6 +143,15 @@ export const test = base.extend<IFixtures>({
         }),
       });
 
+      const eventAwaiter = new EventsAwaiter();
+      await eventAwaiter.connect(client);
+
+      const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
+
+      await client.gameserver.gameServerControllerExecuteCommand(gameServer.data.data.id, {
+        command: 'connectAll',
+      });
+
       const mod = await client.module.moduleControllerCreate({
         name: 'Module with functions',
         configSchema: JSON.stringify({}),
@@ -165,6 +181,10 @@ export const test = base.extend<IFixtures>({
         baseURL: integrationConfig.get('mailhog.url'),
       });
 
+      await connectedEvents;
+
+      const players = await client.player.playerControllerSearch();
+
       /* TODO: should probably add more custom modules with complex config schemas
        * probably a good idea to add one for each type of config field
        */
@@ -179,6 +199,8 @@ export const test = base.extend<IFixtures>({
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         mailhog,
+        gameServer: gameServer.data.data,
+        players: players.data.data,
       });
 
       // fixture teardown
