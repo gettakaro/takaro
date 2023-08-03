@@ -211,6 +211,9 @@ export const useRoleAssign = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
     mutationFn: async ({ id, roleId, gameServerId }) =>
       (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data,
-    onSuccess: () => {},
+    onSuccess: () => {
+      // ??? How to invalidate queries here? No access to the ID we used in mutationFn? :/
+      // queryClient.invalidateQueries(playerKeys.detail(id));
+    },
   });
 };

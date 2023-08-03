@@ -1,7 +1,7 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
-import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { styled, Table, Loading, useTableActions, IconButton, Dropdown, Chip } from '@takaro/lib-components';
+import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,7 @@ const Players: FC = () => {
   const navigate = useNavigate();
 
   const { data, isLoading } = usePlayers({
+    extend: ['roles'],
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -48,12 +49,12 @@ const Players: FC = () => {
   });
 
   // IMPORTANT: id should be identical to data object key.
-  const columnHelper = createColumnHelper<PlayerOutputDTO>();
+  const columnHelper = createColumnHelper<PlayerOutputWithRolesDTO>();
   const columnDefs = [
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => <Link to={PATHS.player.profile(info.row.getValue('id'))}>{info.getValue()}</Link>,
+      cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -77,6 +78,11 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
+    }),
+    columnHelper.accessor('roleAssignments', {
+      header: 'Roles',
+      id: 'roles',
+      cell: (info) => info.row.original.roleAssignments.map((r) => <Chip label={r.role.name} color={'secondary'} />),
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -112,11 +118,15 @@ const Players: FC = () => {
               <Dropdown.Menu.Item
                 label="Go to player profile"
                 icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.players()}/${info.row.original.id}`)}
+                onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
               />
               <Dropdown.Menu.Item label="go to user profile" icon={<EditIcon />} onClick={() => navigate('')} />
             </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
+            <Dropdown.Menu.Item
+              label="Assign role"
+              icon={<EditIcon />}
+              onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
+            />
             <Dropdown.Menu.Item label="Ban player" icon={<DeleteIcon />} onClick={() => navigate('')} />
           </Dropdown.Menu>
         </Dropdown>
@@ -138,7 +148,7 @@ const Players: FC = () => {
         <Table
           id="players"
           columns={columnDefs}
-          data={data.data}
+          data={data.data as PlayerOutputWithRolesDTO[]}
           rowSelection={rowSelection}
           pagination={{
             paginationState: pagination.paginationState,
