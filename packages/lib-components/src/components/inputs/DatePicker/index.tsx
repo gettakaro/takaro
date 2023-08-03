@@ -40,11 +40,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
   return (
     <DatePickerContext.Provider value={state}>
       <DatePickerDispatchContext.Provider value={dispatch}>
-        <Container
-          readOnly={readOnly}
-          hasError={hasError}
-          isOpen={state.showQuickSelect || state.showStartDate || state.showEndDate}
-        >
+        <Container hasError={hasError} isOpen={state.showQuickSelect || state.showStartDate || state.showEndDate}>
           <Popover
             open={state.showQuickSelect}
             onOpenChange={(open) =>
@@ -52,7 +48,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
             }
           >
             <Popover.Trigger asChild>
-              <ItemContainer>
+              <ItemContainer readOnly={readOnly}>
                 <QuickSelectContainer
                   onClick={() =>
                     dispatch({
@@ -76,6 +72,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
           >
             <Popover.Trigger asChild>
               <ItemContainer
+                readOnly={readOnly}
                 onClick={() => {
                   dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
                 }}
@@ -101,6 +98,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, hasError = f
               >
                 <Popover.Trigger asChild>
                   <ItemContainer
+                    readOnly={readOnly}
                     onClick={() => {
                       dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
                     }}

@@ -23,6 +23,7 @@ enum Unit {
 }
 
 const Container = styled.div`
+  padding: ${({ theme }) => theme.spacing[2]};
   h4 {
     margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
@@ -34,7 +35,7 @@ const CommonlyUsedGrid = styled.ul`
   grid-template-rows: repeat(5, 1fr);
   grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
-  padding: ${({ theme }) => theme.spacing[1]};
+  padding: 0 ${({ theme }) => theme.spacing[1]};
 
   li {
     text-align: left;
