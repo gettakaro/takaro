@@ -8,7 +8,6 @@ const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
