@@ -51,7 +51,6 @@ export const Relative: FC<RelativeProps> = ({ isStart }) => {
       };
     } else {
       return {
-        'Seconds ago': 'second',
         'Seconds from now': 'second',
         'Minutes from now': 'minute',
         'Hours from now': 'hour',
@@ -59,6 +58,7 @@ export const Relative: FC<RelativeProps> = ({ isStart }) => {
         'Weeks from now': 'week',
         'Months from now': 'month',
         'Years from now': 'year',
+        'Seconds ago': 'second',
         'Minutes ago': 'minute',
         'Hours ago': 'hour',
         'Days ago': 'day',
