@@ -2,6 +2,14 @@
 
 This application is used as a test server where we don't have to worry about game-specific weirdnesses
 
+## Installation
+
+To install this package, navigate to the root directory of the project and run the following command:
+
+```bash
+npm install @takaro/app-mock-gameserver
+```
+
 
 ## AI Prompts
 
