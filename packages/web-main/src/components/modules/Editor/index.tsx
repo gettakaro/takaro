@@ -9,6 +9,8 @@ import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
 import { useSnackbar } from 'notistack';
 import * as Sentry from '@sentry/react';
+import { Button, Tooltip } from '@takaro/lib-components';
+import { AiFillSave as SaveIcon } from 'react-icons/ai';
 
 export type EditorProps = {
   readOnly?: boolean;
@@ -78,7 +80,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
       <SandpackStack style={{ height: '100vh', margin: 0 }}>
         <FileTabs closableTabs dirtyFiles={dirtyFiles} setDirtyFiles={setDirtyFiles} />
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <MonacoEditor
             width="100%"
             height="100%"
@@ -276,6 +278,25 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               },
             }}
           />
+          {dirtyFiles.has(sandpack.activeFile) && (
+            <div style={{ position: 'fixed', bottom: '20px', right: '40px' }}>
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <Button
+                    icon={<SaveIcon />}
+                    text="Save file"
+                    onClick={() => {
+                      console.log(editorInstance.current?.getAction('save'));
+                      editorInstance.current?.getAction('save')?.run();
+                    }}
+                  />
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                  You can also save with <strong>CTRL+S</strong>
+                </Tooltip.Content>
+              </Tooltip>
+            </div>
+          )}
         </div>
       </SandpackStack>
     </SandpackThemeProvider>

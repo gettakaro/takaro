@@ -288,7 +288,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       );
 
       const promises = parsedCommands.map(async ({ data, db }) => {
-        const delay = data.module.systemConfig.commands[db.name].delay * 1000;
+        const commandConfig = data.module.systemConfig.commands[db.name];
+        const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
         if (delay) {
           await gameServerService.sendMessage(

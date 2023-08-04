@@ -32,7 +32,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -130,7 +130,6 @@ const Users: FC = () => {
             ...pagination,
             pageOptions: pagination.getPageOptions(data),
           }}
-          rowSelection={rowSelection}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
           sorting={sorting}

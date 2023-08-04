@@ -54,6 +54,12 @@ const Studio: FC = () => {
     }
   }
 
+  const configMap = {
+    [FunctionType.Hooks]: 'Hook Config',
+    [FunctionType.Commands]: 'Command Config',
+    [FunctionType.CronJobs]: 'CronJob Config',
+  } as const;
+
   return (
     <Wrapper>
       <Helmet>
@@ -84,7 +90,7 @@ const Studio: FC = () => {
             <CollapseList.Item title="File explorer">
               <FileExplorer sandpack={sandpack} />
             </CollapseList.Item>
-            <CollapseList.Item title="Config">
+            <CollapseList.Item title={configMap[activeModule.type]}>
               <ConfigWrapper>{getConfigComponent(activeModule.type)}</ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>

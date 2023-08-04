@@ -32,23 +32,27 @@ export function ColumnVisibility<DataType extends object>({
       </Dropdown.Trigger>
       <Dropdown.Menu>
         <Dropdown.Menu.Group label="Visible columns">
-          {table.getVisibleFlatColumns().map((column) => (
-            <Dropdown.Menu.Item
-              key={column.id}
-              onClick={() => {
-                // In case they open the dropdown they already know about the column visibility
-                setHasShownColumnVisibilityTooltip(true);
-                column.toggleVisibility();
-              }}
-              label={column.id}
-              activeStyle="checkbox"
-              active={true}
-            />
-          ))}
+          {table
+            .getVisibleFlatColumns()
+            .filter((column) => column.getCanHide() === true)
+            .map((column) => (
+              <Dropdown.Menu.Item
+                key={column.id}
+                onClick={() => {
+                  // In case they open the dropdown they already know about the column visibility
+                  setHasShownColumnVisibilityTooltip(true);
+                  column.toggleVisibility();
+                }}
+                label={column.id}
+                activeStyle="checkbox"
+                active={true}
+              />
+            ))}
         </Dropdown.Menu.Group>
         <Dropdown.Menu.Group label="Hidden columns">
           {table
             .getAllLeafColumns()
+            .filter((column) => column.getCanHide() === true)
             .filter((column) => column.getIsVisible() === false)
             .map((column) => (
               <Dropdown.Menu.Item
