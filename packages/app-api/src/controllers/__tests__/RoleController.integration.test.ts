@@ -115,7 +115,7 @@ const tests = [
     name: 'Does not allow deleting the root role',
     test: async function () {
       try {
-        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: 'root' } });
+        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: ['root'] } });
         await this.client.role.roleControllerRemove(rolesRes.data.data[0].id);
         throw new Error('Should have errored');
       } catch (error) {
@@ -159,7 +159,7 @@ const tests = [
     name: 'Cannot update root role',
     test: async function () {
       try {
-        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: 'root' } });
+        const rolesRes = await this.client.role.roleControllerSearch({ filters: { name: ['root'] } });
         await this.client.role.roleControllerUpdate(rolesRes.data.data[0].id, {
           name: 'New name',
           permissions: [],
