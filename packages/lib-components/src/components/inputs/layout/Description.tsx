@@ -12,7 +12,7 @@ const StyledP = styled.p`
 interface DescriptionProps {
   description: string;
   inputName: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }
 
 export const Description: FC<DescriptionProps> = ({ description, inputName, style }) => {
