@@ -45,7 +45,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
 
   await toEval.link((specifier: string, referencingModule) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'getData', 'axios', '_', 'lodash'],
+      ['getTakaro', 'checkPermission', 'getData', 'axios', '_', 'lodash'],
       function () {
         this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
