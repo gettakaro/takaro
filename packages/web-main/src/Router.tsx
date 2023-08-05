@@ -53,6 +53,17 @@ export const Router: FC = () => (
     <SentryRoutes>
       {/* ======================== Global ======================== */}
       <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
+        {/* ======================== Game Server ======================== */}
+        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
+        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
+          <Route
+            element={<InstallModule />}
+            path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
+          />
+        </Route>
+
+        {/* ======================== domain ======================== */}
         <Route element={<Dashboard />} path={PATHS.home()} />
         <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
         <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
@@ -73,19 +84,6 @@ export const Router: FC = () => (
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
           <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
           <Route element={<CreateModule />} path={PATHS.modules.create()} />
-        </Route>
-      </Route>
-
-      {/* TODO: fix path, frame should be aware of /servers/serverId */}
-      {/* ======================== Game Server ======================== */}
-      <Route element={<AuthenticatedRoute frame="gameserver" />} path={PATHS.gameServer.dashboard(':serverId')}>
-        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
-        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
-        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
-          <Route
-            element={<InstallModule />}
-            path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
-          />
         </Route>
       </Route>
 

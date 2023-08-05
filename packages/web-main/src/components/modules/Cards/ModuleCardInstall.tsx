@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ModuleCardContainer, SpacedRow, ActionIconsContainer } from './style';
 
 import { useGameServerModuleUninstall } from 'queries/gameservers';
-import { useGameServerOutletContext } from 'frames/GameServerFrame';
+import { useGameServerOutletContext } from 'frames/GlobalFrame';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;

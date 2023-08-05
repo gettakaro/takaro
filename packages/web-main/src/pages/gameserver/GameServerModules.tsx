@@ -1,11 +1,12 @@
 import { Loading, Skeleton, styled } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import { useParams, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { ModuleCards } from '../../components/modules/Cards/style';
 import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
+import { useGameServerOutletContext } from 'frames/GlobalFrame';
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -15,8 +16,8 @@ const Page = styled.div`
 `;
 
 const GameServerModules: FC = () => {
-  const { serverId } = useParams();
-  const { data: installations, isLoading } = useGameServerModuleInstallations(serverId!);
+  const { gameServerId } = useGameServerOutletContext();
+  const { data: installations, isLoading } = useGameServerModuleInstallations(gameServerId);
   const { data } = useInfiniteModules();
 
   const mappedModules = useMemo(() => {

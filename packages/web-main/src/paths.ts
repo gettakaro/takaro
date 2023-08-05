@@ -26,7 +26,7 @@ export const PATHS = {
   },
 
   gameServer: {
-    dashboard: (serverId: string) => `/server/${serverId}`,
+    dashboard: (serverId: string) => `/server/${serverId}/dashboard`,
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
     update: (serverId: string) => `/server/${serverId}/update`,
