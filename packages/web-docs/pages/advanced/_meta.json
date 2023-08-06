@@ -1,4 +1,6 @@
 {
-  "api": "API",
-  "functions": "Writing custom modules"
+  "modules": "Modules",
+  "variables": "Variables",
+  "functions": "Writing custom modules",
+  "api": "API"
 }

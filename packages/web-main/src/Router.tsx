@@ -21,6 +21,9 @@ import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
+import { Recovery } from 'pages/auth/recovery';
+import { AuthSettings } from 'pages/auth/profile';
+import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
 import { Events } from 'pages/Events';
@@ -52,6 +55,8 @@ export const Router: FC = () => (
       {/* ======================== Global ======================== */}
       <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
         <Route element={<Dashboard />} path={PATHS.home()} />
+        <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
+        <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
         <Route element={<SettingsFrame />}>
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.overview()} />
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
@@ -91,6 +96,7 @@ export const Router: FC = () => (
         <Route element={<Studio />} path={PATHS.studio.module(':moduleId')} />
       </Route>
       <Route element={<LogIn />} path={PATHS.login()} />
+      <Route element={<Recovery />} path={PATHS.auth.recovery()} />
 
       <Route element={<NotFound />} path="/404" />
 

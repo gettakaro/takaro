@@ -13,6 +13,7 @@ interface IHttpConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
     baseUrl: string;
+    frontendHost: string;
   };
   auth: {
     jwtSecret: string;
@@ -68,6 +69,12 @@ const configSchema = {
       format: String,
       default: 'http://127.0.0.1:13000',
       env: 'BASE_URL',
+    },
+    frontendHost: {
+      doc: 'The host of the frontend',
+      format: String,
+      default: 'http://127.0.0.1:13001',
+      env: 'TAKARO_FRONTEND_HOST',
     },
   },
   auth: {

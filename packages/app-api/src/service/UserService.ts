@@ -1,5 +1,6 @@
 import { TakaroService } from './Base.js';
 import { ITakaroQuery } from '@takaro/db';
+import { send } from '@takaro/email';
 
 import { UserModel, UserRepo } from '../db/user.js';
 import { IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
@@ -37,7 +38,7 @@ export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   email: string;
 
   @IsString()
-  password: string;
+  password?: string;
 
   @IsString()
   @IsOptional()
@@ -92,7 +93,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
-    const idpUser = await ory.createIdentity(user.email, user.password, this.domainId);
+    const idpUser = await ory.createIdentity(user.email, this.domainId, user.password);
     user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
     return this.extendWithOry.bind(this)(createdUser);
@@ -115,5 +116,18 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
   async removeRole(userId: string, roleId: string): Promise<void> {
     return this.repo.removeRole(userId, roleId);
+  }
+
+  async inviteUser(email: string): Promise<void> {
+    const user = await this.create(await new UserCreateInputDTO().construct({ email, name: email }));
+    const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
+
+    await send({
+      address: email,
+      template: 'invite',
+      data: {
+        inviteLink: recoveryFlow.recovery_link,
+      },
+    });
   }
 }

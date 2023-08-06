@@ -51,7 +51,7 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
         readOnly={readOnly}
       />
-      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save cronjob config" />}
     </form>
   );
 };

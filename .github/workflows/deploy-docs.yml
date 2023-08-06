@@ -40,10 +40,8 @@ jobs:
 
       - name: Generate API client docs
         run: |
-          cd packages/lib-apiclient
-          npx typedoc src/main.ts
-          cd ../..
-          mv packages/lib-apiclient/docs packages/web-docs/build/apiclient
+          npx typedoc
+          mv reports/api-docs packages/web-docs/build/api-docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

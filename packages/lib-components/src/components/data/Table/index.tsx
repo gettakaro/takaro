@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
@@ -11,17 +11,16 @@ import {
   useReactTable,
   ColumnDef,
   SortingState,
-  ColumnFiltersState,
   ColumnOrderState,
   VisibilityState,
   ColumnPinningState,
   RowSelectionState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, Header, PaginationContainer, Flex } from './style';
-import { ToggleButtonGroup } from '../../../components';
+import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex } from './style';
+import { Empty, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
-import { PageOptions } from '../../../hooks/useTableActions';
+import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
@@ -34,11 +33,12 @@ export interface TableProps<DataType extends object> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
 
-  rowSelection: {
+  renderToolbar?: () => JSX.Element;
+
+  rowSelection?: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
-
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
@@ -49,12 +49,12 @@ export interface TableProps<DataType extends object> {
     pageOptions: PageOptions;
   };
   columnFiltering: {
-    columnFiltersState: ColumnFiltersState;
-    setColumnFiltersState: OnChangeFn<ColumnFiltersState>;
+    columnFiltersState: ColumnFilter[];
+    setColumnFiltersState: Dispatch<SetStateAction<ColumnFilter[]>>;
   };
   columnSearch: {
-    columnSearchState: ColumnFiltersState;
-    setColumnSearchState: OnChangeFn<ColumnFiltersState>;
+    columnSearchState: ColumnFilter[];
+    setColumnSearchState: OnChangeFn<ColumnFilter[]>;
   };
 }
 
@@ -67,6 +67,7 @@ export function Table<DataType extends object>({
   columnFiltering,
   rowSelection,
   columnSearch,
+  renderToolbar,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
@@ -82,6 +83,8 @@ export function Table<DataType extends object>({
       return column.id;
     })
   );
+
+  const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
 
   // table size
   useEffect(() => {
@@ -118,6 +121,7 @@ export function Table<DataType extends object>({
     manualFiltering: true,
     manualSorting: true,
     enableExpanding: true,
+    enableFilters: true,
     enableColumnFilters: !!columnFiltering,
     enableGlobalFilter: !!columnSearch,
     enableSorting: !!sorting,
@@ -131,11 +135,11 @@ export function Table<DataType extends object>({
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
     onPaginationChange: pagination?.setPaginationState,
-    onColumnFiltersChange: columnFiltering?.setColumnFiltersState,
-    onGlobalFilterChange: columnSearch?.setColumnSearchState,
+    onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
+    onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
-    onRowSelectionChange: rowSelection?.setRowSelectionState,
+    onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
     initialState: {
       columnVisibility,
@@ -143,7 +147,7 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
       pagination: pagination.paginationState,
-      rowSelection: rowSelection.rowSelectionState,
+      rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
     state: {
@@ -153,15 +157,17 @@ export function Table<DataType extends object>({
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
       pagination: pagination?.paginationState,
-      rowSelection: rowSelection.rowSelectionState,
+      rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
     },
   });
 
   return (
     <Wrapper>
-      <Header>
-        {/* search */}
+      <Toolbar role="toolbar">
+        {/* custom toolbar is rendered on left side*/}
+        <Flex>{renderToolbar && renderToolbar()}</Flex>
+
         <Flex>
           <Filter table={table} />
           <ColumnVisibility
@@ -171,22 +177,21 @@ export function Table<DataType extends object>({
             setOpenColumnVisibilityTooltip={setOpenColumnVisibilityTooltip}
             hasShownColumnVisibilityTooltip={hasShownColumnVisibilityTooltip}
           />
+          <ToggleButtonGroup
+            onChange={(val) => setDensity(val as Density)}
+            exclusive={true}
+            orientation="horizontal"
+            defaultValue={density}
+          >
+            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
+              <RelaxedDensityIcon size={20} />
+            </ToggleButtonGroup.Button>
+            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+              <TightDensityIcon size={20} />
+            </ToggleButtonGroup.Button>
+          </ToggleButtonGroup>
         </Flex>
-        <ToggleButtonGroup
-          onChange={(val) => setDensity(val as Density)}
-          exclusive={true}
-          orientation="horizontal"
-          defaultValue={density}
-        >
-          <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
-            <RelaxedDensityIcon size={20} />
-          </ToggleButtonGroup.Button>
-
-          <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
-            <TightDensityIcon size={20} />
-          </ToggleButtonGroup.Button>
-        </ToggleButtonGroup>
-      </Header>
+      </Toolbar>
 
       {/* table */}
       <DndProvider backend={HTML5Backend}>
@@ -194,17 +199,19 @@ export function Table<DataType extends object>({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                <th style={{ width: '10px' }}>
-                  <CheckBox
-                    hasDescription={false}
-                    hasError={false}
-                    id={`select-all-header-${headerGroup.id}`}
-                    name={`select-all-header-${headerGroup.id}`}
-                    onChange={() => table.toggleAllRowsSelected()}
-                    size="small"
-                    value={table.getIsAllRowsSelected()}
-                  />
-                </th>
+                {rowSelection && (
+                  <th style={{ width: '10px' }}>
+                    <CheckBox
+                      hasDescription={false}
+                      hasError={false}
+                      id={`select-all-header-${headerGroup.id}`}
+                      name={`select-all-header-${headerGroup.id}`}
+                      onChange={() => table.toggleAllRowsSelected()}
+                      size="small"
+                      value={table.getIsAllRowsSelected()}
+                    />
+                  </th>
+                )}
                 {headerGroup.headers.map((header) => (
                   <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
                 ))}
@@ -212,6 +219,17 @@ export function Table<DataType extends object>({
             ))}
           </thead>
           <tbody>
+            {/* empty state */}
+            {table.getRowModel().rows.length === 0 && (
+              <tr>
+                <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                  <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
+                  </div>
+                </td>
+              </tr>
+            )}
+
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getCanSelect() && (
@@ -239,31 +257,38 @@ export function Table<DataType extends object>({
               </tr>
             ))}
           </tbody>
-          <tfoot>
-            <tr>
-              {pagination && (
-                <td colSpan={columns.length + 1 /* +1 here is because we have an extra column for the selection */}>
-                  <PaginationContainer>
-                    <span>
-                      showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
-                      {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                        table.getRowModel().rows.length}{' '}
-                      of {pagination.pageOptions.total} entries
-                    </span>
-                    <Pagination
-                      pageCount={table.getPageCount()}
-                      hasNext={table.getCanNextPage()}
-                      hasPrevious={table.getCanPreviousPage()}
-                      previousPage={table.previousPage}
-                      nextPage={table.nextPage}
-                      pageIndex={table.getState().pagination.pageIndex}
-                      setPageIndex={table.setPageIndex}
-                    />
-                  </PaginationContainer>
-                </td>
-              )}
-            </tr>
-          </tfoot>
+          {table.getRowModel().rows.length > 1 && (
+            <tfoot>
+              <tr>
+                {pagination && (
+                  <td
+                    colSpan={
+                      columns.length +
+                      ROW_SELECTION_COL_SPAN /* +1 here is because we have an extra column for the selection */
+                    }
+                  >
+                    <PaginationContainer>
+                      <span>
+                        showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+                        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                          table.getRowModel().rows.length}{' '}
+                        of {pagination.pageOptions.total} entries
+                      </span>
+                      <Pagination
+                        pageCount={table.getPageCount()}
+                        hasNext={table.getCanNextPage()}
+                        hasPrevious={table.getCanPreviousPage()}
+                        previousPage={table.previousPage}
+                        nextPage={table.nextPage}
+                        pageIndex={table.getState().pagination.pageIndex}
+                        setPageIndex={table.setPageIndex}
+                      />
+                    </PaginationContainer>
+                  </td>
+                )}
+              </tr>
+            </tfoot>
+          )}
         </StyledTable>
       </DndProvider>
     </Wrapper>

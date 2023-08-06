@@ -1,7 +1,7 @@
 import { Lambda } from '@aws-sdk/client-lambda';
 import { config } from './config.js';
 import { createLambda } from './createLambda.js';
-import { logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 
 interface executeLambdaOpts {
   domainId: string;
@@ -22,7 +22,7 @@ const log = logger('aws:lambda');
 
 export async function executeLambda({ data, fn, token, domainId }: executeLambdaOpts) {
   if (!config.get('aws.accessKeyId') && !config.get('aws.secretAccessKey')) {
-    return;
+    throw new errors.ConfigError('AWS credentials not set');
   }
 
   try {
@@ -45,15 +45,10 @@ export async function executeLambda({ data, fn, token, domainId }: executeLambda
 
 async function tryExecuteLambda({ data, fn, token, domainId }: executeLambdaOpts) {
   const result = await lambda.invoke({ FunctionName: domainId, Payload: JSON.stringify({ data, token, fn }) });
-  const logs = [];
   if (result.Payload) {
     const tmpResult = Buffer.from(result.Payload).toString();
-    const parsed = JSON.parse(tmpResult);
-    logs.push(parsed);
+    const parsedRes = JSON.parse(tmpResult);
+    const parsedBody = JSON.parse(parsedRes.body);
+    return parsedBody;
   }
-
-  return {
-    logs,
-    success: true,
-  };
 }

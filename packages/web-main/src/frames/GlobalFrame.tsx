@@ -9,7 +9,6 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
-  AiOutlineBook as DocumentationIcon,
   AiOutlineIdcard as PlayersIcon,
   AiOutlineUser as UsersIcon,
   AiOutlineEdit as VariablesIcon,
@@ -78,12 +77,6 @@ const links: NavbarLink[] = [
     path: PATHS.settings.overview(),
     icon: <SettingsIcon />,
     end: false,
-  },
-  {
-    label: 'Documentation',
-    path: 'https://docs.takaro.io',
-    icon: <DocumentationIcon />,
-    external: true,
   },
 ];
 

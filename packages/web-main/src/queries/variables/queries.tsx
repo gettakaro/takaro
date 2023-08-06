@@ -28,7 +28,6 @@ export const useInfiniteVariables = (queryParams: VariableSearchInputDTO = { pag
         await apiClient.variable.variableControllerSearch({
           ...queryParams,
           page: pageParam,
-          extend: ['module', 'player', 'gameServer'],
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),

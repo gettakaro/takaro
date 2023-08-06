@@ -55,16 +55,17 @@ async function main() {
     sortBy: 'key',
     sortDirection: 'asc',
   });
-  const lastExecutedRecord = lastExecuted.data.data[0];
+  let lastExecutedRecord = lastExecuted.data.data[0];
 
   if (!lastExecutedRecord) {
-    await takaro.variable.variableControllerCreate({
+    const createRes = await takaro.variable.variableControllerCreate({
       key: 'lastExecuted',
       gameServerId,
       playerId: player.playerId,
       moduleId: mod.moduleId,
       value: new Date().toISOString(),
     });
+    lastExecutedRecord = createRes.data.data;
   } else {
     const lastExecutedTime = new Date(lastExecutedRecord.value);
     const now = new Date();

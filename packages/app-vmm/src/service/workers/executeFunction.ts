@@ -1,6 +1,6 @@
 import { config } from '../../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
-import { errors, logger } from '@takaro/util';
+import { Sentry, errors, logger } from '@takaro/util';
 import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
 import { getVMM } from '../vmm/index.js';
@@ -18,6 +18,18 @@ const takaro = new AdminClient({
   OAuth2URL: config.get('hydra.publicUrl'),
   log: logger('adminClient'),
 });
+
+export interface ILog {
+  msg: string;
+  details?: Record<string, unknown> | string;
+}
+
+interface IFunctionResult {
+  success: boolean;
+  logs: ILog[];
+}
+
+export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;
 
 async function getJobToken(domainId: string) {
   const tokenRes = await takaro.domain.domainControllerGetToken({
@@ -70,7 +82,7 @@ export async function executeFunction(
   }
 
   try {
-    let result;
+    let result: IFunctionResult;
     data.url = config.get('takaro.url');
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
@@ -82,14 +94,27 @@ export async function executeFunction(
         result = await vmm.executeFunction(functionRes.data.data.code, data, token);
         eventData.meta['result'] = result;
       case EXECUTION_MODE.LAMBDA:
-        await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
+        result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
+        eventData.meta['result'] = result;
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
 
+    if (isCommandData(data) && !result.success) {
+      await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+        message: 'Oops, something went wrong while executing your command. Please try again later.',
+        opts: {
+          recipient: {
+            gameId: data.player.gameId,
+          },
+        },
+      });
+    }
+
     await client.event.eventControllerCreate(eventData);
   } catch (err) {
+    Sentry.captureException(err);
     log.error('executeFunction', err);
     await client.event.eventControllerCreate(eventData);
     return null;

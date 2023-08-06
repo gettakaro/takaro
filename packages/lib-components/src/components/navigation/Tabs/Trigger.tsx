@@ -7,17 +7,22 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
-  padding: ${({ theme }) => `${theme.spacing['1_5']} 0`};
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom: 1px solid ${({ theme, isActive }) => (isActive ? theme.colors.primary : theme.colors.background)};
+  padding: ${({ theme }) => `${theme.spacing['1']} 0`};
+  color: ${({ theme, isActive }) => (isActive ? theme.colors.text : theme.colors.textAlt)};
+
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-left: ${({ theme, isActive }) => (isActive ? `2px solid ${theme.colors.backgroundAlt}` : 'none')};
+  border-right: ${({ theme, isActive }) => (isActive ? `2px solid ${theme.colors.backgroundAlt}` : 'none')};
+  border-bottom: ${({ theme, isActive }) => (isActive ? 'none' : `2px solid ${theme.colors.backgroundAlt}`)};
 
   &:first-child {
-    border-right: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+    border-left: none;
   }
 
-  color: ${({ theme, isActive }) => (isActive ? theme.colors.text : theme.colors.textAlt)};
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 interface TriggerProps {

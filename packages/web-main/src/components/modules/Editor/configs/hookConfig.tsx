@@ -48,21 +48,13 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        control={control}
-        name="regex"
-        label="Regex"
-        readOnly={readOnly}
-      />
+      <TextField control={control} name="regex" label="Regex" readOnly={readOnly} />
       <Select
         control={control}
         name="eventType"
         label="Event Type"
         render={(selectedIndex) => {
-          return (
-            Object.values(HookCreateDTOEventTypeEnum)[selectedIndex] ??
-            'Select...'
-          );
+          return Object.values(HookCreateDTOEventTypeEnum)[selectedIndex] ?? 'Select...';
         }}
         readOnly={readOnly}
       >
@@ -76,7 +68,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           ))}
         </Select.OptionGroup>
       </Select>
-      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
+      {!readOnly && <StyledButton fullWidth type="submit" text="Save hook config" />}
     </form>
   );
 };

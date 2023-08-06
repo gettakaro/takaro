@@ -24,6 +24,7 @@
     "@takaro/db": "0.0.1",
     "@takaro/http": "0.0.1",
     "@takaro/modules": "0.0.1",
+    "@takaro/email": "0.0.1",
     "basic-auth": "^2.0.1",
     "bcrypt": "^5.0.1",
     "human-id": "^4.0.0",

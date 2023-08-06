@@ -45,10 +45,10 @@ export const GenericTextAreaField = forwardRef<HTMLTextAreaElement, GenericTextA
         readOnly={readOnly}
         role="presentation"
         disabled={disabled}
-        required={required}
         ref={ref}
         value={value}
         rows={rows}
+        aria-required={required}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
     </TextAreaContainer>
