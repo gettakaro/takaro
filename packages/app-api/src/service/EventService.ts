@@ -21,6 +21,10 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsOptional()
   @IsUUID()
   gameserverId!: string;
+
+  @IsOptional()
+  @IsObject()
+  meta: Record<string, unknown>;
 }
 
 export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
@@ -41,7 +45,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: Record<string, string>;
+  meta: Record<string, unknown>;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}

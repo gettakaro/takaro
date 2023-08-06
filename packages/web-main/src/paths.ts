@@ -6,6 +6,7 @@ export const PATHS = {
   moduleDefinitions: () => '/modules',
   variables: () => '/variables',
   notFound: () => '/404',
+  events: () => '/events',
 
   auth: {
     recovery: () => '/auth/recovery',

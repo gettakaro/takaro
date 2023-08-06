@@ -12,6 +12,7 @@ import {
   AiOutlineIdcard as PlayersIcon,
   AiOutlineUser as UsersIcon,
   AiOutlineEdit as VariablesIcon,
+  AiOutlineClockCircle as EventsIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -45,6 +46,11 @@ const links: NavbarLink[] = [
     label: 'Servers',
     path: PATHS.gameServers.overview(),
     icon: <GameServersIcon />,
+  },
+  {
+    label: 'Events',
+    path: PATHS.events(),
+    icon: <EventsIcon />,
   },
   {
     label: 'Players',
