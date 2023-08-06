@@ -16,6 +16,7 @@ import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 import { gameTypeSelectOptions } from './GameTypeSelectOptions';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export interface IFormInputs {
   name: string;
@@ -30,6 +31,7 @@ const CreateGameServer: FC = () => {
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useGameServerCreate();
   const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
+  const { setSelectedGameServerId } = useSelectedGameServer();
 
   useEffect(() => {
     if (!open) {
@@ -44,11 +46,14 @@ const CreateGameServer: FC = () => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
     try {
-      mutateAsync({
+      const newGameServer = await mutateAsync({
         type,
         name,
         connectionInfo: JSON.stringify(connectionInfo),
       });
+
+      // set the new gameserver as selected.
+      setSelectedGameServerId(newGameServer.id);
 
       navigate(PATHS.gameServers.overview());
     } catch (error) {

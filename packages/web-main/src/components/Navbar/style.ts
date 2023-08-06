@@ -27,12 +27,33 @@ export const Container = styled(motion.div)`
   }
 `;
 
+export const NoServersCallToAction = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: space-between;
+  width: 100%;
+  padding: ${({ theme }) => `${theme.spacing['2']} ${theme.spacing[1]}`};
+  margin-top: ${({ theme }) => theme.spacing[8]};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  text-align: center;
+
+  h2 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_75']};
+  }
+  p {
+    margin-bottom: ${({ theme }) => theme.spacing['1']};
+  }
+`;
+
 export const Nav = styled.nav`
   display: flex;
   gap: ${({ theme }) => theme.spacing['0_75']};
   width: 100%;
   flex-direction: column;
-  margin-top: ${({ theme }) => theme.spacing[8]};
+  margin-top: ${({ theme }) => theme.spacing[4]};
 
   h3 {
     font-size: ${({ theme }) => theme.fontSize.tiny};

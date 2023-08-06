@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
-import { useGameServerOutletContext } from 'frames/GlobalFrame';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 const ConsoleContainer = styled.div`
   height: 80vh;
@@ -13,8 +13,8 @@ const ConsoleContainer = styled.div`
 const GameServerDashboard: FC = () => {
   const apiClient = useApiClient();
   const { socket } = useSocket();
-  const { gameServerId } = useGameServerOutletContext();
-  const { data: gameServer, isLoading } = useGameServer(gameServerId);
+  const { selectedGameServerId } = useSelectedGameServer();
+  const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
 
   if (isLoading) {
     return (
@@ -38,7 +38,7 @@ const GameServerDashboard: FC = () => {
       type: 'player-disconnected' | 'player-connected' | 'chat-message' | 'log-line' | 'discord-message',
       data: Record<string, unknown>
     ) => {
-      if (handleGameserverId !== gameServerId) return;
+      if (handleGameserverId !== selectedGameServerId) return;
 
       let msg = data?.msg as string;
 

@@ -1,11 +1,11 @@
-import { FC, cloneElement, ReactElement, useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
+import { FC, cloneElement, ReactElement, useMemo, useEffect } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Company, Tooltip } from '@takaro/lib-components';
+import { Button, Company, Tooltip } from '@takaro/lib-components';
 import { GameServerSelectNav } from './GameServerSelectNav';
 import { UserDropdown } from './UserDropdown';
 import { PATHS } from 'paths';
-import { Nav, IconNav, Container } from './style';
+import { Nav, IconNav, Container, NoServersCallToAction } from './style';
 
 import {
   AiOutlineAppstore as DashboardIcon,
@@ -19,11 +19,21 @@ import {
   // icon nav
   AiOutlineBook as DocumentationIcon,
   AiOutlineGithub as GithubIcon,
+
+  // add server button
+  AiOutlinePlus as AddServerIcon,
 } from 'react-icons/ai';
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
+import { useGameServers } from 'queries/gameservers';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 const domainLinks: NavbarLink[] = [
+  {
+    label: 'Dashboard',
+    path: PATHS.home(),
+    icon: <DashboardIcon />,
+  },
   {
     label: 'Servers',
     path: PATHS.gameServers.overview(),
@@ -64,32 +74,32 @@ export interface NavbarLink {
   end?: boolean;
 }
 
-interface NavbarProps {
-  gameServerId: string;
-  setGameServerId: (id: string) => void;
-}
+export const Navbar: FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data } = useGameServers();
+  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
-export const Navbar: FC<NavbarProps> = ({ gameServerId, setGameServerId }) => {
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
       {
         label: 'Dashboard',
         // If serverId is not valid it will be directed by the failed requests.
-        path: PATHS.gameServer.dashboard(gameServerId),
+        path: PATHS.gameServer.dashboard(selectedGameServerId),
         icon: <DashboardIcon />,
       },
       {
         label: 'Modules',
-        path: PATHS.gameServer.modules(gameServerId),
+        path: PATHS.gameServer.modules(selectedGameServerId),
         icon: <ModulesIcon />,
       },
       {
         label: 'Settings',
-        path: PATHS.gameServer.settings(gameServerId),
+        path: PATHS.gameServer.settings(selectedGameServerId),
         icon: <SettingsIcon />,
       },
     ];
-  }, [gameServerId]);
+  }, [selectedGameServerId]);
 
   const renderLink = ({ path, icon, label, end }: NavbarLink) => (
     <div key={`wrapper-${path}`}>
@@ -102,6 +112,15 @@ export const Navbar: FC<NavbarProps> = ({ gameServerId, setGameServerId }) => {
     </div>
   );
 
+  useEffect(() => {
+    console.log(selectedGameServerId);
+    if (selectedGameServerId === '' && data && data?.pages[0].data.length > 0) {
+      setSelectedGameServerId(data.pages[0].data[0].id);
+    }
+  }, [selectedGameServerId]);
+
+  const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
+
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <div style={{ width: '100%' }}>
@@ -109,14 +128,35 @@ export const Navbar: FC<NavbarProps> = ({ gameServerId, setGameServerId }) => {
           <Company />
         </Link>
 
-        <Nav>
-          <h3>Server</h3>
-          <GameServerSelectNav serverId={gameServerId} setServerId={setGameServerId} />
-          {gameServerLinks.map((link) => renderLink(link))}
-        </Nav>
+        {data && data.pages[0].data.length > 0 ? (
+          <Nav>
+            <h3>Server</h3>
+            <GameServerSelectNav
+              isInGameServerNav={isInGameServerNav}
+              serverId={selectedGameServerId}
+              setServerId={setSelectedGameServerId}
+            />
+            {gameServerLinks.map((link) => renderLink(link))}
+          </Nav>
+        ) : (
+          <NoServersCallToAction
+            initial={{ opacity: 0, y: -10 }}
+            transition={{ delay: 0.5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h2>Add your first server!</h2>
+            <p>Step into the world of Takaro by adding your first server!</p>
+            <Button
+              icon={<AddServerIcon />}
+              fullWidth
+              onClick={() => navigate(PATHS.gameServers.create())}
+              text="Add a server"
+            />
+          </NoServersCallToAction>
+        )}
 
         <Nav>
-          <h3>domain</h3>
+          <h3>Global</h3>
           {domainLinks.map((link) => renderLink(link))}
         </Nav>
       </div>

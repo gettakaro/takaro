@@ -6,7 +6,7 @@ import { ModuleCards } from '../../components/modules/Cards/style';
 import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
-import { useGameServerOutletContext } from 'frames/GlobalFrame';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -16,8 +16,8 @@ const Page = styled.div`
 `;
 
 const GameServerModules: FC = () => {
-  const { gameServerId } = useGameServerOutletContext();
-  const { data: installations, isLoading } = useGameServerModuleInstallations(gameServerId);
+  const { selectedGameServerId } = useSelectedGameServer();
+  const { data: installations, isLoading } = useGameServerModuleInstallations(selectedGameServerId);
   const { data } = useInfiniteModules();
 
   const mappedModules = useMemo(() => {

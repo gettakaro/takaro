@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ModuleCardContainer, SpacedRow, ActionIconsContainer } from './style';
 
 import { useGameServerModuleUninstall } from 'queries/gameservers';
-import { useGameServerOutletContext } from 'frames/GlobalFrame';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -19,7 +19,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isLoading: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
-  const { gameServerId } = useGameServerOutletContext();
+  const { selectedGameServerId } = useSelectedGameServer();
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
@@ -50,7 +50,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
                 <Tooltip.Trigger asChild>
                   <IconButton
                     onClick={() => {
-                      navigate(PATHS.gameServer.moduleInstallations.install(gameServerId, mod.id));
+                      navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
                     }}
                     ariaLabel="Configure module"
                     icon={<ConfigIcon />}
@@ -76,7 +76,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
             <Button
               text="Install"
               onClick={() => {
-                navigate(PATHS.gameServer.moduleInstallations.install(gameServerId, mod.id));
+                navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
               }}
             />
           )}
