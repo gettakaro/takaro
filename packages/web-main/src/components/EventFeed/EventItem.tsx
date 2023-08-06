@@ -1,11 +1,12 @@
 import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
+import { EventDetail } from './EventDetail';
+import { DateTime } from 'luxon';
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: top;
-  width: 100%;
 `;
 
 const EventType = styled.div`
@@ -22,13 +23,13 @@ const EventType = styled.div`
 `;
 
 const ListItem = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing['4']};
+  margin-bottom: ${({ theme }) => theme.spacing['7']};
   margin-left: ${({ theme }) => theme.spacing['2']};
 `;
 
 const Data = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 `;
 
 const DataItem = styled.div`
@@ -36,12 +37,6 @@ const DataItem = styled.div`
     text-transform: capitalize;
     color: ${({ theme }) => theme.colors.textAlt};
   }
-`;
-
-const DetailButton = styled.a`
-  color: ${({ theme }) => theme.colors.textAlt};
-  text-decoration: underline;
-  cursor: pointer;
 `;
 
 const Circle = styled.div`
@@ -56,11 +51,12 @@ const Circle = styled.div`
 
   background-color: ${({ theme }) => theme.colors.textAlt};
 `;
-const EventProperty: FC<{ name: string; value: string }> = ({ name, value }) => {
+const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) => {
+  const val = (value as string) === '' ? '-' : value;
   return (
     <DataItem>
       <p>{name}</p>
-      <p>{value}</p>
+      <p>{val as string}</p>
     </DataItem>
   );
 };
@@ -68,46 +64,54 @@ const EventProperty: FC<{ name: string; value: string }> = ({ name, value }) => 
 export type EventItemProps = {
   eventType: string;
   createdAt: string;
-  data: Record<string, string>;
+  playerId?: string;
+  gameserverId?: string;
+  moduleId?: string;
+  data: Record<string, any>;
   onDetailClick: () => void;
 };
 
-function getTimeAgo(timestamp: number) {
-  const now = new Date();
-  const time = new Date(timestamp);
-
-  const secondsPast = Math.floor((now.getTime() - time.getTime()) / 1000);
-
-  const format = (value: number, timeUnit: string) => {
-    return `${value} ${timeUnit}${value === 1 ? '' : 's'} ago`;
-  };
-
-  if (secondsPast < 60) {
-    return format(secondsPast, 'second');
-  }
-
-  const minutesPast = Math.floor(secondsPast / 60);
-  if (minutesPast < 60) {
-    return format(minutesPast, 'minute');
-  }
-
-  const hoursPast = Math.floor(minutesPast / 60);
-  if (hoursPast < 24) {
-    return format(hoursPast, 'hour');
-  }
-
-  const daysPast = Math.floor(hoursPast / 24);
-  if (daysPast < 365) {
-    return format(daysPast, 'day');
-  }
-
-  const yearsPast = Math.floor(daysPast / 365);
-  return format(yearsPast, 'year');
-}
-
-export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, onDetailClick }) => {
+export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, playerId }) => {
   const timestamp = Date.parse(createdAt);
-  const timeAgo = getTimeAgo(timestamp);
+  const timeAgo = DateTime.fromMillis(timestamp).toRelative();
+
+  let properties = <></>;
+
+  switch (eventType) {
+    case 'chat-message':
+      properties = (
+        <>
+          <EventProperty name="playerId" value={playerId} />
+          <EventProperty name="message" value={data.message} />
+        </>
+      );
+      break;
+    case 'command-executed':
+      properties = (
+        <>
+          <EventProperty name="command" value={data.command.command} />
+          <EventProperty name="arguments" value={JSON.stringify(data.command.arguments)} />
+        </>
+      );
+      break;
+    case 'hook-executed':
+    case 'cronjob-executed':
+      properties = (
+        <>
+          <EventProperty name="success" value={`${data?.result?.success}`} />
+          <EventProperty name="logs" value={`${data?.result?.logs?.stdout}`} />
+          <EventProperty name="errors" value={`${data?.result?.logs?.stderr}`} />
+        </>
+      );
+      break;
+    case 'player-connected':
+    case 'player-disconnected':
+      properties = (
+        <>
+          <EventProperty name="playerId" value={playerId} />
+        </>
+      );
+  }
 
   return (
     <ListItem>
@@ -117,13 +121,9 @@ export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, onDe
           <p>{eventType}</p>
           <p>{timeAgo}</p>
         </EventType>
-        <DetailButton onClick={onDetailClick}>view details</DetailButton>
+        <EventDetail eventType={eventType} metaData={data} />
       </Header>
-      <Data>
-        {Object.keys(data).map((key) => {
-          return <EventProperty name={key} value={data[key]} />;
-        })}
-      </Data>
+      <Data>{properties}</Data>
     </ListItem>
   );
 };

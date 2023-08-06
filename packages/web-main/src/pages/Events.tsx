@@ -5,7 +5,8 @@ import { FC } from 'react';
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 0.75fr;
+  width: 100%;
 `;
 
 export const Events: FC = () => {
@@ -26,7 +27,10 @@ export const Events: FC = () => {
           <EventItem
             key={event.id}
             eventType={event.eventName}
-            data={{}}
+            data={(event?.meta as Record<string, any> | undefined) ?? {}}
+            playerId={event.playerId}
+            gameserverId={event.gameserverId}
+            moduleId={event.moduleId}
             createdAt={event.createdAt}
             onDetailClick={() => {
               console.log('clicked!');
