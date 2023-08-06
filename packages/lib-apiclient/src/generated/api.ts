@@ -1837,6 +1837,12 @@ export interface GameServerSearchInputAllowedFilters {
      * @type {Array<string>}
      * @memberof GameServerSearchInputAllowedFilters
      */
+    'id'?: Array<string>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof GameServerSearchInputAllowedFilters
+     */
     'name'?: Array<string>;
     /**
      * 

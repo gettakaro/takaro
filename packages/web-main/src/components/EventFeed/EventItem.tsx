@@ -29,7 +29,7 @@ const ListItem = styled.div`
 
 const Data = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 0.5fr 0.5fr 2fr;
 `;
 
 const DataItem = styled.div`
@@ -64,14 +64,21 @@ const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) =>
 export type EventItemProps = {
   eventType: string;
   createdAt: string;
-  playerId?: string;
-  gameserverId?: string;
-  moduleId?: string;
+  playerName?: string;
+  gamserverName?: string;
+  moduleName?: string;
   data: Record<string, any>;
   onDetailClick: () => void;
 };
 
-export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, playerId }) => {
+export const EventItem: FC<EventItemProps> = ({
+  eventType,
+  createdAt,
+  data,
+  playerName,
+  gamserverName,
+  moduleName,
+}) => {
   const timestamp = Date.parse(createdAt);
   const timeAgo = DateTime.fromMillis(timestamp).toRelative();
 
@@ -81,7 +88,8 @@ export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, play
     case 'chat-message':
       properties = (
         <>
-          <EventProperty name="playerId" value={playerId} />
+          <EventProperty name="gameserver" value={gamserverName} />
+          <EventProperty name="player" value={playerName} />
           <EventProperty name="message" value={data.message} />
         </>
       );
@@ -89,6 +97,7 @@ export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, play
     case 'command-executed':
       properties = (
         <>
+          <EventProperty name="module" value={moduleName} />
           <EventProperty name="command" value={data.command.command} />
           <EventProperty name="arguments" value={JSON.stringify(data.command.arguments)} />
         </>
@@ -98,9 +107,8 @@ export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, play
     case 'cronjob-executed':
       properties = (
         <>
+          <EventProperty name="module" value={moduleName} />
           <EventProperty name="success" value={`${data?.result?.success}`} />
-          <EventProperty name="logs" value={`${data?.result?.logs?.stdout}`} />
-          <EventProperty name="errors" value={`${data?.result?.logs?.stderr}`} />
         </>
       );
       break;
@@ -108,7 +116,8 @@ export const EventItem: FC<EventItemProps> = ({ eventType, createdAt, data, play
     case 'player-disconnected':
       properties = (
         <>
-          <EventProperty name="playerId" value={playerId} />
+          <EventProperty name="gameserver" value={gamserverName} />
+          <EventProperty name="player" value={playerName} />
         </>
       );
   }

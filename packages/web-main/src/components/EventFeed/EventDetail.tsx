@@ -12,12 +12,6 @@ const Button = styled.a`
   cursor: pointer;
 `;
 
-const StyledHeading = styled(Dialog.Heading)`
-  h4 {
-    font-size: ${({ theme }) => theme.fontSize['large']};
-  }
-`;
-
 const StyledContent = styled(Dialog.Content)`
   min-width: 600px;
 `;
@@ -26,13 +20,15 @@ const StyledBody = styled(Dialog.Body)`
   width: 100%;
   margin: 0;
   padding: ${({ theme }) => theme.spacing['1']};
-  max-width: none;
+  max-width: 70vw;
+  max-height: 70vh;
 `;
 
 const CodeBlock = styled.code`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: ${({ theme }) => theme.spacing['1']};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  overflow: auto;
   width: 100%;
 `;
 
@@ -44,7 +40,9 @@ export const EventDetail: FC<EventDetailProps> = ({ eventType, metaData }) => {
       <Button onClick={() => setOpen(true)}>details</Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <StyledContent>
-          <StyledHeading>{eventType}</StyledHeading>
+          <Dialog.Heading>
+            <h3>{eventType}</h3>
+          </Dialog.Heading>
           <StyledBody>
             <CodeBlock>
               <pre>{JSON.stringify(metaData, null, 2)}</pre>
