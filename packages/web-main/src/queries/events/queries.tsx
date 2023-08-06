@@ -1,5 +1,6 @@
 import {
   Client,
+  CommandOutputDTO,
   EventOutputArrayDTOAPI,
   EventOutputDTO,
   EventSearchInputDTO,
@@ -41,11 +42,15 @@ const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['d
     const gameserver = gameservers.data.data.find((gameserver) => gameserver.id === event.gameserverId);
     const mod = modules.data.data.find((m) => m.id === event.moduleId);
 
+    const meta = event.meta as Record<string, any> | undefined;
+    const command = mod?.commands.find((c) => c.id === meta?.command?.command);
+
     return {
       ...event,
       player,
       gameserver,
       module: mod,
+      command,
     };
   });
 };
@@ -61,6 +66,7 @@ interface EnrichedEvent extends EventOutputDTO {
   player: PlayerOutputDTO | undefined;
   gameserver: GameServerOutputDTO | undefined;
   module: ModuleOutputDTO | undefined;
+  command: CommandOutputDTO | undefined;
 }
 
 export const useEvents = (queryParams: EventSearchInputDTO = {}) => {

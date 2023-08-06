@@ -31,6 +31,7 @@ export const Events: FC = () => {
             playerName={event?.player?.name}
             gamserverName={event?.gameserver?.name}
             moduleName={event?.module?.name}
+            commandName={event?.command?.name}
             createdAt={event.createdAt}
             onDetailClick={() => {
               console.log('clicked!');

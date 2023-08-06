@@ -67,6 +67,7 @@ export type EventItemProps = {
   playerName?: string;
   gamserverName?: string;
   moduleName?: string;
+  commandName?: string;
   data: Record<string, any>;
   onDetailClick: () => void;
 };
@@ -78,6 +79,7 @@ export const EventItem: FC<EventItemProps> = ({
   playerName,
   gamserverName,
   moduleName,
+  commandName,
 }) => {
   const timestamp = Date.parse(createdAt);
   const timeAgo = DateTime.fromMillis(timestamp).toRelative();
@@ -98,7 +100,7 @@ export const EventItem: FC<EventItemProps> = ({
       properties = (
         <>
           <EventProperty name="module" value={moduleName} />
-          <EventProperty name="command" value={data.command.command} />
+          <EventProperty name="command" value={commandName} />
           <EventProperty name="arguments" value={JSON.stringify(data.command.arguments)} />
         </>
       );
