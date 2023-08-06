@@ -26,6 +26,7 @@ import { AuthSettings } from 'pages/auth/profile';
 import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
+import { Events } from 'pages/Events';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -69,6 +70,7 @@ export const Router: FC = () => (
           <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
           <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
         </Route>
+        <Route element={<Events />} path={PATHS.events()} />
         <Route element={<Players />} path={PATHS.players()} />
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
           <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
