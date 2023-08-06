@@ -26,6 +26,7 @@ import { AuthSettings } from 'pages/auth/profile';
 import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
+import { Events } from 'pages/Events';
 
 import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';
@@ -84,6 +85,8 @@ export const Router: FC = () => (
           <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
         </Route>
 
+        <Route element={<Events />} path={PATHS.events()} />
+        <Route element={<Players />} path={PATHS.players()} />
         {/* ======================== CRUD Modules ======================== */}
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
           <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />

@@ -63,6 +63,10 @@ class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputD
 
 class GameServerSearchInputAllowedFilters {
   @IsOptional()
+  @IsUUID(4, { each: true })
+  id!: string[];
+
+  @IsOptional()
   @IsString({ each: true })
   name!: string[];
 
