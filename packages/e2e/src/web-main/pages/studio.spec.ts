@@ -213,3 +213,71 @@ test.describe('Built-in modules', () => {
 
   test.fixme('Cannot delete command config argument', async ({}) => {});
 });
+
+test.describe('Item configuration', () => {
+  test.describe('Cronjob config', () => {});
+  test.describe('Hook config', () => {});
+
+  test.describe('Command config', () => {
+    test('Can add argument', async ({ takaro }) => {
+      const { studioPage } = takaro;
+      await studioPage.goto();
+      await studioPage.createFile('testCommand', 'commands');
+      await studioPage.openFile('testCommand');
+
+      await studioPage.page.getByRole('button', { name: 'New' }).click();
+      await studioPage.page.getByLabel('Name', { exact: true }).type('testArgument');
+      await studioPage.page.getByText('Select...').click();
+      await studioPage.page.getByRole('option', { name: 'String' }).click();
+      await studioPage.page.getByRole('textbox', { name: 'Help text' }).type('Some helpful text for the user');
+
+      await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
+
+      // TODO: studio jumps to another file for some reason... Not sure why
+      // await expect(studioPage.page.getByText('testArgument')).toBeVisible();
+
+      await studioPage.page.reload();
+
+      await studioPage.openFile('testCommand');
+      await expect(studioPage.page.getByLabel('Name', { exact: true })).toHaveValue('testArgument');
+    });
+
+    test('Can move arguments around', async ({ takaro }) => {
+      const { studioPage } = takaro;
+      await studioPage.goto();
+      await studioPage.createFile('testCommand', 'commands');
+      await studioPage.openFile('testCommand');
+
+      // Create 3 args, "one" "two" and "three"
+      for (const [key, value] of Object.entries(['one', 'two', 'three'])) {
+        await studioPage.page.getByRole('button', { name: 'New' }).click();
+        await studioPage.page.locator(`input[name="arguments\\.${key}\\.name"]`).type(value);
+        await studioPage.page.getByText('Select...').click();
+        await studioPage.page.getByRole('option', { name: 'String' }).click();
+        await studioPage.page
+          .locator(`input[name="arguments\\.${key}\\.helpText"]`)
+          .type('Some helpful text for the user');
+      }
+
+      await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
+
+      await studioPage.page.reload();
+      await studioPage.openFile('testCommand');
+
+      // Now manually reverse the order of the args
+      await studioPage.page.getByRole('button', { name: 'Move up' }).nth(2).click();
+      await studioPage.page.getByRole('button', { name: 'Move up' }).nth(1).click();
+      await studioPage.page.getByRole('button', { name: 'Move down' }).nth(1).click();
+
+      await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
+
+      await studioPage.page.reload();
+      await studioPage.openFile('testCommand');
+
+      // Now check that the order is correct
+      await expect(studioPage.page.locator('input[name="arguments\\.0\\.name"]')).toHaveValue('three');
+      await expect(studioPage.page.locator('input[name="arguments\\.1\\.name"]')).toHaveValue('two');
+      await expect(studioPage.page.locator('input[name="arguments\\.2\\.name"]')).toHaveValue('one');
+    });
+  });
+});
