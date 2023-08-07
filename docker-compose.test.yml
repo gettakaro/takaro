@@ -60,28 +60,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
 
-  takaro:
-    container_name: takaro
-    build:
-      context: .
-      dockerfile: containers/takaro/dev.Dockerfile
-    command: ['sh']
-    environment:
-      NODE_OPTIONS: '--loader ts-node/esm'
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: 'postgresql'
-      POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
-      REDIS_HOST: 'redis'
-      ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
-      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
-      TAKARO_OAUTH_HOST: http://hydra:4444
-      TAKARO_HOST: http://takaro_api:3000
-      KRATOS_ADMIN_URL: http://kratos:4434
-      TEST_HTTP_TARGET: http://takaro_api:3000
-      MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
-
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     container_name: takaro_api
