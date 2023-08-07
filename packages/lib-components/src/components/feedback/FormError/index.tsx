@@ -22,6 +22,22 @@ const Container = styled.div<{ hasMultiple: boolean }>`
   }
 `;
 
+const extractConstraints = (detail: any) => {
+  const constraints: any[] = [];
+
+  if (detail.constraints) {
+    constraints.push(...Object.values(detail.constraints));
+  }
+
+  if (Array.isArray(detail.children)) {
+    for (const child of detail.children) {
+      constraints.push(...extractConstraints(child));
+    }
+  }
+
+  return constraints;
+};
+
 export interface FormErrorProps {
   message?: string | string[];
   error?: unknown;
@@ -43,7 +59,8 @@ export const FormError: FC<FormErrorProps> = ({ message, error }) => {
       if (error.response?.data?.meta.error.code === 'ValidationError') {
         const details = error.response?.data?.meta.error.details;
         if (Array.isArray(details)) {
-          message = details.flatMap((detail) => Object.values(detail.constraints || {}));
+          // Map over details array and extract the constraints from each children recursively
+          message = details.flatMap((detail) => extractConstraints(detail));
         }
       }
     }
