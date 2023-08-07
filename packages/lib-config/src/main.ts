@@ -1,7 +1,6 @@
 import convict, { Path, PathValue, Schema } from 'convict';
 
 export enum EXECUTION_MODE {
-  FIRECRACKER = 'firecracker',
   LOCAL = 'local',
   LAMBDA = 'lambda',
 }
@@ -35,7 +34,7 @@ export const baseConfigConvict: Schema<IBaseConfig> = {
     executionMode: {
       doc: 'The mode to use when executing functions. Setting to "local" is VERY INSECURE! Only do it if you know what you are doing',
       format: Object.values(EXECUTION_MODE),
-      default: EXECUTION_MODE.FIRECRACKER,
+      default: EXECUTION_MODE.LAMBDA,
       env: 'FUNCTIONS_EXECUTION_MODE',
     },
   },
