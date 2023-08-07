@@ -105,7 +105,6 @@ jobs:
 
       - run: npm run test:style
 
-      - run: ./scripts/dev-init.sh
       - uses: nick-fields/retry@v2
         name: Integration tests
         with:
