@@ -1,12 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TextField } from '@takaro/lib-components';
+import { TextField, Button } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useCronJob, useCronJobUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { StyledButton } from './style';
-
 interface IProps {
   moduleItem: ModuleItemProperties;
   readOnly?: boolean;
@@ -51,7 +49,7 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
         readOnly={readOnly}
       />
-      {!readOnly && <StyledButton fullWidth type="submit" text="Save cronjob config" />}
+      {!readOnly && <Button fullWidth type="submit" text="Save cronjob config" />}
     </form>
   );
 };

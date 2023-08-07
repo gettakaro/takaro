@@ -1,8 +1,4 @@
-import { Button, styled } from '@takaro/lib-components';
-
-export const StyledButton = styled(Button)`
-  margin-top: ${({ theme }) => theme.spacing[2]};
-`;
+import { styled } from '@takaro/lib-components';
 
 export const StyledTest = styled.div`
   width: 100%;
@@ -21,7 +17,6 @@ export const ArgumentCard = styled.li`
   width: 100%;
   display: flex;
   align-items: center;
-  }
 `;
 
 export const ContentContainer = styled.div`
@@ -49,4 +44,10 @@ export const Flex = styled.div`
   & > *:first-child {
     flex-grow: 1;
   }
+`;
+
+export const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
