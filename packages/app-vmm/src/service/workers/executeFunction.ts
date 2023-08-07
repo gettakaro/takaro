@@ -1,11 +1,15 @@
 import { config } from '../../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
 import { Sentry, errors, logger } from '@takaro/util';
+import { Redis } from '@takaro/db';
 import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
 import { getVMM } from '../vmm/index.js';
 import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
 import { executeLambda } from '@takaro/aws';
+import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
+
+let rateLimiter: RateLimiterRedis | null = null;
 
 const log = logger('worker:function');
 
@@ -44,6 +48,16 @@ export async function executeFunction(
   data: IHookJobData | ICommandJobData | ICronJobData,
   domainId: string
 ) {
+  if (!rateLimiter) {
+    const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
+    rateLimiter = new RateLimiterRedis({
+      storeClient: redisClient,
+      keyPrefix: 'worker:rateLimiter',
+      points: 1000,
+      duration: 60 * 60,
+    });
+  }
+
   const token = await getJobToken(domainId);
 
   const client = new Client({
@@ -82,6 +96,7 @@ export async function executeFunction(
   }
 
   try {
+    await rateLimiter.consume(domainId, 1);
     let result: IFunctionResult;
     data.url = config.get('takaro.url');
     switch (config.get('functions.executionMode')) {
@@ -114,6 +129,17 @@ export async function executeFunction(
 
     await client.event.eventControllerCreate(eventData);
   } catch (err) {
+    if (err instanceof RateLimiterRes) {
+      log.warn('Function execution rate limited');
+      eventData.meta['result'] = {
+        success: false,
+        reason: 'rate limited',
+        tryAgainIn: err.msBeforeNext,
+      };
+      await client.event.eventControllerCreate(eventData);
+      return null;
+    }
+
     Sentry.captureException(err);
     log.error('executeFunction', err);
     await client.event.eventControllerCreate(eventData);
