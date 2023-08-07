@@ -20,7 +20,7 @@ const validationSchema = z.object({
 
 export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCronJob(moduleItem.itemId);
-  const { mutateAsync } = useCronJobUpdate();
+  const { mutateAsync, isLoading } = useCronJobUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -49,7 +49,7 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
         readOnly={readOnly}
       />
-      {!readOnly && <Button fullWidth type="submit" text="Save cronjob config" />}
+      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save cronjob config" />}
     </form>
   );
 };
