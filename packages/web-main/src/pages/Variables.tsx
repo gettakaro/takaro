@@ -180,9 +180,11 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
         </Dialog.Heading>
         <Dialog.Body>
           <h2>Delete variable</h2>
-          {variable.module && <p>Module: {variable.module.name}</p>}
-          {variable.gameServer && <p>Game Server: {variable.gameServer.name}</p>}
-          {variable.player && <p>Player Name: {variable.player.name}</p>}
+          <ul>
+            {variable.module && <li>Module: {variable.module.name}</li>}
+            {variable.gameServer && <li>Game Server: {variable.gameServer.name}</li>}
+            {variable.player && <li>Player Name: {variable.player.name}</li>}
+          </ul>
           <p>
             Are you sure you want to delete the variable <strong>{variable.key}</strong>?
           </p>
