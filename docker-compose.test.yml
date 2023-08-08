@@ -75,6 +75,7 @@ services:
       POSTGRES_ENCRYPTION_KEY: ${POSTGRES_ENCRYPTION_KEY}
       REDIS_HOST: 'redis'
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
       TAKARO_HOST: http://takaro_api:3000
       KRATOS_ADMIN_URL: http://kratos:4434
