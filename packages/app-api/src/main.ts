@@ -83,7 +83,7 @@ async function main() {
   log.info('👷 Command worker started');
 
   new CronJobWorker(config.get('queues.cronjobs.concurrency'));
-  log.info('👷 CrongJob worker started');
+  log.info('👷 CronJob worker started');
 
   new HookWorker(config.get('queues.hooks.concurrency'));
   log.info('👷 Hook worker started');
