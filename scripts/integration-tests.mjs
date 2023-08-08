@@ -107,7 +107,6 @@ async function main() {
       waitUntilHealthyHttp('http://127.0.0.1:13001', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
-      waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
     ]);
 
     console.log('Running tests with config', composeOpts);
