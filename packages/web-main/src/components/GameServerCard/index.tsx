@@ -1,8 +1,9 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useState, useEffect } from 'react';
 import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
-import { GameServerOutputDTO } from '@takaro/apiclient';
+import { GameServerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
+import { useVariableById } from 'queries/variables';
 
 import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
@@ -14,6 +15,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
 
   const { isLoading, data } = useGameServerReachabilityById(id);
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
+  const { data: variableData } = useVariableById(id);
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -22,6 +24,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
+    setVariableData(variableData);
   };
 
   const handleOnDelete = async () => {
@@ -78,6 +81,12 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
             <h2>Delete gameserver</h2>
             <p>
               Are you sure you want to delete <strong>{name}</strong>?
+              <br/>
+              Module: {variableData?.module}
+              <br/>
+              Game Server: {variableData?.gameServer}
+              <br/>
+              Player ID: {variableData?.playerId}
             </p>
             <Button
               isLoading={isDeleting}
