@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useState, useEffect } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { GameServerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
@@ -16,7 +16,10 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const { isLoading, data } = useGameServerReachabilityById(id);
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
   const { data: variableData } = useVariableById(id);
-
+  const [variableData, setVariableData] = useState<VariableOutputDTO | null>(null);
+  useEffect(() => {
+    setVariableData(useVariableById(id).data);
+  }, [id]);
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
