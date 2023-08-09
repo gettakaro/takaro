@@ -87,20 +87,22 @@ describe('commandParser', () => {
 
   it('Throws an error when invalid boolean types are provided', () => {
     expect(() => parseCommand('/settele test 42', MockTeleportCommand)).to.throw(
-      'Invalid boolean value for argument "public"'
+      'The value for "public" should be either "true" or "false". Please correct it and try again.'
     );
     expect(() => parseCommand('/settele test foobar', MockTeleportCommand)).to.throw(
-      'Invalid boolean value for argument "public"'
+      'The value for "public" should be either "true" or "false". Please correct it and try again.'
     );
   });
 
   it('Throws an error when invalid number types are provided', () => {
     expect(() => parseCommand('/settele test true foobar', MockTeleportCommand)).to.throw(
-      'Invalid number value for argument "number"'
+      'The value for "number" should be a number. Please correct it and try again.'
     );
   });
 
   it('Throws when required arguments are missing', () => {
-    expect(() => parseCommand('/settele', MockTeleportCommand)).to.throw('Missing argument "name"');
+    expect(() => parseCommand('/settele', MockTeleportCommand)).to.throw(
+      'Oops! It seems you forgot to provide the "name" value. Please check and try again.'
+    );
   });
 });
