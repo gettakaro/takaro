@@ -4,7 +4,7 @@ import { CommandModel, CommandRepo } from '../db/command.js';
 import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
-import { queueService } from '@takaro/queues';
+import { IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ICommand, ICommandArgument, EventChatMessage } from '@takaro/modules';
@@ -276,18 +276,38 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       const resolvedPlayer = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
 
       const parsedCommands = await Promise.all(
-        triggeredCommands.map(async (c) => ({
-          db: c,
-          data: {
-            timestamp: chatMessage.timestamp,
-            ...parseCommand(chatMessage.msg, c),
-            player: resolvedPlayer,
-            module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
-          },
-        }))
+        triggeredCommands.map(async (c) => {
+          let parsedCommand: IParsedCommand | null = null;
+
+          try {
+            parsedCommand = parseCommand(chatMessage.msg, c);
+          } catch (error: any) {
+            await gameServerService.sendMessage(
+              gameServerId,
+              error.message,
+              await new IMessageOptsDTO().construct({
+                recipient: chatMessage.player,
+              })
+            );
+            return;
+          }
+
+          return {
+            db: c,
+            data: {
+              timestamp: chatMessage.timestamp,
+              ...parsedCommand,
+              player: resolvedPlayer,
+              module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
+            },
+          };
+        })
       );
 
-      const promises = parsedCommands.map(async ({ data, db }) => {
+      const promises = parsedCommands.map(async (command) => {
+        if (!command) return;
+        const { data, db } = command;
+
         const commandConfig = data.module.systemConfig.commands[db.name];
         const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
