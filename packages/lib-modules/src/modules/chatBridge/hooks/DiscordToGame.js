@@ -13,7 +13,7 @@ async function main() {
   } catch (error) {
     console.error(error);
     await takaro.discordControllerSendMessage(data.discordChannelId, {
-      message: `Failed to forward your message to the game. Please try again later.`,
+      message: 'Failed to forward your message to the game. Please try again later.',
     });
   }
 }
