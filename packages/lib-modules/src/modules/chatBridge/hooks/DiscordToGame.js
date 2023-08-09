@@ -11,8 +11,9 @@ async function main() {
       message: `[D] ${data.eventData.author.displayName}:  ${data.eventData.msg}`,
     });
   } catch (error) {
+    console.error(error);
     await takaro.discordControllerSendMessage(data.discordChannelId, {
-      message: `Failed to forward your message to the game due to an error: ${error.message}`,
+      message: `Failed to forward your message to the game. Please try again later.`,
     });
   }
 }
