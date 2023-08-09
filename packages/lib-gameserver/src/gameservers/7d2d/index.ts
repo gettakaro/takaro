@@ -135,18 +135,20 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async sendMessage(message: string, opts?: IMessageOptsDTO) {
-    let command = `say "${message}"`;
+    const escapedMessage = message.replaceAll(/"/g, "'");
+
+    let command = `say "${escapedMessage}"`;
 
     if (opts?.recipient?.gameId) {
-      command = `sayplayer "EOS_${opts.recipient.gameId}" "${message}"`;
+      command = `sayplayer "EOS_${opts.recipient.gameId}" "${escapedMessage}"`;
     }
 
     if (this.connectionInfo.useCPM) {
       const sender = this.settings.serverChatName || 'Takaro';
-      command = `say2 "${sender}" "${message}"`;
+      command = `say2 "${sender}" "${escapedMessage}"`;
 
       if (opts?.recipient?.gameId) {
-        command = `pm2 "${sender}" "EOS_${opts.recipient.gameId}" "${message}"`;
+        command = `pm2 "${sender}" "EOS_${opts.recipient.gameId}" "${escapedMessage}"`;
       }
     }
 
