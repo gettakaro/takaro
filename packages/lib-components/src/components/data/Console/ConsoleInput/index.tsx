@@ -29,6 +29,7 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       try {
         const message = await onExecuteCommand(input);
         setMessages((prev: Message[]) => [...prev, message]);
+        localStorage.setItem(Date.now().toString(), input); // store the command in the local storage
       } catch {
         enqueueSnackbar('Something went wrong while executing your command.', {
           variant: 'default',
@@ -48,6 +49,15 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       executeCommand();
       setInput('');
       return;
+    }
+    if (e.key === 'ArrowUp') {
+      const lastCommandKey = Object.keys(localStorage).sort().pop();
+      const lastCommand = localStorage.getItem(lastCommandKey);
+      setInput(lastCommand);
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      // pop the command from the separate stack and set it as the current input
     }
   };
 
