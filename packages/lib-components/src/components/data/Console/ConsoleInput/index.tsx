@@ -30,7 +30,12 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       try {
         const message = await onExecuteCommand(input);
         setMessages((prev: Message[]) => [...prev, message]);
-        localStorage.setItem(Date.now().toString(), input); // store the command in the local storage
+        const commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+        commandHistory.push(input);
+        if (commandHistory.length > 50) {
+          commandHistory.shift();
+        }
+        localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
       } catch {
         enqueueSnackbar('Something went wrong while executing your command.', {
           variant: 'default',
@@ -81,4 +86,3 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       <StyledEnterIcon fill="white" onClick={executeCommand} />
     </Container>
   );
-};
