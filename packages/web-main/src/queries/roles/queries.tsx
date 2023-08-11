@@ -18,6 +18,7 @@ import { hasNextPage } from 'queries/util';
 import { useMemo } from 'react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import * as Sentry from '@sentry/react';
+import { playerKeys } from 'queries/players/queries';
 
 export const roleKeys = {
   all: ['roles'] as const,
@@ -207,10 +208,17 @@ interface RoleAssign {
 
 export const useRoleAssign = () => {
   const apiClient = useApiClient();
-
+  const queryClient = useQueryClient();
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
-    mutationFn: async ({ id, roleId, gameServerId }) =>
-      (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data,
+    mutationFn: async ({ id, roleId, gameServerId }) => {
+      const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data;
+      // TODO: _should_ happen in the onSuccess below I guess
+      // But no access to the ID there
+      // At this point, we technically already know the req was successful
+      // because it would have thrown an error otherwise
+      queryClient.invalidateQueries(playerKeys.detail(id));
+      return res;
+    },
     onSuccess: () => {
       // ??? How to invalidate queries here? No access to the ID we used in mutationFn? :/
       // queryClient.invalidateQueries(playerKeys.detail(id));
