@@ -6,12 +6,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiOutlineUser as ProfileIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineRight as ActionIcon,
-} from 'react-icons/ai';
+import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -108,16 +103,16 @@ const Players: FC = () => {
             <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
-            <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                label="Go to player profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.players()}/${info.row.original.id}`)}
-              />
-              <Dropdown.Menu.Item label="go to user profile" icon={<EditIcon />} onClick={() => navigate('')} />
-            </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
-            <Dropdown.Menu.Item label="Ban player" icon={<DeleteIcon />} onClick={() => navigate('')} />
+            <Dropdown.Menu.Item
+              label="Go to player profile"
+              icon={<ProfileIcon />}
+              onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
+            />
+            <Dropdown.Menu.Item
+              label="Assign role"
+              icon={<EditIcon />}
+              onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
+            />
           </Dropdown.Menu>
         </Dropdown>
       ),
@@ -138,7 +133,7 @@ const Players: FC = () => {
         <Table
           id="players"
           columns={columnDefs}
-          data={data.data}
+          data={data.data as PlayerOutputDTO[]}
           pagination={{
             paginationState: pagination.paginationState,
             setPaginationState: pagination.setPaginationState,

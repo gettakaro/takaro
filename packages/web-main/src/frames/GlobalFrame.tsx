@@ -10,6 +10,7 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
   AiOutlineIdcard as PlayersIcon,
+  AiOutlineUsergroupAdd as RolesIcon,
   AiOutlineUser as UsersIcon,
   AiOutlineEdit as VariablesIcon,
   AiOutlineClockCircle as EventsIcon,
@@ -61,6 +62,11 @@ const links: NavbarLink[] = [
     label: 'Users',
     path: PATHS.users(),
     icon: <UsersIcon />,
+  },
+  {
+    label: 'Roles',
+    path: PATHS.roles.overview(),
+    icon: <RolesIcon />,
   },
   {
     label: 'Modules',

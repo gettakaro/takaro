@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "05869707-9b66-432d-8fb9-3758517a72dc",
-      "createdAt": "2023-04-16T20:16:00.773Z",
-      "updatedAt": "2023-04-16T20:16:00.774Z",
+      "id": "b4410bfe-ccbf-48c9-b49b-d91608ef32c0",
+      "createdAt": "2023-07-12T09:49:28.580Z",
+      "updatedAt": "2023-07-12T09:49:28.580Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
@@ -12,7 +12,8 @@
       "builtin": null,
       "cronJobs": [],
       "hooks": [],
-      "commands": []
+      "commands": [],
+      "permissions": []
     }
   },
   "status": 200,

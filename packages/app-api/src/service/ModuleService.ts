@@ -13,6 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
+import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -42,6 +43,10 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested({ each: true })
   commands: CommandOutputDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
@@ -56,6 +61,11 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
@@ -74,20 +84,32 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsString()
   @IsOptional()
   builtin: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @Length(3, 50)
+  @IsOptional()
   @IsString()
   name!: string;
 
   @IsString()
+  @IsOptional()
   @IsOptional()
   description?: string;
 
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 @traceableClass('service:module')
@@ -143,6 +165,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         await new ModuleCreateInternalDTO().construct({
           ...builtin,
           builtin: builtin.name,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     } else {
@@ -150,6 +173,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.id,
         await new ModuleUpdateDTO().construct({
           ...builtin,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     }

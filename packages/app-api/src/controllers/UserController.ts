@@ -9,6 +9,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+import { RoleService } from '../service/RoleService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -155,16 +156,16 @@ export class UserController {
   @Post('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async assignRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
-    const service = new UserService(req.domainId);
-    return apiResponse(await service.assignRole(params.id, params.roleId));
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.assignRole(params.roleId, params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
   @Delete('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
-    const service = new UserService(req.domainId);
-    return apiResponse(await service.removeRole(params.id, params.roleId));
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.removeRole(params.roleId, params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))

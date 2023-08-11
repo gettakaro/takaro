@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ConflictError",
+        "message": "Unique constraint violation"
+      }
+    },
+    "data": {}
+  },
+  "status": 409,
+  "test": {
+    "group": "RoleController",
+    "snapshot": true,
+    "name": "Cannot create root role if it already exists",
+    "expectedStatus": 409,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
