@@ -6,7 +6,7 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
-import useDocumentTitle from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Page = styled.div`
   padding: 3rem 8rem;
