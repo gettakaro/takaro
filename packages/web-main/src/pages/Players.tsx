@@ -103,13 +103,11 @@ const Players: FC = () => {
             <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
-            <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                label="Go to player profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
-              />
-            </Dropdown.Menu.Group>
+            <Dropdown.Menu.Item
+              label="Go to player profile"
+              icon={<ProfileIcon />}
+              onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
+            />
             <Dropdown.Menu.Item
               label="Assign role"
               icon={<EditIcon />}
