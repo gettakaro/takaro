@@ -219,9 +219,18 @@ export const useRoleAssign = () => {
       queryClient.invalidateQueries(playerKeys.detail(id));
       return res;
     },
-    onSuccess: () => {
-      // ??? How to invalidate queries here? No access to the ID we used in mutationFn? :/
-      // queryClient.invalidateQueries(playerKeys.detail(id));
+  });
+};
+
+export const useRoleUnassign = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
+    mutationFn: async ({ id, roleId, gameServerId }) => {
+      const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
+      // TODO: Same cache issue as in useRoleAssign...
+      queryClient.invalidateQueries(playerKeys.detail(id));
+      return res;
     },
   });
 };

@@ -1,5 +1,5 @@
 import { RoleAssignmentOutputDTO } from '@takaro/apiclient';
-import { Loading, useTableActions, Table, Button } from '@takaro/lib-components';
+import { Loading, useTableActions, Table, Button, Dropdown, IconButton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -7,6 +7,8 @@ import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useGameServers } from 'queries/gameservers';
 import { DateTime } from 'luxon';
+import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useRoleUnassign } from 'queries/roles';
 
 export const PlayerProfile: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -54,6 +56,7 @@ interface IPlayerRolesTableProps {
 
 const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleAssignmentOutputDTO>();
+  const { mutate } = useRoleUnassign();
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 
@@ -98,6 +101,38 @@ const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
       },
       enableColumnFilter: true,
       enableSorting: true,
+    }),
+    columnHelper.display({
+      header: 'Actions',
+      id: 'actions',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: false,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      maxSize: 50,
+
+      cell: (info) => (
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
+          </Dropdown.Trigger>
+          <Dropdown.Menu>
+            <Dropdown.Menu.Item
+              label="Unassign role"
+              icon={<DeleteIcon />}
+              onClick={() => {
+                mutate({
+                  id: playerId,
+                  roleId: info.row.original.role.id,
+                  gameServerId: info.row.original.gameServerId,
+                });
+              }}
+            />
+          </Dropdown.Menu>
+        </Dropdown>
+      ),
     }),
   ];
 
