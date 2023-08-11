@@ -1,5 +1,5 @@
 import { RoleAssignmentOutputDTO } from '@takaro/apiclient';
-import { Loading, useTableActions, Table, Button, Dropdown, IconButton } from '@takaro/lib-components';
+import { Loading, useTableActions, Table, Button, Dropdown, IconButton, Divider } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -35,6 +35,9 @@ export const PlayerProfile: FC = () => {
         <li>EOS ID: {data?.epicOnlineServicesId}</li>
         <li>Xbox ID: {data?.xboxLiveId}</li>
       </ul>
+
+      <Divider />
+
       <h2>Roles</h2>
 
       <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} />
