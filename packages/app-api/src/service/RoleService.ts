@@ -16,6 +16,7 @@ import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
 import { UserService } from './UserService.js';
 import { PlayerService } from './PlayerService.js';
+import { EventCreateDTO, EventService } from './EventService.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -171,6 +172,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async assignRole(roleId: string, targetId: string, gameserverId?: string) {
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
+    const eventService = new EventService(this.domainId);
 
     const userRes = await userService.find({ filters: { id: [targetId] } });
     const playerRes = await playerService.find({ filters: { id: [targetId] } });
@@ -178,16 +180,36 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     if (userRes.total) {
       this.log.info('Assigning role to user');
       await this.repo.assignRoleToUser(targetId, roleId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleAssigned',
+          userId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
     }
     if (playerRes.total) {
       this.log.info('Assigning role to player');
       await this.repo.assignRoleToPlayer(targetId, roleId, gameserverId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleAssigned',
+          gameserverId,
+          playerId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
     }
   }
 
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
     const userService = new UserService(this.domainId);
     const playerService = new PlayerService(this.domainId);
+    const eventService = new EventService(this.domainId);
 
     const userRes = await userService.find({ filters: { id: [targetId] } });
     const playerRes = await playerService.find({ filters: { id: [targetId] } });
@@ -195,10 +217,29 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     if (userRes.total) {
       this.log.info('Removing role from user');
       await this.repo.removeRoleFromUser(targetId, roleId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleRemoved',
+          userId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
     }
     if (playerRes.total) {
       this.log.info('Removing role from player');
       await this.repo.removeRoleFromPlayer(targetId, roleId, gameserverId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleRemoved',
+          playerId: targetId,
+          gameserverId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
     }
   }
 }

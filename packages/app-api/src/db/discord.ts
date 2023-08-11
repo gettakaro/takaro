@@ -25,28 +25,30 @@ export class DiscordGuildModel extends TakaroModel {
 
   takaroEnabled: boolean;
 
-  static relationMappings = {
-    users: {
-      relation: Model.ManyToManyRelation,
-      modelClass: UserModel,
-      join: {
-        from: `${DISCORD_GUILDS_TABLE_NAME}.id`,
-        through: {
-          from: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
-          to: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.userId`,
+  static get relationMappings() {
+    return {
+      users: {
+        relation: Model.ManyToManyRelation,
+        modelClass: UserModel,
+        join: {
+          from: `${DISCORD_GUILDS_TABLE_NAME}.id`,
+          through: {
+            from: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
+            to: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.userId`,
+          },
+          to: `${USER_TABLE_NAME}.id`,
         },
-        to: `${USER_TABLE_NAME}.id`,
       },
-    },
-    guildPermission: {
-      relation: Model.HasOneRelation,
-      modelClass: UserOnGuildModel,
-      join: {
-        from: `${DISCORD_GUILDS_TABLE_NAME}.id`,
-        to: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
+      guildPermission: {
+        relation: Model.HasOneRelation,
+        modelClass: UserOnGuildModel,
+        join: {
+          from: `${DISCORD_GUILDS_TABLE_NAME}.id`,
+          to: `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
+        },
       },
-    },
-  };
+    };
+  }
 }
 
 @traceableClass('repo:discord')
