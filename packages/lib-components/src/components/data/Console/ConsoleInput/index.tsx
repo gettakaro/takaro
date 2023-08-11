@@ -12,7 +12,7 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessa
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = createRef<HTMLInputElement>();
   const [input, setInput] = useState('');
-  const [commandStack, setCommandStack] = useState([]); // declare commandStack state variable
+  const [commandStack, setCommandStack] = useState<string[]>([]); // declare commandStack state variable
 
   async function executeCommand() {
     if (input != '') {
@@ -48,13 +48,22 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessa
     if (e.key === 'ArrowUp') {
       setCommandStack([...commandStack, input]); // push current input to commandStack
       const lastCommandKey = Object.keys(localStorage).sort().pop();
+      if (!lastCommandKey) {
+        return;
+      }
       const lastCommand = localStorage.getItem(lastCommandKey);
+      if (!lastCommand) {
+        return;
+      }
       setInput(lastCommand);
       return;
     }
     if (e.key === 'ArrowDown') {
       if (commandStack.length > 0) {
         const lastCommand = commandStack.pop();
+        if (!lastCommand) {
+          return;
+        }
         setInput(lastCommand);
       } else {
         setInput('');
