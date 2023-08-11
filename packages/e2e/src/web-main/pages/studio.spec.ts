@@ -218,6 +218,48 @@ test.describe('Item configuration', () => {
   test.describe('Cronjob config', () => {});
   test.describe('Hook config', () => {});
 
+  test.describe('Console input', () => {
+    test('Up and down arrow keys correctly retrieve the previous and next command', async ({ takaro }) => {
+      const { studioPage } = takaro;
+      await studioPage.goto();
+      await studioPage.createFile('testCommand', 'commands');
+      await studioPage.openFile('testCommand');
+
+      // Execute some commands
+      for (let i = 0; i < 5; i++) {
+        await studioPage.page.keyboard.type(`command${i}`);
+        await studioPage.page.keyboard.press('Enter');
+      }
+
+      // Press up arrow key and check that the previous command is retrieved
+      await studioPage.page.keyboard.press('ArrowUp');
+      await expect(studioPage.page.locator('input[name="command"]')).toHaveValue('command4');
+
+      // Press down arrow key and check that the next command is retrieved
+      await studioPage.page.keyboard.press('ArrowDown');
+      await expect(studioPage.page.locator('input[name="command"]')).toHaveValue('command3');
+    });
+
+    test('Only the last 50 commands are stored', async ({ takaro }) => {
+      const { studioPage } = takaro;
+      await studioPage.goto();
+      await studioPage.createFile('testCommand', 'commands');
+      await studioPage.openFile('testCommand');
+
+      // Execute more than 50 commands
+      for (let i = 0; i < 55; i++) {
+        await studioPage.page.keyboard.type(`command${i}`);
+        await studioPage.page.keyboard.press('Enter');
+      }
+
+      // Press up arrow key 50 times and check that the first command is not retrieved
+      for (let i = 0; i < 50; i++) {
+        await studioPage.page.keyboard.press('ArrowUp');
+      }
+      await expect(studioPage.page.locator('input[name="command"]')).not.toHaveValue('command0');
+    });
+  });
+
   test.describe('Command config', () => {
     test('Can add argument', async ({ takaro }) => {
       const { studioPage } = takaro;
