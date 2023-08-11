@@ -1,5 +1,4 @@
 import { FC, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -7,6 +6,7 @@ import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -16,6 +16,7 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
+  useDocumentTitle('Players');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
@@ -125,10 +126,6 @@ const Players: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Players - Takaro</title>
-      </Helmet>
-
       <TableContainer>
         <Table
           id="players"

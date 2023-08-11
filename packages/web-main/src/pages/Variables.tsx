@@ -1,11 +1,11 @@
 import { FC, Fragment, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -13,6 +13,7 @@ const TableContainer = styled.div`
 `;
 
 const Variables: FC = () => {
+  useDocumentTitle('Variables');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -125,9 +126,6 @@ const Variables: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Variables - Takaro</title>
-      </Helmet>
       <p>
         Variables allow you to store data in a key-value format, which is persisted between module runs. For example,
         variables are the way that the teleports module stores the teleport locations.

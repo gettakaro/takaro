@@ -1,10 +1,10 @@
 import { FC, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
 import { Button, Empty, EmptyPage, Skeleton, styled } from '@takaro/lib-components';
 import { EmptyGameServerCard, GameServerCard } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useGameServers } from 'queries/gameservers';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const List = styled.ul`
   display: grid;
@@ -14,6 +14,7 @@ const List = styled.ul`
 `;
 
 const GameServers: FC = () => {
+  useDocumentTitle('Game Servers');
   const navigate = useNavigate();
 
   const { data: gameServers, isLoading, isError, InfiniteScroll } = useGameServers();
@@ -48,9 +49,6 @@ const GameServers: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Gameservers - Takaro</title>
-      </Helmet>
       <List>
         {gameServers.pages
           .flatMap((page) => page.data)
