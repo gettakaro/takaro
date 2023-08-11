@@ -29,8 +29,8 @@ export const PlayerProfile: FC = () => {
       <h1>{data?.name}</h1>
       <ul>
         <li>Takaro ID: {data?.id}</li>
-        <li>Created at: {data?.createdAt}</li>
-        <li>Updated at: {data?.updatedAt}</li>
+        <li>Created at: {DateTime.fromISO(data?.createdAt).toLocaleString(DateTime.DATETIME_FULL)}</li>
+        <li>Updated at: {DateTime.fromISO(data?.updatedAt).toLocaleString(DateTime.DATETIME_FULL)}</li>
         <li>Steam ID: {data?.steamId}</li>
         <li>EOS ID: {data?.epicOnlineServicesId}</li>
         <li>Xbox ID: {data?.xboxLiveId}</li>
