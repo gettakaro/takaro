@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { Divider, Loading, styled } from '@takaro/lib-components';
-import { Helmet } from 'react-helmet';
 import { FiPlus } from 'react-icons/fi';
 import { useInfiniteModules } from 'queries/modules';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
+import useDocumentTitle from 'hooks/useDocumentTitle';
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -16,6 +16,7 @@ const Page = styled.div`
 `;
 
 export const ModuleDefinitions: FC = () => {
+  useDocumentTitle('Modules');
   const { data: modules, isLoading, InfiniteScroll } = useInfiniteModules();
 
   const navigate = useNavigate();
@@ -31,9 +32,6 @@ export const ModuleDefinitions: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Modules - Takaro</title>
-      </Helmet>
       <Page>
         <p>
           Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
