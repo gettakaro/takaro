@@ -21,9 +21,9 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessa
         setMessages((prev: Message[]) => [...prev, message]);
 
         const commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
-        commandHistory.push(input);
+        commandHistory.unshift(input);
         if (commandHistory.length > 50) {
-          commandHistory.shift();
+          commandHistory.pop();
         }
         localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
         setCommandHistoryIndex(-1);
@@ -49,22 +49,24 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessa
     }
 
     const commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
-    if (e.key === 'ArrowDown') {
+
+    if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (commandHistoryIndex > 0) {
-        setCommandHistoryIndex(commandHistoryIndex - 1);
-        setInput(commandHistory[commandHistoryIndex - 1]);
+      if (commandHistoryIndex >= -1 && commandHistoryIndex < commandHistory.length) {
+        setCommandHistoryIndex((prevIndex) => prevIndex + 1); // move backwards in command history
+        setInput(commandHistory[commandHistoryIndex + 1]);
       }
       return;
     }
 
-    if (e.key === 'ArrowUp') {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
-      if (commandHistoryIndex < commandHistory.length - 1) {
-        setCommandHistoryIndex(commandHistoryIndex + 1);
-        setInput(commandHistory[commandHistoryIndex + 1]);
-      } else {
-        setInput('');
+      if (commandHistoryIndex > 0) {
+        setCommandHistoryIndex((prevIndex) => prevIndex - 1); // move forward in command history
+        setInput(commandHistory[commandHistoryIndex - 1]);
+      } else if (commandHistoryIndex === 0) {
+        setCommandHistoryIndex(-1);
+        setInput(''); // Clear input if moving beyond available commands
       }
       return;
     }
