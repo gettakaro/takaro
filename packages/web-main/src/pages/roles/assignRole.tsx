@@ -40,8 +40,7 @@ export const AssignRole: FC = () => {
 
 const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { mutateAsync, isLoading } = useRoleAssign();
+  const { mutateAsync, isLoading, error } = useRoleAssign();
   const navigate = useNavigate();
   const { playerId } = useParams<{ playerId: string }>();
 
@@ -67,13 +66,9 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ playerId, roleId, gameServerId }) => {
-    try {
-      await mutateAsync({ id: playerId, roleId, gameServerId });
-
-      navigate(PATHS.player.profile(playerId));
-    } catch (error) {
-      setError('Something went wrong, please try again later');
-    }
+    if (gameServerId === 'null') gameServerId = undefined;
+    await mutateAsync({ id: playerId, roleId, gameServerId });
+    navigate(PATHS.player.profile(playerId));
   };
 
   return (
@@ -122,7 +117,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                   </Select.OptionGroup>
                 </Select>
               </CollapseList.Item>
-              {error && <FormError message={error} />}
+              {error && <FormError error={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>

@@ -8,5 +8,5 @@ export const validationSchema = z.object({
 export const roleAssignValidationSchema = z.object({
   playerId: z.string().uuid(),
   roleId: z.string().uuid(),
-  gameServerId: z.string().uuid().optional(),
+  gameServerId: z.string().optional(),
 });

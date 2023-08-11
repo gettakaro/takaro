@@ -55,7 +55,7 @@ interface IPlayerRolesTableProps {
 const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleAssignmentOutputDTO>();
 
-  const filteredServerIds = roles.filter((role) => role.gameServerId !== undefined).map((role) => role.gameServerId);
+  const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 
   const { data, isLoading } = useGameServers({
     filters: {
