@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-function useDocumentTitle(title) {
+export function useDocumentTitle(title) {
   useEffect(() => {
     // Store the original document title
     const originalTitle = document.title;
@@ -14,5 +14,3 @@ function useDocumentTitle(title) {
     };
   }, [title]); // Re-run the effect when the title prop changes
 }
-
-export default useDocumentTitle;
