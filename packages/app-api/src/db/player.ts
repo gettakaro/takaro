@@ -170,10 +170,18 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
   async removeRole(playerId: string, roleId: string, gameServerId?: string): Promise<void> {
     const knex = await this.getKnex();
     const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
-    await roleOnPlayerModel.query().delete().where({
+
+    const whereObj: Record<string, string | null> = {
       playerId,
       roleId,
-      gameServerId,
-    });
+    };
+
+    if (gameServerId) {
+      whereObj.gameServerId = gameServerId;
+    } else {
+      whereObj.gameServerId = null;
+    }
+
+    await roleOnPlayerModel.query().delete().where(whereObj);
   }
 }
