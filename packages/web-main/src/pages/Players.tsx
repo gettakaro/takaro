@@ -1,7 +1,7 @@
 import { FC, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown, Chip } from '@takaro/lib-components';
-import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
+import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,6 @@ const Players: FC = () => {
   const navigate = useNavigate();
 
   const { data, isLoading } = usePlayers({
-    extend: ['roles'],
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -49,7 +48,7 @@ const Players: FC = () => {
   });
 
   // IMPORTANT: id should be identical to data object key.
-  const columnHelper = createColumnHelper<PlayerOutputWithRolesDTO>();
+  const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('name', {
       header: 'Name',
@@ -78,11 +77,6 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
-    }),
-    columnHelper.accessor('roleAssignments', {
-      header: 'Roles',
-      id: 'roles',
-      cell: (info) => info.row.original.roleAssignments.map((r) => <Chip label={r.role.name} color={'secondary'} />),
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -148,7 +142,7 @@ const Players: FC = () => {
         <Table
           id="players"
           columns={columnDefs}
-          data={data.data as PlayerOutputWithRolesDTO[]}
+          data={data.data as PlayerOutputDTO[]}
           pagination={{
             paginationState: pagination.paginationState,
             setPaginationState: pagination.setPaginationState,
