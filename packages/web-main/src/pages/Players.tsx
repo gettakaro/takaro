@@ -6,12 +6,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiOutlineUser as ProfileIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineRight as ActionIcon,
-} from 'react-icons/ai';
+import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -114,14 +109,12 @@ const Players: FC = () => {
                 icon={<ProfileIcon />}
                 onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
               />
-              <Dropdown.Menu.Item label="go to user profile" icon={<EditIcon />} onClick={() => navigate('')} />
             </Dropdown.Menu.Group>
             <Dropdown.Menu.Item
               label="Assign role"
               icon={<EditIcon />}
               onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
             />
-            <Dropdown.Menu.Item label="Ban player" icon={<DeleteIcon />} onClick={() => navigate('')} />
           </Dropdown.Menu>
         </Dropdown>
       ),
