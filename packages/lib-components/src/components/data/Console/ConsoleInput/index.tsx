@@ -23,12 +23,21 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = createRef<HTMLInputElement>();
   const [input, setInput] = useState('');
+  const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
 
   async function executeCommand() {
     if (input != '') {
       try {
         const message = await onExecuteCommand(input);
         setMessages((prev: Message[]) => [...prev, message]);
+  
+        let commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+        commandHistory.push(input);
+        if (commandHistory.length > 50) {
+          commandHistory.shift();
+        }
+        localStorage.setItem('commandHistory', JSON.stringify(commandHistory));
+        setCommandHistoryIndex(-1);
       } catch {
         enqueueSnackbar('Something went wrong while executing your command.', {
           variant: 'default',
@@ -47,6 +56,27 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       e.preventDefault();
       executeCommand();
       setInput('');
+      return;
+    }
+  
+    let commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistoryIndex > 0) {
+        setCommandHistoryIndex(commandHistoryIndex - 1);
+        setInput(commandHistory[commandHistoryIndex - 1]);
+      }
+      return;
+    }
+  
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (commandHistoryIndex < commandHistory.length - 1) {
+        setCommandHistoryIndex(commandHistoryIndex + 1);
+        setInput(commandHistory[commandHistoryIndex + 1]);
+      } else {
+        setInput('');
+      }
       return;
     }
   };
