@@ -1,12 +1,4 @@
-import {
-  ChangeEvent,
-  createRef,
-  KeyboardEvent,
-  Dispatch,
-  FC,
-  SetStateAction,
-  useState,
-} from 'react';
+import { ChangeEvent, createRef, KeyboardEvent, Dispatch, FC, SetStateAction, useState } from 'react';
 import { Message } from '../MessageModel';
 import { Container, StyledEnterIcon } from './style';
 import { useSnackbar } from 'notistack';
@@ -16,10 +8,7 @@ export interface ConsoleInputProps {
   onExecuteCommand: (command: string) => Promise<Message>;
 }
 
-export const ConsoleInput: FC<ConsoleInputProps> = ({
-  onExecuteCommand,
-  setMessages,
-}) => {
+export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessages }) => {
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = createRef<HTMLInputElement>();
   const [input, setInput] = useState('');
@@ -30,8 +19,8 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       try {
         const message = await onExecuteCommand(input);
         setMessages((prev: Message[]) => [...prev, message]);
-  
-        let commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+
+        const commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
         commandHistory.push(input);
         if (commandHistory.length > 50) {
           commandHistory.shift();
@@ -58,9 +47,9 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       setInput('');
       return;
     }
-  
-    let commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
-    if (e.key === 'ArrowUp') {
+
+    const commandHistory = JSON.parse(localStorage.getItem('commandHistory') || '[]');
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (commandHistoryIndex > 0) {
         setCommandHistoryIndex(commandHistoryIndex - 1);
@@ -68,8 +57,8 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       }
       return;
     }
-  
-    if (e.key === 'ArrowDown') {
+
+    if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (commandHistoryIndex < commandHistory.length - 1) {
         setCommandHistoryIndex(commandHistoryIndex + 1);
