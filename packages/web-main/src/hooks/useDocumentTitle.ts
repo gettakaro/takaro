@@ -6,7 +6,7 @@ function useDocumentTitle(title) {
     const originalTitle = document.title;
 
     // Set the new title
-    document.title = title;
+    document.title = `${title} - Takaro`;
 
     // Return the cleanup function to reset to the original title when the component unmounts or if the title prop changes
     return () => {
