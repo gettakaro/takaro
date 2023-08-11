@@ -1,12 +1,4 @@
-import {
-  ChangeEvent,
-  createRef,
-  KeyboardEvent,
-  Dispatch,
-  FC,
-  SetStateAction,
-  useState,
-} from 'react';
+import { ChangeEvent, createRef, KeyboardEvent, Dispatch, FC, SetStateAction, useState } from 'react';
 import { Message } from '../MessageModel';
 import { Container, StyledEnterIcon } from './style';
 import { useSnackbar } from 'notistack';
@@ -16,10 +8,7 @@ export interface ConsoleInputProps {
   onExecuteCommand: (command: string) => Promise<Message>;
 }
 
-export const ConsoleInput: FC<ConsoleInputProps> = ({
-  onExecuteCommand,
-  setMessages,
-}) => {
+export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessages }) => {
   const { enqueueSnackbar } = useSnackbar();
   const inputRef = createRef<HTMLInputElement>();
   const [input, setInput] = useState('');
@@ -86,3 +75,4 @@ export const ConsoleInput: FC<ConsoleInputProps> = ({
       <StyledEnterIcon fill="white" onClick={executeCommand} />
     </Container>
   );
+};
