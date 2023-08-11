@@ -1,5 +1,6 @@
 import { styled } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/EventFeed';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useEvents } from 'queries/events';
 import { FC } from 'react';
 
@@ -10,6 +11,7 @@ const Wrapper = styled.div`
 `;
 
 export const Events: FC = () => {
+  useDocumentTitle('Events');
   const { data, isLoading } = useEvents({
     page: 0,
     sortBy: 'createdAt',

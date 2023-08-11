@@ -1,11 +1,11 @@
 import { Loading, Skeleton, styled } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
-import { Helmet } from 'react-helmet';
 import { useParams, Outlet } from 'react-router-dom';
 import { ModuleCards } from '../../components/modules/Cards/style';
 import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Page = styled.div`
   padding: 3rem 8rem;
@@ -15,6 +15,7 @@ const Page = styled.div`
 `;
 
 const GameServerModules: FC = () => {
+  useDocumentTitle('Modules');
   const { serverId } = useParams();
   const { data: installations, isLoading } = useGameServerModuleInstallations(serverId!);
   const { data } = useInfiniteModules();
@@ -53,9 +54,6 @@ const GameServerModules: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Modules - Takaro</title>
-      </Helmet>
       <Page>
         <h1>Modules</h1>
 

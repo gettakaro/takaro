@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import { Helmet } from 'react-helmet';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { EmptyPage, Skeleton, styled, Empty, Button } from '@takaro/lib-components';
 import { useRoles } from 'queries/roles';
 import { PATHS } from 'paths';
 import { EmptyRolesCard, RoleCard } from 'components/roles/RoleCard';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Grid = styled.div`
   display: grid;
@@ -14,6 +14,7 @@ const Grid = styled.div`
 `;
 
 export const Roles: FC = () => {
+  useDocumentTitle('Roles');
   const navigate = useNavigate();
   const { data: roles, isLoading, isError, InfiniteScroll } = useRoles();
 
@@ -47,9 +48,6 @@ export const Roles: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Roles - Takaro</title>
-      </Helmet>
       <Grid>
         <EmptyRolesCard onClick={() => navigate(PATHS.roles.create())} />
         {roles.pages
