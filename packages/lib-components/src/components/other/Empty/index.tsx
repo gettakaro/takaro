@@ -1,11 +1,16 @@
 import { FC, ReactElement } from 'react';
 import { Size, styled } from '../../../styled';
+import { AiOutlineContainer as Icon } from 'react-icons/ai';
 
 const Container = styled.div<{ size: Size }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 600px;
+
+  svg {
+    fill: ${({ theme }) => theme.colors.primary};
+  }
 
   ${({ size }) => {
     switch (size) {
@@ -70,14 +75,10 @@ export interface EmptyProps {
   size?: Size;
 }
 
-export const Empty: FC<EmptyProps> = ({
-  description = 'No Data',
-  header,
-  actions,
-  size = 'medium',
-}) => {
+export const Empty: FC<EmptyProps> = ({ description = 'No Data', header, actions, size = 'medium' }) => {
   return (
     <Container size={size}>
+      <Icon size={40} />
       <h2>{header}</h2>
       <Description>{description}</Description>
       <ActionContainer>{actions}</ActionContainer>

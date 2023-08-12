@@ -2,6 +2,7 @@ import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import * as url from 'url';
 import { HookEventTypes } from './dto/index.js';
+import { PermissionCreateDTO } from '@takaro/apiclient';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -38,6 +39,7 @@ export abstract class BuiltinModule {
   public commands: Array<ICommand> = [];
   public hooks: Array<IHook> = [];
   public cronJobs: Array<ICronJob> = [];
+  public permissions: PermissionCreateDTO[] = [];
 
   async construct() {
     await this.loadType('commands');

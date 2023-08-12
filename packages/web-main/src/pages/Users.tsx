@@ -1,5 +1,4 @@
-import { FC, Fragment, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import {
@@ -21,6 +20,9 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useInviteUser } from 'queries/users/queries';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -30,7 +32,8 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
-  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<UserOutputDTO>();
+  useDocumentTitle('Users');
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -41,18 +44,12 @@ const Users: FC = () => {
       ? UserSearchInputDTOSortDirectionEnum.Desc
       : UserSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: [columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value].filter(
-        Boolean
-      ) as string[],
-      discordId: [columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
     },
     search: {
-      name: [columnSearch.columnSearchState.find((search) => search.id === 'name')?.value].filter(Boolean) as string[],
-      discordId: [columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value].filter(
-        Boolean
-      ) as string[],
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
     },
   });
 
@@ -121,9 +118,6 @@ const Users: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Users - Takaro</title>
-      </Helmet>
       <TableContainer>
         <Table
           id="users"
@@ -134,7 +128,6 @@ const Users: FC = () => {
             ...pagination,
             pageOptions: pagination.getPageOptions(data),
           }}
-          rowSelection={rowSelection}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
           sorting={sorting}
@@ -150,7 +143,19 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { control, handleSubmit } = useForm<IFormInputs>();
+
+  const validationSchema = useMemo(
+    () =>
+      z.object({
+        userEmail: z.string().email('Email is not valid.').nonempty(),
+      }),
+    []
+  );
+
+  const { control, handleSubmit } = useForm<IFormInputs>({
+    resolver: zodResolver(validationSchema),
+    mode: 'onSubmit',
+  });
   const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
@@ -176,7 +181,13 @@ const InviteUser: FC = () => {
               set their password.
             </p>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <TextField label="User email" name="userEmail" placeholder="example@example.com" control={control} />
+              <TextField
+                label="User email"
+                name="userEmail"
+                placeholder="example@example.com"
+                control={control}
+                required
+              />
               {isError && <FormError error={error} />}
               <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
             </form>

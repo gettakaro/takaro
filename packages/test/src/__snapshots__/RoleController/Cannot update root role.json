@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Cannot update root role"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RoleController",
+    "snapshot": true,
+    "name": "Cannot update root role",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

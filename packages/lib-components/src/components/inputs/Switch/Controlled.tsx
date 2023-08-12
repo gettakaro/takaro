@@ -52,7 +52,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
           ref={field.ref}
         />
       </Container>
-      {description && <Description description={description} inputName={name} />}
+      {description && <Description description={description} inputName={name} style={{ marginTop: 0 }} />}
     </Wrapper>
   );
 };

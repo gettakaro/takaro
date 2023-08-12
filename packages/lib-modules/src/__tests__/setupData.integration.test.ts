@@ -1,4 +1,4 @@
-import { ModuleOutputDTO, GameServerOutputDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { integrationConfig, IntegrationTest, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
@@ -15,6 +15,9 @@ export interface IModuleTestsSetupData {
   gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
+  role: RoleOutputDTO;
+  players: PlayerOutputDTO[];
+  eventAwaiter: EventsAwaiter;
 }
 
 export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -63,8 +66,17 @@ export const modulesTestSetup = async function (
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.data.data.id, {
     command: 'connectAll',
   });
-
   await connectedEvents;
+
+  const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions: ['ROOT'] });
+
+  const playersRes = await this.client.player.playerControllerSearch();
+
+  await Promise.all(
+    playersRes.data.data.map(async (player) => {
+      await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
+    })
+  );
 
   return {
     modules: modules,
@@ -74,5 +86,8 @@ export const modulesTestSetup = async function (
     onboardingModule,
     gimmeModule,
     gameserver: gameserver.data.data,
+    role: roleRes.data.data,
+    players: playersRes.data.data,
+    eventAwaiter,
   };
 };

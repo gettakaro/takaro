@@ -128,10 +128,10 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
         <Content>
           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
 
-          {/* Only show columnSettings when sorting and filtering is enabled */}
-          {column.getCanFilter() && column.getCanSort() && column.getCanGlobalFilter() && (
-            <ColumnSettings header={header} table={table} />
-          )}
+          {/* Only show columnSettings when sorting and filtering is enabled 
+            NOTE: getCanGlobalFilter cannot be used to base render logic on because it is set to false when the table has no data.
+          */}
+          {column.getCanFilter() && column.getCanSort() && <ColumnSettings header={header} table={table} />}
         </Content>
       </Target>
       {header.column.getCanResize() && (

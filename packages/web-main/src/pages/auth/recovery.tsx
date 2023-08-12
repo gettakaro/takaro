@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
 import { styled, Loading, Company } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Container = styled.div`
   display: flex;
@@ -26,6 +26,7 @@ const StyledUserCard = styled(UserAuthCard)`
 `;
 
 export const Recovery: FC = () => {
+  useDocumentTitle('Recovery');
   const [flow, setFlow] = useState<RecoveryFlow | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { oryClient, oryError } = useAuth();
@@ -88,9 +89,6 @@ export const Recovery: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Recovery - Takaro</title>
-      </Helmet>
       <Container>
         <Company size="huge" />
 

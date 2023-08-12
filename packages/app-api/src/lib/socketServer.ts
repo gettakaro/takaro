@@ -8,9 +8,11 @@ import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { NextFunction, Response } from 'express';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Redis } from '@takaro/db';
+import { EventOutputDTO } from '../service/EventService.js';
 
 interface ServerToClientEvents {
   gameEvent: (gameserverId: string, type: HookEventTypes, data: EventMapping[HookEventTypes]) => void;
+  event: (event: EventOutputDTO) => void;
   pong: () => void;
 }
 

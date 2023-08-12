@@ -10,8 +10,10 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineDatabase as GameServersIcon,
   AiOutlineIdcard as PlayersIcon,
+  AiOutlineUsergroupAdd as RolesIcon,
   AiOutlineUser as UsersIcon,
   AiOutlineEdit as VariablesIcon,
+  AiOutlineClockCircle as EventsIcon,
 } from 'react-icons/ai';
 import { NavbarLink } from 'components/Navbar';
 import { PATHS } from 'paths';
@@ -47,6 +49,11 @@ const links: NavbarLink[] = [
     icon: <GameServersIcon />,
   },
   {
+    label: 'Events',
+    path: PATHS.events(),
+    icon: <EventsIcon />,
+  },
+  {
     label: 'Players',
     path: PATHS.players(),
     icon: <PlayersIcon />,
@@ -55,6 +62,11 @@ const links: NavbarLink[] = [
     label: 'Users',
     path: PATHS.users(),
     icon: <UsersIcon />,
+  },
+  {
+    label: 'Roles',
+    path: PATHS.roles.overview(),
+    icon: <RolesIcon />,
   },
   {
     label: 'Modules',

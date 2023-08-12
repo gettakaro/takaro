@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Cannot delete root role"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "RoleController",
+    "snapshot": true,
+    "name": "Does not allow deleting the root role",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

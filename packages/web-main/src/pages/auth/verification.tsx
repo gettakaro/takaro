@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
 import { styled, Loading } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Container = styled.div`
   display: flex;
@@ -22,6 +22,7 @@ const Container = styled.div`
 `;
 
 export const AuthVerification: FC = () => {
+  useDocumentTitle('Verification');
   const [flow, setFlow] = useState<VerificationFlow | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { oryClient, oryError } = useAuth();
@@ -88,9 +89,6 @@ export const AuthVerification: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Verification - Takaro</title>
-      </Helmet>
       <Container>
         <UserAuthCard
           title="Verification"

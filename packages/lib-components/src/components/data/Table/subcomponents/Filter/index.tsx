@@ -27,10 +27,13 @@ interface FilterProps<DataType extends object> {
 export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
 
-  const columnIds = table
-    .getAllLeafColumns()
-    .filter((column) => column.getCanFilter() && column.getCanGlobalFilter())
-    .map((column) => column.id);
+  // Only get the columnIds on initial render
+  const columnIds = useMemo(() => {
+    return table
+      .getAllLeafColumns()
+      .filter((column) => column.getCanFilter() && column.getCanGlobalFilter())
+      .map((column) => column.id);
+  }, []);
 
   const validationSchema = useMemo(() => {
     return z.object({
@@ -52,29 +55,33 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     });
   }, [columnIds]);
 
+  // these are the filters that are already applied to the table
   const defaultColumnFilters = table
     .getState()
     .columnFilters.filter((filter) => Object.keys(filter).length)
-    .map((filter) => {
+    .map(({ id, value }) => {
       return {
-        column: filter.id,
-        operator: 'is',
-        value: filter.value,
+        column: id,
+        operator: operators.is,
+        value: [...(value as string[])],
       };
     });
 
+  // these are the global filters (search in api) that are already applied to the table
   const defaultGlobalFilters = table
     .getState()
     .globalFilter.filter((filter: { value: string; id: string }) => Object.keys(filter).length)
-    .map((filter: { value: string; id: string }) => {
+    .map(({ value, id }: { value: string[]; id: string }) => {
       return {
-        column: filter.id,
-        operator: 'contains',
-        value: filter.value,
+        column: id,
+        operator: operators.contains,
+        value: [...value],
       };
     });
 
   const { control, handleSubmit } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+
     resolver: zodResolver(validationSchema),
     defaultValues: {
       filters: [...defaultColumnFilters, ...defaultGlobalFilters],
@@ -104,30 +111,24 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     }
   }, [fields]);
 
+  // filters contains both column filters and global filters
   const onSubmit: SubmitHandler<IFormInputs> = ({ filters }) => {
-    // filters
-    table.setColumnFilters(
-      filters
-        .filter((filter) => filter.operator === 'is')
-        .map((filter) => {
-          return {
-            id: filter.column,
-            value: filter.value,
-          };
-        })
-    );
+    const columnFilters: Record<string, string[]> = {};
+    const globalFilters: Record<string, string[]> = {};
 
-    // search
-    table.setGlobalFilter(
-      filters
-        .filter((filter) => filter.operator === 'contains')
-        .map((filter) => {
-          return {
-            id: filter.column,
-            value: filter.value,
-          };
-        })
-    );
+    filters.forEach((filter) => {
+      const target = filter.operator === 'is' ? columnFilters : globalFilters;
+      if (!target[filter.column]) {
+        target[filter.column] = [];
+      }
+      target[filter.column].push(filter.value);
+    });
+
+    const columnFiltersArray = Object.entries(columnFilters).map(([id, values]) => ({ id, value: values }));
+    const globalFiltersArray = Object.entries(globalFilters).map(([id, values]) => ({ id, value: values }));
+
+    table.setColumnFilters(columnFiltersArray);
+    table.setGlobalFilter(globalFiltersArray);
     setOpen(false);
   };
 
@@ -160,7 +161,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
             return (
               <FilterContainer key={field.id} hasMultipleFields={fields.length > 1}>
                 {fields.length > 1 && (
-                  <Tooltip>
+                  <Tooltip key={`remove-${field.id}`}>
                     <Tooltip.Trigger asChild>
                       <IconButton
                         size="tiny"
@@ -175,6 +176,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                   </Tooltip>
                 )}
                 <Select
+                  key={`column-${field.id}`}
                   control={control}
                   name={`filters.${index}.column`}
                   label="Column"
@@ -195,6 +197,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                 </Select>
 
                 <Select
+                  key={`operator-${field.id}`}
                   control={control}
                   name={`filters.${index}.operator`}
                   label="Condition"
@@ -214,6 +217,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                   </Select.OptionGroup>
                 </Select>
                 <TextField
+                  key={`value-${field.id}`}
                   control={control}
                   name={`filters.${index}.value`}
                   label="Value"

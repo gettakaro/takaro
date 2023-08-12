@@ -26,10 +26,9 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
   @Type(() => RoleOutputDTO)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   roles: RoleOutputDTO[];
 }
-
 export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   @Length(3, 50)
   name: string;

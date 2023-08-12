@@ -12,9 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration.js';
-import { RequiredError, RequestArgs } from './base.js';
-import { AxiosInstance, AxiosResponse } from 'axios';
+import type { Configuration } from './configuration.js';
+import type { RequestArgs } from './base.js';
+import type { AxiosInstance, AxiosResponse } from 'axios';
+import { RequiredError } from './base.js';
 
 /**
  *
@@ -94,6 +95,7 @@ export const setOAuthToObject = async function (
 };
 
 function setFlattenedQueryParams(urlSearchParams: URLSearchParams, parameter: any, key: string = ''): void {
+  if (parameter == null) return;
   if (typeof parameter === 'object') {
     if (Array.isArray(parameter)) {
       (parameter as any[]).forEach((item) => setFlattenedQueryParams(urlSearchParams, item, key));
@@ -117,7 +119,18 @@ function setFlattenedQueryParams(urlSearchParams: URLSearchParams, parameter: an
  */
 export const setSearchParams = function (url: URL, ...objects: any[]) {
   const searchParams = new URLSearchParams(url.search);
-  setFlattenedQueryParams(searchParams, objects);
+  for (const object of objects) {
+    for (const key in object) {
+      if (Array.isArray(object[key])) {
+        searchParams.delete(key);
+        for (const item of object[key]) {
+          searchParams.append(key, item);
+        }
+      } else {
+        searchParams.set(key, object[key]);
+      }
+    }
+  }
   url.search = searchParams.toString();
 };
 

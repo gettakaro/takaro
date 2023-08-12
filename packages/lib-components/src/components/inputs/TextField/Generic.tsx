@@ -62,7 +62,6 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         isPassword={type === 'password'}
         id={id}
         name={name}
-        required={required}
         onChange={handleOnChange}
         onBlur={onBlur}
         onFocus={onFocus}
@@ -74,6 +73,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         type={getFieldType(type, showPassword)}
         ref={ref}
         value={value}
+        aria-required={required}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />
       {type === 'password' &&
