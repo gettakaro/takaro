@@ -25,7 +25,7 @@ anyhow = "1.0.69"
 opentelemetry = { version = "0.18.0", features = ["rt-tokio", "trace"] }
 opentelemetry-otlp = "0.11.0"
 tracing-opentelemetry = "0.18.0"
-hyper = "0.14.26"
+hyper = "0.14.27"
 opentelemetry-semantic-conventions = "0.10.0"
 tracing-appender = "0.2.2"
 opentelemetry-http = "0.7.0"
