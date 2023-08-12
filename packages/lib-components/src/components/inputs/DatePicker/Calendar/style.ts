@@ -45,5 +45,5 @@ export const DaysGrid = styled.div`
 
 export const DayWrapper = styled.div<{ dayNumber: number; isFirstDay: boolean }>`
   ${({ dayNumber, isFirstDay }) => isFirstDay && `grid-column-start: ${dayNumber};`}
-  padding: ${({ theme }) => `${theme.spacing['1']} 0`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']}`};
 `;

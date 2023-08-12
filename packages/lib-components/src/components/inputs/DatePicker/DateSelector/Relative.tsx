@@ -1,17 +1,29 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { styled } from '../../../../styled';
-import { Button, Select, TextField } from '../../../../components';
+import { Button, Divider, Select, TextField } from '../../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, DateTimeUnit } from 'luxon';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { GenericTextField } from '../../TextField';
 
 const StyledForm = styled.form`
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[1]};
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
+`;
+
+const InputsContainer = styled.div`
+  display: grid;
+  grid-template-columns: 0.4fr 1fr;
+  gap: ${({ theme }) => theme.spacing[1]};
+  align-items: center;
+  div {
+    margin-bottom: 0;
+  }
 `;
 
 interface RelativeProps {
@@ -98,8 +110,10 @@ export const Relative: FC<RelativeProps> = ({ isStart }) => {
     resolver: zodResolver(validationSchema),
   });
 
+  const [unit, setUnit] = useState<DateTimeUnit>('second');
+
   const onSubmit: SubmitHandler<IFormInputs> = ({ timeSpanAmount, relativeTimeSpan }) => {
-    const unit = relativeOptions[relativeTimeSpan];
+    setUnit(relativeOptions[relativeTimeSpan]);
     const isAgo = relativeTimeSpan.includes('ago');
     const isFromNow = relativeTimeSpan.includes('from now');
     const friendlyName = `~ ${timeSpanAmount} ${relativeTimeSpan}`;
@@ -125,35 +139,50 @@ export const Relative: FC<RelativeProps> = ({ isStart }) => {
   };
 
   return (
-    <StyledForm onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        key={`timeSpanAmount-${isStart}`}
-        control={control}
-        name="timeSpanAmount"
-        label="Time Span Amount"
-        type="number"
+    <>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <InputsContainer>
+          <TextField key={`timeSpanAmount-${isStart}`} control={control} name="timeSpanAmount" type="number" />
+          <Select
+            key={`relativeTimeSpan-${isStart}`}
+            inPortal
+            control={control}
+            name="relativeTimeSpan"
+            render={(selectedIndex) => (
+              <div>
+                {selectedIndex !== -1
+                  ? Object.keys(relativeOptions)[selectedIndex]
+                  : Object.keys(relativeOptions).at(0)}
+              </div>
+            )}
+          >
+            <Select.OptionGroup>
+              {Object.keys(relativeOptions).map((val: string) => (
+                <Select.Option key={`${val}`} value={val}>
+                  <span>{val}</span>
+                </Select.Option>
+              ))}
+            </Select.OptionGroup>
+          </Select>
+        </InputsContainer>
+        <Button type="submit" text="Apply" />
+      </StyledForm>
+      <GenericTextField
+        hasDescription={false}
+        hasError={false}
+        name={`date-preview-${isStart}`}
+        id={`date-preview-${isStart}`}
+        onChange={() => {}}
+        readOnly={true}
+        prefix={isStart ? 'Start date' : 'End date'}
+        value={
+          isStart
+            ? state.start.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')
+            : state.end.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')
+        }
       />
-      <Select
-        key={`relativeTimeSpan-${isStart}`}
-        inPortal
-        control={control}
-        name="relativeTimeSpan"
-        label="Time Span"
-        render={(selectedIndex) => (
-          <div>
-            {selectedIndex !== -1 ? Object.keys(relativeOptions)[selectedIndex] : Object.keys(relativeOptions).at(0)}
-          </div>
-        )}
-      >
-        <Select.OptionGroup>
-          {Object.keys(relativeOptions).map((val: string) => (
-            <Select.Option key={`${val}`} value={val}>
-              <span>{val}</span>
-            </Select.Option>
-          ))}
-        </Select.OptionGroup>
-      </Select>
-      <Button type="submit" text="Apply" />
-    </StyledForm>
+      <Divider fullWidth />
+      {/* Todo add button to round the date */}
+    </>
   );
 };

@@ -13,7 +13,7 @@ const List = styled.ul`
   max-height: 300px;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing['1']}`};
+  padding: ${({ theme }) => `${theme.spacing[1]}`};
   scrollbar-width: thin;
   scrollbar-color: #69707d80 #0000;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};

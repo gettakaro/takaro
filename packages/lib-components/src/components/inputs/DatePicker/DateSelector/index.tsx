@@ -1,12 +1,12 @@
 import { FC } from 'react';
-import { Divider, Tabs } from '../../../../components';
+import { Tabs } from '../../../../components';
 import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
 import { styled } from '../../../../styled';
-import { GenericTextField } from '../../TextField/Generic';
 import { Absolute } from './Absolute';
 import { Relative } from './Relative';
 
 const Wrapper = styled.div`
+  width: 400px;
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[1]} 0 ${theme.spacing[1]}`};
   display: flex;
   flex-direction: column;
@@ -40,21 +40,6 @@ export const DateSelector: FC<DateSelectorProps> = ({ isStart }) => {
       <Tabs.Content value="relative">
         <Wrapper>
           <Relative isStart={isStart} />
-          <GenericTextField
-            hasDescription={false}
-            hasError={false}
-            name={`date-preview-${isStart}`}
-            id={`date-preview-${isStart}`}
-            onChange={() => {}}
-            readOnly={true}
-            value={
-              isStart
-                ? state.start.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')
-                : state.end.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')
-            }
-          />
-          <Divider fullWidth />
-          {/* todo: add option to round selected unit */}
         </Wrapper>
       </Tabs.Content>
     </Tabs>

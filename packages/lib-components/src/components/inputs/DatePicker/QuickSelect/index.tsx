@@ -24,6 +24,7 @@ enum Unit {
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
+  min-width: 400px;
   h4 {
     margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
@@ -45,10 +46,19 @@ const CommonlyUsedGrid = styled.ul`
 
 const StyledForm = styled.form`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   gap: ${({ theme }) => theme.spacing[1]};
+`;
+
+const InputsContainer = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 0.5fr 0.5fr 1fr;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+  div {
+    width: 100%;
+    margin-bottom: 0;
+  }
 `;
 
 interface FormInputs {
@@ -113,43 +123,43 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
     <Container>
       <h4>Quick select</h4>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        <Select
-          inPortal
-          control={control}
-          name="tense"
-          label="Time Tense"
-          render={(selectedIndex) => (
-            <div>{selectedIndex !== -1 ? Object.values(Tense)[selectedIndex] : Tense.Last}</div>
-          )}
-        >
-          <Select.OptionGroup>
-            {Object.values(Tense).map((val: string) => (
-              <Select.Option key={`${val}-${id}`} value={val}>
-                <span>{val}</span>
-              </Select.Option>
-            ))}
-          </Select.OptionGroup>
-        </Select>
+        <InputsContainer>
+          <Select
+            inPortal
+            control={control}
+            name="tense"
+            render={(selectedIndex) => (
+              <div>{selectedIndex !== -1 ? Object.values(Tense)[selectedIndex] : Tense.Last}</div>
+            )}
+          >
+            <Select.OptionGroup>
+              {Object.values(Tense).map((val: string) => (
+                <Select.Option key={`${val}-${id}`} value={val}>
+                  <span>{val}</span>
+                </Select.Option>
+              ))}
+            </Select.OptionGroup>
+          </Select>
 
-        <TextField control={control} label="Step" type="number" name="step" />
+          <TextField control={control} type="number" name="step" />
 
-        <Select
-          inPortal
-          control={control}
-          name="unit"
-          label="Time Unit"
-          render={(selectedIndex) => (
-            <div>{selectedIndex !== -1 ? Object.values(Unit)[selectedIndex] : Unit.Minutes}</div>
-          )}
-        >
-          <Select.OptionGroup>
-            {Object.values(Unit).map((val: string) => (
-              <Select.Option key={`${val}-${id}`} value={val}>
-                <span>{val}</span>
-              </Select.Option>
-            ))}
-          </Select.OptionGroup>
-        </Select>
+          <Select
+            inPortal
+            control={control}
+            name="unit"
+            render={(selectedIndex) => (
+              <div>{selectedIndex !== -1 ? Object.values(Unit)[selectedIndex] : Unit.Minutes}</div>
+            )}
+          >
+            <Select.OptionGroup>
+              {Object.values(Unit).map((val: string) => (
+                <Select.Option key={`${val}-${id}`} value={val}>
+                  <span>{val}</span>
+                </Select.Option>
+              ))}
+            </Select.OptionGroup>
+          </Select>
+        </InputsContainer>
         <Button type="submit" text="Apply" />
       </StyledForm>
 

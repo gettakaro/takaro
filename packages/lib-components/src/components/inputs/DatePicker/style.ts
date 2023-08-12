@@ -16,6 +16,7 @@ export const Container = styled.div<{
   outline: 0;
   font-weight: 500;
   text-transform: capitalize;
+  padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   border: 0.1rem solid
     ${({ theme, isOpen, hasError }) => {
       if (hasError) return theme.colors.error;
