@@ -61,6 +61,8 @@
     "react-virtualized-auto-sizer": "^1.0.9",
     "react-window": "^1.8.8",
     "simplebar-react": "^3.2.4",
+    "styled-components": "^5.3.5",
+    "web-vitals": "^2.1.2",
     "luxon": "3.3.0",
     "@types/luxon": "3.3.0"
   }
