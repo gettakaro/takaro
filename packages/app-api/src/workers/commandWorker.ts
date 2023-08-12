@@ -1,8 +1,8 @@
 import { Job } from 'bullmq';
-import { config } from '../../config.js';
 import { TakaroWorker, ICommandJobData } from '@takaro/queues';
 import { ctx } from '@takaro/util';
-import { executeFunction } from './executeFunction.js';
+import { config } from '../config.js';
+import { executeFunction } from '../executors/executeFunction.js';
 
 export class CommandWorker extends TakaroWorker<ICommandJobData> {
   constructor(concurrency: number) {

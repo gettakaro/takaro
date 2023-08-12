@@ -28,7 +28,7 @@ interface IFormInputs {
 
 export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useRoleCreate();
 

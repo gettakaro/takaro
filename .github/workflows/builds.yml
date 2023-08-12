@@ -22,13 +22,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: "npm"
+          cache: 'npm'
 
       - run: ./scripts/dev-init.sh
 
       - name: Build packages
         run: |
-          npm -w packages/app-vmm run build
           npm -w packages/app-api run build
           npm -w packages/app-mock-gameserver run build
           npm -w packages/app-connector run build

@@ -42,7 +42,7 @@ interface IFormInputs {
 
 const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const navigate = useNavigate();
   const { mutateAsync, isLoading } = useRoleUpdate();
 

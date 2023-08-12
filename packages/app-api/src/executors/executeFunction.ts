@@ -1,12 +1,11 @@
-import { config } from '../../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
 import { Sentry, errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
-import { getVMM } from '../vmm/index.js';
 import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
 import { executeLambda } from '@takaro/aws';
+import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 
 let rateLimiter: RateLimiterRedis | null = null;
@@ -104,10 +103,6 @@ export async function executeFunction(
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
         eventData.meta['result'] = result;
         break;
-      case EXECUTION_MODE.FIRECRACKER:
-        const vmm = await getVMM();
-        result = await vmm.executeFunction(functionRes.data.data.code, data, token);
-        eventData.meta['result'] = result;
       case EXECUTION_MODE.LAMBDA:
         result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
         eventData.meta['result'] = result;

@@ -1,9 +1,9 @@
 import { getTakaro, checkPermission } from '@takaro/helpers';
 import vm from 'node:vm';
-import { config } from '../../config.js';
 import axios from 'axios';
 import * as _ from 'lodash-es';
 import { FunctionExecutor, ILog } from './executeFunction.js';
+import { config } from '../config.js';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
