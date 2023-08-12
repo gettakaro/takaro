@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Helmet } from 'react-helmet';
 import { styled, CollapseList } from '@takaro/lib-components';
 import { Editor } from 'components/modules/Editor';
 import { Resizable } from 're-resizable';
@@ -11,6 +10,7 @@ import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
 import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
 import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
 import { Header } from 'components/studio/Header';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Wrapper = styled.div`
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}} ${theme.spacing[2]} 0`};
@@ -34,6 +34,7 @@ const StyledResizable = styled(Resizable)`
 `;
 
 const Studio: FC = () => {
+  useDocumentTitle('Studio');
   const { sandpack } = useSandpack();
   const { moduleData } = useModule();
 
@@ -62,9 +63,6 @@ const Studio: FC = () => {
 
   return (
     <Wrapper>
-      <Helmet>
-        <title>Takaro - Studio</title>
-      </Helmet>
       <Header />
       <Container>
         <StyledResizable

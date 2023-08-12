@@ -1,16 +1,17 @@
 import { Console, Message, Skeleton, styled } from '@takaro/lib-components';
 import { Dispatch, FC, Fragment, SetStateAction } from 'react';
-import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useGameServerOutletContext } from 'frames/GameServerFrame';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const ConsoleContainer = styled.div`
   height: 80vh;
 `;
 
 const GameServerDashboard: FC = () => {
+  useDocumentTitle('Gameserver dashboard');
   const apiClient = useApiClient();
   const { socket } = useSocket();
   const { gameServerId } = useGameServerOutletContext();
@@ -35,12 +36,7 @@ const GameServerDashboard: FC = () => {
     // TODO: use typings from backend
     const eventHandler = (
       handleGameserverId: string,
-      type:
-        | 'player-disconnected'
-        | 'player-connected'
-        | 'chat-message'
-        | 'log-line'
-        | 'discord-message',
+      type: 'player-disconnected' | 'player-connected' | 'chat-message' | 'log-line' | 'discord-message',
       data: Record<string, unknown>
     ) => {
       if (handleGameserverId !== gameServerId) return;
@@ -84,18 +80,11 @@ const GameServerDashboard: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Gameserver dashboard</title>
-      </Helmet>
       <ConsoleContainer>
         <Console
           listenerFactory={handleMessageFactory}
           onExecuteCommand={async (command: string) => {
-            const result =
-              await apiClient.gameserver.gameServerControllerExecuteCommand(
-                gameServer.id,
-                { command }
-              );
+            const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
             return {
               type: 'command',
               data: command,
