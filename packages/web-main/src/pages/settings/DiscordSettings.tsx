@@ -81,9 +81,6 @@ export const DiscordSettings = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Settings - Takaro</title>
-      </Helmet>
       <Flex>
         <LoginDiscord />
         <InviteCard />
