@@ -5,6 +5,7 @@ import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util'
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
+import { getSocketServer } from '../lib/socketServer.js';
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsString()
@@ -17,6 +18,10 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsOptional()
   @IsUUID()
   playerId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  userId!: string;
 
   @IsOptional()
   @IsUUID()
@@ -38,6 +43,10 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   @IsOptional()
   @IsUUID()
   playerId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  userId!: string;
 
   @IsOptional()
   @IsUUID()
@@ -64,8 +73,13 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     return this.repo.findOne(id);
   }
 
-  create(data: EventCreateDTO): Promise<EventOutputDTO> {
-    return this.repo.create(data);
+  async create(data: EventCreateDTO): Promise<EventOutputDTO> {
+    const created = await this.repo.create(data);
+
+    const socketServer = await getSocketServer();
+    socketServer.emit(this.domainId, 'event', [created]);
+
+    return created;
   }
 
   update(): Promise<EventOutputDTO> {

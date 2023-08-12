@@ -8,6 +8,11 @@ export const PATHS = {
   notFound: () => '/404',
   events: () => '/events',
 
+  roles: {
+    overview: () => '/roles',
+    create: () => '/roles/create',
+    update: (roleId: string) => `/roles/update/${roleId}`,
+  },
   auth: {
     recovery: () => '/auth/recovery',
     profile: () => '/auth/profile',
@@ -45,5 +50,10 @@ export const PATHS = {
   studio: {
     module: (moduleId: string) => `/studio/${moduleId}`,
     settings: (moduleId: string) => `/studio/${moduleId}/settings`,
+  },
+
+  player: {
+    profile: (playerId: string) => `/player/${playerId}`,
+    assignRole: (playerId: string) => `/player/${playerId}/assign-role`,
   },
 };

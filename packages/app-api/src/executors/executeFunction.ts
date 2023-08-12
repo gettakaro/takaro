@@ -123,7 +123,7 @@ export async function executeFunction(
     }
 
     await client.event.eventControllerCreate(eventData);
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
       eventData.meta['result'] = {
@@ -133,6 +133,13 @@ export async function executeFunction(
       };
       await client.event.eventControllerCreate(eventData);
       return null;
+    }
+
+    if ('message' in err) {
+      eventData.meta['result'] = {
+        success: false,
+        reason: err.message,
+      };
     }
 
     Sentry.captureException(err);

@@ -1,5 +1,4 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
-import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, TextField } from '@takaro/lib-components';
 import { AiFillSave } from 'react-icons/ai';
@@ -9,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import { useGameServerSettings } from 'queries/gameservers';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 interface IFormInputs {
   commandPrefix: string;
@@ -28,6 +28,7 @@ function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof
 }
 
 export const GlobalGameServerSettings: FC = () => {
+  useDocumentTitle('Settings');
   const apiClient = useApiClient();
   const { serverId } = useParams();
 
@@ -51,7 +52,7 @@ export const GlobalGameServerSettings: FC = () => {
 
     await mapSettings(formValues as Settings, async (key, value) =>
       apiClient.settings.settingsControllerSet(key, {
-        value: value!!,
+        value: value!,
         gameServerId: serverId,
       })
     );
@@ -73,9 +74,6 @@ export const GlobalGameServerSettings: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Settings - Takaro</title>
-      </Helmet>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Fragment>
           {settings}

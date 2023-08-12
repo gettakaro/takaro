@@ -1,0 +1,40 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
+      "createdAt": "2023-07-17T15:56:31.115Z",
+      "updatedAt": "2023-07-17T15:56:31.115Z",
+      "name": "Test module",
+      "description": "No description provided.",
+      "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
+      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}",
+      "builtin": null,
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [],
+      "permissions": [
+        {
+          "id": "6a183bc2-1c89-4711-95b3-cd1e146ad3b5",
+          "createdAt": "2023-07-17T15:56:31.115Z",
+          "updatedAt": "2023-07-17T15:56:31.116Z",
+          "moduleId": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
+          "permission": "test",
+          "friendlyName": "test",
+          "description": "test"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Allows passing an array of permissions when creating a module",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
