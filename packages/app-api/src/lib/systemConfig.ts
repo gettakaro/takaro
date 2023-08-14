@@ -33,6 +33,7 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
   }
 
   if (mod.hooks.length) {
+  systemConfigSchema.required.push('hooks');
     for (const hook of mod.hooks) {
       if (hook.eventType === DiscordEvents.DISCORD_MESSAGE) {
         if (!systemConfigSchema.properties.hooks) {
