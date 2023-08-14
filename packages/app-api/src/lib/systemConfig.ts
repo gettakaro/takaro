@@ -44,9 +44,6 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
           };
         }
 
-        if (!systemConfigSchema.required.includes('hooks')) {
-          systemConfigSchema.required.push('hooks');
-        }
 
         const configKey = `${hook.name} Discord channel ID`;
 
