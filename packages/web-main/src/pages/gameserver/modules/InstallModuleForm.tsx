@@ -1,10 +1,17 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Drawer, CollapseList, styled, JsonSchemaForm, DrawerSkeleton } from '@takaro/lib-components';
+import {
+  Button,
+  Drawer,
+  CollapseList,
+  styled,
+  JsonSchemaForm,
+  DrawerSkeleton,
+  FormError,
+} from '@takaro/lib-components';
 import Form from '@rjsf/core';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { useGameServerModuleInstall, useGameServerModuleInstallation } from 'queries/gameservers';
 import { useModule } from 'queries/modules';
 
@@ -18,7 +25,7 @@ const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
   const [submitRequested, setSubmitRequested] = useState(false);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useGameServerModuleInstall();
+  const { mutate, isLoading, error, isSuccess } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
   const { data: modInstallation, isLoading: moduleInstallationLoading } = useGameServerModuleInstallation(
@@ -53,21 +60,22 @@ const InstallModule: FC = () => {
   }, [open, navigate, serverId]);
 
   const onSubmit = useCallback(async () => {
-    try {
-      mutateAsync({
-        gameServerId: serverId,
-        moduleId: moduleId,
-        moduleInstall: {
-          systemConfig: JSON.stringify(systemConfig),
-          userConfig: JSON.stringify(userConfig),
-        },
-      });
+    mutate({
+      gameServerId: serverId,
+      moduleId: moduleId,
+      moduleInstall: {
+        systemConfig: JSON.stringify(systemConfig),
+        userConfig: JSON.stringify(userConfig),
+      },
+    });
+  }, [moduleId, navigate, serverId, systemConfig, userConfig]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      console.log('isSuccess', isSuccess);
       navigate(PATHS.gameServer.modules(serverId));
-    } catch (error) {
-      Sentry.captureException(error);
     }
-  }, [moduleId, mutateAsync, navigate, serverId, systemConfig, userConfig]);
+  }, [isSuccess]);
 
   useEffect(() => {
     if (userConfig && systemConfig && submitRequested) {
@@ -112,6 +120,7 @@ const InstallModule: FC = () => {
           </CollapseList>
         </Drawer.Body>
         <Drawer.Footer>
+          {error && <FormError error={error} />}
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
