@@ -39,16 +39,19 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
-    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log?adminuser=${
-      this.config.adminUser
-    }&admintoken=${this.config.adminToken}`;
+    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
   }
 
   async start(): Promise<void> {
     await Promise.race([
       new Promise<void>((resolve, reject) => {
         this.logger.debug(`Connecting to ${this.config.host}`);
-        this.eventSource = new EventSource(this.url);
+        this.eventSource = new EventSource(this.url, {
+          headers: {
+            ['X-SDTD-API-TOKENNAME']: this.config.adminUser,
+            ['X-SDTD-API-SECRET']: this.config.adminToken,
+          },
+        });
 
         this.eventSource.addEventListener('logLine', (data) => this.listener(data));
 
