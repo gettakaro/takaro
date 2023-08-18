@@ -82,7 +82,7 @@ const InstallModule: FC = () => {
       onSubmit();
     }
     setSubmitRequested(false);
-  }, [userConfig, systemConfig, onSubmit, submitRequested]);
+  }, [submitRequested]);
 
   if (moduleLoading || moduleInstallationLoading) {
     return <DrawerSkeleton />;
