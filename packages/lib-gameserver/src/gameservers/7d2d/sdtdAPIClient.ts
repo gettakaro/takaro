@@ -12,14 +12,11 @@ export class SdtdApiClient {
       baseURL: this.url,
     });
 
-    this.client.interceptors.request.use((config) => {
-      config.params = {
-        ...config.params,
-        adminuser: this.config.adminUser,
-        admintoken: this.config.adminToken,
-      };
+    this.client.interceptors.request.use((req) => {
+      req.headers['X-SDTD-API-TOKENNAME'] = config.adminUser;
+      req.headers['X-SDTD-API-SECRET'] = config.adminToken;
 
-      return config;
+      return req;
     });
 
     this.client.interceptors.response.use(

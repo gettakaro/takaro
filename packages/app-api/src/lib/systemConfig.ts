@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import ms from 'ms';
-import { ModuleOutputDTO } from '../service/ModuleService.js';
+import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DiscordEvents } from '@takaro/modules';
 
 export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
@@ -35,14 +35,18 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
   if (mod.hooks.length) {
     for (const hook of mod.hooks) {
       if (hook.eventType === DiscordEvents.DISCORD_MESSAGE) {
-        systemConfigSchema.properties.hooks = {
-          type: 'object',
-          properties: {},
-          required: [],
-          default: {},
-        };
+        if (!systemConfigSchema.properties.hooks) {
+          systemConfigSchema.properties.hooks = {
+            type: 'object',
+            properties: {},
+            required: [],
+            default: {},
+          };
+        }
 
-        systemConfigSchema.required.push('hooks');
+        if (!systemConfigSchema.required.includes('hooks')) {
+          systemConfigSchema.required.push('hooks');
+        }
 
         const configKey = `${hook.name} Discord channel ID`;
 
