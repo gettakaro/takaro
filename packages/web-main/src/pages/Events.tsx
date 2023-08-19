@@ -102,7 +102,6 @@ export const Events: FC = () => {
   useEffect(() => {
     if (!live) {
       socket.off('event');
-      socket.off('gameEvent');
       return;
     }
     refetch();
@@ -208,6 +207,7 @@ export const Events: FC = () => {
           </EventFeed>
         )}
         <Filters>
+          {/* TODO: maybe find a better name since we already have Quick select in the datepicker */}
           <h3>Quick select</h3>
           <TreeFilter data={treeData} addFilters={addFilters} removeFilters={removeFilters} />
         </Filters>
