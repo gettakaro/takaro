@@ -177,4 +177,22 @@ describe('QueryBuilder', () => {
 
     expect(res.results).to.have.lengthOf(2);
   });
+
+  it('Can search between a date range', async () => {
+    const start = new Date();
+    await TestUserModel.query().insert({ name: 'test1' });
+    await TestUserModel.query().insert({ name: 'test2' });
+
+    const end = new Date();
+    await TestUserModel.query().insert({ name: 'test3', createdAt: end.toISOString() });
+
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    }).build(TestUserModel.query());
+
+    console.log(res.results);
+
+    expect(res.results).to.have.lengthOf(2);
+  });
 });

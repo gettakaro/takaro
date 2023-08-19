@@ -15,7 +15,21 @@ import { useApiClient } from 'hooks/useApiClient';
 const eventKeys = {
   all: ['events'] as const,
   list: () => [...eventKeys.all, 'list'] as const,
-  detail: (id: string) => [...eventKeys.all, 'detail', id] as const,
+};
+
+export const useEnrichEvent = (event: EventOutputDTO | null) => {
+  const apiClient = useApiClient();
+
+  const events = event ? [event] : [];
+
+  return useQuery<EnrichedEvent, AxiosError<EnrichedEvent>>({
+    queryKey: ['lastEvent', event?.id ?? ''],
+    queryFn: async () => {
+      const enriched = await enrichEvents(apiClient, events);
+      return enriched[0];
+    },
+    enabled: !!event,
+  });
 };
 
 const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['data']): Promise<EnrichedEvent[]> => {
@@ -56,13 +70,15 @@ const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['d
 };
 
 const fetchEvents = async (apiClient: Client, queryParams: EventSearchInputDTO) => {
+  console.log('fetching all events');
+
   const events = await apiClient.event.eventControllerSearch(queryParams);
   const enRiched = await enrichEvents(apiClient, events.data.data);
 
   return enRiched;
 };
 
-interface EnrichedEvent extends EventOutputDTO {
+export interface EnrichedEvent extends EventOutputDTO {
   player: PlayerOutputDTO | undefined;
   gameserver: GameServerOutputDTO | undefined;
   module: ModuleOutputDTO | undefined;
@@ -73,7 +89,7 @@ export const useEvents = (queryParams: EventSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useQuery<EnrichedEvent[], AxiosError<EnrichedEvent[]>>({
-    queryKey: ['events', { queryParams }],
+    queryKey: [eventKeys.list, { queryParams }],
     queryFn: async () => await fetchEvents(apiClient, queryParams),
   });
 };

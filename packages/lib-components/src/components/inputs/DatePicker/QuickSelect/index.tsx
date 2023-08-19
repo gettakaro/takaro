@@ -117,6 +117,13 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
         friendlyRange: friendlyRangeName,
       },
     });
+
+    dispatch({
+      type: 'toggle_quick_select_popover',
+      payload: {
+        toggleQuickSelect: false,
+      },
+    });
   };
 
   return (
