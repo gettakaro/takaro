@@ -167,7 +167,7 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
-  /* TODO: server side filtering xD */
+  /* TODO: server side filtering or just clean this up with better data structures / typings xD */
   const filteredEvents = events
     ?.filter(
       (event) =>
