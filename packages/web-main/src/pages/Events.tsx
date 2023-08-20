@@ -167,18 +167,25 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
+  /* TODO: server side filtering xD */
   const filteredEvents = events
     ?.filter(
       (event) =>
         fields.includes(event.eventName) &&
         (filters.length === 0 ||
-          filters.some((f) => {
+          filters.every((f) => {
+            const field = (
+              event[f.field]?.name ??
+              event[f.field] ??
+              event.meta?.[f.field] ??
+              event.meta?.['result'].success ??
+              ''
+            ).toString();
             if (f.operator === 'is') {
-              console.log(event[f.field].name, f.value);
-              return event[f.field].name === f.value;
+              return field === f.value;
             }
             if (f.operator === 'contains') {
-              return event[f.field].includes(f.value);
+              return field.includes(f.value);
             }
             return false;
           }))

@@ -41,7 +41,7 @@ export const EventFilter: FC<FilterProps> = ({ addFilter }) => {
   return (
     <Popover open={open} onOpenChange={setOpen} placement="bottom-end">
       <Popover.Trigger asChild>
-        <Button icon={<FilterIcon />} text="Filter" onClick={() => setOpen(true)} />
+        <Button icon={<FilterIcon />} text="New filter" onClick={() => setOpen(true)} />
       </Popover.Trigger>
       <Popover.Content>
         <FilterContent>
