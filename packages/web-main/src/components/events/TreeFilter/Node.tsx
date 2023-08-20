@@ -10,7 +10,7 @@ type TreeNodeProps = {
 };
 
 export const Node: FC<TreeNodeProps> = ({ name, addFilters, removeFilters, isBranchEnabled }) => {
-  const [isEnabled, setEnabled] = useState(isBranchEnabled ?? true);
+  const [isEnabled, setEnabled] = useState(isBranchEnabled ?? false);
 
   const handleCheckbox = () => {
     if (isEnabled) {
@@ -23,7 +23,7 @@ export const Node: FC<TreeNodeProps> = ({ name, addFilters, removeFilters, isBra
   };
 
   useEffect(() => {
-    setEnabled(isBranchEnabled ?? true);
+    setEnabled(isBranchEnabled ?? false);
   }, [isBranchEnabled]);
 
   return (

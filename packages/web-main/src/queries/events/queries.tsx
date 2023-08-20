@@ -70,8 +70,6 @@ const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['d
 };
 
 const fetchEvents = async (apiClient: Client, queryParams: EventSearchInputDTO) => {
-  console.log('fetching all events');
-
   const events = await apiClient.event.eventControllerSearch(queryParams);
   const enRiched = await enrichEvents(apiClient, events.data.data);
 
@@ -89,7 +87,7 @@ export const useEvents = (queryParams: EventSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
   return useQuery<EnrichedEvent[], AxiosError<EnrichedEvent[]>>({
-    queryKey: [eventKeys.list, { queryParams }],
+    queryKey: [eventKeys.list(), { ...queryParams }],
     queryFn: async () => await fetchEvents(apiClient, queryParams),
   });
 };

@@ -30,7 +30,3 @@ export const ClearButton = styled.a`
   text-decoration: underline;
   cursor: pointer;
 `;
-
-export const Wrapper = styled.div`
-  max-width: 300px;
-`;

@@ -1,8 +1,11 @@
 import { EventOutputDTO } from '@takaro/apiclient';
 import { styled, DatePicker, Button } from '@takaro/lib-components';
 import { GenericTextField } from '@takaro/lib-components/src/components/inputs/TextField';
-import { EventFeed, EventItem } from 'components/EventFeed';
-import { TreeFilter } from 'components/TreeFilter';
+import { EventFeed, EventItem } from 'components/events/EventFeed';
+import { EventFilter } from 'components/events/EventFilter';
+import { EventFilterTag } from 'components/events/EventFilter/Tag';
+import { EventFilterTagList } from 'components/events/EventFilter/TagList';
+import { TreeFilter } from 'components/events/TreeFilter';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
 import { DateTime } from 'luxon';
@@ -13,9 +16,10 @@ import { FC, useEffect, useState } from 'react';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiMagnifyingGlass as SearchIcon } from 'react-icons/hi2';
 
 const ContentContainer = styled.div`
+  margin-top: ${({ theme }) => theme.spacing['1']};
   display: flex;
   flex-direction: row;
-  gap: ${({ theme }) => theme.spacing['8']};
+  gap: ${({ theme }) => theme.spacing['4']};
   width: 100%;
 `;
 
@@ -33,15 +37,28 @@ const Header = styled.div`
   width: 100%;
   display: flex;
   gap: ${({ theme }) => theme.spacing['1']};
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  margin-bottom: ${({ theme }) => theme.spacing['1']};
 `;
 
 const Filters = styled.div`
-  min-width: 300px;
+  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  padding: ${({ theme }) => `${theme.spacing[2]}`};
+  height: 600px;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  min-width: 360px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 1rem;
+`;
+
+const ScrollableContainer = styled.div`
+  overflow-y: auto;
+  display: flex;
+  padding-left: 4px;
+  padding-right: ${({ theme }) => theme.spacing[4]};
+  width: 100%;
+  height: 82vh;
 `;
 
 const treeData = [
@@ -86,12 +103,19 @@ const treeData = [
   },
 ];
 
+export type Filter = {
+  field: string;
+  operator: string;
+  value: string;
+};
+
 export const Events: FC = () => {
   useDocumentTitle('Events');
 
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
-  const [filters, setFilters] = useState<string[]>([]);
+  const [fields, setFields] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const [live, setLive] = useState<boolean>(false);
   const [lastEvent, setLastEvent] = useState<EventOutputDTO | null>(null);
@@ -131,7 +155,6 @@ export const Events: FC = () => {
     if (lastEventResponse) {
       setEvents((prev) => {
         if (prev) {
-          console.log('adding event');
           return [lastEventResponse, ...prev];
         }
         return [lastEventResponse];
@@ -144,20 +167,22 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
-  const addFilters = (filters: string[]) => {
-    setFilters((prev) => {
-      return [...prev, ...filters];
-    });
-  };
-
-  const removeFilters = (filters: string[]) => {
-    setFilters((prev) => {
-      return prev.filter((filter) => !filters.includes(filter));
-    });
-  };
-
   const filteredEvents = events
-    ?.filter((event) => filters.includes(event.eventName))
+    ?.filter(
+      (event) =>
+        fields.includes(event.eventName) &&
+        (filters.length === 0 ||
+          filters.some((f) => {
+            if (f.operator === 'is') {
+              console.log(event[f.field].name, f.value);
+              return event[f.field].name === f.value;
+            }
+            if (f.operator === 'contains') {
+              return event[f.field].includes(f.value);
+            }
+            return false;
+          }))
+    )
     .sort((a, b) => {
       return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
     });
@@ -166,7 +191,16 @@ export const Events: FC = () => {
     <>
       <Header>
         <Flex>
-          <Button text="Filters" />
+          <EventFilter
+            addFilter={(filter: Filter) => {
+              if (!filters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
+                setFilters((prev) => [...prev, filter]);
+              }
+            }}
+            removeFilter={(filter: Filter) => {
+              setFilters((prev) => prev.filter((f) => f !== filter));
+            }}
+          />
           <StyledTextField
             icon={<SearchIcon />}
             name="search"
@@ -186,30 +220,54 @@ export const Events: FC = () => {
           color={live ? 'primary' : 'secondary'}
         />
       </Header>
+      <EventFilterTagList>
+        {filters.map((filter) => (
+          <EventFilterTag
+            key={`${filter.field}-${filter.operator}-${filter.value}`}
+            {...filter}
+            onClear={() => {
+              setFilters((prev) => prev.filter((f) => f !== filter));
+            }}
+            onClick={() => {
+              console.log('clicked');
+            }}
+          />
+        ))}
+      </EventFilterTagList>
       <ContentContainer>
         {filteredEvents?.length === 0 ? (
           <div style={{ width: '100%', textAlign: 'center', marginTop: '4rem' }}>No events found</div>
         ) : (
-          <EventFeed>
-            {filteredEvents?.map((event) => (
-              <EventItem
-                key={event.id}
-                eventType={event.eventName}
-                data={(event?.meta as Record<string, any> | undefined) ?? {}}
-                playerName={event?.player?.name}
-                gamserverName={event?.gameserver?.name}
-                moduleName={event?.module?.name}
-                commandName={event?.command?.name}
-                createdAt={event.createdAt}
-                onDetailClick={() => {}}
-              />
-            ))}
-          </EventFeed>
+          <ScrollableContainer>
+            <EventFeed>
+              {filteredEvents?.map((event) => (
+                <EventItem
+                  key={event.id}
+                  eventType={event.eventName}
+                  data={(event?.meta as Record<string, any> | undefined) ?? {}}
+                  playerName={event?.player?.name}
+                  gamserverName={event?.gameserver?.name}
+                  moduleName={event?.module?.name}
+                  commandName={event?.command?.name}
+                  createdAt={event.createdAt}
+                  onDetailClick={() => {}}
+                />
+              ))}
+            </EventFeed>
+          </ScrollableContainer>
         )}
         <Filters>
           {/* TODO: maybe find a better name since we already have Quick select in the datepicker */}
-          <h3>Quick select</h3>
-          <TreeFilter data={treeData} addFilters={addFilters} removeFilters={removeFilters} />
+          <h3>Select event types</h3>
+          <TreeFilter
+            data={treeData}
+            addFilters={(f) => {
+              setFields((prev) => [...prev, ...f]);
+            }}
+            removeFilters={(f) => {
+              setFields((prev) => prev.filter((filter) => !f.includes(filter)));
+            }}
+          />
         </Filters>
       </ContentContainer>
     </>
