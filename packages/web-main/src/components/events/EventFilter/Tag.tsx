@@ -1,6 +1,8 @@
-import { styled } from '@takaro/lib-components';
-import { FC } from 'react';
+import { Popover, styled, Tooltip } from '@takaro/lib-components';
+import { FC, useState } from 'react';
 import { HiXMark as CloseIcon } from 'react-icons/hi2';
+import { FilterPopup } from '.';
+import { Filter as FilterType } from 'pages/events';
 
 const Wrapper = styled.div`
   display: flex;
@@ -28,9 +30,9 @@ const Label = styled.div`
 `;
 
 type FilterTagProps = {
-  field: string;
-  operator: string;
-  value: string;
+  fields: string[];
+  filter: FilterType;
+  editFilter: (filter: FilterType) => void;
   onClear: () => void;
   onClick: () => void;
 };
@@ -53,13 +55,37 @@ const operatorMap = {
   'not ends with': 'not ends with',
 };
 
-export const EventFilterTag: FC<FilterTagProps> = ({ field, operator, value, onClear }) => {
+export const EventFilterTag: FC<FilterTagProps> = ({ filter, fields, editFilter, onClear, onClick }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+    onClick();
+  };
+
   return (
-    <Wrapper>
-      <Label>
-        <p>{`${field} ${operatorMap[operator]} ${value}`}</p>
-      </Label>
-      <CloseIcon onClick={onClear} style={{ cursor: 'pointer' }} />
-    </Wrapper>
+    <Popover open={open} onOpenChange={setOpen} placement="right">
+      <Popover.Trigger asChild>
+        <Wrapper>
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <Label onClick={handleClick}>
+                <p>{`${filter.field} ${operatorMap[filter.operator]} ${filter.value}`}</p>
+              </Label>
+            </Tooltip.Trigger>
+            <Tooltip.Content>Edit filter</Tooltip.Content>
+          </Tooltip>
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <CloseIcon onClick={onClear} style={{ cursor: 'pointer' }} />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Delete filter</Tooltip.Content>
+          </Tooltip>
+        </Wrapper>
+      </Popover.Trigger>
+      <Popover.Content>
+        <FilterPopup selectedFilter={filter} fields={fields} addFilter={editFilter} mode="edit" setOpen={setOpen} />
+      </Popover.Content>
+    </Popover>
   );
 };

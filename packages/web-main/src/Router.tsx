@@ -26,7 +26,7 @@ import { AuthSettings } from 'pages/auth/profile';
 import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
-import { Events } from 'pages/Events';
+import { Events } from 'pages/events';
 
 import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';

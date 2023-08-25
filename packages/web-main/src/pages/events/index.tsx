@@ -192,12 +192,15 @@ export const Events: FC = () => {
       return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
     });
 
+  const possibleFields = ['player.name', 'gameserver.name', 'module.name', 'meta.result.success'];
+
   return (
     <>
       <Header>
         <Flex>
           <EventFilter
-            fields={['player.name', 'gameserver.name', 'module.name', 'meta.result.success']}
+            mode="add"
+            fields={possibleFields}
             addFilter={(filter: Filter) => {
               if (!filters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
                 setFilters((prev) => [...prev, filter]);
@@ -226,11 +229,15 @@ export const Events: FC = () => {
       <EventFilterTagList>
         {filters.map((filter) => (
           <EventFilterTag
+            fields={possibleFields}
             key={`${filter.field}-${filter.operator}-${filter.value}`}
-            {...filter}
+            editFilter={(f) => {
+              setFilters((prev) => prev.map((filter) => (filter.field === f.field ? f : filter)));
+            }}
             onClear={() => {
               setFilters((prev) => prev.filter((f) => f !== filter));
             }}
+            filter={filter}
             onClick={() => {
               console.log('clicked');
             }}

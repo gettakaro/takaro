@@ -12,9 +12,12 @@ export const ButtonContainer = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing['1_5']};
+  button {
+    text-transform: capitalize;
+  }
 `;
 
-export const FilterContent = styled.div`
+export const Box = styled.div`
   width: 800px;
   padding: ${({ theme }) => theme.spacing['1_5']};
 `;
