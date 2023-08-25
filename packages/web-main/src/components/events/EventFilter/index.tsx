@@ -19,14 +19,12 @@ type FormInputs = {
 };
 
 type FilterProps = {
+  fields: string[];
   addFilter: (filter: FilterType) => void;
-  removeFilter: (filter: FilterType) => void;
 };
 
-export const EventFilter: FC<FilterProps> = ({ addFilter }) => {
+export const EventFilter: FC<FilterProps> = ({ fields, addFilter }) => {
   const [open, setOpen] = useState<boolean>(false);
-
-  const fieldNames = ['gameserver', 'player', 'message', 'success', 'module'];
 
   const { control, handleSubmit } = useForm<FormInputs>({
     mode: 'onSubmit',
@@ -41,7 +39,7 @@ export const EventFilter: FC<FilterProps> = ({ addFilter }) => {
   return (
     <Popover open={open} onOpenChange={setOpen} placement="bottom-end">
       <Popover.Trigger asChild>
-        <Button icon={<FilterIcon />} text="New filter" onClick={() => setOpen(true)} />
+        <Button icon={<FilterIcon />} text="Filter" onClick={() => setOpen(true)} />
       </Popover.Trigger>
       <Popover.Content>
         <FilterContent>
@@ -54,11 +52,11 @@ export const EventFilter: FC<FilterProps> = ({ addFilter }) => {
                 name="filter.field"
                 inPortal
                 render={(selectedIndex) => {
-                  return fieldNames[selectedIndex] ?? 'Select a field';
+                  return fields[selectedIndex] ?? 'Select a field';
                 }}
               >
                 <Select.OptionGroup>
-                  {fieldNames.map((col) => (
+                  {fields.map((col) => (
                     <Select.Option key={col} value={col}>
                       <div>
                         <span>{col}</span>

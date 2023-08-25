@@ -8,6 +8,7 @@ import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { TreeFilter } from 'components/events/TreeFilter';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
+import _ from 'lodash';
 import { DateTime } from 'luxon';
 import { useEvents } from 'queries/events';
 import { EnrichedEvent, useEnrichEvent } from 'queries/events/queries';
@@ -174,20 +175,17 @@ export const Events: FC = () => {
         fields.includes(event.eventName) &&
         (filters.length === 0 ||
           filters.every((f) => {
-            const field = (
-              event[f.field]?.name ??
-              event[f.field] ??
-              event.meta?.[f.field] ??
-              event.meta?.['result'].success ??
-              ''
-            ).toString();
-            if (f.operator === 'is') {
-              return field === f.value;
+            const field = _.get(event, f.field);
+            if (field === undefined) return false;
+
+            switch (f.operator) {
+              case 'is':
+                return String(field) === String(f.value);
+              case 'contains':
+                return String(field).includes(f.value);
+              default:
+                return false;
             }
-            if (f.operator === 'contains') {
-              return field.includes(f.value);
-            }
-            return false;
           }))
     )
     .sort((a, b) => {
@@ -199,13 +197,11 @@ export const Events: FC = () => {
       <Header>
         <Flex>
           <EventFilter
+            fields={['player.name', 'gameserver.name', 'module.name', 'meta.result.success']}
             addFilter={(filter: Filter) => {
               if (!filters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
                 setFilters((prev) => [...prev, filter]);
               }
-            }}
-            removeFilter={(filter: Filter) => {
-              setFilters((prev) => prev.filter((f) => f !== filter));
             }}
           />
           <StyledTextField
@@ -264,7 +260,6 @@ export const Events: FC = () => {
           </ScrollableContainer>
         )}
         <Filters>
-          {/* TODO: maybe find a better name since we already have Quick select in the datepicker */}
           <h3>Select event types</h3>
           <TreeFilter
             data={treeData}

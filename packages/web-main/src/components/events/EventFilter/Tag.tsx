@@ -14,15 +14,10 @@ const Wrapper = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
-const Operator = styled.p`
-  font-weight: 600;
-`;
-
 const Label = styled.div`
   display: flex;
   width: fit-content;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing['0_5']};
   width: 100%;
   border-bottom: 1px solid ${({ theme }) => theme.colors.background};
 
@@ -41,7 +36,7 @@ type FilterTagProps = {
 };
 
 const operatorMap = {
-  ':': '=',
+  ':': ' = ',
   '>': 'greater than',
   '<': 'less than',
   '>=': 'greater than or equal to',
@@ -62,9 +57,7 @@ export const EventFilterTag: FC<FilterTagProps> = ({ field, operator, value, onC
   return (
     <Wrapper>
       <Label>
-        <p>{field}</p>
-        <Operator>{operatorMap[operator]}</Operator>
-        <p>{value}</p>
+        <p>{`${field} ${operatorMap[operator]} ${value}`}</p>
       </Label>
       <CloseIcon onClick={onClear} style={{ cursor: 'pointer' }} />
     </Wrapper>

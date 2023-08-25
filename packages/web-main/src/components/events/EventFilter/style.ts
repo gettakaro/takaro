@@ -22,3 +22,7 @@ export const FilterContent = styled.div`
 export const OperatorSelect = styled(Select)`
   max-width: 10px;
 `;
+
+export const FlexShrink = styled.div`
+  flex-shrink: 0;
+`;
