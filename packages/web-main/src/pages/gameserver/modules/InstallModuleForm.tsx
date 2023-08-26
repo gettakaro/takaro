@@ -23,7 +23,8 @@ const ButtonContainer = styled.div`
 
 const InstallModule: FC = () => {
   const [open, setOpen] = useState(true);
-  const [submitRequested, setSubmitRequested] = useState(false);
+  const [userConfigSubmitted, setUserConfigSubmitted] = useState(false);
+  const [systemConfigSubmitted, setSystemConfigSubmitted] = useState(false);
   const navigate = useNavigate();
   const { mutate, isLoading, error, isSuccess } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
@@ -46,11 +47,13 @@ const InstallModule: FC = () => {
   const onUserConfigSubmit = ({ formData }, e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setUserConfig(formData);
+    setUserConfigSubmitted(true);
   };
 
   const onSystemConfigSubmit = ({ formData }, e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSystemConfig(formData);
+    setSystemConfigSubmitted(true);
   };
 
   useEffect(() => {
@@ -78,11 +81,12 @@ const InstallModule: FC = () => {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (userConfig && systemConfig && submitRequested) {
+    if (userConfig && systemConfig && userConfigSubmitted && systemConfigSubmitted) {
       onSubmit();
+      setUserConfigSubmitted(false);
+      setSystemConfigSubmitted(false);
     }
-    setSubmitRequested(false);
-  }, [submitRequested]);
+  }, [userConfigSubmitted, systemConfigSubmitted, userConfig, systemConfig]);
 
   if (moduleLoading || moduleInstallationLoading) {
     return <DrawerSkeleton />;
@@ -101,7 +105,7 @@ const InstallModule: FC = () => {
               <JsonSchemaForm
                 schema={JSON.parse(mod?.configSchema as string)}
                 uiSchema={{}}
-                initialData={modInstallation?.userConfig}
+                initialData={modInstallation?.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
                 ref={userConfigFormRef}
@@ -111,7 +115,7 @@ const InstallModule: FC = () => {
               <JsonSchemaForm
                 schema={JSON.parse(mod?.systemConfigSchema as string)}
                 uiSchema={{}}
-                initialData={modInstallation?.systemConfig}
+                initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 ref={systemConfigFormRef}
@@ -131,7 +135,6 @@ const InstallModule: FC = () => {
               onClick={() => {
                 systemConfigFormRef.current?.formElement.current.requestSubmit();
                 userConfigFormRef.current?.formElement.current.requestSubmit();
-                setSubmitRequested(true);
               }}
             />
           </ButtonContainer>
