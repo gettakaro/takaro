@@ -13,14 +13,7 @@ import {
 } from '@floating-ui/react';
 import { ItemList, Wrapper } from './style';
 import { Item } from './Item';
-import { Filter } from 'pages/events';
-
-enum InputType {
-  field = 0,
-  operator = 1,
-  value = 2,
-  conjunction = 3,
-}
+import { Filter, InputType } from '../types';
 
 type EventSearchProps = {
   fields: string[];
@@ -30,7 +23,7 @@ type EventSearchProps = {
   getValueOptions: (field: string) => string[];
 };
 
-export const EventSearch: FC<EventSearchProps> = ({ fields, operators, conjunctions, setFilters, getValueOptions }) => {
+export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilters, getValueOptions }) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -87,7 +80,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, conjuncti
   }
 
   const suggestions = (() => {
-    const type: InputType = inputIndex % 4;
+    const type: InputType = inputIndex;
 
     let d: string[] = [];
 
@@ -99,9 +92,8 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, conjuncti
         d = operators;
         break;
       case InputType.value:
-        return getValueOptions(inputArray[0]);
+        return getValueOptions(inputArray[0]).map((value) => `"${value}"`);
       case InputType.conjunction:
-        d = conjunctions;
         break;
     }
 
@@ -113,6 +105,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, conjuncti
       return;
     }
 
+    // if there is no selected item, we want to add the current input as a filter
     if (activeIndex == null) {
       setOpen(false);
 
@@ -124,7 +117,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, conjuncti
         newFilters.push({
           field,
           operator,
-          value,
+          value: value.replace(/"/g, ''),
         });
       }
 

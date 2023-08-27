@@ -2,7 +2,7 @@ import { Popover, styled, Tooltip } from '@takaro/lib-components';
 import { FC, useState } from 'react';
 import { HiXMark as CloseIcon } from 'react-icons/hi2';
 import { FilterPopup } from '.';
-import { Filter as FilterType } from 'pages/events';
+import { Filter as FilterType } from '../types';
 
 const Wrapper = styled.div`
   display: flex;

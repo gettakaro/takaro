@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button, Divider, Popover, Select, TextField } from '@takaro/lib-components';
 import { HiFunnel as FilterIcon } from 'react-icons/hi2';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
-import { Filter as FilterType } from 'pages/events';
+import { Filter } from '../types';
 
 enum operators {
   is = ':',
@@ -11,18 +11,14 @@ enum operators {
 }
 
 type FormInputs = {
-  filter: {
-    field: string;
-    operator: string;
-    value: string;
-  };
+  filter: Filter;
 };
 
 type EventFilterProps = {
   mode: 'add' | 'edit';
   fields: string[];
-  selectedFilter?: FilterType;
-  addFilter: (filter: FilterType) => void;
+  selectedFilter?: Filter;
+  addFilter: (filter: Filter) => void;
 };
 
 type FilterPopupProps = EventFilterProps & {

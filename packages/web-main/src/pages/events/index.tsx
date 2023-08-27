@@ -6,6 +6,7 @@ import { EventFilterTag } from 'components/events/EventFilter/Tag';
 import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { EventSearch } from 'components/events/EventSearch';
 import { TreeFilter } from 'components/events/TreeFilter';
+import { Filter } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
 import _ from 'lodash';
@@ -102,12 +103,6 @@ const treeData = [
 
 const possibleFields = ['player.name', 'gameserver.name', 'module.name', 'meta.result.success'];
 
-export type Filter = {
-  field: string;
-  operator: string;
-  value: string;
-};
-
 export const Events: FC = () => {
   useDocumentTitle('Events');
 
@@ -151,10 +146,6 @@ export const Events: FC = () => {
       setEvents(rawEvents);
     }
   }, [rawEvents]);
-
-  useEffect(() => {
-    console.log(searchFilters);
-  }, [searchFilters]);
 
   useEffect(() => {
     if (lastEventResponse) {
@@ -217,7 +208,7 @@ export const Events: FC = () => {
             conjunctions={['and']}
             operators={[':', ':*']}
             getValueOptions={(field) => {
-              return _.uniq(selectedEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
+              return _.uniq(events?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
             }}
             setFilters={setSearchFilters}
           />
