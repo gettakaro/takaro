@@ -37,24 +37,6 @@ type FilterTagProps = {
   onClick: () => void;
 };
 
-const operatorMap = {
-  ':': ' = ',
-  '>': 'greater than',
-  '<': 'less than',
-  '>=': 'greater than or equal to',
-  '<=': 'less than or equal to',
-  '!=': 'not equal to',
-  in: 'in',
-  is: ':',
-  'not in': 'not in',
-  contains: 'contains',
-  'not contains': 'not contains',
-  'starts with': 'starts with',
-  'not starts with': 'not starts with',
-  'ends with': 'ends with',
-  'not ends with': 'not ends with',
-};
-
 export const EventFilterTag: FC<FilterTagProps> = ({ filter, fields, editFilter, onClear, onClick }) => {
   const [open, setOpen] = useState(false);
 
@@ -70,7 +52,7 @@ export const EventFilterTag: FC<FilterTagProps> = ({ filter, fields, editFilter,
           <Tooltip>
             <Tooltip.Trigger asChild>
               <Label onClick={handleClick}>
-                <p>{`${filter.field} ${operatorMap[filter.operator]} ${filter.value}`}</p>
+                <p>{`${filter.field} ${filter.operator} ${filter.value}`}</p>
               </Label>
             </Tooltip.Trigger>
             <Tooltip.Content>Edit filter</Tooltip.Content>

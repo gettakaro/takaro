@@ -1,10 +1,10 @@
 import { EventOutputDTO } from '@takaro/apiclient';
 import { styled, DatePicker, Button } from '@takaro/lib-components';
-import { GenericTextField } from '@takaro/lib-components/src/components/inputs/TextField';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
 import { EventFilterTag } from 'components/events/EventFilter/Tag';
 import { EventFilterTagList } from 'components/events/EventFilter/TagList';
+import { EventSearch } from 'components/events/EventSearch';
 import { TreeFilter } from 'components/events/TreeFilter';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
@@ -14,17 +14,13 @@ import { useEvents } from 'queries/events';
 import { EnrichedEvent, useEnrichEvent } from 'queries/events/queries';
 import { FC, useEffect, useState } from 'react';
 
-import { HiStop as PauseIcon, HiPlay as PlayIcon, HiMagnifyingGlass as SearchIcon } from 'react-icons/hi2';
+import { HiStop as PauseIcon, HiPlay as PlayIcon } from 'react-icons/hi2';
 
 const ContentContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing['1']};
   display: flex;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing['4']};
-  width: 100%;
-`;
-
-const StyledTextField = styled(GenericTextField)`
   width: 100%;
 `;
 
@@ -104,6 +100,8 @@ const treeData = [
   },
 ];
 
+const possibleFields = ['player.name', 'gameserver.name', 'module.name', 'meta.result.success'];
+
 export type Filter = {
   field: string;
   operator: string;
@@ -115,8 +113,10 @@ export const Events: FC = () => {
 
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
+
   const [fields, setFields] = useState<string[]>([]);
-  const [filters, setFilters] = useState<Filter[]>([]);
+  const [tagFilters, setTagFilters] = useState<Filter[]>([]);
+  const [searchFilters, setSearchFilters] = useState<Filter[]>([]);
 
   const [live, setLive] = useState<boolean>(false);
   const [lastEvent, setLastEvent] = useState<EventOutputDTO | null>(null);
@@ -153,6 +153,10 @@ export const Events: FC = () => {
   }, [rawEvents]);
 
   useEffect(() => {
+    console.log(searchFilters);
+  }, [searchFilters]);
+
+  useEffect(() => {
     if (lastEventResponse) {
       setEvents((prev) => {
         if (prev) {
@@ -168,31 +172,32 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
+  const filters = [...tagFilters, ...searchFilters];
+  const selectedEvents = events?.filter((event) => fields.includes(event.eventName));
   /* TODO: server side filtering or just clean this up with better data structures / typings xD */
-  const filteredEvents = events
+  const filteredEvents = selectedEvents
     ?.filter(
       (event) =>
-        fields.includes(event.eventName) &&
-        (filters.length === 0 ||
-          filters.every((f) => {
-            const field = _.get(event, f.field);
-            if (field === undefined) return false;
+        filters.length === 0 ||
+        filters.every((f) => {
+          const field = _.get(event, f.field);
+          if (field === undefined) return false;
 
-            switch (f.operator) {
-              case 'is':
-                return String(field) === String(f.value);
-              case 'contains':
-                return String(field).includes(f.value);
-              default:
-                return false;
-            }
-          }))
+          switch (f.operator) {
+            case 'is':
+            case ':':
+              return String(field) === String(f.value);
+            case 'contains':
+            case ':*':
+              return String(field).includes(f.value);
+            default:
+              return false;
+          }
+        })
     )
     .sort((a, b) => {
       return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
     });
-
-  const possibleFields = ['player.name', 'gameserver.name', 'module.name', 'meta.result.success'];
 
   return (
     <>
@@ -202,20 +207,19 @@ export const Events: FC = () => {
             mode="add"
             fields={possibleFields}
             addFilter={(filter: Filter) => {
-              if (!filters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
-                setFilters((prev) => [...prev, filter]);
+              if (!tagFilters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
+                setTagFilters((prev) => [...prev, filter]);
               }
             }}
           />
-          <StyledTextField
-            icon={<SearchIcon />}
-            name="search"
-            placeholder="Search"
-            id="1"
-            onChange={() => {}}
-            value=""
-            hasDescription={false}
-            hasError={false}
+          <EventSearch
+            fields={possibleFields}
+            conjunctions={['and']}
+            operators={[':', ':*']}
+            getValueOptions={(field) => {
+              return _.uniq(selectedEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
+            }}
+            setFilters={setSearchFilters}
           />
         </Flex>
         <DatePicker id="1" onChange={handleDatePicker} />
@@ -227,15 +231,15 @@ export const Events: FC = () => {
         />
       </Header>
       <EventFilterTagList>
-        {filters.map((filter) => (
+        {tagFilters.map((filter) => (
           <EventFilterTag
             fields={possibleFields}
             key={`${filter.field}-${filter.operator}-${filter.value}`}
             editFilter={(f) => {
-              setFilters((prev) => prev.map((filter) => (filter.field === f.field ? f : filter)));
+              setTagFilters((prev) => prev.map((filter) => (filter.field === f.field ? f : filter)));
             }}
             onClear={() => {
-              setFilters((prev) => prev.filter((f) => f !== filter));
+              setTagFilters((prev) => prev.filter((f) => f !== filter));
             }}
             filter={filter}
             onClick={() => {

@@ -6,8 +6,8 @@ import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
 import { Filter as FilterType } from 'pages/events';
 
 enum operators {
-  is = 'is',
-  contains = 'contains',
+  is = ':',
+  contains = ':*',
 }
 
 type FormInputs = {
@@ -45,6 +45,8 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
   });
 
   const onSubmit: SubmitHandler<FormInputs> = ({ filter }) => {
+    filter.operator = operators[filter.operator as keyof typeof operators];
+
     addFilter(filter);
     setOpen(false);
   };
