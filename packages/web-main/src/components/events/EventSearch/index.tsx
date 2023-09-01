@@ -176,7 +176,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
             onChange,
             onClick,
             value: inputValue,
-            placeholder: 'Filter events',
+            placeholder: 'Search events',
             style: {
               width: '100%',
               height: '100%',
