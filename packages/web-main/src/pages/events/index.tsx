@@ -90,19 +90,19 @@ const treeData = [
     ],
   },
   {
-    name: 'Domain',
+    name: 'Global',
     children: [
       {
-        name: 'Role created',
+        name: 'role-created',
       },
       {
-        name: 'Role assigned',
+        name: 'role-assigned',
       },
     ],
   },
 ];
 
-const possibleFields = [
+const allFields = [
   'player.name',
   'player.id',
   'player.gameId',
@@ -111,6 +111,9 @@ const possibleFields = [
   'gameserver.type',
   'gameserver.id',
   'module.name',
+  'module.id',
+  'module.description',
+  'module.builtIn',
   'meta.result.success',
   'meta.message',
 ];
@@ -208,7 +211,7 @@ export const Events: FC = () => {
         <Flex>
           <EventFilter
             mode="add"
-            fields={possibleFields}
+            fields={allFields}
             addFilter={(filter: Filter) => {
               if (!tagFilters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
                 setTagFilters((prev) => [...prev, filter]);
@@ -216,11 +219,11 @@ export const Events: FC = () => {
             }}
           />
           <EventSearch
-            fields={possibleFields}
+            fields={allFields}
             conjunctions={['and']}
             operators={[':', ':*']}
             getValueOptions={(field) => {
-              return _.uniq(events?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
+              return _.uniq(filteredEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
             }}
             setFilters={setSearchFilters}
           />
@@ -236,7 +239,7 @@ export const Events: FC = () => {
       <EventFilterTagList>
         {tagFilters.map((filter) => (
           <EventFilterTag
-            fields={possibleFields}
+            fields={allFields}
             key={`${filter.field}-${filter.operator}-${filter.value}`}
             editFilter={(f) => {
               setTagFilters((prev) => prev.map((filter) => (filter.field === f.field ? f : filter)));
