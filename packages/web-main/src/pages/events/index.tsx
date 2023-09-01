@@ -15,7 +15,7 @@ import { useEvents } from 'queries/events';
 import { EnrichedEvent, useEnrichEvent } from 'queries/events/queries';
 import { FC, useEffect, useState } from 'react';
 
-import { HiStop as PauseIcon, HiPlay as PlayIcon } from 'react-icons/hi2';
+import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 
 const ContentContainer = styled.div`
   margin-top: ${({ theme }) => theme.spacing['1']};
@@ -235,6 +235,7 @@ export const Events: FC = () => {
           onClick={() => setLive(!live)}
           color={live ? 'primary' : 'secondary'}
         />
+        <Button text="Refresh" icon={<RefreshIcon />} onClick={() => refetch()} color={'secondary'} />
       </Header>
       <EventFilterTagList>
         {tagFilters.map((filter) => (
