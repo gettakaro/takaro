@@ -65,19 +65,28 @@ export const useUser = (userId: string) => {
 
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
+  const queryClient = useQueryClient();
 
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }) => (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
+    mutationFn: async ({ userId, roleId }) => {
+      const res = (await apiClient.user.userControllerAssignRole(userId, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(userId));
+      return res;
+    },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useUserRemoveRole = () => {
   const apiClient = useApiClient();
+  const queryClient = useQueryClient();
 
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }: RoleInput) =>
-      (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
+    mutationFn: async ({ userId, roleId }: RoleInput) => {
+      const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(userId));
+      return res;
+    },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

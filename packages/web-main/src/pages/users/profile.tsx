@@ -1,11 +1,12 @@
 import { RoleOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
-import { Button, Divider, Loading, Table, useTableActions } from '@takaro/lib-components';
-import { useUser } from 'queries/users/queries';
+import { Button, Divider, Dropdown, IconButton, Loading, Table, useTableActions } from '@takaro/lib-components';
+import { useUser, useUserRemoveRole } from 'queries/users/queries';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { useParams, Outlet, useNavigate } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import { PATHS } from 'paths';
+import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 
 export const UserProfile: FC = () => {
   const { userId } = useParams();
@@ -58,6 +59,7 @@ interface IUserRolesTableProps {
 
 const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleOutputDTO>();
+  const { mutate } = useUserRemoveRole();
 
   const columnHelper = createColumnHelper<RoleOutputDTO>();
 
@@ -68,6 +70,37 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
+    }),
+    columnHelper.display({
+      header: 'Actions',
+      id: 'actions',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: false,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      maxSize: 50,
+
+      cell: (info) => (
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
+          </Dropdown.Trigger>
+          <Dropdown.Menu>
+            <Dropdown.Menu.Item
+              label="Unassign role"
+              icon={<DeleteIcon />}
+              onClick={() => {
+                mutate({
+                  userId,
+                  roleId: info.row.original.id,
+                });
+              }}
+            />
+          </Dropdown.Menu>
+        </Dropdown>
+      ),
     }),
   ];
 
