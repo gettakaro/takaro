@@ -5,15 +5,14 @@ import { ItemContent } from './style';
 type ItemProps = {
   children: React.ReactNode;
   active: boolean;
+  onClick?: () => void;
 };
 
 export const Item = forwardRef<HTMLDivElement, ItemProps & React.HTMLProps<HTMLDivElement>>(
-  ({ children, active }, ref) => {
+  ({ children, active, onClick }, ref) => {
     const id = useId();
     const theme = useTheme();
-    const onClick = () => {
-      console.log('click');
-    };
+
     return (
       <ItemContent
         ref={ref}

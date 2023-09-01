@@ -12,3 +12,8 @@ export type Filter = {
   operator: string;
   value: string;
 };
+
+export enum operators {
+  is = ':',
+  contains = ':*',
+}

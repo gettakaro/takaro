@@ -11,6 +11,23 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useApiClient } from 'hooks/useApiClient';
+import _ from 'lodash';
+
+const cleanEvent = (event: EventOutputDTO) => {
+  const newEvent = { ...event };
+
+  Object.keys(newEvent).forEach((key) => {
+    if (newEvent[key] === null) {
+      delete newEvent[key];
+    }
+  });
+
+  delete newEvent.playerId;
+  delete newEvent.gameserverId;
+  delete newEvent.moduleId;
+
+  return newEvent;
+};
 
 const eventKeys = {
   all: ['events'] as const,
@@ -59,13 +76,15 @@ const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['d
     const meta = event.meta as Record<string, any> | undefined;
     const command = mod?.commands.find((c) => c.id === meta?.command?.command);
 
-    return {
-      ...event,
+    const enriched = {
+      ...cleanEvent(event),
       player,
       gameserver,
       module: mod,
       command,
     };
+
+    return _.omit(enriched, 'gameserver.connectionInfo');
   });
 };
 
@@ -76,7 +95,7 @@ const fetchEvents = async (apiClient: Client, queryParams: EventSearchInputDTO) 
   return enRiched;
 };
 
-export interface EnrichedEvent extends EventOutputDTO {
+export interface EnrichedEvent extends Pick<EventOutputDTO, 'id' | 'createdAt' | 'eventName' | 'meta'> {
   player: PlayerOutputDTO | undefined;
   gameserver: GameServerOutputDTO | undefined;
   module: ModuleOutputDTO | undefined;

@@ -76,6 +76,7 @@ const treeData = [
   },
   {
     name: 'Module',
+    defaultEnabled: true,
     children: [
       {
         name: 'cronjob-executed',
@@ -101,7 +102,18 @@ const treeData = [
   },
 ];
 
-const possibleFields = ['player.name', 'gameserver.name', 'module.name', 'meta.result.success'];
+const possibleFields = [
+  'player.name',
+  'player.id',
+  'player.gameId',
+  'player.steamId',
+  'gameserver.name',
+  'gameserver.type',
+  'gameserver.id',
+  'module.name',
+  'meta.result.success',
+  'meta.message',
+];
 
 export const Events: FC = () => {
   useDocumentTitle('Events');
@@ -233,9 +245,6 @@ export const Events: FC = () => {
               setTagFilters((prev) => prev.filter((f) => f !== filter));
             }}
             filter={filter}
-            onClick={() => {
-              console.log('clicked');
-            }}
           />
         ))}
       </EventFilterTagList>
@@ -246,17 +255,7 @@ export const Events: FC = () => {
           <ScrollableContainer>
             <EventFeed>
               {filteredEvents?.map((event) => (
-                <EventItem
-                  key={event.id}
-                  eventType={event.eventName}
-                  data={(event?.meta as Record<string, any> | undefined) ?? {}}
-                  playerName={event?.player?.name}
-                  gamserverName={event?.gameserver?.name}
-                  moduleName={event?.module?.name}
-                  commandName={event?.command?.name}
-                  createdAt={event.createdAt}
-                  onDetailClick={() => {}}
-                />
+                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
               ))}
             </EventFeed>
           </ScrollableContainer>

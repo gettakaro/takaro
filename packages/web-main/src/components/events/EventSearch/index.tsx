@@ -11,9 +11,32 @@ import {
   FloatingFocusManager,
   FloatingPortal,
 } from '@floating-ui/react';
-import { ItemList, Wrapper } from './style';
+import {
+  Input,
+  InputContainer,
+  InputTypeContainer,
+  ItemList,
+  PrefixContainer,
+  SuffixContainer,
+  Wrapper,
+} from './style';
 import { Item } from './Item';
 import { Filter, InputType } from '../types';
+
+import { HiMagnifyingGlass as SearchIcon, HiXMark as CloseIcon } from 'react-icons/hi2';
+
+function inputTypeMap(type: InputType) {
+  switch (type) {
+    case InputType.field:
+      return 'f';
+    case InputType.operator:
+      return 'o';
+    case InputType.value:
+      return 'v';
+    case InputType.conjunction:
+      return 'c';
+  }
+}
 
 type EventSearchProps = {
   fields: string[];
@@ -100,6 +123,13 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
     return d.filter((item) => item.toLowerCase().startsWith(inputArray[inputIndex].toLowerCase()));
   })();
 
+  function acceptSuggestion(index: number) {
+    const selected = suggestions[index];
+    const newInput = `${inputArray.slice(0, inputIndex).join(' ')}${inputIndex > 0 ? ' ' : ''}${selected} `;
+
+    setInputValue(newInput);
+  }
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'Enter') {
       return;
@@ -127,10 +157,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
     }
 
     if (suggestions[activeIndex]) {
-      const selected = suggestions[activeIndex];
-      const newInput = `${inputArray.slice(0, inputIndex).join(' ')}${inputIndex > 0 ? ' ' : ''}${selected} `;
-
-      setInputValue(newInput);
+      acceptSuggestion(activeIndex);
     }
 
     setActiveIndex(null);
@@ -138,21 +165,37 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
 
   return (
     <Wrapper>
-      <input
-        {...getReferenceProps({
-          ref: refs.setReference,
-          onChange,
-          onClick,
-          value: inputValue,
-          placeholder: 'Filter events',
-          style: {
-            width: '100%',
-            height: '100%',
-          },
-          'aria-autocomplete': 'list',
-          onKeyDown: handleKeyDown,
-        })}
-      />
+      <InputContainer>
+        <PrefixContainer>
+          <SearchIcon />
+        </PrefixContainer>
+        <Input
+          id="event-search"
+          {...getReferenceProps({
+            ref: refs.setReference,
+            onChange,
+            onClick,
+            value: inputValue,
+            placeholder: 'Filter events',
+            style: {
+              width: '100%',
+              height: '100%',
+            },
+            'aria-autocomplete': 'list',
+            onKeyDown: handleKeyDown,
+          })}
+        />
+        <SuffixContainer>
+          {inputValue && (
+            <CloseIcon
+              onClick={() => {
+                setInputValue('');
+                setFilters([]);
+              }}
+            />
+          )}
+        </SuffixContainer>
+      </InputContainer>
       <FloatingPortal>
         {open && (
           <FloatingFocusManager context={context} initialFocus={-1} visuallyHiddenDismiss>
@@ -173,12 +216,12 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
                       listRef.current[index] = node;
                     },
                     onClick() {
-                      setOpen(false);
-                      refs.domReference.current?.focus();
+                      acceptSuggestion(index);
                     },
                   })}
                   active={activeIndex === index}
                 >
+                  <InputTypeContainer>{inputTypeMap(inputIndex)}</InputTypeContainer>
                   {item}
                 </Item>
               ))}

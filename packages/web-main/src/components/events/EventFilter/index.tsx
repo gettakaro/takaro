@@ -3,12 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button, Divider, Popover, Select, TextField } from '@takaro/lib-components';
 import { HiFunnel as FilterIcon } from 'react-icons/hi2';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
-import { Filter } from '../types';
-
-enum operators {
-  is = ':',
-  contains = ':*',
-}
+import { Filter, operators } from '../types';
 
 type FormInputs = {
   filter: Filter;
@@ -41,8 +36,6 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
   });
 
   const onSubmit: SubmitHandler<FormInputs> = ({ filter }) => {
-    filter.operator = operators[filter.operator as keyof typeof operators];
-
     addFilter(filter);
     setOpen(false);
   };

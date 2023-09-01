@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
+import { EnrichedEvent } from 'queries/events/queries';
 
 const Header = styled.div`
   display: flex;
@@ -62,46 +63,34 @@ const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) =>
 };
 
 export type EventItemProps = {
-  eventType: string;
-  createdAt: string;
-  playerName?: string;
-  gamserverName?: string;
-  moduleName?: string;
-  commandName?: string;
-  data: Record<string, any>;
+  event: EnrichedEvent;
   onDetailClick: () => void;
 };
 
-export const EventItem: FC<EventItemProps> = ({
-  eventType,
-  createdAt,
-  data,
-  playerName,
-  gamserverName,
-  moduleName,
-  commandName,
-}) => {
-  const timestamp = Date.parse(createdAt);
+export const EventItem: FC<EventItemProps> = ({ event }) => {
+  const timestamp = Date.parse(event.createdAt);
   const timeAgo = DateTime.fromMillis(timestamp).toRelative();
+
+  const meta = event.meta as any;
 
   let properties = <></>;
 
-  switch (eventType) {
+  switch (event.eventName) {
     case 'chat-message':
       properties = (
         <>
-          <EventProperty name="gameserver" value={gamserverName} />
-          <EventProperty name="player" value={playerName} />
-          <EventProperty name="message" value={data.message} />
+          <EventProperty name="gameserver" value={event.gameserver?.name} />
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="message" value={meta?.message} />
         </>
       );
       break;
     case 'command-executed':
       properties = (
         <>
-          <EventProperty name="module" value={moduleName} />
-          <EventProperty name="command" value={commandName} />
-          <EventProperty name="arguments" value={JSON.stringify(data.command.arguments)} />
+          <EventProperty name="module" value={event.module?.name} />
+          <EventProperty name="command" value={event.command?.name} />
+          <EventProperty name="arguments" value={JSON.stringify(event.command?.arguments)} />
         </>
       );
       break;
@@ -109,8 +98,8 @@ export const EventItem: FC<EventItemProps> = ({
     case 'cronjob-executed':
       properties = (
         <>
-          <EventProperty name="module" value={moduleName} />
-          <EventProperty name="success" value={`${data?.result?.success}`} />
+          <EventProperty name="module" value={event?.module?.name} />
+          <EventProperty name="success" value={`${meta.result?.success}`} />
         </>
       );
       break;
@@ -118,8 +107,9 @@ export const EventItem: FC<EventItemProps> = ({
     case 'player-disconnected':
       properties = (
         <>
-          <EventProperty name="gameserver" value={gamserverName} />
-          <EventProperty name="player" value={playerName} />
+          <EventProperty name="gameserver" value={event.gameserver?.name} />
+          <EventProperty name="game" value={event.gameserver?.type} />
+          <EventProperty name="player" value={event.player?.name} />
         </>
       );
   }
@@ -129,10 +119,10 @@ export const EventItem: FC<EventItemProps> = ({
       <Circle />
       <Header>
         <EventType>
-          <p>{eventType}</p>
+          <p>{event.eventName}</p>
           <p>{timeAgo}</p>
         </EventType>
-        <EventDetail eventType={eventType} metaData={data} />
+        <EventDetail eventType={event.eventName} metaData={event} />
       </Header>
       <Data>{properties}</Data>
     </ListItem>
