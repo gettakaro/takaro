@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
   useFloating,
   autoUpdate,
@@ -10,6 +10,7 @@ import {
   useRole,
   useInteractions,
   Placement,
+  arrow,
 } from '@floating-ui/react';
 
 export interface PopoverOptions {
@@ -34,19 +35,26 @@ export function usePopover({
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = setControlledOpen ?? setUncontrolledOpen;
 
+  const arrowRef = useRef(null);
+  const ARROW_HEIGHT = 7;
+  const GAP = 7;
+
   const { context, ...data } = useFloating({
     placement,
     open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
-      offset(5),
+      offset(ARROW_HEIGHT + GAP),
       flip({
         crossAxis: placement.includes('-'),
         fallbackAxisSideDirection: 'end',
         padding: 5,
       }),
       shift({ padding: 5 }),
+      arrow({
+        element: arrowRef,
+      }),
     ],
   });
 
@@ -70,6 +78,7 @@ export function usePopover({
       descriptionId,
       setLabelId,
       setDescriptionId,
+      arrowRef,
     }),
     [open, setOpen, interactions, data, modal, labelId, descriptionId]
   );

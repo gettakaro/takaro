@@ -1,12 +1,28 @@
-import { FC, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
+import { FC, Fragment, useEffect, useMemo, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import {
+  styled,
+  Table,
+  Loading,
+  useTableActions,
+  IconButton,
+  Dropdown,
+  Dialog,
+  Button,
+  TextField,
+  FormError,
+} from '@takaro/lib-components';
 import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useInviteUser } from 'queries/users/queries';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -16,6 +32,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
+  useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
@@ -27,12 +44,12 @@ const Users: FC = () => {
       ? UserSearchInputDTOSortDirectionEnum.Desc
       : UserSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
-      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value as string,
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+      discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
     },
     search: {
-      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
-      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value as string,
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+      discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
     },
   });
 
@@ -42,35 +59,27 @@ const Users: FC = () => {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('email', {
       header: 'Email',
       id: 'email',
-      cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -109,19 +118,15 @@ const Users: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Users - Takaro</title>
-      </Helmet>
-
       <TableContainer>
         <Table
+          id="users"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
+          renderToolbar={() => <InviteUser />}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
@@ -129,6 +134,67 @@ const Users: FC = () => {
         />
       </TableContainer>
     </Fragment>
+  );
+};
+
+interface IFormInputs {
+  userEmail: string;
+}
+
+const InviteUser: FC = () => {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const validationSchema = useMemo(
+    () =>
+      z.object({
+        userEmail: z.string().email('Email is not valid.').nonempty(),
+      }),
+    []
+  );
+
+  const { control, handleSubmit } = useForm<IFormInputs>({
+    resolver: zodResolver(validationSchema),
+    mode: 'onSubmit',
+  });
+  const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
+
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
+    mutate({ email: data.userEmail });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess]);
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)} text="Invite user" icon={<PlusIcon />} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog.Content>
+          <Dialog.Heading />
+          <Dialog.Body>
+            <h2>Invite user</h2>
+            <p>
+              Inviting users allows them to login to the Takaro dashboard. The user wil receive an email with a link to
+              set their password.
+            </p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <TextField
+                label="User email"
+                name="userEmail"
+                placeholder="example@example.com"
+                control={control}
+                required
+              />
+              {isError && <FormError error={error} />}
+              <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
+            </form>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+    </>
   );
 };
 

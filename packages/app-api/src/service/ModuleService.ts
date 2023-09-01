@@ -13,6 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
+import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -42,6 +43,10 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested({ each: true })
   commands: CommandOutputDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => PermissionOutputDTO)
+  permissions: PermissionOutputDTO[];
 }
 
 export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
@@ -56,6 +61,11 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
@@ -74,20 +84,32 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsString()
   @IsOptional()
   builtin: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @Length(3, 50)
+  @IsOptional()
   @IsString()
   name!: string;
 
   @IsString()
+  @IsOptional()
   @IsOptional()
   description?: string;
 
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => PermissionCreateDTO)
+  permissions: PermissionCreateDTO[];
 }
 
 @traceableClass('service:module')
@@ -133,7 +155,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
     const existing = await this.repo.find({
-      filters: { builtin: builtin.name },
+      filters: { builtin: [builtin.name] },
     });
 
     let mod = existing.results[0];
@@ -143,6 +165,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         await new ModuleCreateInternalDTO().construct({
           ...builtin,
           builtin: builtin.name,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     } else {
@@ -150,6 +173,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.id,
         await new ModuleUpdateDTO().construct({
           ...builtin,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
         })
       );
     }
@@ -157,7 +181,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const commands = Promise.all(
       builtin.commands.map(async (c) => {
         const existing = await commandService.find({
-          filters: { name: c.name, moduleId: mod.id },
+          filters: { name: [c.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {
@@ -176,7 +200,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const hooks = Promise.all(
       builtin.hooks.map(async (h) => {
         const existing = await hookService.find({
-          filters: { name: h.name, moduleId: mod.id },
+          filters: { name: [h.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {
@@ -195,7 +219,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const cronjobs = Promise.all(
       builtin.cronJobs.map(async (c) => {
         const existing = await cronjobService.find({
-          filters: { name: c.name, moduleId: mod.id },
+          filters: { name: [c.name], moduleId: [mod.id] },
         });
 
         if (existing.results.length === 1) {

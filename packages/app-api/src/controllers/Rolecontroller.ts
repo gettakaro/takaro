@@ -6,6 +6,7 @@ import {
   RoleService,
   RoleUpdateInputDTO,
   RoleOutputDTO,
+  PermissionOutputDTO,
 } from '../service/RoleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
@@ -14,7 +15,8 @@ import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Response } from 'express';
-import { PERMISSIONS } from '@takaro/auth';
+import { PERMISSIONS, PERMISSION_DETAILS } from '@takaro/auth';
+import { ModuleService } from '../service/ModuleService.js';
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
   @ValidateNested()
@@ -29,14 +31,24 @@ export class RoleOutputArrayDTOAPI extends APIOutput<RoleOutputDTO[]> {
 
 export class RoleSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 }
 
 export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedFilters)
   declare filters: RoleSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => RoleSearchInputAllowedFilters)
+  declare search: RoleSearchInputAllowedFilters;
+}
+
+export class PermissionOutputDTOAPI extends APIOutput<PermissionOutputDTO[]> {
+  @Type(() => PermissionOutputDTO)
+  @ValidateNested({ each: true })
+  declare data: PermissionOutputDTO[];
 }
 
 @OpenAPI({
@@ -93,5 +105,18 @@ export class RoleController {
     const service = new RoleService(req.domainId);
     await service.delete(params.id);
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([]))
+  @ResponseSchema(PermissionOutputDTOAPI)
+  @Get('/permissions')
+  async getPermissions(@Req() req: AuthenticatedRequest) {
+    const moduleService = new ModuleService(req.domainId);
+    const modules = await moduleService.find({ limit: 1000 });
+    const modulePermissions = modules.results.map((mod) => mod.permissions).flat();
+
+    const allPermissions = Object.values(PERMISSION_DETAILS).concat(modulePermissions);
+
+    return apiResponse(allPermissions);
   }
 }

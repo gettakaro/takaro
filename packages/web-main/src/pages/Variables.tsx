@@ -1,20 +1,19 @@
 import { FC, Fragment, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
   margin-top: 2rem;
 `;
 
 const Variables: FC = () => {
+  useDocumentTitle('Variables');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -24,20 +23,21 @@ const Variables: FC = () => {
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
+    extend: ['module', 'player', 'gameServer'],
     sortDirection: sorting.sortingState[0]?.desc
       ? VariableSearchInputDTOSortDirectionEnum.Desc
       : VariableSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      key: columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value as string,
-      gameServerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value as string,
-      playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value as string,
-      moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value as string,
+      key: columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value,
+      gameServerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value,
+      playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
+      moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value,
     },
     search: {
-      key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value as string,
-      gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value as string,
-      playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value as string,
-      moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value as string,
+      key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value,
+      gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value,
+      playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
+      moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
     },
   });
 
@@ -54,7 +54,6 @@ const Variables: FC = () => {
       header: 'Value',
       id: 'value',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
@@ -82,14 +81,12 @@ const Variables: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -129,9 +126,6 @@ const Variables: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Variables - Takaro</title>
-      </Helmet>
       <p>
         Variables allow you to store data in a key-value format, which is persisted between module runs. For example,
         variables are the way that the teleports module stores the teleport locations.
@@ -139,13 +133,12 @@ const Variables: FC = () => {
 
       <TableContainer>
         <Table
+          id="variables"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data}
           pagination={{
             ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}
@@ -164,12 +157,6 @@ interface IVariableDeleteProps {
   setOpenDialog: (open: boolean) => void;
 }
 
-const DeleteDialogContainer = styled(Dialog.Body)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
-
 const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
   const { mutateAsync, isLoading: isDeleting } = useVariableDelete();
 
@@ -187,12 +174,17 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <Dialog.Content>
         <Dialog.Heading>
-          <h1>Delete variable</h1>
+          <span>Delete variable</span>
         </Dialog.Heading>
-        <DeleteDialogContainer>
+        <Dialog.Body>
           <h2>Delete variable</h2>
+          <ul>
+            {variable.module && <li>Module: {variable.module.name}</li>}
+            {variable.gameServer && <li>Game Server: {variable.gameServer.name}</li>}
+            {variable.player && <li>Player Name: {variable.player.name}</li>}
+          </ul>
           <p>
-            Are you sure you want to delete the variable <strong>{variable.key}</strong>? This action is irreversible!
+            Are you sure you want to delete the variable <strong>{variable.key}</strong>?
           </p>
           <Button
             isLoading={isDeleting}
@@ -201,7 +193,7 @@ const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpe
             text={'Delete variable'}
             color="error"
           />
-        </DeleteDialogContainer>
+        </Dialog.Body>
       </Dialog.Content>
     </Dialog>
   );

@@ -5,7 +5,6 @@ import { IParsedCommand } from '@takaro/queues';
 const log = logger('lib:commandParser');
 
 export function parseCommand(rawMessage: string, command: CommandOutputDTO): IParsedCommand {
-  // Split, allowing for quotes
   const split = rawMessage.match(/(?:[^\s"]+|"[^"]*")+/g);
 
   if (!split) {
@@ -27,7 +26,9 @@ export function parseCommand(rawMessage: string, command: CommandOutputDTO): IPa
       value = argument.defaultValue;
     } else {
       log.error('Missing argument', { rawMessage, command, argument });
-      throw new errors.BadRequestError(`Missing argument "${argument.name}"`);
+      throw new errors.BadRequestError(
+        `Oops! It seems you forgot to provide the "${argument.name}" value. Please check and try again.`
+      );
     }
 
     switch (argument.type) {
@@ -44,7 +45,9 @@ export function parseCommand(rawMessage: string, command: CommandOutputDTO): IPa
             argument,
             value,
           });
-          throw new errors.BadRequestError(`Invalid number value for argument "${argument.name}"`);
+          throw new errors.BadRequestError(
+            `The value for "${argument.name}" should be a number. Please correct it and try again.`
+          );
         }
 
         parsedArgs[argument.name] = parseInt(value, 10);
@@ -57,7 +60,9 @@ export function parseCommand(rawMessage: string, command: CommandOutputDTO): IPa
             argument,
             value,
           });
-          throw new errors.BadRequestError(`Invalid boolean value for argument "${argument.name}"`);
+          throw new errors.BadRequestError(
+            `The value for "${argument.name}" should be either "true" or "false". Please correct it and try again.`
+          );
         }
 
         parsedArgs[argument.name] = value === 'true';

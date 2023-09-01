@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserService, UserUpdateDTO } from '../service/UserService.js';
@@ -9,6 +9,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+import { RoleService } from '../service/RoleService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -26,6 +27,12 @@ export class LoginDTO {
 export class ParamIdAndRoleId extends ParamId {
   @IsUUID('4')
   roleId!: string;
+}
+
+export class InviteCreateDTO {
+  @IsString()
+  @IsEmail()
+  email!: string;
 }
 
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
@@ -48,22 +55,26 @@ class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
 
 class UserSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsString()
-  idpId!: string;
+  @IsString({ each: true })
+  idpId!: string[];
 
   @IsOptional()
-  @IsString()
-  discordId!: string;
+  @IsString({ each: true })
+  discordId!: string[];
 }
 
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare filters: UserSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedFilters)
+  declare search: UserSearchInputAllowedFilters;
 }
 
 @OpenAPI({
@@ -145,15 +156,24 @@ export class UserController {
   @Post('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async assignRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
-    const service = new UserService(req.domainId);
-    return apiResponse(await service.assignRole(params.id, params.roleId));
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.assignRole(params.roleId, params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
   @Delete('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.removeRole(params.roleId, params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @Post('/user/invite')
+  @ResponseSchema(APIOutput)
+  async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.removeRole(params.id, params.roleId));
+    await service.inviteUser(data.email);
+    return apiResponse();
   }
 }

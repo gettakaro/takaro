@@ -56,6 +56,7 @@ npm run-script -w packages/lib-auth build
 npm run-script -w packages/lib-aws build
 npm run-script -w packages/lib-db build
 npm run-script -w packages/lib-modules build
+npm run-script -w packages/lib-email build
 npm run-script -w packages/lib-gameserver build
 npm run-script -w packages/lib-queues build
 npm run-script -w packages/lib-http build

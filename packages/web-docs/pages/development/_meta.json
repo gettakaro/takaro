@@ -1,5 +1,11 @@
 {
   "getting-started": "Getting started",
   "repo-setup": "Repository setup",
-  "common-tasks": "Common tasks"
+  "common-tasks": "Common tasks",
+  "apiclient": {
+    "title": "Packages",
+    "href": "/api-docs/",
+    "type": "page",
+    "newWindow": true
+  }
 }

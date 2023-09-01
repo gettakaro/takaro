@@ -19,7 +19,7 @@ interface I7DaysToDieEvent extends JsonObject {
 
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]:
-    /PlayerSpawnedInWorld \(reason: JoinMultiplayer, position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
+    /PlayerSpawnedInWorld \(reason: (JoinMultiplayer|EnterMultiplayer), position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
   [GameEvents.CHAT_MESSAGE]:
     /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
@@ -39,16 +39,19 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
-    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log?adminuser=${
-      this.config.adminUser
-    }&admintoken=${this.config.adminToken}`;
+    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
   }
 
   async start(): Promise<void> {
     await Promise.race([
       new Promise<void>((resolve, reject) => {
         this.logger.debug(`Connecting to ${this.config.host}`);
-        this.eventSource = new EventSource(this.url);
+        this.eventSource = new EventSource(this.url, {
+          headers: {
+            ['X-SDTD-API-TOKENNAME']: this.config.adminUser,
+            ['X-SDTD-API-SECRET']: this.config.adminToken,
+          },
+        });
 
         this.eventSource.addEventListener('logLine', (data) => this.listener(data));
 

@@ -3,6 +3,8 @@ import { isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 
 const group = 'ModuleController';
 
+const testPermission = { permission: 'test', description: 'test', friendlyName: 'test' };
+
 const tests = [
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -71,7 +73,7 @@ const tests = [
       const utilsModule = (
         await this.client.module.moduleControllerSearch({
           filters: {
-            name: 'utils',
+            name: ['utils'],
           },
         })
       ).data.data[0];
@@ -112,7 +114,7 @@ const tests = [
       const utilsModule = (
         await this.client.module.moduleControllerSearch({
           filters: {
-            name: 'utils',
+            name: ['utils'],
           },
         })
       ).data.data[0];
@@ -171,6 +173,67 @@ const tests = [
       return res;
     },
     expectedStatus: 400,
+  }),
+  new IntegrationTest({
+    group,
+    snapshot: true,
+    name: 'Allows passing an array of permissions when creating a module',
+    test: async function () {
+      return this.client.module.moduleControllerCreate({
+        name: 'Test module',
+        permissions: [testPermission],
+      });
+    },
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Allows passing an array of permissions when updating a module',
+    setup: async function () {
+      return (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+    },
+    test: async function () {
+      return this.client.module.moduleControllerUpdate(this.setupData.id, {
+        permissions: [testPermission],
+      });
+    },
+    filteredFields: ['moduleId'],
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Updating permissions keeps IDs static of already-existing permissions',
+    setup: async function () {
+      return (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+          permissions: [testPermission],
+        })
+      ).data.data;
+    },
+    test: async function () {
+      const secondPermission = { permission: 'test2', description: 'test2', friendlyName: 'test2' };
+      const updateRes = await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        permissions: [testPermission, secondPermission],
+      });
+
+      const newPermission = updateRes.data.data.permissions.find((p) => p.permission === 'test');
+      const existingPermission = this.setupData.permissions.find((p) => p.permission === 'test');
+
+      if (!existingPermission || !newPermission) {
+        throw new Error('Permission not found');
+      }
+
+      expect(existingPermission.id).to.equal(newPermission.id);
+
+      return updateRes;
+    },
+    filteredFields: ['moduleId'],
   }),
 ];
 

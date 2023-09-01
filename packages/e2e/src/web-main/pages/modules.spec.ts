@@ -1,5 +1,6 @@
 import playwright from '@playwright/test';
 import { basicTest, test } from '../fixtures/index.js';
+import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect, test: pwTest } = playwright;
 
@@ -47,9 +48,10 @@ basicTest('Creating module with config, saves the config', async ({ page }) => {
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 
-basicTest('Creating a module but providing too short name, shows an error', async ({ page }) => {
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+basicTest('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.page.getByText('new module').click();
 
   await page.getByPlaceholder('My cool module').fill('a');
 
@@ -120,26 +122,51 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
-test('Can install module with empty config', async ({ page }) => {
+basicTest('Can install module with empty config', async ({ page, takaro }) => {
+  const modRes = await takaro.client.module.moduleControllerSearch({ filters: { name: ['Module without functions'] } });
+
+  const mod = modRes.data.data[0];
+
+  await expect(mod).toBeDefined();
+
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
   await page.getByText('Server Modules').click();
 
-  await page
-    .getByRole('list')
-    .locator('div')
-    .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
-    .getByRole('button', { name: 'Install' })
-    .click();
+  await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
+
+  await page.getByRole('button', { name: 'Install' }).click();
+
+  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
+});
+
+basicTest('Can install a module with a discord hook', async ({ page, takaro }) => {
+  const mod = await takaro.client.module.moduleControllerCreate({
+    name: 'Module with Discord hook',
+    configSchema: JSON.stringify({}),
+    description: 'aaa',
+  });
+
+  await takaro.client.hook.hookControllerCreate({
+    name: 'My hook',
+    eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+    moduleId: mod.data.data.id,
+    regex: 'test',
+  });
+
+  await page.getByRole('link', { name: 'Servers' }).click();
+  await page.getByText('Test server').click();
+  await page.getByText('Server Modules').click();
+
+  await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
+
+  await page.getByLabel('My hook Discord channel IDRequired').type('123');
 
   await page.getByRole('button', { name: 'Install' }).click();
 
   await expect(
-    page
-      .getByRole('list')
-      .locator('div')
-      .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
-  ).toHaveCount(0);
+    page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Uninstall module' })
+  ).toBeVisible();
 });
 
 pwTest.describe('Module config', () => {

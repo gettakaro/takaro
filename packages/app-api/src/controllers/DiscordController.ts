@@ -13,22 +13,26 @@ import { discordBot } from '../lib/DiscordBot.js';
 
 class GuildSearchInputAllowedFilters {
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsString()
-  discordId!: string;
+  @IsString({ each: true })
+  discordId!: string[];
 
   @IsOptional()
-  @IsBoolean()
-  takaroEnabled!: boolean;
+  @IsBoolean({ each: true })
+  takaroEnabled!: boolean[];
 }
 
 class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
   @ValidateNested()
   @Type(() => GuildSearchInputAllowedFilters)
   declare filters: GuildSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => GuildSearchInputAllowedFilters)
+  declare search: GuildSearchInputAllowedFilters;
 }
 
 class DiscordParamId {

@@ -15,7 +15,7 @@ const StyledList = styled.div`
 export const CollapseList: FC<PropsWithChildren> & {
   Item: FC<PropsWithChildren<ItemProps>>;
 } = ({ children }) => {
-  return <StyledList>{children}</StyledList>;
+  return <StyledList role="tree">{children}</StyledList>;
 };
 
 interface ItemProps {
@@ -46,7 +46,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
   const theme = useTheme();
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%' }} role="treeitem">
       <Header isCollapsed={isCollapsed} onClick={() => setIsCollapsed((prev) => !prev)}>
         <h3>{title}</h3>
         <ArrowUp size={18} />

@@ -26,26 +26,30 @@ export class HookOutputArrayDTOAPI extends APIOutput<HookOutputDTO[]> {
 
 class HookSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsUUID()
-  moduleId!: string;
+  @IsUUID(4, { each: true })
+  moduleId!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsEnum({ ...EventTypes })
-  eventType!: typeof EventTypes;
+  @IsEnum({ ...EventTypes }, { each: true })
+  eventType!: (typeof EventTypes)[];
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
   declare filters: HookSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => HookSearchInputAllowedFilters)
+  declare search: HookSearchInputAllowedFilters;
 }
 
 @OpenAPI({

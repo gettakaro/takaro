@@ -1,6 +1,7 @@
 import { Config, IBaseConfig } from '@takaro/config';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
+import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 
 enum CLUSTER_MODE {
@@ -13,6 +14,7 @@ interface IHttpConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
     baseUrl: string;
+    frontendHost: string;
   };
   auth: {
     jwtSecret: string;
@@ -28,6 +30,7 @@ interface IHttpConfig extends IBaseConfig {
   takaro: {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
+    url: string;
   };
 }
 
@@ -68,6 +71,12 @@ const configSchema = {
       format: String,
       default: 'http://127.0.0.1:13000',
       env: 'BASE_URL',
+    },
+    frontendHost: {
+      doc: 'The host of the frontend',
+      format: String,
+      default: 'http://127.0.0.1:13001',
+      env: 'TAKARO_FRONTEND_HOST',
     },
   },
   auth: {
@@ -119,11 +128,18 @@ const configSchema = {
       default: 100,
       env: 'MAX_VARIABLES',
     },
+    url: {
+      doc: 'The URL of the Takaro server',
+      format: String,
+      default: 'http://localhost:3000',
+      env: 'TAKARO_HOST',
+    },
   },
 };
 
-export const config = new Config<IHttpConfig & IQueuesConfig & IDbConfig>([
+export const config = new Config<IHttpConfig & IQueuesConfig & IDbConfig & Pick<IAuthConfig, 'kratos' | 'hydra'>>([
   configSchema,
   queuesConfigSchema,
   dbConfigSchema,
+  { kratos: authConfigSchema.kratos, hydra: authConfigSchema.hydra },
 ]);

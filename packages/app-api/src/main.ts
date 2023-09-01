@@ -27,6 +27,9 @@ import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
 import { discordBot } from './lib/DiscordBot.js';
 import { EventController } from './controllers/EventController.js';
+import { HookWorker } from './workers/hookWorker.js';
+import { CronJobWorker } from './workers/cronjobWorker.js';
+import { CommandWorker } from './workers/commandWorker.js';
 
 export const server = new HTTP(
   {
@@ -75,6 +78,15 @@ async function main() {
 
   new EventsWorker();
   log.info('👷 Event worker started');
+
+  new CommandWorker(config.get('queues.commands.concurrency'));
+  log.info('👷 Command worker started');
+
+  new CronJobWorker(config.get('queues.cronjobs.concurrency'));
+  log.info('👷 CronJob worker started');
+
+  new HookWorker(config.get('queues.hooks.concurrency'));
+  log.info('👷 Hook worker started');
 
   await getSocketServer(server.server as HttpServer);
   await server.start();

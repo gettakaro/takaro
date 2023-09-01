@@ -16,11 +16,6 @@ services:
     extends:
       file: docker-compose.yml
       service: takaro
-  vmm:
-    extends:
-      file: docker-compose.yml
-      service: vmm
-
   kratos-migrate:
     extends:
       file: docker-compose.yml

@@ -8,12 +8,12 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      key: `tp_${args.tp}`,
-      moduleId: mod.moduleId,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      key: [`tp_${args.tp}`],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',

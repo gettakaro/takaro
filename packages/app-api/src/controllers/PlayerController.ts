@@ -1,19 +1,22 @@
 import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { PlayerOutputDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { ParamIdAndRoleId } from './UserController.js';
+import { RoleService } from '../service/RoleService.js';
+import { errors } from '@takaro/util';
 
-export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputDTO> {
-  @Type(() => PlayerOutputDTO)
+export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
+  @Type(() => PlayerOutputWithRolesDTO)
   @ValidateNested()
-  declare data: PlayerOutputDTO;
+  declare data: PlayerOutputWithRolesDTO;
 }
 
 export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {
@@ -24,30 +27,40 @@ export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {
 
 class PlayerSearchInputAllowedFilters {
   @IsOptional()
-  @IsUUID()
-  id!: string;
+  @IsUUID(4, { each: true })
+  id!: string[];
 
   @IsOptional()
-  @IsString()
-  name!: string;
+  @IsString({ each: true })
+  name!: string[];
 
   @IsOptional()
-  @IsString()
-  steamId!: string;
+  @IsString({ each: true })
+  steamId!: string[];
 
   @IsOptional()
-  @IsString()
-  epicOnlineServicesId!: string;
+  @IsString({ each: true })
+  epicOnlineServicesId!: string[];
 
   @IsOptional()
-  @IsString()
-  xboxLiveId!: string;
+  @IsString({ each: true })
+  xboxLiveId!: string[];
 }
 
 class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedFilters)
+  declare search: PlayerSearchInputAllowedFilters;
+}
+
+class PlayerRoleAssignChangeDTO {
+  @IsUUID()
+  @IsOptional()
+  gameServerId?: string;
 }
 
 @OpenAPI({
@@ -78,5 +91,40 @@ export class PlayerController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new PlayerService(req.domainId);
     return apiResponse(await service.findOne(params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
+  @Post('/player/:id/role/:roleId')
+  @ResponseSchema(APIOutput)
+  async assignRole(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndRoleId,
+    @Body() data: PlayerRoleAssignChangeDTO
+  ) {
+    const service = new RoleService(req.domainId);
+
+    try {
+      await service.assignRole(params.roleId, params.id, data.gameServerId);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'UniqueViolationError') {
+        throw new errors.BadRequestError('Role already assigned');
+      } else {
+        throw error;
+      }
+    }
+
+    return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_ROLES]))
+  @Delete('/player/:id/role/:roleId')
+  @ResponseSchema(APIOutput)
+  async removeRole(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndRoleId,
+    @Body() data: PlayerRoleAssignChangeDTO
+  ) {
+    const service = new RoleService(req.domainId);
+    return apiResponse(await service.removeRole(params.roleId, params.id, data.gameServerId));
   }
 }

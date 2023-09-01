@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) { }
+  } catch (err) {}
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -33,9 +33,7 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  TAKARO_OAUTH_HOST: process.env.IS_E2E
-    ? 'http://127.0.0.1:14444'
-    : 'http://hydra:4444',
+  TAKARO_OAUTH_HOST: process.env.IS_E2E ? 'http://127.0.0.1:14444' : 'http://hydra:4444',
 };
 
 const composeOpts = {
@@ -59,23 +57,12 @@ async function main() {
   await mkdir('./reports/integrationTests', { recursive: true });
 
   console.log('Bringing up datastores');
-  await upMany(
-    ['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'],
-    composeOpts
-  );
+  await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
   await sleep(1000);
 
   console.log('Running SQL migrations...');
-  await run(
-    'hydra-migrate',
-    'migrate -c /etc/config/hydra/hydra.yml sql -e --yes',
-    { ...composeOpts, log: false }
-  );
-  await run(
-    'kratos-migrate',
-    '-c /etc/config/kratos/kratos.yml migrate sql -e --yes',
-    { ...composeOpts, log: false }
-  );
+  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
+  await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
 
   await upMany(['kratos', 'hydra', 'hydra-e2e'], composeOpts);
 
@@ -87,10 +74,7 @@ async function main() {
 
   // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
   // If not set, create them
-  if (
-    !composeOpts.env.ADMIN_CLIENT_ID ||
-    !composeOpts.env.ADMIN_CLIENT_SECRET
-  ) {
+  if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
     console.log('No OAuth admin client configured, creating one...');
     const rawClientOutput = await exec(
       'hydra',
@@ -123,7 +107,6 @@ async function main() {
       waitUntilHealthyHttp('http://127.0.0.1:13001', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3002/healthz', 60),
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
-      waitUntilHealthyHttp('http://127.0.0.1:13004/healthz', 60),
     ]);
 
     console.log('Running tests with config', composeOpts);
@@ -138,6 +121,7 @@ async function main() {
         ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
         TAKARO_OAUTH_HOST: 'http://127.0.0.1:14444 ',
         MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002',
+        MAILHOG_URL: 'http://127.0.0.1:8025',
       };
 
       for (const [key, value] of Object.entries(testVars)) {
@@ -154,15 +138,12 @@ async function main() {
   }
 
   const logsResult = await logs(
-    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'takaro_vmm', 'kratos', 'hydra', 'hydra-e2e'],
+    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos', 'hydra', 'hydra-e2e'],
     { ...composeOpts, log: false }
   );
 
   await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
-  await writeFile(
-    './reports/integrationTests/docker-logs-err.txt',
-    logsResult.err
-  );
+  await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);
 
   await cleanUp();
 

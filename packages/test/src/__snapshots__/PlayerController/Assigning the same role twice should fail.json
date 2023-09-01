@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Role already assigned"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Assigning the same role twice should fail",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

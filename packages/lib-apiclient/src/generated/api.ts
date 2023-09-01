@@ -12,8 +12,9 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration.js';
-import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { Configuration } from './configuration.js';
+import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -28,8 +29,9 @@ import {
   toPathString,
   createRequestFunction,
 } from './common.js';
+import type { RequestArgs } from './base.js';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base.js';
+import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base.js';
 
 /**
  *
@@ -503,28 +505,28 @@ export interface CommandOutputDTOAPI {
 export interface CommandSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {boolean}
+   * @type {Array<boolean>}
    * @memberof CommandSearchInputAllowedFilters
    */
-  enabled?: boolean;
+  enabled?: Array<boolean>;
 }
 /**
  *
@@ -540,10 +542,10 @@ export interface CommandSearchInputDTO {
   filters?: CommandSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {CommandSearchInputAllowedFilters}
    * @memberof CommandSearchInputDTO
    */
-  search?: any;
+  search?: CommandSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -592,10 +594,10 @@ export type CommandSearchInputDTOSortDirectionEnum =
 export interface CommandTriggerDTO {
   /**
    *
-   * @type {IPlayerReferenceDTO}
+   * @type {string}
    * @memberof CommandTriggerDTO
    */
-  player: IPlayerReferenceDTO;
+  playerId: string;
   /**
    *
    * @type {string}
@@ -766,22 +768,22 @@ export interface CronJobOutputDTOAPI {
 export interface CronJobSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof CronJobSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -797,10 +799,10 @@ export interface CronJobSearchInputDTO {
   filters?: CronJobSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {CronJobSearchInputAllowedFilters}
    * @memberof CronJobSearchInputDTO
    */
-  search?: any;
+  search?: CronJobSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1069,10 +1071,10 @@ export interface DomainOutputDTOAPI {
 export interface DomainSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof DomainSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -1088,10 +1090,10 @@ export interface DomainSearchInputDTO {
   filters?: DomainSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {DomainSearchInputAllowedFilters}
    * @memberof DomainSearchInputDTO
    */
-  search?: any;
+  search?: DomainSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1355,6 +1357,12 @@ export interface EventOutputDTO {
   gameserverId?: string;
   /**
    *
+   * @type {object}
+   * @memberof EventOutputDTO
+   */
+  meta?: object;
+  /**
+   *
    * @type {string}
    * @memberof EventOutputDTO
    */
@@ -1464,28 +1472,28 @@ export type EventPlayerDisconnectedTypeEnum =
 export interface EventSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  eventName?: string;
+  eventName?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  playerId?: string;
+  playerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  gameserverId?: string;
+  gameserverId?: Array<string>;
 }
 /**
  *
@@ -1501,10 +1509,10 @@ export interface EventSearchInputDTO {
   filters?: EventSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {EventSearchInputAllowedFilters}
    * @memberof EventSearchInputDTO
    */
-  search?: any;
+  search?: EventSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1635,10 +1643,10 @@ export interface FunctionOutputDTOAPI {
 export interface FunctionSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof FunctionSearchInputAllowedFilters
    */
-  id: string;
+  id: Array<string>;
 }
 /**
  *
@@ -1654,10 +1662,10 @@ export interface FunctionSearchInputDTO {
   filters?: FunctionSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {FunctionSearchInputAllowedFilters}
    * @memberof FunctionSearchInputDTO
    */
-  search?: any;
+  search?: FunctionSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -1845,16 +1853,22 @@ export interface GameServerOutputDTOAPI {
 export interface GameServerSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  name?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  type?: GameServerSearchInputAllowedFiltersTypeEnum;
+  name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  type?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {
@@ -1880,10 +1894,10 @@ export interface GameServerSearchInputDTO {
   filters?: GameServerSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {GameServerSearchInputAllowedFilters}
    * @memberof GameServerSearchInputDTO
    */
-  search?: any;
+  search?: GameServerSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -2248,22 +2262,22 @@ export interface GuildOutputDTOAPI {
 export interface GuildSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  discordId?: string;
+  discordId?: Array<string>;
   /**
    *
-   * @type {boolean}
+   * @type {Array<boolean>}
    * @memberof GuildSearchInputAllowedFilters
    */
-  takaroEnabled?: boolean;
+  takaroEnabled?: Array<boolean>;
 }
 /**
  *
@@ -2279,10 +2293,10 @@ export interface GuildSearchInputDTO {
   filters?: GuildSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {GuildSearchInputAllowedFilters}
    * @memberof GuildSearchInputDTO
    */
-  search?: any;
+  search?: GuildSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -2558,28 +2572,28 @@ export interface HookOutputDTOAPI {
 export interface HookSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof HookSearchInputAllowedFilters
    */
-  eventType?: HookSearchInputAllowedFiltersEventTypeEnum;
+  eventType?: Array<HookSearchInputAllowedFiltersEventTypeEnum>;
 }
 
 export const HookSearchInputAllowedFiltersEventTypeEnum = {
@@ -2607,10 +2621,10 @@ export interface HookSearchInputDTO {
   filters?: HookSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {HookSearchInputAllowedFilters}
    * @memberof HookSearchInputDTO
    */
-  search?: any;
+  search?: HookSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -2935,6 +2949,19 @@ export interface IdUuidDTOAPI {
 /**
  *
  * @export
+ * @interface InviteCreateDTO
+ */
+export interface InviteCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof InviteCreateDTO
+   */
+  email: string;
+}
+/**
+ *
+ * @export
  * @interface InviteOutputDTO
  */
 export interface InviteOutputDTO {
@@ -3114,6 +3141,12 @@ export interface ModuleCreateDTO {
    * @memberof ModuleCreateDTO
    */
   configSchema?: string;
+  /**
+   *
+   * @type {Array<PermissionCreateDTO>}
+   * @memberof ModuleCreateDTO
+   */
+  permissions?: Array<PermissionCreateDTO>;
 }
 /**
  *
@@ -3145,6 +3178,12 @@ export interface ModuleCreateInternalDTO {
    * @memberof ModuleCreateInternalDTO
    */
   builtin?: string;
+  /**
+   *
+   * @type {Array<PermissionCreateDTO>}
+   * @memberof ModuleCreateInternalDTO
+   */
+  permissions?: Array<PermissionCreateDTO>;
 }
 /**
  *
@@ -3327,6 +3366,12 @@ export interface ModuleOutputDTO {
   commands: Array<CommandOutputDTO>;
   /**
    *
+   * @type {Array<PermissionOutputDTO>}
+   * @memberof ModuleOutputDTO
+   */
+  permissions: Array<PermissionOutputDTO>;
+  /**
+   *
    * @type {string}
    * @memberof ModuleOutputDTO
    */
@@ -3371,16 +3416,16 @@ export interface ModuleOutputDTOAPI {
 export interface ModuleSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof ModuleSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -3396,10 +3441,10 @@ export interface ModuleSearchInputDTO {
   filters?: ModuleSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {ModuleSearchInputAllowedFilters}
    * @memberof ModuleSearchInputDTO
    */
-  search?: any;
+  search?: ModuleSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -3451,7 +3496,7 @@ export interface ModuleUpdateDTO {
    * @type {string}
    * @memberof ModuleUpdateDTO
    */
-  name: string;
+  name?: string;
   /**
    *
    * @type {string}
@@ -3464,6 +3509,12 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   configSchema?: string;
+  /**
+   *
+   * @type {Array<PermissionCreateDTO>}
+   * @memberof ModuleUpdateDTO
+   */
+  permissions?: Array<PermissionCreateDTO>;
 }
 /**
  *
@@ -3590,6 +3641,31 @@ export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyE
 /**
  *
  * @export
+ * @interface PermissionCreateDTO
+ */
+export interface PermissionCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionCreateDTO
+   */
+  permission: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionCreateDTO
+   */
+  friendlyName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionCreateDTO
+   */
+  description?: string;
+}
+/**
+ *
+ * @export
  * @interface PermissionOutputDTO
  */
 export interface PermissionOutputDTO {
@@ -3598,7 +3674,19 @@ export interface PermissionOutputDTO {
    * @type {string}
    * @memberof PermissionOutputDTO
    */
-  permission: PermissionOutputDTOPermissionEnum;
+  permission: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  friendlyName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOutputDTO
+   */
+  description?: string;
   /**
    *
    * @type {string}
@@ -3618,38 +3706,25 @@ export interface PermissionOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
-
-export const PermissionOutputDTOPermissionEnum = {
-  Root: 'ROOT',
-  ManageUsers: 'MANAGE_USERS',
-  ReadUsers: 'READ_USERS',
-  ManageRoles: 'MANAGE_ROLES',
-  ReadRoles: 'READ_ROLES',
-  ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
-  ReadFunctions: 'READ_FUNCTIONS',
-  ManageFunctions: 'MANAGE_FUNCTIONS',
-  ReadCronjobs: 'READ_CRONJOBS',
-  ManageCronjobs: 'MANAGE_CRONJOBS',
-  ReadHooks: 'READ_HOOKS',
-  ManageHooks: 'MANAGE_HOOKS',
-  ReadCommands: 'READ_COMMANDS',
-  ManageCommands: 'MANAGE_COMMANDS',
-  ReadModules: 'READ_MODULES',
-  ManageModules: 'MANAGE_MODULES',
-  ReadPlayers: 'READ_PLAYERS',
-  ManagePlayers: 'MANAGE_PLAYERS',
-  ManageSettings: 'MANAGE_SETTINGS',
-  ReadSettings: 'READ_SETTINGS',
-  ReadVariables: 'READ_VARIABLES',
-  ManageVariables: 'MANAGE_VARIABLES',
-  ReadEvents: 'READ_EVENTS',
-  ManageEvents: 'MANAGE_EVENTS',
-} as const;
-
-export type PermissionOutputDTOPermissionEnum =
-  (typeof PermissionOutputDTOPermissionEnum)[keyof typeof PermissionOutputDTOPermissionEnum];
-
+/**
+ *
+ * @export
+ * @interface PermissionOutputDTOAPI
+ */
+export interface PermissionOutputDTOAPI {
+  /**
+   *
+   * @type {Array<PermissionOutputDTO>}
+   * @memberof PermissionOutputDTOAPI
+   */
+  data: Array<PermissionOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PermissionOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
 /**
  *
  * @export
@@ -3838,6 +3913,85 @@ export interface PlayerOnGameserverOutputDTOAPI {
 /**
  *
  * @export
+ * @interface PlayerOnGameserverOutputWithRolesDTO
+ */
+export interface PlayerOnGameserverOutputWithRolesDTO {
+  /**
+   *
+   * @type {Array<RoleOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  roles: Array<RoleOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  gameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ping?: number;
+}
+/**
+ *
+ * @export
  * @interface PlayerOutputArrayDTOAPI
  */
 export interface PlayerOutputArrayDTOAPI {
@@ -3917,10 +4071,10 @@ export interface PlayerOutputDTO {
 export interface PlayerOutputDTOAPI {
   /**
    *
-   * @type {PlayerOutputDTO}
+   * @type {PlayerOutputWithRolesDTO}
    * @memberof PlayerOutputDTOAPI
    */
-  data: PlayerOutputDTO;
+  data: PlayerOutputWithRolesDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -3931,39 +4085,113 @@ export interface PlayerOutputDTOAPI {
 /**
  *
  * @export
- * @interface PlayerSearchInputAllowedFilters
+ * @interface PlayerOutputWithRolesDTO
  */
-export interface PlayerSearchInputAllowedFilters {
+export interface PlayerOutputWithRolesDTO {
   /**
    *
-   * @type {string}
-   * @memberof PlayerSearchInputAllowedFilters
+   * @type {Array<RoleAssignmentOutputDTO>}
+   * @memberof PlayerOutputWithRolesDTO
    */
-  id?: string;
+  roleAssignments: Array<RoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
-   * @memberof PlayerSearchInputAllowedFilters
+   * @memberof PlayerOutputWithRolesDTO
    */
-  name?: string;
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
-   * @memberof PlayerSearchInputAllowedFilters
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
    */
   steamId?: string;
   /**
    *
    * @type {string}
-   * @memberof PlayerSearchInputAllowedFilters
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
    */
   epicOnlineServicesId?: string;
   /**
    *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  playerOnGameServers?: Array<PlayerOnGameserverOutputDTO>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerRoleAssignChangeDTO
+ */
+export interface PlayerRoleAssignChangeDTO {
+  /**
+   *
    * @type {string}
+   * @memberof PlayerRoleAssignChangeDTO
+   */
+  gameServerId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerSearchInputAllowedFilters
+ */
+export interface PlayerSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
    * @memberof PlayerSearchInputAllowedFilters
    */
-  xboxLiveId?: string;
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  epicOnlineServicesId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  xboxLiveId?: Array<string>;
 }
 /**
  *
@@ -3979,10 +4207,10 @@ export interface PlayerSearchInputDTO {
   filters?: PlayerSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {PlayerSearchInputAllowedFilters}
    * @memberof PlayerSearchInputDTO
    */
-  search?: any;
+  search?: PlayerSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -4052,6 +4280,55 @@ export interface RedirectQs {
 /**
  *
  * @export
+ * @interface RoleAssignmentOutputDTO
+ */
+export interface RoleAssignmentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  role: RoleOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RoleAssignmentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface RoleCreateInputDTO
  */
 export interface RoleCreateInputDTO {
@@ -4066,40 +4343,8 @@ export interface RoleCreateInputDTO {
    * @type {Array<string>}
    * @memberof RoleCreateInputDTO
    */
-  permissions: Array<RoleCreateInputDTOPermissionsEnum>;
+  permissions: Array<string>;
 }
-
-export const RoleCreateInputDTOPermissionsEnum = {
-  Root: 'ROOT',
-  ManageUsers: 'MANAGE_USERS',
-  ReadUsers: 'READ_USERS',
-  ManageRoles: 'MANAGE_ROLES',
-  ReadRoles: 'READ_ROLES',
-  ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
-  ReadFunctions: 'READ_FUNCTIONS',
-  ManageFunctions: 'MANAGE_FUNCTIONS',
-  ReadCronjobs: 'READ_CRONJOBS',
-  ManageCronjobs: 'MANAGE_CRONJOBS',
-  ReadHooks: 'READ_HOOKS',
-  ManageHooks: 'MANAGE_HOOKS',
-  ReadCommands: 'READ_COMMANDS',
-  ManageCommands: 'MANAGE_COMMANDS',
-  ReadModules: 'READ_MODULES',
-  ManageModules: 'MANAGE_MODULES',
-  ReadPlayers: 'READ_PLAYERS',
-  ManagePlayers: 'MANAGE_PLAYERS',
-  ManageSettings: 'MANAGE_SETTINGS',
-  ReadSettings: 'READ_SETTINGS',
-  ReadVariables: 'READ_VARIABLES',
-  ManageVariables: 'MANAGE_VARIABLES',
-  ReadEvents: 'READ_EVENTS',
-  ManageEvents: 'MANAGE_EVENTS',
-} as const;
-
-export type RoleCreateInputDTOPermissionsEnum =
-  (typeof RoleCreateInputDTOPermissionsEnum)[keyof typeof RoleCreateInputDTOPermissionsEnum];
-
 /**
  *
  * @export
@@ -4133,10 +4378,10 @@ export interface RoleOutputDTO {
   name: string;
   /**
    *
-   * @type {Array<any>}
+   * @type {Array<PermissionOutputDTO>}
    * @memberof RoleOutputDTO
    */
-  permissions: Array<any>;
+  permissions: Array<PermissionOutputDTO>;
   /**
    *
    * @type {string}
@@ -4183,10 +4428,10 @@ export interface RoleOutputDTOAPI {
 export interface RoleSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof RoleSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
 }
 /**
  *
@@ -4202,10 +4447,10 @@ export interface RoleSearchInputDTO {
   filters?: RoleSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {RoleSearchInputAllowedFilters}
    * @memberof RoleSearchInputDTO
    */
-  search?: any;
+  search?: RoleSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -4263,40 +4508,8 @@ export interface RoleUpdateInputDTO {
    * @type {Array<string>}
    * @memberof RoleUpdateInputDTO
    */
-  permissions: Array<RoleUpdateInputDTOPermissionsEnum>;
+  permissions: Array<string>;
 }
-
-export const RoleUpdateInputDTOPermissionsEnum = {
-  Root: 'ROOT',
-  ManageUsers: 'MANAGE_USERS',
-  ReadUsers: 'READ_USERS',
-  ManageRoles: 'MANAGE_ROLES',
-  ReadRoles: 'READ_ROLES',
-  ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
-  ReadFunctions: 'READ_FUNCTIONS',
-  ManageFunctions: 'MANAGE_FUNCTIONS',
-  ReadCronjobs: 'READ_CRONJOBS',
-  ManageCronjobs: 'MANAGE_CRONJOBS',
-  ReadHooks: 'READ_HOOKS',
-  ManageHooks: 'MANAGE_HOOKS',
-  ReadCommands: 'READ_COMMANDS',
-  ManageCommands: 'MANAGE_COMMANDS',
-  ReadModules: 'READ_MODULES',
-  ManageModules: 'MANAGE_MODULES',
-  ReadPlayers: 'READ_PLAYERS',
-  ManagePlayers: 'MANAGE_PLAYERS',
-  ManageSettings: 'MANAGE_SETTINGS',
-  ReadSettings: 'READ_SETTINGS',
-  ReadVariables: 'READ_VARIABLES',
-  ManageVariables: 'MANAGE_VARIABLES',
-  ReadEvents: 'READ_EVENTS',
-  ManageEvents: 'MANAGE_EVENTS',
-} as const;
-
-export type RoleUpdateInputDTOPermissionsEnum =
-  (typeof RoleUpdateInputDTOPermissionsEnum)[keyof typeof RoleUpdateInputDTOPermissionsEnum];
-
 /**
  *
  * @export
@@ -4774,10 +4987,10 @@ export interface UserOutputDTOAPI {
 export interface UserOutputWithRolesDTO {
   /**
    *
-   * @type {RoleOutputDTO}
+   * @type {Array<RoleOutputDTO>}
    * @memberof UserOutputWithRolesDTO
    */
-  roles: RoleOutputDTO;
+  roles: Array<RoleOutputDTO>;
   /**
    *
    * @type {string}
@@ -4829,22 +5042,22 @@ export interface UserOutputWithRolesDTO {
 export interface UserSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  name?: string;
+  name?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  idpId?: string;
+  idpId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
-  discordId?: string;
+  discordId?: Array<string>;
 }
 /**
  *
@@ -4860,10 +5073,10 @@ export interface UserSearchInputDTO {
   filters?: UserSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {UserSearchInputAllowedFilters}
    * @memberof UserSearchInputDTO
    */
-  search?: any;
+  search?: UserSearchInputAllowedFilters;
   /**
    *
    * @type {number}
@@ -5086,34 +5299,34 @@ export interface VariableOutputDTOAPI {
 export interface VariableSearchInputAllowedFilters {
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  id?: string;
+  id?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  key?: string;
+  key?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  gameServerId?: string;
+  gameServerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  playerId?: string;
+  playerId?: Array<string>;
   /**
    *
-   * @type {string}
+   * @type {Array<string>}
    * @memberof VariableSearchInputAllowedFilters
    */
-  moduleId?: string;
+  moduleId?: Array<string>;
 }
 /**
  *
@@ -11373,6 +11586,57 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
   return {
     /**
      *
+     * @summary Assign role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerAssignRole: async (
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerControllerAssignRole', 'id', id);
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('playerControllerAssignRole', 'roleId', roleId);
+      const localVarPath = `/player/{id}/role/{roleId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'roleId'}}`, encodeURIComponent(String(roleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerRoleAssignChangeDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11398,6 +11662,57 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Remove role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerRemoveRole: async (
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerControllerRemoveRole', 'id', id);
+      // verify required parameter 'roleId' is not null or undefined
+      assertParamExists('playerControllerRemoveRole', 'roleId', roleId);
+      const localVarPath = `/player/{id}/role/{roleId}`
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)))
+        .replace(`{${'roleId'}}`, encodeURIComponent(String(roleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerRoleAssignChangeDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -11453,6 +11768,29 @@ export const PlayerApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Assign role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerAssignRole(
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerAssignRole(
+        id,
+        roleId,
+        playerRoleAssignChangeDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11463,6 +11801,29 @@ export const PlayerApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetOne(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Remove role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerRemoveRole(
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerRemoveRole(
+        id,
+        roleId,
+        playerRoleAssignChangeDTO,
+        options
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -11491,6 +11852,25 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
   return {
     /**
      *
+     * @summary Assign role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerAssignRole(
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11498,6 +11878,25 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
      */
     playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputDTOAPI> {
       return localVarFp.playerControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Remove role
+     * @param {string} id
+     * @param {string} roleId
+     * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerRemoveRole(
+      id: string,
+      roleId: string,
+      playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -11526,6 +11925,27 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
 export class PlayerApi extends BaseAPI {
   /**
    *
+   * @summary Assign role
+   * @param {string} id
+   * @param {string} roleId
+   * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerAssignRole(
+    id: string,
+    roleId: string,
+    playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11535,6 +11955,27 @@ export class PlayerApi extends BaseAPI {
   public playerControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return PlayerApiFp(this.configuration)
       .playerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Remove role
+   * @param {string} id
+   * @param {string} roleId
+   * @param {PlayerRoleAssignChangeDTO} [playerRoleAssignChangeDTO] PlayerRoleAssignChangeDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerRemoveRole(
+    id: string,
+    roleId: string,
+    playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -11607,6 +12048,36 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       // verify required parameter 'id' is not null or undefined
       assertParamExists('roleControllerGetOne', 'id', id);
       const localVarPath = `/role/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    roleControllerGetPermissions: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/permissions`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -11780,6 +12251,18 @@ export const RoleApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async roleControllerGetPermissions(
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PermissionOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetPermissions(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11854,6 +12337,15 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
     },
     /**
      *
+     * @summary Get permissions
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    roleControllerGetPermissions(options?: any): AxiosPromise<PermissionOutputDTOAPI> {
+      return localVarFp.roleControllerGetPermissions(options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11924,6 +12416,19 @@ export class RoleApi extends BaseAPI {
   public roleControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return RoleApiFp(this.configuration)
       .roleControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get permissions
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof RoleApi
+   */
+  public roleControllerGetPermissions(options?: AxiosRequestConfig) {
+    return RoleApiFp(this.configuration)
+      .roleControllerGetPermissions(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12395,6 +12900,43 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerInvite: async (
+      inviteCreateDTO?: InviteCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/user/invite`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(inviteCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12696,6 +13238,20 @@ export const UserApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerInvite(
+      inviteCreateDTO?: InviteCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12835,6 +13391,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
     },
     /**
      *
+     * @summary Invite
+     * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
      * @param {*} [options] Override http request option.
@@ -12953,6 +13519,20 @@ export class UserApi extends BaseAPI {
   public userControllerGetOne(id: string, options?: AxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Invite
+   * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: AxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerInvite(inviteCreateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13133,12 +13713,45 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
     },
     /**
      *
-     * @summary Find
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerFindOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('variableControllerFindOne', 'id', id);
+      const localVarPath = `/variables/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    variableControllerFind: async (
+    variableControllerSearch: async (
       variableSearchInputDTO?: VariableSearchInputDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
@@ -13166,39 +13779,6 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
         localVarRequestOptions,
         configuration
       );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Find one
-     * @param {string} id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    variableControllerFindOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('variableControllerFindOne', 'id', id);
-      const localVarPath = `/variables/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
 
       return {
         url: toPathString(localVarUrlObj),
@@ -13286,20 +13866,6 @@ export const VariableApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Find
-     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async variableControllerFind(
-      variableSearchInputDTO?: VariableSearchInputDTO,
-      options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerFind(variableSearchInputDTO, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13310,6 +13876,23 @@ export const VariableApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerFindOne(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async variableControllerSearch(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerSearch(
+        variableSearchInputDTO,
+        options
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -13366,21 +13949,6 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
     },
     /**
      *
-     * @summary Find
-     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    variableControllerFind(
-      variableSearchInputDTO?: VariableSearchInputDTO,
-      options?: any
-    ): AxiosPromise<VariableOutputArrayDTOAPI> {
-      return localVarFp
-        .variableControllerFind(variableSearchInputDTO, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13388,6 +13956,21 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
      */
     variableControllerFindOne(id: string, options?: any): AxiosPromise<VariableOutputDTOAPI> {
       return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    variableControllerSearch(
+      variableSearchInputDTO?: VariableSearchInputDTO,
+      options?: any
+    ): AxiosPromise<VariableOutputArrayDTOAPI> {
+      return localVarFp
+        .variableControllerSearch(variableSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -13446,20 +14029,6 @@ export class VariableApi extends BaseAPI {
 
   /**
    *
-   * @summary Find
-   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof VariableApi
-   */
-  public variableControllerFind(variableSearchInputDTO?: VariableSearchInputDTO, options?: AxiosRequestConfig) {
-    return VariableApiFp(this.configuration)
-      .variableControllerFind(variableSearchInputDTO, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
    * @summary Find one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -13469,6 +14038,20 @@ export class VariableApi extends BaseAPI {
   public variableControllerFindOne(id: string, options?: AxiosRequestConfig) {
     return VariableApiFp(this.configuration)
       .variableControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof VariableApi
+   */
+  public variableControllerSearch(variableSearchInputDTO?: VariableSearchInputDTO, options?: AxiosRequestConfig) {
+    return VariableApiFp(this.configuration)
+      .variableControllerSearch(variableSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

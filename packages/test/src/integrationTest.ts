@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import { matchSnapshot } from './snapshots.js';
 import { integrationConfig } from './main.js';
 import { expect } from './test/expect.js';
-import { AdminClient, Client, AxiosResponse, RoleCreateInputDTOPermissionsEnum, isAxiosError } from '@takaro/apiclient';
+import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -149,10 +149,7 @@ export class IntegrationTest<SetupData> {
   }
 }
 
-export async function logInWithPermissions(
-  client: Client,
-  permissions: RoleCreateInputDTOPermissionsEnum[]
-): Promise<Client> {
+export async function logInWithPermissions(client: Client, permissions: string[]): Promise<Client> {
   const role = await client.role.roleControllerCreate({
     name: 'Test role',
     permissions,

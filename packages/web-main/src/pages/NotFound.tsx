@@ -1,11 +1,7 @@
 import { PageNotFound } from '@takaro/lib-components';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PATHS } from 'paths';
-import {
-  AiOutlineBook,
-  AiOutlineMenu,
-  AiOutlineWifi,
-  AiOutlineShop,
-} from 'react-icons/ai';
+import { AiOutlineBook, AiOutlineMenu, AiOutlineWifi, AiOutlineShop } from 'react-icons/ai';
 
 // TODO: Eventually set this to the correct pages.
 const PageNotFoundRedirects = [
@@ -36,9 +32,8 @@ const PageNotFoundRedirects = [
 ];
 
 const NotFound = () => {
-  return (
-    <PageNotFound pages={PageNotFoundRedirects} homeRoute={PATHS.home()} />
-  );
+  useDocumentTitle('Page not found');
+  return <PageNotFound pages={PageNotFoundRedirects} homeRoute={PATHS.home()} />;
 };
 
 export default NotFound;

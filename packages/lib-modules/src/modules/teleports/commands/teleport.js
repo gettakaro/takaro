@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -6,12 +6,24 @@ async function main() {
 
   const { player, gameServerId, arguments: args, module: mod } = data;
 
-  const ownedTeleportRes = await takaro.variable.variableControllerFind({
+  if (!checkPermission(player, 'TELEPORTS_USE')) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: 'You do not have permission to use teleports.',
+      opts: {
+        recipient: {
+          gameId: player.gameId,
+        },
+      },
+    });
+    return;
+  }
+
+  const ownedTeleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      key: `tp_${args.tp}`,
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: [`tp_${args.tp}`],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',
@@ -20,11 +32,11 @@ async function main() {
   let teleports = ownedTeleportRes.data.data;
 
   if (mod.userConfig.allowPublicTeleports) {
-    const maybePublicTeleportRes = await takaro.variable.variableControllerFind({
+    const maybePublicTeleportRes = await takaro.variable.variableControllerSearch({
       filters: {
-        key: `tp_${args.tp}`,
-        gameServerId,
-        moduleId: mod.moduleId,
+        key: [`tp_${args.tp}`],
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
       },
       sortBy: 'key',
       sortDirection: 'asc',
@@ -45,26 +57,27 @@ async function main() {
 
   const timeout = mod.userConfig.timeout;
 
-  const lastExecuted = await takaro.variable.variableControllerFind({
+  const lastExecuted = await takaro.variable.variableControllerSearch({
     filters: {
-      key: 'lastExecuted',
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
+      key: ['lastExecuted'],
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
     },
     sortBy: 'key',
     sortDirection: 'asc',
   });
-  const lastExecutedRecord = lastExecuted.data.data[0];
+  let lastExecutedRecord = lastExecuted.data.data[0];
 
   if (!lastExecutedRecord) {
-    await takaro.variable.variableControllerCreate({
+    const createRes = await takaro.variable.variableControllerCreate({
       key: 'lastExecuted',
       gameServerId,
       playerId: player.playerId,
       moduleId: mod.moduleId,
       value: new Date().toISOString(),
     });
+    lastExecutedRecord = createRes.data.data;
   } else {
     const lastExecutedTime = new Date(lastExecutedRecord.value);
     const now = new Date();

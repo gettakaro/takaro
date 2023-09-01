@@ -14,6 +14,8 @@ const Container = styled(motion.div)<{ isWrapped: boolean }>`
   overflow: hidden;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   z-index: ${({ theme }) => theme.zIndex.errorMessage};
+  top: 100%;
+  bottom: auto;
   padding: ${({ theme, isWrapped }) =>
     isWrapped
       ? `${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`

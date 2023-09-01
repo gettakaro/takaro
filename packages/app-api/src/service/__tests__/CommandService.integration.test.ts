@@ -217,6 +217,41 @@ const tests = [
       });
     },
   }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro, install module -> create command -> command not active',
+    setup,
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.mod.id
+      );
+
+      await this.client.command.commandControllerCreate({
+        name: 'Test command 2',
+        moduleId: this.setupData.mod.id,
+        trigger: 'test2',
+      });
+
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
+
+      await this.setupData.service.handleChatMessage(
+        await new EventChatMessage().construct({
+          msg: '/test2',
+          player: await getMockPlayer(),
+        }),
+        this.setupData.gameserver.id
+      );
+
+      expect(addStub).to.have.been.calledOnce;
+    },
+  }),
 ];
 
 describe(group, function () {

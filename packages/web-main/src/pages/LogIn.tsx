@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
-import { Helmet } from 'react-helmet';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +10,7 @@ import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AxiosError } from 'axios';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -68,11 +68,12 @@ interface IFormInputs {
 }
 
 const LogIn: FC = () => {
+  useDocumentTitle('Log in');
   const [loading, setLoading] = useState(false);
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
-  const { logIn, createLoginFlow } = useAuth();
+  const { oryClient } = useAuth();
   const navigate = useNavigate();
 
   const validationSchema = useMemo(
@@ -83,6 +84,25 @@ const LogIn: FC = () => {
       }),
     []
   );
+
+  async function createLoginFlow() {
+    const res = await oryClient.createBrowserLoginFlow({
+      refresh: true,
+    });
+    return res.data;
+  }
+
+  async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
+    await oryClient.updateLoginFlow({
+      flow,
+      updateLoginFlowBody: {
+        csrf_token,
+        identifier: email,
+        password,
+        method: 'password',
+      },
+    });
+  }
 
   useEffect(() => {
     if (loginFlow) {
@@ -135,9 +155,6 @@ const LogIn: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Log in - Takaro </title>
-      </Helmet>
       <Container>
         <Company size="huge" />
         {/* 
@@ -161,7 +178,7 @@ const LogIn: FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
           <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
-          <StyledLink to="/forgot-password">Forgot your password?</StyledLink>
+          <StyledLink to="/auth/recovery">Forgot your password?</StyledLink>
           {error && <FormError message={error} />}
           <Button
             icon={<Mail />}

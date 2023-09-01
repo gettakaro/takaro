@@ -1,12 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Select, TextField } from '@takaro/lib-components';
+import { Select, TextField, Button } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useHook, useHookUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
-import { StyledButton } from './style';
 
 interface IProps {
   moduleItem: ModuleItemProperties;
@@ -25,7 +24,7 @@ const validationSchema = z.object({
 
 export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useHook(moduleItem.itemId);
-  const { mutateAsync } = useHookUpdate();
+  const { mutateAsync, isLoading } = useHookUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -48,21 +47,13 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        control={control}
-        name="regex"
-        label="Regex"
-        readOnly={readOnly}
-      />
+      <TextField control={control} name="regex" label="Regex" readOnly={readOnly} />
       <Select
         control={control}
         name="eventType"
         label="Event Type"
         render={(selectedIndex) => {
-          return (
-            Object.values(HookCreateDTOEventTypeEnum)[selectedIndex] ??
-            'Select...'
-          );
+          return Object.values(HookCreateDTOEventTypeEnum)[selectedIndex] ?? 'Select...';
         }}
         readOnly={readOnly}
       >
@@ -76,7 +67,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           ))}
         </Select.OptionGroup>
       </Select>
-      {!readOnly && <StyledButton fullWidth type="submit" text="Save" />}
+      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save hook config" />}
     </form>
   );
 };

@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -13,12 +13,24 @@ async function main() {
     return;
   }
 
-  const teleportRes = await takaro.variable.variableControllerFind({
+  if (!checkPermission(player, 'TELEPORTS_CREATE_PUBLIC')) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: 'You do not have permission to create public teleports.',
+      opts: {
+        recipient: {
+          gameId: player.gameId,
+        },
+      },
+    });
+    return;
+  }
+
+  const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
-      gameServerId,
-      playerId: player.playerId,
-      moduleId: mod.moduleId,
-      key: `tp_${args.tp}`,
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
+      key: [`tp_${args.tp}`],
     },
     sortBy: 'key',
     sortDirection: 'asc',

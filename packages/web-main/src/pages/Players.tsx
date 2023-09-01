@@ -1,17 +1,12 @@
 import { FC, Fragment } from 'react';
-import { Helmet } from 'react-helmet';
 import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import {
-  AiOutlineUser as ProfileIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineDelete as DeleteIcon,
-  AiOutlineRight as ActionIcon,
-} from 'react-icons/ai';
+import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -21,6 +16,7 @@ const TableContainer = styled.div`
 `;
 
 const Players: FC = () => {
+  useDocumentTitle('Players');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
   const navigate = useNavigate();
 
@@ -32,17 +28,18 @@ const Players: FC = () => {
       ? PlayerSearchInputDTOSortDirectionEnum.Desc
       : PlayerSearchInputDTOSortDirectionEnum.Asc,
     filters: {
-      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value as string,
-      steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value as string,
+      name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+      steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value,
       epicOnlineServicesId: columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')
-        ?.value as string,
-      xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value as string,
+        ?.value,
+      xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value,
     },
     search: {
-      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value as string,
-      steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value as string,
-      epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId'),
-      xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value as string,
+      name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+      steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
+      epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
+        ?.value,
+      xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
     },
   });
 
@@ -81,14 +78,12 @@ const Players: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       cell: (info) => info.getValue(),
-      enableColumnFilter: true,
       enableSorting: true,
     }),
 
@@ -109,16 +104,16 @@ const Players: FC = () => {
             <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
-            <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                label="Go to player profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.players()}/${info.row.original.id}`)}
-              />
-              <Dropdown.Menu.Item label="go to user profile" icon={<EditIcon />} onClick={() => navigate('')} />
-            </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
-            <Dropdown.Menu.Item label="Ban player" icon={<DeleteIcon />} onClick={() => navigate('')} />
+            <Dropdown.Menu.Item
+              label="Go to player profile"
+              icon={<ProfileIcon />}
+              onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
+            />
+            <Dropdown.Menu.Item
+              label="Assign role"
+              icon={<EditIcon />}
+              onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
+            />
           </Dropdown.Menu>
         </Dropdown>
       ),
@@ -131,19 +126,15 @@ const Players: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Players - Takaro</title>
-      </Helmet>
-
       <TableContainer>
         <Table
+          id="players"
           columns={columnDefs}
-          defaultDensity="relaxed"
-          data={data.pages[pagination.paginationState.pageIndex].data}
+          data={data.data as PlayerOutputDTO[]}
           pagination={{
-            ...pagination,
-            pageCount: data.pages[pagination.paginationState.pageIndex].meta.page!,
-            total: data.pages[pagination.paginationState.pageIndex].meta.total!,
+            paginationState: pagination.paginationState,
+            setPaginationState: pagination.setPaginationState,
+            pageOptions: pagination.getPageOptions(data),
           }}
           columnFiltering={columnFilters}
           columnSearch={columnSearch}

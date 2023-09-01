@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
@@ -17,7 +17,7 @@ interface RoleInput {
   roleId: string;
 }
 
-export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
+export const useInfiniteUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
@@ -40,6 +40,18 @@ export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   return { ...queryOpts, InfiniteScroll };
 };
 
+export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
+    queryKey: [...userKeys.list(), { queryParams }],
+    queryFn: async () => (await apiClient.user.userControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
+};
+
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
 
@@ -56,5 +68,18 @@ export const useUserRemoveRole = () => {
     mutationFn: async ({ userId, roleId }: RoleInput) =>
       (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
     useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+};
+
+export const useInviteUser = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, { email: string }>({
+    mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(userKeys.list());
+    },
   });
 };

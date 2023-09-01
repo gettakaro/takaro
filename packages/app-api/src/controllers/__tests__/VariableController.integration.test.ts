@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
 import { config } from '../../config.js';
 import { EventTypes } from '@takaro/modules';
@@ -127,11 +127,11 @@ const tests = [
     },
     expectedStatus: 409,
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key but different gameServerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -147,11 +147,11 @@ const tests = [
     },
     filteredFields: ['gameServerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key but different playerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -167,11 +167,11 @@ const tests = [
     },
     filteredFields: ['playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same playerId and different gameServerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -189,11 +189,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same gameServerId and different playerId is allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -211,11 +211,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Same key, same playerId and same gameServerId is not allowed',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -234,11 +234,11 @@ const tests = [
     expectedStatus: 409,
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Can query API with playerId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -252,9 +252,9 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      const res = await this.client.variable.variableControllerFind({
+      const res = await this.client.variable.variableControllerSearch({
         filters: {
-          playerId: this.setupData.players[0].id,
+          playerId: [this.setupData.players[0].id],
         },
       });
 
@@ -265,11 +265,11 @@ const tests = [
     },
     filteredFields: ['gameServerId', 'playerId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Can query API with gameServerId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       await this.client.variable.variableControllerCreate({
         key: 'Variable',
@@ -283,9 +283,9 @@ const tests = [
         gameServerId: this.setupData.gameServer2.id,
       });
 
-      const res = await this.client.variable.variableControllerFind({
+      const res = await this.client.variable.variableControllerSearch({
         filters: {
-          gameServerId: this.setupData.gameServer1.id,
+          gameServerId: [this.setupData.gameServer1.id],
         },
       });
 

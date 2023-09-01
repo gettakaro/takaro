@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, CSSProperties } from 'react';
 
 import { styled } from '../../../styled';
 
@@ -12,26 +12,18 @@ const StyledP = styled.p`
 interface DescriptionProps {
   description: string;
   inputName: string;
+  style?: CSSProperties;
 }
 
-export const Description: FC<DescriptionProps> = ({
-  description,
-  inputName,
-}) => {
+export const Description: FC<DescriptionProps> = ({ description, inputName, style }) => {
   const urlPattern = /(https?:\/\/[^\s]+)/g;
 
   return (
-    <StyledP id={`${inputName}-description`}>
+    <StyledP id={`${inputName}-description`} style={style}>
       {description.split(urlPattern).map((part, i) => {
         if (part.match(urlPattern)) {
           return (
-            <a
-              key={`${i}`}
-              href={part}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
+            <a key={`${i}`} href={part} target="_blank" rel="noopener noreferrer" className="underline">
               {part}
             </a>
           );

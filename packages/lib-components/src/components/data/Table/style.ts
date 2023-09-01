@@ -5,12 +5,18 @@ export const Wrapper = styled.div`
   overflow-x: auto;
 `;
 
-export const Header = styled.div`
+export const Toolbar = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
+`;
+
+export const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const StyledTable = styled.table<{ density: Density }>`
@@ -32,7 +38,7 @@ export const StyledTable = styled.table<{ density: Density }>`
       if (density === 'tight') {
         return `${theme.spacing['0_5']} 0`;
       }
-      return `${theme.spacing['2_5']} 0`;
+      return `${theme.spacing['1_5']} 0`;
     }};
 
     &:first-of-type {
@@ -65,10 +71,4 @@ export const PaginationContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-`;
-
-export const Flex = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
 `;

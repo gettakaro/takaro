@@ -1,5 +1,4 @@
-import { PaginationState, ColumnFiltersState, SortingState } from '@tanstack/react-table';
-import { AxiosResponse } from 'axios';
+import { PaginationState, SortingState, RowSelectionState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { APIOutput } from '@takaro/apiclient';
 
@@ -7,42 +6,51 @@ interface ExtendedAPIOutput<T> extends APIOutput {
   data: T[];
 }
 
-interface Paginated<T> {
-  rows: T[];
+export interface PageOptions {
+  // amount of pages items are spread across
   pageCount: number;
+  // total amount of items
   total: number;
 }
 
-export function useTableActions<T>(pageIndex = 0, pageSize = 10) {
+interface TableActionOptions {
+  pageIndex: number;
+  pageSize: number;
+}
+
+export interface ColumnFilter {
+  id: string;
+  value: string[];
+}
+
+export function useTableActions<T>({ pageIndex, pageSize }: TableActionOptions = { pageIndex: 0, pageSize: 9 }) {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex,
     pageSize,
   });
-  const [columnFiltersState, setColumnFiltersState] = useState<ColumnFiltersState>([]);
-  const [columnSearchState, setColumnSearchState] = useState<ColumnFiltersState>([]);
+  const [columnFiltersState, setColumnFiltersState] = useState<ColumnFilter[]>([]);
+  const [columnSearchState, setColumnSearchState] = useState<ColumnFilter[]>([]);
   const [sortingState, setSortingState] = useState<SortingState>([]);
+  const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
 
-  function paginate(response: AxiosResponse<ExtendedAPIOutput<T>>): Paginated<T> {
-    setPaginationState({
-      pageIndex: paginationState.pageIndex++,
-      pageSize: paginationState.pageSize,
-    });
+  function getPageOptions(data: ExtendedAPIOutput<T>): PageOptions {
+    // we can use page 0 here because that data is the same for all pages
+    const limit = data.meta.limit!;
+    const total = data.meta.total!;
 
-    // non-null because this hook is only used when paginating.
-    // In that case the metadata will always be present.
+    const pageCount = data.meta.total ? Math.ceil(total / limit) : Math.ceil(data.data.length / limit);
+
     return {
-      rows: response.data.data,
-      pageCount: response.data.meta.total
-        ? Math.ceil(response.data.meta.total / response.data.meta.limit!)
-        : Math.ceil(response.data.data.length / response.data.meta.limit!),
-      total: response.data.meta.total!,
+      pageCount,
+      total,
     };
   }
 
   return {
-    pagination: { paginate, paginationState, setPaginationState },
+    pagination: { paginationState, setPaginationState, getPageOptions },
     columnFilters: { columnFiltersState, setColumnFiltersState },
     columnSearch: { columnSearchState, setColumnSearchState },
     sorting: { sortingState, setSortingState },
+    rowSelection: { rowSelectionState, setRowSelectionState },
   };
 }
