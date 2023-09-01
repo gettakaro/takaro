@@ -32,7 +32,9 @@ import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';
 import { RolesUpdate } from './pages/roles/RolesUpdate';
 import { PlayerProfile } from 'pages/player/profile';
-import { AssignRole } from 'pages/roles/assignRole';
+import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
+import { UserProfile } from 'pages/users/profile';
+import { AssignUserRole } from 'pages/roles/assignUserRole';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -69,14 +71,18 @@ export const Router: FC = () => (
           <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
 
-        <Route element={<Players />} path={PATHS.players()} />
-
         <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-          <Route element={<AssignRole />} path={PATHS.player.assignRole(':playerId')} />
+          <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
         </Route>
 
         <Route element={<GameServers />} path="/server/" />
+
         <Route element={<Users />} path={PATHS.users()} />
+
+        <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>
+          <Route element={<AssignUserRole />} path={PATHS.user.assignRole(':userId')} />
+        </Route>
+
         <Route element={<Variables />} path={PATHS.variables()} />
 
         {/* ======================== CRUD Game Servers ======================== */}

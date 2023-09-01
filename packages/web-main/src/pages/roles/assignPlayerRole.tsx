@@ -1,6 +1,6 @@
 import { Drawer, CollapseList, FormError, Button, Select, TextField, Loading } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { useRoleAssign, useRoles } from 'queries/roles';
+import { usePlayerRoleAssign, useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ButtonContainer } from './style';
@@ -11,7 +11,7 @@ import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 
 interface IFormInputs {
-  playerId: string;
+  id: string;
   roleId: string;
   gameServerId?: string;
 }
@@ -21,7 +21,7 @@ interface IAssignRoleFormProps {
   gameServers: GameServerOutputDTO[];
 }
 
-export const AssignRole: FC = () => {
+export const AssignPlayerRole: FC = () => {
   const { data: roles, isLoading: isLoadingRoles } = useRoles();
   const { data: gameservers, isLoading: isLoadingGameServers } = useGameServers();
 
@@ -40,7 +40,7 @@ export const AssignRole: FC = () => {
 
 const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   const [open, setOpen] = useState(true);
-  const { mutateAsync, isLoading, error } = useRoleAssign();
+  const { mutateAsync, isLoading, error } = usePlayerRoleAssign();
   const navigate = useNavigate();
   const { playerId } = useParams<{ playerId: string }>();
 
@@ -59,16 +59,16 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
     mode: 'onSubmit',
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
-      playerId,
+      id: playerId,
       roleId: roles[0].id,
       gameServerId: gameServers[0].id,
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ playerId, roleId, gameServerId }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId }) => {
     if (gameServerId === 'null') gameServerId = undefined;
-    await mutateAsync({ id: playerId, roleId, gameServerId });
-    navigate(PATHS.player.profile(playerId));
+    await mutateAsync({ id, roleId, gameServerId });
+    navigate(PATHS.player.profile(id));
   };
 
   return (
@@ -79,7 +79,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="create-role-form">
               <CollapseList.Item title="General">
-                <TextField readOnly control={control} name="playerId" label="Player" />
+                <TextField readOnly control={control} name="id" label="Player" />
 
                 <Select
                   control={control}

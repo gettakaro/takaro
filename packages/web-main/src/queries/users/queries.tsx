@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
+import { APIOutput, UserOutputArrayDTOAPI, UserOutputWithRolesDTO, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
@@ -47,6 +47,17 @@ export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
     queryKey: [...userKeys.list(), { queryParams }],
     queryFn: async () => (await apiClient.user.userControllerSearch(queryParams)).data,
     keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
+};
+
+export const useUser = (userId: string) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
+    queryKey: [...userKeys.detail(userId)],
+    queryFn: async () => (await apiClient.user.userControllerGetOne(userId)).data.data,
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
   return queryOpts;
