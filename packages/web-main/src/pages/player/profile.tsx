@@ -8,7 +8,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useGameServers } from 'queries/gameservers';
 import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { useRoleUnassign } from 'queries/roles';
+import { usePlayerRoleUnassign } from 'queries/roles';
 
 export const PlayerProfile: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -59,7 +59,7 @@ interface IPlayerRolesTableProps {
 
 const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleAssignmentOutputDTO>();
-  const { mutate } = useRoleUnassign();
+  const { mutate } = usePlayerRoleUnassign();
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 

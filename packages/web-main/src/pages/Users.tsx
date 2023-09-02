@@ -102,7 +102,7 @@ const Users: FC = () => {
               <Dropdown.Menu.Item
                 label="Go to user profile"
                 icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.users()}/${info.row.original.id}`)}
+                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
               />
             </Dropdown.Menu.Group>
             <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />

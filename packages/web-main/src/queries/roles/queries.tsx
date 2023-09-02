@@ -19,6 +19,7 @@ import { useMemo } from 'react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import * as Sentry from '@sentry/react';
 import { playerKeys } from 'queries/players/queries';
+import { userKeys } from 'queries/users';
 
 export const roleKeys = {
   all: ['roles'] as const,
@@ -200,16 +201,16 @@ export const useRoleRemove = () => {
   });
 };
 
-interface RoleAssign {
+interface IPlayerRoleAssign {
   id: string;
   roleId: string;
   gameServerId?: string;
 }
 
-export const useRoleAssign = () => {
+export const usePlayerRoleAssign = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
-  return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
+  return useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
     mutationFn: async ({ id, roleId, gameServerId }) => {
       const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data;
       // TODO: _should_ happen in the onSuccess below I guess
@@ -222,14 +223,43 @@ export const useRoleAssign = () => {
   });
 };
 
-export const useRoleUnassign = () => {
+export const usePlayerRoleUnassign = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
-  return useMutation<APIOutput, AxiosError<APIOutput>, RoleAssign>({
+  return useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
     mutationFn: async ({ id, roleId, gameServerId }) => {
       const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
       // TODO: Same cache issue as in useRoleAssign...
       queryClient.invalidateQueries(playerKeys.detail(id));
+      return res;
+    },
+  });
+};
+
+interface IUserRoleAssign {
+  id: string;
+  roleId: string;
+}
+
+export const useUserRoleAssign = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+    mutationFn: async ({ id, roleId }) => {
+      const res = (await apiClient.user.userControllerAssignRole(id, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(id));
+      return res;
+    },
+  });
+};
+
+export const useUserRoleUnassign = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+    mutationFn: async ({ id, roleId }) => {
+      const res = (await apiClient.user.userControllerRemoveRole(id, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(id));
       return res;
     },
   });
