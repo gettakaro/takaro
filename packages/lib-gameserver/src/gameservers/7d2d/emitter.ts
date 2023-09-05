@@ -12,6 +12,7 @@ import {
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { SevenDaysToDie } from './index.js';
+import ms from 'ms';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -32,6 +33,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private sdtd: SevenDaysToDie;
 
   private recentMessages: Set<string> = new Set(); // To track recent messages
+  private checkInterval: NodeJS.Timer;
+  private lastMessageTimestamp = Date.now();
+  private keepAliveTimeout = ms('30s');
 
   constructor(private config: SdtdConnectionInfo) {
     super();
@@ -43,6 +47,16 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async start(): Promise<void> {
+    this.checkInterval = setInterval(() => {
+      if (Date.now() - this.lastMessageTimestamp >= this.keepAliveTimeout) {
+        this.logger.warn(`No messages received for ${ms(this.keepAliveTimeout, { long: true })}. Reconnecting...`);
+        this.lastMessageTimestamp = Date.now();
+        this.stop()
+          .then(() => this.start())
+          .catch((err) => this.logger.error('Error during reconnection', err));
+      }
+    }, 5000);
+
     await Promise.race([
       new Promise<void>((resolve, reject) => {
         this.logger.debug(`Connecting to ${this.config.host}`);
@@ -73,6 +87,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async stop(): Promise<void> {
+    if (this.checkInterval) {
+      clearInterval(this.checkInterval);
+    }
     this.eventSource.removeEventListener('logLine', this.listener);
     this.eventSource.close();
   }
@@ -196,6 +213,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async listener(data: MessageEvent) {
+    this.lastMessageTimestamp = Date.now();
+
     const parsed = JSON.parse(data.data);
     const messageMatch = this.SSERegex.exec(parsed.msg);
     if (messageMatch && messageMatch[1]) {
