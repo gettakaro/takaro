@@ -4,3 +4,12 @@ gha_enabled: True
 description: "Test coverage is very important to us. Always check for related tests. If you are working with backend code, the tests will usually be in a subfolder called __tests__. If you are making frontend changes, look for tests in packages/e2e, the frontend tests use playwright. We care about test coverage, so if you add a separate execution path, add a new test rather than replacing the logic."
 
 docs: {"playwright": "https://playwright.dev/", "typescript": "https://www.typescriptlang.org/docs/", "react": "https://react.dev/"}
+
+sandbox:
+  install:
+    - cd packages/web-main && npm i # or npm run ci
+    - cd packages/web-main && npm i prettier
+  check:
+    - packages/web-main/node_modules/prettier/bin/prettier.cjs --write {file_path} # Not sure if you use prettier but it helps with syntax errors. Remove --write if you don't want the actual formatting.
+      #    - npx tsc --project packages/web-main/tsconfig.json # I will continue to try to get this working.
+    - ./scripts/dev-init.sh
