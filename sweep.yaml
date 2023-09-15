@@ -7,9 +7,7 @@ docs: {"playwright": "https://playwright.dev/", "typescript": "https://www.types
 
 sandbox:
   install:
-    - cd packages/web-main && npm i # or npm run ci
-    - cd packages/web-main && npm i prettier
-  check:
-    - packages/web-main/node_modules/prettier/bin/prettier.cjs --write {file_path} # Not sure if you use prettier but it helps with syntax errors. Remove --write if you don't want the actual formatting.
-      #    - npx tsc --project packages/web-main/tsconfig.json # I will continue to try to get this working.
     - ./scripts/dev-init.sh
+  check:
+    - npm run test:style
+    - npm run test:unit
