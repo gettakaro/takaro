@@ -56,4 +56,9 @@ export const PATHS = {
     profile: (playerId: string) => `/player/${playerId}`,
     assignRole: (playerId: string) => `/player/${playerId}/assign-role`,
   },
+
+  user: {
+    profile: (userId: string) => `/user/${userId}`,
+    assignRole: (userId: string) => `/user/${userId}/assign-role`,
+  },
 };

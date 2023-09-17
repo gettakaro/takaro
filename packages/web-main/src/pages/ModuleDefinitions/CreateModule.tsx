@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, useFieldArray } from 'react-hook-form';
 import {
   Button,
   TextField,
@@ -7,22 +7,25 @@ import {
   CollapseList,
   styled,
   SchemaGenerator,
-  errors,
   FormError,
   TextAreaField,
+  Tooltip,
+  IconButton,
 } from '@takaro/lib-components';
+import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { useModuleCreate } from 'queries/modules';
 import { AnySchema } from 'ajv';
+import { PermissionCard, PermissionList, Fields, Column } from './style'; // Assuming these styles are available
+import { PermissionCreateDTO } from '@takaro/apiclient';
 
 interface IFormInputs {
   name: string;
   description?: string;
+  permissions: PermissionCreateDTO[];
 }
 
 const ButtonContainer = styled.div`
@@ -34,11 +37,27 @@ const ButtonContainer = styled.div`
 const CreateModule: FC = () => {
   const [open, setOpen] = useState(true);
   const [generalData, setGeneralData] = useState<IFormInputs>();
-  const [errorMessage, setErrorMessage] = useState<string | string[] | undefined>();
   const [schema, setSchema] = useState<null | AnySchema>(null);
   const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading, error: createModuleError } = useModuleCreate();
+  const { mutate, isLoading, error, isSuccess } = useModuleCreate();
+
+  const { control, handleSubmit } = useForm<IFormInputs>({
+    mode: 'onSubmit',
+    resolver: zodResolver(moduleValidationSchema),
+    defaultValues: {
+      permissions: [],
+    },
+  });
+
+  const {
+    fields,
+    append: addField,
+    remove,
+  } = useFieldArray({
+    control: control,
+    name: 'permissions',
+  });
 
   useEffect(() => {
     if (!open) {
@@ -46,13 +65,8 @@ const CreateModule: FC = () => {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
-    mode: 'onSubmit',
-    resolver: zodResolver(moduleValidationSchema),
-  });
-
-  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({ name, description }) => {
-    setGeneralData({ name, description });
+  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({ name, description, permissions }) => {
+    setGeneralData({ name, description, permissions });
   };
 
   const onGeneratorSubmit = async (schema: AnySchema) => {
@@ -60,39 +74,25 @@ const CreateModule: FC = () => {
   };
 
   useEffect(() => {
-    const createModule = async () => {
-      if (generalData && Object.keys(generalData).length !== 0 && schema && Object.keys(schema).length !== 0) {
-        try {
-          await mutateAsync({
-            name: generalData.name,
-            description: generalData.description,
-            configSchema: JSON.stringify(schema),
-          });
+    if (isSuccess) {
+      navigate(PATHS.moduleDefinitions());
+    }
+  }, [isSuccess]);
 
-          navigate(PATHS.moduleDefinitions());
-        } catch (error) {
-          console.log(error);
-          Sentry.captureException(error);
-        }
+  useEffect(() => {
+    const createModule = async () => {
+      if (generalData && schema) {
+        mutate({
+          name: generalData.name,
+          description: generalData.description,
+          configSchema: JSON.stringify(schema),
+          permissions: generalData.permissions,
+        });
       }
     };
 
     createModule();
-  }, [generalData, setGeneralData, mutateAsync, navigate, schema, setSchema]);
-
-  if (!errorMessage && createModuleError) {
-    const errorType = errors.defineErrorType(createModuleError);
-    if (errorType instanceof errors.UniqueConstraintError) {
-      setErrorMessage('A module with that name already exists.');
-    }
-    if (errorType instanceof errors.ResponseValidationError) {
-      const msgs = errorType.parseValidationError();
-      setErrorMessage(msgs);
-    }
-    if (errorType instanceof errors.InternalServerError) {
-      setErrorMessage(errorType.message);
-    }
-  }
+  }, [generalData, setGeneralData, schema, setSchema]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -119,11 +119,69 @@ const CreateModule: FC = () => {
                 />
               </form>
             </CollapseList.Item>
+
+            <CollapseList.Item title="Permissions">
+              <details>
+                <summary>What are permissions?</summary>
+                <p>
+                  Permissions are a way to control who can use the items inside your module or control the behavior of
+                  functions inside your module. For example, if you have a command that only admins should be able to
+                  use, you can create a permission for it and then check for it to the command. Or, you might want to
+                  have different behavior for different groups of players (e.g. regular players vs donators)
+                </p>
+              </details>
+
+              {fields.length > 0 && (
+                <PermissionList>
+                  {fields.map((field, index) => (
+                    <PermissionCard key={field.id}>
+                      <Fields>
+                        <TextField
+                          label="Name"
+                          control={control}
+                          name={`permissions.${index}.permission`}
+                          description="This is the permission code name, what you will need to check for inside the module code"
+                        />
+
+                        <TextField control={control} label="Description" name={`permissions.${index}.description`} />
+                        <TextField control={control} label="Friendly name" name={`permissions.${index}.friendlyName`} />
+                      </Fields>
+                      <Column>
+                        <Tooltip>
+                          <Tooltip.Trigger asChild>
+                            <IconButton
+                              onClick={() => remove(index)}
+                              icon={<CloseIcon size={16} cursor="pointer" />}
+                              ariaLabel="Remove"
+                            />
+                          </Tooltip.Trigger>
+                          <Tooltip.Content>Remove</Tooltip.Content>
+                        </Tooltip>
+                      </Column>
+                    </PermissionCard>
+                  ))}
+                </PermissionList>
+              )}
+              <Button
+                onClick={(_e) => {
+                  addField({
+                    permission: '',
+                    description: 'No description',
+                    friendlyName: '',
+                  });
+                }}
+                type="button"
+                fullWidth
+                text="New permission"
+                variant="outline"
+              ></Button>
+            </CollapseList.Item>
+
             <CollapseList.Item title="Config">
               <SchemaGenerator onSchemaChange={onGeneratorSubmit} ref={SchemaGeneratorFormRef} />
             </CollapseList.Item>
           </CollapseList>
-          {errorMessage && <FormError message={errorMessage} />}
+          {error && <FormError error={error} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>

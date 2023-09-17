@@ -41,6 +41,27 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
 
+  it('[PlayerConnected]: Can detect simple player connected when player connects for the first time', async () => {
+    const emitter = new SevenDaysToDieEmitter(await mockSdtdConnectionInfo);
+    await emitter.parseMessage({
+      msg: `PlayerSpawnedInWorld (reason: EnterMultiplayer, position: 1080, 61, 1089): EntityID=3812, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm', ClientNumber='6'`,
+    });
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+      name: 'Catalysm',
+      ping: undefined,
+      gameId: '0002b5d970954287afdcb5dc35af0424',
+      steamId: '76561198028175941',
+      epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
+      xboxLiveId: undefined,
+      ip: undefined,
+      platformId: undefined,
+    });
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+  });
+
   it('[PlayerConnected]: Can detect Xbox player connected', async () => {
     await new SevenDaysToDieEmitter(await mockSdtdConnectionInfo).parseMessage({
       msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='XBL_123456abcdef', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,

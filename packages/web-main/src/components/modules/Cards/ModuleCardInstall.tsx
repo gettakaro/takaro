@@ -32,7 +32,7 @@ export const ModuleCardInstall: FC<IModuleCardProps> = ({ mod, installation }) =
   };
 
   return (
-    <ModuleCardContainer>
+    <ModuleCardContainer data-testid={`module-${mod.id}`}>
       <h2>{mod.name}</h2>
 
       <p>{mod.description}</p>

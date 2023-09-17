@@ -7,14 +7,7 @@ async function main() {
   const { player, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(player, 'TELEPORTS_USE')) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'You do not have permission to use teleports.',
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
+    await data.player.pm('You do not have permission to use teleports.');
     return;
   }
 

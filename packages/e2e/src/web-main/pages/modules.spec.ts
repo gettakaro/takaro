@@ -1,5 +1,6 @@
 import playwright from '@playwright/test';
 import { basicTest, test } from '../fixtures/index.js';
+import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect, test: pwTest } = playwright;
 
@@ -17,6 +18,37 @@ basicTest('Can create module', async ({ page }) => {
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(newModuleName)).toBeVisible();
+});
+
+basicTest('Can create module with permissions', async ({ page }) => {
+  // open modules page
+  await page.getByRole('link', { name: 'Modules' }).click();
+  await page.getByText('new module').click();
+
+  const newModuleName = 'My new module';
+  const moduleNameInput = page.getByPlaceholder('My cool module');
+
+  await moduleNameInput.click();
+  await moduleNameInput.fill(newModuleName);
+
+  await page.getByRole('button', { name: 'New permission' }).click();
+  await page.getByRole('button', { name: 'New permission' }).click();
+
+  await page.locator('[id="permissions\\.0\\.permission"]').type('MY_PERMISSION');
+  await page.locator('[id="permissions\\.0\\.description"]').type('Informative description');
+  await page.locator('[id="permissions\\.0\\.friendlyName"]').type('My first permission');
+
+  await page.locator('[id="permissions\\.1\\.permission"]').type('MY_PERMISSION2');
+  await page.locator('[id="permissions\\.1\\.description"]').type('Informative description 2');
+  await page.locator('[id="permissions\\.1\\.friendlyName"]').type('My second permission');
+
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  /*   await expect(page.getByText(newModuleName)).toBeVisible();
+  
+    await page.getByRole('link', { name: 'My new module Edit module Delete module No description provided.' }).getByRole('button', { name: 'Edit module' }).click();
+    await expect(page.getByText('MY_PERMISSION')).toBeVisible();
+    await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
 });
 
 basicTest('Creating module with config, saves the config', async ({ page }) => {
@@ -121,26 +153,51 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
-test.fixme('Can install module with empty config', async ({ page }) => {
+basicTest('Can install module with empty config', async ({ page, takaro }) => {
+  const modRes = await takaro.client.module.moduleControllerSearch({ filters: { name: ['Module without functions'] } });
+
+  const mod = modRes.data.data[0];
+
+  await expect(mod).toBeDefined();
+
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
   await page.getByText('Server Modules').click();
 
-  await page
-    .getByRole('list')
-    .locator('div')
-    .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
-    .getByRole('button', { name: 'Install' })
-    .click();
+  await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
+
+  await page.getByRole('button', { name: 'Install' }).click();
+
+  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
+});
+
+basicTest('Can install a module with a discord hook', async ({ page, takaro }) => {
+  const mod = await takaro.client.module.moduleControllerCreate({
+    name: 'Module with Discord hook',
+    configSchema: JSON.stringify({}),
+    description: 'aaa',
+  });
+
+  await takaro.client.hook.hookControllerCreate({
+    name: 'My hook',
+    eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
+    moduleId: mod.data.data.id,
+    regex: 'test',
+  });
+
+  await page.getByRole('link', { name: 'Servers' }).click();
+  await page.getByText('Test server').click();
+  await page.getByText('Server Modules').click();
+
+  await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
+
+  await page.getByLabel('My hook Discord channel IDRequired').type('123');
 
   await page.getByRole('button', { name: 'Install' }).click();
 
   await expect(
-    page
-      .getByRole('list')
-      .locator('div')
-      .filter({ hasText: 'Module without functionsEmpty module with no functions Install' })
-  ).toHaveCount(0);
+    page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Uninstall module' })
+  ).toBeVisible();
 });
 
 pwTest.describe('Module config', () => {

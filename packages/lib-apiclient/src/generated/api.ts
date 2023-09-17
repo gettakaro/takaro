@@ -12,9 +12,8 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from './configuration.js';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import globalAxios from 'axios';
+import { Configuration } from './configuration.js';
+import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -29,9 +28,8 @@ import {
   toPathString,
   createRequestFunction,
 } from './common.js';
-import type { RequestArgs } from './base.js';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base.js';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base.js';
 
 /**
  *
@@ -5124,10 +5122,10 @@ export interface UserOutputDTO {
 export interface UserOutputDTOAPI {
   /**
    *
-   * @type {UserOutputDTO}
+   * @type {UserOutputWithRolesDTO}
    * @memberof UserOutputDTOAPI
    */
-  data: UserOutputDTO;
+  data: UserOutputWithRolesDTO;
   /**
    *
    * @type {MetadataOutput}
