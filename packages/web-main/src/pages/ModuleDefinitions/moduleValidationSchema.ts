@@ -16,4 +16,11 @@ export const moduleValidationSchema = z.object({
       message: 'Module description requires a maximum length of 100 characters',
     })
     .optional(),
+  permissions: z.array(
+    z.object({
+      permission: z.string().nonempty('Permission cannot be empty'),
+      description: z.string().optional(),
+      friendlyName: z.string().optional(),
+    })
+  ),
 });

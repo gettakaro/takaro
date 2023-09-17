@@ -10,6 +10,7 @@ import {
   ValidateNested,
   IsOptional,
   IsUUID,
+  IsNotEmpty,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -50,14 +51,15 @@ export class SearchRoleInputDTO {
 
 export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @IsString()
+  @IsNotEmpty()
   permission!: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   friendlyName: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   description: string;
 }
 
@@ -66,11 +68,11 @@ export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
   permission!: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   friendlyName: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   description: string;
 }
 
