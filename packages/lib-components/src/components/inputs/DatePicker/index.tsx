@@ -12,7 +12,7 @@ import { DateSelector } from './DateSelector';
 import { DatePickerContext, DatePickerDispatchContext, reducer } from './Context';
 
 export interface DatePickerProps {
-  value: string;
+  value?: string;
   readOnly?: boolean;
   id: string;
   onChange: (start: DateTime, end: DateTime) => void;
@@ -51,19 +51,18 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange
             }
           >
             <Popover.Trigger asChild>
-              <ItemContainer readOnly={readOnly}>
-                <QuickSelectContainer
-                  onClick={() =>
-                    dispatch({
-                      type: 'toggle_quick_select_popover',
-                      payload: { toggleQuickSelect: !state.showQuickSelect },
-                    })
-                  }
-                >
-                  <CalendarIcon size={18} />
-                  <DownIcon size={18} />
-                </QuickSelectContainer>
-              </ItemContainer>
+              <QuickSelectContainer
+                readOnly={readOnly}
+                onClick={() =>
+                  dispatch({
+                    type: 'toggle_quick_select_popover',
+                    payload: { toggleQuickSelect: !state.showQuickSelect },
+                  })
+                }
+              >
+                <CalendarIcon size={18} />
+                <DownIcon size={18} />
+              </QuickSelectContainer>
             </Popover.Trigger>
             <Popover.Content>
               <QuickSelect id={`quick-select-${id}`} />

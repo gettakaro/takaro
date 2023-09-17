@@ -6,6 +6,7 @@ const List = styled.ol`
   padding: 0;
   border-left: 1px solid ${({ theme }) => theme.colors.textAlt};
   width: 100%;
+  height: fit-content;
 `;
 
 export const EventFeed: FC<PropsWithChildren> = ({ children }) => {

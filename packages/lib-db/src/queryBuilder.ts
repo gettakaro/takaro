@@ -1,15 +1,15 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { QueryBuilder as ObjectionQueryBuilder, Model as ObjectionModel, Page, AnyQueryBuilder } from 'objection';
 
 export class ITakaroQuery<T> {
   @IsOptional()
   filters?: {
-    [key in keyof T]?: unknown[];
+    [key in keyof T]?: unknown[] | unknown;
   };
 
   @IsOptional()
   search?: {
-    [key in keyof T]?: unknown[];
+    [key in keyof T]?: unknown[] | unknown;
   };
 
   @IsOptional()
@@ -28,6 +28,14 @@ export class ITakaroQuery<T> {
   @IsString()
   @IsEnum(['asc', 'desc'])
   sortDirection?: SortDirection;
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
 
   @IsOptional()
   @IsString({ each: true })
@@ -49,6 +57,13 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
     const sorting = this.sorting();
 
     let qry = query.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
+
+    if (this.query.startDate) {
+      qry = qry.where(`${tableName}.createdAt`, '>=', this.query.startDate);
+    }
+    if (this.query.endDate) {
+      qry = qry.where(`${tableName}.createdAt`, '<=', this.query.endDate);
+    }
 
     qry = this.filters(tableName, qry);
 
@@ -84,7 +99,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
         const searchVal = this.query.filters[filter];
 
-        if (searchVal) {
+        if (searchVal && Array.isArray(searchVal)) {
           const filtered = searchVal.filter(Boolean);
           if (filtered.length) {
             query.whereIn(`${tableName}.${filter}`, searchVal.filter(Boolean) as unknown as AnyQueryBuilder);

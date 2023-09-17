@@ -5,8 +5,7 @@ import { Button } from '../../../components';
 
 export interface InfiniteScrollProps {
   isFetchingNextPage: boolean;
-  // TODO: correct type
-  fetchNextPage: any;
+  fetchNextPage: () => void;
   isFetching: boolean;
   hasNextPage?: boolean;
 }
@@ -29,7 +28,7 @@ export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>
     };
 
     return (
-      <div>
+      <>
         {hasNextPage && (
           <Button
             isLoading={isFetchingNextPage}
@@ -39,7 +38,7 @@ export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>
           />
         )}
         <div>{isFetching && !isFetchingNextPage ? 'background updating' : null}</div>
-      </div>
+      </>
     );
   }
 );

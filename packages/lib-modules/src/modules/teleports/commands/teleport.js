@@ -7,9 +7,9 @@ async function main() {
   const { player, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(player, 'TELEPORTS_USE')) {
-      await data.player.pm('You do not have permission to use teleports.');
-      return;
-    }
+    await data.player.pm('You do not have permission to use teleports.');
+    return;
+  }
 
   const ownedTeleportRes = await takaro.variable.variableControllerSearch({
     filters: {

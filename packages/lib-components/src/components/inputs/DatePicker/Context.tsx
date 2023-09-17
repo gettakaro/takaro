@@ -70,6 +70,7 @@ export function reducer(state: DatePickerState, action: Action): DatePickerState
         friendlyRange: action.payload.friendlyRange,
         friendlyEndDate: undefined,
         friendlyStartDate: undefined,
+        showQuickSelect: false,
       };
   }
 }
