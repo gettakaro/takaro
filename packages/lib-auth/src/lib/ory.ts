@@ -165,6 +165,11 @@ class Ory {
       xSessionToken: tokenFromAuthHeader,
     });
 
+    if (!sessionRes.data.identity) {
+      this.log.warn('No identity found in session');
+      throw new errors.ForbiddenError();
+    }
+
     if (!sessionRes.data.identity.metadata_public) {
       this.log.warn('Identity has no metadata_public', {
         identity: sessionRes.data.identity.id,
