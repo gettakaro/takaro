@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import {
   autoUpdate,
   FloatingFocusManager,
@@ -12,6 +12,12 @@ import {
 } from '@floating-ui/react';
 import { styled } from '../../../styled';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
+import { useDebounce } from '../../../hooks';
+import { setAriaDescribedBy } from '../layout';
+
+const Input = styled.input<{ hasError: boolean }>`
+  border: 1px solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+`;
 
 const ItemContainer = styled.div<{ isActive: boolean }>`
   background: ${({ theme, isActive }) => (isActive ? theme.colors.primary : theme.colors.background)};
@@ -27,25 +33,35 @@ interface Item {
 export interface SearchFieldProps {
   items: Item[];
   isLoading: boolean;
+  placeholder?: string;
+  onChange: (value: string) => void;
 }
 
 export type GenericSearchFieldProps = GenericInputProps<string, HTMLInputElement> & SearchFieldProps;
-
 const defaultsApplier = defaultInputPropsFactory<GenericSearchFieldProps>(defaultInputProps);
 
 export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFieldProps>((props, ref) => {
-  const { onBlur = () => {}, onFocus = () => {}, name, items } = defaultsApplier(props);
+  const {
+    onBlur = () => {},
+    onFocus = () => {},
+    onChange,
+    name,
+    items,
+    disabled,
+    required,
+    placeholder = 'Search field',
+    hasDescription,
+    hasError,
+  } = defaultsApplier(props);
 
   const [open, setOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  // const debouncedValue = useDebounce(inputValue, 1000);
+  const debouncedValue = useDebounce(inputValue, 1000);
 
-  /*
   useEffect(() => {
     onChange(debouncedValue);
   }, [debouncedValue, onChange]);
-  */
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
 
@@ -93,16 +109,21 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
 
   return (
     <div ref={ref}>
-      <input
+      <Input
+        hasError={hasError}
         {...getReferenceProps({
           ref: refs.setReference,
           onChange: onInputChange,
           value: inputValue,
-          placeholder: 'enter',
+          placeholder: placeholder,
           name: name,
           onBlur: onBlur,
           onFocus: onFocus,
+          disabled: disabled,
+          autoComplete: 'off',
+          'aria-describedby': setAriaDescribedBy(name, hasDescription),
           'aria-autocomplete': 'list',
+          'aria-required': required,
           onKeyDown(event) {
             if (event.key === 'Enter' && activeIndex != null && items[activeIndex]) {
               setInputValue(items[activeIndex].label);
