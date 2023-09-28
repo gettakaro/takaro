@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -15,15 +15,15 @@ class EventSearchInputAllowedFilters {
   eventName!: string[];
 
   @IsOptional()
-  @IsUUID(4, { each: true })
+  @IsString({ each: true })
   moduleId!: string[];
 
   @IsOptional()
-  @IsUUID(4, { each: true })
+  @IsString({ each: true })
   playerId!: string[];
 
   @IsOptional()
-  @IsUUID(4, { each: true })
+  @IsString({ each: true })
   gameserverId!: string[];
 }
 

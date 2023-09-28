@@ -102,21 +102,7 @@ const treeData = [
   },
 ];
 
-const allFields = [
-  'player.name',
-  'player.id',
-  'player.gameId',
-  'player.steamId',
-  'gameserver.name',
-  'gameserver.type',
-  'gameserver.id',
-  'module.name',
-  'module.id',
-  'module.description',
-  'module.builtIn',
-  'meta.result.success',
-  'meta.message',
-];
+const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
 export const Events: FC = () => {
   useDocumentTitle('Events');
@@ -148,9 +134,35 @@ export const Events: FC = () => {
 
   const { data: lastEventResponse } = useEnrichEvent(lastEvent);
 
+  useEffect(() => {
+    if (lastEventResponse) {
+      setEvents((prev) => {
+        if (prev) {
+          return [lastEventResponse, ...prev];
+        }
+        return [lastEventResponse];
+      });
+    }
+  }, [lastEventResponse]);
+
+  const filters = [...tagFilters, ...searchFilters];
+  // const searchFields = filters
+  //   .filter((f) => f.operator === ':*')
+  //   .reduce((acc, f) => {
+  //     acc[f.field] = [f.value];
+  //     return acc;
+  //   }, {});
+  const filterFields = filters
+    .filter((f) => f.operator === ':')
+    .reduce((acc, f) => {
+      acc[f.field] = [f.value];
+      return acc;
+    }, {});
+
   // TODO: server side filtering
   const { data: rawEvents, refetch } = useEvents({
     search: { eventName: fields },
+    filters: filterFields,
     sortBy: 'createdAt',
     sortDirection: 'desc',
     startDate: startDate?.toISO() ?? undefined,
@@ -163,17 +175,6 @@ export const Events: FC = () => {
     }
   }, [rawEvents]);
 
-  useEffect(() => {
-    if (lastEventResponse) {
-      setEvents((prev) => {
-        if (prev) {
-          return [lastEventResponse, ...prev];
-        }
-        return [lastEventResponse];
-      });
-    }
-  }, [lastEventResponse]);
-
   const handleDatePicker = (start: DateTime, end: DateTime) => {
     setStartDate(start);
     setEndDate(end);
@@ -184,30 +185,9 @@ export const Events: FC = () => {
     selectedEvents = events?.filter((event) => fields.includes(event.eventName));
   }
 
-  const filters = [...tagFilters, ...searchFilters];
-  const filteredEvents = selectedEvents
-    ?.filter(
-      (event) =>
-        filters.length === 0 ||
-        filters.every((f) => {
-          const field = _.get(event, f.field);
-          if (field === undefined) return false;
-
-          switch (f.operator) {
-            case 'is':
-            case ':':
-              return String(field) === String(f.value);
-            case 'contains':
-            case ':*':
-              return String(field).includes(f.value);
-            default:
-              return false;
-          }
-        })
-    )
-    .sort((a, b) => {
-      return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
-    });
+  const filteredEvents = selectedEvents?.sort((a, b) => {
+    return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
+  });
 
   return (
     <>
@@ -225,7 +205,7 @@ export const Events: FC = () => {
           <EventSearch
             fields={allFields}
             conjunctions={['and']}
-            operators={[':', ':*']}
+            operators={[':']}
             getValueOptions={(field) => {
               return _.uniq(filteredEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
             }}
