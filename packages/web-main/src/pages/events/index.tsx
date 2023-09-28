@@ -150,6 +150,7 @@ export const Events: FC = () => {
 
   // TODO: server side filtering
   const { data: rawEvents, refetch } = useEvents({
+    search: { eventName: fields },
     sortBy: 'createdAt',
     sortDirection: 'desc',
     startDate: startDate?.toISO() ?? undefined,
@@ -178,9 +179,12 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
+  let selectedEvents = events;
+  if (live && events && fields.length > 0) {
+    selectedEvents = events?.filter((event) => fields.includes(event.eventName));
+  }
+
   const filters = [...tagFilters, ...searchFilters];
-  const selectedEvents = events?.filter((event) => fields.includes(event.eventName));
-  /* TODO: server side filtering or just clean this up with better data structures / typings xD */
   const filteredEvents = selectedEvents
     ?.filter(
       (event) =>
