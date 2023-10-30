@@ -155,12 +155,6 @@ export const Events: FC = () => {
   }, [lastEventResponse]);
 
   const filters = [...tagFilters, ...searchFilters];
-  // const searchFields = filters
-  //   .filter((f) => f.operator === ':*')
-  //   .reduce((acc, f) => {
-  //     acc[f.field] = [f.value];
-  //     return acc;
-  //   }, {});
   const filterFields = filters
     .filter((f) => f.operator === ':')
     .reduce((acc, f) => {
@@ -192,15 +186,6 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
-  let selectedEvents = events;
-  if (live && events && fields.length > 0) {
-    selectedEvents = events?.filter((event) => fields.includes(event.eventName));
-  }
-
-  const filteredEvents = selectedEvents?.sort((a, b) => {
-    return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
-  });
-
   return (
     <>
       <Header>
@@ -220,7 +205,7 @@ export const Events: FC = () => {
             operators={[':']}
             getValueOptions={(field) => {
               return _.uniq(
-                filteredEvents
+                events
                   ?.map((e) => {
                     // TODO: this is a hack, we should have a better way to get the value
                     if (field.endsWith('Id')) {
@@ -261,13 +246,13 @@ export const Events: FC = () => {
         ))}
       </EventFilterTagList>
       <ContentContainer>
-        {filteredEvents?.length === 0 ? (
+        {events?.length === 0 ? (
           <div style={{ width: '100%', textAlign: 'center', marginTop: '4rem' }}>No events found</div>
         ) : (
           <EventFilterContainer>
             <ScrollableContainer>
               <EventFeed>
-                {filteredEvents?.map((event) => (
+                {events?.map((event) => (
                   <EventItem key={event.id} event={event} onDetailClick={() => {}} />
                 ))}
               </EventFeed>
