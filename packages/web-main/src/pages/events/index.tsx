@@ -207,7 +207,19 @@ export const Events: FC = () => {
             conjunctions={['and']}
             operators={[':']}
             getValueOptions={(field) => {
-              return _.uniq(filteredEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
+              return _.uniq(
+                filteredEvents
+                  ?.map((e) => {
+                    // TODO: this is a hack, we should have a better way to get the value
+                    if (field.endsWith('Id')) {
+                      const type = field.split('Id')[0];
+                      return String(_.get(e, `${type}.id`));
+                    }
+
+                    return String(_.get(e, field));
+                  })
+                  .filter((e) => e !== 'undefined')
+              );
             }}
             setFilters={setSearchFilters}
           />
