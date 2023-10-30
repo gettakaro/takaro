@@ -255,9 +255,9 @@ export const Events: FC = () => {
                 {events?.map((event) => (
                   <EventItem key={event.id} event={event} onDetailClick={() => {}} />
                 ))}
+                {InfiniteScroll}
               </EventFeed>
             </ScrollableContainer>
-            {InfiniteScroll}
           </EventFilterContainer>
         )}
         <Filters>
