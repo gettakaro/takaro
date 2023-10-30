@@ -31,6 +31,15 @@ const Flex = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
+const EventFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+  margin-bottom: ${({ theme }) => theme.spacing['1']};
+  align-items: center;
+  width: 100%;
+`;
+
 const Header = styled.div`
   width: 100%;
   display: flex;
@@ -56,7 +65,7 @@ const ScrollableContainer = styled.div`
   padding-left: 4px;
   padding-right: ${({ theme }) => theme.spacing[4]};
   width: 100%;
-  height: 82vh;
+  height: 80vh;
 `;
 
 const treeData = [
@@ -159,8 +168,11 @@ export const Events: FC = () => {
       return acc;
     }, {});
 
-  // TODO: server side filtering
-  const { data: rawEvents, refetch } = useEvents({
+  const {
+    data: rawEvents,
+    refetch,
+    InfiniteScroll,
+  } = useEvents({
     search: { eventName: fields },
     filters: filterFields,
     sortBy: 'createdAt',
@@ -171,7 +183,7 @@ export const Events: FC = () => {
 
   useEffect(() => {
     if (rawEvents) {
-      setEvents(rawEvents);
+      setEvents(rawEvents.pages.flatMap((page) => page.data));
     }
   }, [rawEvents]);
 
@@ -252,13 +264,16 @@ export const Events: FC = () => {
         {filteredEvents?.length === 0 ? (
           <div style={{ width: '100%', textAlign: 'center', marginTop: '4rem' }}>No events found</div>
         ) : (
-          <ScrollableContainer>
-            <EventFeed>
-              {filteredEvents?.map((event) => (
-                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
-              ))}
-            </EventFeed>
-          </ScrollableContainer>
+          <EventFilterContainer>
+            <ScrollableContainer>
+              <EventFeed>
+                {filteredEvents?.map((event) => (
+                  <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+                ))}
+              </EventFeed>
+            </ScrollableContainer>
+            {InfiniteScroll}
+          </EventFilterContainer>
         )}
         <Filters>
           <h3>Select event types</h3>

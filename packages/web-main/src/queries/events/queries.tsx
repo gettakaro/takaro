@@ -1,17 +1,20 @@
 import {
   Client,
   CommandOutputDTO,
-  EventOutputArrayDTOAPI,
   EventOutputDTO,
   EventSearchInputDTO,
   GameServerOutputDTO,
+  MetadataOutput,
   ModuleOutputDTO,
   PlayerOutputDTO,
 } from '@takaro/apiclient';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { AxiosError } from 'axios';
 import { useApiClient } from 'hooks/useApiClient';
 import _ from 'lodash';
+import { useMemo } from 'react';
+import { hasNextPage } from 'queries/util';
 
 const cleanEvent = (event: EventOutputDTO) => {
   const newEvent = { ...event };
@@ -49,7 +52,22 @@ export const useEnrichEvent = (event: EventOutputDTO | null) => {
   });
 };
 
-const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['data']): Promise<EnrichedEvent[]> => {
+interface EnrichedEventOutputArrayDTO {
+  /**
+   *
+   * @type {Array<EventOutputDTO>}
+   * @memberof EventOutputArrayDTOAPI
+   */
+  data: Array<EnrichedEvent>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof EventOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+
+const enrichEvents = async (apiClient: Client, events: EventOutputDTO[]): Promise<EnrichedEvent[]> => {
   const idFilter = (id: string | undefined): id is string => id !== undefined && id !== '' && id !== null;
 
   const playerIds = events.map((event) => event.playerId).filter(idFilter);
@@ -88,11 +106,14 @@ const enrichEvents = async (apiClient: Client, events: EventOutputArrayDTOAPI['d
   });
 };
 
-const fetchEvents = async (apiClient: Client, queryParams: EventSearchInputDTO) => {
+const fetchEvents = async (
+  apiClient: Client,
+  queryParams: EventSearchInputDTO
+): Promise<EnrichedEventOutputArrayDTO> => {
   const events = await apiClient.event.eventControllerSearch(queryParams);
-  const enRiched = await enrichEvents(apiClient, events.data.data);
+  const enriched = await enrichEvents(apiClient, events.data.data);
 
-  return enRiched;
+  return { meta: events.data.meta, data: enriched };
 };
 
 export interface EnrichedEvent extends Pick<EventOutputDTO, 'id' | 'createdAt' | 'eventName' | 'meta'> {
@@ -105,8 +126,18 @@ export interface EnrichedEvent extends Pick<EventOutputDTO, 'id' | 'createdAt' |
 export const useEvents = (queryParams: EventSearchInputDTO = {}) => {
   const apiClient = useApiClient();
 
-  return useQuery<EnrichedEvent[], AxiosError<EnrichedEvent[]>>({
+  const queryOpts = useInfiniteQuery<EnrichedEventOutputArrayDTO, AxiosError<EnrichedEventOutputArrayDTO>>({
     queryKey: [eventKeys.list(), { ...queryParams }],
-    queryFn: async () => await fetchEvents(apiClient, queryParams),
+    queryFn: async ({ pageParam = queryParams.page }) => {
+      const events = await fetchEvents(apiClient, { ...queryParams, page: pageParam });
+      return events;
+    },
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
