@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { APIOutput, UserOutputArrayDTOAPI, UserSearchInputDTO } from '@takaro/apiclient';
+import { APIOutput, UserOutputArrayDTOAPI, UserOutputWithRolesDTO, UserSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
@@ -52,21 +52,41 @@ export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   return queryOpts;
 };
 
-export const useUserAssignRole = () => {
+export const useUser = (userId: string) => {
   const apiClient = useApiClient();
 
+  const queryOpts = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
+    queryKey: [...userKeys.detail(userId)],
+    queryFn: async () => (await apiClient.user.userControllerGetOne(userId)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
+};
+
+export const useUserAssignRole = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }) => (await apiClient.user.userControllerAssignRole(userId, roleId)).data,
+    mutationFn: async ({ userId, roleId }) => {
+      const res = (await apiClient.user.userControllerAssignRole(userId, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(userId));
+      return res;
+    },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
 export const useUserRemoveRole = () => {
   const apiClient = useApiClient();
+  const queryClient = useQueryClient();
 
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }: RoleInput) =>
-      (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
+    mutationFn: async ({ userId, roleId }: RoleInput) => {
+      const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
+      queryClient.invalidateQueries(userKeys.detail(userId));
+      return res;
+    },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

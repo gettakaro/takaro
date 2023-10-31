@@ -14,7 +14,7 @@ export interface TextFieldProps {
   placeholder?: string;
   size?: Size;
   prefix?: string;
-  suffix?: string;
+  suffix?: string | ReactElement;
   icon?: ReactElement;
 }
 

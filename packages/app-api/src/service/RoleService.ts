@@ -1,11 +1,23 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
-import { Length, IsArray, ValidatorConstraint, ValidatorConstraintInterface, IsString, IsEnum } from 'class-validator';
+import {
+  Length,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  IsString,
+  ValidateNested,
+  IsOptional,
+  IsUUID,
+  IsNotEmpty,
+} from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
+import { UserService } from './UserService.js';
+import { PlayerService } from './PlayerService.js';
+import { EventCreateDTO, EventService } from './EventService.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -20,16 +32,16 @@ export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsEnum(PERMISSIONS, { each: true })
-  permissions: PERMISSIONS[];
+  @IsString({ each: true })
+  permissions: string[];
 }
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsEnum(PERMISSIONS, { each: true })
-  permissions: PERMISSIONS[];
+  @IsString({ each: true })
+  permissions: string[];
 }
 
 export class SearchRoleInputDTO {
@@ -38,17 +50,55 @@ export class SearchRoleInputDTO {
 }
 
 export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
-  @IsEnum(PERMISSIONS)
-  permission: PERMISSIONS;
+  @IsString()
+  @IsNotEmpty()
+  permission!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  friendlyName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+}
+
+export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
+  @IsString()
+  permission!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  friendlyName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 }
 
 export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @IsString()
   name: string;
 
-  @IsArray()
   @Type(() => PermissionOutputDTO)
+  @ValidateNested({ each: true })
   permissions: PermissionOutputDTO[];
+}
+
+export class RoleAssignmentOutputDTO extends TakaroModelDTO<RoleAssignmentOutputDTO> {
+  @IsUUID()
+  playerId: string;
+
+  @IsUUID()
+  roleId: string;
+
+  @IsUUID()
+  @IsOptional()
+  gameServerId: string;
+
+  @Type(() => RoleOutputDTO)
+  @ValidateNested()
+  role: RoleOutputDTO;
 }
 
 @traceableClass('service:role')
@@ -70,15 +120,27 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   }
 
   async update(id: string, item: RoleUpdateInputDTO): Promise<RoleOutputDTO> {
+    const toUpdate = await this.repo.findOne(id);
+
+    if (toUpdate?.name === 'root') {
+      throw new errors.BadRequestError('Cannot update root role');
+    }
+
     return this.repo.update(id, item);
   }
 
   async delete(id: string) {
+    const toDelete = await this.repo.findOne(id);
+
+    if (toDelete?.name === 'root') {
+      throw new errors.BadRequestError('Cannot delete root role');
+    }
+
     await this.repo.delete(id);
     return id;
   }
 
-  async createWithPermissions(role: RoleCreateInputDTO, permissions: PERMISSIONS[]): Promise<RoleOutputDTO> {
+  async createWithPermissions(role: RoleCreateInputDTO, permissions: string[]): Promise<RoleOutputDTO> {
     const createdRole = await this.repo.create(role);
     await Promise.all(
       permissions.map((permission) => {
@@ -89,7 +151,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     return this.repo.findOne(createdRole.id);
   }
 
-  async setPermissions(roleId: string, permissions: PERMISSIONS[]) {
+  async setPermissions(roleId: string, permissions: string[]) {
     const role = await this.repo.findOne(roleId);
 
     const toRemove = role.permissions.filter((permission) => !permissions.includes(permission.permission));
@@ -107,5 +169,79 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     await Promise.all([...removePromises, ...addPromises]);
 
     return this.repo.findOne(roleId);
+  }
+
+  async assignRole(roleId: string, targetId: string, gameserverId?: string) {
+    const userService = new UserService(this.domainId);
+    const playerService = new PlayerService(this.domainId);
+    const eventService = new EventService(this.domainId);
+
+    const userRes = await userService.find({ filters: { id: [targetId] } });
+    const playerRes = await playerService.find({ filters: { id: [targetId] } });
+
+    if (userRes.total) {
+      this.log.info('Assigning role to user');
+      await this.repo.assignRoleToUser(targetId, roleId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleAssigned',
+          userId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
+    }
+    if (playerRes.total) {
+      this.log.info('Assigning role to player');
+      await this.repo.assignRoleToPlayer(targetId, roleId, gameserverId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleAssigned',
+          gameserverId,
+          playerId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
+    }
+  }
+
+  async removeRole(roleId: string, targetId: string, gameserverId?: string) {
+    const userService = new UserService(this.domainId);
+    const playerService = new PlayerService(this.domainId);
+    const eventService = new EventService(this.domainId);
+
+    const userRes = await userService.find({ filters: { id: [targetId] } });
+    const playerRes = await playerService.find({ filters: { id: [targetId] } });
+
+    if (userRes.total) {
+      this.log.info('Removing role from user');
+      await this.repo.removeRoleFromUser(targetId, roleId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleRemoved',
+          userId: targetId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
+    }
+    if (playerRes.total) {
+      this.log.info('Removing role from player');
+      await this.repo.removeRoleFromPlayer(targetId, roleId, gameserverId);
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: 'roleRemoved',
+          playerId: targetId,
+          gameserverId,
+          meta: {
+            roleId: roleId,
+          },
+        })
+      );
+    }
   }
 }

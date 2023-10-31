@@ -1,5 +1,4 @@
 import { FC, Fragment, useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import {
@@ -23,6 +22,7 @@ import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight
 import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -32,6 +32,7 @@ const TableContainer = styled.div`
 `;
 
 const Users: FC = () => {
+  useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
 
@@ -101,7 +102,7 @@ const Users: FC = () => {
               <Dropdown.Menu.Item
                 label="Go to user profile"
                 icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.users()}/${info.row.original.id}`)}
+                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
               />
             </Dropdown.Menu.Group>
             <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
@@ -117,9 +118,6 @@ const Users: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Users - Takaro</title>
-      </Helmet>
       <TableContainer>
         <Table
           id="users"

@@ -50,6 +50,7 @@ export const PrefixContainer = styled.div<{ hasError: boolean }>`
   padding: ${({ theme }) => `0 ${theme.spacing['0_75']}`};
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
+  white-space: nowrap;
 `;
 
 export const SuffixContainer = styled.div<{ hasError: boolean }>`
@@ -60,6 +61,7 @@ export const SuffixContainer = styled.div<{ hasError: boolean }>`
   padding: ${({ theme }) => `0 ${theme.spacing['0_75']}`};
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
+  white-space: nowrap;
 `;
 
 export const Input = styled.input<{

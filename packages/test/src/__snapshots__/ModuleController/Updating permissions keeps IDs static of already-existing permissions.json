@@ -1,0 +1,49 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "e5d59722-dacc-445d-9424-4676b8335abc",
+      "createdAt": "2023-07-17T15:56:31.450Z",
+      "updatedAt": "2023-07-17T15:56:31.466Z",
+      "name": "Test module",
+      "description": "No description provided.",
+      "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
+      "systemConfigSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}",
+      "builtin": null,
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [],
+      "permissions": [
+        {
+          "id": "d36664a0-0a01-4aee-ba52-74c80702c9d6",
+          "createdAt": "2023-07-17T15:56:31.450Z",
+          "updatedAt": "2023-07-17T15:56:31.451Z",
+          "moduleId": "e5d59722-dacc-445d-9424-4676b8335abc",
+          "permission": "test",
+          "friendlyName": "test",
+          "description": "test"
+        },
+        {
+          "id": "49b07312-73d2-46c3-81de-abb36774b5f8",
+          "createdAt": "2023-07-17T15:56:31.468Z",
+          "updatedAt": "2023-07-17T15:56:31.468Z",
+          "moduleId": "e5d59722-dacc-445d-9424-4676b8335abc",
+          "permission": "test2",
+          "friendlyName": "test2",
+          "description": "test2"
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Updating permissions keeps IDs static of already-existing permissions",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

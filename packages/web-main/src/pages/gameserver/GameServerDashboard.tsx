@@ -1,16 +1,17 @@
 import { Console, Message, Skeleton, styled } from '@takaro/lib-components';
 import { Dispatch, FC, Fragment, SetStateAction } from 'react';
-import { Helmet } from 'react-helmet';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const ConsoleContainer = styled.div`
   height: 80vh;
 `;
 
 const GameServerDashboard: FC = () => {
+  useDocumentTitle('Gameserver dashboard');
   const apiClient = useApiClient();
   const { socket } = useSocket();
   const { selectedGameServerId } = useSelectedGameServer();
@@ -79,9 +80,6 @@ const GameServerDashboard: FC = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Gameserver dashboard</title>
-      </Helmet>
       <ConsoleContainer>
         <Console
           listenerFactory={handleMessageFactory}

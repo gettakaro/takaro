@@ -8,6 +8,7 @@ import {
   HookCreateDTOEventTypeEnum,
   ModuleOutputDTO,
   PlayerOutputDTO,
+  UserOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
 import { GameServersPage } from './GameServersPage.js';
@@ -51,6 +52,7 @@ interface IFixtures {
     gameServer: GameServerOutputDTO;
     mailhog: MailhogAPI;
     players: PlayerOutputDTO[];
+    rootUser: UserOutputDTO;
   };
 }
 
@@ -106,6 +108,7 @@ export const basicTest = base.extend<IFixtures>({
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         mailhog,
         players: [],
+        rootUser: data.rootUser,
       });
 
       // fixture teardown
@@ -201,6 +204,7 @@ export const test = base.extend<IFixtures>({
         mailhog,
         gameServer: gameServer.data.data,
         players: players.data.data,
+        rootUser: data.rootUser,
       });
 
       // fixture teardown

@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
-import { Helmet } from 'react-helmet';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +10,7 @@ import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AxiosError } from 'axios';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -68,6 +68,7 @@ interface IFormInputs {
 }
 
 const LogIn: FC = () => {
+  useDocumentTitle('Log in');
   const [loading, setLoading] = useState(false);
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
@@ -154,9 +155,6 @@ const LogIn: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Log in - Takaro </title>
-      </Helmet>
       <Container>
         <Company size="huge" />
         {/* 

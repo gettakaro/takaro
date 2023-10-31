@@ -26,6 +26,15 @@ import { AuthSettings } from 'pages/auth/profile';
 import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
+import { Events } from 'pages/events';
+
+import { Roles } from './pages/roles';
+import { RolesCreate } from './pages/roles/RolesCreate';
+import { RolesUpdate } from './pages/roles/RolesUpdate';
+import { PlayerProfile } from 'pages/player/profile';
+import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
+import { UserProfile } from 'pages/users/profile';
+import { AssignUserRole } from 'pages/roles/assignUserRole';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -72,18 +81,39 @@ export const Router: FC = () => (
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
           <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
+
+        <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
+          <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
+        </Route>
+
         <Route element={<GameServers />} path="/server/" />
+
         <Route element={<Users />} path={PATHS.users()} />
+
+        <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>
+          <Route element={<AssignUserRole />} path={PATHS.user.assignRole(':userId')} />
+        </Route>
+
         <Route element={<Variables />} path={PATHS.variables()} />
 
+        {/* ======================== CRUD Game Servers ======================== */}
         <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
           <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
           <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
         </Route>
+
+        <Route element={<Events />} path={PATHS.events()} />
         <Route element={<Players />} path={PATHS.players()} />
+        {/* ======================== CRUD Modules ======================== */}
         <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
           <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
           <Route element={<CreateModule />} path={PATHS.modules.create()} />
+        </Route>
+
+        {/* ======================== CRUD Roles ======================== */}
+        <Route element={<Roles />} path={PATHS.roles.overview()}>
+          <Route element={<RolesCreate />} path={PATHS.roles.create()} />
+          <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
         </Route>
       </Route>
 

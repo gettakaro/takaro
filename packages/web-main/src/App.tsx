@@ -1,6 +1,5 @@
 import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider } from '@ory/elements';
-import { Helmet } from 'react-helmet';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
@@ -112,26 +111,6 @@ function App() {
             <SnackbarProvider>
               <QueryClientProvider client={queryClient}>
                 <GlobalStyle />
-                <Helmet>
-                  <meta charSet="UTF-8" />
-                  <base href="/" />
-                  <meta content="ie=edge" httpEquiv="X-UA-Compatible" />
-                  <meta content="true" name="HandHeldFriendly" />
-                  <meta content="index, follow" name="robots" />
-                  <meta content="takaro.io" name="author" />
-                  <meta content="takaro.io" name="designer" />
-                  <meta content="takaro" name="copyright" />
-                  <meta
-                    content="Takaro is a web based gameserver manager. Bring your server(s) to the next level with Takaro's advanced features! Join hundreds of other servers in a new generation of server management."
-                    name="description"
-                  />
-                  <meta
-                    content="server manager, web, cloud, open source, Takaro, 7 Days to Die server manager,7 Days to Die, Rust, monitor"
-                    name="keywords"
-                  />
-                  <title>Takaro</title>
-                  <link href="https://takaro.io/" rel="canonical" />
-                </Helmet>
                 <Router />
                 {
                   // React query devtools are only included in bundles with NODE_ENV === 'development'.

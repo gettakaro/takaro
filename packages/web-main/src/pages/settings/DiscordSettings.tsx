@@ -1,5 +1,4 @@
 import { Fragment, ReactNode } from 'react';
-import { Helmet } from 'react-helmet';
 import { Button, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { LoginDiscord } from 'components/DiscordSettings/LoginDiscord';
 import { useDiscordGuilds } from 'queries/discord';
@@ -82,9 +81,6 @@ export const DiscordSettings = () => {
 
   return (
     <Fragment>
-      <Helmet>
-        <title>Settings - Takaro</title>
-      </Helmet>
       <Flex>
         <LoginDiscord />
         <InviteCard />

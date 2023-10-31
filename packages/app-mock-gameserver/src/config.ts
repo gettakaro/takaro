@@ -2,7 +2,6 @@ import { Config, IBaseConfig } from '@takaro/config';
 import { errors } from '@takaro/util';
 
 export enum EXECUTION_MODE {
-  FIRECRACKER = 'firecracker',
   LOCAL = 'local',
 }
 

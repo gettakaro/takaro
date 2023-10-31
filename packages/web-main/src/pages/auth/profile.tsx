@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
 import { styled, Loading } from '@takaro/lib-components';
 import { gridStyle, NodeMessages, UserSettingsCard, UserSettingsFlowType } from '@ory/elements';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Container = styled.div`
   display: flex;
@@ -21,6 +21,7 @@ const StyledUserCard = styled(UserSettingsCard)`
 `;
 
 export const AuthSettings: FC = () => {
+  useDocumentTitle('Profile');
   const { oryClient, oryError } = useAuth();
   const [flow, setFlow] = useState<SettingsFlow | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,9 +86,6 @@ export const AuthSettings: FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Profile - Takaro</title>
-      </Helmet>
       <Container>
         <div className={gridStyle({ gap: 16 })}>
           <NodeMessages uiMessages={flow.ui.messages} />

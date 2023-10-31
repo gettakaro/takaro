@@ -13,3 +13,6 @@ export { BreadCrumbs } from './BreadCrumbs';
 
 export { HorizontalNav } from './HorizontalNav';
 export type { HorizontalNavProps, HorizontalNavLink } from './HorizontalNav';
+
+export { Tabs } from './Tabs';
+export type { TabsProps } from './Tabs';

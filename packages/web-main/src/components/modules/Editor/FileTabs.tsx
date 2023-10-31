@@ -12,7 +12,7 @@ const dirtyIcon =
   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIGhlaWdodD0iMTYiIHdpZHRoPSIxNiI+PGNpcmNsZSBmaWxsPSIjQzVDNUM1IiBjeD0iOCIgY3k9IjgiIHI9IjQiLz48L3N2Zz4=';
 
 const Tabs = styled.div`
-  border-bottom: "1px solid ${({ theme }) => theme.colors.background};
+  border-bottom: '1px solid ${({ theme }) => theme.colors.background}';
   background: ${({ theme }) => theme.colors.background};
 `;
 

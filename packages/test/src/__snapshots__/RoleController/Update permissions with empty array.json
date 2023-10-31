@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "7e35d19d-5532-45b2-b9fc-2cea928a15ff",
+      "createdAt": "2023-07-19T18:20:28.139Z",
+      "updatedAt": "2023-07-19T18:20:28.160Z",
+      "name": "New name",
+      "permissions": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "RoleController",
+    "snapshot": true,
+    "name": "Update permissions with empty array",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
