@@ -8,9 +8,13 @@ import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefi
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
-const SubHeader = styled.h2`
+const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
-    margin-bottom: ${({ theme }) => theme.spacing[2]}};
+  margin-bottom: ${({ theme, withMargin }) => (withMargin ? theme.spacing[2] : 0)}};
+`;
+
+const SubText = styled.p`
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const ModuleDefinitions: FC = () => {
@@ -28,6 +32,10 @@ export const ModuleDefinitions: FC = () => {
     return <p></p>;
   }
 
+  const flattenedModules = modules.pages.flatMap((page) => page.data);
+  const builtinModules = flattenedModules.filter((mod) => mod.builtin);
+  const customModules = flattenedModules.filter((mod) => !mod.builtin);
+
   return (
     <>
       <p>
@@ -36,7 +44,7 @@ export const ModuleDefinitions: FC = () => {
       </p>
 
       <Divider />
-      <SubHeader>Available modules</SubHeader>
+      <SubHeader withMargin>Yours</SubHeader>
       <ModuleCards>
         <AddModuleCard
           onClick={() => {
@@ -46,11 +54,19 @@ export const ModuleDefinitions: FC = () => {
           <FiPlus size={24} />
           <h3>new module</h3>
         </AddModuleCard>
-        {modules.pages
-          .flatMap((page) => page.data)
-          .map((mod) => (
-            <ModuleCardDefinition key={mod.id} mod={mod} />
-          ))}
+        {customModules.map((mod) => (
+          <ModuleCardDefinition key={mod.id} mod={mod} />
+        ))}
+      </ModuleCards>
+      <SubHeader>Built-in</SubHeader>
+      <SubText>
+        These modules are built-in and can be installed per server through the modules page for a selected gameserver.
+        Tip: you can copy a built-in module in the editor and modify it to your needs.
+      </SubText>
+      <ModuleCards>
+        {builtinModules.map((mod) => (
+          <ModuleCardDefinition key={mod.id} mod={mod} />
+        ))}
         <Outlet />
       </ModuleCards>
       {InfiniteScroll}

@@ -2,8 +2,8 @@ import { styled, Button } from '@takaro/lib-components';
 
 export const ModuleCards = styled.ul`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-auto-rows: 160px;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  grid-auto-rows: 200px;
   gap: ${({ theme }) => theme.spacing['1_5']};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
@@ -32,7 +32,7 @@ export const AddModuleCard = styled(ModuleCardContainer)`
   }
 
   h3 {
-    margin-left: ${({ theme }) => theme.spacing[1]};
+    margin-left: ${({ theme }) => theme.spacing['0_5']};
   }
 `;
 
