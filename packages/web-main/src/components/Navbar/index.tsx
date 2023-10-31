@@ -113,8 +113,8 @@ export const Navbar: FC = () => {
   );
 
   useEffect(() => {
-    console.log(selectedGameServerId);
-    if (selectedGameServerId === '' && data && data?.pages[0].data.length > 0) {
+    // If there is no selectedGameServerId, select the first one.
+    if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
       setSelectedGameServerId(data.pages[0].data[0].id);
     }
   }, [selectedGameServerId]);
@@ -139,20 +139,22 @@ export const Navbar: FC = () => {
             {gameServerLinks.map((link) => renderLink(link))}
           </Nav>
         ) : (
-          <NoServersCallToAction
-            initial={{ opacity: 0, y: -10 }}
-            transition={{ delay: 0.5 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h2>Add your first server!</h2>
-            <p>Step into the world of Takaro by adding your first server!</p>
-            <Button
-              icon={<AddServerIcon />}
-              fullWidth
-              onClick={() => navigate(PATHS.gameServers.create())}
-              text="Add a server"
-            />
-          </NoServersCallToAction>
+          <Nav>
+            <h3>Server</h3>
+            <NoServersCallToAction
+              initial={{ opacity: 0, y: -10 }}
+              transition={{ delay: 0.5 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p>Step into the world of Takaro by adding your first server!</p>
+              <Button
+                icon={<AddServerIcon />}
+                fullWidth
+                onClick={() => navigate(PATHS.gameServers.create())}
+                text="Add a server"
+              />
+            </NoServersCallToAction>
+          </Nav>
         )}
 
         <Nav>

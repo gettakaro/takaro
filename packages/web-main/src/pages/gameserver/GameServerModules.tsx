@@ -1,4 +1,4 @@
-import { Loading, Skeleton, styled } from '@takaro/lib-components';
+import { Loading, Skeleton } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ModuleCards } from '../../components/modules/Cards/style';
@@ -7,13 +7,6 @@ import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const Page = styled.div`
-  padding: 3rem 8rem;
-  h1 {
-    margin-bottom: 2rem;
-  }
-`;
 
 const GameServerModules: FC = () => {
   useDocumentTitle('Modules');
@@ -55,16 +48,12 @@ const GameServerModules: FC = () => {
 
   return (
     <>
-      <Page>
-        <h1>Modules</h1>
-
-        <ModuleCards>
-          {mappedModules.map((mod) => (
-            <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
-          ))}
-          <Outlet />
-        </ModuleCards>
-      </Page>
+      <ModuleCards>
+        {mappedModules.map((mod) => (
+          <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
+        ))}
+        <Outlet />
+      </ModuleCards>
     </>
   );
 };

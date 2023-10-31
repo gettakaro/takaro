@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { useGameServerRemove, useGameServerReachabilityById } from 'queries/gameservers';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -15,12 +16,20 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const { isLoading, data } = useGameServerReachabilityById(id);
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
 
+  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
+
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
     navigate(PATHS.gameServers.update(id));
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
+
+    // if the gameserver was selected, deselect it
+    if (selectedGameServerId === id) {
+      setSelectedGameServerId('');
+    }
+
     setOpenDialog(true);
   };
 

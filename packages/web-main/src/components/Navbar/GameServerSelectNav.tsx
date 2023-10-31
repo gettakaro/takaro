@@ -24,7 +24,7 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
   const location = useLocation();
   const { data, isLoading } = useGameServers();
 
-  const { control, watch } = useForm<FormFields>({
+  const { control, watch, setValue } = useForm<FormFields>({
     mode: 'onChange',
     defaultValues: {
       gameServerId: serverId,
@@ -34,6 +34,7 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
   // flatten pages into a single array
   const gameServers = data?.pages.flatMap((page) => page.data);
 
+  // handle gameserver change event from the server dropdown
   useEffect(() => {
     const subscription = watch(({ gameServerId }) => {
       if (gameServerId && gameServerId !== serverId) {
@@ -53,6 +54,11 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
     });
     return () => subscription.unsubscribe();
   }, [watch('gameServerId'), location.pathname]);
+
+  // if the serverId changes from the outside, update the form value
+  useEffect(() => {
+    setValue('gameServerId', serverId);
+  }, [serverId]);
 
   // if there is there is only 1 server, don't show the dropdown
   if (!data || !gameServers || (gameServers && gameServers.length === 1)) return null;

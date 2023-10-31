@@ -8,11 +8,9 @@ import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefi
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
-const Page = styled.div`
-  padding: 3rem 8rem;
-  h1 {
-    margin-bottom: 2rem;
-  }
+const SubHeader = styled.h2`
+  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    margin-bottom: ${({ theme }) => theme.spacing[2]}};
 `;
 
 export const ModuleDefinitions: FC = () => {
@@ -32,32 +30,30 @@ export const ModuleDefinitions: FC = () => {
 
   return (
     <>
-      <Page>
-        <p>
-          Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
-          install the built-in modules easily, just configure them!. Advanced users can create their own modules.
-        </p>
+      <p>
+        Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
+        install the built-in modules easily, just configure them!. Advanced users can create their own modules.
+      </p>
 
-        <Divider />
-        <h1>Available modules</h1>
-        <ModuleCards>
-          <AddModuleCard
-            onClick={() => {
-              navigate(PATHS.modules.create());
-            }}
-          >
-            <FiPlus size={24} />
-            <h3>new module</h3>
-          </AddModuleCard>
-          {modules.pages
-            .flatMap((page) => page.data)
-            .map((mod) => (
-              <ModuleCardDefinition key={mod.id} mod={mod} />
-            ))}
-          <Outlet />
-        </ModuleCards>
-        {InfiniteScroll}
-      </Page>
+      <Divider />
+      <SubHeader>Available modules</SubHeader>
+      <ModuleCards>
+        <AddModuleCard
+          onClick={() => {
+            navigate(PATHS.modules.create());
+          }}
+        >
+          <FiPlus size={24} />
+          <h3>new module</h3>
+        </AddModuleCard>
+        {modules.pages
+          .flatMap((page) => page.data)
+          .map((mod) => (
+            <ModuleCardDefinition key={mod.id} mod={mod} />
+          ))}
+        <Outlet />
+      </ModuleCards>
+      {InfiniteScroll}
     </>
   );
 };

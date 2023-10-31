@@ -5,4 +5,4 @@ export interface ISelectedGameServerContext {
   setSelectedGameServerId: (id: string) => void;
 }
 
-export const SelectedGameServerContext = createContext<ISelectedGameServerContext>(undefined!);
+export const SelectedGameServerContext = createContext<ISelectedGameServerContext | null>(null);
