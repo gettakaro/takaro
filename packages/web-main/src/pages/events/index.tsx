@@ -31,6 +31,15 @@ const Flex = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
+const EventFilterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+  margin-bottom: ${({ theme }) => theme.spacing['1']};
+  align-items: center;
+  width: 100%;
+`;
+
 const Header = styled.div`
   width: 100%;
   display: flex;
@@ -56,7 +65,7 @@ const ScrollableContainer = styled.div`
   padding-left: 4px;
   padding-right: ${({ theme }) => theme.spacing[4]};
   width: 100%;
-  height: 82vh;
+  height: 80vh;
 `;
 
 const treeData = [
@@ -102,21 +111,7 @@ const treeData = [
   },
 ];
 
-const allFields = [
-  'player.name',
-  'player.id',
-  'player.gameId',
-  'player.steamId',
-  'gameserver.name',
-  'gameserver.type',
-  'gameserver.id',
-  'module.name',
-  'module.id',
-  'module.description',
-  'module.builtIn',
-  'meta.result.success',
-  'meta.message',
-];
+const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
 export const Events: FC = () => {
   useDocumentTitle('Events');
@@ -148,20 +143,6 @@ export const Events: FC = () => {
 
   const { data: lastEventResponse } = useEnrichEvent(lastEvent);
 
-  // TODO: server side filtering
-  const { data: rawEvents, refetch } = useEvents({
-    sortBy: 'createdAt',
-    sortDirection: 'desc',
-    startDate: startDate?.toISO() ?? undefined,
-    endDate: endDate?.toISO() ?? undefined,
-  });
-
-  useEffect(() => {
-    if (rawEvents) {
-      setEvents(rawEvents);
-    }
-  }, [rawEvents]);
-
   useEffect(() => {
     if (lastEventResponse) {
       setEvents((prev) => {
@@ -173,37 +154,37 @@ export const Events: FC = () => {
     }
   }, [lastEventResponse]);
 
+  const filters = [...tagFilters, ...searchFilters];
+  const filterFields = filters
+    .filter((f) => f.operator === ':')
+    .reduce((acc, f) => {
+      acc[f.field] = [f.value];
+      return acc;
+    }, {});
+
+  const {
+    data: rawEvents,
+    refetch,
+    InfiniteScroll,
+  } = useEvents({
+    search: { eventName: fields },
+    filters: filterFields,
+    sortBy: 'createdAt',
+    sortDirection: 'desc',
+    startDate: startDate?.toISO() ?? undefined,
+    endDate: endDate?.toISO() ?? undefined,
+  });
+
+  useEffect(() => {
+    if (rawEvents) {
+      setEvents(rawEvents.pages.flatMap((page) => page.data));
+    }
+  }, [rawEvents]);
+
   const handleDatePicker = (start: DateTime, end: DateTime) => {
     setStartDate(start);
     setEndDate(end);
   };
-
-  const filters = [...tagFilters, ...searchFilters];
-  const selectedEvents = events?.filter((event) => fields.includes(event.eventName));
-  /* TODO: server side filtering or just clean this up with better data structures / typings xD */
-  const filteredEvents = selectedEvents
-    ?.filter(
-      (event) =>
-        filters.length === 0 ||
-        filters.every((f) => {
-          const field = _.get(event, f.field);
-          if (field === undefined) return false;
-
-          switch (f.operator) {
-            case 'is':
-            case ':':
-              return String(field) === String(f.value);
-            case 'contains':
-            case ':*':
-              return String(field).includes(f.value);
-            default:
-              return false;
-          }
-        })
-    )
-    .sort((a, b) => {
-      return DateTime.fromISO(b.createdAt).diff(DateTime.fromISO(a.createdAt)).milliseconds;
-    });
 
   return (
     <>
@@ -221,9 +202,21 @@ export const Events: FC = () => {
           <EventSearch
             fields={allFields}
             conjunctions={['and']}
-            operators={[':', ':*']}
+            operators={[':']}
             getValueOptions={(field) => {
-              return _.uniq(filteredEvents?.map((e) => String(_.get(e, field))).filter((e) => e !== 'undefined'));
+              return _.uniq(
+                events
+                  ?.map((e) => {
+                    // TODO: this is a hack, we should have a better way to get the value
+                    if (field.endsWith('Id')) {
+                      const type = field.split('Id')[0];
+                      return String(_.get(e, `${type}.id`));
+                    }
+
+                    return String(_.get(e, field));
+                  })
+                  .filter((e) => e !== 'undefined')
+              );
             }}
             setFilters={setSearchFilters}
           />
@@ -253,16 +246,19 @@ export const Events: FC = () => {
         ))}
       </EventFilterTagList>
       <ContentContainer>
-        {filteredEvents?.length === 0 ? (
+        {events?.length === 0 ? (
           <div style={{ width: '100%', textAlign: 'center', marginTop: '4rem' }}>No events found</div>
         ) : (
-          <ScrollableContainer>
-            <EventFeed>
-              {filteredEvents?.map((event) => (
-                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
-              ))}
-            </EventFeed>
-          </ScrollableContainer>
+          <EventFilterContainer>
+            <ScrollableContainer>
+              <EventFeed>
+                {events?.map((event) => (
+                  <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+                ))}
+                {InfiniteScroll}
+              </EventFeed>
+            </ScrollableContainer>
+          </EventFilterContainer>
         )}
         <Filters>
           <h3>Select event types</h3>
