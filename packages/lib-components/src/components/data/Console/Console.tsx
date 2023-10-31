@@ -1,12 +1,4 @@
-import {
-  FC,
-  useEffect,
-  useState,
-  SetStateAction,
-  Dispatch,
-  useRef,
-  forwardRef,
-} from 'react';
+import { FC, useEffect, SetStateAction, Dispatch, useRef, forwardRef } from 'react';
 import { Wrapper, Header, MessageContainer } from './style';
 import { ConsoleLine } from './ConsoleLine';
 import { VariableSizeList } from 'react-window';
@@ -31,31 +23,23 @@ interface RowState {
 
 export interface ConsoleProps {
   // This should spit out messages of the format Message and add it using the setter.
-  listenerFactory: (s: Dispatch<SetStateAction<Message[]>>) => {
+  listenerFactory: () => {
     on: () => void;
     off: () => void;
   };
+  messages: Message[];
+  setMessages: Dispatch<SetStateAction<Message[]>>;
   onExecuteCommand: (command: string) => Promise<Message>;
-  initialMessages?: Message[];
 }
 
-export const Console: FC<ConsoleProps> = ({
-  listenerFactory,
-  onExecuteCommand,
-  initialMessages = [],
-}) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, setMessages, messages }) => {
   const rowHeights = useRef<RowState[]>([]);
 
-  const {
-    consoleMessagesBoxRef,
-    isLiveModeEnabled,
-    setIsLiveModeEnabled,
-    toggleLiveModeOnConsoleScroll,
-  } = useConsoleLiveModeScrolling(messages);
+  const { consoleMessagesBoxRef, isLiveModeEnabled, setIsLiveModeEnabled, toggleLiveModeOnConsoleScroll } =
+    useConsoleLiveModeScrolling(messages);
 
   useEffect(() => {
-    const { on, off } = listenerFactory(setMessages);
+    const { on, off } = listenerFactory();
     on();
 
     return () => {
@@ -65,9 +49,7 @@ export const Console: FC<ConsoleProps> = ({
 
   const getRowHeight = (index: number) => {
     if (rowHeights.current && rowHeights.current[index]) {
-      return (
-        rowHeights.current[index].height + GUTTER_SIZE || DEFAULT_LINE_HEIGHT
-      );
+      return rowHeights.current[index].height + GUTTER_SIZE || DEFAULT_LINE_HEIGHT;
     }
     return DEFAULT_LINE_HEIGHT;
   };
@@ -85,34 +67,23 @@ export const Console: FC<ConsoleProps> = ({
   // this is required so that react-window knows the padding of the element
   // again, react-window does not have types, cba to type this.
   //
-  const innerElementType = forwardRef<HTMLDivElement, any>(
-    ({ style, ...rest }, ref) => (
-      <div
-        ref={ref}
-        style={{
-          ...style,
-          height: `${style.height + LIST_PADDING_SIZE * 2}px`,
-          paddingTop: `${GUTTER_SIZE}px`,
-        }}
-        {...rest}
-      />
-    )
-  );
+  const innerElementType = forwardRef<HTMLDivElement, any>(({ style, ...rest }, ref) => (
+    <div
+      ref={ref}
+      style={{
+        ...style,
+        height: `${style.height + LIST_PADDING_SIZE * 2}px`,
+        paddingTop: `${GUTTER_SIZE}px`,
+      }}
+      {...rest}
+    />
+  ));
 
   return (
     <Wrapper>
       <Header>
-        <Button
-          onClick={() => setIsLiveModeEnabled(true)}
-          text="Follow"
-          disabled={isLiveModeEnabled}
-        />
-        <Button
-          onClick={() => setMessages([])}
-          text="Clear"
-          color="background"
-          icon={<ClearIcon />}
-        />
+        <Button onClick={() => setIsLiveModeEnabled(true)} text="Follow" disabled={isLiveModeEnabled} />
+        <Button onClick={() => setMessages([])} text="Clear" color="background" icon={<ClearIcon />} />
       </Header>
       <MessageContainer>
         <Autosizer>
@@ -138,11 +109,7 @@ export const Console: FC<ConsoleProps> = ({
                       index={index}
                       message={data[index]}
                       style={style}
-                      collapsed={
-                        rowHeights.current[index]
-                          ? rowHeights.current[index].collapsed
-                          : true
-                      }
+                      collapsed={rowHeights.current[index] ? rowHeights.current[index].collapsed : true}
                       setRowState={setRowState}
                     />
                   );
@@ -152,10 +119,7 @@ export const Console: FC<ConsoleProps> = ({
           }}
         </Autosizer>
       </MessageContainer>
-      <ConsoleInput
-        setMessages={setMessages}
-        onExecuteCommand={onExecuteCommand}
-      />
+      <ConsoleInput setMessages={setMessages} onExecuteCommand={onExecuteCommand} />
     </Wrapper>
   );
 };
