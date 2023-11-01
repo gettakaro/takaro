@@ -15,6 +15,7 @@ import {
   AiOutlineIdcard as PlayersIcon,
   AiOutlineUser as UsersIcon,
   AiOutlineEdit as VariablesIcon,
+  AiOutlineClockCircle as EventsIcon,
 
   // icon nav
   AiOutlineBook as DocumentationIcon,
@@ -38,6 +39,11 @@ const domainLinks: NavbarLink[] = [
     label: 'Servers',
     path: PATHS.gameServers.overview(),
     icon: <GameServersIcon />,
+  },
+  {
+    label: 'Events',
+    path: PATHS.events(),
+    icon: <EventsIcon />,
   },
   {
     label: 'Players',
