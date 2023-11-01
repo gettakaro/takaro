@@ -4,15 +4,15 @@ import { styled } from '../../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDatePickerDispatchContext } from '../Context';
+import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
 import { DateTime, DateTimeUnit } from 'luxon';
 
-enum Tense {
+export enum Tense {
   Last = 'Last',
   Next = 'Next',
 }
 
-enum Unit {
+export enum Unit {
   Seconds = 'Seconds',
   Minutes = 'Minutes',
   Hours = 'Hours',
@@ -72,6 +72,7 @@ interface QuickSelectProps {
 }
 
 export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
+  const state = useDatePickerContext();
   const dispatch = useDatePickerDispatchContext();
 
   if (!dispatch) {
@@ -92,9 +93,9 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      step: 15,
-      tense: Tense.Last,
-      unit: Unit.Minutes,
+      step: state?.quickSelect.step,
+      tense: state?.quickSelect.tense,
+      unit: state?.quickSelect.unit,
     },
   });
 
@@ -110,18 +111,23 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
     const friendlyRangeName = `${tense} ${step} ${unit.toLowerCase()}`;
 
     dispatch({
+      type: 'set_quick_select',
+      payload: {
+        quickSelect: {
+          show: false,
+          tense: tense as Tense,
+          step,
+          unit: unit as Unit,
+        },
+      },
+    });
+
+    dispatch({
       type: 'set_range',
       payload: {
         startDate,
         endDate,
         friendlyRange: friendlyRangeName,
-      },
-    });
-
-    dispatch({
-      type: 'toggle_quick_select_popover',
-      payload: {
-        toggleQuickSelect: false,
       },
     });
   };
