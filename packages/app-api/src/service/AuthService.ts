@@ -196,7 +196,7 @@ export class AuthService extends DomainScoped {
         ctx.addData({ user: user.id, domain: user.domain });
 
         const allUserPermissions = user.roles.reduce((acc, role) => {
-          return [...acc, ...role.permissions.map((c) => c.permission)];
+          return [...acc, ...role.permissions.map((c) => c.permission.permission)];
         }, [] as string[]);
 
         const hasAllPermissions = permissions.every((permission) => allUserPermissions.includes(permission));
@@ -271,7 +271,7 @@ export class AuthService extends DomainScoped {
                 })
               );
 
-              if (user.roles.find((r) => r.permissions.find((p) => p.permission === PERMISSIONS.ROOT))) {
+              if (user.roles.find((r) => r.permissions.find((p) => p.permission.permission === PERMISSIONS.ROOT))) {
                 const guilds = (await rest.get(Routes.userGuilds())) as RESTGetAPICurrentUserGuildsResult;
                 const discordService = new DiscordService(req.domainId);
                 await discordService.syncGuilds(guilds);

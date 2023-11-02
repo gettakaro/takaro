@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
-      "createdAt": "2023-07-17T15:56:31.115Z",
-      "updatedAt": "2023-07-17T15:56:31.115Z",
+      "id": "db7826a1-9f5c-4cfc-857c-3d21b0c4feaa",
+      "createdAt": "2023-11-02T11:56:31.409Z",
+      "updatedAt": "2023-11-02T11:56:31.409Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
@@ -15,13 +15,14 @@
       "commands": [],
       "permissions": [
         {
-          "id": "6a183bc2-1c89-4711-95b3-cd1e146ad3b5",
-          "createdAt": "2023-07-17T15:56:31.115Z",
-          "updatedAt": "2023-07-17T15:56:31.116Z",
-          "moduleId": "5a9812a4-8941-455f-9a4b-f0787e27fdfa",
+          "id": "7136d486-d833-44d3-9758-3244df8c5dca",
+          "createdAt": "2023-11-02T11:56:31.410Z",
+          "updatedAt": "2023-11-02T11:56:31.410Z",
+          "moduleId": "db7826a1-9f5c-4cfc-857c-3d21b0c4feaa",
           "permission": "test",
           "friendlyName": "test",
-          "description": "test"
+          "description": "test",
+          "canHaveCount": false
         }
       ]
     }

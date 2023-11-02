@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "e5d59722-dacc-445d-9424-4676b8335abc",
-      "createdAt": "2023-07-17T15:56:31.450Z",
-      "updatedAt": "2023-07-17T15:56:31.466Z",
+      "id": "afe7ef1f-ac86-4bf1-b583-351767fb9222",
+      "createdAt": "2023-11-02T11:56:31.965Z",
+      "updatedAt": "2023-11-02T11:56:31.986Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\": \"http://json-schema.org/draft-07/schema#\",\"type\": \"object\",\"additionalProperties\": true}",
@@ -15,22 +15,24 @@
       "commands": [],
       "permissions": [
         {
-          "id": "d36664a0-0a01-4aee-ba52-74c80702c9d6",
-          "createdAt": "2023-07-17T15:56:31.450Z",
-          "updatedAt": "2023-07-17T15:56:31.451Z",
-          "moduleId": "e5d59722-dacc-445d-9424-4676b8335abc",
+          "id": "b2d09b5c-44a2-4c6c-a30c-7601963942b7",
+          "createdAt": "2023-11-02T11:56:31.966Z",
+          "updatedAt": "2023-11-02T11:56:31.966Z",
+          "moduleId": "afe7ef1f-ac86-4bf1-b583-351767fb9222",
           "permission": "test",
           "friendlyName": "test",
-          "description": "test"
+          "description": "test",
+          "canHaveCount": false
         },
         {
-          "id": "49b07312-73d2-46c3-81de-abb36774b5f8",
-          "createdAt": "2023-07-17T15:56:31.468Z",
-          "updatedAt": "2023-07-17T15:56:31.468Z",
-          "moduleId": "e5d59722-dacc-445d-9424-4676b8335abc",
+          "id": "8134e9fb-c3d5-4de7-8dd9-1a2b728b05df",
+          "createdAt": "2023-11-02T11:56:31.989Z",
+          "updatedAt": "2023-11-02T11:56:31.989Z",
+          "moduleId": "afe7ef1f-ac86-4bf1-b583-351767fb9222",
           "permission": "test2",
           "friendlyName": "test2",
-          "description": "test2"
+          "description": "test2",
+          "canHaveCount": false
         }
       ]
     }

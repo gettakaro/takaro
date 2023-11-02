@@ -23,7 +23,7 @@ const tests = [
     test: async function () {
       return this.client.role.roleControllerGetOne(this.setupData.id);
     },
-    filteredFields: ['roleId'],
+    filteredFields: ['roleId', 'permissionId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -42,10 +42,10 @@ const tests = [
     test: async function () {
       return this.client.role.roleControllerUpdate(this.setupData.id, {
         name: 'New name',
-        permissions: [PERMISSIONS.MANAGE_ROLES, PERMISSIONS.MANAGE_USERS],
+        permissions: this.setupData.permissions.map((p) => p.permissionId),
       });
     },
-    filteredFields: ['roleId'],
+    filteredFields: ['roleId', 'permissionId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -54,7 +54,7 @@ const tests = [
     test: async function () {
       return this.client.role.roleControllerUpdate('invalid-id', {
         name: 'New name',
-        permissions: [PERMISSIONS.MANAGE_ROLES, PERMISSIONS.MANAGE_USERS],
+        permissions: [],
       });
     },
     expectedStatus: 400,
@@ -90,7 +90,7 @@ const tests = [
         filters: { name: ['Test role'] },
       });
     },
-    filteredFields: ['roleId'],
+    filteredFields: ['roleId', 'permissionId'],
   }),
   new IntegrationTest<RoleOutputDTO>({
     group,

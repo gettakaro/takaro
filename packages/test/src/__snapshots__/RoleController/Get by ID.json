@@ -1,20 +1,29 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-11T20:36:44.585Z"
-    },
+    "meta": {},
     "data": {
-      "createdAt": "2022-09-11T20:36:44.565Z",
-      "updatedAt": "2022-09-11T20:36:44.565Z",
-      "id": "17cd82f2-710e-4b6c-a4c3-94f488904aa8",
+      "id": "39d477f5-9855-4643-b00b-7228f41ed96f",
+      "createdAt": "2023-11-02T11:51:19.909Z",
+      "updatedAt": "2023-11-02T11:51:19.910Z",
       "name": "Test role",
       "permissions": [
         {
-          "createdAt": "2022-09-11T20:36:44.570Z",
-          "updatedAt": "2022-09-11T20:36:44.570Z",
-          "id": "b1e2b8e5-c4b8-408e-a358-38b63a36cee1",
-          "roleId": "17cd82f2-710e-4b6c-a4c3-94f488904aa8",
-          "permission": "MANAGE_ROLES"
+          "id": "69715455-dec2-47a1-a989-c24158670c3d",
+          "createdAt": "2023-11-02T11:51:19.911Z",
+          "updatedAt": "2023-11-02T11:51:19.912Z",
+          "permissionId": "9bd0b9a9-49bc-40da-b345-65e91162a861",
+          "permission": {
+            "id": "9bd0b9a9-49bc-40da-b345-65e91162a861",
+            "createdAt": "2023-09-29T06:35:26.753Z",
+            "updatedAt": "2023-09-29T06:35:26.753Z",
+            "permission": "MANAGE_ROLES",
+            "friendlyName": "MANAGE_ROLES",
+            "description": "No description provided",
+            "moduleId": null,
+            "canHaveCount": false
+          },
+          "roleId": "39d477f5-9855-4643-b00b-7228f41ed96f",
+          "count": 0
         }
       ]
     }
@@ -22,9 +31,11 @@
   "status": 200,
   "test": {
     "group": "RoleController",
+    "snapshot": true,
     "name": "Get by ID",
     "filteredFields": [
-      "roleId"
+      "roleId",
+      "permissionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
