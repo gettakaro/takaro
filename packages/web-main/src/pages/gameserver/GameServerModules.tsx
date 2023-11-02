@@ -61,15 +61,14 @@ const GameServerModules: FC = () => {
         {installedModules.map((mod) => (
           <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
         ))}
-        <Outlet />
       </ModuleCards>
       <SubHeader>Available</SubHeader>
       <ModuleCards>
         {availableModules.map((mod) => (
           <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
         ))}
-        <Outlet />
       </ModuleCards>
+      <Outlet />
     </>
   );
 };

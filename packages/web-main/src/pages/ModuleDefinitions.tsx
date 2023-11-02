@@ -44,7 +44,11 @@ export const ModuleDefinitions: FC = () => {
       </p>
 
       <Divider />
-      <SubHeader withMargin>Yours</SubHeader>
+      <SubHeader>Custom</SubHeader>
+      <SubText>
+        You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
+        module click on a built-in module & inside the editor click on the copy icon next to it's name.
+      </SubText>
       <ModuleCards>
         <AddModuleCard
           onClick={() => {
@@ -60,8 +64,8 @@ export const ModuleDefinitions: FC = () => {
       </ModuleCards>
       <SubHeader>Built-in</SubHeader>
       <SubText>
-        These modules are built-in and can be installed per server through the modules page for a selected gameserver.
-        Tip: you can copy a built-in module in the editor and modify it to your needs.
+        These modules are built-in from Takaro and can be installed per server through the modules page for a selected
+        gameserver. If you want to view how they are implemented, you can view the source by clicking on a module.
       </SubText>
       <ModuleCards>
         {builtinModules.map((mod) => (

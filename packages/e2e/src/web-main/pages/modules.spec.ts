@@ -162,7 +162,11 @@ basicTest('Can install module with empty config', async ({ page, takaro }) => {
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Modules').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Modules' })
+    .click();
 
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
 
@@ -187,7 +191,11 @@ basicTest('Can install a module with a discord hook', async ({ page, takaro }) =
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Modules').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Modules' })
+    .click();
 
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
 
