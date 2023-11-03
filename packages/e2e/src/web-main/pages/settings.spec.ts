@@ -18,7 +18,11 @@ test('Can set global settings', async ({ page }) => {
 test('Can set server-scoped settings', async ({ page }) => {
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Settings').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Settings' })
+    .click();
 
   await page.getByLabel('serverChatName').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
@@ -39,7 +43,11 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Settings').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Settings' })
+    .click();
 
   await page.getByLabel('serverChatName').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
@@ -47,7 +55,11 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
   await page.getByRole('link', { name: 'Takaro' }).click();
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Second server').click();
-  await page.getByText('Server Settings').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Settings' })
+    .click();
 
   await expect(page.getByLabel('serverChatName')).toHaveValue('Takaro');
 });
