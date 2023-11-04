@@ -286,7 +286,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
                     icon={<SaveIcon />}
                     text="Save file"
                     onClick={() => {
-                      console.log(editorInstance.current?.getAction('save'));
                       editorInstance.current?.getAction('save')?.run();
                     }}
                   />

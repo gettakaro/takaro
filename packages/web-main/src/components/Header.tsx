@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useLocation } from 'react-router-dom';
-import { styled, BreadCrumbs } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 
 const Container = styled.header`
   height: 80px;
@@ -11,6 +11,7 @@ const Container = styled.header`
   justify-content: space-between;
   align-items: flex-end;
   position: relative;
+  text-transform: capitalize;
 `;
 
 const Left = styled.div`
@@ -30,14 +31,20 @@ interface HeaderProps {
   idToNameMap?: Record<string, string>;
 }
 
-export const Header: FC<HeaderProps> = ({ isLoading, idToNameMap }) => {
+export const Header: FC<HeaderProps> = ({}) => {
   const location = useLocation();
+
+  const pathArr = location.pathname.split('/');
+  let serverName = pathArr.at(pathArr.length - 1);
+
+  if (pathArr.at(pathArr.length - 2) === 'settings') {
+    serverName = 'settings';
+  }
 
   return (
     <Container>
       <Left>
-        <h2>{location.pathname.split('/')[1] || 'dashboard'}</h2>
-        {!isLoading && <BreadCrumbs idToNameMap={idToNameMap} />}
+        <h1>{serverName || 'dashboard'}</h1>
       </Left>
     </Container>
   );

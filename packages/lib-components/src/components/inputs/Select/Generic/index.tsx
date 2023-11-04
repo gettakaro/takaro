@@ -67,7 +67,6 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
   const listContentRef = useRef([
-    'Select...',
     ...(Children.map(children, (child) =>
       Children.map(isValidElement(child) && child.props.children, (child) => child.props.value)
     ) ?? []),

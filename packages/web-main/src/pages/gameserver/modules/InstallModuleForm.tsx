@@ -75,7 +75,6 @@ const InstallModule: FC = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log('isSuccess', isSuccess);
       navigate(PATHS.gameServer.modules(serverId));
     }
   }, [isSuccess]);
