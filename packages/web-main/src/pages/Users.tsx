@@ -11,6 +11,7 @@ import {
   Button,
   TextField,
   FormError,
+  PERMISSIONS,
 } from '@takaro/lib-components';
 import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -22,6 +23,7 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
@@ -91,13 +93,17 @@ const Users: FC = () => {
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                label="Go to user profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
-              />
+              <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_USERS]]}>
+                <Dropdown.Menu.Item
+                  label="Go to user profile"
+                  icon={<ProfileIcon />}
+                  onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
+                />
+              </PermissionsGuard>
             </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_ROLES]]}>
+              <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
+            </PermissionsGuard>
           </Dropdown.Menu>
         </Dropdown>
       ),
@@ -114,7 +120,11 @@ const Users: FC = () => {
         id="users"
         columns={columnDefs}
         data={data.data}
-        renderToolbar={() => <InviteUser />}
+        renderToolbar={() => (
+          <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_USERS]}>
+            <InviteUser />
+          </PermissionsGuard>
+        )}
         pagination={{
           ...pagination,
           pageOptions: pagination.getPageOptions(data),

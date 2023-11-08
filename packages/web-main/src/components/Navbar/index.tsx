@@ -1,7 +1,7 @@
 import { FC, cloneElement, ReactElement, useMemo, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Button, Company, Tooltip } from '@takaro/lib-components';
+import { Button, Company, PERMISSIONS, RequiredPermissions, Tooltip } from '@takaro/lib-components';
 import { GameServerSelectNav } from './GameServerSelectNav';
 import { UserDropdown } from './UserDropdown';
 import { PATHS } from 'paths';
@@ -28,6 +28,7 @@ import {
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { useGameServers } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -39,37 +40,44 @@ const domainLinks: NavbarLink[] = [
     label: 'Servers',
     path: PATHS.gameServers.overview(),
     icon: <GameServersIcon />,
+    requiredPermissions: [PERMISSIONS.READ_GAMESERVERS],
   },
   {
     label: 'Events',
     path: PATHS.events(),
     icon: <EventsIcon />,
+    requiredPermissions: [PERMISSIONS.READ_EVENTS],
   },
   {
     label: 'Players',
     path: PATHS.players(),
     icon: <PlayersIcon />,
+    requiredPermissions: [PERMISSIONS.READ_PLAYERS],
   },
   {
     label: 'Users',
     path: PATHS.users(),
     icon: <UsersIcon />,
+    requiredPermissions: [PERMISSIONS.READ_USERS],
   },
   {
     label: 'Modules',
     path: PATHS.moduleDefinitions(),
     icon: <ModulesIcon />,
+    requiredPermissions: [PERMISSIONS.READ_MODULES],
   },
   {
     label: 'Variables',
     path: PATHS.variables(),
     icon: <VariablesIcon />,
+    requiredPermissions: [PERMISSIONS.READ_VARIABLES],
   },
   {
     label: 'Settings',
     path: PATHS.settings.overview(),
     icon: <SettingsIcon />,
     end: false,
+    requiredPermissions: [PERMISSIONS.READ_SETTINGS],
   },
 ];
 
@@ -77,6 +85,7 @@ export interface NavbarLink {
   path: string;
   label: string;
   icon: ReactElement;
+  requiredPermissions?: RequiredPermissions;
   end?: boolean;
 }
 
@@ -107,15 +116,17 @@ export const Navbar: FC = () => {
     ];
   }, [selectedGameServerId]);
 
-  const renderLink = ({ path, icon, label, end }: NavbarLink) => (
-    <div key={`wrapper-${path}`}>
-      <NavLink to={path} key={`link-${path}`} end={end}>
-        <span key={`inner-${path}`}>
-          {cloneElement(icon, { size: 20, key: `icon-${path}` })}
-          <p key={`label-${path}`}>{label}</p>
-        </span>
-      </NavLink>
-    </div>
+  const renderLink = ({ path, icon, label, end, requiredPermissions }: NavbarLink) => (
+    <PermissionsGuard requiredPermissions={requiredPermissions || []}>
+      <div key={`wrapper-${path}`}>
+        <NavLink to={path} key={`link-${path}`} end={end}>
+          <span key={`inner-${path}`}>
+            {cloneElement(icon, { size: 20, key: `icon-${path}` })}
+            <p key={`label-${path}`}>{label}</p>
+          </span>
+        </NavLink>
+      </div>
+    </PermissionsGuard>
   );
 
   useEffect(() => {
