@@ -3,6 +3,14 @@ import { integrationConfig } from '@takaro/test';
 import { basicTest } from '../fixtures/index.js';
 const { expect } = playwright;
 
+basicTest('Can use call to action if there are no gameservers', async ({ page }) => {
+  const button = page.getByRole('button').getByText('Add a server');
+
+  await button.click();
+
+  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
+});
+
 basicTest('Can create gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
 

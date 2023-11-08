@@ -115,7 +115,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     data.arguments = data.arguments.map((arg, index) => {
-      console.log(arg);
       return {
         name: arg.name,
         type: arg.type,
@@ -207,7 +206,6 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           <IconButton
                             disabled={index === 0}
                             onClick={() => {
-                              console.log(index);
                               swap(index, index - 1);
                             }}
                             icon={<UpArrowIcon size={16} cursor="pointer" />}

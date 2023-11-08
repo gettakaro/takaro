@@ -1,9 +1,9 @@
 import { Console, Message, Skeleton, styled } from '@takaro/lib-components';
-import { Dispatch, FC, Fragment, SetStateAction } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
-import { useGameServerOutletContext } from 'frames/GameServerFrame';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const ConsoleContainer = styled.div`
@@ -12,10 +12,18 @@ const ConsoleContainer = styled.div`
 
 const GameServerDashboard: FC = () => {
   useDocumentTitle('Gameserver dashboard');
+
   const apiClient = useApiClient();
   const { socket } = useSocket();
-  const { gameServerId } = useGameServerOutletContext();
-  const { data: gameServer, isLoading } = useGameServer(gameServerId);
+  const { selectedGameServerId } = useSelectedGameServer();
+  const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
+
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  // TODO: don't clear console on server change, so that you persist the console history for each gameserver
+  useEffect(() => {
+    setMessages([]);
+  }, [selectedGameServerId]);
 
   if (isLoading) {
     return (
@@ -32,14 +40,14 @@ const GameServerDashboard: FC = () => {
     return <>could not load data</>;
   }
 
-  function handleMessageFactory(setter: Dispatch<SetStateAction<Message[]>>) {
+  function handleMessageFactory() {
     // TODO: use typings from backend
     const eventHandler = (
       handleGameserverId: string,
       type: 'player-disconnected' | 'player-connected' | 'chat-message' | 'log-line' | 'discord-message',
       data: Record<string, unknown>
     ) => {
-      if (handleGameserverId !== gameServerId) return;
+      if (handleGameserverId !== selectedGameServerId) return;
 
       let msg = data?.msg as string;
 
@@ -59,7 +67,7 @@ const GameServerDashboard: FC = () => {
         }
       }
 
-      setter((prev: Message[]) => [
+      setMessages((prev: Message[]) => [
         ...prev,
         {
           type: 'info',
@@ -68,6 +76,7 @@ const GameServerDashboard: FC = () => {
         },
       ]);
     };
+
     return {
       on: () => {
         socket.on('gameEvent', eventHandler);
@@ -82,6 +91,8 @@ const GameServerDashboard: FC = () => {
     <Fragment>
       <ConsoleContainer>
         <Console
+          messages={messages}
+          setMessages={setMessages}
           listenerFactory={handleMessageFactory}
           onExecuteCommand={async (command: string) => {
             const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });

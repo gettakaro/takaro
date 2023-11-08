@@ -1,16 +1,11 @@
 import { FC, Fragment, useState } from 'react';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
+import { Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const TableContainer = styled.div`
-  width: 100%;
-  margin-top: 2rem;
-`;
 
 const Variables: FC = () => {
   useDocumentTitle('Variables');
@@ -131,20 +126,18 @@ const Variables: FC = () => {
         variables are the way that the teleports module stores the teleport locations.
       </p>
 
-      <TableContainer>
-        <Table
-          id="variables"
-          columns={columnDefs}
-          data={data.data}
-          pagination={{
-            ...pagination,
-            pageOptions: pagination.getPageOptions(data),
-          }}
-          columnFiltering={columnFilters}
-          columnSearch={columnSearch}
-          sorting={sorting}
-        />
-      </TableContainer>
+      <Table
+        id="variables"
+        columns={columnDefs}
+        data={data.data}
+        pagination={{
+          ...pagination,
+          pageOptions: pagination.getPageOptions(data),
+        }}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
+        sorting={sorting}
+      />
 
       <VariableDelete variable={activeVar} openDialog={openDialog} setOpenDialog={setOpenDialog} />
     </Fragment>

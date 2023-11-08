@@ -1,23 +1,22 @@
 import { Loading, Skeleton, styled } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { ModuleCards } from '../../components/modules/Cards/style';
 import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
-const Page = styled.div`
-  padding: 3rem 8rem;
-  h1 {
-    margin-bottom: 2rem;
-  }
+const SubHeader = styled.h2`
+  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+  margin-bottom: ${({ theme }) => theme.spacing[2]}};
 `;
 
 const GameServerModules: FC = () => {
   useDocumentTitle('Modules');
-  const { serverId } = useParams();
-  const { data: installations, isLoading } = useGameServerModuleInstallations(serverId!);
+  const { selectedGameServerId } = useSelectedGameServer();
+  const { data: installations, isLoading } = useGameServerModuleInstallations(selectedGameServerId);
   const { data } = useInfiniteModules();
 
   const mappedModules = useMemo(() => {
@@ -52,18 +51,24 @@ const GameServerModules: FC = () => {
     return <Loading />;
   }
 
+  const installedModules = mappedModules.filter((mod) => mod.installed);
+  const availableModules = mappedModules.filter((mod) => !mod.installed);
+
   return (
     <>
-      <Page>
-        <h1>Modules</h1>
-
-        <ModuleCards>
-          {mappedModules.map((mod) => (
-            <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
-          ))}
-          <Outlet />
-        </ModuleCards>
-      </Page>
+      <SubHeader>Installed</SubHeader>
+      <ModuleCards>
+        {installedModules.map((mod) => (
+          <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
+        ))}
+      </ModuleCards>
+      <SubHeader>Available</SubHeader>
+      <ModuleCards>
+        {availableModules.map((mod) => (
+          <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
+        ))}
+      </ModuleCards>
+      <Outlet />
     </>
   );
 };

@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { Dispatch, SetStateAction } from 'react';
 import { Console as ConsoleComponent } from '../Console';
 import { Message, MessageType } from './MessageModel';
 
@@ -9,16 +8,12 @@ export default {
   component: ConsoleComponent,
 } as Meta;
 
-const MessageTypeMap: MessageType[] = [
-  'command',
-  'info',
-  'debug',
-  'warning',
-  'error',
-];
+const MessageTypeMap: MessageType[] = ['command', 'info', 'debug', 'warning', 'error'];
 
 export const Console: StoryFn = () => {
-  function listenerFactory(setter: Dispatch<SetStateAction<Message[]>>) {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  function listenerFactory() {
     const interval = setInterval(() => {
       const r = Math.floor(Math.random() * 5);
       const newMessage: Message = {
@@ -28,7 +23,7 @@ export const Console: StoryFn = () => {
         type: MessageTypeMap[r],
       };
 
-      setter((prev: Message[]) => [...prev, newMessage]);
+      setMessages((prev: Message[]) => [...prev, newMessage]);
     }, 200);
 
     return {
@@ -41,6 +36,8 @@ export const Console: StoryFn = () => {
 
   return (
     <ConsoleComponent
+      messages={messages}
+      setMessages={setMessages}
       listenerFactory={listenerFactory}
       onExecuteCommand={async () => {
         return {

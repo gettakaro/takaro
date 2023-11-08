@@ -6,7 +6,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { ServerFrame } from 'frames/GameServerFrame';
 import { setUser } from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -46,15 +45,12 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
 
   useEffect(() => {
     handleAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingSession]);
 
   function handleFrame() {
     switch (frame) {
       case 'global':
         return <GlobalFrame />;
-      case 'gameserver':
-        return <ServerFrame />;
       case 'studio':
         return <StudioFrame />;
       default:
