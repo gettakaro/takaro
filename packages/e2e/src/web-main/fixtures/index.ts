@@ -1,8 +1,10 @@
-import playwright, { Page } from '@playwright/test';
+import playwright from '@playwright/test';
 import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { PERMISSIONS } from '@takaro/lib-components';
 import {
   AdminClient,
   Client,
+  DomainCreateOutputDTO,
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTO,
   HookCreateDTOEventTypeEnum,
@@ -11,39 +13,17 @@ import {
   UserOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
-import { GameServersPage } from './GameServersPage.js';
-import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
+import { GameServersPage } from '../pages/GameServersPage.js';
+import { ModuleDefinitionsPage } from '../pages/ModuleDefinitionsPage.js';
 import { StudioPage } from './StudioPage.js';
 import { EventTypes } from '@takaro/modules';
+import { getAdminClient, login } from './helpers.js';
 
-const { expect, test: base } = playwright;
+const { test: base } = playwright;
 
-export async function login(page: Page, username: string, password: string) {
-  await page.goto('/login');
-  const emailInput = page.getByPlaceholder('hi cutie');
-  await emailInput.click();
-  await emailInput.fill(username);
-  emailInput.press('Tab');
-  await emailInput.press('Tab');
-  await page.getByLabel('PasswordRequired').fill(password);
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
-}
-
-export const getAdminClient = () => {
-  return new AdminClient({
-    url: integrationConfig.get('host'),
-    auth: {
-      clientId: integrationConfig.get('auth.adminClientId'),
-      clientSecret: integrationConfig.get('auth.adminClientSecret'),
-    },
-    OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
-  });
-};
-
-interface IFixtures {
+interface IBaseFixtures {
   takaro: {
-    client: Client;
+    rootClient: Client;
     adminClient: AdminClient;
     studioPage: StudioPage;
     moduleDefinitionsPage: ModuleDefinitionsPage;
@@ -53,34 +33,30 @@ interface IFixtures {
     mailhog: MailhogAPI;
     players: PlayerOutputDTO[];
     rootUser: UserOutputDTO;
+    domain: DomainCreateOutputDTO;
   };
 }
 
-export const basicTest = base.extend<IFixtures>({
+export const basicTest = base.extend<IBaseFixtures>({
   takaro: [
     async ({ page }, use) => {
-      // fixture setup
       const adminClient = getAdminClient();
-      const createdDomainRes = await adminClient.domain.domainControllerCreate({
-        name: `e2e-${humanId.default()}`.slice(0, 49),
-      });
+      const domain = (
+        await adminClient.domain.domainControllerCreate({
+          name: `e2e-${humanId.default()}`.slice(0, 49),
+        })
+      ).data.data;
 
-      const data = createdDomainRes.data.data;
-      await login(page, data.rootUser.email, data.password);
+      await login(page, domain.rootUser.email, domain.password);
 
       const client = new Client({
         url: integrationConfig.get('host'),
         auth: {
-          username: data.rootUser.email,
-          password: data.password,
+          username: domain.rootUser.email,
+          password: domain.password,
         },
       });
       await client.login();
-
-      const mailhog = new MailhogAPI({
-        baseURL: integrationConfig.get('mailhog.url'),
-      });
-
       const gameServer = await client.gameserver.gameServerControllerCreate({
         name: 'Test server',
         type: GameServerCreateDTOTypeEnum.Mock,
@@ -95,63 +71,54 @@ export const basicTest = base.extend<IFixtures>({
         configSchema: JSON.stringify({}),
         description: 'Empty module with no functions',
       });
-
       const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
 
       await use({
-        client,
+        rootClient: client,
         adminClient,
         builtinModule: mods.data.data[0],
         gameServer: gameServer.data.data,
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
-        mailhog,
+        mailhog: new MailhogAPI({
+          baseURL: integrationConfig.get('mailhog.url'),
+        }),
+        domain,
         players: [],
-        rootUser: data.rootUser,
+        rootUser: domain.rootUser,
       });
 
       // fixture teardown
-      await adminClient.domain.domainControllerRemove(data.createdDomain.id);
+      await adminClient.domain.domainControllerRemove(domain.createdDomain.id);
     },
     { auto: true },
   ],
 });
 
-export const test = base.extend<IFixtures>({
-  takaro: [
-    async ({ page }, use) => {
-      const adminClient = getAdminClient();
-      const createdDomainRes = await adminClient.domain.domainControllerCreate({
-        name: `e2e-${humanId.default()}`.slice(0, 49),
-      });
+interface WithModuleFixture {
+  module: ModuleOutputDTO;
+}
 
-      const data = createdDomainRes.data.data;
-      await login(page, data.rootUser.email, data.password);
+export const test = basicTest.extend<WithModuleFixture>({
+  module: [
+    async ({ takaro, page }, use) => {
+      const { rootUser, domain, gameServer } = takaro;
+      await login(page, rootUser.email, domain.password);
 
       const client = new Client({
         url: integrationConfig.get('host'),
         auth: {
-          username: data.rootUser.email,
-          password: data.password,
+          username: rootUser.email,
+          password: domain.password,
         },
       });
       await client.login();
 
-      const gameServer = await client.gameserver.gameServerControllerCreate({
-        name: 'Test server',
-        type: GameServerCreateDTOTypeEnum.Mock,
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-        }),
-      });
-
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(client);
-
       const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
-
-      await client.gameserver.gameServerControllerExecuteCommand(gameServer.data.data.id, {
+      await client.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
         command: 'connectAll',
       });
 
@@ -179,37 +146,67 @@ export const test = base.extend<IFixtures>({
         name: 'my-cron',
         temporalValue: '* * * * *',
       });
-
-      const mailhog = new MailhogAPI({
-        baseURL: integrationConfig.get('mailhog.url'),
-      });
-
       await connectedEvents;
-
-      const players = await client.player.playerControllerSearch();
-
-      /* TODO: should probably add more custom modules with complex config schemas
-       * probably a good idea to add one for each type of config field
-       */
-
-      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
-
-      await use({
-        client,
-        adminClient,
-        builtinModule: mods.data.data[0],
-        studioPage: new StudioPage(page, mod.data.data),
-        GameServersPage: new GameServersPage(page, gameServer.data.data),
-        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
-        mailhog,
-        gameServer: gameServer.data.data,
-        players: players.data.data,
-        rootUser: data.rootUser,
-      });
-
-      // fixture teardown
-      await adminClient.domain.domainControllerRemove(data.createdDomain.id);
+      await use(mod.data.data);
     },
     { auto: true },
   ],
 });
+
+interface UserFixtures {
+  user: {
+    user: UserOutputDTO;
+    userClient: Client;
+  };
+}
+
+export function createTestFnWithUserPermissions(permissions: PERMISSIONS[]) {
+  return basicTest.extend<UserFixtures>({
+    user: [
+      async ({ takaro, page }, use) => {
+        const { rootUser, domain } = takaro;
+        const client = new Client({
+          url: integrationConfig.get('host'),
+          auth: {
+            username: rootUser.email,
+            password: domain.password,
+          },
+        });
+        await client.login();
+
+        const password = 'test';
+        const user = (
+          await client.user.userControllerCreate({
+            email: `e2e-${humanId.default()}@takaro.io`,
+            password,
+            name: 'test',
+          })
+        ).data.data;
+
+        const role = (
+          await client.role.roleControllerCreate({
+            name: `e2e-${humanId.default()}`,
+            permissions,
+          })
+        ).data.data;
+
+        await client.user.userControllerAssignRole(user.id, role.id);
+        client.logout();
+
+        const userClient = new Client({
+          url: integrationConfig.get('host'),
+          auth: {
+            username: user.email,
+            password,
+          },
+        });
+        userClient.login();
+        await login(page, user.email, password);
+        await use({ user, userClient });
+
+        // the base fixture removes the domain which will remove the user
+      },
+      { auto: true },
+    ],
+  });
+}

@@ -114,7 +114,7 @@ basicTest('Creating a module with config but not providing a default value, show
 basicTest('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'edit this module';
 
-  await takaro.client.module.moduleControllerCreate({
+  await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
     description: 'Modules are the building blocks of your game server. They consist of commands, c',
     configSchema: JSON.stringify({}),
@@ -136,7 +136,7 @@ basicTest('Can edit module', async ({ page, takaro }) => {
 
 basicTest('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
-  await takaro.client.module.moduleControllerCreate({
+  await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
     description: 'Modules are the building blocks of your game server. They consist of commands, c',
     configSchema: JSON.stringify({}),
@@ -154,11 +154,13 @@ basicTest('Can delete module', async ({ page, takaro }) => {
 });
 
 basicTest('Can install module with empty config', async ({ page, takaro }) => {
-  const modRes = await takaro.client.module.moduleControllerSearch({ filters: { name: ['Module without functions'] } });
+  const modRes = await takaro.rootClient.module.moduleControllerSearch({
+    filters: { name: ['Module without functions'] },
+  });
 
   const mod = modRes.data.data[0];
 
-  await expect(mod).toBeDefined();
+  expect(mod).toBeDefined();
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
@@ -176,13 +178,13 @@ basicTest('Can install module with empty config', async ({ page, takaro }) => {
 });
 
 basicTest('Can install a module with a discord hook', async ({ page, takaro }) => {
-  const mod = await takaro.client.module.moduleControllerCreate({
+  const mod = await takaro.rootClient.module.moduleControllerCreate({
     name: 'Module with Discord hook',
     configSchema: JSON.stringify({}),
     description: 'aaa',
   });
 
-  await takaro.client.hook.hookControllerCreate({
+  await takaro.rootClient.hook.hookControllerCreate({
     name: 'My hook',
     eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
     moduleId: mod.data.data.id,

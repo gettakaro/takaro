@@ -6,7 +6,7 @@ const { expect } = playwright;
 
 test.describe('smoke', () => {
   test('should open onboarding when new module with no functions is created', async ({ takaro }) => {
-    const mod = await takaro.client.module.moduleControllerCreate({
+    const mod = await takaro.rootClient.module.moduleControllerCreate({
       name: 'Module without functions',
     });
     takaro.studioPage.mod = mod.data.data;
