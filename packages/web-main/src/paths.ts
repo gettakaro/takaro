@@ -32,7 +32,7 @@ export const PATHS = {
   },
 
   gameServer: {
-    dashboard: (serverId: string) => `/server/${serverId}`,
+    dashboard: (serverId: string) => `/server/${serverId}/dashboard`,
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
     update: (serverId: string) => `/server/${serverId}/update`,
@@ -55,5 +55,10 @@ export const PATHS = {
   player: {
     profile: (playerId: string) => `/player/${playerId}`,
     assignRole: (playerId: string) => `/player/${playerId}/assign-role`,
+  },
+
+  user: {
+    profile: (userId: string) => `/user/${userId}`,
+    assignRole: (userId: string) => `/user/${userId}/assign-role`,
   },
 };

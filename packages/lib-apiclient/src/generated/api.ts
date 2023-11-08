@@ -572,6 +572,18 @@ export interface CommandSearchInputDTO {
   sortDirection?: CommandSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof CommandSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommandSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof CommandSearchInputDTO
    */
@@ -827,6 +839,18 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CronJobSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -1120,6 +1144,18 @@ export interface DomainSearchInputDTO {
   sortDirection?: DomainSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof DomainSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof DomainSearchInputDTO
    */
@@ -1242,6 +1278,12 @@ export interface EventCreateDTO {
    * @type {string}
    * @memberof EventCreateDTO
    */
+  userId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventCreateDTO
+   */
   gameserverId?: string;
   /**
    *
@@ -1349,6 +1391,12 @@ export interface EventOutputDTO {
    * @memberof EventOutputDTO
    */
   playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventOutputDTO
+   */
+  userId?: string;
   /**
    *
    * @type {string}
@@ -1539,6 +1587,18 @@ export interface EventSearchInputDTO {
   sortDirection?: EventSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof EventSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof EventSearchInputDTO
    */
@@ -1690,6 +1750,18 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -1922,6 +1994,18 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -2323,6 +2407,18 @@ export interface GuildSearchInputDTO {
   sortDirection?: GuildSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof GuildSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GuildSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof GuildSearchInputDTO
    */
@@ -2651,6 +2747,18 @@ export interface HookSearchInputDTO {
   sortDirection?: HookSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof HookSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof HookSearchInputDTO
    */
@@ -2898,6 +3006,18 @@ export interface ITakaroQuery {
    * @memberof ITakaroQuery
    */
   sortDirection?: ITakaroQuerySortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ITakaroQuery
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ITakaroQuery
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -3471,6 +3591,18 @@ export interface ModuleSearchInputDTO {
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof ModuleSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof ModuleSearchInputDTO
    */
@@ -3655,13 +3787,13 @@ export interface PermissionCreateDTO {
    * @type {string}
    * @memberof PermissionCreateDTO
    */
-  friendlyName?: string;
+  friendlyName: string;
   /**
    *
    * @type {string}
    * @memberof PermissionCreateDTO
    */
-  description?: string;
+  description: string;
 }
 /**
  *
@@ -3680,13 +3812,13 @@ export interface PermissionOutputDTO {
    * @type {string}
    * @memberof PermissionOutputDTO
    */
-  friendlyName?: string;
+  friendlyName: string;
   /**
    *
    * @type {string}
    * @memberof PermissionOutputDTO
    */
-  description?: string;
+  description: string;
   /**
    *
    * @type {string}
@@ -4237,6 +4369,18 @@ export interface PlayerSearchInputDTO {
   sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
   /**
    *
+   * @type {string}
+   * @memberof PlayerSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
    * @type {Array<string>}
    * @memberof PlayerSearchInputDTO
    */
@@ -4475,6 +4619,18 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   sortDirection?: RoleSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoleSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -4968,10 +5124,10 @@ export interface UserOutputDTO {
 export interface UserOutputDTOAPI {
   /**
    *
-   * @type {UserOutputDTO}
+   * @type {UserOutputWithRolesDTO}
    * @memberof UserOutputDTOAPI
    */
-  data: UserOutputDTO;
+  data: UserOutputWithRolesDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -5101,6 +5257,18 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   sortDirection?: UserSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof UserSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -5370,6 +5538,18 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   sortDirection?: VariableSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof VariableSearchInputDTO
+   */
+  endDate?: string;
   /**
    *
    * @type {Array<string>}

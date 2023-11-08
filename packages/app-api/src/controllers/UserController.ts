@@ -1,7 +1,13 @@
 import { IsEmail, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { UserCreateInputDTO, UserOutputDTO, UserService, UserUpdateDTO } from '../service/UserService.js';
+import {
+  UserCreateInputDTO,
+  UserOutputDTO,
+  UserOutputWithRolesDTO,
+  UserService,
+  UserUpdateDTO,
+} from '../service/UserService.js';
 import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -41,10 +47,10 @@ class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   declare data: LoginOutputDTO;
 }
 
-class UserOutputDTOAPI extends APIOutput<UserOutputDTO> {
-  @Type(() => UserOutputDTO)
+class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
+  @Type(() => UserOutputWithRolesDTO)
   @ValidateNested()
-  declare data: UserOutputDTO;
+  declare data: UserOutputWithRolesDTO;
 }
 
 class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {

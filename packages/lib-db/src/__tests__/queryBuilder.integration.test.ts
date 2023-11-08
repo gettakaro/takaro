@@ -3,6 +3,7 @@ import { QueryBuilder, SortDirection } from '../queryBuilder.js';
 import { expect } from '@takaro/test';
 import { TakaroModel } from '../TakaroModel.js';
 import { Model } from 'objection';
+import { sleep } from '@takaro/util';
 
 const TEST_TABLE_USERS_NAME = 'test_users';
 const TEST_TABLE_POSTS_NAME = 'test_posts';
@@ -173,6 +174,27 @@ describe('QueryBuilder', () => {
       search: {
         name: ['st1', 'st2'],
       },
+    }).build(TestUserModel.query());
+
+    expect(res.results).to.have.lengthOf(2);
+  });
+
+  it('Can search between a date range', async () => {
+    const start = new Date();
+    await TestUserModel.query().insert({ name: 'test1' });
+    await TestUserModel.query().insert({ name: 'test2' });
+
+    const end = new Date();
+
+    // Quick hack to make the test pass
+    // Relying on times like this with an external DB is troublesome...
+    await sleep(250);
+
+    await TestUserModel.query().insert({ name: 'test3', createdAt: end.toISOString() });
+
+    const res = await new QueryBuilder<TestUserModel, TestUserModel>({
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
     }).build(TestUserModel.query());
 
     expect(res.results).to.have.lengthOf(2);

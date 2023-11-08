@@ -1,6 +1,8 @@
 export { ControlledCheckBox as CheckBox } from './CheckBox';
 export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox';
 
+export { GenericCheckBox as UnControlledCheckBox } from './CheckBox/Generic';
+
 export { ControlledSelect as Select } from './Select';
 export type { ControlledSelectProps as SelectProps } from './Select';
 
@@ -32,5 +34,8 @@ export type { EditableFieldProps } from './EditableField';
 
 export { Label } from './layout/Label';
 export type { LabelProps } from './layout/Label';
+
+export { DatePicker } from './DatePicker';
+export type { DatePickerProps } from './DatePicker';
 
 export { JsonSchemaForm, SchemaGenerator, generateJsonSchema } from './JsonSchemaForm';

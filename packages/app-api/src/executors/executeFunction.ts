@@ -30,6 +30,7 @@ export interface ILog {
 interface IFunctionResult {
   success: boolean;
   logs: ILog[];
+  requestId?: string;
 }
 
 export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;

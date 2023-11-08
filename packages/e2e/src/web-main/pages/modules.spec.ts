@@ -20,6 +20,37 @@ basicTest('Can create module', async ({ page }) => {
   await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
+basicTest('Can create module with permissions', async ({ page }) => {
+  // open modules page
+  await page.getByRole('link', { name: 'Modules' }).click();
+  await page.getByText('new module').click();
+
+  const newModuleName = 'My new module';
+  const moduleNameInput = page.getByPlaceholder('My cool module');
+
+  await moduleNameInput.click();
+  await moduleNameInput.fill(newModuleName);
+
+  await page.getByRole('button', { name: 'New permission' }).click();
+  await page.getByRole('button', { name: 'New permission' }).click();
+
+  await page.locator('[id="permissions\\.0\\.permission"]').type('MY_PERMISSION');
+  await page.locator('[id="permissions\\.0\\.description"]').type('Informative description');
+  await page.locator('[id="permissions\\.0\\.friendlyName"]').type('My first permission');
+
+  await page.locator('[id="permissions\\.1\\.permission"]').type('MY_PERMISSION2');
+  await page.locator('[id="permissions\\.1\\.description"]').type('Informative description 2');
+  await page.locator('[id="permissions\\.1\\.friendlyName"]').type('My second permission');
+
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  /*   await expect(page.getByText(newModuleName)).toBeVisible();
+  
+    await page.getByRole('link', { name: 'My new module Edit module Delete module No description provided.' }).getByRole('button', { name: 'Edit module' }).click();
+    await expect(page.getByText('MY_PERMISSION')).toBeVisible();
+    await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
+});
+
 basicTest('Creating module with config, saves the config', async ({ page }) => {
   await page.getByRole('link', { name: 'Modules' }).click();
   await page.getByText('new module').click();
@@ -131,7 +162,11 @@ basicTest('Can install module with empty config', async ({ page, takaro }) => {
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Modules').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Modules' })
+    .click();
 
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
 
@@ -156,7 +191,11 @@ basicTest('Can install a module with a discord hook', async ({ page, takaro }) =
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page.getByText('Server Modules').click();
+  await page
+    .getByRole('navigation')
+    .filter({ hasText: 'ServerDashboardModulesSettings' })
+    .getByRole('link', { name: 'Modules' })
+    .click();
 
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
 

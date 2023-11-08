@@ -235,6 +235,31 @@ const tests = [
     },
     filteredFields: ['moduleId'],
   }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Updating permissions can remove permissions',
+    setup: async function () {
+      return (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+          permissions: [testPermission],
+        })
+      ).data.data;
+    },
+    test: async function () {
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        permissions: [],
+      });
+
+      const getRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
+
+      expect(getRes.data.data.permissions).to.have.length(0);
+
+      return getRes;
+    },
+    filteredFields: ['moduleId'],
+  }),
 ];
 
 describe(group, function () {

@@ -2,7 +2,6 @@ import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import {
-  styled,
   Table,
   Loading,
   useTableActions,
@@ -23,13 +22,6 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const TableContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 2rem;
-`;
 
 const Users: FC = () => {
   useDocumentTitle('Users');
@@ -102,7 +94,7 @@ const Users: FC = () => {
               <Dropdown.Menu.Item
                 label="Go to user profile"
                 icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.users()}/${info.row.original.id}`)}
+                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
               />
             </Dropdown.Menu.Group>
             <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
@@ -118,21 +110,19 @@ const Users: FC = () => {
 
   return (
     <Fragment>
-      <TableContainer>
-        <Table
-          id="users"
-          columns={columnDefs}
-          data={data.data}
-          renderToolbar={() => <InviteUser />}
-          pagination={{
-            ...pagination,
-            pageOptions: pagination.getPageOptions(data),
-          }}
-          columnFiltering={columnFilters}
-          columnSearch={columnSearch}
-          sorting={sorting}
-        />
-      </TableContainer>
+      <Table
+        id="users"
+        columns={columnDefs}
+        data={data.data}
+        renderToolbar={() => <InviteUser />}
+        pagination={{
+          ...pagination,
+          pageOptions: pagination.getPageOptions(data),
+        }}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
+        sorting={sorting}
+      />
     </Fragment>
   );
 };

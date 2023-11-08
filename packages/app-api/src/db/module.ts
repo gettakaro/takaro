@@ -203,7 +203,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON());
 
-    if (data.permissions && data.permissions.length > 0) {
+    if (data.permissions) {
       const knex = await this.getKnex();
       const permissionModel = ModulePermissionModel.bindKnex(knex);
 

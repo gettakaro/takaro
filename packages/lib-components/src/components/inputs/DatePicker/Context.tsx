@@ -1,10 +1,16 @@
 import { DateTime } from 'luxon';
 import { createContext, Dispatch, useContext } from 'react';
+import { Tense, Unit } from './QuickSelect';
 
 export interface DatePickerState {
   start: DateTime;
   end: DateTime;
-  showQuickSelect: boolean;
+  quickSelect: {
+    show: boolean;
+    tense: Tense;
+    step: number;
+    unit: Unit;
+  };
   showStartDate: boolean;
   showEndDate: boolean;
   friendlyStartDate?: string;
@@ -17,7 +23,7 @@ export function reducer(state: DatePickerState, action: Action): DatePickerState
     case 'toggle_quick_select_popover':
       return {
         ...state,
-        showQuickSelect: action.payload.toggleQuickSelect,
+        quickSelect: { ...state.quickSelect, show: action.payload.toggleQuickSelect },
       };
     case 'toggle_start_date_popover':
       return {
@@ -47,6 +53,12 @@ export function reducer(state: DatePickerState, action: Action): DatePickerState
         friendlyRange: undefined,
       };
 
+    case 'set_quick_select':
+      return {
+        ...state,
+        quickSelect: { ...state.quickSelect, ...action.payload.quickSelect },
+      };
+
     case 'set_absolute_end_date':
       return {
         ...state,
@@ -70,6 +82,7 @@ export function reducer(state: DatePickerState, action: Action): DatePickerState
         friendlyRange: action.payload.friendlyRange,
         friendlyEndDate: undefined,
         friendlyStartDate: undefined,
+        quickSelect: { ...state.quickSelect, show: false },
       };
   }
 }
@@ -78,6 +91,7 @@ export type Action =
   | { type: 'toggle_quick_select_popover'; payload: { toggleQuickSelect: boolean } }
   | { type: 'toggle_start_date_popover'; payload: { toggleStartDate: boolean } }
   | { type: 'toggle_end_date_popover'; payload: { toggleEndDate: boolean } }
+  | { type: 'set_quick_select'; payload: { quickSelect: DatePickerState['quickSelect'] } }
   | { type: 'set_relative_start_date'; payload: { startDate: DateTime; friendlyStartDate?: string } }
   | { type: 'set_absolute_start_date'; payload: { startDate: DateTime } }
   | { type: 'set_relative_end_date'; payload: { endDate: DateTime; friendlyEndDate?: string } }

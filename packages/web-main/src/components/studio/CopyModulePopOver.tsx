@@ -71,10 +71,8 @@ export const CopyModulePopOver = () => {
     const createdModule = await createModule({ name: newName, configSchema: mod.configSchema });
 
     if (moduleCreateError) {
-      console.log('this fires');
       const err = errors.defineErrorType(moduleCreateError);
 
-      console.log(err, err instanceof errors.UniqueConstraintError);
       if (err instanceof errors.UniqueConstraintError) {
         setError('Module name already exists');
       } else {

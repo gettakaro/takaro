@@ -10,6 +10,12 @@ interface executeLambdaOpts {
   token: string;
 }
 
+interface IFunctionResult {
+  success: boolean;
+  logs: any[];
+  requestId?: string;
+}
+
 const lambda = new Lambda({
   region: config.get('aws.region'),
   credentials: {
@@ -45,10 +51,26 @@ export async function executeLambda({ data, fn, token, domainId }: executeLambda
 
 async function tryExecuteLambda({ data, fn, token, domainId }: executeLambdaOpts) {
   const result = await lambda.invoke({ FunctionName: domainId, Payload: JSON.stringify({ data, token, fn }) });
+  let returnVal: IFunctionResult = {
+    requestId: result.$metadata.requestId,
+    logs: [],
+    success: false,
+  };
+
   if (result.Payload) {
     const tmpResult = Buffer.from(result.Payload).toString();
     const parsedRes = JSON.parse(tmpResult);
-    const parsedBody = JSON.parse(parsedRes.body);
-    return parsedBody;
+
+    if (parsedRes.errorMessage && parsedRes.errorMessage.includes('Task timed out')) {
+      returnVal['success'] = false;
+      returnVal['logs'] = [
+        {
+          msg: 'Task timed out',
+        },
+      ];
+    } else {
+      returnVal = JSON.parse(parsedRes.body);
+    }
   }
+  return returnVal;
 }

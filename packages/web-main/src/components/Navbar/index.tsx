@@ -1,101 +1,77 @@
-import { FC, cloneElement, ReactElement } from 'react';
-import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { FC, cloneElement, ReactElement, useMemo, useEffect } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Company, styled, Tooltip } from '@takaro/lib-components';
-import { GameServerSelectNav } from '../GameServerSelectNav';
+import { Button, Company, Tooltip } from '@takaro/lib-components';
+import { GameServerSelectNav } from './GameServerSelectNav';
 import { UserDropdown } from './UserDropdown';
 import { PATHS } from 'paths';
+import { Nav, IconNav, Container, NoServersCallToAction } from './style';
 
-import { AiOutlineBook as DocumentationIcon, AiOutlineGithub as GithubIcon } from 'react-icons/ai';
+import {
+  AiOutlineAppstore as DashboardIcon,
+  AiOutlineSetting as SettingsIcon,
+  AiOutlineFunction as ModulesIcon,
+  AiOutlineDatabase as GameServersIcon,
+  AiOutlineIdcard as PlayersIcon,
+  AiOutlineUser as UsersIcon,
+  AiOutlineEdit as VariablesIcon,
+  AiOutlineClockCircle as EventsIcon,
+
+  // icon nav
+  AiOutlineBook as DocumentationIcon,
+  AiOutlineGithub as GithubIcon,
+
+  // add server button
+  AiOutlinePlus as AddServerIcon,
+} from 'react-icons/ai';
+
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
+import { useGameServers } from 'queries/gameservers';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
-const Container = styled(motion.div)`
-  width: 0;
-  position: relative;
-  height: 100vh;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
-
-  .company-icon {
-    margin: 0 auto;
-    cursor: pointer;
-  }
-
-  img {
-    display: block;
-    width: 80px;
-    height: auto;
-    margin: 0 auto;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-`;
-
-const Nav = styled.nav`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[1]};
-  width: 100%;
-  flex-direction: column;
-  margin-top: ${({ theme }) => theme.spacing[8]};
-
-  a {
-    width: 100%;
-    border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: 0.2s transform ease-in-out;
-    font-weight: 500;
-    white-space: nowrap;
-
-    span {
-      display: flex;
-      align-items: center;
-    }
-
-    &:hover {
-      background-color: ${({ theme }) => theme.colors.background};
-    }
-
-    p {
-      margin: ${({ theme }) => `0 ${theme.spacing['4']} 0 ${theme.spacing[1]}`};
-    }
-
-    svg {
-      fill: ${({ theme }) => theme.colors.textAlt};
-    }
-
-    &.active {
-      svg {
-        fill: ${({ theme }) => theme.colors.primary};
-      }
-      p {
-        color: white;
-      }
-    }
-  }
-`;
-
-const IconNav = styled.nav`
-  display: flex;
-  flex-direction: row;
-  margin-top: ${({ theme }) => theme.spacing['1']};
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing[1]};
-
-  a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-`;
+const domainLinks: NavbarLink[] = [
+  {
+    label: 'Dashboard',
+    path: PATHS.home(),
+    icon: <DashboardIcon />,
+  },
+  {
+    label: 'Servers',
+    path: PATHS.gameServers.overview(),
+    icon: <GameServersIcon />,
+  },
+  {
+    label: 'Events',
+    path: PATHS.events(),
+    icon: <EventsIcon />,
+  },
+  {
+    label: 'Players',
+    path: PATHS.players(),
+    icon: <PlayersIcon />,
+  },
+  {
+    label: 'Users',
+    path: PATHS.users(),
+    icon: <UsersIcon />,
+  },
+  {
+    label: 'Modules',
+    path: PATHS.moduleDefinitions(),
+    icon: <ModulesIcon />,
+  },
+  {
+    label: 'Variables',
+    path: PATHS.variables(),
+    icon: <VariablesIcon />,
+  },
+  {
+    label: 'Settings',
+    path: PATHS.settings.overview(),
+    icon: <SettingsIcon />,
+    end: false,
+  },
+];
 
 export interface NavbarLink {
   path: string;
@@ -104,12 +80,33 @@ export interface NavbarLink {
   end?: boolean;
 }
 
-interface NavbarProps {
-  links: NavbarLink[];
-  gameServerNav?: boolean;
-}
+export const Navbar: FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data } = useGameServers();
+  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
-export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
+  const gameServerLinks: NavbarLink[] = useMemo(() => {
+    return [
+      {
+        label: 'Dashboard',
+        // If serverId is not valid it will be directed by the failed requests.
+        path: PATHS.gameServer.dashboard(selectedGameServerId),
+        icon: <DashboardIcon />,
+      },
+      {
+        label: 'Modules',
+        path: PATHS.gameServer.modules(selectedGameServerId),
+        icon: <ModulesIcon />,
+      },
+      {
+        label: 'Settings',
+        path: PATHS.gameServer.settings(selectedGameServerId),
+        icon: <SettingsIcon />,
+      },
+    ];
+  }, [selectedGameServerId]);
+
   const renderLink = ({ path, icon, label, end }: NavbarLink) => (
     <div key={`wrapper-${path}`}>
       <NavLink to={path} key={`link-${path}`} end={end}>
@@ -121,14 +118,55 @@ export const Navbar: FC<NavbarProps> = ({ links, gameServerNav = false }) => {
     </div>
   );
 
+  useEffect(() => {
+    // If there is no selectedGameServerId, select the first one.
+    if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
+      setSelectedGameServerId(data.pages[0].data[0].id);
+    }
+  }, [selectedGameServerId]);
+
+  const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
+
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <div style={{ width: '100%' }}>
         <Link className="company-icon" to={PATHS.home()}>
           <Company />
         </Link>
-        {gameServerNav && <GameServerSelectNav />}
-        <Nav>{links.map((link) => renderLink(link))}</Nav>
+
+        {data && data.pages[0].data.length > 0 ? (
+          <Nav>
+            <h3>Server</h3>
+            <GameServerSelectNav
+              isInGameServerNav={isInGameServerNav}
+              serverId={selectedGameServerId}
+              setServerId={setSelectedGameServerId}
+            />
+            {gameServerLinks.map((link) => renderLink(link))}
+          </Nav>
+        ) : (
+          <Nav>
+            <h3>Server</h3>
+            <NoServersCallToAction
+              initial={{ opacity: 0, y: -10 }}
+              transition={{ delay: 0.5 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p>Step into the world of Takaro by adding your first server!</p>
+              <Button
+                icon={<AddServerIcon />}
+                fullWidth
+                onClick={() => navigate(PATHS.gameServers.create())}
+                text="Add a server"
+              />
+            </NoServersCallToAction>
+          </Nav>
+        )}
+
+        <Nav>
+          <h3>Global</h3>
+          {domainLinks.map((link) => renderLink(link))}
+        </Nav>
       </div>
       <div style={{ width: '100%' }}>
         <UserDropdown />

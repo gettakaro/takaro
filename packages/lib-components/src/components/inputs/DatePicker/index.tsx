@@ -6,13 +6,13 @@ import {
   AiOutlineArrowRight as ArrowRightIcon,
 } from 'react-icons/ai';
 import { Popover } from '../../../components';
-import { QuickSelect } from './QuickSelect';
+import { QuickSelect, Tense, Unit } from './QuickSelect';
 import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { DatePickerContext, DatePickerDispatchContext, reducer } from './Context';
 
 export interface DatePickerProps {
-  value: string;
+  value?: string;
   readOnly?: boolean;
   id: string;
   onChange: (start: DateTime, end: DateTime) => void;
@@ -20,7 +20,12 @@ export interface DatePickerProps {
 
 export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange }) => {
   const [state, dispatch] = useReducer(reducer, {
-    showQuickSelect: false,
+    quickSelect: {
+      show: false,
+      tense: Tense.Last,
+      step: 15,
+      unit: Unit.Minutes,
+    },
     showStartDate: false,
     showEndDate: false,
     start: DateTime.local().startOf('day'),
@@ -43,27 +48,26 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange
   return (
     <DatePickerContext.Provider value={state}>
       <DatePickerDispatchContext.Provider value={dispatch}>
-        <Container hasError={hasError} isOpen={state.showQuickSelect || state.showStartDate || state.showEndDate}>
+        <Container hasError={hasError} isOpen={state.quickSelect.show || state.showStartDate || state.showEndDate}>
           <Popover
-            open={state.showQuickSelect}
+            open={state.quickSelect.show}
             onOpenChange={(open) =>
               dispatch({ type: 'toggle_quick_select_popover', payload: { toggleQuickSelect: open } })
             }
           >
             <Popover.Trigger asChild>
-              <ItemContainer readOnly={readOnly}>
-                <QuickSelectContainer
-                  onClick={() =>
-                    dispatch({
-                      type: 'toggle_quick_select_popover',
-                      payload: { toggleQuickSelect: !state.showQuickSelect },
-                    })
-                  }
-                >
-                  <CalendarIcon size={18} />
-                  <DownIcon size={18} />
-                </QuickSelectContainer>
-              </ItemContainer>
+              <QuickSelectContainer
+                readOnly={readOnly}
+                onClick={() =>
+                  dispatch({
+                    type: 'toggle_quick_select_popover',
+                    payload: { toggleQuickSelect: !state.quickSelect.show },
+                  })
+                }
+              >
+                <CalendarIcon size={18} />
+                <DownIcon size={18} />
+              </QuickSelectContainer>
             </Popover.Trigger>
             <Popover.Content>
               <QuickSelect id={`quick-select-${id}`} />

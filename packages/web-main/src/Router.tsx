@@ -26,13 +26,15 @@ import { AuthSettings } from 'pages/auth/profile';
 import { AuthVerification } from 'pages/auth/verification';
 import Users from 'pages/Users';
 import Variables from 'pages/Variables';
-import { Events } from 'pages/Events';
+import { Events } from 'pages/events';
 
 import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';
 import { RolesUpdate } from './pages/roles/RolesUpdate';
 import { PlayerProfile } from 'pages/player/profile';
-import { AssignRole } from 'pages/roles/assignRole';
+import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
+import { UserProfile } from 'pages/users/profile';
+import { AssignUserRole } from 'pages/roles/assignUserRole';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -60,6 +62,17 @@ export const Router: FC = () => (
     <SentryRoutes>
       {/* ======================== Global ======================== */}
       <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
+        {/* ======================== Game Server ======================== */}
+        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
+        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
+          <Route
+            element={<InstallModule />}
+            path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
+          />
+        </Route>
+
+        {/* ======================== domain ======================== */}
         <Route element={<Dashboard />} path={PATHS.home()} />
         <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
         <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
@@ -69,14 +82,18 @@ export const Router: FC = () => (
           <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
         </Route>
 
-        <Route element={<Players />} path={PATHS.players()} />
-
         <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-          <Route element={<AssignRole />} path={PATHS.player.assignRole(':playerId')} />
+          <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
         </Route>
 
         <Route element={<GameServers />} path="/server/" />
+
         <Route element={<Users />} path={PATHS.users()} />
+
+        <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>
+          <Route element={<AssignUserRole />} path={PATHS.user.assignRole(':userId')} />
+        </Route>
+
         <Route element={<Variables />} path={PATHS.variables()} />
 
         {/* ======================== CRUD Game Servers ======================== */}
@@ -97,19 +114,6 @@ export const Router: FC = () => (
         <Route element={<Roles />} path={PATHS.roles.overview()}>
           <Route element={<RolesCreate />} path={PATHS.roles.create()} />
           <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
-        </Route>
-      </Route>
-
-      {/* TODO: fix path, frame should be aware of /servers/serverId */}
-      {/* ======================== Game Server ======================== */}
-      <Route element={<AuthenticatedRoute frame="gameserver" />} path={PATHS.gameServer.dashboard(':serverId')}>
-        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
-        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
-        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
-          <Route
-            element={<InstallModule />}
-            path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
-          />
         </Route>
       </Route>
 

@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { styled, Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
+import { Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
@@ -7,13 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const TableContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 2rem;
-`;
 
 const Players: FC = () => {
   useDocumentTitle('Players');
@@ -126,21 +119,19 @@ const Players: FC = () => {
 
   return (
     <Fragment>
-      <TableContainer>
-        <Table
-          id="players"
-          columns={columnDefs}
-          data={data.data as PlayerOutputDTO[]}
-          pagination={{
-            paginationState: pagination.paginationState,
-            setPaginationState: pagination.setPaginationState,
-            pageOptions: pagination.getPageOptions(data),
-          }}
-          columnFiltering={columnFilters}
-          columnSearch={columnSearch}
-          sorting={sorting}
-        />
-      </TableContainer>
+      <Table
+        id="players"
+        columns={columnDefs}
+        data={data.data as PlayerOutputDTO[]}
+        pagination={{
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
+        sorting={sorting}
+      />
     </Fragment>
   );
 };
