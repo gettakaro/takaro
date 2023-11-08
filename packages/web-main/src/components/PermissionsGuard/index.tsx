@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
-import { PERMISSIONS, PermissionsGuard as Guard, RequiredPermissions } from '@takaro/lib-components';
+import { PERMISSIONS, PermissionsGuard as Guard, RequiredPermissions, useHasPermission } from '@takaro/lib-components';
 import { useUser } from 'hooks/useUser';
 
 interface PermissionsGuardProps {
@@ -34,4 +34,28 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
       {children}
     </Guard>
   );
+};
+
+export const useUserHasPermissions = () => {
+  const { userData } = useUser();
+
+  const userPermissions = useMemo(() => {
+    if (!userData || !userData.roles) {
+      return [];
+    }
+
+    const permissionsFromRoles = userData.roles
+      .flatMap((role) => role.permissions.map((permission) => permission.permission))
+      .filter((permission): permission is PERMISSIONS =>
+        Object.values(PERMISSIONS).includes(permission as PERMISSIONS)
+      );
+
+    return Array.from(new Set(permissionsFromRoles));
+  }, [userData]);
+
+  const hasPermission = (requiredPermissions: RequiredPermissions) => {
+    return useHasPermission(userPermissions, requiredPermissions);
+  };
+
+  return hasPermission;
 };

@@ -65,3 +65,16 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
 
   return <>{children}</>;
 };
+
+export const useHasPermission = (userPermissions: PERMISSIONS[], requiredPermissions: RequiredPermissions): boolean => {
+  return useMemo(() => {
+    if (userPermissions.includes(PERMISSIONS.ROOT)) {
+      return true;
+    }
+    return requiredPermissions.some((permissionSet) =>
+      Array.isArray(permissionSet)
+        ? permissionSet.every((permission) => userPermissions.includes(permission))
+        : userPermissions.includes(permissionSet as PERMISSIONS)
+    );
+  }, [userPermissions, requiredPermissions]);
+};

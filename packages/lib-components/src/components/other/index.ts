@@ -12,5 +12,5 @@ export type { ActionMenuProps } from './ActionMenu';
 
 export { CollapseList } from './CollapseList';
 
-export { PermissionsGuard, PERMISSIONS } from './PermissionsGuard';
+export { PermissionsGuard, PERMISSIONS, useHasPermission } from './PermissionsGuard';
 export type { PermissionsGuardProps, RequiredPermissions } from './PermissionsGuard';
