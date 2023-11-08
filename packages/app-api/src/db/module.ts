@@ -177,6 +177,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
           permission: permission.permission,
           friendlyName: permission.friendlyName,
           description: permission.description,
+          canHaveCount: permission.canHaveCount,
         }))
       );
     }

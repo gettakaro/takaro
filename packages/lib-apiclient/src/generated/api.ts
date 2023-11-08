@@ -3762,6 +3762,12 @@ export interface PermissionCreateDTO {
      * @memberof PermissionCreateDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PermissionCreateDTO
+     */
+    'canHaveCount'?: boolean;
 }
 /**
  * 
@@ -3824,6 +3830,12 @@ export interface PermissionOutputDTO {
      * @memberof PermissionOutputDTO
      */
     'description': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PermissionOutputDTO
+     */
+    'canHaveCount'?: boolean;
     /**
      * 
      * @type {string}

@@ -36,11 +36,13 @@ export class Teleports extends BuiltinModule {
         permission: 'TELEPORTS_CREATE_PUBLIC',
         friendlyName: 'Create Public Teleports',
         description: 'Allows the player to create public teleports',
+        canHaveCount: true,
       },
       {
         permission: 'TELEPORTS_USE',
         friendlyName: 'Use Teleports',
         description: 'Allows the player to use teleports modules',
+        canHaveCount: true,
       },
     ];
 

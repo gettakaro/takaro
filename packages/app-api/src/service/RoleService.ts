@@ -11,6 +11,7 @@ import {
   IsOptional,
   IsUUID,
   IsNotEmpty,
+  IsBoolean,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -61,6 +62,10 @@ export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsBoolean()
+  @IsOptional()
+  canHaveCount: boolean;
 }
 
 export class PermissionOnRoleDTO extends TakaroModelDTO<PermissionOnRoleDTO> {
@@ -83,6 +88,10 @@ export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsBoolean()
+  @IsOptional()
+  canHaveCount: boolean;
 }
 
 export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
