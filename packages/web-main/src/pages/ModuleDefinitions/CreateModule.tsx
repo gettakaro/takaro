@@ -11,6 +11,7 @@ import {
   TextAreaField,
   Tooltip,
   IconButton,
+  PERMISSIONS,
 } from '@takaro/lib-components';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +22,7 @@ import { useModuleCreate } from 'queries/modules';
 import { AnySchema } from 'ajv';
 import { PermissionCard, PermissionList, Fields, Column } from './style'; // Assuming these styles are available
 import { PermissionCreateDTO } from '@takaro/apiclient';
+import { useUserHasPermissions } from 'components/PermissionsGuard';
 
 interface IFormInputs {
   name: string;
@@ -41,6 +43,7 @@ const CreateModule: FC = () => {
   const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   const { mutate, isLoading, error, isSuccess } = useModuleCreate();
+  const hasPermissions = useUserHasPermissions();
 
   const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -60,7 +63,7 @@ const CreateModule: FC = () => {
   });
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !hasPermissions([PERMISSIONS.MANAGE_MODULES])) {
       navigate(PATHS.moduleDefinitions());
     }
   }, [open, navigate]);

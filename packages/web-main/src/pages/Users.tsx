@@ -13,6 +13,7 @@ import {
   FormError,
   PERMISSIONS,
 } from '@takaro/lib-components';
+
 import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
@@ -23,12 +24,13 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { PermissionsGuard, useUserHasPermissions } from 'components/PermissionsGuard';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
+  const hasPermission = useUserHasPermissions();
 
   const { data, isLoading } = useUsers({
     page: pagination.paginationState.pageIndex,
@@ -102,7 +104,12 @@ const Users: FC = () => {
               </PermissionsGuard>
             </Dropdown.Menu.Group>
             <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_ROLES]]}>
-              <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
+              <Dropdown.Menu.Item
+                label="Edit roles"
+                icon={<EditIcon />}
+                onClick={() => navigate('')}
+                disabled={hasPermission([PERMISSIONS.MANAGE_ROLES])}
+              />
             </PermissionsGuard>
           </Dropdown.Menu>
         </Dropdown>
@@ -120,11 +127,7 @@ const Users: FC = () => {
         id="users"
         columns={columnDefs}
         data={data.data}
-        renderToolbar={() => (
-          <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_USERS]}>
-            <InviteUser />
-          </PermissionsGuard>
-        )}
+        renderToolbar={() => <InviteUser />}
         pagination={{
           ...pagination,
           pageOptions: pagination.getPageOptions(data),
@@ -143,6 +146,7 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const hasPermission = useUserHasPermissions();
 
   const validationSchema = useMemo(
     () =>
@@ -170,7 +174,12 @@ const InviteUser: FC = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} text="Invite user" icon={<PlusIcon />} />
+      <Button
+        onClick={() => setOpen(true)}
+        text="Invite user"
+        icon={<PlusIcon />}
+        disabled={hasPermission([PERMISSIONS.MANAGE_USERS])}
+      />
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
           <Dialog.Heading />
