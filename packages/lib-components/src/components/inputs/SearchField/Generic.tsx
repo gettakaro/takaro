@@ -25,16 +25,21 @@ const ItemContainer = styled.div<{ isActive: boolean }>`
   cursor: default;
 `;
 
-interface Item {
+export interface SearchFieldItem {
   label: string;
   value: string;
 }
 
 export interface SearchFieldProps {
-  items: Item[];
+  items: SearchFieldItem[];
   isLoading: boolean;
   placeholder?: string;
-  onChange: (value: string) => void;
+
+  /// Triggered whenever the input value changes, debounced by 0.5 seconds.
+  handleOnChange: (value: string) => void;
+  /// Triggered whenever an item is selected from the dropdown.
+  /// This could be by clicking on an item or by pressing enter on an item.
+  handleOnSelect: (item: SearchFieldItem) => void;
 }
 
 export type GenericSearchFieldProps = GenericInputProps<string, HTMLInputElement> & SearchFieldProps;
@@ -52,15 +57,18 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
     placeholder = 'Search field',
     hasDescription,
     hasError,
+    handleOnChange,
+    handleOnSelect,
+    // TODO: ISLOADING STATE WHILE LOADING NEW OPTIONS
   } = defaultsApplier(props);
 
   const [open, setOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const debouncedValue = useDebounce(inputValue, 1000);
+  const debouncedValue = useDebounce(inputValue, 500);
 
   useEffect(() => {
-    onChange(debouncedValue);
+    handleOnChange(debouncedValue);
   }, [debouncedValue, onChange]);
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
@@ -127,6 +135,7 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
           onKeyDown(event) {
             if (event.key === 'Enter' && activeIndex != null && items[activeIndex]) {
               setInputValue(items[activeIndex].label);
+              handleOnSelect(items[activeIndex]);
               setActiveIndex(null);
               setOpen(false);
             }
@@ -156,6 +165,7 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
                     },
                     onClick() {
                       setInputValue(item.label);
+                      handleOnSelect(item);
                       setOpen(false);
                       refs.domReference.current?.focus();
                     },
