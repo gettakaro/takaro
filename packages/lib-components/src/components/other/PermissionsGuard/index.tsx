@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
 
 // Would be better that this comes from apiclient so it is automatically synced with the backend
 export enum PERMISSIONS {
@@ -35,31 +35,32 @@ export type RequiredPermissions = PermissionsSet[];
 export interface PermissionsGuardProps {
   requiredPermissions: RequiredPermissions;
   userPermissions: PERMISSIONS[];
+  fallback?: ReactElement;
 }
-
-const hasNestedPermissions = (userPermissions: PERMISSIONS[], requiredPermissions: RequiredPermissions): boolean => {
-  // If requiredPermissions is a single set, we treat it as an AND condition
-  // If it's an array of sets, we treat it as an OR condition between those sets
-  return requiredPermissions.some((permissionSet: PermissionsSet) =>
-    Array.isArray(permissionSet)
-      ? permissionSet.every((permission) => userPermissions.includes(permission))
-      : userPermissions.includes(permissionSet as PERMISSIONS)
-  );
-};
 
 export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
   userPermissions,
   requiredPermissions,
   children,
+  fallback,
 }) => {
   // only update permissions when userPermissions or requiredPermissions change
-  const hasPermission = useMemo(
-    () => hasNestedPermissions(userPermissions, requiredPermissions),
-    [userPermissions, requiredPermissions]
-  );
+  const hasPermission = useMemo(() => {
+    // If the user has the ROOT permission, they have access to everything
+    if (userPermissions.includes(PERMISSIONS.ROOT)) {
+      return true;
+    }
+
+    // AND/OR logic for permissions
+    return requiredPermissions.some((permissionSet) =>
+      Array.isArray(permissionSet)
+        ? permissionSet.every((permission) => userPermissions.includes(permission))
+        : userPermissions.includes(permissionSet as PERMISSIONS)
+    );
+  }, [userPermissions, requiredPermissions]);
 
   if (!hasPermission) {
-    return null;
+    return fallback ?? null;
   }
 
   return <>{children}</>;
