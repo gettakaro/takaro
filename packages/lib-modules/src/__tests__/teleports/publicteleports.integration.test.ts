@@ -220,9 +220,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'If player does not have role to create public teleports, command gets denied',
     test: async function () {
+      const permissionsRes = await this.client.role.roleControllerGetPermissions();
+      const teleportsPermission = permissionsRes.data.data.find((p) => p.permission === 'TELEPORTS_USE');
+
+      if (!teleportsPermission) throw new Error('Teleports permission not found');
+
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
         name: this.setupData.role.name,
-        permissions: ['TELEPORTS_USE'],
+        permissions: [teleportsPermission.id],
       });
 
       await this.client.gameserver.gameServerControllerInstallModule(
