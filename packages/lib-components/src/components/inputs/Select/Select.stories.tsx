@@ -45,9 +45,7 @@ export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
         hint={args.hint}
         render={(selectedIndex) => (
           <div>
-            {films[selectedIndex] && (
-              <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
-            )}
+            {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
             {films[selectedIndex]?.name ?? 'Select...'}
           </div>
         )}
@@ -74,10 +72,7 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        film: z.enum([
-          'not-sure-how-this-works',
-          ...films.map((film) => film.name),
-        ]),
+        film: z.enum(['not-sure-how-this-works', ...films.map((film) => film.name)]),
       }),
     []
   );
@@ -92,9 +87,8 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
 
   return (
     <>
-      NOTE: You can ignore the width changing when opening the select. This is
-      due to the select being rendered in a storybook iframe which has incorrect
-      gutter size.
+      NOTE: You can ignore the width changing when opening the select. This is due to the select being rendered in a
+      storybook iframe which has incorrect gutter size.
       <form onSubmit={handleSubmit(submit)}>
         <Select
           control={control}
@@ -103,9 +97,7 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
           description={args.description}
           render={(selectedIndex) => (
             <div>
-              {films[selectedIndex] && (
-                <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />
-              )}
+              {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
               {films[selectedIndex]?.name ?? 'Select...'}
             </div>
           )}
@@ -123,6 +115,41 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
         <Button type="submit" text="Submit" />
       </form>
       <pre>result: {result}</pre>
+    </>
+  );
+};
+
+export const Filter: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
+  const { control } = useForm();
+  const selectValue = useWatch({ control, name: 'film' });
+
+  return (
+    <>
+      <Select
+        description={args.description}
+        label={args.label}
+        control={control}
+        name="film"
+        hint={args.hint}
+        enableFilter
+        render={(selectedIndex) => (
+          <div>
+            {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
+            {films[selectedIndex]?.name ?? 'Select...'}
+          </div>
+        )}
+      >
+        <Select.OptionGroup label={args.optionGroupLabel}>
+          {films.map(({ name }) => (
+            <Select.Option key={name} value={name}>
+              <div>
+                <span>{name}</span>
+              </div>
+            </Select.Option>
+          ))}
+        </Select.OptionGroup>
+      </Select>
+      <pre>result: {selectValue}</pre>
     </>
   );
 };
