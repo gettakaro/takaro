@@ -37,7 +37,7 @@ export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>
             onClick={handleOnClick}
           />
         )}
-        <div>{isFetching && !isFetchingNextPage ? 'background updating' : null}</div>
+        <div>{isFetching && !isFetchingNextPage ? 'updating data' : null}</div>
       </>
     );
   }

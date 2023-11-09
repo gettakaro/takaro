@@ -17,7 +17,13 @@ const GameServers: FC = () => {
   useDocumentTitle('Game Servers');
   const navigate = useNavigate();
 
-  const { data: gameServers, isLoading, isError, InfiniteScroll } = useGameServers();
+  // refetch every minute
+  const {
+    data: gameServers,
+    isLoading,
+    isError,
+    InfiniteScroll,
+  } = useGameServers(undefined, { refetchInterval: 60000 });
 
   if (isLoading) {
     return (
