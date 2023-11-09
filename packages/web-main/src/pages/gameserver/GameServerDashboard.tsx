@@ -4,18 +4,17 @@ import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 
 const ConsoleContainer = styled.div`
   height: 80vh;
 `;
 
 const GameServerDashboard: FC = () => {
-  useDocumentTitle('Gameserver dashboard');
-
+  const { selectedGameServerId } = useSelectedGameServer();
+  useGameServerDocumentTitle('dashboard');
   const apiClient = useApiClient();
   const { socket } = useSocket();
-  const { selectedGameServerId } = useSelectedGameServer();
   const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
 
   const [messages, setMessages] = useState<Message[]>([]);
