@@ -11,18 +11,9 @@ import { HookOutputDTO } from '../service/HookService.js';
 import { CommandOutputDTO } from '../service/CommandService.js';
 import { FunctionOutputDTO } from '../service/FunctionService.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
+import { PERMISSION_TABLE_NAME, PermissionModel } from './role.js';
 
 export const MODULE_TABLE_NAME = 'modules';
-export const MODULE_PERMISSIONS_TABLE_NAME = 'modulePermission';
-
-export class ModulePermissionModel extends TakaroModel {
-  static tableName = MODULE_PERMISSIONS_TABLE_NAME;
-  moduleId!: string;
-  permission!: string;
-  friendlyName!: string;
-  description!: string;
-}
-
 export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
@@ -64,10 +55,10 @@ export class ModuleModel extends TakaroModel {
 
       permissions: {
         relation: Model.HasManyRelation,
-        modelClass: ModulePermissionModel,
+        modelClass: PermissionModel,
         join: {
           from: `${MODULE_TABLE_NAME}.id`,
-          to: `${MODULE_PERMISSIONS_TABLE_NAME}.moduleId`,
+          to: `${PERMISSION_TABLE_NAME}.moduleId`,
         },
       },
     };
@@ -179,13 +170,14 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     if (item.permissions && item.permissions.length > 0) {
       const knex = await this.getKnex();
-      const permissionModel = ModulePermissionModel.bindKnex(knex);
+      const permissionModel = PermissionModel.bindKnex(knex);
       await permissionModel.query().insert(
         item.permissions.map((permission) => ({
           moduleId: data.id,
           permission: permission.permission,
           friendlyName: permission.friendlyName,
           description: permission.description,
+          canHaveCount: permission.canHaveCount,
         }))
       );
     }
@@ -205,13 +197,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     if (data.permissions) {
       const knex = await this.getKnex();
-      const permissionModel = ModulePermissionModel.bindKnex(knex);
+      const permissionModel = PermissionModel.bindKnex(knex);
 
       const existingPermissions = await permissionModel.query().where('moduleId', id);
       const existingPermissionsMap = existingPermissions.reduce((acc, permission) => {
         acc[permission.permission] = permission;
         return acc;
-      }, {} as Record<string, ModulePermissionModel>);
+      }, {} as Record<string, PermissionModel>);
 
       const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission.permission]);
       const toDelete = existingPermissions.filter(

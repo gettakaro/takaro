@@ -56,15 +56,15 @@ export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
 const DEFAULT_ROLES: Promise<RoleCreateInputDTO>[] = [
   new RoleCreateInputDTO().construct({
     name: 'Admin',
-    permissions: ['ROOT'],
+    permissions: [PERMISSIONS.ROOT],
   }),
   new RoleCreateInputDTO().construct({
     name: 'Moderator',
-    permissions: ['TELEPORTS_USE', PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_SETTINGS],
+    permissions: [PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_SETTINGS],
   }),
   new RoleCreateInputDTO().construct({
     name: 'Player',
-    permissions: ['TELEPORTS_USE'],
+    permissions: [],
   }),
 ];
 

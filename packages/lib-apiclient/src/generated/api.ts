@@ -12,9 +12,8 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from './configuration.js';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import globalAxios from 'axios';
+import { Configuration } from './configuration.js';
+import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -29,9 +28,8 @@ import {
   toPathString,
   createRequestFunction,
 } from './common.js';
-import type { RequestArgs } from './base.js';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base.js';
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base.js';
 
 /**
  *
@@ -3794,6 +3792,49 @@ export interface PermissionCreateDTO {
    * @memberof PermissionCreateDTO
    */
   description: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PermissionCreateDTO
+   */
+  canHaveCount?: boolean;
+}
+/**
+ *
+ * @export
+ * @interface PermissionOnRoleDTO
+ */
+export interface PermissionOnRoleDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOnRoleDTO
+   */
+  permissionId: string;
+  /**
+   *
+   * @type {PermissionOutputDTO}
+   * @memberof PermissionOnRoleDTO
+   */
+  permission: PermissionOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionOnRoleDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOnRoleDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PermissionOnRoleDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -3819,6 +3860,12 @@ export interface PermissionOutputDTO {
    * @memberof PermissionOutputDTO
    */
   description: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PermissionOutputDTO
+   */
+  canHaveCount?: boolean;
   /**
    *
    * @type {string}
@@ -4522,10 +4569,10 @@ export interface RoleOutputDTO {
   name: string;
   /**
    *
-   * @type {Array<PermissionOutputDTO>}
+   * @type {Array<PermissionOnRoleDTO>}
    * @memberof RoleOutputDTO
    */
-  permissions: Array<PermissionOutputDTO>;
+  permissions: Array<PermissionOnRoleDTO>;
   /**
    *
    * @type {string}
