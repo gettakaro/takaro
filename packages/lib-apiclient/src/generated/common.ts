@@ -12,10 +12,9 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from './configuration.js';
-import type { RequestArgs } from './base.js';
-import type { AxiosInstance, AxiosResponse } from 'axios';
-import { RequiredError } from './base.js';
+import { Configuration } from './configuration.js';
+import { RequiredError, RequestArgs } from './base.js';
+import { AxiosInstance, AxiosResponse } from 'axios';
 
 /**
  *
@@ -94,32 +93,24 @@ export const setOAuthToObject = async function (
   }
 };
 
-function setFlattenedQueryParams(urlSearchParams: URLSearchParams, parameter: any, key: string = ''): void {
-  if (parameter == null) return;
-  if (typeof parameter === 'object') {
-    if (Array.isArray(parameter)) {
-      (parameter as any[]).forEach((item) => setFlattenedQueryParams(urlSearchParams, item, key));
-    } else {
-      Object.keys(parameter).forEach((currentKey) =>
-        setFlattenedQueryParams(urlSearchParams, parameter[currentKey], `${key}${key !== '' ? '.' : ''}${currentKey}`)
-      );
-    }
-  } else {
-    if (urlSearchParams.has(key)) {
-      urlSearchParams.append(key, parameter);
-    } else {
-      urlSearchParams.set(key, parameter);
-    }
-  }
-}
-
 /**
  *
  * @export
  */
 export const setSearchParams = function (url: URL, ...objects: any[]) {
   const searchParams = new URLSearchParams(url.search);
-  setFlattenedQueryParams(searchParams, objects);
+  for (const object of objects) {
+    for (const key in object) {
+      if (Array.isArray(object[key])) {
+        searchParams.delete(key);
+        for (const item of object[key]) {
+          searchParams.append(key, item);
+        }
+      } else {
+        searchParams.set(key, object[key]);
+      }
+    }
+  }
   url.search = searchParams.toString();
 };
 

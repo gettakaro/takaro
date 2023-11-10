@@ -2,30 +2,59 @@ import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { omit } from 'lodash-es';
 import { Model } from 'objection';
-import { RoleCreateInputDTO, RoleOutputDTO, RoleUpdateInputDTO, PermissionOutputDTO } from '../service/RoleService.js';
+import {
+  RoleCreateInputDTO,
+  RoleOutputDTO,
+  RoleUpdateInputDTO,
+  PermissionOutputDTO,
+  PermissionOnRoleDTO,
+} from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
 import { UserRepo } from './user.js';
 import { PlayerRepo } from './player.js';
 
 export const ROLE_TABLE_NAME = 'roles';
 export const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
+export const PERMISSION_TABLE_NAME = 'permission';
 
 export class PermissionModel extends TakaroModel {
-  static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
+  static tableName = PERMISSION_TABLE_NAME;
+  moduleId?: string;
   permission!: string;
+  friendlyName!: string;
+  description!: string;
+  canHaveCount!: boolean;
+}
+
+export class PermissionOnRoleModel extends TakaroModel {
+  static tableName = PERMISSION_ON_ROLE_TABLE_NAME;
+  permission!: PermissionModel;
+  permissionId: string;
   roleId!: string;
+  count: number | null;
+
+  static relationMappings = {
+    permission: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: PermissionModel,
+      join: {
+        from: `${PERMISSION_ON_ROLE_TABLE_NAME}.permissionId`,
+        to: `${PERMISSION_TABLE_NAME}.id`,
+      },
+    },
+  };
 }
 
 export class RoleModel extends TakaroModel {
   static tableName = ROLE_TABLE_NAME;
   name!: string;
 
-  permissions!: PermissionModel[];
+  permissions!: PermissionOnRoleModel[];
 
   static relationMappings = {
     permissions: {
       relation: Model.HasManyRelation,
-      modelClass: PermissionModel,
+      modelClass: PermissionOnRoleModel,
       join: {
         from: `${ROLE_TABLE_NAME}.id`,
         to: `${PERMISSION_ON_ROLE_TABLE_NAME}.roleId`,
@@ -60,7 +89,14 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
 
     return new RoleOutputDTO().construct({
       ...data,
-      permissions: await Promise.all(data.permissions?.map((c) => new PermissionOutputDTO().construct(c))),
+      permissions: await Promise.all(
+        data.permissions?.map(async (c) =>
+          new PermissionOnRoleDTO().construct({
+            ...c,
+            permission: await new PermissionOutputDTO().construct(c.permission),
+          })
+        )
+      ),
     });
   }
 
@@ -68,7 +104,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     const { query } = await this.getModel();
     const result = await new QueryBuilder<RoleModel, RoleOutputDTO>({
       ...filters,
-      extend: ['permissions'],
+      extend: ['permissions.permission'],
     }).build(query);
     return {
       total: result.total,
@@ -78,7 +114,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
 
   async findOne(id: string): Promise<RoleOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphJoined('permissions');
+    const data = await query.findById(id).withGraphJoined('permissions.permission');
 
     if (!data) {
       throw new errors.NotFoundError();
@@ -123,22 +159,36 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
   }
 
   async addPermissionToRole(roleId: string, permission: string) {
-    return PermissionModel.bindKnex(await this.getKnex())
+    const knex = await this.getKnex();
+    const permissionModel = PermissionModel.bindKnex(knex);
+
+    const permissionRecord = await permissionModel.query().where({ id: permission }).first();
+
+    if (!permissionRecord) throw new errors.NotFoundError(`Permission ${permission} not found`);
+
+    return PermissionOnRoleModel.bindKnex(await this.getKnex())
       .query()
       .insert({
         roleId,
-        permission,
+        permissionId: permissionRecord.id,
         domain: this.domainId,
       });
   }
 
   async removePermissionFromRole(roleId: string, permission: string) {
-    return PermissionModel.bindKnex(await this.getKnex())
+    const knex = await this.getKnex();
+    const permissionModel = PermissionModel.bindKnex(knex);
+
+    const permissionRecord = await permissionModel.query().where({ id: permission }).first();
+
+    if (!permissionRecord) throw new errors.NotFoundError(`Permission ${permission} not found`);
+
+    return PermissionOnRoleModel.bindKnex(await this.getKnex())
       .query()
       .modify('domainScoped', this.domainId)
       .where({
         roleId,
-        permission,
+        permissionId: permissionRecord.id,
       })
       .del();
   }
@@ -161,5 +211,16 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
   async removeRoleFromPlayer(playerId: string, roleId: string, gameserverId?: string) {
     const playerRepo = new PlayerRepo(this.domainId);
     await playerRepo.removeRole(playerId, roleId, gameserverId);
+  }
+
+  async permissionCodeToRecord(permissionCode: string) {
+    const knex = await this.getKnex();
+    const permissionModel = PermissionModel.bindKnex(knex);
+
+    const permissionRecord = await permissionModel.query().where({ permission: permissionCode }).first();
+
+    if (!permissionRecord) throw new errors.NotFoundError(`Permission ${permissionCode} not found`);
+
+    return permissionRecord;
   }
 }

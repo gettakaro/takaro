@@ -27,6 +27,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     name,
     control,
     loading,
+    enableFilter = false,
     inPortal = false,
   } = defaultsApplier(props);
 
@@ -76,6 +77,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
           disabled={disabled}
           required={required}
           size={componentSize}
+          enableFilter={enableFilter}
           onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}

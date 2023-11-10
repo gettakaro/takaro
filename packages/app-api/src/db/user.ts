@@ -1,6 +1,6 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { PermissionModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
+import { PermissionOnRoleModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
@@ -34,7 +34,7 @@ export class UserModel extends TakaroModel {
 }
 
 export interface IUserFindOneOutput extends UserModel {
-  roles: Array<RoleModel & { permissions: PermissionModel[] }>;
+  roles: Array<RoleModel & { permissions: PermissionOnRoleModel[] }>;
 }
 
 @traceableClass('repo:user')
@@ -56,7 +56,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     const { query } = await this.getModel();
     const result = await new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
-      extend: ['roles.permissions'],
+      extend: ['roles.permissions.permission'],
     }).build(query);
 
     return {
@@ -67,7 +67,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphFetched('roles.permissions');
+    const data = await query.findById(id).withGraphFetched('roles.permissions.permission');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);

@@ -18,7 +18,13 @@ import {
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+} from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
@@ -42,7 +48,10 @@ export const installedModuleKeys = {
     [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
 };
 
-export const useGameServers = (queryParams: GameServerSearchInputDTO = { page: 0 }) => {
+export const useGameServers = (
+  queryParams: GameServerSearchInputDTO = { page: 0 },
+  opts?: UseInfiniteQueryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI, any>>
+) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
@@ -56,6 +65,7 @@ export const useGameServers = (queryParams: GameServerSearchInputDTO = { page: 0
       ).data,
     keepPreviousData: true,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    ...opts,
   });
 
   const InfiniteScroll = useMemo(() => {

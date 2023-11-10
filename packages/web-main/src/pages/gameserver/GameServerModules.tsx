@@ -6,7 +6,7 @@ import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInst
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -14,9 +14,10 @@ const SubHeader = styled.h2`
 `;
 
 const GameServerModules: FC = () => {
-  useDocumentTitle('Modules');
+  useGameServerDocumentTitle('Modules');
   const { selectedGameServerId } = useSelectedGameServer();
   const { data: installations, isLoading } = useGameServerModuleInstallations(selectedGameServerId);
+
   const { data } = useInfiniteModules();
 
   const mappedModules = useMemo(() => {
@@ -24,8 +25,7 @@ const GameServerModules: FC = () => {
       return;
     }
 
-    // todo: currently weird implementation :), you'll probably come back to this and think wth happened here :D
-    // enjoy the ride
+    // todo: Instead of paginated view of the modules we just flat map them
     const modules = data.pages.flatMap((page) => page.data);
     return modules.map((mod) => {
       const installation = installations.find((inst) => inst.moduleId === mod.id);
