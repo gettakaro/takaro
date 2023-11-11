@@ -19,6 +19,7 @@ import { TakaroService } from './Base.js';
 import { UserService } from './UserService.js';
 import { PlayerService } from './PlayerService.js';
 import { EventCreateDTO, EventService } from './EventService.js';
+import { ModuleService } from './ModuleService.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -275,5 +276,15 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         })
       );
     }
+  }
+
+  async getPermissions() {
+    const moduleService = new ModuleService(this.domainId);
+    const modules = await moduleService.find({ limit: 1000 });
+    const modulePermissions = modules.results.map((mod) => mod.permissions).flat();
+    const systemPermissions = await this.repo.getSystemPermissions();
+
+    const allPermissions = systemPermissions.concat(modulePermissions);
+    return allPermissions;
   }
 }

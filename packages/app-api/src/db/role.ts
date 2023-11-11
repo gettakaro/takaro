@@ -223,4 +223,13 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
 
     return permissionRecord;
   }
+
+  async getSystemPermissions() {
+    const knex = await this.getKnex();
+    const permissionModel = PermissionModel.bindKnex(knex);
+
+    const res = await permissionModel.query().where({ moduleId: null });
+
+    return await Promise.all(res.map((c) => new PermissionOutputDTO().construct(c)));
+  }
 }

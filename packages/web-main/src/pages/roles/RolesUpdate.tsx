@@ -60,7 +60,7 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
           ...acc,
-          [permission.permission]: data.permissions.some((p) => p.permission.permission === permission.permission),
+          [permission.id]: data.permissions.some((p) => p.permissionId === permission.id),
         }),
         {}
       ),
@@ -107,8 +107,8 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
                   <Switch
                     control={control}
                     label={permission.friendlyName}
-                    name={`permissions.${permission.permission}`}
-                    key={permission.permission}
+                    name={`permissions.${permission.id}`}
+                    key={permission.id}
                     description={permission.description}
                   />
                 ))}
