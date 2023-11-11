@@ -24,6 +24,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     disabled,
     hint,
     description,
+    multiSelect = false,
     name,
     control,
     loading,
@@ -68,6 +69,10 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
             hint={hint}
           />
         )}
+
+        {/* Typescript cannot infer the correct types here*/}
+        {/*eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
         <GenericSelect
           name={name}
           id={name}
@@ -78,7 +83,11 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
           required={required}
           size={componentSize}
           enableFilter={enableFilter}
-          onChange={field.onChange}
+          multiSelect={multiSelect}
+          onChange={(e) => {
+            console.log(e);
+            field.onChange(e);
+          }}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
           render={render}
