@@ -87,7 +87,7 @@ export const basicTest = base.extend<IBaseFixtures>({
       const password = 'test';
       const user = await client.user.userControllerCreate({
         name: 'test',
-        email: 'test@takaro.io',
+        email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
         password,
       });
 
@@ -127,7 +127,7 @@ export const basicTest = base.extend<IBaseFixtures>({
         domain,
         players: [],
         rootUser: domain.rootUser,
-        user: { ...user.data.data, password, role: emptyRole.data.data },
+        testUser: { ...user.data.data, password, role: emptyRole.data.data },
       });
 
       // fixture teardown
