@@ -9,11 +9,10 @@ export enum InputType {
 
 export type Filter = {
   field: string;
-  operator: string;
+  operator: Operator;
   value: string;
 };
 
-export enum operators {
+export enum Operator {
   is = ':',
-  contains = ':*',
 }
