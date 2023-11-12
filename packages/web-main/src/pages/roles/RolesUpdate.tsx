@@ -60,7 +60,7 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
           ...acc,
-          [permission.permission]: data.permissions.some((p) => p.permission === permission.permission),
+          [permission.permission]: data.permissions.some((p) => p.permission.permission === permission.permission),
         }),
         {}
       ),

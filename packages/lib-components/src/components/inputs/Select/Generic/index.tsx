@@ -10,16 +10,17 @@ import {
   useEffect,
   ReactNode,
   useMemo,
+  ReactElement,
 } from 'react';
 import { SelectContext } from './context';
 import { GroupLabel, SelectButton, SelectContainer, StyledFloatingOverlay, StyledArrowIcon } from '../style';
+import { FilterInput } from './FilterInput';
 
 import {
   useFloating,
   offset,
   flip,
   useListNavigation,
-  useTypeahead,
   useInteractions,
   useRole,
   useClick,
@@ -38,6 +39,7 @@ import { setAriaDescribedBy } from '../../layout';
 
 export interface SelectProps {
   render: (selectedIndex: number) => React.ReactNode;
+  enableFilter?: boolean;
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
@@ -63,6 +65,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasDescription,
     name,
     inPortal = true,
+    enableFilter = false,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -73,13 +76,15 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
   ]);
 
   const [open, setOpen] = useState(false);
-
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(() => {
     const defaultIndex = Math.max(0, listContentRef.current.indexOf(value));
     onChange(listContentRef.current[defaultIndex]);
     return defaultIndex;
   });
+
+  const [filterText, setFilterText] = useState<string>('');
+  const filterInputRef = useRef<HTMLInputElement>(null);
 
   const [pointer, setPointer] = useState(false);
 
@@ -122,12 +127,6 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
       selectedIndex,
       onNavigate: setActiveIndex,
     }),
-    useTypeahead(context, {
-      listRef: listContentRef,
-      onMatch: open ? setActiveIndex : setSelectedIndex,
-      activeIndex,
-      selectedIndex,
-    }),
   ]);
 
   const values = useMemo(() => {
@@ -161,33 +160,55 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     }
   }, [open, activeIndex, pointer]);
 
-  let optionIndex = 0;
+  const options = useMemo(() => {
+    let optionIndex = 0;
 
-  const options = [
-    ...(Children.map(
-      children,
-      (child) =>
-        isValidElement(child) && (
-          <ul key={child.props.label} role="group" aria-labelledby={`select-${child.props.label}`}>
-            {child.props.label && (
-              <GroupLabel role="presentation" id={`select-${child.props.label}`} aria-hidden="true">
-                {child.props.label}
-              </GroupLabel>
-            )}
-            {Children.map(child.props.children, (child) =>
-              cloneElement(child, {
-                index: 1 + optionIndex++,
-                onChange: onChange,
-              })
-            )}
-          </ul>
-        )
-    ) ?? []),
-  ];
+    return Children.map(children, (group) => {
+      if (!isValidElement(group)) return null;
+
+      const filteredOptions = Children.toArray(group.props.children)
+        .filter(isValidElement) // Ensures that only valid elements are processed
+        .filter((option: ReactElement) => {
+          // Perform the filtering based on your condition
+          const valueMatches = filterText === '' || option.props.value.toLowerCase().includes(filterText.toLowerCase());
+          return valueMatches;
+        })
+        .map((option: ReactElement) => {
+          // Increment optionIndex only for options that match
+          optionIndex++;
+
+          // Make sure your Option component can accept and use the index prop
+          return cloneElement(option, {
+            index: optionIndex,
+            onChange: onChange,
+          });
+        });
+
+      if (filteredOptions.length === 0) return null;
+
+      return (
+        <ul key={group.props.label} role="group" aria-labelledby={`select-${group.props.label}`}>
+          {group.props.label && (
+            <GroupLabel role="presentation" id={`select-${group.props.label}`} aria-hidden="true">
+              {group.props.label}
+            </GroupLabel>
+          )}
+          {filteredOptions}
+        </ul>
+      );
+    });
+  }, [children, onChange, filterText]);
+
+  // clear filter when dropdown is closed
+  useEffect(() => {
+    if (!open) {
+      setFilterText('');
+    }
+  }, [open]);
 
   const renderSelect = () => {
     return (
-      <FloatingFocusManager context={context} initialFocus={selectedIndex}>
+      <FloatingFocusManager context={context} initialFocus={selectedIndex || filterInputRef}>
         <SelectContainer
           ref={refs.setFloating}
           style={{
@@ -204,6 +225,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           }}
           {...getFloatingProps()}
         >
+          {enableFilter && <FilterInput ref={filterInputRef} selectName={name} onFilterChange={setFilterText} />}
           {options}
         </SelectContainer>
       </FloatingFocusManager>

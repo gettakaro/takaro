@@ -2,33 +2,33 @@ import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Container } from './style';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
-import { GenericSelect, SubComponentTypes } from '.';
-import { SelectProps } from './Generic';
-import { Option } from './Generic/Option';
-import { OptionGroup } from './Generic/OptionGroup';
+import { SubComponentTypes } from '.';
+import { GenericSearchField, SearchFieldProps } from './Generic';
+import { OptionGroup } from '../Select/Generic/OptionGroup';
 import { ErrorMessage, Label, Wrapper, Description } from '../layout';
+import { Option } from './Generic/Option';
 
-export type ControlledSelectProps = PropsWithChildren<ControlledInputProps & SelectProps>;
+export type ControlledSearchFieldProps = PropsWithChildren<ControlledInputProps & SearchFieldProps>;
 
-const defaultsApplier = defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledSearchFieldProps>(defaultInputProps);
 
-// TODO: handle select loading state
-export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (props) => {
+export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponentTypes = (props) => {
   const {
     required,
     size: componentSize,
     label,
-    render,
     children,
+    placeholder,
     readOnly,
     disabled,
     hint,
     description,
+    // TODO: form loading
     name,
     control,
-    loading,
-    enableFilter = false,
-    inPortal = false,
+    debounce,
+    isLoadingData,
+    handleInputValueChange,
   } = defaultsApplier(props);
 
   const {
@@ -50,10 +50,6 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     setShowError(false);
   };
 
-  if (loading) {
-    return <div>loading...</div>;
-  }
-
   return (
     <Wrapper>
       <Container>
@@ -68,25 +64,26 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
             hint={hint}
           />
         )}
-        <GenericSelect
+        <GenericSearchField
           name={name}
           id={name}
+          isLoadingData={isLoadingData}
           hasError={!!error}
+          placeholder={placeholder}
           hasDescription={!!description}
           readOnly={readOnly}
           disabled={disabled}
           required={required}
           size={componentSize}
-          enableFilter={enableFilter}
           onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
-          render={render}
           value={field.value}
-          inPortal={inPortal}
+          debounce={debounce}
+          handleInputValueChange={handleInputValueChange}
         >
           {children}
-        </GenericSelect>
+        </GenericSearchField>
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
@@ -94,5 +91,5 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   );
 };
 
-ControlledSelect.OptionGroup = OptionGroup;
-ControlledSelect.Option = Option;
+ControlledSearchField.OptionGroup = OptionGroup;
+ControlledSearchField.Option = Option;

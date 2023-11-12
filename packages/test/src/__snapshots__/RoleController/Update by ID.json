@@ -1,27 +1,29 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-11T20:36:45.286Z"
-    },
+    "meta": {},
     "data": {
-      "createdAt": "2022-09-11T20:36:45.261Z",
-      "updatedAt": "2022-09-11T20:36:45.281Z",
-      "id": "befa3242-a031-4241-831b-2eb3a62963a2",
+      "id": "76066294-5a6b-4d33-b8e0-0dc0100cf96f",
+      "createdAt": "2023-11-02T11:51:21.122Z",
+      "updatedAt": "2023-11-02T11:51:21.147Z",
       "name": "New name",
       "permissions": [
         {
-          "createdAt": "2022-09-11T20:36:45.263Z",
-          "updatedAt": "2022-09-11T20:36:45.263Z",
-          "id": "196c5fa5-9beb-4416-bf01-63e73890050e",
-          "roleId": "befa3242-a031-4241-831b-2eb3a62963a2",
-          "permission": "MANAGE_ROLES"
-        },
-        {
-          "createdAt": "2022-09-11T20:36:45.276Z",
-          "updatedAt": "2022-09-11T20:36:45.277Z",
-          "id": "78b96bd6-83e8-46ea-9145-2a6dedcc40b4",
-          "roleId": "befa3242-a031-4241-831b-2eb3a62963a2",
-          "permission": "MANAGE_USERS"
+          "id": "3c6f358a-3e80-4992-8016-d8be6ba7b518",
+          "createdAt": "2023-11-02T11:51:21.125Z",
+          "updatedAt": "2023-11-02T11:51:21.125Z",
+          "permissionId": "9bd0b9a9-49bc-40da-b345-65e91162a861",
+          "permission": {
+            "id": "9bd0b9a9-49bc-40da-b345-65e91162a861",
+            "createdAt": "2023-09-29T06:35:26.753Z",
+            "updatedAt": "2023-09-29T06:35:26.753Z",
+            "permission": "MANAGE_ROLES",
+            "friendlyName": "MANAGE_ROLES",
+            "description": "No description provided",
+            "moduleId": null,
+            "canHaveCount": false
+          },
+          "roleId": "76066294-5a6b-4d33-b8e0-0dc0100cf96f",
+          "count": 0
         }
       ]
     }
@@ -29,9 +31,11 @@
   "status": 200,
   "test": {
     "group": "RoleController",
+    "snapshot": true,
     "name": "Update by ID",
     "filteredFields": [
-      "roleId"
+      "roleId",
+      "permissionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

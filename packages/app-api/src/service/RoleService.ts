@@ -11,6 +11,7 @@ import {
   IsOptional,
   IsUUID,
   IsNotEmpty,
+  IsBoolean,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -61,6 +62,19 @@ export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsBoolean()
+  @IsOptional()
+  canHaveCount: boolean;
+}
+
+export class PermissionOnRoleDTO extends TakaroModelDTO<PermissionOnRoleDTO> {
+  @IsUUID()
+  permissionId: string;
+
+  @Type(() => PermissionOutputDTO)
+  @ValidateNested()
+  permission: PermissionOutputDTO;
 }
 
 export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
@@ -74,15 +88,19 @@ export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsBoolean()
+  @IsOptional()
+  canHaveCount: boolean;
 }
 
 export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @IsString()
   name: string;
 
-  @Type(() => PermissionOutputDTO)
+  @Type(() => PermissionOnRoleDTO)
   @ValidateNested({ each: true })
-  permissions: PermissionOutputDTO[];
+  permissions: PermissionOnRoleDTO[];
 }
 
 export class RoleAssignmentOutputDTO extends TakaroModelDTO<RoleAssignmentOutputDTO> {
@@ -141,10 +159,15 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   }
 
   async createWithPermissions(role: RoleCreateInputDTO, permissions: string[]): Promise<RoleOutputDTO> {
+    const permissionIds = await Promise.all(
+      permissions.map((p) => {
+        return this.repo.permissionCodeToRecord(p);
+      })
+    );
     const createdRole = await this.repo.create(role);
     await Promise.all(
-      permissions.map((permission) => {
-        return this.repo.addPermissionToRole(createdRole.id, permission);
+      permissionIds.map((permission) => {
+        return this.repo.addPermissionToRole(createdRole.id, permission.id);
       })
     );
 
@@ -154,20 +177,29 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async setPermissions(roleId: string, permissions: string[]) {
     const role = await this.repo.findOne(roleId);
 
-    const toRemove = role.permissions.filter((permission) => !permissions.includes(permission.permission));
-    const toAdd = permissions.filter(
-      (permission) => !role.permissions.map((cap) => cap.permission).includes(permission)
+    // Check if the role exists
+    if (!role) {
+      throw new Error(`Role with ID ${roleId} not found`);
+    }
+
+    const currentPermissions = role.permissions.map((p) => p.permissionId);
+
+    // Permissions to remove are those not in the new permissions list
+    const toRemove = role.permissions.filter((permission) => !permissions.includes(permission.permissionId));
+
+    // Permissions to add are those not in the current permissions of the role
+    const toAdd = permissions.filter((permission) => !currentPermissions.includes(permission));
+
+    // Create promises for removing and adding permissions
+    const removePromises = toRemove.map((permission) =>
+      this.repo.removePermissionFromRole(roleId, permission.permissionId)
     );
+    const addPromises = toAdd.map((permission) => this.repo.addPermissionToRole(roleId, permission));
 
-    const removePromises = toRemove.map((permission) => {
-      return this.repo.removePermissionFromRole(roleId, permission.permission);
-    });
-    const addPromises = toAdd.map((permission) => {
-      return this.repo.addPermissionToRole(roleId, permission);
-    });
-
+    // Execute all the promises
     await Promise.all([...removePromises, ...addPromises]);
 
+    // Return the updated role
     return this.repo.findOne(roleId);
   }
 

@@ -6,6 +6,9 @@ export { GenericCheckBox as UnControlledCheckBox } from './CheckBox/Generic';
 export { ControlledSelect as Select } from './Select';
 export type { ControlledSelectProps as SelectProps } from './Select';
 
+export { ControlledSearchField as SearchField } from './SearchField';
+export type { SearchFieldProps } from './SearchField';
+
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';
 

@@ -72,10 +72,12 @@ export const Router: FC = () => (
           />
         </Route>
 
-        {/* ======================== domain ======================== */}
+        {/* ======================== Domain ======================== */}
         <Route element={<Dashboard />} path={PATHS.home()} />
         <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
         <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
+
+        {/* ======================== Settings ======================== */}
         <Route element={<SettingsFrame />}>
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.overview()} />
           <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
@@ -87,7 +89,6 @@ export const Router: FC = () => (
         </Route>
 
         <Route element={<GameServers />} path="/server/" />
-
         <Route element={<Users />} path={PATHS.users()} />
 
         <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>

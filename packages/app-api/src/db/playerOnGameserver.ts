@@ -88,7 +88,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const roles = await roleOnPlayerModel
       .query()
       .where({ playerId: data.playerId })
-      .withGraphFetched('role.permissions');
+      .withGraphFetched('role.permissions.permission');
     const globalRoles = roles.filter((role) => role.gameServerId === null);
     const gameServerRoles = roles.filter((role) => role.gameServerId === data.gameServerId);
     const filteredRoles = [...globalRoles, ...gameServerRoles];

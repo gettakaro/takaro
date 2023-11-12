@@ -9,9 +9,14 @@ async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
 
   const playersRes = await this.client.player.playerControllerSearch();
 
+  const permissionsRes = await this.client.role.roleControllerGetPermissions();
+  const teleportsPermission = permissionsRes.data.data.find((p) => p.permission === 'TELEPORTS_USE');
+
+  if (!teleportsPermission) throw new Error('Teleports permission not found');
+
   await this.client.role.roleControllerUpdate(defaultSetup.role.id, {
     name: defaultSetup.role.name,
-    permissions: ['TELEPORTS_USE'],
+    permissions: [teleportsPermission.id],
   });
 
   await this.client.gameserver.gameServerControllerInstallModule(

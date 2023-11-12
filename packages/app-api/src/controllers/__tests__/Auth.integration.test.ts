@@ -24,7 +24,7 @@ const tests = [
     snapshot: true,
     group,
     name: 'Can access resource with permissions',
-    filteredFields: ['roleId'],
+    filteredFields: ['roleId', 'permissionId'],
     setup: async function () {
       await logInWithPermissions(this.client, [PERMISSIONS.READ_ROLES]);
     },
