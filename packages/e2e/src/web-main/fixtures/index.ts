@@ -1,6 +1,5 @@
 import playwright from '@playwright/test';
 import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
-import { PERMISSIONS } from '@takaro/lib-components';
 import {
   AdminClient,
   Client,
@@ -10,18 +9,45 @@ import {
   HookCreateDTOEventTypeEnum,
   ModuleOutputDTO,
   PlayerOutputDTO,
+  RoleOutputDTO,
   UserOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
-import { GameServersPage } from '../pages/GameServersPage.js';
-import { ModuleDefinitionsPage } from '../pages/ModuleDefinitionsPage.js';
-import { StudioPage } from './StudioPage.js';
+import { ModuleDefinitionsPage, StudioPage, GameServersPage } from '../pages/index.js';
 import { EventTypes } from '@takaro/modules';
 import { getAdminClient, login } from './helpers.js';
 
+export enum PERMISSIONS {
+  'ROOT' = 'ROOT',
+  'MANAGE_USERS' = 'MANAGE_USERS',
+  'READ_USERS' = 'READ_USERS',
+  'MANAGE_ROLES' = 'MANAGE_ROLES',
+  'READ_ROLES' = 'READ_ROLES',
+  'MANAGE_GAMESERVERS' = 'MANAGE_GAMESERVERS',
+  'READ_GAMESERVERS' = 'READ_GAMESERVERS',
+  'READ_FUNCTIONS' = 'READ_FUNCTIONS',
+  'MANAGE_FUNCTIONS' = 'MANAGE_FUNCTIONS',
+  'READ_CRONJOBS' = 'READ_CRONJOBS',
+  'MANAGE_CRONJOBS' = 'MANAGE_CRONJOBS',
+  'READ_HOOKS' = 'READ_HOOKS',
+  'MANAGE_HOOKS' = 'MANAGE_HOOKS',
+  'READ_COMMANDS' = 'READ_COMMANDS',
+  'MANAGE_COMMANDS' = 'MANAGE_COMMANDS',
+  'READ_MODULES' = 'READ_MODULES',
+  'MANAGE_MODULES' = 'MANAGE_MODULES',
+  'READ_PLAYERS' = 'READ_PLAYERS',
+  'MANAGE_PLAYERS' = 'MANAGE_PLAYERS',
+  'MANAGE_SETTINGS' = 'MANAGE_SETTINGS',
+  'READ_SETTINGS' = 'READ_SETTINGS',
+  'READ_VARIABLES' = 'READ_VARIABLES',
+  'MANAGE_VARIABLES' = 'MANAGE_VARIABLES',
+  'READ_EVENTS' = 'READ_EVENTS',
+  'MANAGE_EVENTS' = 'MANAGE_EVENTS',
+}
+
 const { test: base } = playwright;
 
-interface IBaseFixtures {
+export interface IBaseFixtures {
   takaro: {
     rootClient: Client;
     adminClient: AdminClient;
@@ -33,6 +59,7 @@ interface IBaseFixtures {
     mailhog: MailhogAPI;
     players: PlayerOutputDTO[];
     rootUser: UserOutputDTO;
+    testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
     domain: DomainCreateOutputDTO;
   };
 }
@@ -47,8 +74,6 @@ export const basicTest = base.extend<IBaseFixtures>({
         })
       ).data.data;
 
-      await login(page, domain.rootUser.email, domain.password);
-
       const client = new Client({
         url: integrationConfig.get('host'),
         auth: {
@@ -57,6 +82,21 @@ export const basicTest = base.extend<IBaseFixtures>({
         },
       });
       await client.login();
+
+      // User with no permissions
+      const password = 'test';
+      const user = await client.user.userControllerCreate({
+        name: 'test',
+        email: 'test@takaro.io',
+        password,
+      });
+
+      const emptyRole = await client.role.roleControllerCreate({
+        name: 'test',
+        permissions: [],
+      });
+      client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
+
       const gameServer = await client.gameserver.gameServerControllerCreate({
         name: 'Test server',
         type: GameServerCreateDTOTypeEnum.Mock,
@@ -87,6 +127,7 @@ export const basicTest = base.extend<IBaseFixtures>({
         domain,
         players: [],
         rootUser: domain.rootUser,
+        user: { ...user.data.data, password, role: emptyRole.data.data },
       });
 
       // fixture teardown
@@ -96,7 +137,7 @@ export const basicTest = base.extend<IBaseFixtures>({
   ],
 });
 
-interface WithModuleFixture {
+export interface WithModuleFixture {
   module: ModuleOutputDTO;
 }
 
@@ -152,61 +193,3 @@ export const test = basicTest.extend<WithModuleFixture>({
     { auto: true },
   ],
 });
-
-interface UserFixtures {
-  user: {
-    user: UserOutputDTO;
-    userClient: Client;
-  };
-}
-
-export function createTestFnWithUserPermissions(permissions: PERMISSIONS[]) {
-  return basicTest.extend<UserFixtures>({
-    user: [
-      async ({ takaro, page }, use) => {
-        const { rootUser, domain } = takaro;
-        const client = new Client({
-          url: integrationConfig.get('host'),
-          auth: {
-            username: rootUser.email,
-            password: domain.password,
-          },
-        });
-        await client.login();
-
-        const password = 'test';
-        const user = (
-          await client.user.userControllerCreate({
-            email: `e2e-${humanId.default()}@takaro.io`,
-            password,
-            name: 'test',
-          })
-        ).data.data;
-
-        const role = (
-          await client.role.roleControllerCreate({
-            name: `e2e-${humanId.default()}`,
-            permissions,
-          })
-        ).data.data;
-
-        await client.user.userControllerAssignRole(user.id, role.id);
-        client.logout();
-
-        const userClient = new Client({
-          url: integrationConfig.get('host'),
-          auth: {
-            username: user.email,
-            password,
-          },
-        });
-        userClient.login();
-        await login(page, user.email, password);
-        await use({ user, userClient });
-
-        // the base fixture removes the domain which will remove the user
-      },
-      { auto: true },
-    ],
-  });
-}

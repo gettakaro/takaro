@@ -5,9 +5,7 @@ const { expect } = playwright;
 
 basicTest('Can use call to action if there are no gameservers', async ({ page }) => {
   const button = page.getByRole('button').getByText('Add a server');
-
   await button.click();
-
   expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
 });
 
