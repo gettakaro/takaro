@@ -65,6 +65,7 @@ const domainLinks: NavbarLink[] = [
     label: 'Roles',
     path: PATHS.roles.overview(),
     icon: <RolesIcon />,
+    requiredPermissions: [PERMISSIONS.READ_ROLES],
   },
   {
     label: 'Modules',
@@ -108,16 +109,19 @@ export const Navbar: FC = () => {
         // If serverId is not valid it will be directed by the failed requests.
         path: PATHS.gameServer.dashboard(selectedGameServerId),
         icon: <DashboardIcon />,
+        requiredPermissions: [PERMISSIONS.READ_GAMESERVERS],
       },
       {
         label: 'Modules',
         path: PATHS.gameServer.modules(selectedGameServerId),
         icon: <ModulesIcon />,
+        requiredPermissions: [PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_MODULES],
       },
       {
         label: 'Settings',
         path: PATHS.gameServer.settings(selectedGameServerId),
         icon: <SettingsIcon />,
+        requiredPermissions: [PERMISSIONS.READ_SETTINGS, PERMISSIONS.READ_GAMESERVERS],
       },
     ];
   }, [selectedGameServerId]);
@@ -154,11 +158,13 @@ export const Navbar: FC = () => {
         {data && data.pages[0].data.length > 0 ? (
           <Nav>
             <h3>Server</h3>
-            <GameServerSelectNav
-              isInGameServerNav={isInGameServerNav}
-              serverId={selectedGameServerId}
-              setServerId={setSelectedGameServerId}
-            />
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS]]}>
+              <GameServerSelectNav
+                isInGameServerNav={isInGameServerNav}
+                serverId={selectedGameServerId}
+                setServerId={setSelectedGameServerId}
+              />
+            </PermissionsGuard>
             {gameServerLinks.map((link) => renderLink(link))}
           </Nav>
         ) : (

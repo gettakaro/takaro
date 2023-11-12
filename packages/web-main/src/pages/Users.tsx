@@ -107,8 +107,9 @@ const Users: FC = () => {
               <Dropdown.Menu.Item
                 label="Edit roles"
                 icon={<EditIcon />}
+                // TODO: navigate to edit roles page for user
                 onClick={() => navigate('')}
-                disabled={hasPermission([PERMISSIONS.MANAGE_ROLES])}
+                disabled={!hasPermission([PERMISSIONS.MANAGE_ROLES])}
               />
             </PermissionsGuard>
           </Dropdown.Menu>
@@ -178,7 +179,7 @@ const InviteUser: FC = () => {
         onClick={() => setOpen(true)}
         text="Invite user"
         icon={<PlusIcon />}
-        disabled={hasPermission([PERMISSIONS.MANAGE_USERS])}
+        disabled={!hasPermission([PERMISSIONS.MANAGE_USERS])}
       />
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
