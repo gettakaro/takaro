@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, Divider, Popover, SearchField, Select } from '@takaro/lib-components';
+import { Button, Divider, Popover, Select, TextField } from '@takaro/lib-components';
 import { HiFunnel as FilterIcon } from 'react-icons/hi2';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
 import { Filter, Operator } from '../types';
@@ -12,7 +12,6 @@ type FormInputs = {
 type EventFilterProps = {
   mode: 'add' | 'edit';
   fields: string[];
-  getValueOptions?: (field: string) => string[];
   selectedFilter?: Filter;
   addFilter: (filter: Filter) => void;
 };
@@ -21,17 +20,8 @@ type FilterPopupProps = EventFilterProps & {
   setOpen: (open: boolean) => void;
 };
 
-export const FilterPopup: FC<FilterPopupProps> = ({
-  selectedFilter,
-  fields,
-  addFilter,
-  mode,
-  setOpen,
-  getValueOptions,
-}) => {
-  const [options, setOptions] = useState<string[]>([]);
-
-  const { control, handleSubmit, getValues } = useForm<FormInputs>({
+export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addFilter, mode, setOpen }) => {
+  const { control, handleSubmit } = useForm<FormInputs>({
     mode: 'onSubmit',
     shouldUnregister: true,
     ...(selectedFilter && {
@@ -52,13 +42,6 @@ export const FilterPopup: FC<FilterPopupProps> = ({
 
     addFilter(copyFilter);
     setOpen(false);
-  };
-
-  const handleInputValueChange = (value: string) => {
-    if (getValueOptions) {
-      const options = getValueOptions(getValues().filter.field);
-      setOptions(options.filter((option) => option.toLowerCase().includes(value.toLowerCase())));
-    }
   };
 
   return (
@@ -105,24 +88,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
               ))}
             </Select.OptionGroup>
           </OperatorSelect>
-          <SearchField
-            debounce={0}
-            control={control}
-            name="filter.value"
-            placeholder="Select a value"
-            handleInputValueChange={handleInputValueChange}
-          >
-            {/* In this case the label is the same as the value but ofcourse that can differ*/}
-            <SearchField.OptionGroup>
-              {options?.map((name) => (
-                <SearchField.Option key={name} value={name} label={name}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{name}</span>
-                  </div>
-                </SearchField.Option>
-              ))}
-            </SearchField.OptionGroup>
-          </SearchField>
+          <TextField control={control} name="filter.value" placeholder="Select a value" />
         </FilterContainer>
 
         <ButtonContainer>
@@ -134,7 +100,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   );
 };
 
-export const EventFilter: FC<EventFilterProps> = ({ fields, addFilter, getValueOptions }) => {
+export const EventFilter: FC<EventFilterProps> = ({ fields, addFilter }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -143,13 +109,7 @@ export const EventFilter: FC<EventFilterProps> = ({ fields, addFilter, getValueO
         <Button icon={<FilterIcon />} text="Filter" onClick={() => setOpen(true)} />
       </Popover.Trigger>
       <Popover.Content>
-        <FilterPopup
-          fields={fields}
-          addFilter={addFilter}
-          mode="add"
-          setOpen={setOpen}
-          getValueOptions={getValueOptions}
-        />
+        <FilterPopup fields={fields} addFilter={addFilter} mode="add" setOpen={setOpen} />
       </Popover.Content>
     </Popover>
   );

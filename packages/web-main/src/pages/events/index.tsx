@@ -215,22 +215,6 @@ export const Events: FC = () => {
     setEndDate(end);
   };
 
-  const getValueOptions = (field: string) => {
-    return _.uniq(
-      events
-        ?.map((e) => {
-          // TODO: this is a hack, we should have a better way to get the value
-          if (field.endsWith('Id')) {
-            const type = field.split('Id')[0];
-            return String(_.get(e, `${type}.id`));
-          }
-
-          return String(_.get(e, field));
-        })
-        .filter((e) => e !== 'undefined')
-    );
-  };
-
   return (
     <>
       <Header>
@@ -243,13 +227,26 @@ export const Events: FC = () => {
                 setTagFilters((prev) => [...prev, filter]);
               }
             }}
-            getValueOptions={getValueOptions}
           />
           <EventSearch
             fields={allFields}
             conjunctions={['and']}
             operators={[':']}
-            getValueOptions={getValueOptions}
+            getValueOptions={(field) => {
+              return _.uniq(
+                events
+                  ?.map((e) => {
+                    // TODO: this is a hack, we should have a better way to get the value
+                    if (field.endsWith('Id')) {
+                      const type = field.split('Id')[0];
+                      return String(_.get(e, `${type}.id`));
+                    }
+
+                    return String(_.get(e, field));
+                  })
+                  .filter((e) => e !== 'undefined')
+              );
+            }}
             setFilters={setSearchFilters}
           />
         </Flex>
