@@ -10,9 +10,11 @@ const tests = [
     name: 'Assign role to player',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
-        permissions: [PERMISSIONS.READ_GAMESERVERS],
+        permissions,
       });
       const player = this.setupData.players[0];
       return this.client.player.playerControllerAssignRole(player.id, role.data.data.id);
@@ -24,9 +26,10 @@ const tests = [
     name: 'Assigning the same role twice should fail',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
-        permissions: [PERMISSIONS.READ_GAMESERVERS],
+        permissions,
       });
       const player = this.setupData.players[0];
       await this.client.player.playerControllerAssignRole(player.id, role.data.data.id);
@@ -40,9 +43,10 @@ const tests = [
     name: 'Assigning the same role for different gameservers should work',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
-        permissions: [PERMISSIONS.READ_GAMESERVERS],
+        permissions,
       });
       const player = this.setupData.players[0];
       const player2 = this.setupData.players[1];
@@ -60,9 +64,10 @@ const tests = [
     name: 'Assigning the same role for same gameserver should fail',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
-        permissions: [PERMISSIONS.READ_GAMESERVERS],
+        permissions,
       });
       const player = this.setupData.players[0];
       await this.client.player.playerControllerAssignRole(player.id, role.data.data.id, {

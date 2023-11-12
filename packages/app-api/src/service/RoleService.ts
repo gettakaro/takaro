@@ -12,6 +12,7 @@ import {
   IsUUID,
   IsNotEmpty,
   IsBoolean,
+  IsNumber,
 } from 'class-validator';
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
@@ -30,20 +31,31 @@ export class IsPermissionArray implements ValidatorConstraintInterface {
   }
 }
 
+export class PermissionInputDTO extends TakaroDTO<PermissionInputDTO> {
+  @IsString()
+  permissionId: string;
+
+  @IsNumber()
+  @IsOptional()
+  count?: number;
+}
+
 export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsString({ each: true })
-  permissions: string[];
+  @ValidateNested({ each: true })
+  @Type(() => PermissionInputDTO)
+  permissions: PermissionInputDTO[];
 }
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Length(3, 20)
   name: string;
 
-  @IsString({ each: true })
-  permissions: string[];
+  @ValidateNested({ each: true })
+  @Type(() => PermissionInputDTO)
+  permissions: PermissionInputDTO[];
 }
 
 export class SearchRoleInputDTO {
@@ -145,7 +157,9 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       throw new errors.BadRequestError('Cannot update root role');
     }
 
-    return this.repo.update(id, item);
+    await this.repo.update(id, item);
+    await this.setPermissions(id, item.permissions);
+    return this.repo.findOne(id);
   }
 
   async delete(id: string) {
@@ -159,23 +173,13 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     return id;
   }
 
-  async createWithPermissions(role: RoleCreateInputDTO, permissions: string[]): Promise<RoleOutputDTO> {
-    const permissionIds = await Promise.all(
-      permissions.map((p) => {
-        return this.repo.permissionCodeToRecord(p);
-      })
-    );
+  async createWithPermissions(role: RoleCreateInputDTO, permissions: PermissionInputDTO[]): Promise<RoleOutputDTO> {
     const createdRole = await this.repo.create(role);
-    await Promise.all(
-      permissionIds.map((permission) => {
-        return this.repo.addPermissionToRole(createdRole.id, permission.id);
-      })
-    );
-
+    await this.setPermissions(createdRole.id, permissions);
     return this.repo.findOne(createdRole.id);
   }
 
-  async setPermissions(roleId: string, permissions: string[]) {
+  async setPermissions(roleId: string, permissions: PermissionInputDTO[]) {
     const role = await this.repo.findOne(roleId);
 
     // Check if the role exists
@@ -184,12 +188,13 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     }
 
     const currentPermissions = role.permissions.map((p) => p.permissionId);
+    const permissionIdsToSet = permissions.map((p) => p.permissionId);
 
     // Permissions to remove are those not in the new permissions list
-    const toRemove = role.permissions.filter((permission) => !permissions.includes(permission.permissionId));
+    const toRemove = role.permissions.filter((permission) => !permissionIdsToSet.includes(permission.permissionId));
 
     // Permissions to add are those not in the current permissions of the role
-    const toAdd = permissions.filter((permission) => !currentPermissions.includes(permission));
+    const toAdd = permissionIdsToSet.filter((permissionId) => !currentPermissions.includes(permissionId));
 
     // Create promises for removing and adding permissions
     const removePromises = toRemove.map((permission) =>
@@ -286,5 +291,10 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
 
     const allPermissions = systemPermissions.concat(modulePermissions);
     return allPermissions;
+  }
+
+  async permissionCodeToRecord(permissionCode: string): Promise<PermissionOutputDTO> {
+    const record = await this.repo.permissionCodeToRecord(permissionCode);
+    return await new PermissionOutputDTO().construct(record);
   }
 }
