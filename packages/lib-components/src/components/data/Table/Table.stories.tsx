@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 
 import { Table, TableProps } from '.';
@@ -16,54 +16,14 @@ type User = {
 };
 
 const data: User[] = [
-  {
-    firstName: 'John',
-    lastName: 'Doe',
-    age: 32,
-    visits: 32,
+  ...Array.from({ length: 100 }).map((_, i) => ({
+    firstName: `John ${i}`,
+    lastName: `Doe ${i}`,
+    age: 32 + i,
+    visits: 32 + i,
     status: 'complicated',
-    progress: 66,
-  },
-  {
-    firstName: 'Jane',
-    lastName: 'Doe',
-    age: 30,
-    visits: 30,
-    status: 'single',
-    progress: 100,
-  },
-  {
-    firstName: 'Sam',
-    lastName: 'Doe',
-    age: 28,
-    visits: 28,
-    status: 'married',
-    progress: 0,
-  },
-  {
-    firstName: 'Sally',
-    lastName: 'Doe',
-    age: 26,
-    visits: 26,
-    status: 'single',
-    progress: 100,
-  },
-  {
-    firstName: 'Bob',
-    lastName: 'Doe',
-    age: 24,
-    visits: 24,
-    status: 'single',
-    progress: 100,
-  },
-  {
-    firstName: 'Barbara',
-    lastName: 'Doe',
-    age: 22,
-    visits: 22,
-    status: 'single',
-    progress: 100,
-  },
+    progress: 66 + i,
+  })),
 ];
 
 const columnHelper = createColumnHelper<User>();
@@ -110,23 +70,17 @@ export default {
 const Users: FC<TableProps<User>> = () => {
   const { pagination, sorting, columnSearch, columnFilters, rowSelection } = useTableActions<User>();
 
-  useEffect(() => {
-    pagination.setPaginationState({
-      ...pagination.paginationState,
-      pageSize: 1,
-    });
-  }, []);
-
   return (
     <Table
       id="story-table"
       data={data}
       columns={columns}
       pagination={{
-        ...pagination,
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
         pageOptions: {
-          pageCount: 10,
-          total: 20,
+          pageCount: 5,
+          total: 10,
         },
       }}
       columnFiltering={columnFilters}

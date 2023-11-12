@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useSearchParams } from 'react-router-dom';
 import { Density } from '../../../styled';
+import { useTableSearchParamKeys } from './SearchParams';
 
 import {
   flexRender,
@@ -25,6 +27,7 @@ import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
 export interface TableProps<DataType extends object> {
+  /// Unique identifier for the table
   id: string;
 
   data: DataType[];
@@ -35,10 +38,12 @@ export interface TableProps<DataType extends object> {
 
   renderToolbar?: () => JSX.Element;
 
+  /// Callback for when the row selection changes
   rowSelection?: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
+
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
@@ -72,17 +77,25 @@ export function Table<DataType extends object>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
+  const TableSearchParamKeys = useTableSearchParamKeys(id);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    columns.map((column) => {
+
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() => {
+    const columnOrderString = searchParams.get(TableSearchParamKeys.COLUMN_ORDER);
+    if (columnOrderString) {
+      return columnOrderString.split('|');
+    }
+
+    return columns.map((column) => {
       if (column.id === undefined) {
         throw new Error('ColumnDef must have an id');
       }
       return column.id;
-    })
-  );
+    });
+  });
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
 
@@ -110,6 +123,14 @@ export function Table<DataType extends object>({
     }
   }, [columnVisibility, hasShownColumnVisibilityTooltip]);
 
+  // Function to safely parse search params or use defaults
+  const getSafeNumberParam = (paramKey: string, defaultValue: number) => {
+    const value = searchParams.get(paramKey);
+    return value !== null ? Number(value) : defaultValue;
+  };
+
+  // Column Order is either the one from the search params or the default order.
+
   const table = useReactTable({
     data,
     columns,
@@ -134,19 +155,40 @@ export function Table<DataType extends object>({
     columnResizeMode: 'onChange',
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
-    onPaginationChange: pagination?.setPaginationState,
+    onPaginationChange: (paginationOrUpdaterFn) => {
+      if (typeof paginationOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.PAGE_INDEX, String(paginationOrUpdaterFn.pageIndex as number));
+          prevSearchParams.set(TableSearchParamKeys.PAGE_SIZE, String(paginationOrUpdaterFn.pageSize));
+          return prevSearchParams;
+        });
+        pagination?.setPaginationState(paginationOrUpdaterFn);
+      }
+    },
     onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
     onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
-    onColumnOrderChange: setColumnOrder,
+    onColumnOrderChange: (columnOrderOrUpdaterFn) => {
+      if (typeof columnOrderOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_ORDER, columnOrderOrUpdaterFn.join('|'));
+          return prevSearchParams;
+        });
+      }
+      setColumnOrder(columnOrderOrUpdaterFn);
+    },
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
+    // We first base on the searchParams and then on the incoming properties from the parent component
     initialState: {
       columnVisibility,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
-      pagination: pagination.paginationState,
+      pagination: {
+        pageIndex: getSafeNumberParam(TableSearchParamKeys.PAGE_INDEX, pagination.paginationState.pageIndex),
+        pageSize: getSafeNumberParam(TableSearchParamKeys.PAGE_SIZE, pagination.paginationState.pageSize),
+      },
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
@@ -156,7 +198,7 @@ export function Table<DataType extends object>({
       sorting: sorting?.sortingState,
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
-      pagination: pagination?.paginationState,
+      pagination: pagination.paginationState,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
     },
@@ -275,6 +317,7 @@ export function Table<DataType extends object>({
                         of {pagination.pageOptions.total} entries
                       </span>
                       <Pagination
+                        tableId={id}
                         pageCount={table.getPageCount()}
                         hasNext={table.getCanNextPage()}
                         hasPrevious={table.getCanPreviousPage()}
