@@ -74,8 +74,8 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
             control={control}
             name="filter.operator"
             inPortal
-            render={(selectedIndex) => {
-              return Object.keys(Operator)[selectedIndex] ?? 'select operator';
+            render={() => {
+              return Object.keys(Operator)[0];
             }}
           >
             <Select.OptionGroup>
