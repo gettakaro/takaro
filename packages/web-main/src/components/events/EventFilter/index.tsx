@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Button, Divider, Popover, Select, TextField } from '@takaro/lib-components';
 import { HiFunnel as FilterIcon } from 'react-icons/hi2';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
-import { Filter, operators } from '../types';
+import { Filter, Operator } from '../types';
 
 type FormInputs = {
   filter: Filter;
@@ -36,7 +36,11 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
   });
 
   const onSubmit: SubmitHandler<FormInputs> = ({ filter }) => {
-    addFilter(filter);
+    const copyFilter = { ...filter };
+
+    copyFilter.operator = Operator[filter.operator];
+
+    addFilter(copyFilter);
     setOpen(false);
   };
 
@@ -71,11 +75,11 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
             name="filter.operator"
             inPortal
             render={(selectedIndex) => {
-              return Object.keys(operators)[selectedIndex] ?? 'select operator';
+              return Object.keys(Operator)[selectedIndex] ?? 'select operator';
             }}
           >
             <Select.OptionGroup>
-              {Object.keys(operators).map((operator) => (
+              {Object.keys(Operator).map((operator) => (
                 <Select.Option key={operator} value={operator}>
                   <div>
                     <span>{operator}</span>

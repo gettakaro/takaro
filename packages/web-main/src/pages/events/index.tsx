@@ -6,7 +6,7 @@ import { EventFilterTag } from 'components/events/EventFilter/Tag';
 import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { EventSearch } from 'components/events/EventSearch';
 import { TreeFilter } from 'components/events/TreeFilter';
-import { Filter } from 'components/events/types';
+import { Filter, Operator } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
 import _ from 'lodash';
@@ -156,7 +156,7 @@ export const Events: FC = () => {
 
   const filters = [...tagFilters, ...searchFilters];
   const filterFields = filters
-    .filter((f) => f.operator === ':')
+    .filter((f) => f.operator === Operator.is)
     .reduce((acc, f) => {
       acc[f.field] = [f.value];
       return acc;
