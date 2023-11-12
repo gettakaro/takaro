@@ -129,7 +129,7 @@ export const Navbar: FC = () => {
     if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
       setSelectedGameServerId(data.pages[0].data[0].id);
     }
-  }, [selectedGameServerId]);
+  }, [selectedGameServerId, data]);
 
   const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
 
