@@ -85,7 +85,6 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
           enableFilter={enableFilter}
           multiSelect={multiSelect}
           onChange={(e) => {
-            console.log(e);
             field.onChange(e);
           }}
           onBlur={handleOnBlur}

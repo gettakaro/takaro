@@ -89,7 +89,7 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.secondary};
     span {
       color: white;
     }
@@ -101,6 +101,7 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
     gap: ${({ theme }) => theme.spacing[1]};
 
     span {
+      cursor: pointer;
       color: ${({ theme, isActive: isSelected }) => (isSelected ? theme.colors.white : theme.colors.text)};
     }
   }

@@ -3,7 +3,7 @@ import { ContextData } from '@floating-ui/react';
 
 interface SelectContextValue {
   selectedIndex: number | number[];
-  setSelectedIndex: (index: number) => void;
+  setSelectedIndex: (index: number | number[]) => void;
   values: string[];
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;

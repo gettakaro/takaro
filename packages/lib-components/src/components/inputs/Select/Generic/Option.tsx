@@ -11,7 +11,6 @@ const StyledCheckIcon = styled(CheckIcon)`
 
 export interface OptionProps extends PropsWithChildren {
   value: string;
-
   // Properties set by the Select component
   index?: number;
   onChange?: (value: string | string[]) => unknown;
@@ -48,8 +47,10 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
 
   function handleSelect() {
     if (multiSelect) {
-      toggleSelectedIndex(selectedIndex as number[], index);
-      if (onChange) onChange(getselectedValues(selectedIndex as number[], values));
+      // Since state updates are async, we cannot use the selectedIndex state in the onChange callback
+      const updatedIndices = toggleSelectedIndex(selectedIndex as number[], index);
+      setSelectedIndex(updatedIndices);
+      if (onChange) onChange(getselectedValues(updatedIndices, values));
     } else {
       setSelectedIndex(index);
       if (onChange) onChange(value);
@@ -80,6 +81,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
       role="option"
       ref={(node: any) => (listRef.current[index] = node)}
       tabIndex={activeIndex === index ? 0 : 1}
+      isMultiSelect={multiSelect}
       isActive={activeIndex === index}
       aria-selected={activeIndex === index}
       data-selected={selectedIndex === index}
@@ -102,7 +104,8 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
           value={(selectedIndex as number[]).includes(index)}
         />
       )}
-      <span>{children}</span> {!multiSelect && selectedIndex === index && <StyledCheckIcon size={15} />}
+      <span style={{ marginLeft: multiSelect ? '10px' : 0 }}>{children}</span>{' '}
+      {!multiSelect && selectedIndex === index && <StyledCheckIcon size={15} />}
     </OptionContainer>
   );
 };
