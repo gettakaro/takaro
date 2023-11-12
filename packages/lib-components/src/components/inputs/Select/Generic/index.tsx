@@ -37,14 +37,25 @@ import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
 import { setAriaDescribedBy } from '../../layout';
 
-export interface SelectProps {
-  render: (selectedIndex: number) => React.ReactNode;
+interface MultiSelectProps {
+  render: (selectIndex: number[]) => React.ReactNode;
+  multiSelect: true;
   enableFilter?: boolean;
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
 }
 
+interface SingleSelectProps {
+  render: (selectIndex: number) => React.ReactNode;
+  multiSelect?: false;
+  enableFilter?: boolean;
+  /// Rendering in portal will render the selectDropdown independent from its parent container.
+  /// this is useful when select is rendered in other floating elements with limited space.
+  inPortal?: boolean;
+}
+
+export type SelectProps = MultiSelectProps | SingleSelectProps;
 export type GenericSelectProps = PropsWithChildren<SelectProps & GenericInputProps<string, HTMLDivElement>>;
 
 const defaultsApplier = defaultInputPropsFactory<GenericSelectProps>(defaultInputProps);
@@ -66,6 +77,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     name,
     inPortal = true,
     enableFilter = false,
+    multiSelect = false,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -77,7 +89,11 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
 
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(() => {
+  const [selectedIndex, setSelectedIndex] = useState<number | number[]>(() => {
+    if (multiSelect) {
+      return [];
+    }
+
     const defaultIndex = Math.max(0, listContentRef.current.indexOf(value));
     onChange(listContentRef.current[defaultIndex]);
     return defaultIndex;
@@ -124,7 +140,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     useListNavigation(context, {
       listRef: listItemsRef,
       activeIndex,
-      selectedIndex,
+      selectedIndex: multiSelect ? null : (selectedIndex as number),
       onNavigate: setActiveIndex,
     }),
   ]);
@@ -139,12 +155,19 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         });
       })?.flat() ?? []
     );
-  }, []);
+  }, [children]);
 
+  /* This handles the case where the value is set by default by react-hook-form an initial value coming from the api.*/
   useEffect(() => {
-    const index = values.indexOf(value);
-    if (index !== -1) {
-      setSelectedIndex(index + 1);
+    if (multiSelect && value && Array.isArray(value)) {
+      const values = value as unknown as string[];
+      const indices = values.map((v) => listContentRef.current.indexOf(v));
+      setSelectedIndex(indices);
+    } else {
+      const index = values.indexOf(value);
+      if (index !== -1) {
+        setSelectedIndex(index + 1);
+      }
     }
   }, [value]);
 
@@ -208,7 +231,10 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
 
   const renderSelect = () => {
     return (
-      <FloatingFocusManager context={context} initialFocus={selectedIndex || filterInputRef}>
+      <FloatingFocusManager
+        context={context}
+        initialFocus={multiSelect ? (selectedIndex as number[])[0] : (selectedIndex as number) || filterInputRef}
+      >
         <SelectContainer
           ref={refs.setFloating}
           style={{
@@ -232,6 +258,16 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     );
   };
 
+  const renderContent = () => {
+    if (Array.isArray(selectedIndex)) {
+      // Typescript does not infer the correct type for render here
+      return render(selectedIndex as number[] & number);
+    } else {
+      // Typescript does not infer the correct type for render here
+      return render((selectedIndex - 1) as number[] & number);
+    }
+  };
+
   return (
     <SelectContext.Provider
       value={{
@@ -243,6 +279,9 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         setOpen,
         getItemProps,
         dataRef: context.dataRef,
+        name,
+        multiSelect,
+        values,
       }}
     >
       <SelectButton
@@ -257,7 +296,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
-        {render(selectedIndex - 1)}
+        {renderContent()}
         {!readOnly && <StyledArrowIcon size={16} />}
       </SelectButton>
       {open &&

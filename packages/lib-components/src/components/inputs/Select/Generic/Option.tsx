@@ -3,6 +3,7 @@ import { styled } from '../../../../styled';
 import { SelectContext } from './context';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
 import { OptionContainer } from '../style';
+import { GenericCheckBox } from '../../CheckBox';
 
 const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
@@ -10,19 +11,51 @@ const StyledCheckIcon = styled(CheckIcon)`
 
 export interface OptionProps extends PropsWithChildren {
   value: string;
+  // Properties set by the Select component
   index?: number;
-  onChange?: (value: string) => unknown;
+  onChange?: (value: string | string[]) => unknown;
+}
+
+// check if the index is already selected, if so remove it, otherwise add it.
+function toggleSelectedIndex(selectedIndices: number[], index: number) {
+  if (selectedIndices.includes(index)) {
+    return selectedIndices.filter((i) => i !== index);
+  } else {
+    return [...selectedIndices, index];
+  }
+}
+
+// get the values from the selected indices
+function getselectedValues(selectedIndices: number[], options: string[]): string[] {
+  return selectedIndices.map((i) => options[i]);
 }
 
 export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }) => {
-  const { selectedIndex, setSelectedIndex, listRef, setOpen, activeIndex, setActiveIndex, getItemProps, dataRef } =
-    useContext(SelectContext);
+  const {
+    selectedIndex,
+    setSelectedIndex,
+    listRef,
+    setOpen,
+    activeIndex,
+    setActiveIndex,
+    getItemProps,
+    dataRef,
+    multiSelect,
+    values,
+    name,
+  } = useContext(SelectContext);
 
   function handleSelect() {
-    setSelectedIndex(index);
-    if (onChange) onChange(value);
-
-    setOpen(false);
+    if (multiSelect) {
+      // Since state updates are async, we cannot use the selectedIndex state in the onChange callback
+      const updatedIndices = toggleSelectedIndex(selectedIndex as number[], index);
+      setSelectedIndex(updatedIndices);
+      if (onChange) onChange(getselectedValues(updatedIndices, values));
+    } else {
+      setSelectedIndex(index);
+      if (onChange) onChange(value);
+      setOpen(false);
+    }
     setActiveIndex(null);
   }
 
@@ -48,6 +81,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
       role="option"
       ref={(node: any) => (listRef.current[index] = node)}
       tabIndex={activeIndex === index ? 0 : 1}
+      isMultiSelect={multiSelect}
       isActive={activeIndex === index}
       aria-selected={activeIndex === index}
       data-selected={selectedIndex === index}
@@ -57,7 +91,21 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
         onKeyUp: handleKeyUp,
       })}
     >
-      <span>{children}</span> {selectedIndex === index && <StyledCheckIcon size={15} />}
+      {multiSelect && (
+        <GenericCheckBox
+          size="tiny"
+          id={`${name}-checkbox-${index}`}
+          hasDescription={false}
+          hasError={false}
+          onChange={() => {
+            /* bubbles up? */
+          }}
+          name={`${name}-checkbox-${index}`}
+          value={(selectedIndex as number[]).includes(index)}
+        />
+      )}
+      <span style={{ marginLeft: multiSelect ? '10px' : 0 }}>{children}</span>{' '}
+      {!multiSelect && selectedIndex === index && <StyledCheckIcon size={15} />}
     </OptionContainer>
   );
 };

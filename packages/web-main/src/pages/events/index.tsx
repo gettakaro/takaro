@@ -6,7 +6,7 @@ import { EventFilterTag } from 'components/events/EventFilter/Tag';
 import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { EventSearch } from 'components/events/EventSearch';
 import { TreeFilter } from 'components/events/TreeFilter';
-import { Filter } from 'components/events/types';
+import { Filter, Operator } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
 import _ from 'lodash';
@@ -113,13 +113,44 @@ const treeData = [
 
 const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
+function clientSideFilter(
+  event: EnrichedEvent,
+  eventTypes: string[],
+  filters: Filter[],
+  startDate: DateTime | null,
+  endDate: DateTime | null
+) {
+  const createdAt = DateTime.fromISO(event.createdAt);
+  if ((startDate && createdAt < startDate) || (endDate && createdAt > endDate)) {
+    return false;
+  }
+
+  if (!eventTypes.includes(event.eventName)) {
+    return false;
+  }
+
+  if (filters.length > 0) {
+    return filters.every((filter) => {
+      const value = _.get(event, filter.field);
+      switch (filter.operator) {
+        case Operator.is:
+          return filter.value === value;
+        default:
+          return false;
+      }
+    });
+  }
+
+  return true;
+}
+
 export const Events: FC = () => {
   useDocumentTitle('Events');
 
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
 
-  const [fields, setFields] = useState<string[]>([]);
+  const [eventTypes, setEventTypes] = useState<string[]>([]);
   const [tagFilters, setTagFilters] = useState<Filter[]>([]);
   const [searchFilters, setSearchFilters] = useState<Filter[]>([]);
 
@@ -143,8 +174,14 @@ export const Events: FC = () => {
 
   const { data: lastEventResponse } = useEnrichEvent(lastEvent);
 
+  const filters = [...tagFilters, ...searchFilters];
+  const filterFields = filters.reduce((acc, f) => {
+    acc[f.field] = [f.value];
+    return acc;
+  }, {});
+
   useEffect(() => {
-    if (lastEventResponse) {
+    if (lastEventResponse && clientSideFilter(lastEventResponse, eventTypes, filters, startDate, endDate)) {
       setEvents((prev) => {
         if (prev) {
           return [lastEventResponse, ...prev];
@@ -154,20 +191,12 @@ export const Events: FC = () => {
     }
   }, [lastEventResponse]);
 
-  const filters = [...tagFilters, ...searchFilters];
-  const filterFields = filters
-    .filter((f) => f.operator === ':')
-    .reduce((acc, f) => {
-      acc[f.field] = [f.value];
-      return acc;
-    }, {});
-
   const {
     data: rawEvents,
     refetch,
     InfiniteScroll,
   } = useEvents({
-    search: { eventName: fields },
+    search: { eventName: eventTypes },
     filters: filterFields,
     sortBy: 'createdAt',
     sortDirection: 'desc',
@@ -261,14 +290,14 @@ export const Events: FC = () => {
           </EventFilterContainer>
         )}
         <Filters>
-          <h3>Select event types</h3>
+          <h3>Filter event types</h3>
           <TreeFilter
             data={treeData}
             addFilters={(f) => {
-              setFields((prev) => [...prev, ...f]);
+              setEventTypes((prev) => [...prev, ...f]);
             }}
             removeFilters={(f) => {
-              setFields((prev) => prev.filter((filter) => !f.includes(filter)));
+              setEventTypes((prev) => prev.filter((filter) => !f.includes(filter)));
             }}
           />
         </Filters>

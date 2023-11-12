@@ -21,7 +21,7 @@ import {
   Wrapper,
 } from './style';
 import { Item } from './Item';
-import { Filter, InputType } from '../types';
+import { Filter, InputType, Operator } from '../types';
 
 import { HiMagnifyingGlass as SearchIcon, HiXMark as CloseIcon } from 'react-icons/hi2';
 
@@ -146,7 +146,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
       if (field && operator && value) {
         newFilters.push({
           field,
-          operator,
+          operator: operator as Operator,
           value: value.replace(/"/g, ''),
         });
       }
