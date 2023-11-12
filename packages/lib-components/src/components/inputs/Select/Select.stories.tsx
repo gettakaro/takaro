@@ -119,6 +119,67 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
   );
 };
 
+export const MultiSelect: StoryFn<SelectProps> = (args) => {
+  type FormFields = { film: string[] };
+  const [result, setResult] = useState<string>('none');
+
+  const validationSchema = useMemo(
+    () =>
+      z.object({
+        film: z.string().array(),
+      }),
+    []
+  );
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    resolver: zodResolver(validationSchema),
+  });
+
+  const submit: SubmitHandler<FormFields> = ({ film }) => {
+    setResult(film.join(', '));
+  };
+
+  return (
+    <>
+      NOTE: You can ignore the width changing when opening the select. This is due to the select being rendered in a
+      storybook iframe which has incorrect gutter size.
+      <form onSubmit={handleSubmit(submit)}>
+        <Select
+          control={control}
+          name="film"
+          label={args.label}
+          multiSelect
+          description={args.description}
+          render={(selectedIndices) => (
+            <div>
+              {selectedIndices.length === 0
+                ? 'Select...'
+                : selectedIndices.length <= 3
+                ? selectedIndices.map((index) => films[index]?.name).join(', ')
+                : `${selectedIndices
+                    .slice(0, 3)
+                    .map((index) => films[index]?.name)
+                    .join(', ')} and ${selectedIndices.length - 3} more`}
+            </div>
+          )}
+        >
+          <Select.OptionGroup label="films">
+            {films.map(({ name }) => (
+              <Select.Option key={name} value={name}>
+                <div>
+                  <span>{name}</span>
+                </div>
+              </Select.Option>
+            ))}
+          </Select.OptionGroup>
+        </Select>
+        <Button type="submit" text="Submit" />
+      </form>
+      <pre>result: {result}</pre>
+    </>
+  );
+};
+
 export const Filter: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });

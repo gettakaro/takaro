@@ -2,7 +2,7 @@ import { Popover, styled, Tooltip } from '@takaro/lib-components';
 import { FC, useState } from 'react';
 import { HiXMark as CloseIcon } from 'react-icons/hi2';
 import { FilterPopup } from '.';
-import { Filter as FilterType, operators } from '../types';
+import { Filter as FilterType } from '../types';
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,8 +39,6 @@ type FilterTagProps = {
 export const EventFilterTag: FC<FilterTagProps> = ({ filter, fields, editFilter, onClear }) => {
   const [open, setOpen] = useState(false);
 
-  const operator = operators[filter.operator as keyof typeof operators];
-
   const handleClick = () => {
     setOpen(true);
   };
@@ -52,7 +50,7 @@ export const EventFilterTag: FC<FilterTagProps> = ({ filter, fields, editFilter,
           <Tooltip>
             <Tooltip.Trigger asChild>
               <Label onClick={handleClick}>
-                <p>{`${filter.field} ${operator} ${filter.value}`}</p>
+                <p>{`${filter.field} ${filter.operator} ${filter.value}`}</p>
               </Label>
             </Tooltip.Trigger>
             <Tooltip.Content>Edit filter</Tooltip.Content>

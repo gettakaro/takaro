@@ -44,6 +44,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, label }) =
     <OptionContainer
       ref={(node: any) => (listRef.current[index] = node)}
       tabIndex={activeIndex === index ? 0 : 1}
+      isMultiSelect={false}
       aria-selected={activeIndex === index}
       {...getItemProps({
         role: 'option',
