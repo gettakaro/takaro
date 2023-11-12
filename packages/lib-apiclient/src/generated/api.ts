@@ -3808,6 +3808,12 @@ export interface PermissionOnRoleDTO {
     'permission': PermissionOutputDTO;
     /**
      * 
+     * @type {number}
+     * @memberof PermissionOnRoleDTO
+     */
+    'count': number;
+    /**
+     * 
      * @type {string}
      * @memberof PermissionOnRoleDTO
      */

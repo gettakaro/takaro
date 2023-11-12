@@ -37,7 +37,7 @@ export class PermissionInputDTO extends TakaroDTO<PermissionInputDTO> {
 
   @IsNumber()
   @IsOptional()
-  count?: number;
+  count: number | null;
 }
 
 export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
@@ -88,6 +88,9 @@ export class PermissionOnRoleDTO extends TakaroModelDTO<PermissionOnRoleDTO> {
   @Type(() => PermissionOutputDTO)
   @ValidateNested()
   permission: PermissionOutputDTO;
+
+  @IsNumber()
+  count: number;
 }
 
 export class PermissionCreateDTO extends TakaroDTO<PermissionOutputDTO> {
@@ -194,7 +197,21 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const toRemove = role.permissions.filter((permission) => !permissionIdsToSet.includes(permission.permissionId));
 
     // Permissions to add are those not in the current permissions of the role
-    const toAdd = permissionIdsToSet.filter((permissionId) => !currentPermissions.includes(permissionId));
+    const toAdd = permissions.filter((permission) => !currentPermissions.includes(permission.permissionId));
+
+    const toUpdate = permissions.filter((permission) => {
+      const currentPermission = role.permissions.find((p) => p.permissionId === permission.permissionId);
+      return currentPermission && currentPermission.count !== permission.count;
+    });
+
+    // For all to-update, first remove the perm and then re-add it
+    await Promise.all(
+      toUpdate.map((permission) =>
+        this.repo
+          .removePermissionFromRole(roleId, permission.permissionId)
+          .then(() => this.repo.addPermissionToRole(roleId, permission))
+      )
+    );
 
     // Create promises for removing and adding permissions
     const removePromises = toRemove.map((permission) =>
