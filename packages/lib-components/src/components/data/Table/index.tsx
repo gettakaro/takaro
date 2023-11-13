@@ -48,15 +48,18 @@ export interface TableProps<DataType extends object> {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
   };
+
   pagination: {
     paginationState: PaginationState;
     setPaginationState: OnChangeFn<PaginationState>;
     pageOptions: PageOptions;
   };
+
   columnFiltering: {
     columnFiltersState: ColumnFilter[];
     setColumnFiltersState: Dispatch<SetStateAction<ColumnFilter[]>>;
   };
+
   columnSearch: {
     columnSearchState: ColumnFilter[];
     setColumnSearchState: OnChangeFn<ColumnFilter[]>;
@@ -74,11 +77,16 @@ export function Table<DataType extends object>({
   columnSearch,
   renderToolbar,
 }: TableProps<DataType>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
-  const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
   const TableSearchParamKeys = useTableSearchParamKeys(id);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    const columnVisibility = searchParams.get(TableSearchParamKeys.COLUMN_VISIBILITY);
+    return columnVisibility ? JSON.parse(columnVisibility) : {};
+  });
+
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
+  const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
@@ -86,7 +94,7 @@ export function Table<DataType extends object>({
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() => {
     const columnOrderString = searchParams.get(TableSearchParamKeys.COLUMN_ORDER);
     if (columnOrderString) {
-      return columnOrderString.split('|');
+      return columnOrderString.split(',');
     }
 
     return columns.map((column) => {
@@ -102,6 +110,7 @@ export function Table<DataType extends object>({
   // table size
   useEffect(() => {
     if (density === 'tight') {
+      // TODO: this should probably be based on the provided page size
       table.setPageSize(19);
     } else {
       table.resetPageSize(true);
@@ -129,8 +138,6 @@ export function Table<DataType extends object>({
     return value !== null ? Number(value) : defaultValue;
   };
 
-  // Column Order is either the one from the search params or the default order.
-
   const table = useReactTable({
     data,
     columns,
@@ -153,8 +160,45 @@ export function Table<DataType extends object>({
     autoResetPageIndex: false,
 
     columnResizeMode: 'onChange',
-    onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: sorting?.setSortingState,
+    onColumnVisibilityChange: (columnVisibilityOrUpdaterFn) => {
+      if (typeof columnVisibilityOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_VISIBILITY, JSON.stringify(columnVisibilityOrUpdaterFn));
+          return prevSearchParams;
+        });
+        setColumnVisibility(columnVisibilityOrUpdaterFn);
+      } else {
+        setColumnVisibility((old) => {
+          const newColumnVisibility = columnVisibilityOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_VISIBILITY, JSON.stringify(newColumnVisibility));
+            return prevSearchParams;
+          });
+          return newColumnVisibility;
+        });
+      }
+    },
+
+    onSortingChange: (sortingStateOrUpdaterFn) => {
+      if (sorting.setSortingState) {
+        if (typeof sortingStateOrUpdaterFn !== 'function') {
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_SORT, JSON.stringify(sortingStateOrUpdaterFn));
+            return prevSearchParams;
+          });
+          return sorting?.setSortingState(sortingStateOrUpdaterFn);
+        } else {
+          sorting?.setSortingState((old) => {
+            const newSorting = sortingStateOrUpdaterFn(old);
+            setSearchParams((prevSearchParams) => {
+              prevSearchParams.set(TableSearchParamKeys.COLUMN_SORT, JSON.stringify(newSorting));
+              return prevSearchParams;
+            });
+            return newSorting;
+          });
+        }
+      }
+    },
     onPaginationChange: (paginationOrUpdaterFn) => {
       if (typeof paginationOrUpdaterFn !== 'function') {
         setSearchParams((prevSearchParams) => {
@@ -165,12 +209,48 @@ export function Table<DataType extends object>({
         pagination?.setPaginationState(paginationOrUpdaterFn);
       }
     },
-    onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
-    onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
+    onColumnFiltersChange: (filtersOrUpdaterFn) => {
+      // For some reason the filtersOrUpdaterFn can be a function or the new filters
+      if (typeof filtersOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_FILTER, JSON.stringify(filtersOrUpdaterFn));
+          return prevSearchParams;
+        });
+        columnFiltering?.setColumnFiltersState(filtersOrUpdaterFn as ColumnFilter[]);
+      } else {
+        columnFiltering?.setColumnFiltersState((old) => {
+          const newFilters = filtersOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_FILTER, JSON.stringify(newFilters));
+            return prevSearchParams;
+          });
+          return newFilters as ColumnFilter[];
+        });
+      }
+    },
+    onGlobalFilterChange: (filtersOrUpdaterFn) => {
+      // Same as column filters
+      if (typeof filtersOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_SEARCH, JSON.stringify(filtersOrUpdaterFn));
+          return prevSearchParams;
+        });
+        columnSearch?.setColumnSearchState(filtersOrUpdaterFn as ColumnFilter[]);
+      } else {
+        columnSearch?.setColumnSearchState((old) => {
+          const newFilters = filtersOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_SEARCH, JSON.stringify(newFilters));
+            return prevSearchParams;
+          });
+          return newFilters as ColumnFilter[];
+        });
+      }
+    },
     onColumnOrderChange: (columnOrderOrUpdaterFn) => {
       if (typeof columnOrderOrUpdaterFn !== 'function') {
         setSearchParams((prevSearchParams) => {
-          prevSearchParams.set(TableSearchParamKeys.COLUMN_ORDER, columnOrderOrUpdaterFn.join('|'));
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_ORDER, columnOrderOrUpdaterFn.join(','));
           return prevSearchParams;
         });
       }
@@ -179,12 +259,12 @@ export function Table<DataType extends object>({
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
-    // We first base on the searchParams and then on the incoming properties from the parent component
+    // InitialState is only used when a reset is triggered (e.g. resetPageIndex)
     initialState: {
       columnVisibility,
-      sorting: sorting.sortingState,
-      columnFilters: columnFiltering.columnFiltersState,
-      globalFilter: columnSearch.columnSearchState,
+      sorting: [],
+      columnFilters: [],
+      globalFilter: [],
       pagination: {
         pageIndex: getSafeNumberParam(TableSearchParamKeys.PAGE_INDEX, pagination.paginationState.pageIndex),
         pageSize: getSafeNumberParam(TableSearchParamKeys.PAGE_SIZE, pagination.paginationState.pageSize),
@@ -211,7 +291,7 @@ export function Table<DataType extends object>({
         <Flex>{renderToolbar && renderToolbar()}</Flex>
 
         <Flex>
-          <Filter table={table} />
+          <Filter table={table} tableId={id} />
           <ColumnVisibility
             table={table}
             setHasShownColumnVisibilityTooltip={setHasShownColumnVisibilityTooltip}

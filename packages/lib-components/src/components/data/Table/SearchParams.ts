@@ -3,10 +3,13 @@ import { useMemo } from 'react';
 export const useTableSearchParamKeys = (tableId: string) => {
   return useMemo(() => {
     return {
-      PAGE_INDEX: `table_${tableId}_page_index`,
-      PAGE_SIZE: `table_${tableId}_page_size`,
-      COLUMN_ORDER: `table_${tableId}_column_order`,
-      // ... any additional dynamic keys
+      PAGE_INDEX: `${tableId}PageIndex`,
+      PAGE_SIZE: `${tableId}PageSize`,
+      COLUMN_ORDER: `${tableId}ColumnOrder`,
+      COLUMN_FILTER: `${tableId}ColumnFilter`,
+      COLUMN_SEARCH: `${tableId}ColumnSearch`,
+      COLUMN_SORT: `${tableId}ColumnSort`,
+      COLUMN_VISIBILITY: `${tableId}ColumnVisibility`,
     };
   }, [tableId]);
 };

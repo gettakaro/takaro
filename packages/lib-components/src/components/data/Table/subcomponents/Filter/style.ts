@@ -1,5 +1,9 @@
 import { styled } from '../../../../../styled';
 
+export const Wrapper = styled.div`
+  padding: ${({ theme }) => theme.spacing['1']};
+`;
+
 export const FilterContainer = styled.div<{ hasMultipleFields: boolean }>`
   display: grid;
   grid-template-columns: ${({ hasMultipleFields }) => (hasMultipleFields ? '20px 1fr 1fr 1fr' : '1fr 1fr 1fr')};
