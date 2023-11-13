@@ -68,7 +68,8 @@ export const modulesTestSetup = async function (
   });
   await connectedEvents;
 
-  const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions: ['ROOT'] });
+  const permissions = await this.client.permissionCodesToInputs(['ROOT']);
+  const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
   const playersRes = await this.client.player.playerControllerSearch();
 

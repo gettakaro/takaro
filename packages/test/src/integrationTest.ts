@@ -150,9 +150,16 @@ export class IntegrationTest<SetupData> {
 }
 
 export async function logInWithPermissions(client: Client, permissions: string[]): Promise<Client> {
+  const permissionRecords = await client.role.roleControllerGetPermissions();
+  const permissionInputs = permissionRecords.data.data
+    .filter((p) => permissions.includes(p.permission))
+    .map((p) => ({
+      permissionId: p.id,
+    }));
+
   const role = await client.role.roleControllerCreate({
     name: 'Test role',
-    permissions,
+    permissions: permissionInputs,
   });
   const user = await client.user.userControllerCreate({
     email: integrationConfig.get('auth.username'),

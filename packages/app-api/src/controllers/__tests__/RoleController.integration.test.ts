@@ -6,10 +6,11 @@ import { AxiosError } from 'axios';
 const group = 'RoleController';
 
 const setup = async function (this: IntegrationTest<RoleOutputDTO>) {
+  const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_ROLES]);
   return (
     await this.client.role.roleControllerCreate({
       name: 'Test role',
-      permissions: [PERMISSIONS.MANAGE_ROLES],
+      permissions,
     })
   ).data.data;
 };
@@ -42,7 +43,9 @@ const tests = [
     test: async function () {
       return this.client.role.roleControllerUpdate(this.setupData.id, {
         name: 'New name',
-        permissions: this.setupData.permissions.map((p) => p.permissionId),
+        permissions: await this.client.permissionCodesToInputs(
+          this.setupData.permissions.map((p) => p.permission.permission)
+        ),
       });
     },
     filteredFields: ['roleId', 'permissionId'],

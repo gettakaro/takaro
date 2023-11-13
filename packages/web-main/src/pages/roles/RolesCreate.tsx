@@ -23,7 +23,7 @@ interface CreateRoleformProps {
 }
 interface IFormInputs {
   name: string;
-  permissions: Record<string, boolean>;
+  permissions: Record<string, { enabled: boolean; count?: number }>;
 }
 
 export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
@@ -44,7 +44,13 @@ export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
     defaultValues: {
       name: '',
       permissions: Object.values(permissions).reduce(
-        (acc, permission) => ({ ...acc, [permission.permission]: false }),
+        (acc, permission) => ({
+          ...acc,
+          [permission.permission]: {
+            enabled: false,
+            count: 0,
+          },
+        }),
         {}
       ),
     },
@@ -53,8 +59,11 @@ export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions: formPermissions }) => {
     try {
       const activePermissions = Object.entries(formPermissions)
-        .filter(([_key, value]) => value === true)
-        .map(([key, _value]) => key);
+        .filter(([_key, value]) => value.enabled === true)
+        .map(([key, value]) => ({
+          permissionId: key,
+          count: value.count,
+        }));
 
       await mutateAsync({
         name,
@@ -86,15 +95,28 @@ export const RolesCreateForm: FC<CreateRoleformProps> = ({ permissions }) => {
                 />
               </CollapseList.Item>
               <CollapseList.Item title="Permissions">
-                {permissions.map((permission) => (
-                  <Switch
-                    control={control}
-                    label={permission.friendlyName}
-                    name={`permissions.${permission.permission}`}
-                    key={permission.permission}
-                    description={permission.description}
-                  />
-                ))}
+                {permissions.map((permission) => {
+                  return (
+                    <>
+                      <Switch
+                        control={control}
+                        label={permission.friendlyName}
+                        name={`permissions.${permission.id}.enabled`}
+                        key={permission.id}
+                        description={permission.description}
+                      />
+                      {permission.canHaveCount && (
+                        <TextField
+                          control={control}
+                          label="Amount"
+                          type="number"
+                          placeholder="Enter amount"
+                          name={`permissions.${permission.id}.count`}
+                        />
+                      )}
+                    </>
+                  );
+                })}
               </CollapseList.Item>
               {error && <FormError message={error} />}
             </form>
