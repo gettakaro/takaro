@@ -143,6 +143,7 @@ export const Navbar: FC = () => {
         {data && data.pages[0].data.length > 0 ? (
           <Nav>
             <h3>Server</h3>
+
             <GameServerSelectNav
               isInGameServerNav={isInGameServerNav}
               serverId={selectedGameServerId}
