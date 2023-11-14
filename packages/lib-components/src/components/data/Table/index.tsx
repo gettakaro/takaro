@@ -17,7 +17,7 @@ import {
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex } from './style';
-import { Empty, ToggleButtonGroup } from '../../../components';
+import { Empty, Spinner, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
 import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
@@ -28,6 +28,8 @@ export interface TableProps<DataType extends object> {
   id: string;
 
   data: DataType[];
+
+  isLoading?: boolean;
 
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,6 +70,7 @@ export function Table<DataType extends object>({
   rowSelection,
   columnSearch,
   renderToolbar,
+  isLoading,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
@@ -199,7 +202,7 @@ export function Table<DataType extends object>({
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {rowSelection && (
+                {rowSelection && !isLoading && (
                   <th style={{ width: '10px' }}>
                     <CheckBox
                       hasDescription={false}
@@ -219,8 +222,19 @@ export function Table<DataType extends object>({
             ))}
           </thead>
           <tbody>
+            {/* loading state */}
+            {isLoading && (
+              <tr>
+                <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '15px' }}>
+                    <Spinner size="small" />
+                  </div>
+                </td>
+              </tr>
+            )}
+
             {/* empty state */}
-            {table.getRowModel().rows.length === 0 && (
+            {!isLoading && table.getRowModel().rows.length === 0 && (
               <tr>
                 <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
                   <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -230,34 +244,35 @@ export function Table<DataType extends object>({
               </tr>
             )}
 
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getCanSelect() && (
-                  <td style={{ paddingRight: '10px', width: '15px' }}>
-                    <CheckBox
-                      value={row.getIsSelected()}
-                      id={row.id}
-                      name={row.id}
-                      hasError={false}
-                      disabled={!row.getCanSelect()}
-                      onChange={() => row.toggleSelected()}
-                      hasDescription={false}
-                      size="small"
-                    />
-                  </td>
-                )}
-                {row.getVisibleCells().map(({ column, id, getContext }) => (
-                  <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
-                ))}
-                {row.getIsExpanded() && (
-                  <tr>
-                    <td colSpan={table.getVisibleLeafColumns().length} />
-                  </tr>
-                )}
-              </tr>
-            ))}
+            {!isLoading &&
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getCanSelect() && (
+                    <td style={{ paddingRight: '10px', width: '15px' }}>
+                      <CheckBox
+                        value={row.getIsSelected()}
+                        id={row.id}
+                        name={row.id}
+                        hasError={false}
+                        disabled={!row.getCanSelect()}
+                        onChange={() => row.toggleSelected()}
+                        hasDescription={false}
+                        size="small"
+                      />
+                    </td>
+                  )}
+                  {row.getVisibleCells().map(({ column, id, getContext }) => (
+                    <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
+                  ))}
+                  {row.getIsExpanded() && (
+                    <tr>
+                      <td colSpan={table.getVisibleLeafColumns().length} />
+                    </tr>
+                  )}
+                </tr>
+              ))}
           </tbody>
-          {table.getRowModel().rows.length > 1 && (
+          {!isLoading && table.getRowModel().rows.length > 1 && (
             <tfoot>
               <tr>
                 {pagination && (

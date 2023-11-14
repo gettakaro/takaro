@@ -3,7 +3,7 @@ import { useDrag, useDragLayer, useDrop, XYCoord } from 'react-dnd';
 import { ColumnSettings } from './ColumnSettings';
 import { Identifier } from 'dnd-core';
 import { styled } from '../../../../../styled';
-import { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Target, Content, Container, ResizeHandle } from './style';
 
@@ -35,6 +35,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
   const { getState, setColumnOrder } = table;
   const { columnOrder } = getState();
   const { column } = header;
+  const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const [{ isActive, isRight }, dropRef] = useDrop<Column<DataType>, void, CollectedProps>({
@@ -122,6 +123,8 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       isActive={isActive}
       isRight={isRight}
       width={header.getSize()}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
         <CustomDragLayer />
@@ -131,7 +134,9 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
           {/* Only show columnSettings when sorting and filtering is enabled 
             NOTE: getCanGlobalFilter cannot be used to base render logic on because it is set to false when the table has no data.
           */}
-          {column.getCanFilter() && column.getCanSort() && <ColumnSettings header={header} table={table} />}
+          {column.getCanFilter() && column.getCanSort() && (
+            <ColumnSettings columnIsHovered={isHovered} header={header} table={table} />
+          )}
         </Content>
       </Target>
       {header.column.getCanResize() && (

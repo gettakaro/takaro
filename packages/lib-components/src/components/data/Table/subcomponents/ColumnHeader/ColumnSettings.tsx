@@ -1,21 +1,27 @@
 import { Header, Table } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import {
-  AiOutlineMenu as MenuIcon,
   AiOutlineSortAscending as SortAscendingIcon,
   AiOutlineSortDescending as SortDescendingIcon,
   AiOutlineEyeInvisible as HideFieldIcon,
   AiOutlinePushpin as PinIcon,
   AiOutlineDelete as DeleteIcon,
 } from 'react-icons/ai';
+import { HiOutlineDotsHorizontal as MenuIcon } from 'react-icons/hi';
 import { Dropdown, IconButton, Tooltip } from '../../../../../components';
+import { MenuTrigger } from './style';
 
 interface ColumnSettingsProps<DataType extends object> {
   header: Header<DataType, unknown>;
   table: Table<DataType>;
+  columnIsHovered: boolean;
 }
 
-export function ColumnSettings<DataType extends object>({ header, table }: ColumnSettingsProps<DataType>) {
+export function ColumnSettings<DataType extends object>({
+  header,
+  table,
+  columnIsHovered,
+}: ColumnSettingsProps<DataType>) {
   const toggleSorting = (desc: boolean) => {
     table.setSorting(() => [{ id: header.column.id, desc }]);
   };
@@ -82,7 +88,9 @@ export function ColumnSettings<DataType extends object>({ header, table }: Colum
       )}
       <Dropdown>
         <Dropdown.Trigger asChild>
-          <IconButton icon={<MenuIcon />} ariaLabel="column settings" />
+          <MenuTrigger isVisible={columnIsHovered}>
+            <IconButton icon={<MenuIcon />} ariaLabel="column settings" />
+          </MenuTrigger>
         </Dropdown.Trigger>
         <Dropdown.Menu>
           <Dropdown.Menu.Group divider>

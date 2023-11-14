@@ -60,3 +60,8 @@ export const ResizeHandle = styled.div<{ isResizing: boolean }>`
   opacity: ${({ isResizing }) => (isResizing ? 1 : 0)};
   background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.secondary)};
 `;
+
+export const MenuTrigger = styled.div<{ isVisible: boolean }>`
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
+  transition: opacity 0.2s ease-in-out;
+`;
