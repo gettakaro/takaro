@@ -5,8 +5,13 @@ export const validationSchema = z.object({
   permissions: z.record(z.boolean()),
 });
 
-export const roleAssignValidationSchema = z.object({
-  id: z.string().uuid(),
-  roleId: z.string().uuid(),
-  gameServerId: z.string().optional(),
+export const playerRoleAssignValidationSchema = z.object({
+  id: z.string().uuid().nonempty(),
+  roleIds: z.string().uuid().array(),
+  gameServerId: z.string().nonempty(),
+});
+
+export const userRoleAssignValidationschema = z.object({
+  id: z.string().uuid().nonempty(),
+  roleIds: z.string().uuid().array(),
 });
