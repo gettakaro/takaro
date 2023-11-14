@@ -18,7 +18,17 @@ const defaultsApplier = defaultInputPropsFactory<GenericCheckBoxProps>(defaultIn
 
 // TODO: write a test that checks if the value is being processed as a boolean.
 export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProps>((props, ref) => {
-  const { readOnly, disabled, value, hasError, onChange, id, name, hasDescription, size } = defaultsApplier(props);
+  const {
+    readOnly,
+    disabled,
+    value = false,
+    hasError,
+    onChange,
+    id,
+    name,
+    hasDescription,
+    size,
+  } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOnClick(): void {
@@ -71,6 +81,7 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
       >
         <BackgroundContainer
           size={size}
+          initial="unchecked"
           animate={value ? 'checked' : 'unchecked'}
           transition={getTransition()}
           variants={variants}
