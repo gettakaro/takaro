@@ -47,6 +47,8 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
 
   dt {
     font-size: ${({ theme }) => theme.fontSize.medium};
+    font-color: ${({ theme }) => theme.colors.secondary};
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 
   dd {
@@ -56,6 +58,11 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
     letter-spacing: 1px;
     margin: 0;
     padding: 0;
+
+    &.placeholder {
+      min-width: 80%;
+      min-height: 25px;
+    }
   }
 `;
 
@@ -64,10 +71,22 @@ export interface StatProps {
   value: string;
   // TODO: Add icon support when needed
   // icon?: ReactNode
+  isLoading?: boolean;
 }
 
-export const Stat: FC<StatProps> = ({ description, value }) => {
+export const Stat: FC<StatProps> = ({ description, value, isLoading }) => {
   const { border, direction } = useContext(StatContext);
+
+  if (isLoading) {
+    return (
+      <Container hasBorder={border} direction={direction}>
+        <div>
+          <dt>{description}</dt>
+          <dd className="placeholder"></dd>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container hasBorder={border} direction={direction}>

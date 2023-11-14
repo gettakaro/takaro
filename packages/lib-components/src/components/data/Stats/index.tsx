@@ -12,7 +12,8 @@ export const Container = styled.dl<{ direction: Direction; border: boolean; coun
   }};
   border: ${({ border, theme }) => (border ? `1px solid ${theme.colors.secondary}` : 'none')};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  gap: ${({ theme, border }) => (border ? 0 : theme.spacing['2'])};
+  gap: ${({ theme, direction }) => (direction === 'vertical' ? theme.spacing['2'] : 0)}
+    ${({ theme, direction }) => (direction === 'horizontal' ? theme.spacing['2'] : 0)};
 `;
 
 export interface StatsProps {
