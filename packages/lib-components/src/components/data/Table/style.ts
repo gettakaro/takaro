@@ -53,9 +53,6 @@ export const StyledTable = styled.table<{ density: Density }>`
     border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
   }
 
-  th {
-  }
-
   tfoot {
     tr {
       td {

@@ -62,6 +62,7 @@ export const ResizeHandle = styled.div<{ isResizing: boolean }>`
 `;
 
 export const MenuTrigger = styled.div<{ isVisible: boolean }>`
+  display: inline-block;
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
   transition: opacity 0.2s ease-in-out;
 `;
