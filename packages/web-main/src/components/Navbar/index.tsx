@@ -136,8 +136,8 @@ export const Navbar: FC = () => {
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <div style={{ width: '100%' }}>
-        <Link className="company-icon" to={PATHS.home()}>
-          <Company />
+        <Link className="company-icon" to={PATHS.home()} style={{ display: 'block', marginLeft: '15px' }}>
+          <Company textVisible={false} />
         </Link>
 
         {data && data.pages[0].data.length > 0 ? (
