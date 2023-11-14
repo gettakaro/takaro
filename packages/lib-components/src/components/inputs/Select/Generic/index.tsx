@@ -167,6 +167,8 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
       const index = values.indexOf(value);
       if (index !== -1) {
         setSelectedIndex(index + 1);
+      } else {
+        setSelectedIndex(index);
       }
     }
   }, [value]);
