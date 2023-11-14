@@ -1,1 +1,9 @@
-export { userKeys, useUserAssignRole, useUserRemoveRole, useUsers, useInfiniteUsers } from './queries';
+export {
+  userKeys,
+  useUserAssignRole,
+  useUserRemoveRole,
+  useUsers,
+  useInfiniteUsers,
+  useUser,
+  useInviteUser,
+} from './queries';
