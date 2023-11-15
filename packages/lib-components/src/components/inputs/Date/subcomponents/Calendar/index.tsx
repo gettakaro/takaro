@@ -1,7 +1,7 @@
 import { DateTime, Interval } from 'luxon';
 import { FC, useCallback, useState } from 'react';
 import { Header, Wrapper, DaysGrid, DayButton, DayWrapper, DayOfWeekGrid } from './style';
-import { IconButton, Tooltip } from '../../../../components';
+import { IconButton, Tooltip } from '../../../../../components';
 import { AiOutlineRight as ChevronRightIcon, AiOutlineLeft as ChevronLeftIcon } from 'react-icons/ai';
 
 interface CalendarProps {

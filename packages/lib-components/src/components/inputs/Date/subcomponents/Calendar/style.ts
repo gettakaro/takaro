@@ -1,4 +1,4 @@
-import { styled } from '../../../../styled';
+import { styled } from '../../../../../styled';
 
 export const Wrapper = styled.div`
   width: 100%;

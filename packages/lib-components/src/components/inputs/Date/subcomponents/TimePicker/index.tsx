@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import { styled } from '../../../../styled';
+import { styled } from '../../../../../styled';
 
 const List = styled.ul`
   display: flex;

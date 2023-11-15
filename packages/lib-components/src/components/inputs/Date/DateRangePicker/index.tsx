@@ -5,7 +5,7 @@ import {
   AiOutlineDown as DownIcon,
   AiOutlineArrowRight as ArrowRightIcon,
 } from 'react-icons/ai';
-import { Popover } from '../../../components';
+import { Popover } from '../../../../components';
 import { QuickSelect, Tense, Unit } from './QuickSelect';
 import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';

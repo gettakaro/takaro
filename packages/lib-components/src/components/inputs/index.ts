@@ -38,7 +38,10 @@ export type { EditableFieldProps } from './EditableField';
 export { Label } from './layout/Label';
 export type { LabelProps } from './layout/Label';
 
-export { DateRangePicker } from './DateRangePicker';
-export type { DateRangePickerProps } from './DateRangePicker';
+export { DateRangePicker } from './Date/DateRangePicker';
+export type { DateRangePickerProps } from './Date/DateRangePicker';
+
+export { ControlledDatePicker as DatePicker } from './Date/DatePicker/Controlled';
+export type { ControlledDatePickerProps as DatePickerProps } from './Date/DatePicker/Controlled';
 
 export { JsonSchemaForm, SchemaGenerator, generateJsonSchema } from './JsonSchemaForm';

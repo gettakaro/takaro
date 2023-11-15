@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import { Tabs } from '../../../../components';
+import { Tabs } from '../../../../../components';
 import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
-import { styled } from '../../../../styled';
+import { styled } from '../../../../../styled';
 import { Absolute } from './Absolute';
 import { Relative } from './Relative';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { DateRangePicker, DateRangePickerProps } from '.';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 
 const Wrapper = styled.div`
   height: 100vh;
