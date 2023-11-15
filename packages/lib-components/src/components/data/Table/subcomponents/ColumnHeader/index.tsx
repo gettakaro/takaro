@@ -20,6 +20,7 @@ interface CollectedProps {
 export interface ColumnHeaderProps<DataType extends object> {
   header: Header<DataType, unknown>;
   table: Table<DataType>;
+  isLoading: boolean;
 }
 
 const reorder = (draggedColumnId: string, targetColumnId: string, columnOrder: string[]): ColumnOrderState => {
@@ -31,12 +32,13 @@ const reorder = (draggedColumnId: string, targetColumnId: string, columnOrder: s
   return [...columnOrder];
 };
 
-export function ColumnHeader<DataType extends object>({ header, table }: ColumnHeaderProps<DataType>) {
+export function ColumnHeader<DataType extends object>({ header, table, isLoading }: ColumnHeaderProps<DataType>) {
   const { getState, setColumnOrder } = table;
   const { columnOrder } = getState();
   const { column } = header;
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const canDrag = !isLoading;
 
   const [{ isActive, isRight }, dropRef] = useDrop<Column<DataType>, void, CollectedProps>({
     accept: ItemTypes.COLUMN,
@@ -100,6 +102,9 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       ...column,
       draggedIndex: columnOrder.indexOf(column.id),
     }),
+
+    // Disable dragging whnen loading
+    canDrag: !isLoading,
     type: ItemTypes.COLUMN,
   });
 
@@ -117,6 +122,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
 
   return (
     <Container
+      canDrag={canDrag}
       colSpan={header.colSpan}
       scope="col"
       isDragging={isDragging}
@@ -139,7 +145,7 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
           )}
         </Content>
       </Target>
-      {header.column.getCanResize() && (
+      {header.column.getCanResize() && !isLoading && (
         <ResizeHandle
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}

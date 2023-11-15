@@ -1,6 +1,12 @@
 import { styled } from '../../../../../styled';
 
-export const Container = styled.th<{ isActive: boolean; isRight: boolean; isDragging: boolean; width: number }>`
+export const Container = styled.th<{
+  isActive: boolean;
+  isRight: boolean;
+  isDragging: boolean;
+  width: number;
+  canDrag: boolean;
+}>`
   position: relative;
   width: ${({ width }) => width}px;
   padding: ${({ theme }) => `${theme.spacing['0_75']} 0`};
@@ -10,7 +16,7 @@ export const Container = styled.th<{ isActive: boolean; isRight: boolean; isDrag
     isActive && isRight ? `4px solid ${theme.colors.primary}` : `1px solid ${theme.colors.background}`};
   border-left: ${({ theme, isActive, isRight }) =>
     isActive && !isRight ? `4px solid ${theme.colors.primary}` : `1px solid ${theme.colors.background}`};
-  cursor: grab;
+  cursor: ${({ canDrag }) => (canDrag ? 'grab' : 'default')};
 
   &:first-child {
     border-left: ${({ theme, isActive, isRight }) =>
@@ -27,7 +33,7 @@ export const Container = styled.th<{ isActive: boolean; isRight: boolean; isDrag
   }
 
   &:active {
-    cursor: grabbing;
+    cursor: ${({ canDrag }) => (canDrag ? 'grabbing' : 'default')};
   }
 
   & > div {

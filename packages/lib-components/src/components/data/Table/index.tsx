@@ -70,7 +70,7 @@ export function Table<DataType extends object>({
   rowSelection,
   columnSearch,
   renderToolbar,
-  isLoading,
+  isLoading = false,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
@@ -216,7 +216,12 @@ export function Table<DataType extends object>({
                   </th>
                 )}
                 {headerGroup.headers.map((header) => (
-                  <ColumnHeader header={header} table={table} key={`draggable-column-header-${header.id}`} />
+                  <ColumnHeader
+                    header={header}
+                    table={table}
+                    isLoading={isLoading}
+                    key={`draggable-column-header-${header.id}`}
+                  />
                 ))}
               </tr>
             ))}
