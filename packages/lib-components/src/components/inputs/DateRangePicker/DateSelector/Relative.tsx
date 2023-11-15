@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, DateTimeUnit } from 'luxon';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { useDateRangePickerContext, useDateRangePickerDispatchContext } from '../Context';
 import { GenericTextField } from '../../TextField';
 
 const StyledForm = styled.form`
@@ -31,11 +31,13 @@ interface RelativeProps {
 }
 
 export const Relative: FC<RelativeProps> = ({ isStart }) => {
-  const dispatch = useDatePickerDispatchContext();
-  const state = useDatePickerContext();
+  const dispatch = useDateRangePickerDispatchContext();
+  const state = useDateRangePickerContext();
 
   if (!dispatch || !state) {
-    throw new Error('useDatePickerDispatchContext and useDatePickerContext must be used within a DatePickerProvider');
+    throw new Error(
+      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider'
+    );
   }
 
   interface IFormInputs {

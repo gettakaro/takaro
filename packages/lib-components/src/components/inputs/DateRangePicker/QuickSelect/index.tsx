@@ -4,7 +4,7 @@ import { styled } from '../../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
 import { DateTime, DateTimeUnit } from 'luxon';
 
 export enum Tense {
@@ -72,11 +72,11 @@ interface QuickSelectProps {
 }
 
 export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
-  const state = useDatePickerContext();
-  const dispatch = useDatePickerDispatchContext();
+  const state = useDateRangePickerContext();
+  const dispatch = useDateRangePickerDispatchContext();
 
   if (!dispatch) {
-    throw new Error('useDatePickerDispatchContext must be used within a DatePickerProvider');
+    throw new Error('useDateRangePickerDispatchContext must be used within a DateRangePickerProvider');
   }
 
   const validationSchema = useMemo(

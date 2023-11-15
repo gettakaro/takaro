@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo } from 'react';
 import { Calendar } from '../Calendar';
 import { TimePicker } from '../TimePicker';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { useDateRangePickerContext, useDateRangePickerDispatchContext } from '../Context';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,11 +24,13 @@ interface AbsoluteProps {
 }
 
 export const Absolute: FC<AbsoluteProps> = ({ isStart }) => {
-  const dispatch = useDatePickerDispatchContext();
-  const state = useDatePickerContext();
+  const dispatch = useDateRangePickerDispatchContext();
+  const state = useDateRangePickerContext();
 
   if (!dispatch || !state) {
-    throw new Error('useDatePickerDispatchContext and useDatePickerContext must be used within a DatePickerProvider');
+    throw new Error(
+      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider'
+    );
   }
 
   interface IFormInputs {

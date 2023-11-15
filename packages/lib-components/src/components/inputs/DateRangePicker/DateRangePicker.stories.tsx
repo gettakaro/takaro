@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { DatePicker, DatePickerProps } from '.';
+import { DateRangePicker, DateRangePickerProps } from '.';
 import { styled } from '../../../styled';
 
 const Wrapper = styled.div`
@@ -9,19 +9,19 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Inputs/DatePicker',
-  component: DatePicker,
+  title: 'Inputs/DateRangePicker',
+  component: DateRangePicker,
   args: {
     readOnly: false,
     hasDescription: false,
     hasError: false,
   },
-} as Meta<DatePickerProps>;
+} as Meta<DateRangePickerProps>;
 
-export const Default: StoryFn<DatePickerProps> = (args) => {
+export const Default: StoryFn<DateRangePickerProps> = (args) => {
   return (
     <Wrapper>
-      <DatePicker
+      <DateRangePicker
         readOnly={args.readOnly}
         id="date"
         onChange={(start, end) => console.log(start, end)}

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Tabs } from '../../../../components';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
 import { styled } from '../../../../styled';
 import { Absolute } from './Absolute';
 import { Relative } from './Relative';
@@ -19,11 +19,13 @@ interface DateSelectorProps {
 }
 
 export const DateSelector: FC<DateSelectorProps> = ({ isStart }) => {
-  const dispatch = useDatePickerDispatchContext();
-  const state = useDatePickerContext();
+  const dispatch = useDateRangePickerDispatchContext();
+  const state = useDateRangePickerContext();
 
   if (!dispatch || !state) {
-    throw new Error('useDatePickerDispatchContext and useDatePickerContext must be used within a DatePickerProvider');
+    throw new Error(
+      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider'
+    );
   }
 
   return (

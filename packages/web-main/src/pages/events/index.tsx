@@ -1,5 +1,5 @@
 import { EventOutputDTO } from '@takaro/apiclient';
-import { styled, DatePicker, Button } from '@takaro/lib-components';
+import { styled, DateRangePicker, Button } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
 import { EventFilterTag } from 'components/events/EventFilter/Tag';
@@ -210,7 +210,7 @@ export const Events: FC = () => {
     }
   }, [rawEvents]);
 
-  const handleDatePicker = (start: DateTime, end: DateTime) => {
+  const handleDateRangePicker = (start: DateTime, end: DateTime) => {
     setStartDate(start);
     setEndDate(end);
   };
@@ -250,7 +250,7 @@ export const Events: FC = () => {
             setFilters={setSearchFilters}
           />
         </Flex>
-        <DatePicker id="1" onChange={handleDatePicker} />
+        <DateRangePicker id="1" onChange={handleDateRangePicker} />
         <Button
           text="Live"
           icon={live ? <PauseIcon /> : <PlayIcon />}
