@@ -19,6 +19,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     readOnly,
     required,
     format,
+    mode,
+    placeholder,
     // TODO: loading,
     description,
   } = defaultsApplier(props);
@@ -71,6 +73,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
           hasError={!!error}
           hasDescription={!!description}
           format={format}
+          placeholder={placeholder}
+          mode={mode}
         />
         {showError && error?.message && <ErrorMessage message={error.message} />}
       </Container>

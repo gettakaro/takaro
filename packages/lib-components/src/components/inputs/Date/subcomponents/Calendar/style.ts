@@ -25,7 +25,7 @@ export const DayButton = styled.button<{ isSelected: boolean; isToday: boolean; 
   padding: ${({ theme }) => theme.spacing['1']};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : theme.colors.secondary)};
   }
 `;
 

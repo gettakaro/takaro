@@ -54,6 +54,7 @@ export const OnDateSubmit: StoryFn<DatePickerProps> = (args) => {
       Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
       <form onSubmit={handleSubmit(onSubmit)}>
         <DatePicker
+          mode="absolute"
           control={control}
           label={args.label}
           name={args.name}
@@ -86,6 +87,7 @@ export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
       Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
       <form onSubmit={handleSubmit(onSubmit)}>
         <DatePicker
+          mode="absolute"
           control={control}
           label={args.label}
           name={args.name}
@@ -120,13 +122,49 @@ export const onTimeSubmit: StoryFn<DatePickerProps> = (args) => {
       Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
       <form onSubmit={handleSubmit(onSubmit)}>
         <DatePicker
+          mode="absolute"
           control={control}
           label={args.label}
           name={args.name}
           required={args.required}
           loading={args.loading}
           hint={args.hint}
-          format={DateTime.TIME_24_SIMPLE}
+          format={DateTime.TIME_SIMPLE}
+          timePickerOptions={args.timePickerOptions}
+          description={args.description}
+        />
+        <Button type="submit" text="Submit form" />
+      </form>
+      <p>result: {result}</p>
+    </Wrapper>
+  );
+};
+
+export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
+  const [result, setResult] = useState<string>('none');
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
+  };
+
+  return (
+    <Wrapper>
+      Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DatePicker
+          mode="relative"
+          control={control}
+          label={args.label}
+          name={args.name}
+          required={args.required}
+          loading={args.loading}
+          hint={args.hint}
+          format={DateTime.DATETIME_MED_WITH_SECONDS}
           timePickerOptions={args.timePickerOptions}
           description={args.description}
         />

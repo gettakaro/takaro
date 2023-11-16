@@ -2,17 +2,26 @@ import { FC, useLayoutEffect, useMemo, useState } from 'react';
 import { Button, Popover } from '../../../../components';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { dateFormats, timeFormats } from './formats';
-import { TimePicker } from '../subcomponents/TimePicker';
-import { Calendar } from '../subcomponents/Calendar';
 import { GenericInputProps } from '../../InputProps';
 import { ResultContainer, ContentContainer, InnerContainer, ButtonContainer } from './style';
+import { TimePicker } from '../subcomponents/TimePicker';
+import { Calendar } from '../subcomponents/Calendar';
+import { Relative } from '../subcomponents/Relative';
 
 interface TimePickerOptions {
   interval?: number;
 }
 
 export interface DatePickerProps {
+  /// Determines if the date picker is in absolute or relative mode
+  /// Absolute mode is a calendar and time picker
+  /// Relative mode is a relative picker
+  mode: 'relative' | 'absolute';
+
+  /// Determines the format of the selected date/time
   format?: DateTimeFormatOptions;
+
+  /// Options specific for the time picker
   timePickerOptions?: TimePickerOptions;
   placeholder?: string;
 }
@@ -30,12 +39,17 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   timePickerOptions,
   placeholder,
   format = DateTime.DATE_SHORT,
+  mode,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedDateTime, setSelectedDateTime] = useState<DateTime | null>(null);
+  const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(value ? DateTime.fromISO(value) : DateTime.now());
 
   const isDateOnly = !timeFormats.includes(format);
   const isTimeOnly = !dateFormats.includes(format);
+  const isDateTime = !isDateOnly && !isTimeOnly;
+
+  const isAbsolute = mode === 'absolute';
+  const isRelative = mode === 'relative';
 
   const handleOnChange = (dateTime: DateTime) => {
     const dateTimeString = dateTime.toISO();
@@ -50,6 +64,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
       stopPropagation: () => {},
     } as unknown as React.ChangeEvent<HTMLInputElement>;
     onChange(event);
+    setOpen(false);
   };
 
   const renderPlaceholder = () => {
@@ -88,43 +103,51 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
       </Popover.Trigger>
       <Popover.Content>
         <ContentContainer>
-          <InnerContainer>
-            {dateFormats.includes(format) && (
-              <Calendar
-                id={`calendar-${id}`}
-                // should be start of day to not update the time when only selecting a date
-                selectedDate={value ? DateTime.fromISO(value) : DateTime.now().startOf('day')}
-                onDateClick={(date) => {
-                  setSelectedDateTime(date);
+          {isAbsolute && (
+            <InnerContainer>
+              {dateFormats.includes(format) && (
+                <Calendar
+                  id={`calendar-${id}`}
+                  // should be start of day to not update the time when only selecting a date
+                  selectedDate={selectedDateTime}
+                  onDateClick={(date) => {
+                    setSelectedDateTime(date);
+                    if (isDateOnly) {
+                      handleOnChange(date);
+                    }
+                  }}
+                />
+              )}
+              {timeFormats.includes(format) && (
+                <TimePicker
+                  selectedDate={selectedDateTime}
+                  interval={timePickerOptions?.interval}
+                  onChange={(newTime) => {
+                    setSelectedDateTime(newTime);
 
-                  // we cannot add this to the `if` because the state depends on the value from the parent component
-                  handleOnChange(date);
-                  // we cannot close the popover if we are only selecting a date
-                  if (isDateOnly) {
-                    setOpen(false);
-                  }
+                    // see notes above
+                    if (isTimeOnly) {
+                      handleOnChange(newTime);
+                    }
+                  }}
+                />
+              )}
+            </InnerContainer>
+          )}
+
+          {isRelative && (
+            <InnerContainer>
+              <Relative
+                onChange={(newDate) => {
+                  console.log(newDate);
+                  setSelectedDateTime(newDate);
+                  handleOnChange(newDate);
                 }}
               />
-            )}
-            {timeFormats.includes(format) && (
-              <TimePicker
-                selectedDate={selectedDateTime || (value ? DateTime.fromISO(value) : DateTime.now().startOf('day'))}
-                interval={timePickerOptions?.interval}
-                onChange={(newTime) => {
-                  setSelectedDateTime(newTime);
+            </InnerContainer>
+          )}
 
-                  // see notes above
-                  handleOnChange(newTime);
-
-                  if (isTimeOnly) {
-                    setOpen(false);
-                  }
-                }}
-              />
-            )}
-          </InnerContainer>
-
-          {!isDateOnly && !isTimeOnly && (
+          {isAbsolute && isDateTime && (
             <ButtonContainer>
               <Button
                 onClick={() => {
