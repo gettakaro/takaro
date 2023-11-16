@@ -2,27 +2,27 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "39d477f5-9855-4643-b00b-7228f41ed96f",
-      "createdAt": "2023-11-02T11:51:19.909Z",
-      "updatedAt": "2023-11-02T11:51:19.910Z",
+      "id": "a1977ad7-ed47-406c-b0b5-684c4b830118",
+      "createdAt": "2023-11-12T13:05:00.439Z",
+      "updatedAt": "2023-11-12T13:05:00.439Z",
       "name": "Test role",
       "permissions": [
         {
-          "id": "69715455-dec2-47a1-a989-c24158670c3d",
-          "createdAt": "2023-11-02T11:51:19.911Z",
-          "updatedAt": "2023-11-02T11:51:19.912Z",
-          "permissionId": "9bd0b9a9-49bc-40da-b345-65e91162a861",
+          "id": "77f6d8aa-d0ce-42e3-a85f-6f1edf4bcf00",
+          "createdAt": "2023-11-12T13:05:00.441Z",
+          "updatedAt": "2023-11-12T13:05:00.441Z",
+          "permissionId": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
           "permission": {
-            "id": "9bd0b9a9-49bc-40da-b345-65e91162a861",
-            "createdAt": "2023-09-29T06:35:26.753Z",
-            "updatedAt": "2023-09-29T06:35:26.753Z",
+            "id": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
+            "createdAt": "2023-11-08T16:32:31.021Z",
+            "updatedAt": "2023-11-08T16:32:31.021Z",
             "permission": "MANAGE_ROLES",
-            "friendlyName": "MANAGE_ROLES",
-            "description": "No description provided",
-            "moduleId": null,
-            "canHaveCount": false
+            "friendlyName": "Manage Roles",
+            "description": "Can create, update, and delete roles",
+            "canHaveCount": false,
+            "moduleId": null
           },
-          "roleId": "39d477f5-9855-4643-b00b-7228f41ed96f",
+          "roleId": "a1977ad7-ed47-406c-b0b5-684c4b830118",
           "count": 0
         }
       ]

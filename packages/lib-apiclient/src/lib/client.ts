@@ -63,6 +63,17 @@ export class Client extends BaseApiClient<IApiClientConfig> {
     delete this.axios.defaults.headers.common['Authorization'];
   }
 
+  public async permissionCodesToInputs(permissions: string[]) {
+    const permissionsRes = await this.role.roleControllerGetPermissions();
+    const records = permissionsRes.data.data
+      .filter((p) => permissions.includes(p.permission))
+      .map((p) => ({
+        permissionId: p.id,
+      }));
+
+    return records;
+  }
+
   get user() {
     return new UserApi(
       {
