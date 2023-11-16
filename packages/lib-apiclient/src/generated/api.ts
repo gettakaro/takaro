@@ -3802,6 +3802,25 @@ export interface PermissionCreateDTO {
 /**
  *
  * @export
+ * @interface PermissionInputDTO
+ */
+export interface PermissionInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionInputDTO
+   */
+  permissionId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PermissionInputDTO
+   */
+  count?: number;
+}
+/**
+ *
+ * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -3817,6 +3836,12 @@ export interface PermissionOnRoleDTO {
    * @memberof PermissionOnRoleDTO
    */
   permission: PermissionOutputDTO;
+  /**
+   *
+   * @type {number}
+   * @memberof PermissionOnRoleDTO
+   */
+  count: number;
   /**
    *
    * @type {string}
@@ -4531,10 +4556,10 @@ export interface RoleCreateInputDTO {
   name: string;
   /**
    *
-   * @type {Array<string>}
+   * @type {Array<PermissionInputDTO>}
    * @memberof RoleCreateInputDTO
    */
-  permissions: Array<string>;
+  permissions: Array<PermissionInputDTO>;
 }
 /**
  *
@@ -4708,10 +4733,10 @@ export interface RoleUpdateInputDTO {
   name: string;
   /**
    *
-   * @type {Array<string>}
+   * @type {Array<PermissionInputDTO>}
    * @memberof RoleUpdateInputDTO
    */
-  permissions: Array<string>;
+  permissions: Array<PermissionInputDTO>;
 }
 /**
  *
