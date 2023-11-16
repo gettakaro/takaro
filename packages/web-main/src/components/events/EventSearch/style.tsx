@@ -16,7 +16,7 @@ export const ItemContent = styled.div`
 export const ItemList = styled.div`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => `0 0 ${theme.borderRadius.medium} ${theme.borderRadius.medium}`};
   overflowy: 'auto';
 `;

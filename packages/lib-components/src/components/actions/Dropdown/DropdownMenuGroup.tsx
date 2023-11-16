@@ -4,7 +4,7 @@ import { styled } from '../../../styled';
 const Container = styled.div<{ divider: boolean; hasChildren: boolean }>`
   padding-bottom: ${({ theme }) => theme.spacing['0_5']};
   border-bottom: ${({ divider, theme, hasChildren }) =>
-    divider && hasChildren && `2px solid ${theme.colors.secondary}`};
+    divider && hasChildren && `2px solid ${theme.colors.backgroundAccent}`};
   margin-bottom: ${({ divider, theme, hasChildren }) => divider && hasChildren && theme.spacing['0_5']};
   padding-left: 0;
 

@@ -48,7 +48,7 @@ const Header = styled.div`
 `;
 
 const Filters = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   padding: ${({ theme }) => `${theme.spacing[2]}`};
   height: 600px;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
