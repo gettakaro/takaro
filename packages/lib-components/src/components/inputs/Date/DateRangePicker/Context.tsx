@@ -42,6 +42,8 @@ export function reducer(state: DateRangePickerState, action: Action): DateRangeP
       return {
         ...state,
         start: action.payload.startDate,
+        // If endDate is before new startDate, set endDate to new startDate
+        end: state.end < action.payload.startDate ? action.payload.startDate : state.end,
         friendlyStartDate: undefined,
         friendlyRange: undefined,
       };

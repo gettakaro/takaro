@@ -6,6 +6,7 @@ import { Button, DatePicker, DatePickerProps } from '../../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DateTime } from 'luxon';
 
 const Wrapper = styled.div`
   display: flex;
@@ -20,31 +21,37 @@ const Wrapper = styled.div`
 export default {
   title: 'Inputs/DatePicker',
   component: DatePicker,
-  args: {},
+  args: {
+    label: 'date',
+    name: 'date',
+    required: false,
+    description: 'This is a description',
+    timePickerOptions: {
+      interval: 30,
+    },
+  },
 } as Meta<DatePickerProps>;
 
 const validationSchema = z.object({
-  name: z.string().min(6).nonempty('Name is a required field.'),
+  date: z.string().datetime({ offset: true }),
 });
-type FormFields = { name: string };
+type FormFields = { date: string };
 
-export const OnSubmit: StoryFn<DatePickerProps> = (args) => {
+export const OnDateSubmit: StoryFn<DatePickerProps> = (args) => {
   const [result, setResult] = useState<string>('none');
 
   const { control, handleSubmit } = useForm<FormFields>({
-    defaultValues: {
-      [args.name]: '',
-    },
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<FormFields> = ({ name }) => {
-    setResult(name);
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
   };
 
   return (
     <Wrapper>
+      Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
       <form onSubmit={handleSubmit(onSubmit)}>
         <DatePicker
           control={control}
@@ -53,8 +60,77 @@ export const OnSubmit: StoryFn<DatePickerProps> = (args) => {
           required={args.required}
           loading={args.loading}
           hint={args.hint}
+          description={args.description}
         />
-        <Button type="submit" text="Submit form" size="large" />
+        <Button type="submit" text="Submit form" />
+      </form>
+      <p>result: {result}</p>
+    </Wrapper>
+  );
+};
+
+export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
+  const [result, setResult] = useState<string>('none');
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
+  };
+
+  return (
+    <Wrapper>
+      Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DatePicker
+          control={control}
+          label={args.label}
+          name={args.name}
+          required={args.required}
+          loading={args.loading}
+          hint={args.hint}
+          format={DateTime.DATETIME_SHORT}
+          timePickerOptions={args.timePickerOptions}
+          description={args.description}
+        />
+        <Button type="submit" text="Submit form" />
+      </form>
+      <p>result: {result}</p>
+    </Wrapper>
+  );
+};
+
+export const onTimeSubmit: StoryFn<DatePickerProps> = (args) => {
+  const [result, setResult] = useState<string>('none');
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
+  };
+
+  return (
+    <Wrapper>
+      Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DatePicker
+          control={control}
+          label={args.label}
+          name={args.name}
+          required={args.required}
+          loading={args.loading}
+          hint={args.hint}
+          format={DateTime.TIME_24_SIMPLE}
+          timePickerOptions={args.timePickerOptions}
+          description={args.description}
+        />
+        <Button type="submit" text="Submit form" />
       </form>
       <p>result: {result}</p>
     </Wrapper>

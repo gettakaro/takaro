@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { defaultInputProps, defaultInputPropsFactory, ControlledInputProps } from '../../InputProps';
 import { useController } from 'react-hook-form';
 import { GenericDatePicker, DatePickerProps } from './Generic';
@@ -23,6 +23,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     description,
   } = defaultsApplier(props);
 
+  const [showError, setShowError] = useState<boolean>(true);
+
   const {
     field,
     fieldState: { error },
@@ -30,6 +32,15 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     name,
     control,
   });
+
+  const handleOnFocus = () => {
+    setShowError(false);
+  };
+
+  const handleOnBlur = () => {
+    field.onBlur();
+    setShowError(true);
+  };
 
   return (
     <Wrapper>
@@ -47,19 +58,21 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
           />
         )}
         <GenericDatePicker
-          hasError={!!error}
+          onChange={field.onChange}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          value={field.value}
           disabled={disabled}
           name={name}
           id={name}
           required={required}
           size={size}
           readOnly={readOnly}
-          onChange={field.onChange}
-          value={field.value}
+          hasError={!!error}
           hasDescription={!!description}
           format={format}
         />
-        {error && error.message && <ErrorMessage message={error.message} />}
+        {showError && error?.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
     </Wrapper>

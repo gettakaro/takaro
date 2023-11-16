@@ -3,7 +3,7 @@ import { styled } from '../../../../../styled';
 export const Wrapper = styled.div`
   width: 100%;
   min-width: 300px;
-  padding: 0 ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `0 ${theme.spacing[2]}`};
 `;
 
 export const Header = styled.div`
