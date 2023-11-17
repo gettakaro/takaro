@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Divider } from '../../../../../components';
 import { DateTime } from 'luxon';
 import { useDateRangePickerContext, useDateRangePickerDispatchContext } from '../Context';
-import { Relative as RelativePicker } from '../../subcomponents/Relative';
+import { RelativePicker } from '../../subcomponents/RelativePicker';
 import { GenericTextField } from '../../../TextField';
 
 interface RelativeProps {
@@ -33,7 +33,7 @@ export const Relative: FC<RelativeProps> = ({ isStart }) => {
 
   return (
     <>
-      <RelativePicker onChange={handleOnChange} />
+      <RelativePicker id={`${isStart ? 'start' : 'end'}`} onChange={handleOnChange} />
       <Divider fullWidth />
       <GenericTextField
         hasDescription={false}
