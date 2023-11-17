@@ -7,7 +7,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
-import { RoleOutputDTO } from './RoleService.js';
+import { RoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -41,9 +41,9 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
-  @Type(() => RoleOutputDTO)
+  @Type(() => RoleAssignmentOutputDTO)
   @ValidateNested({ each: true })
-  roles: RoleOutputDTO[];
+  roles: RoleAssignmentOutputDTO[];
 }
 
 export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCreateDTO> {
@@ -122,7 +122,18 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
-    return this.repo.resolveRef(ref, gameserverId);
+    const player = await this.repo.resolveRef(ref, gameserverId);
+
+    const roleService = new RoleService(this.domainId);
+    const roles = await roleService.find({ filters: { name: ['Player'] } });
+
+    player.roles.push(
+      await new RoleAssignmentOutputDTO().construct({
+        roleId: roles.results[0].id,
+        role: roles.results[0],
+      })
+    );
+    return player;
   }
 
   async getRef(playerId: string, gameserverId: string) {

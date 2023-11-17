@@ -2,11 +2,12 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "7e35d19d-5532-45b2-b9fc-2cea928a15ff",
-      "createdAt": "2023-07-19T18:20:28.139Z",
-      "updatedAt": "2023-07-19T18:20:28.160Z",
+      "id": "515ea467-b24b-4b44-881a-e2b827c4a601",
+      "createdAt": "2023-11-14T15:38:05.262Z",
+      "updatedAt": "2023-11-14T15:38:05.274Z",
       "name": "New name",
-      "permissions": []
+      "permissions": [],
+      "system": false
     }
   },
   "status": 200,

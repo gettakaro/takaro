@@ -1,5 +1,5 @@
 import { GameEvents, EventMapping } from '@takaro/modules';
-import { ModuleInstallationOutputDTO, PlayerOnGameserverOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
+import { ModuleInstallationOutputDTO, PlayerOnGameserverOutputWithRolesDTO } from '@takaro/apiclient';
 
 export interface IParsedCommand {
   command: string;
@@ -36,7 +36,7 @@ export interface IHookJobData extends IJobData {
 }
 
 export interface ICommandJobData extends IJobData {
-  player: PlayerOnGameserverOutputDTO & { roles: RoleOutputDTO[] };
+  player: PlayerOnGameserverOutputWithRolesDTO;
   arguments: IParsedCommand['arguments'];
 }
 
