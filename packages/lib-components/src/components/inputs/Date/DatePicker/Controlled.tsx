@@ -4,6 +4,7 @@ import { useController } from 'react-hook-form';
 import { GenericDatePicker, DatePickerProps } from './Generic';
 import { Label, ErrorMessage, Wrapper, Description } from '../../layout';
 import { Container } from './style';
+import { Skeleton } from '../../../../components';
 
 export type ControlledDatePickerProps = ControlledInputProps & DatePickerProps;
 const defaultsApplier = defaultInputPropsFactory<ControlledDatePickerProps>(defaultInputProps);
@@ -23,7 +24,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     relativePickerOptions,
     timePickerOptions,
     placeholder,
-    // TODO: loading,
+    popOverPlacement,
+    loading,
     description,
   } = defaultsApplier(props);
 
@@ -61,25 +63,30 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
             position="top"
           />
         )}
-        <GenericDatePicker
-          onChange={field.onChange}
-          onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
-          value={field.value}
-          disabled={disabled}
-          name={name}
-          id={name}
-          required={required}
-          size={size}
-          readOnly={readOnly}
-          hasError={!!error}
-          hasDescription={!!description}
-          relativePickerOptions={relativePickerOptions}
-          timePickerOptions={timePickerOptions}
-          format={format}
-          placeholder={placeholder}
-          mode={mode}
-        />
+        {loading ? (
+          <Skeleton variant="text" width="100%" height="38px" />
+        ) : (
+          <GenericDatePicker
+            onChange={field.onChange}
+            onFocus={handleOnFocus}
+            onBlur={handleOnBlur}
+            value={field.value}
+            disabled={disabled}
+            name={name}
+            id={name}
+            required={required}
+            size={size}
+            readOnly={readOnly}
+            hasError={!!error}
+            popOverPlacement={popOverPlacement}
+            hasDescription={!!description}
+            relativePickerOptions={relativePickerOptions}
+            timePickerOptions={timePickerOptions}
+            format={format}
+            placeholder={placeholder}
+            mode={mode}
+          />
+        )}
         {showError && error?.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}

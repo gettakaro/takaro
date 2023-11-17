@@ -7,6 +7,7 @@ import { ResultContainer, ContentContainer, InnerContainer, ButtonContainer } fr
 import { TimePicker } from '../subcomponents/TimePicker';
 import { Calendar } from '../subcomponents/Calendar';
 import { RelativePicker, timeDirection } from '../subcomponents/RelativePicker';
+import { Placement } from '@floating-ui/react';
 
 interface TimePickerOptions {
   /// Determines the interval between time options
@@ -26,6 +27,8 @@ export interface DatePickerProps {
   /// Absolute mode is a calendar and time picker
   /// Relative mode is a relative picker
   mode: 'relative' | 'absolute';
+
+  popOverPlacement?: Placement;
 
   /// Determines the format of the selected date/time
   format?: DateTimeFormatOptions;
@@ -53,6 +56,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   timePickerOptions,
   relativePickerOptions = { showFriendlyName: true, timeDirection: 'future' },
   placeholder,
+  popOverPlacement = 'bottom',
   format = DateTime.DATE_SHORT,
   mode,
 }) => {
@@ -125,7 +129,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   };
 
   return (
-    <Popover placement="bottom" open={open} onOpenChange={setOpen}>
+    <Popover placement={popOverPlacement} open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <ResultContainer readOnly={readOnly} hasError={hasError} onClick={() => setOpen(!open)}>
           {renderResult()}
