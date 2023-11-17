@@ -18,6 +18,10 @@ export const ResultContainer = styled.div<{ readOnly: boolean; hasError: boolean
   z-index: ${({ theme }) => theme.zIndex.dropdown};
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
   user-select: none;
+
+  span {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export const ContentContainer = styled.div`

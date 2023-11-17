@@ -6,10 +6,19 @@ import { GenericInputProps } from '../../InputProps';
 import { ResultContainer, ContentContainer, InnerContainer, ButtonContainer } from './style';
 import { TimePicker } from '../subcomponents/TimePicker';
 import { Calendar } from '../subcomponents/Calendar';
-import { Relative } from '../subcomponents/Relative';
+import { RelativePicker, timeDirection } from '../subcomponents/RelativePicker';
 
 interface TimePickerOptions {
+  /// Determines the interval between time options
+  /// Default: 30
   interval?: number;
+}
+
+interface RelativePickerOptions {
+  /// Determines if the relative picker should be able to show filters to the past, future, or pastAndFuture
+  // Default: pastAndFuture
+  timeDirection?: timeDirection;
+  showFriendlyName?: boolean;
 }
 
 export interface DatePickerProps {
@@ -23,6 +32,11 @@ export interface DatePickerProps {
 
   /// Options specific for the time picker
   timePickerOptions?: TimePickerOptions;
+
+  /// Options specific for the relative picker
+  relativePickerOptions?: RelativePickerOptions;
+
+  /// Placeholder text for the input
   placeholder?: string;
 }
 
@@ -37,12 +51,14 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   onFocus,
   onBlur,
   timePickerOptions,
+  relativePickerOptions = { showFriendlyName: true, timeDirection: 'future' },
   placeholder,
   format = DateTime.DATE_SHORT,
   mode,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(value ? DateTime.fromISO(value) : DateTime.now());
+  const [friendlyName, setFriendlyName] = useState<string | undefined>(undefined);
 
   const isDateOnly = !timeFormats.includes(format);
   const isTimeOnly = !dateFormats.includes(format);
@@ -94,11 +110,25 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
     }
   }, [open]);
 
+  const renderResult = () => {
+    if (friendlyName) {
+      return (
+        <>
+          {DateTime.fromISO(value).toLocaleString(format)} <span>({friendlyName})</span>
+        </>
+      );
+    }
+    if (value) {
+      return DateTime.fromISO(value).toLocaleString(format);
+    }
+    return renderPlaceholder();
+  };
+
   return (
     <Popover placement="bottom" open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <ResultContainer readOnly={readOnly} hasError={hasError} onClick={() => setOpen(!open)}>
-          {value ? DateTime.fromISO(value).toLocaleString(format) : renderPlaceholder()}
+          {renderResult()}
         </ResultContainer>
       </Popover.Trigger>
       <Popover.Content>
@@ -112,6 +142,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   selectedDate={selectedDateTime}
                   onDateClick={(date) => {
                     setSelectedDateTime(date);
+                    relativePickerOptions?.showFriendlyName && setFriendlyName(undefined);
                     if (isDateOnly) {
                       handleOnChange(date);
                     }
@@ -124,6 +155,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   interval={timePickerOptions?.interval}
                   onChange={(newTime) => {
                     setSelectedDateTime(newTime);
+                    relativePickerOptions?.showFriendlyName && setFriendlyName(undefined);
 
                     // see notes above
                     if (isTimeOnly) {
@@ -137,9 +169,11 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
 
           {isRelative && (
             <InnerContainer>
-              <Relative
-                onChange={(newDate) => {
-                  console.log(newDate);
+              <RelativePicker
+                id={id}
+                timeDirection={relativePickerOptions?.timeDirection}
+                onChange={(newDate, friendlyName) => {
+                  relativePickerOptions?.showFriendlyName && setFriendlyName(friendlyName);
                   setSelectedDateTime(newDate);
                   handleOnChange(newDate);
                 }}

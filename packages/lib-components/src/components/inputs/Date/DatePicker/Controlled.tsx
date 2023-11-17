@@ -20,6 +20,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     required,
     format,
     mode,
+    relativePickerOptions,
+    timePickerOptions,
     placeholder,
     // TODO: loading,
     description,
@@ -72,6 +74,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
           readOnly={readOnly}
           hasError={!!error}
           hasDescription={!!description}
+          relativePickerOptions={relativePickerOptions}
+          timePickerOptions={timePickerOptions}
           format={format}
           placeholder={placeholder}
           mode={mode}

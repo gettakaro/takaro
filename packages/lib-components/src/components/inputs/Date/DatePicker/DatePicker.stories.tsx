@@ -29,6 +29,10 @@ export default {
     timePickerOptions: {
       interval: 30,
     },
+    relativePickerOptions: {
+      showFriendlyName: true,
+      timeDirection: 'future',
+    },
   },
 } as Meta<DatePickerProps>;
 
@@ -166,6 +170,7 @@ export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
           hint={args.hint}
           format={DateTime.DATETIME_MED_WITH_SECONDS}
           timePickerOptions={args.timePickerOptions}
+          relativePickerOptions={args.relativePickerOptions}
           description={args.description}
         />
         <Button type="submit" text="Submit form" />
