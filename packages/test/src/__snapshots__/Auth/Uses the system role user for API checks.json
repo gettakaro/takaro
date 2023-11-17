@@ -119,7 +119,8 @@
     "filteredFields": [
       "idpId",
       "roleId",
-      "email"
+      "email",
+      "permissionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

@@ -99,7 +99,7 @@ const tests = [
       expect(usersRes.data.data.length).to.equal(2);
       return usersRes;
     },
-    filteredFields: ['idpId', 'roleId', 'email'],
+    filteredFields: ['idpId', 'roleId', 'email', 'permissionId'],
   }),
 ];
 
