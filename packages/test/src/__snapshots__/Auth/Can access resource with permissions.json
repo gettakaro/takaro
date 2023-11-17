@@ -7,130 +7,130 @@
     },
     "data": [
       {
-        "id": "950ced65-2d83-45a7-8118-64242f316b17",
-        "createdAt": "2023-11-02T11:55:52.285Z",
-        "updatedAt": "2023-11-02T11:55:52.285Z",
+        "id": "7eafcc0c-667f-4b08-9586-e66b53cbde6e",
+        "createdAt": "2023-11-12T13:16:36.871Z",
+        "updatedAt": "2023-11-12T13:16:36.871Z",
         "name": "Test role",
         "permissions": [
           {
-            "id": "1decca5c-4704-4d61-90f6-fea0e9475388",
-            "createdAt": "2023-11-02T11:55:52.287Z",
-            "updatedAt": "2023-11-02T11:55:52.287Z",
-            "permissionId": "f5f031c8-42af-4293-90fe-a71691f6e40e",
+            "id": "494f53d8-f624-4165-8aa7-b0915b771275",
+            "createdAt": "2023-11-12T13:16:36.873Z",
+            "updatedAt": "2023-11-12T13:16:36.873Z",
+            "permissionId": "001656d4-6ede-47e2-987c-49ca01a4eca0",
             "permission": {
-              "id": "f5f031c8-42af-4293-90fe-a71691f6e40e",
-              "createdAt": "2023-09-29T06:35:26.753Z",
-              "updatedAt": "2023-09-29T06:35:26.753Z",
+              "id": "001656d4-6ede-47e2-987c-49ca01a4eca0",
+              "createdAt": "2023-11-08T16:32:31.021Z",
+              "updatedAt": "2023-11-08T16:32:31.021Z",
               "permission": "READ_ROLES",
-              "friendlyName": "READ_ROLES",
-              "description": "No description provided",
-              "moduleId": null,
-              "canHaveCount": false
+              "friendlyName": "Read Roles",
+              "description": "Can view role details",
+              "canHaveCount": false,
+              "moduleId": null
             },
-            "roleId": "950ced65-2d83-45a7-8118-64242f316b17",
+            "roleId": "7eafcc0c-667f-4b08-9586-e66b53cbde6e",
             "count": 0
           }
         ]
       },
       {
-        "id": "4e1fcdc2-270f-46d9-9caa-b432118f1892",
-        "createdAt": "2023-11-02T11:55:52.045Z",
-        "updatedAt": "2023-11-02T11:55:52.045Z",
+        "id": "b85c0f1a-f577-49c9-828a-fb2eadb58c70",
+        "createdAt": "2023-11-12T13:16:36.731Z",
+        "updatedAt": "2023-11-12T13:16:36.731Z",
         "name": "root",
         "permissions": [
           {
-            "id": "e015c758-9439-4cec-be43-0efb4018ca30",
-            "createdAt": "2023-11-02T11:55:52.046Z",
-            "updatedAt": "2023-11-02T11:55:52.047Z",
-            "permissionId": "62cbdfc6-81f9-46ff-89fc-97181455dbd2",
+            "id": "e0f2f2a8-f8f1-4f90-91fb-c531430d2ee5",
+            "createdAt": "2023-11-12T13:16:36.733Z",
+            "updatedAt": "2023-11-12T13:16:36.733Z",
+            "permissionId": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
             "permission": {
-              "id": "62cbdfc6-81f9-46ff-89fc-97181455dbd2",
-              "createdAt": "2023-09-29T06:35:26.753Z",
-              "updatedAt": "2023-09-29T06:35:26.753Z",
+              "id": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
+              "createdAt": "2023-11-08T16:32:31.021Z",
+              "updatedAt": "2023-11-08T16:32:31.021Z",
               "permission": "ROOT",
-              "friendlyName": "ROOT",
-              "description": "No description provided",
-              "moduleId": null,
-              "canHaveCount": false
+              "friendlyName": "Root Access",
+              "description": "Full access to all systems and resources",
+              "canHaveCount": false,
+              "moduleId": null
             },
-            "roleId": "4e1fcdc2-270f-46d9-9caa-b432118f1892",
+            "roleId": "b85c0f1a-f577-49c9-828a-fb2eadb58c70",
             "count": 0
           }
         ]
       },
       {
-        "id": "96e038e9-664d-4ccb-9ce7-6c075b079466",
-        "createdAt": "2023-11-02T11:55:52.049Z",
-        "updatedAt": "2023-11-02T11:55:52.051Z",
+        "id": "e5336b66-f683-4eba-b7fc-13b1f92ae3d9",
+        "createdAt": "2023-11-12T13:16:36.736Z",
+        "updatedAt": "2023-11-12T13:16:36.736Z",
         "name": "Player",
         "permissions": []
       },
       {
-        "id": "30279b73-f6c6-44d3-916e-fcedae8fd412",
-        "createdAt": "2023-11-02T11:55:52.052Z",
-        "updatedAt": "2023-11-02T11:55:52.052Z",
+        "id": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
+        "createdAt": "2023-11-12T13:16:36.736Z",
+        "updatedAt": "2023-11-12T13:16:36.736Z",
         "name": "Moderator",
         "permissions": [
           {
-            "id": "3ef5aa44-e905-4f41-9030-399e0e4ba34e",
-            "createdAt": "2023-11-02T11:55:52.057Z",
-            "updatedAt": "2023-11-02T11:55:52.057Z",
-            "permissionId": "e7e1c2a0-f039-49c5-9208-c95d73407580",
+            "id": "3562ae9f-6c69-4144-9385-cdc9a36002f1",
+            "createdAt": "2023-11-12T13:16:36.740Z",
+            "updatedAt": "2023-11-12T13:16:36.740Z",
+            "permissionId": "08730688-73a0-4071-98b8-b818109022ca",
             "permission": {
-              "id": "e7e1c2a0-f039-49c5-9208-c95d73407580",
-              "createdAt": "2023-09-29T06:35:26.753Z",
-              "updatedAt": "2023-09-29T06:35:26.753Z",
+              "id": "08730688-73a0-4071-98b8-b818109022ca",
+              "createdAt": "2023-11-08T16:32:31.021Z",
+              "updatedAt": "2023-11-08T16:32:31.021Z",
               "permission": "READ_PLAYERS",
-              "friendlyName": "READ_PLAYERS",
-              "description": "No description provided",
-              "moduleId": null,
-              "canHaveCount": false
+              "friendlyName": "Read Players",
+              "description": "Can view player details",
+              "canHaveCount": false,
+              "moduleId": null
             },
-            "roleId": "30279b73-f6c6-44d3-916e-fcedae8fd412",
+            "roleId": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
             "count": 0
           },
           {
-            "id": "2660511b-ffa5-4505-87b3-52724ef12683",
-            "createdAt": "2023-11-02T11:55:52.058Z",
-            "updatedAt": "2023-11-02T11:55:52.059Z",
-            "permissionId": "f8b06faa-34bb-4663-a8b8-901be66ab4f6",
+            "id": "e1a4c6eb-e35b-48f5-b622-f3426e3d4e00",
+            "createdAt": "2023-11-12T13:16:36.742Z",
+            "updatedAt": "2023-11-12T13:16:36.742Z",
+            "permissionId": "5ac9cfac-17dc-4c88-8e0e-818c9ddaa484",
             "permission": {
-              "id": "f8b06faa-34bb-4663-a8b8-901be66ab4f6",
-              "createdAt": "2023-09-29T06:35:26.753Z",
-              "updatedAt": "2023-09-29T06:35:26.753Z",
+              "id": "5ac9cfac-17dc-4c88-8e0e-818c9ddaa484",
+              "createdAt": "2023-11-08T16:32:31.021Z",
+              "updatedAt": "2023-11-08T16:32:31.021Z",
               "permission": "READ_SETTINGS",
-              "friendlyName": "READ_SETTINGS",
-              "description": "No description provided",
-              "moduleId": null,
-              "canHaveCount": false
+              "friendlyName": "Read Settings",
+              "description": "Can view settings",
+              "canHaveCount": false,
+              "moduleId": null
             },
-            "roleId": "30279b73-f6c6-44d3-916e-fcedae8fd412",
+            "roleId": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
             "count": 0
           }
         ]
       },
       {
-        "id": "f95a0878-bca7-4b0d-8cd6-76f6c3fef853",
-        "createdAt": "2023-11-02T11:55:52.051Z",
-        "updatedAt": "2023-11-02T11:55:52.051Z",
+        "id": "86d1bf08-6e75-41a2-817e-fecf60315cb7",
+        "createdAt": "2023-11-12T13:16:36.736Z",
+        "updatedAt": "2023-11-12T13:16:36.736Z",
         "name": "Admin",
         "permissions": [
           {
-            "id": "0176dbe2-cad5-4e9d-bd56-9bbfe5634b98",
-            "createdAt": "2023-11-02T11:55:52.054Z",
-            "updatedAt": "2023-11-02T11:55:52.054Z",
-            "permissionId": "62cbdfc6-81f9-46ff-89fc-97181455dbd2",
+            "id": "4f14451c-877d-4acf-ae4f-7b105d8998b6",
+            "createdAt": "2023-11-12T13:16:36.741Z",
+            "updatedAt": "2023-11-12T13:16:36.741Z",
+            "permissionId": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
             "permission": {
-              "id": "62cbdfc6-81f9-46ff-89fc-97181455dbd2",
-              "createdAt": "2023-09-29T06:35:26.753Z",
-              "updatedAt": "2023-09-29T06:35:26.753Z",
+              "id": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
+              "createdAt": "2023-11-08T16:32:31.021Z",
+              "updatedAt": "2023-11-08T16:32:31.021Z",
               "permission": "ROOT",
-              "friendlyName": "ROOT",
-              "description": "No description provided",
-              "moduleId": null,
-              "canHaveCount": false
+              "friendlyName": "Root Access",
+              "description": "Full access to all systems and resources",
+              "canHaveCount": false,
+              "moduleId": null
             },
-            "roleId": "f95a0878-bca7-4b0d-8cd6-76f6c3fef853",
+            "roleId": "86d1bf08-6e75-41a2-817e-fecf60315cb7",
             "count": 0
           }
         ]

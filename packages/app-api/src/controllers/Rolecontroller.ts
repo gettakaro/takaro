@@ -15,8 +15,7 @@ import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Response } from 'express';
-import { PERMISSIONS, PERMISSION_DETAILS } from '@takaro/auth';
-import { ModuleService } from '../service/ModuleService.js';
+import { PERMISSIONS } from '@takaro/auth';
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
   @ValidateNested()
@@ -111,12 +110,8 @@ export class RoleController {
   @ResponseSchema(PermissionOutputDTOAPI)
   @Get('/permissions')
   async getPermissions(@Req() req: AuthenticatedRequest) {
-    const moduleService = new ModuleService(req.domainId);
-    const modules = await moduleService.find({ limit: 1000 });
-    const modulePermissions = modules.results.map((mod) => mod.permissions).flat();
-
-    const allPermissions = Object.values(PERMISSION_DETAILS).concat(modulePermissions);
-
+    const roleService = new RoleService(req.domainId);
+    const allPermissions = await roleService.getPermissions();
     return apiResponse(allPermissions);
   }
 }
