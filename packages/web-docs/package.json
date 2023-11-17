@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@napi-rs/simple-git-linux-x64-gnu": "^0.1.9",
     "next": "13.2.4",
     "nextra": "2.3.0",
     "nextra-theme-blog": "2.3.0",
