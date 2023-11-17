@@ -8,6 +8,7 @@ import {
   RoleUpdateInputDTO,
   PermissionOutputDTO,
   PermissionOnRoleDTO,
+  PermissionInputDTO,
 } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
 import { UserRepo } from './user.js';
@@ -94,6 +95,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
           new PermissionOnRoleDTO().construct({
             ...c,
             permission: await new PermissionOutputDTO().construct(c.permission),
+            count: c.count || 0,
           })
         )
       ),
@@ -158,11 +160,11 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     return item;
   }
 
-  async addPermissionToRole(roleId: string, permission: string) {
+  async addPermissionToRole(roleId: string, permission: PermissionInputDTO) {
     const knex = await this.getKnex();
     const permissionModel = PermissionModel.bindKnex(knex);
 
-    const permissionRecord = await permissionModel.query().where({ id: permission }).first();
+    const permissionRecord = await permissionModel.query().where({ id: permission.permissionId }).first();
 
     if (!permissionRecord) throw new errors.NotFoundError(`Permission ${permission} not found`);
 
@@ -171,6 +173,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
       .insert({
         roleId,
         permissionId: permissionRecord.id,
+        count: permission.count,
         domain: this.domainId,
       });
   }
@@ -222,5 +225,14 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     if (!permissionRecord) throw new errors.NotFoundError(`Permission ${permissionCode} not found`);
 
     return permissionRecord;
+  }
+
+  async getSystemPermissions() {
+    const knex = await this.getKnex();
+    const permissionModel = PermissionModel.bindKnex(knex);
+
+    const res = await permissionModel.query().where({ moduleId: null });
+
+    return await Promise.all(res.map((c) => new PermissionOutputDTO().construct(c)));
   }
 }

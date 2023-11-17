@@ -2,7 +2,7 @@
 
 The core of Takaro is built around Modules. Modules are a very powerful and flexible way of creating features..
 
-Takaro comes with a set of [built-in modules](./builtin-modules.mdx). When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
+Takaro comes with a set of [built-in modules](../built-in-modules.mdx). When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
 
 Each module consists of one or more of the following components:
 
