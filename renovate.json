@@ -5,5 +5,20 @@
   ],
   "schedule": [
     "after 10pm and before 5am every weekday"
+  ],
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchPackagePatterns": [
+        "lint",
+        "prettier",
+        "@types",
+        "chai",
+        "mocha"
+      ],
+      "automerge": true
+    }
   ]
 }
