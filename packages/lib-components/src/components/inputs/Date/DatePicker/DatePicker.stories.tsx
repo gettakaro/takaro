@@ -26,6 +26,9 @@ export default {
     name: 'date',
     required: false,
     description: 'This is a description',
+    popOverPlacement: 'bottom',
+    readOnly: false,
+    loading: false,
     timePickerOptions: {
       interval: 30,
     },
@@ -66,6 +69,7 @@ export const OnDateSubmit: StoryFn<DatePickerProps> = (args) => {
           loading={args.loading}
           hint={args.hint}
           description={args.description}
+          popOverPlacement={args.popOverPlacement}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -101,6 +105,7 @@ export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           format={DateTime.DATETIME_SHORT}
           timePickerOptions={args.timePickerOptions}
           description={args.description}
+          popOverPlacement={args.popOverPlacement}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -136,6 +141,7 @@ export const onTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           format={DateTime.TIME_SIMPLE}
           timePickerOptions={args.timePickerOptions}
           description={args.description}
+          popOverPlacement={args.popOverPlacement}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -172,6 +178,7 @@ export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
           timePickerOptions={args.timePickerOptions}
           relativePickerOptions={args.relativePickerOptions}
           description={args.description}
+          popOverPlacement={args.popOverPlacement}
         />
         <Button type="submit" text="Submit form" />
       </form>
