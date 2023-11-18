@@ -33,50 +33,56 @@ export class Mock implements IGameServer {
     return this.emitter;
   }
 
-  private async getClient(timeout = 5000): Promise<Socket> {
+  private async getClient(timeout = 2500): Promise<Socket> {
     if (this.io.connected) {
       return this.io;
     }
 
     return Promise.race([
       new Promise<Socket>((resolve, reject) => {
-        this.io.on('connect', () => {
+        const onConnect = () => {
+          this.io.off('connect_error', onConnectError);
           resolve(this.io);
-        });
-        this.io.on('connect_error', (err) => {
+        };
+
+        const onConnectError = (err: Error) => {
+          this.io.off('connect', onConnect);
           reject(err);
-        });
+        };
+
+        this.io.on('connect', onConnect);
+        this.io.on('connect_error', onConnectError);
       }),
       new Promise<Socket>((_, reject) => {
         setTimeout(() => {
+          this.io.off('connect');
+          this.io.off('connect_error');
           reject(new Error(`Connection timed out after ${timeout}ms`));
         }, timeout);
       }),
     ]);
   }
 
-  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+  private async requestFromServer(event: string, ...args: any[]) {
     const client = await this.getClient();
-    const data = await client.emitWithAck('getPlayer', player);
-    return data;
+    return client.timeout(2500).emitWithAck(event, ...args);
+  }
+
+  async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    return this.requestFromServer('getPlayer', player);
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('getPlayers');
-    return data;
+    return this.requestFromServer('getPlayers');
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('getPlayerLocation', player);
-    return data;
+    return this.requestFromServer('getPlayerLocation', player);
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
-      const client = await this.getClient();
-      const data = await client.emitWithAck('ping');
+      const data = await this.requestFromServer('ping');
       assert(data === 'pong');
     } catch (error) {
       if (!error || !(error instanceof Error)) {
@@ -105,49 +111,34 @@ export class Mock implements IGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('executeConsoleCommand', rawCommand);
-    return data;
+    return this.requestFromServer('executeConsoleCommand', rawCommand);
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('sendMessage', message, opts);
-    return data;
+    return this.requestFromServer('sendMessage', message, opts);
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('teleportPlayer', player, x, y, z);
-    return data;
+    return this.requestFromServer('teleportPlayer', player, x, y, z);
   }
 
   async kickPlayer(player: IGamePlayer, reason: string) {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('kickPlayer', player, reason);
-    return data;
+    return this.requestFromServer('kickPlayer', player, reason);
   }
 
   async banPlayer(options: BanDTO) {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('banPlayer', options);
-    return data;
+    return this.requestFromServer('banPlayer', options);
   }
 
   async unbanPlayer(player: IGamePlayer) {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('unbanPlayer', player);
-    return data;
+    return this.requestFromServer('unbanPlayer', player);
   }
 
   async listBans(): Promise<BanDTO[]> {
-    const client = await this.getClient();
-    const data = await client.emitWithAck('listBans');
-    return data;
+    return this.requestFromServer('listBans');
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    const client = await this.getClient();
-    await client.emitWithAck('giveItem', player, item);
+    return this.requestFromServer('giveItem', player, item);
   }
 }

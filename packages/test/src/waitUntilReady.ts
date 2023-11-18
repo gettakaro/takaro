@@ -6,16 +6,6 @@ import { logger } from '@takaro/util';
 const log = logger('tests');
 
 before(async () => {
-  if (process.env.LOGGING_LEVEL === 'none') {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    console.log = () => {};
-  }
-
-  if (process.env.LOGGING_LEVEL === 'none') {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    console.log = () => {};
-  }
-
   const client = new Client({
     url: integrationConfig.get('host'),
     auth: {},

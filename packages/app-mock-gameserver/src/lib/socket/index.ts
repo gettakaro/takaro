@@ -39,7 +39,6 @@ class SocketServer {
 
     this.io.on('connection', async (socket) => {
       const instance = await getMockServer();
-      await instance.ensurePlayersPersisted();
 
       this.log.info(`New connection: ${socket.id}`);
       socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
@@ -64,6 +63,8 @@ class SocketServer {
           args[args.length - 1](new Error(`Event ${event} not found`));
         }
       });
+
+      await instance.ensurePlayersPersisted();
     });
 
     this.log.info('Socket server started');
