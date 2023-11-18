@@ -1,5 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Dialog, Dropdown, IconButton } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { PATHS } from 'paths';
 import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 
-export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
+export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -40,12 +40,20 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name }) => {
                 <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
               </Dropdown.Trigger>
               <Dropdown.Menu>
-                <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" />
-                <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" />
+                {name !== 'root' ? <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" /> : null}
+                {!system ? <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" /> : null}
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage users" />
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage players" />
               </Dropdown.Menu>
             </Dropdown>
+            {system ? (
+              <Tooltip placement="bottom">
+                <Tooltip.Trigger asChild>
+                  <Chip label="system" color="primary" />
+                </Tooltip.Trigger>
+                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted</Tooltip.Content>
+              </Tooltip>
+            ) : null}
           </Header>
           <TitleContainer>
             <h3>Role: {name}</h3>

@@ -124,7 +124,7 @@ const tests = [
       } catch (error) {
         if (error instanceof AxiosError) {
           expect(error.response?.status).to.eq(400);
-          expect(error.response?.data.meta.error.message).to.be.eq('Cannot delete root role');
+          expect(error.response?.data.meta.error.message).to.be.eq('Cannot delete system roles');
           return error.response;
         } else {
           throw error;

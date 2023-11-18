@@ -49,6 +49,19 @@ export class RoleCreateInputDTO extends TakaroDTO<RoleCreateInputDTO> {
   permissions: PermissionInputDTO[];
 }
 
+export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputDTO> {
+  @Length(3, 20)
+  name: string;
+
+  @ValidateNested({ each: true })
+  @Type(() => PermissionInputDTO)
+  permissions: PermissionInputDTO[];
+
+  @IsBoolean()
+  @IsOptional()
+  system?: boolean;
+}
+
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Length(3, 20)
   name: string;
@@ -117,6 +130,9 @@ export class RoleOutputDTO extends TakaroModelDTO<RoleOutputDTO> {
   @Type(() => PermissionOnRoleDTO)
   @ValidateNested({ each: true })
   permissions: PermissionOnRoleDTO[];
+
+  @IsBoolean()
+  system: boolean;
 }
 
 export class RoleAssignmentOutputDTO extends TakaroModelDTO<RoleAssignmentOutputDTO> {
@@ -149,18 +165,21 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     return this.repo.findOne(id);
   }
 
-  async create(item: RoleCreateInputDTO): Promise<RoleOutputDTO> {
+  async create(item: ServiceRoleCreateInputDTO): Promise<RoleOutputDTO> {
     return this.createWithPermissions(item, item.permissions);
   }
 
   async update(id: string, item: RoleUpdateInputDTO): Promise<RoleOutputDTO> {
     const toUpdate = await this.repo.findOne(id);
 
-    if (toUpdate?.name === 'root') {
+    if (toUpdate.name === 'root') {
       throw new errors.BadRequestError('Cannot update root role');
     }
 
-    await this.repo.update(id, item);
+    if (!toUpdate?.system) {
+      await this.repo.update(id, item);
+    }
+
     await this.setPermissions(id, item.permissions);
     return this.repo.findOne(id);
   }
@@ -168,8 +187,8 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async delete(id: string) {
     const toDelete = await this.repo.findOne(id);
 
-    if (toDelete?.name === 'root') {
-      throw new errors.BadRequestError('Cannot delete root role');
+    if (toDelete?.system) {
+      throw new errors.BadRequestError('Cannot delete system roles');
     }
 
     await this.repo.delete(id);

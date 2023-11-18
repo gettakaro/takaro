@@ -4122,10 +4122,10 @@ export interface PlayerOnGameserverOutputDTOAPI {
 export interface PlayerOnGameserverOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleOutputDTO>}
+   * @type {Array<RoleAssignmentOutputDTO>}
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
-  roles: Array<RoleOutputDTO>;
+  roles: Array<RoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4600,6 +4600,12 @@ export interface RoleOutputDTO {
   permissions: Array<PermissionOnRoleDTO>;
   /**
    *
+   * @type {boolean}
+   * @memberof RoleOutputDTO
+   */
+  system: boolean;
+  /**
+   *
    * @type {string}
    * @memberof RoleOutputDTO
    */
@@ -4831,6 +4837,31 @@ export interface SendMessageInputDTO {
    * @memberof SendMessageInputDTO
    */
   message: string;
+}
+/**
+ *
+ * @export
+ * @interface ServiceRoleCreateInputDTO
+ */
+export interface ServiceRoleCreateInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {Array<PermissionInputDTO>}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  permissions: Array<PermissionInputDTO>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  system?: boolean;
 }
 /**
  *
