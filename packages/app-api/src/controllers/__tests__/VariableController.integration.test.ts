@@ -1,7 +1,6 @@
-import { IntegrationTest, expect, integrationConfig, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
-import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO, VariableOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
+import { VariableOutputDTO } from '@takaro/apiclient';
 import { config } from '../../config.js';
-import { EventTypes } from '@takaro/modules';
 
 const group = 'VariableController';
 
@@ -12,59 +11,6 @@ const setup = async function (this: IntegrationTest<VariableOutputDTO>): Promise
       value: 'Test value',
     })
   ).data.data;
-};
-
-interface ISetupWithGameServersAndPlayers {
-  gameServer1: GameServerOutputDTO;
-  gameServer2: GameServerOutputDTO;
-  players: PlayerOutputDTO[];
-  mod: ModuleOutputDTO;
-}
-
-const setupWithGameServersAndPlayers = async function (
-  this: IntegrationTest<ISetupWithGameServersAndPlayers>
-): Promise<ISetupWithGameServersAndPlayers> {
-  const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 1',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
-  });
-
-  const gameServer2 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 2',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
-  });
-
-  const mod = (
-    await this.client.module.moduleControllerCreate({
-      name: 'Test module',
-    })
-  ).data.data;
-
-  const eventsAwaiter = new EventsAwaiter();
-  await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 10);
-
-  await Promise.all([
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
-  ]);
-
-  await connectedEvents;
-
-  const players = (await this.client.player.playerControllerSearch()).data.data;
-
-  return {
-    gameServer1: gameServer1.data.data,
-    gameServer2: gameServer2.data.data,
-    players,
-    mod,
-  };
 };
 
 const tests = [
@@ -329,11 +275,11 @@ const tests = [
     },
     expectedStatus: 400,
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Create with moduleId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       return this.client.variable.variableControllerCreate({
         key: 'Test variable',
@@ -343,11 +289,11 @@ const tests = [
     },
     filteredFields: ['moduleId'],
   }),
-  new IntegrationTest<ISetupWithGameServersAndPlayers>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Prevents creating duplicate variables with same moduleId',
-    setup: setupWithGameServersAndPlayers,
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       // First creation should succeed
       await this.client.variable.variableControllerCreate({
