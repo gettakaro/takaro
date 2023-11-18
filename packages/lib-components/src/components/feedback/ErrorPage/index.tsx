@@ -4,8 +4,12 @@ import { useTheme } from '../../../hooks';
 import { styled } from '../../../styled';
 import { Link } from 'react-router-dom';
 import {
+  AiOutlineBook,
+  AiOutlineMenu,
+  AiOutlineWifi,
   AiOutlineRight,
   AiOutlineArrowRight as ArrowRightIcon,
+  AiOutlineShop,
 } from 'react-icons/ai';
 
 const Container = styled.div`
@@ -13,16 +17,18 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 6rem 0;
 
-  .error {
-    margin-top: 6rem;
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-align: center;
-  }
+  
   p {
     text-align: center;
     font-size: 1.7rem;
+
+    &.error {
+    margin-top: ${({ theme }) => theme.spacing[6]};
+    color: ${({ theme }) => theme.colors.primary};
+    font-size: ${({ theme }) => theme.fontSize.large};
+    font-weight: 600;
+    text-align: center;
+    }
   }
 
   h3 {
@@ -36,7 +42,7 @@ const Container = styled.div`
     font-weight: 600;
     font-size: 1.5rem;
     color: ${({ theme }) => theme.colors.secondary};
-    margin: 10rem 0 1.5rem 0;
+    margin: 3rem 0 1.5rem 0;
   }
   h5 {
     font-size: 1.7rem;
@@ -96,32 +102,68 @@ const IconContainer = styled.div`
   margin-right: 2rem;
 `;
 
-export interface PageNotFoundProps {
-  pages?: Page[];
+export interface ErrorPageProps {
+  listItems?: ListItem[];
   homeRoute: string;
+  title: string;
+  description: string;
+  errorCode: number;
 }
 
-interface Page {
+interface ListItem {
   icon: ReactElement;
   title: string;
   description: string;
   to: string;
 }
 
-export const PageNotFound: FC<PageNotFoundProps> = ({ pages, homeRoute }) => {
+const defaultListItems = [
+  {
+    icon: <AiOutlineBook />,
+    title: 'Documentation',
+    description: 'Learn how to integrate our tools with your app',
+    to: '',
+  },
+  {
+    icon: <AiOutlineMenu />,
+    title: 'Api reference',
+    description: 'A complete API reference for our libraries',
+    to: '',
+  },
+  {
+    icon: <AiOutlineWifi />,
+    title: 'Guides',
+    description: 'Installation guides that cover popular setups',
+    to: '',
+  },
+  {
+    icon: <AiOutlineShop />,
+    title: 'Blog',
+    description: 'Read our latest news and articles',
+    to: '',
+  },
+];
+
+export const ErrorPage: FC<ErrorPageProps> = ({
+  listItems = defaultListItems,
+  homeRoute,
+  title,
+  description,
+  errorCode,
+}) => {
   const theme = useTheme();
 
   return (
     <Container>
       <Company />
-      <p className="error">404</p>
-      <h3>This page does not exist.</h3>
-      <p>The page you are looking for could not be found.</p>
-      {pages && pages.length && (
+      <p className="error">{errorCode}</p>
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {listItems && listItems.length && (
         <>
           <h4>Popular pages</h4>
           <ul>
-            {pages.map(({ icon, title, description, to }) => (
+            {listItems.map(({ icon, title, description, to }) => (
               <li key={`${title}-${to}`}>
                 <Link to={to}>
                   <ChevronRightIcon />
