@@ -3,7 +3,8 @@ import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
 import Dashboard from 'pages/Dashboard';
 import { PATHS } from 'paths';
-import { AuthenticatedRoute } from 'components/AuthenticatedRoute';
+import { AuthenticationGuard } from 'components/AuthenticationGuard';
+import { RouteGuard } from 'components/PermissionsGuard';
 
 import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
@@ -35,22 +36,14 @@ import { PlayerProfile } from 'pages/player/profile';
 import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
 import { UserProfile } from 'pages/users/profile';
 import { AssignUserRole } from 'pages/roles/assignUserRole';
+import { PERMISSIONS } from '@takaro/lib-components';
+import NotAuthorized from 'pages/NotAuthorized';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
 const Studio = lazy(() => import('./pages/studio'));
-// const GameServerDashboard = lazy(
-//   () => import('./pages/gameserver/GameServerDashboard')
-// );
-// const GameServerSettings = lazy(
-//   () => import('./pages/gameserver/GameServerSettings')
-// );
-//
-// const GameServerModules = lazy(
-//   () => import('./pages/gameserver/GameServerModules')
-// );
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // eventually we probably want to use react query in combination with the new data api
@@ -61,71 +54,116 @@ export const Router: FC = () => (
   <BrowserRouter>
     <SentryRoutes>
       {/* ======================== Global ======================== */}
-      <Route element={<AuthenticatedRoute frame="global" />} path={PATHS.home()}>
+      <Route element={<AuthenticationGuard frame="global" />} path={PATHS.home()}>
+        {/* ======================== Domain ======================== */}
+
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_GAMESERVERS]} />}>
+          <Route element={<Dashboard />} path={PATHS.home()} />
+        </Route>
+
+        <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
+        <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
+
         {/* ======================== Game Server ======================== */}
-        <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
-        <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
-        <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')}>
+
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_GAMESERVERS]} />}>
+          <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+        </Route>
+
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]} />}>
+          <Route element={<GameServerSettings />} path={PATHS.gameServer.settings(':serverId')} />
+        </Route>
+
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_MODULES]} />}>
+          <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')} />
           <Route
             element={<InstallModule />}
             path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
           />
         </Route>
 
-        {/* ======================== Domain ======================== */}
-        <Route element={<Dashboard />} path={PATHS.home()} />
-        <Route element={<AuthSettings />} path={PATHS.auth.profile()} />
-        <Route element={<AuthVerification />} path={PATHS.auth.verification()} />
+        {/* ======================== GameServers ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_GAMESERVERS]} />}>
+          <Route element={<GameServers />} path="/server/" />
+          <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
+            <Route element={<RouteGuard permissions={[PERMISSIONS.MANAGE_GAMESERVERS]} />}>
+              <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
+              <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* ======================== PLayer ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_PLAYERS]} />}>
+          <Route element={<Players />} path={PATHS.players()} />
+          <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
+            <Route element={<RouteGuard permissions={[PERMISSIONS.MANAGE_PLAYERS]} />}>
+              <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* ======================== User ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_USERS]} />}>
+          <Route element={<Users />} path={PATHS.users()} />
+          <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>
+            <Route element={<RouteGuard permissions={[PERMISSIONS.MANAGE_USERS]} />}>
+              <Route element={<AssignUserRole />} path={PATHS.user.assignRole(':userId')} />
+            </Route>
+          </Route>
+        </Route>
 
         {/* ======================== Settings ======================== */}
-        <Route element={<SettingsFrame />}>
-          <Route element={<GlobalGameServerSettings />} path={PATHS.settings.overview()} />
-          <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
-          <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_SETTINGS]} />}>
+          <Route element={<SettingsFrame />}>
+            <Route element={<GlobalGameServerSettings />} path={PATHS.settings.overview()} />
+            <Route element={<GlobalGameServerSettings />} path={PATHS.settings.GameServerSettings()} />
+            <Route element={<DiscordSettings />} path={PATHS.settings.discordSettings()} />
+          </Route>
         </Route>
 
-        <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-          <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
+        {/* ======================== Variables ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_VARIABLES]} />}>
+          <Route element={<Variables />} path={PATHS.variables()} />
         </Route>
 
-        <Route element={<GameServers />} path="/server/" />
-        <Route element={<Users />} path={PATHS.users()} />
-
-        <Route element={<UserProfile />} path={PATHS.user.profile(':userId')}>
-          <Route element={<AssignUserRole />} path={PATHS.user.assignRole(':userId')} />
+        {/* ======================== Events ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_EVENTS]} />}>
+          <Route element={<Events />} path={PATHS.events()} />
         </Route>
 
-        <Route element={<Variables />} path={PATHS.variables()} />
-
-        {/* ======================== CRUD Game Servers ======================== */}
-        <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
-          <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
-          <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
+        {/* ======================== Modules ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_MODULES]} />}>
+          <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
+            <Route element={<RouteGuard permissions={[PERMISSIONS.MANAGE_MODULES]} />}>
+              <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
+              <Route element={<CreateModule />} path={PATHS.modules.create()} />
+            </Route>
+          </Route>
         </Route>
 
-        <Route element={<Events />} path={PATHS.events()} />
-        <Route element={<Players />} path={PATHS.players()} />
-        {/* ======================== CRUD Modules ======================== */}
-        <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
-          <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
-          <Route element={<CreateModule />} path={PATHS.modules.create()} />
-        </Route>
-
-        {/* ======================== CRUD Roles ======================== */}
-        <Route element={<Roles />} path={PATHS.roles.overview()}>
-          <Route element={<RolesCreate />} path={PATHS.roles.create()} />
-          <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
+        {/* ======================== Roles ======================== */}
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_ROLES]} />}>
+          <Route element={<Roles />} path={PATHS.roles.overview()}>
+            <Route element={<RouteGuard permissions={[PERMISSIONS.MANAGE_ROLES]} />}>
+              <Route element={<RolesCreate />} path={PATHS.roles.create()} />
+              <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
+            </Route>
+          </Route>
         </Route>
       </Route>
 
       {/* ======================== Studio ======================== */}
-      <Route element={<AuthenticatedRoute frame="studio" />}>
-        <Route element={<Studio />} path={PATHS.studio.module(':moduleId')} />
+      <Route element={<AuthenticationGuard frame="studio" />}>
+        <Route element={<RouteGuard permissions={[PERMISSIONS.READ_MODULES, PERMISSIONS.MANAGE_MODULES]} />}>
+          <Route element={<Studio />} path={PATHS.studio.module(':moduleId')} />
+        </Route>
       </Route>
+
       <Route element={<LogIn />} path={PATHS.login()} />
       <Route element={<Recovery />} path={PATHS.auth.recovery()} />
-
-      <Route element={<NotFound />} path="/404" />
+      <Route element={<NotFound />} path={PATHS.notFound()} />
+      <Route element={<NotAuthorized />} path={PATHS.notAuthorized()} />
 
       {/* Page not found matches with everything => should stay at bottom */}
       <Route element={<NotFound />} path="*" />

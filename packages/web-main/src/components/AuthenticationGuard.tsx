@@ -17,11 +17,11 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-interface AuthenticatedRouteProps {
+interface AuthenticationGuardProps {
   frame: 'global' | 'studio' | 'gameserver';
 }
 
-export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
+export const AuthenticationGuard: FC<AuthenticationGuardProps> = ({ frame }) => {
   const { session, isLoading: isLoadingSession } = useAuth();
   const { setUserData } = useUser();
   const navigate = useNavigate();
