@@ -5,7 +5,9 @@ export const PATHS = {
   players: () => '/players',
   moduleDefinitions: () => '/modules',
   variables: () => '/variables',
+
   notFound: () => '/404',
+  notAuthorized: () => '/401',
   events: () => '/events',
 
   roles: {
