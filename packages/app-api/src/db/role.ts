@@ -3,12 +3,12 @@ import { errors, traceableClass } from '@takaro/util';
 import { omit } from 'lodash-es';
 import { Model } from 'objection';
 import {
-  RoleCreateInputDTO,
   RoleOutputDTO,
   RoleUpdateInputDTO,
   PermissionOutputDTO,
   PermissionOnRoleDTO,
   PermissionInputDTO,
+  ServiceRoleCreateInputDTO,
 } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
 import { UserRepo } from './user.js';
@@ -49,6 +49,7 @@ export class PermissionOnRoleModel extends TakaroModel {
 export class RoleModel extends TakaroModel {
   static tableName = ROLE_TABLE_NAME;
   name!: string;
+  system: boolean;
 
   permissions!: PermissionOnRoleModel[];
 
@@ -65,7 +66,7 @@ export class RoleModel extends TakaroModel {
 }
 
 @traceableClass('repo:role')
-export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
+export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleCreateInputDTO, RoleUpdateInputDTO> {
   constructor(public readonly domainId: string) {
     super(domainId);
   }
@@ -125,7 +126,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, RoleCreateIn
     return this.transformToDTO(data);
   }
 
-  async create(item: RoleCreateInputDTO): Promise<RoleOutputDTO> {
+  async create(item: ServiceRoleCreateInputDTO): Promise<RoleOutputDTO> {
     const { query } = await this.getModel();
     const data = await query
       .insert({

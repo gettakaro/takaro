@@ -7,15 +7,15 @@
     },
     "data": [
       {
-        "id": "1c5b4630-8821-42a8-8500-326053727ae3",
-        "createdAt": "2023-11-12T13:05:01.424Z",
-        "updatedAt": "2023-11-12T13:05:01.424Z",
+        "id": "b7653a04-6d64-44a4-9325-0621a2caf6a1",
+        "createdAt": "2023-11-14T15:38:05.089Z",
+        "updatedAt": "2023-11-14T15:38:05.089Z",
         "name": "Test role",
         "permissions": [
           {
-            "id": "a66b16b5-d43c-46f7-ae09-9ef9dfe1a916",
-            "createdAt": "2023-11-12T13:05:01.425Z",
-            "updatedAt": "2023-11-12T13:05:01.425Z",
+            "id": "daaa34bd-08ff-463b-a7c3-2669c4c2615c",
+            "createdAt": "2023-11-14T15:38:05.091Z",
+            "updatedAt": "2023-11-14T15:38:05.091Z",
             "permissionId": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
             "permission": {
               "id": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
@@ -27,10 +27,11 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "1c5b4630-8821-42a8-8500-326053727ae3",
-            "count": 0
+            "count": 0,
+            "roleId": "b7653a04-6d64-44a4-9325-0621a2caf6a1"
           }
-        ]
+        ],
+        "system": false
       }
     ]
   },
