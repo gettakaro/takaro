@@ -20,7 +20,7 @@ export class RoleOnPlayerModel extends TakaroModel {
 
   playerId!: string;
   roleId!: string;
-  gameServerId: string | null;
+  gameServerId: string | undefined;
 
   static get relationMappings() {
     return {

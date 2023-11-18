@@ -2,15 +2,15 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "a1977ad7-ed47-406c-b0b5-684c4b830118",
-      "createdAt": "2023-11-12T13:05:00.439Z",
-      "updatedAt": "2023-11-12T13:05:00.439Z",
+      "id": "46812c6f-2935-44c4-b6e6-9df6782df3bd",
+      "createdAt": "2023-11-14T15:38:04.174Z",
+      "updatedAt": "2023-11-14T15:38:04.174Z",
       "name": "Test role",
       "permissions": [
         {
-          "id": "77f6d8aa-d0ce-42e3-a85f-6f1edf4bcf00",
-          "createdAt": "2023-11-12T13:05:00.441Z",
-          "updatedAt": "2023-11-12T13:05:00.441Z",
+          "id": "55792f25-9e3e-4fff-972a-04d008c96495",
+          "createdAt": "2023-11-14T15:38:04.176Z",
+          "updatedAt": "2023-11-14T15:38:04.176Z",
           "permissionId": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
           "permission": {
             "id": "9f60c9ef-0d4b-4efd-aa4c-c0a7c029b94f",
@@ -22,10 +22,11 @@
             "canHaveCount": false,
             "moduleId": null
           },
-          "roleId": "a1977ad7-ed47-406c-b0b5-684c4b830118",
-          "count": 0
+          "count": 0,
+          "roleId": "46812c6f-2935-44c4-b6e6-9df6782df3bd"
         }
-      ]
+      ],
+      "system": false
     }
   },
   "status": 200,
