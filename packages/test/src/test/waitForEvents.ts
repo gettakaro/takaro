@@ -23,7 +23,7 @@ export class EventsAwaiter {
       this.socket.on('connect', async () => {
         // There's a race condition happening somewhere with the io connection
         // I couldn't get to the bottom of it, so I'm just adding a sleep here for now...
-        await sleep(500);
+        await sleep(1000);
         return resolve();
       });
 
