@@ -2,6 +2,7 @@ import { GameEvents } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
+import { sleep } from '@takaro/util';
 
 export interface IDetectedEvent {
   event: GameEvents;
@@ -19,7 +20,10 @@ export class EventsAwaiter {
         },
       });
 
-      this.socket.on('connect', () => {
+      this.socket.on('connect', async () => {
+        // There's a race condition happening somewhere with the io connection
+        // I couldn't get to the bottom of it, so I'm just adding a sleep here for now...
+        await sleep(500);
         return resolve();
       });
 
