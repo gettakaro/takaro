@@ -21,8 +21,8 @@ const Container = styled.div`
 const ContentContainer = styled(motion.div)`
   background-color: ${({ theme }): string => theme.colors.background};
   margin-top: ${({ theme }) => theme.spacing[1]};
-  border-left: 1px solid ${({ theme }) => theme.colors.secondary};
-  border-top: 1px solid ${({ theme }) => theme.colors.secondary};
+  border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
   width: 100%;
   opacity: 0;

@@ -41,6 +41,8 @@ export const lightTheme = {
     gray: '#4e525c',
     background: '#f9f9f9',
     backgroundAlt: '#e9e9e9',
+    // not set correctly yet.
+    backgroundAccent: '#353535',
     disabled: '#151515',
     text: '#030303',
     textAlt: '#636363',
@@ -73,6 +75,9 @@ export const darkTheme: ThemeType = {
     textAlt: '#818181',
     background: '#151515',
     backgroundAlt: '#202020',
+    // this is basically for when it is unsure if the background is background or backgroundAlt
+    // Often used for borders and such.
+    backgroundAccent: '#353535',
     disabled: '#151515',
     info: '#664de5',
     success: '#3ccd6A',

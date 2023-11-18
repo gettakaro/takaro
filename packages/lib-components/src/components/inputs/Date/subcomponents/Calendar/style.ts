@@ -1,9 +1,9 @@
-import { styled } from '../../../../styled';
+import { styled } from '../../../../../styled';
 
 export const Wrapper = styled.div`
   width: 100%;
   min-width: 300px;
-  padding: 0 ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => `0 ${theme.spacing[2]}`};
 `;
 
 export const Header = styled.div`
@@ -25,7 +25,7 @@ export const DayButton = styled.button<{ isSelected: boolean; isToday: boolean; 
   padding: ${({ theme }) => theme.spacing['1']};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : theme.colors.secondary)};
   }
 `;
 

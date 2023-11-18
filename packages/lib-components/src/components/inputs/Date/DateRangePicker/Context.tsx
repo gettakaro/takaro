@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { createContext, Dispatch, useContext } from 'react';
 import { Tense, Unit } from './QuickSelect';
 
-export interface DatePickerState {
+export interface DateRangePickerState {
   start: DateTime;
   end: DateTime;
   quickSelect: {
@@ -18,7 +18,7 @@ export interface DatePickerState {
   friendlyRange?: string;
 }
 
-export function reducer(state: DatePickerState, action: Action): DatePickerState {
+export function reducer(state: DateRangePickerState, action: Action): DateRangePickerState {
   switch (action.type) {
     case 'toggle_quick_select_popover':
       return {
@@ -42,6 +42,8 @@ export function reducer(state: DatePickerState, action: Action): DatePickerState
       return {
         ...state,
         start: action.payload.startDate,
+        // If endDate is before new startDate, set endDate to new startDate
+        end: state.end < action.payload.startDate ? action.payload.startDate : state.end,
         friendlyStartDate: undefined,
         friendlyRange: undefined,
       };
@@ -91,20 +93,20 @@ export type Action =
   | { type: 'toggle_quick_select_popover'; payload: { toggleQuickSelect: boolean } }
   | { type: 'toggle_start_date_popover'; payload: { toggleStartDate: boolean } }
   | { type: 'toggle_end_date_popover'; payload: { toggleEndDate: boolean } }
-  | { type: 'set_quick_select'; payload: { quickSelect: DatePickerState['quickSelect'] } }
+  | { type: 'set_quick_select'; payload: { quickSelect: DateRangePickerState['quickSelect'] } }
   | { type: 'set_relative_start_date'; payload: { startDate: DateTime; friendlyStartDate?: string } }
   | { type: 'set_absolute_start_date'; payload: { startDate: DateTime } }
   | { type: 'set_relative_end_date'; payload: { endDate: DateTime; friendlyEndDate?: string } }
   | { type: 'set_absolute_end_date'; payload: { endDate: DateTime } }
   | { type: 'set_range'; payload: { startDate: DateTime; endDate: DateTime; friendlyRange?: string } };
 
-export const DatePickerContext = createContext<DatePickerState | null>(null);
-export const DatePickerDispatchContext = createContext<Dispatch<Action> | null>(null);
+export const DateRangePickerContext = createContext<DateRangePickerState | null>(null);
+export const DateRangePickerDispatchContext = createContext<Dispatch<Action> | null>(null);
 
-export function useDatePickerContext() {
-  return useContext(DatePickerContext);
+export function useDateRangePickerContext() {
+  return useContext(DateRangePickerContext);
 }
 
-export function useDatePickerDispatchContext() {
-  return useContext(DatePickerDispatchContext);
+export function useDateRangePickerDispatchContext() {
+  return useContext(DateRangePickerDispatchContext);
 }

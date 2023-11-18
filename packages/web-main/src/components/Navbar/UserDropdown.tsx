@@ -21,7 +21,7 @@ const User = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.secondary};
+    border-color: ${({ theme }) => theme.colors.backgroundAccent};
   }
 `;
 

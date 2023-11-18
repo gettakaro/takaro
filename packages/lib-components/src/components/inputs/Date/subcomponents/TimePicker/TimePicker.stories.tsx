@@ -16,5 +16,10 @@ export default {
 export const Default: StoryFn<TimePickerProps> = () => {
   const [selectedTime, setSelectedTime] = React.useState<DateTime>(DateTime.local().startOf('day'));
 
-  return <TimePicker selectedDate={selectedTime} onChange={(newTime) => setSelectedTime(newTime)} />;
+  return (
+    <>
+      timepicker should not be used alone, instead use datepicker and select a time format
+      <TimePicker selectedDate={selectedTime} onChange={(newTime) => setSelectedTime(newTime)} />;
+    </>
+  );
 };
