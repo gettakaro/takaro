@@ -1,5 +1,5 @@
 import { EventsAwaiter } from '../test/waitForEvents.js';
-import { GameServerOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { EventTypes } from '@takaro/modules';
 import { IntegrationTest } from '../integrationTest.js';
 import { integrationConfig } from '../test/integrationConfig.js';
@@ -8,6 +8,7 @@ export interface ISetupData {
   gameServer1: GameServerOutputDTO;
   gameServer2: GameServerOutputDTO;
   players: PlayerOutputDTO[];
+  mod: ModuleOutputDTO;
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
@@ -27,6 +28,12 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     }),
   });
 
+  const mod = (
+    await this.client.module.moduleControllerCreate({
+      name: 'Test module',
+    })
+  ).data.data;
+
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 10);
@@ -44,5 +51,6 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     gameServer1: gameServer1.data.data,
     gameServer2: gameServer2.data.data,
     players,
+    mod,
   };
 };
