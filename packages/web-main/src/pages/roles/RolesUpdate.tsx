@@ -105,7 +105,7 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
                   loading={isLoading}
                   name="name"
                   placeholder="My cool role"
-                  required
+                  disabled={data.system}
                 />
               </CollapseList.Item>
               <CollapseList.Item title="Permissions">

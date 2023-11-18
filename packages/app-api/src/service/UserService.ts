@@ -5,7 +5,7 @@ import { send } from '@takaro/email';
 import { UserModel, UserRepo } from '../db/user.js';
 import { IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { RoleOutputDTO } from './RoleService.js';
+import { RoleOutputDTO, RoleService } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 
@@ -68,19 +68,24 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     return new UserRepo(this.domainId);
   }
 
-  private async extendWithOry(user: UserOutputWithRolesDTO): Promise<UserOutputWithRolesDTO> {
+  private async extend(user: UserOutputWithRolesDTO): Promise<UserOutputWithRolesDTO> {
     const oryIdentity = await ory.getIdentity(user.idpId);
-    return new UserOutputWithRolesDTO().construct({
+    const withOry = await new UserOutputWithRolesDTO().construct({
       ...user,
       email: oryIdentity.email,
     });
+    const roleService = new RoleService(this.domainId);
+    const roles = await roleService.find({ filters: { name: ['User'] } });
+
+    withOry.roles.push(...roles.results);
+    return withOry;
   }
 
   async find(filters: ITakaroQuery<UserOutputDTO>) {
     const result = await this.repo.find(filters);
     const extendedWithOry = {
       ...result,
-      results: await Promise.all(result.results.map(this.extendWithOry.bind(this))),
+      results: await Promise.all(result.results.map(this.extend.bind(this))),
     };
 
     return extendedWithOry;
@@ -88,19 +93,19 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
   async findOne(id: string) {
     const user = await this.repo.findOne(id);
-    return this.extendWithOry.bind(this)(user);
+    return this.extend.bind(this)(user);
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
     const idpUser = await ory.createIdentity(user.email, this.domainId, user.password);
     user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
-    return this.extendWithOry.bind(this)(createdUser);
+    return this.extend.bind(this)(createdUser);
   }
 
   async update(id: string, data: UserUpdateAuthDTO | UserUpdateDTO): Promise<UserOutputDTO> {
     await this.repo.update(id, data);
-    return this.extendWithOry.bind(this)(await this.repo.findOne(id));
+    return this.extend.bind(this)(await this.repo.findOne(id));
   }
 
   async delete(id: string) {

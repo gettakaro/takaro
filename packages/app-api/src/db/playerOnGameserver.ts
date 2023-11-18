@@ -12,7 +12,7 @@ import {
   PlayerOnGameServerUpdateDTO,
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
-import { RoleOutputDTO } from '../service/RoleService.js';
+import { RoleAssignmentOutputDTO } from '../service/RoleService.js';
 
 export class PlayerOnGameServerModel extends TakaroModel {
   static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
@@ -95,7 +95,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const uniqueRoles = filteredRoles.filter(
       (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
     );
-    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new RoleOutputDTO().construct(role)));
+    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new RoleAssignmentOutputDTO().construct(role)));
 
     data.roles = roleDTOs;
 

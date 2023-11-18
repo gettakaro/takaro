@@ -3,19 +3,27 @@
     "meta": {
       "page": 0,
       "limit": 100,
-      "total": 5
+      "total": 6
     },
     "data": [
       {
-        "id": "7eafcc0c-667f-4b08-9586-e66b53cbde6e",
-        "createdAt": "2023-11-12T13:16:36.871Z",
-        "updatedAt": "2023-11-12T13:16:36.871Z",
+        "id": "17306bb1-8251-4a51-ad16-77ea9540b4da",
+        "createdAt": "2023-11-14T15:37:48.788Z",
+        "updatedAt": "2023-11-14T15:37:48.789Z",
+        "name": "User",
+        "permissions": [],
+        "system": true
+      },
+      {
+        "id": "65c30eee-bbeb-4f00-ac73-bd5111d12e34",
+        "createdAt": "2023-11-14T15:37:48.933Z",
+        "updatedAt": "2023-11-14T15:37:48.933Z",
         "name": "Test role",
         "permissions": [
           {
-            "id": "494f53d8-f624-4165-8aa7-b0915b771275",
-            "createdAt": "2023-11-12T13:16:36.873Z",
-            "updatedAt": "2023-11-12T13:16:36.873Z",
+            "id": "2c7e6dbf-2dc3-4014-aeac-4fee3f27499f",
+            "createdAt": "2023-11-14T15:37:48.935Z",
+            "updatedAt": "2023-11-14T15:37:48.935Z",
             "permissionId": "001656d4-6ede-47e2-987c-49ca01a4eca0",
             "permission": {
               "id": "001656d4-6ede-47e2-987c-49ca01a4eca0",
@@ -27,21 +35,22 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "7eafcc0c-667f-4b08-9586-e66b53cbde6e",
-            "count": 0
+            "count": 0,
+            "roleId": "65c30eee-bbeb-4f00-ac73-bd5111d12e34"
           }
-        ]
+        ],
+        "system": false
       },
       {
-        "id": "b85c0f1a-f577-49c9-828a-fb2eadb58c70",
-        "createdAt": "2023-11-12T13:16:36.731Z",
-        "updatedAt": "2023-11-12T13:16:36.731Z",
+        "id": "01f71346-099d-456f-aaf5-c3de62879b35",
+        "createdAt": "2023-11-14T15:37:48.784Z",
+        "updatedAt": "2023-11-14T15:37:48.784Z",
         "name": "root",
         "permissions": [
           {
-            "id": "e0f2f2a8-f8f1-4f90-91fb-c531430d2ee5",
-            "createdAt": "2023-11-12T13:16:36.733Z",
-            "updatedAt": "2023-11-12T13:16:36.733Z",
+            "id": "a71145e9-b39a-480f-ab98-292d29d620a3",
+            "createdAt": "2023-11-14T15:37:48.786Z",
+            "updatedAt": "2023-11-14T15:37:48.786Z",
             "permissionId": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
             "permission": {
               "id": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
@@ -53,28 +62,30 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "b85c0f1a-f577-49c9-828a-fb2eadb58c70",
-            "count": 0
+            "count": 0,
+            "roleId": "01f71346-099d-456f-aaf5-c3de62879b35"
           }
-        ]
+        ],
+        "system": true
       },
       {
-        "id": "e5336b66-f683-4eba-b7fc-13b1f92ae3d9",
-        "createdAt": "2023-11-12T13:16:36.736Z",
-        "updatedAt": "2023-11-12T13:16:36.736Z",
+        "id": "3515aa36-6445-40cd-a0d7-acadb9bac85d",
+        "createdAt": "2023-11-14T15:37:48.788Z",
+        "updatedAt": "2023-11-14T15:37:48.789Z",
         "name": "Player",
-        "permissions": []
+        "permissions": [],
+        "system": true
       },
       {
-        "id": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
-        "createdAt": "2023-11-12T13:16:36.736Z",
-        "updatedAt": "2023-11-12T13:16:36.736Z",
+        "id": "9f1faab3-eae9-466e-a193-96b274746d7f",
+        "createdAt": "2023-11-14T15:37:48.788Z",
+        "updatedAt": "2023-11-14T15:37:48.789Z",
         "name": "Moderator",
         "permissions": [
           {
-            "id": "3562ae9f-6c69-4144-9385-cdc9a36002f1",
-            "createdAt": "2023-11-12T13:16:36.740Z",
-            "updatedAt": "2023-11-12T13:16:36.740Z",
+            "id": "96ec396e-9baf-4596-a945-888a1a97ccdc",
+            "createdAt": "2023-11-14T15:37:48.793Z",
+            "updatedAt": "2023-11-14T15:37:48.793Z",
             "permissionId": "08730688-73a0-4071-98b8-b818109022ca",
             "permission": {
               "id": "08730688-73a0-4071-98b8-b818109022ca",
@@ -86,13 +97,13 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
-            "count": 0
+            "count": 0,
+            "roleId": "9f1faab3-eae9-466e-a193-96b274746d7f"
           },
           {
-            "id": "e1a4c6eb-e35b-48f5-b622-f3426e3d4e00",
-            "createdAt": "2023-11-12T13:16:36.742Z",
-            "updatedAt": "2023-11-12T13:16:36.742Z",
+            "id": "16db12f3-d063-42b6-a059-4d6d095b5226",
+            "createdAt": "2023-11-14T15:37:48.793Z",
+            "updatedAt": "2023-11-14T15:37:48.793Z",
             "permissionId": "5ac9cfac-17dc-4c88-8e0e-818c9ddaa484",
             "permission": {
               "id": "5ac9cfac-17dc-4c88-8e0e-818c9ddaa484",
@@ -104,21 +115,22 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "0bfcbe94-9778-457d-bc7d-ad4fcb721cf0",
-            "count": 0
+            "count": 0,
+            "roleId": "9f1faab3-eae9-466e-a193-96b274746d7f"
           }
-        ]
+        ],
+        "system": false
       },
       {
-        "id": "86d1bf08-6e75-41a2-817e-fecf60315cb7",
-        "createdAt": "2023-11-12T13:16:36.736Z",
-        "updatedAt": "2023-11-12T13:16:36.736Z",
+        "id": "3db8f3d6-4511-4570-8b73-9515e6a47285",
+        "createdAt": "2023-11-14T15:37:48.788Z",
+        "updatedAt": "2023-11-14T15:37:48.788Z",
         "name": "Admin",
         "permissions": [
           {
-            "id": "4f14451c-877d-4acf-ae4f-7b105d8998b6",
-            "createdAt": "2023-11-12T13:16:36.741Z",
-            "updatedAt": "2023-11-12T13:16:36.741Z",
+            "id": "571042cd-c211-4fab-b82a-6e65bc281823",
+            "createdAt": "2023-11-14T15:37:48.792Z",
+            "updatedAt": "2023-11-14T15:37:48.792Z",
             "permissionId": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
             "permission": {
               "id": "5e1f560b-3348-43e3-abe3-8c9b9b40867a",
@@ -130,10 +142,11 @@
               "canHaveCount": false,
               "moduleId": null
             },
-            "roleId": "86d1bf08-6e75-41a2-817e-fecf60315cb7",
-            "count": 0
+            "count": 0,
+            "roleId": "3db8f3d6-4511-4570-8b73-9515e6a47285"
           }
-        ]
+        ],
+        "system": false
       }
     ]
   },

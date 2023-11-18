@@ -97,6 +97,69 @@ const tests = [
       expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Uses system roles',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            timeout: 0,
+          }),
+        }
+      );
+
+      await Promise.all(
+        this.setupData.players.map(async (player) => {
+          await this.client.player.playerControllerRemoveRole(player.id, this.setupData.role.id);
+        })
+      );
+
+      const permissions = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
+      const playerRoleRes = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      await this.client.role.roleControllerUpdate(playerRoleRes.data.data[0].id, {
+        name: 'Player',
+        permissions,
+      });
+
+      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
+
+      await this.client.role.roleControllerUpdate(playerRoleRes.data.data[0].id, {
+        name: 'Player',
+        permissions: [],
+      });
+
+      const tpEventNoPerm = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await tpEventNoPerm)[0].data.msg).to.be.eq('You do not have permission to use teleports.');
+    },
+  }),
 ];
 
 describe(group, function () {
