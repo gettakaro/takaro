@@ -1,0 +1,42 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "40e7888f-a8b3-45d7-997b-cf257f31dcc6",
+      "createdAt": "2023-11-19T15:52:07.026Z",
+      "updatedAt": "2023-11-19T15:52:07.026Z",
+      "name": "Melvina15",
+      "steamId": "q3albiue5x7zc6ch",
+      "xboxLiveId": null,
+      "epicOnlineServicesId": null,
+      "roleAssignments": [
+        {
+          "playerId": "40e7888f-a8b3-45d7-997b-cf257f31dcc6",
+          "roleId": "bf674a66-4548-4a1b-8aad-12eba1f200ce",
+          "role": {
+            "id": "bf674a66-4548-4a1b-8aad-12eba1f200ce",
+            "createdAt": "2023-11-19T15:52:06.335Z",
+            "updatedAt": "2023-11-19T15:52:06.336Z",
+            "name": "Player",
+            "permissions": [],
+            "system": true
+          }
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Expired roles get deleted",
+    "filteredFields": [
+      "name",
+      "playerId",
+      "steamId",
+      "roleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

@@ -18,6 +18,10 @@ Players can be assigned Roles in two ways:
 
 In this case, the player can use teleports on all servers due to their global role, but they can only set teleports on Game Server A because of their game-server specific role.
 
+### Timed roles
+
+When assigning a role to a user or to a player, you can optionally specify an expiration date. This allows you to create timed roles that will automatically expire after a certain amount of time. This is useful for things like temporary bans or temporary VIP access.
+
 ### System roles
 
 There are 3 system roles that are automatically created when Takaro is installed and have special meaning

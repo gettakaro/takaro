@@ -1,12 +1,33 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
-import { PermissionOnRoleModel, RoleModel, ROLE_TABLE_NAME } from './role.js';
+import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
 
 export const USER_TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
+
+export class RoleOnUserModel extends TakaroModel {
+  static tableName = ROLE_ON_USER_TABLE_NAME;
+
+  userId: string;
+  roleId: string;
+  expiresAt: string | null;
+
+  static get relationMappings() {
+    return {
+      role: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: RoleModel,
+        join: {
+          from: `${ROLE_ON_USER_TABLE_NAME}.roleId`,
+          to: `${ROLE_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
+}
 
 export class UserModel extends TakaroModel {
   static tableName = USER_TABLE_NAME;
@@ -18,15 +39,11 @@ export class UserModel extends TakaroModel {
   static get relationMappings() {
     return {
       roles: {
-        relation: Model.ManyToManyRelation,
-        modelClass: RoleModel,
+        relation: Model.HasManyRelation,
+        modelClass: RoleOnUserModel,
         join: {
           from: `${USER_TABLE_NAME}.id`,
-          through: {
-            from: `${ROLE_ON_USER_TABLE_NAME}.userId`,
-            to: `${ROLE_ON_USER_TABLE_NAME}.roleId`,
-          },
-          to: `${ROLE_TABLE_NAME}.id`,
+          to: `${ROLE_ON_USER_TABLE_NAME}.userId`,
         },
       },
     };
@@ -56,7 +73,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     const { query } = await this.getModel();
     const result = await new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
-      extend: ['roles.permissions.permission'],
+      extend: ['roles.role.permissions.permission'],
     }).build(query);
 
     return {
@@ -67,7 +84,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async findOne(id: string): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphFetched('roles.permissions.permission');
+    const data = await query.findById(id).withGraphFetched('roles.role.permissions.permission');
 
     if (!data) {
       throw new errors.NotFoundError(`User with id ${id} not found`);
@@ -100,14 +117,20 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     return this.findOne(item.id);
   }
 
-  async assignRole(userId: string, roleId: string): Promise<void> {
-    const { model } = await this.getModel();
-    await model.relatedQuery('roles').for(userId).relate(roleId);
+  async assignRole(userId: string, roleId: string, expiresAt?: string): Promise<void> {
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnUserModel.bindKnex(knex);
+    await roleOnPlayerModel.query().insert({
+      userId,
+      roleId,
+      expiresAt,
+    });
   }
 
   async removeRole(userId: string, roleId: string): Promise<void> {
-    const { model } = await this.getModel();
-    await model.relatedQuery('roles').for(userId).unrelate().where('roleId', roleId);
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnUserModel.bindKnex(knex);
+    await roleOnPlayerModel.query().delete().where({ userId, roleId });
   }
 
   async NOT_DOMAIN_SCOPED_resolveDomainByEmail(email: string): Promise<string> {

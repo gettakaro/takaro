@@ -4122,10 +4122,10 @@ export interface PlayerOnGameserverOutputDTOAPI {
 export interface PlayerOnGameserverOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleAssignmentOutputDTO>}
+   * @type {Array<PlayerRoleAssignmentOutputDTO>}
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
-  roles: Array<RoleAssignmentOutputDTO>;
+  roles: Array<PlayerRoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4294,10 +4294,10 @@ export interface PlayerOutputDTOAPI {
 export interface PlayerOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleAssignmentOutputDTO>}
+   * @type {Array<PlayerRoleAssignmentOutputDTO>}
    * @memberof PlayerOutputWithRolesDTO
    */
-  roleAssignments: Array<RoleAssignmentOutputDTO>;
+  roleAssignments: Array<PlayerRoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4350,6 +4350,25 @@ export interface PlayerOutputWithRolesDTO {
 /**
  *
  * @export
+ * @interface PlayerOutputWithRolesDTOAPI
+ */
+export interface PlayerOutputWithRolesDTOAPI {
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof PlayerOutputWithRolesDTOAPI
+   */
+  data: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOutputWithRolesDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface PlayerRoleAssignChangeDTO
  */
 export interface PlayerRoleAssignChangeDTO {
@@ -4359,6 +4378,67 @@ export interface PlayerRoleAssignChangeDTO {
    * @memberof PlayerRoleAssignChangeDTO
    */
   gameServerId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignChangeDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface PlayerRoleAssignmentOutputDTO
+ */
+export interface PlayerRoleAssignmentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  role: RoleOutputDTO;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -4492,55 +4572,6 @@ export interface RedirectQs {
    * @memberof RedirectQs
    */
   redirect: string;
-}
-/**
- *
- * @export
- * @interface RoleAssignmentOutputDTO
- */
-export interface RoleAssignmentOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  playerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  roleId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  gameServerId?: string;
-  /**
-   *
-   * @type {RoleOutputDTO}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  role: RoleOutputDTO;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -5123,6 +5154,61 @@ export interface TokenOutputDTOAPI {
 /**
  *
  * @export
+ * @interface UserAssignmentOutputDTO
+ */
+export interface UserAssignmentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof UserAssignmentOutputDTO
+   */
+  role: RoleOutputDTO;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface UserCreateInputDTO
  */
 export interface UserCreateInputDTO {
@@ -5159,10 +5245,10 @@ export interface UserCreateInputDTO {
 export interface UserOutputArrayDTOAPI {
   /**
    *
-   * @type {Array<UserOutputDTO>}
+   * @type {Array<UserOutputWithRolesDTO>}
    * @memberof UserOutputArrayDTOAPI
    */
-  data: Array<UserOutputDTO>;
+  data: Array<UserOutputWithRolesDTO>;
   /**
    *
    * @type {MetadataOutput}
@@ -5246,10 +5332,10 @@ export interface UserOutputDTOAPI {
 export interface UserOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleOutputDTO>}
+   * @type {Array<UserAssignmentOutputDTO>}
    * @memberof UserOutputWithRolesDTO
    */
-  roles: Array<RoleOutputDTO>;
+  roles: Array<UserAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -5292,6 +5378,19 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   discordId?: string;
+}
+/**
+ *
+ * @export
+ * @interface UserRoleAssignChangeDTO
+ */
+export interface UserRoleAssignChangeDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserRoleAssignChangeDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -12082,7 +12181,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
     async playerControllerGetOne(
       id: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputWithRolesDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetOne(id, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -12159,7 +12258,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputDTOAPI> {
+    playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputWithRolesDTOAPI> {
       return localVarFp.playerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
@@ -13074,12 +13173,14 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     userControllerAssignRole: async (
       id: string,
       roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -13102,9 +13203,16 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
       // authentication domainAuth required
 
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userRoleAssignChangeDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -13480,15 +13588,22 @@ export const UserApiFp = function (configuration?: Configuration) {
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async userControllerAssignRole(
       id: string,
       roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerAssignRole(id, roleId, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerAssignRole(
+        id,
+        roleId,
+        userRoleAssignChangeDTO,
+        options
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -13646,11 +13761,19 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerAssignRole(id: string, roleId: string, options?: any): AxiosPromise<APIOutput> {
-      return localVarFp.userControllerAssignRole(id, roleId, options).then((request) => request(axios, basePath));
+    userControllerAssignRole(
+      id: string,
+      roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -13767,13 +13890,19 @@ export class UserApi extends BaseAPI {
    * @summary Assign role
    * @param {string} id
    * @param {string} roleId
+   * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UserApi
    */
-  public userControllerAssignRole(id: string, roleId: string, options?: AxiosRequestConfig) {
+  public userControllerAssignRole(
+    id: string,
+    roleId: string,
+    userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
+    options?: AxiosRequestConfig
+  ) {
     return UserApiFp(this.configuration)
-      .userControllerAssignRole(id, roleId, options)
+      .userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
