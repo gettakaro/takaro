@@ -220,11 +220,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'If player does not have role to create public teleports, command gets denied',
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
-
+      const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
-        name: this.setupData.role.name,
-        permissions,
+        permissions: [
+          {
+            permissionId: useTeleportsRole[0].permissionId,
+            count: 3,
+          },
+        ],
       });
 
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -257,6 +260,85 @@ const tests = [
 
       expect((await setPublicEvent).length).to.be.eq(1);
       expect((await setPublicEvent)[0].data.msg).to.be.eq('You do not have permission to create public teleports.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Prohibits players from settings more public teleports than their role allows',
+    test: async function () {
+      const permissionRes = await this.client.permissionCodesToInputs(['TELEPORTS_CREATE_PUBLIC', 'TELEPORTS_USE']);
+      await this.client.role.roleControllerUpdate(this.setupData.role.id, {
+        permissions: [
+          {
+            permissionId: permissionRes[0].permissionId,
+            count: 3,
+          },
+          {
+            permissionId: permissionRes[1].permissionId,
+            count: 5,
+          },
+        ],
+      });
+
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id,
+        {
+          userConfig: JSON.stringify({
+            allowPublicTeleports: true,
+            timeout: 0,
+          }),
+        }
+      );
+
+      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
+
+      await Promise.all(
+        Array.from({ length: 4 }).map(async (_, i) => {
+          return this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+            msg: `/settp test${i}`,
+            playerId: this.setupData.players[0].id,
+          });
+        })
+      );
+
+      expect((await setTpEvent).length).to.be.eq(4);
+
+      for (const event of await setTpEvent) {
+        expect(event.data.msg).to.match(/Teleport test\d set\./);
+      }
+
+      const setPublicEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+
+      await Promise.all(
+        Array.from({ length: 3 }).map(async (_, i) => {
+          return this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+            msg: `/setpublic test${i}`,
+            playerId: this.setupData.players[0].id,
+          });
+        })
+      );
+
+      expect((await setPublicEvent).length).to.be.eq(3);
+
+      for (const event of await setPublicEvent) {
+        expect(event.data.msg).to.match(/Teleport test\d is now public\./);
+      }
+
+      const setPublicEvent2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setpublic test4',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await setPublicEvent2).length).to.be.eq(1);
+
+      expect((await setPublicEvent2)[0].data.msg).to.be.eq(
+        'You have reached the maximum number of public teleports for your role, maximum allowed is 3'
+      );
     },
   }),
 ];

@@ -4736,13 +4736,13 @@ export interface RoleUpdateInputDTO {
    * @type {string}
    * @memberof RoleUpdateInputDTO
    */
-  name: string;
+  name?: string;
   /**
    *
    * @type {Array<PermissionInputDTO>}
    * @memberof RoleUpdateInputDTO
    */
-  permissions: Array<PermissionInputDTO>;
+  permissions?: Array<PermissionInputDTO>;
 }
 /**
  *
