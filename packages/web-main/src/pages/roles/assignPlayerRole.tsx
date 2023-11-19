@@ -1,4 +1,13 @@
-import { Drawer, CollapseList, FormError, Button, Select, TextField, Loading } from '@takaro/lib-components';
+import {
+  Drawer,
+  CollapseList,
+  FormError,
+  Button,
+  Select,
+  TextField,
+  Loading,
+  DatePicker,
+} from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayerRoleAssign, useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
@@ -9,11 +18,13 @@ import { roleAssignValidationSchema } from './validationSchema';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
+import { DateTime } from 'luxon';
 
 interface IFormInputs {
   id: string;
   roleId: string;
   gameServerId?: string;
+  expiresAt?: string;
 }
 
 interface IAssignRoleFormProps {
@@ -65,9 +76,9 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId, expiresAt }) => {
     if (gameServerId === 'null') gameServerId = undefined;
-    await mutateAsync({ id, roleId, gameServerId });
+    await mutateAsync({ id, roleId, gameServerId, expiresAt });
     navigate(PATHS.player.profile(id));
   };
 
@@ -116,6 +127,19 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                     ))}
                   </Select.OptionGroup>
                 </Select>
+
+                <DatePicker
+                  mode="absolute"
+                  control={control}
+                  label={'Expiration date'}
+                  name={'expiresAt'}
+                  required={false}
+                  loading={isLoading}
+                  description={'The role will be automatically removed after this date'}
+                  popOverPlacement={'bottom'}
+                  timePickerOptions={{ interval: 30 }}
+                  format={DateTime.DATETIME_SHORT}
+                />
               </CollapseList.Item>
               {error && <FormError error={error} />}
             </form>

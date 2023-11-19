@@ -169,7 +169,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       })
     );
 
-    await userService.assignRole(rootUser.id, rootRole.id);
+    await userService.assignRole(rootRole.id, rootUser.id);
 
     await moduleService.seedBuiltinModules();
 

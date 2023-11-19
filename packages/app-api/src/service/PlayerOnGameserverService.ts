@@ -7,7 +7,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
-import { RoleAssignmentOutputDTO, RoleService } from './RoleService.js';
+import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -41,9 +41,9 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
-  @Type(() => RoleAssignmentOutputDTO)
+  @Type(() => PlayerRoleAssignmentOutputDTO)
   @ValidateNested({ each: true })
-  roles: RoleAssignmentOutputDTO[];
+  roles: PlayerRoleAssignmentOutputDTO[];
 }
 
 export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCreateDTO> {
@@ -128,7 +128,7 @@ export class PlayerOnGameServerService extends TakaroService<
     const roles = await roleService.find({ filters: { name: ['Player'] } });
 
     player.roles.push(
-      await new RoleAssignmentOutputDTO().construct({
+      await new PlayerRoleAssignmentOutputDTO().construct({
         roleId: roles.results[0].id,
         role: roles.results[0],
       })

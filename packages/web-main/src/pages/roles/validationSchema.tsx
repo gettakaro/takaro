@@ -14,4 +14,5 @@ export const roleAssignValidationSchema = z.object({
   id: z.string().uuid(),
   roleId: z.string().uuid(),
   gameServerId: z.string().optional(),
+  expiresAt: z.string().optional(),
 });

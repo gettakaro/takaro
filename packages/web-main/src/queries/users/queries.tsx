@@ -63,13 +63,19 @@ export const useUser = (userId: string) => {
   return queryOpts;
 };
 
+interface IUserRoleAssign {
+  userId: string;
+  roleId: string;
+  expiresAt?: string;
+}
+
 export const useUserAssignRole = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }) => {
-      const res = (await apiClient.user.userControllerAssignRole(userId, roleId)).data;
+  return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+    mutationFn: async ({ userId, roleId, expiresAt }) => {
+      const res = (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data;
       queryClient.invalidateQueries(userKeys.detail(userId));
       return res;
     },
