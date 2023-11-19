@@ -64,10 +64,12 @@ export class ServiceRoleCreateInputDTO extends TakaroDTO<ServiceRoleCreateInputD
 
 export class RoleUpdateInputDTO extends TakaroDTO<RoleUpdateInputDTO> {
   @Length(3, 20)
+  @IsOptional()
   name: string;
 
   @ValidateNested({ each: true })
   @Type(() => PermissionInputDTO)
+  @IsOptional()
   permissions: PermissionInputDTO[];
 }
 

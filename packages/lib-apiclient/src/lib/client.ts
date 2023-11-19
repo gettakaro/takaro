@@ -71,6 +71,9 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         permissionId: p.id,
       }));
 
+    if (records.length !== permissions.length)
+      throw new Error(`Not all permissions were found: ${permissions.join(', ')}`);
+
     return records;
   }
 

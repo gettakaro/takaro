@@ -68,11 +68,19 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({ maxTeleports: 3 }),
-        }
+        this.setupData.teleportsModule.id
       );
+
+      const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
+      await this.client.role.roleControllerUpdate(this.setupData.role.id, {
+        permissions: [
+          {
+            permissionId: useTeleportsRole[0].permissionId,
+            count: 3,
+          },
+        ],
+      });
+
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
@@ -98,7 +106,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        'You have reached the maximum number of teleports, maximum allowed is 3'
+        'You have reached the maximum number of teleports for your role, maximum allowed is 3'
       );
     },
   }),
