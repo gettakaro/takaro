@@ -9,12 +9,6 @@ export class Teleports extends BuiltinModule {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
-          maxTeleports: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 50,
-            default: 5,
-          },
           timeout: {
             type: 'integer',
             description: 'The time in milliseconds required between teleports',
@@ -26,7 +20,7 @@ export class Teleports extends BuiltinModule {
             default: false,
           },
         },
-        required: ['maxTeleports'],
+        required: [],
         additionalProperties: false,
       })
     );

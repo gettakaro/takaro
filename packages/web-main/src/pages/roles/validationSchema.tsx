@@ -2,7 +2,12 @@ import { z } from 'zod';
 
 export const validationSchema = z.object({
   name: z.string().min(3).max(50),
-  permissions: z.record(z.boolean()),
+  permissions: z.record(
+    z.object({
+      enabled: z.boolean().optional(),
+      count: z.number().optional(),
+    })
+  ),
 });
 
 export const roleAssignValidationSchema = z.object({

@@ -1,11 +1,11 @@
-import { Button, Divider, Select, TextField } from '../../../../components';
+import { Button, Divider, Select, TextField } from '../../../../../components';
 import { FC, useMemo } from 'react';
-import { styled } from '../../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDatePickerContext, useDatePickerDispatchContext } from '../Context';
+import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
 import { DateTime, DateTimeUnit } from 'luxon';
+import { Container, StyledForm, InputsContainer, CommonlyUsedGrid } from './style';
 
 export enum Tense {
   Last = 'Last',
@@ -22,45 +22,6 @@ export enum Unit {
   Years = 'Years',
 }
 
-const Container = styled.div`
-  padding: ${({ theme }) => theme.spacing[2]};
-  min-width: 400px;
-  h4 {
-    margin-bottom: ${({ theme }) => theme.spacing['1']};
-  }
-`;
-
-const CommonlyUsedGrid = styled.ul`
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(5, 1fr);
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
-  padding: 0 ${({ theme }) => theme.spacing[1]};
-
-  li {
-    text-align: left;
-    cursor: pointer;
-  }
-`;
-
-const StyledForm = styled.form`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[1]};
-`;
-
-const InputsContainer = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 0.5fr 0.5fr 1fr;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
-  div {
-    width: 100%;
-    margin-bottom: 0;
-  }
-`;
-
 interface FormInputs {
   tense: string;
   step: number;
@@ -72,11 +33,11 @@ interface QuickSelectProps {
 }
 
 export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
-  const state = useDatePickerContext();
-  const dispatch = useDatePickerDispatchContext();
+  const state = useDateRangePickerContext();
+  const dispatch = useDateRangePickerDispatchContext();
 
   if (!dispatch) {
-    throw new Error('useDatePickerDispatchContext must be used within a DatePickerProvider');
+    throw new Error('useDateRangePickerDispatchContext must be used within a DateRangePickerProvider');
   }
 
   const validationSchema = useMemo(

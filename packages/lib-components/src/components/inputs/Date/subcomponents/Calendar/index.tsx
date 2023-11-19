@@ -1,7 +1,7 @@
 import { DateTime, Interval } from 'luxon';
 import { FC, useCallback, useState } from 'react';
 import { Header, Wrapper, DaysGrid, DayButton, DayWrapper, DayOfWeekGrid } from './style';
-import { IconButton, Tooltip } from '../../../../components';
+import { IconButton, Tooltip } from '../../../../../components';
 import { AiOutlineRight as ChevronRightIcon, AiOutlineLeft as ChevronLeftIcon } from 'react-icons/ai';
 
 interface CalendarProps {
@@ -12,28 +12,27 @@ interface CalendarProps {
 
 export const Calendar: FC<CalendarProps> = ({ onDateClick, selectedDate, id }) => {
   const today = DateTime.local().startOf('day');
-  const [currentMonth, setCurrentMonth] = useState<string>(selectedDate.toFormat('MMM-YYYY'));
-  const firstDayCurrentMonth = DateTime.fromFormat(currentMonth, 'MMM-YYYY').startOf('month');
+  const [currentMonth, setCurrentMonth] = useState<DateTime>(selectedDate.startOf('month'));
 
   // days of month
-  const days = Interval.fromDateTimes(firstDayCurrentMonth, firstDayCurrentMonth.endOf('month'))
+  const days = Interval.fromDateTimes(currentMonth, currentMonth.endOf('month'))
     .splitBy({ days: 1 })
     .map((day) => day.start!);
 
   const previousMonth = useCallback(() => {
-    const firstDayPreviousMonth = firstDayCurrentMonth.minus({ months: 1 });
-    setCurrentMonth(firstDayPreviousMonth.toFormat('MMM-YYYY'));
-  }, [firstDayCurrentMonth]);
+    const firstDayPreviousMonth = currentMonth.minus({ months: 1 });
+    setCurrentMonth(firstDayPreviousMonth);
+  }, [currentMonth]);
 
   const nextMonth = useCallback(() => {
-    const firstDayNextMonth = firstDayCurrentMonth.plus({ months: 1 });
-    setCurrentMonth(firstDayNextMonth.toFormat('MMM-YYYY'));
-  }, [firstDayCurrentMonth]);
+    const firstDayNextMonth = currentMonth.plus({ months: 1 });
+    setCurrentMonth(firstDayNextMonth);
+  }, [currentMonth]);
 
   return (
     <Wrapper>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <h2 style={{ flex: '1 1 auto' }}>{firstDayCurrentMonth.toFormat('MMMM yyyy')}</h2>
+        <h2 style={{ flex: '1 1 auto' }}>{currentMonth.toFormat('MMMM yyyy')}</h2>
         <Tooltip>
           <Tooltip.Trigger>
             <IconButton onClick={previousMonth} icon={<ChevronLeftIcon />} ariaLabel="Previous month" />
@@ -75,7 +74,7 @@ export const Calendar: FC<CalendarProps> = ({ onDateClick, selectedDate, id }) =
                 }}
                 isSelected={day.hasSame(selectedDate, 'day') ?? false}
                 isToday={day.hasSame(today, 'day') ?? false}
-                isSameMonth={day.hasSame(firstDayCurrentMonth, 'month') ?? false}
+                isSameMonth={day.hasSame(currentMonth, 'month') ?? false}
               >
                 <time key={`${id}-time`} dateTime={day?.toFormat('yyyy-MM-dd')}>
                   {day?.toFormat('d')}

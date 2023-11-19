@@ -104,7 +104,7 @@ class SocketServer {
         this.log.error('No domain found in context');
         return next(new errors.UnauthorizedError());
       }
-      socket.join(ctxData.domain);
+      await socket.join(ctxData.domain);
       next();
     } catch (error) {
       this.log.error('Unknown error when routing socket', error);

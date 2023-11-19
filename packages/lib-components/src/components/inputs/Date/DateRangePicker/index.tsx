@@ -5,20 +5,20 @@ import {
   AiOutlineDown as DownIcon,
   AiOutlineArrowRight as ArrowRightIcon,
 } from 'react-icons/ai';
-import { Popover } from '../../../components';
+import { Popover } from '../../../../components';
 import { QuickSelect, Tense, Unit } from './QuickSelect';
 import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
-import { DatePickerContext, DatePickerDispatchContext, reducer } from './Context';
+import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';
 
-export interface DatePickerProps {
+export interface DateRangePickerProps {
   value?: string;
   readOnly?: boolean;
   id: string;
   onChange: (start: DateTime, end: DateTime) => void;
 }
 
-export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange }) => {
+export const DateRangePicker: FC<DateRangePickerProps> = ({ readOnly = false, id, onChange }) => {
   const [state, dispatch] = useReducer(reducer, {
     quickSelect: {
       show: false,
@@ -46,8 +46,8 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange
   }, [state.start, state.end]);
 
   return (
-    <DatePickerContext.Provider value={state}>
-      <DatePickerDispatchContext.Provider value={dispatch}>
+    <DateRangePickerContext.Provider value={state}>
+      <DateRangePickerDispatchContext.Provider value={dispatch}>
         <Container hasError={hasError} isOpen={state.quickSelect.show || state.showStartDate || state.showEndDate}>
           <Popover
             open={state.quickSelect.show}
@@ -120,7 +120,7 @@ export const DatePicker: FC<DatePickerProps> = ({ readOnly = false, id, onChange
             </>
           )}
         </Container>
-      </DatePickerDispatchContext.Provider>
-    </DatePickerContext.Provider>
+      </DateRangePickerDispatchContext.Provider>
+    </DateRangePickerContext.Provider>
   );
 };

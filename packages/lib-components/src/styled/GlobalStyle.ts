@@ -75,7 +75,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   strong {
     padding: ${({ theme }) => `0 ${theme.spacing['0_25']}`};
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    border: 1px solid ${({ theme }) => theme.colors.secondary};
+    border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     text-transform: capitalize;
     font-weight: 400;

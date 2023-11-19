@@ -10,10 +10,12 @@ const tests = [
     snapshot: true,
     name: 'Cannot read data from other domains',
     setup: async function () {
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_ROLES]);
+
       // Create a role in standard domain
       await this.client.role.roleControllerCreate({
         name: 'Test role',
-        permissions: [PERMISSIONS.READ_ROLES],
+        permissions,
       });
 
       // Create a new domain and login to that

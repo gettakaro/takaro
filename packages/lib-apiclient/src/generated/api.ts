@@ -3802,6 +3802,25 @@ export interface PermissionCreateDTO {
 /**
  *
  * @export
+ * @interface PermissionInputDTO
+ */
+export interface PermissionInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionInputDTO
+   */
+  permissionId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PermissionInputDTO
+   */
+  count?: number;
+}
+/**
+ *
+ * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -3817,6 +3836,12 @@ export interface PermissionOnRoleDTO {
    * @memberof PermissionOnRoleDTO
    */
   permission: PermissionOutputDTO;
+  /**
+   *
+   * @type {number}
+   * @memberof PermissionOnRoleDTO
+   */
+  count: number;
   /**
    *
    * @type {string}
@@ -4097,10 +4122,10 @@ export interface PlayerOnGameserverOutputDTOAPI {
 export interface PlayerOnGameserverOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleOutputDTO>}
+   * @type {Array<RoleAssignmentOutputDTO>}
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
-  roles: Array<RoleOutputDTO>;
+  roles: Array<RoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4531,10 +4556,10 @@ export interface RoleCreateInputDTO {
   name: string;
   /**
    *
-   * @type {Array<string>}
+   * @type {Array<PermissionInputDTO>}
    * @memberof RoleCreateInputDTO
    */
-  permissions: Array<string>;
+  permissions: Array<PermissionInputDTO>;
 }
 /**
  *
@@ -4573,6 +4598,12 @@ export interface RoleOutputDTO {
    * @memberof RoleOutputDTO
    */
   permissions: Array<PermissionOnRoleDTO>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof RoleOutputDTO
+   */
+  system: boolean;
   /**
    *
    * @type {string}
@@ -4705,13 +4736,13 @@ export interface RoleUpdateInputDTO {
    * @type {string}
    * @memberof RoleUpdateInputDTO
    */
-  name: string;
+  name?: string;
   /**
    *
-   * @type {Array<string>}
+   * @type {Array<PermissionInputDTO>}
    * @memberof RoleUpdateInputDTO
    */
-  permissions: Array<string>;
+  permissions?: Array<PermissionInputDTO>;
 }
 /**
  *
@@ -4806,6 +4837,31 @@ export interface SendMessageInputDTO {
    * @memberof SendMessageInputDTO
    */
   message: string;
+}
+/**
+ *
+ * @export
+ * @interface ServiceRoleCreateInputDTO
+ */
+export interface ServiceRoleCreateInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {Array<PermissionInputDTO>}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  permissions: Array<PermissionInputDTO>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ServiceRoleCreateInputDTO
+   */
+  system?: boolean;
 }
 /**
  *

@@ -3,7 +3,7 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Cannot delete root role"
+        "message": "Cannot delete system roles"
       }
     },
     "data": {}

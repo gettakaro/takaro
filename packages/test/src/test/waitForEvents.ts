@@ -19,7 +19,7 @@ export class EventsAwaiter {
         },
       });
 
-      this.socket.on('connect', () => {
+      this.socket.on('connect', async () => {
         return resolve();
       });
 
@@ -58,7 +58,7 @@ export class EventsAwaiter {
           console.warn(`Event ${expectedEvent} timed out`);
           console.warn(JSON.stringify(events, null, 2));
           reject(new Error(`Event ${expectedEvent} timed out`));
-        }, 15000);
+        }, 5000);
       }),
     ]);
   }

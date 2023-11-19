@@ -26,7 +26,7 @@ export const SelectButton = styled.div<{
   border: 0.1rem solid
     ${({ theme, isOpen, hasError }) => {
       if (hasError) return theme.colors.error;
-      return isOpen ? theme.colors.primary : theme.colors.secondary;
+      return isOpen ? theme.colors.primary : theme.colors.backgroundAccent;
     }};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   font-weight: 500;
@@ -61,7 +61,7 @@ export const SelectContainer = styled.div`
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing['0_75']};
   outline: 0;
-  border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
@@ -69,7 +69,7 @@ export const SelectContainer = styled.div`
   z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
-export const OptionContainer = styled.div<{ isActive: boolean }>`
+export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
@@ -77,7 +77,7 @@ export const OptionContainer = styled.div<{ isActive: boolean }>`
   text-align: left;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: ${({ isMultiSelect }) => (isMultiSelect ? 'flex-start' : 'space-between')};
   transition: transform 0.15s ease-out;
   outline: 0;
   scroll-margin: ${({ theme }) => theme.spacing['0_75']};
@@ -89,7 +89,7 @@ export const OptionContainer = styled.div<{ isActive: boolean }>`
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.secondary};
     span {
       color: white;
     }
@@ -101,6 +101,7 @@ export const OptionContainer = styled.div<{ isActive: boolean }>`
     gap: ${({ theme }) => theme.spacing[1]};
 
     span {
+      cursor: pointer;
       color: ${({ theme, isActive: isSelected }) => (isSelected ? theme.colors.white : theme.colors.text)};
     }
   }
