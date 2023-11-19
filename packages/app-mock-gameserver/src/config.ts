@@ -12,7 +12,6 @@ interface IMockServerConfig extends IBaseConfig {
   };
   mockserver: {
     name: string;
-    scenarioInterval: number;
   };
 }
 
@@ -54,12 +53,6 @@ const configSchema = {
       format: String,
       default: 'default-mock',
       env: 'MOCK_SERVER_NAME',
-    },
-    scenarioInterval: {
-      doc: 'The interval in which to run random scenarios',
-      format: Number,
-      default: 1200000,
-      env: 'MOCK_SERVER_SCENARIO_INTERVAL',
     },
   },
 };
