@@ -8,7 +8,6 @@
       "gameserverId": "1225343a-ca6a-4d64-b2a9-c7d2d3cd8270",
       "moduleId": "eacf283f-760b-4ed0-b55f-3e33db83c4b5",
       "userConfig": {
-        "maxTeleports": 42,
         "timeout": 1337,
         "allowPublicTeleports": false
       },

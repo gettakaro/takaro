@@ -37,6 +37,15 @@ const tests = [
     setup: cleanRoleSetup,
     name: 'Player has global role -> works',
     test: async function () {
+      const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
+      await this.client.role.roleControllerUpdate(this.setupData.role.id, {
+        permissions: [
+          {
+            permissionId: useTeleportsRole[0].permissionId,
+            count: 3,
+          },
+        ],
+      });
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, this.setupData.role.id);
 
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -83,6 +92,16 @@ const tests = [
     setup: cleanRoleSetup,
     name: 'Player has role on correct gameserver -> works',
     test: async function () {
+      const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
+      await this.client.role.roleControllerUpdate(this.setupData.role.id, {
+        permissions: [
+          {
+            permissionId: useTeleportsRole[0].permissionId,
+            count: 3,
+          },
+        ],
+      });
+
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, this.setupData.role.id, {
         gameServerId: this.setupData.gameserver.id,
       });
@@ -119,11 +138,15 @@ const tests = [
         })
       );
 
-      const permissions = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
       const playerRoleRes = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
       await this.client.role.roleControllerUpdate(playerRoleRes.data.data[0].id, {
-        name: 'Player',
-        permissions,
+        permissions: [
+          {
+            permissionId: useTeleportsRole[0].permissionId,
+            count: 3,
+          },
+        ],
       });
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

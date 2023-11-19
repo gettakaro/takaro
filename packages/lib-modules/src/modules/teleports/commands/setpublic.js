@@ -13,7 +13,9 @@ async function main() {
     return;
   }
 
-  if (!checkPermission(player, 'TELEPORTS_CREATE_PUBLIC')) {
+  const hasPermission = checkPermission(player, 'TELEPORTS_CREATE_PUBLIC');
+
+  if (!hasPermission) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: 'You do not have permission to create public teleports.',
       opts: {
@@ -22,6 +24,29 @@ async function main() {
         },
       },
     });
+    return;
+  }
+
+  const existingTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
+    search: {
+      key: 'tp_',
+    },
+    filters: {
+      gameServerId: [gameServerId],
+      playerId: [player.playerId],
+      moduleId: [mod.moduleId],
+    },
+  });
+
+  const existingPublicTeleportsForPlayer = existingTeleportsForPlayerRes.data.data.filter((tp) => {
+    const teleport = JSON.parse(tp.value);
+    return teleport.public;
+  });
+
+  if (existingPublicTeleportsForPlayer.length >= hasPermission.count) {
+    await data.player.pm(
+      `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`
+    );
     return;
   }
 
