@@ -37,10 +37,6 @@ class MockGameserver implements IMockGameServer {
   private socketServer = getSocketServer();
   private redis = Redis.getClient('mockgameserver');
 
-  private scenarioInterval = setInterval(() => {
-    playScenario(this.socketServer.io);
-  }, config.get('mockserver.scenarioInterval'));
-
   async ensurePlayersPersisted() {
     const existingPlayers = await (await this.redis).keys(getRedisKey('player:*'));
 
