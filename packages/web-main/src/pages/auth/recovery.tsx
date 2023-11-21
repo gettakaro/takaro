@@ -75,7 +75,6 @@ export const Recovery: FC = () => {
   useEffect(() => {
     // we might redirect to this page after the flow is initialized, so we check for the flowId in the URL
     const flowId = searchParams.get('flow');
-    console.log('flowId', flowId);
     // the flow already exists
     if (flowId) {
       getFlow(flowId).catch(createFlow); // if for some reason the flow has expired, we need to get a new one

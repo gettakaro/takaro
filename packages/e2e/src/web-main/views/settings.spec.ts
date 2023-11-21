@@ -33,7 +33,7 @@ test('Can set server-scoped settings', async ({ page }) => {
 });
 
 test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
-  await takaro.client.gameserver.gameServerControllerCreate({
+  await takaro.rootClient.gameserver.gameServerControllerCreate({
     name: 'Second server',
     type: GameServerCreateDTOTypeEnum.Mock,
     connectionInfo: JSON.stringify({

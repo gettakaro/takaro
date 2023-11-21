@@ -24,13 +24,14 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PermissionsGuard, useUserHasPermissions } from 'components/PermissionsGuard';
+import { useHasPermission } from 'components/PermissionsGuard';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
   const navigate = useNavigate();
-  const hasPermission = useUserHasPermissions();
+  const hasReadUsersPermission = useHasPermission([PERMISSIONS.READ_USERS]);
+  const hasManageRolesPermission = useHasPermission([PERMISSIONS.MANAGE_ROLES]);
 
   const { data, isLoading } = useUsers({
     page: pagination.paginationState.pageIndex,
@@ -95,23 +96,20 @@ const Users: FC = () => {
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group divider>
-              <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_USERS]]}>
-                <Dropdown.Menu.Item
-                  label="Go to user profile"
-                  icon={<ProfileIcon />}
-                  onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
-                />
-              </PermissionsGuard>
-            </Dropdown.Menu.Group>
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_ROLES]]}>
               <Dropdown.Menu.Item
-                label="Edit roles"
-                icon={<EditIcon />}
-                // TODO: navigate to edit roles page for user
-                onClick={() => navigate('')}
-                disabled={!hasPermission([PERMISSIONS.MANAGE_ROLES])}
+                disabled={!hasReadUsersPermission}
+                label="Go to user profile"
+                icon={<ProfileIcon />}
+                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
               />
-            </PermissionsGuard>
+            </Dropdown.Menu.Group>
+            <Dropdown.Menu.Item
+              label="Edit roles"
+              icon={<EditIcon />}
+              // TODO: navigate to edit roles page for user
+              onClick={() => navigate('')}
+              disabled={!hasManageRolesPermission}
+            />
           </Dropdown.Menu>
         </Dropdown>
       ),
@@ -147,7 +145,7 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const hasPermission = useUserHasPermissions();
+  const hasManageUsersPermission = useHasPermission([PERMISSIONS.MANAGE_USERS]);
 
   const validationSchema = useMemo(
     () =>
@@ -179,7 +177,7 @@ const InviteUser: FC = () => {
         onClick={() => setOpen(true)}
         text="Invite user"
         icon={<PlusIcon />}
-        disabled={!hasPermission([PERMISSIONS.MANAGE_USERS])}
+        disabled={!hasManageUsersPermission}
       />
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>

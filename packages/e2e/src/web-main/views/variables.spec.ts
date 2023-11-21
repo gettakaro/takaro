@@ -4,7 +4,7 @@ import { test } from '../fixtures/index.js';
 const { expect } = playwright;
 
 test('Can view variables', async ({ page, takaro }) => {
-  await takaro.client.variable.variableControllerCreate({
+  await takaro.rootClient.variable.variableControllerCreate({
     key: 'test-variable',
     value: 'test-value',
     gameServerId: takaro.gameServer.id,

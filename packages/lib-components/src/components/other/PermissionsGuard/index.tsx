@@ -38,6 +38,20 @@ export interface PermissionsGuardProps {
   fallback?: ReactElement;
 }
 
+export const hasPermissionHelper = (
+  userPermissions: PERMISSIONS[],
+  requiredPermissions: RequiredPermissions
+): boolean => {
+  if (userPermissions.includes(PERMISSIONS.ROOT)) {
+    return true;
+  }
+  return requiredPermissions.some((permissionSet) =>
+    Array.isArray(permissionSet)
+      ? permissionSet.every((permission) => userPermissions.includes(permission))
+      : userPermissions.includes(permissionSet as PERMISSIONS)
+  );
+};
+
 export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
   userPermissions,
   requiredPermissions,
@@ -46,17 +60,7 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
 }) => {
   // only update permissions when userPermissions or requiredPermissions change
   const hasPermission = useMemo(() => {
-    // If the user has the ROOT permission, they have access to everything
-    if (userPermissions.includes(PERMISSIONS.ROOT)) {
-      return true;
-    }
-
-    // AND/OR logic for permissions
-    return requiredPermissions.some((permissionSet) =>
-      Array.isArray(permissionSet)
-        ? permissionSet.every((permission) => userPermissions.includes(permission))
-        : userPermissions.includes(permissionSet as PERMISSIONS)
-    );
+    return hasPermissionHelper(userPermissions, requiredPermissions);
   }, [userPermissions, requiredPermissions]);
 
   if (!hasPermission) {
@@ -64,19 +68,4 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
   }
 
   return <>{children}</>;
-};
-
-export const useHasPermission = (userPermissions: PERMISSIONS[], requiredPermissions: RequiredPermissions): boolean => {
-  console.log(userPermissions.includes(PERMISSIONS.ROOT));
-
-  return useMemo(() => {
-    if (userPermissions.includes(PERMISSIONS.ROOT)) {
-      return true;
-    }
-    return requiredPermissions.some((permissionSet) =>
-      Array.isArray(permissionSet)
-        ? permissionSet.every((permission) => userPermissions.includes(permission))
-        : userPermissions.includes(permissionSet as PERMISSIONS)
-    );
-  }, [userPermissions, requiredPermissions]);
 };

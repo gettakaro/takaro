@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 import {
   AiOutlineBook,
   AiOutlineMenu,
-  AiOutlineWifi,
+  //AiOutlineWifi,
   AiOutlineRight,
   AiOutlineArrowRight as ArrowRightIcon,
-  AiOutlineShop,
+  //AiOutlineShop,
 } from 'react-icons/ai';
 
 const Container = styled.div`
@@ -19,15 +19,14 @@ const Container = styled.div`
 
   
   p {
-    text-align: center;
     font-size: 1.7rem;
 
     &.error {
-    margin-top: ${({ theme }) => theme.spacing[6]};
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: ${({ theme }) => theme.fontSize.large};
-    font-weight: 600;
-    text-align: center;
+      margin-top: ${({ theme }) => theme.spacing[6]};
+      color: ${({ theme }) => theme.colors.primary};
+      font-size: ${({ theme }) => theme.fontSize.large};
+      font-weight: 600;
+      text-align: center;
     }
   }
 
@@ -122,14 +121,15 @@ const defaultListItems = [
     icon: <AiOutlineBook />,
     title: 'Documentation',
     description: 'Learn how to integrate our tools with your app',
-    to: '',
+    to: 'docs.takaro.io',
   },
   {
     icon: <AiOutlineMenu />,
     title: 'Api reference',
     description: 'A complete API reference for our libraries',
-    to: '',
+    to: 'https://api.stg.takaro.dev/api.html',
   },
+  /*
   {
     icon: <AiOutlineWifi />,
     title: 'Guides',
@@ -142,6 +142,7 @@ const defaultListItems = [
     description: 'Read our latest news and articles',
     to: '',
   },
+  */
 ];
 
 export const ErrorPage: FC<ErrorPageProps> = ({

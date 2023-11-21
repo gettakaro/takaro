@@ -6,8 +6,8 @@ export const PATHS = {
   moduleDefinitions: () => '/modules',
   variables: () => '/variables',
 
-  notFound: () => '/404',
-  notAuthorized: () => '/401',
+  notFound: () => '/not-found',
+  forbidden: () => '/forbidden',
   events: () => '/events',
 
   roles: {

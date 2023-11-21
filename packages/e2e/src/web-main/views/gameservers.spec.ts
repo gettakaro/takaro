@@ -1,15 +1,22 @@
 import playwright from '@playwright/test';
 import { integrationConfig } from '@takaro/test';
-import { basicTest } from '../fixtures/index.js';
+import { test } from '../fixtures/index.js';
 const { expect } = playwright;
 
-basicTest('Can use call to action if there are no gameservers', async ({ page }) => {
+test('Can use call to action if there are no gameservers', async ({ page, takaro }) => {
+  // by default we always create 1 gameserver in the test setup
+  // lets delete it so we can test the call to action
+  const { GameServersPage } = takaro;
+  await GameServersPage.goto();
+  await GameServersPage.action('Delete');
+  await expect(page.getByText(takaro.gameServer.name)).toHaveCount(0);
+
   const button = page.getByRole('button').getByText('Add a server');
   await button.click();
   expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
 });
 
-basicTest('Can create gameserver', async ({ page, takaro }) => {
+test('Can create gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
 
   const serverName = 'My new server';
@@ -29,7 +36,7 @@ basicTest('Can create gameserver', async ({ page, takaro }) => {
   await expect(page.getByText(serverName)).toBeVisible();
 });
 
-basicTest('Can edit gameserver', async ({ page, takaro }) => {
+test('Can edit gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
   await expect(page.getByText(GameServersPage.gameServer.name)).toBeVisible();
@@ -44,7 +51,7 @@ basicTest('Can edit gameserver', async ({ page, takaro }) => {
   await expect(page.getByText(newGameServerName)).toBeVisible();
 });
 
-basicTest('Can delete gameserver', async ({ page, takaro }) => {
+test('Can delete gameserver', async ({ page, takaro }) => {
   const gameServerName = 'My gameserver';
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
@@ -52,9 +59,9 @@ basicTest('Can delete gameserver', async ({ page, takaro }) => {
   await expect(page.getByText(gameServerName)).toHaveCount(0);
 });
 
-basicTest.describe('Dashboard', () => {
-  basicTest.describe('Command history', () => {
-    basicTest('Pressing arrow up should show last command', async ({ takaro }) => {
+test.describe('Dashboard', () => {
+  test.describe('Command history', () => {
+    test('Pressing arrow up should show last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.goto();
@@ -70,7 +77,7 @@ basicTest.describe('Dashboard', () => {
       await GameServersPage.page.keyboard.press('ArrowUp');
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('Command 1');
     });
-    basicTest('Pressing up arrow twice should show the command before the last', async ({ takaro }) => {
+    test('Pressing up arrow twice should show the command before the last', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.goto();
@@ -89,7 +96,7 @@ basicTest.describe('Dashboard', () => {
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('Command 1');
     });
 
-    basicTest('Pressing down arrow after pressing up arrow should return to last command', async ({ takaro }) => {
+    test('Pressing down arrow after pressing up arrow should return to last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.goto();
@@ -105,7 +112,7 @@ basicTest.describe('Dashboard', () => {
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('');
     });
 
-    basicTest('Reaching top of history and pressing up arrow again should not change input', async ({ takaro }) => {
+    test('Reaching top of history and pressing up arrow again should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.goto();
@@ -121,22 +128,19 @@ basicTest.describe('Dashboard', () => {
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('Command 1');
     });
 
-    basicTest(
-      'Reaching bottom or empty command and pressing down arrow should not change input',
-      async ({ takaro }) => {
-        const { GameServersPage } = takaro;
+    test('Reaching bottom or empty command and pressing down arrow should not change input', async ({ takaro }) => {
+      const { GameServersPage } = takaro;
 
-        await GameServersPage.goto();
-        await GameServersPage.page.getByText('onlineTest serverMOCK').click();
+      await GameServersPage.goto();
+      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
 
-        await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
-        await GameServersPage.page.keyboard.press('ArrowDown');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
+      await GameServersPage.page.keyboard.press('ArrowDown');
 
-        await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('');
-      }
-    );
+      await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('');
+    });
 
-    basicTest('Command history should have a cap of 50 commands', async ({ takaro }) => {
+    test('Command history should have a cap of 50 commands', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.goto();

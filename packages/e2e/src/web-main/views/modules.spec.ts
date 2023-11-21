@@ -1,10 +1,10 @@
 import playwright from '@playwright/test';
-import { basicTest, test } from '../fixtures/index.js';
+import { test } from '../fixtures/index.js';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect, test: pwTest } = playwright;
 
-basicTest('Can create module', async ({ page }) => {
+test('Can create module', async ({ page }) => {
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
   await page.getByText('new module').click();
@@ -20,7 +20,7 @@ basicTest('Can create module', async ({ page }) => {
   await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
-basicTest('Can create module with permissions', async ({ page }) => {
+test('Can create module with permissions', async ({ page }) => {
   // open modules page
   await page.getByRole('link', { name: 'Modules' }).click();
   await page.getByText('new module').click();
@@ -51,7 +51,7 @@ basicTest('Can create module with permissions', async ({ page }) => {
     await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
 });
 
-basicTest('Creating module with config, saves the config', async ({ page }) => {
+test('Creating module with config, saves the config', async ({ page }) => {
   await page.getByRole('link', { name: 'Modules' }).click();
   await page.getByText('new module').click();
 
@@ -79,7 +79,7 @@ basicTest('Creating module with config, saves the config', async ({ page }) => {
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 
-basicTest('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
+test('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.page.getByText('new module').click();
@@ -91,7 +91,7 @@ basicTest('Creating a module but providing too short name, shows an error', asyn
   await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
 });
 
-basicTest('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
+test('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
   await page.getByRole('link', { name: 'Modules' }).click();
   await page.getByText('new module').click();
 
@@ -111,7 +111,7 @@ basicTest('Creating a module with config but not providing a default value, show
   ).toBeVisible();
 });
 
-basicTest('Can edit module', async ({ page, takaro }) => {
+test('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'edit this module';
 
   await takaro.rootClient.module.moduleControllerCreate({
@@ -134,7 +134,7 @@ basicTest('Can edit module', async ({ page, takaro }) => {
   await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
 });
 
-basicTest('Can delete module', async ({ page, takaro }) => {
+test('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
   await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
@@ -153,7 +153,7 @@ basicTest('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
-basicTest('Can install module with empty config', async ({ page, takaro }) => {
+test('Can install module with empty config', async ({ page, takaro }) => {
   const modRes = await takaro.rootClient.module.moduleControllerSearch({
     filters: { name: ['Module without functions'] },
   });
@@ -177,7 +177,7 @@ basicTest('Can install module with empty config', async ({ page, takaro }) => {
   await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
 });
 
-basicTest('Can install a module with a discord hook', async ({ page, takaro }) => {
+test('Can install a module with a discord hook', async ({ page, takaro }) => {
   const mod = await takaro.rootClient.module.moduleControllerCreate({
     name: 'Module with Discord hook',
     configSchema: JSON.stringify({}),
@@ -211,7 +211,7 @@ basicTest('Can install a module with a discord hook', async ({ page, takaro }) =
 });
 
 pwTest.describe('Module config', () => {
-  test('Can create string field', async ({}) => {
+  pwTest.fixme('Can create string field', async ({}) => {
     /*
     await page.getByRole('link', { name: 'Modules' }).click();
 
@@ -292,11 +292,11 @@ pwTest.describe('Module config', () => {
     */
   });
 
-  test.fixme('Can create number field', async ({}) => {});
+  pwTest.fixme('Can create number field', async ({}) => {});
 
-  test.fixme('Can create boolean field', async ({}) => {});
+  pwTest.fixme('Can create boolean field', async ({}) => {});
 
-  test.fixme('Can create array field', async ({}) => {});
+  pwTest.fixme('Can create array field', async ({}) => {});
 
-  test.fixme('Can create enum field', async ({}) => {});
+  pwTest.fixme('Can create enum field', async ({}) => {});
 });

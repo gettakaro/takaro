@@ -68,7 +68,6 @@ export const AuthVerification: FC = () => {
         updateVerificationFlowBody: body,
       })
       .then(({ data: flow }) => {
-        console.log(flow);
         setFlow(flow);
       })
       .catch(sdkErrorHandler);

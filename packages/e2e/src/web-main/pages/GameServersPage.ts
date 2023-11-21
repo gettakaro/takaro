@@ -26,7 +26,7 @@ export class GameServersPage {
 
   async nameCreateEdit(value: string) {
     const gameServerNameInput = this.page.getByPlaceholder('My cool server');
-    await gameServerNameInput.click();
+    await gameServerNameInput.focus();
     await gameServerNameInput.fill(value);
   }
 

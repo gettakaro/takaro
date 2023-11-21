@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, FormError, PERMISSIONS } from '@takaro/lib-components';
+import { Button, Select, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -19,7 +19,6 @@ import { useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 import { gameTypeSelectOptions } from './GameTypeSelectOptions';
-import { useUserHasPermissions } from 'components/PermissionsGuard';
 
 export interface IFormInputs {
   name: string;
@@ -54,10 +53,9 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const { mutateAsync, isLoading } = useGameServerUpdate();
   const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
-  const hasPermissions = useUserHasPermissions();
 
   useEffect(() => {
-    if (!open || hasPermissions([PERMISSIONS.MANAGE_GAMESERVERS])) {
+    if (!open) {
       navigate(PATHS.gameServers.overview());
     }
   }, [open, navigate]);

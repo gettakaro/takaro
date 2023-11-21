@@ -45,7 +45,7 @@ export enum PERMISSIONS {
   'MANAGE_EVENTS' = 'MANAGE_EVENTS',
 }
 
-const { test: base } = playwright;
+const { test: pwTest } = playwright;
 
 export interface IBaseFixtures {
   takaro: {
@@ -64,7 +64,7 @@ export interface IBaseFixtures {
   };
 }
 
-export const basicTest = base.extend<IBaseFixtures>({
+const main = pwTest.extend<IBaseFixtures>({
   takaro: [
     async ({ page }, use) => {
       const adminClient = getAdminClient();
@@ -97,6 +97,7 @@ export const basicTest = base.extend<IBaseFixtures>({
       });
       client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
 
+      // simple gameserver
       const gameServer = await client.gameserver.gameServerControllerCreate({
         name: 'Test server',
         type: GameServerCreateDTOTypeEnum.Mock,
@@ -137,11 +138,27 @@ export const basicTest = base.extend<IBaseFixtures>({
   ],
 });
 
+// this uses the root user
+export const test = main.extend({
+  takaro: async ({ takaro, page }, use) => {
+    await login(page, takaro.rootUser.email, takaro.domain.password);
+    await use(takaro);
+  },
+});
+
+// NO Permissions user test
+export const userTest = main.extend({
+  takaro: async ({ takaro, page }, use) => {
+    login(page, takaro.testUser.email, takaro.testUser.password);
+    await use(takaro);
+  },
+});
+
 export interface WithModuleFixture {
   module: ModuleOutputDTO;
 }
 
-export const test = basicTest.extend<WithModuleFixture>({
+export const ExtendedRootTest = main.extend<WithModuleFixture>({
   module: [
     async ({ takaro, page }, use) => {
       const { rootUser, domain, gameServer } = takaro;
