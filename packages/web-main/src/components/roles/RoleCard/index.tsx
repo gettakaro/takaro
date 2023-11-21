@@ -47,7 +47,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               </Dropdown.Menu>
             </Dropdown>
             {system ? (
-              <Tooltip placement="bottom">
+              <Tooltip placement="top">
                 <Tooltip.Trigger asChild>
                   <Chip label="system" color="primary" />
                 </Tooltip.Trigger>
