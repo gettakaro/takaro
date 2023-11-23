@@ -164,45 +164,38 @@ export interface ExtendedFixture {
 export const extendedTest = main.extend<ExtendedFixture>({
   extended: [
     async ({ takaro, page }, use) => {
-      const { rootUser, domain, gameServer } = takaro;
-      await login(page, rootUser.email, domain.password);
+      const { rootUser, domain, gameServer, rootClient } = takaro;
 
-      const client = new Client({
-        url: integrationConfig.get('host'),
-        auth: {
-          username: rootUser.email,
-          password: domain.password,
-        },
-      });
-      await client.login();
-
+      // required to add players to the gameserver
       const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(client);
+      await eventAwaiter.connect(rootClient);
       const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
-      await client.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
+      await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
         command: 'connectAll',
       });
 
-      const mod = await client.module.moduleControllerCreate({
+      await login(page, rootUser.email, domain.password);
+
+      const mod = await rootClient.module.moduleControllerCreate({
         name: 'Module with functions',
         configSchema: JSON.stringify({}),
         description: 'Module with functions',
       });
 
-      await client.command.commandControllerCreate({
+      await rootClient.command.commandControllerCreate({
         moduleId: mod.data.data.id,
         name: 'my-command',
         trigger: 'test',
       });
 
-      await client.hook.hookControllerCreate({
+      await rootClient.hook.hookControllerCreate({
         moduleId: mod.data.data.id,
         name: 'my-hook',
         regex: 'test',
         eventType: HookCreateDTOEventTypeEnum.Log,
       });
 
-      await client.cronjob.cronJobControllerCreate({
+      await rootClient.cronjob.cronJobControllerCreate({
         moduleId: mod.data.data.id,
         name: 'my-cron',
         temporalValue: '* * * * *',
@@ -210,8 +203,8 @@ export const extendedTest = main.extend<ExtendedFixture>({
 
       takaro.studioPage.mod = mod.data.data;
 
+      const players = (await rootClient.player.playerControllerSearch()).data.data;
       await connectedEvents;
-      const players = (await client.player.playerControllerSearch()).data.data;
 
       await use({
         mod: mod.data.data,
