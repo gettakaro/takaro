@@ -78,7 +78,8 @@ test('Invite user - happy path', async ({ page, takaro }) => {
 
   await page.getByRole('button', { name: 'Log in with Email' }).click();
 
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
+  // since the user has no permissions, they should be redirected to the forbidden page
+  await expect(page.getByText('Forbidden')).toBeVisible();
 });
 
 test('Recover account and reset password', async ({ page, takaro }) => {
