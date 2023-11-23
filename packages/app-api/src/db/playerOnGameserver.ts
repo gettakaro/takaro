@@ -29,6 +29,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionY: number;
   positionZ: number;
 
+  currency: number;
+
   static get relationMappings() {
     return {
       gameServer: {
@@ -127,16 +129,16 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query
-      .updateAndFetchById(id, {
-        ping: data.ping,
-        ip: data.ip,
-        positionX: data.positionX,
-        positionY: data.positionY,
-        positionZ: data.positionZ,
-      })
-      .returning('*');
-    return new PlayerOnGameserverOutputDTO().construct(res);
+    const res = await query.updateAndFetchById(id, {
+      ping: data.ping,
+      ip: data.ip,
+      positionX: data.positionX,
+      positionY: data.positionY,
+      positionZ: data.positionZ,
+      currency: data.currency,
+    });
+
+    return this.findOne(res.id);
   }
 
   async findGameAssociations(gameId: string, gameServerId: string) {
