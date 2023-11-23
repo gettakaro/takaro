@@ -57,7 +57,7 @@ export const GameServerNav: FC = () => {
   const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
 
   return (
-    <Nav data-testid="gameserver-nav">
+    <Nav data-testid="server-nav">
       {data && data.pages[0].data.length > 0 ? (
         <>
           <h3>Server</h3>
