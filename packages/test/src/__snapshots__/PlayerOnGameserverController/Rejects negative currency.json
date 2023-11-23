@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Currency must be positive"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "PlayerOnGameserverController",
+    "snapshot": true,
+    "name": "Rejects negative currency",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

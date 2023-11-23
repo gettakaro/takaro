@@ -2,7 +2,7 @@ import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, traceableClass } f
 import { createLambda, deleteLambda } from '@takaro/aws';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
 import { randomBytes } from 'crypto';
-import { RoleCreateInputDTO, RoleOutputDTO, RoleService } from './RoleService.js';
+import { PermissionInputDTO, RoleOutputDTO, RoleService, ServiceRoleCreateInputDTO } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
 import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DomainModel, DomainRepo } from '../db/domain.js';
@@ -52,21 +52,6 @@ export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
   @IsString()
   password: string;
 }
-
-const DEFAULT_ROLES: Promise<RoleCreateInputDTO>[] = [
-  new RoleCreateInputDTO().construct({
-    name: 'Admin',
-    permissions: [PERMISSIONS.ROOT],
-  }),
-  new RoleCreateInputDTO().construct({
-    name: 'Moderator',
-    permissions: [PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_SETTINGS],
-  }),
-  new RoleCreateInputDTO().construct({
-    name: 'Player',
-    permissions: [],
-  }),
-];
 
 @traceableClass('service:domain')
 export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
@@ -134,10 +119,43 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     await settingsService.init();
 
+    const rootPermission = await roleService.permissionCodeToRecord(PERMISSIONS.ROOT);
+    const readPlayersPermission = await roleService.permissionCodeToRecord(PERMISSIONS.READ_PLAYERS);
+    const readSettingsPermission = await roleService.permissionCodeToRecord(PERMISSIONS.READ_SETTINGS);
+
+    const rootPermissionDTO = await new PermissionInputDTO().construct({ permissionId: rootPermission.id });
+    const readPlayersPermissionDTO = await new PermissionInputDTO().construct({
+      permissionId: readPlayersPermission.id,
+    });
+    const readSettingsPermissionDTO = await new PermissionInputDTO().construct({
+      permissionId: readSettingsPermission.id,
+    });
+
     const rootRole = await roleService.createWithPermissions(
-      await new RoleCreateInputDTO().construct({ name: 'root' }),
-      [PERMISSIONS.ROOT]
+      await new ServiceRoleCreateInputDTO().construct({ name: 'root', system: true }),
+      [rootPermissionDTO]
     );
+
+    const DEFAULT_ROLES: Promise<ServiceRoleCreateInputDTO>[] = [
+      new ServiceRoleCreateInputDTO().construct({
+        name: 'Admin',
+        permissions: [rootPermissionDTO],
+      }),
+      new ServiceRoleCreateInputDTO().construct({
+        name: 'Moderator',
+        permissions: [readPlayersPermissionDTO, readSettingsPermissionDTO],
+      }),
+      new ServiceRoleCreateInputDTO().construct({
+        name: 'Player',
+        permissions: [],
+        system: true,
+      }),
+      new ServiceRoleCreateInputDTO().construct({
+        name: 'User',
+        permissions: [],
+        system: true,
+      }),
+    ];
 
     const defaultRolesToCreate = await Promise.all(DEFAULT_ROLES);
     await Promise.all(defaultRolesToCreate.map((r) => roleService.create(r)));
@@ -151,7 +169,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       })
     );
 
-    await userService.assignRole(rootUser.id, rootRole.id);
+    await userService.assignRole(rootRole.id, rootUser.id);
 
     await moduleService.seedBuiltinModules();
 

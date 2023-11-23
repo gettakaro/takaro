@@ -16,6 +16,8 @@ import {
 export interface PopoverOptions {
   initialOpen?: boolean;
   placement?: Placement;
+  /// If focus is modal, focus is trapped inside the floating element and outside content cannot be accessed.
+  /// When set, the floating element should have a dedicated close button.
   modal?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;

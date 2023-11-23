@@ -26,7 +26,7 @@ export const SelectButton = styled.div<{
   border: 0.1rem solid
     ${({ theme, isOpen, hasError }) => {
       if (hasError) return theme.colors.error;
-      return isOpen ? theme.colors.primary : theme.colors.secondary;
+      return isOpen ? theme.colors.primary : theme.colors.backgroundAccent;
     }};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   font-weight: 500;
@@ -61,7 +61,7 @@ export const SelectContainer = styled.div`
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing['0_75']};
   outline: 0;
-  border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};

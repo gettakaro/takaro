@@ -13,7 +13,7 @@ import { styled } from '../../../styled';
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
-  border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   padding: ${({ theme }) => theme.spacing['0_5']};
 `;

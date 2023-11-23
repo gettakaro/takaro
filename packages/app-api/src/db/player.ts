@@ -20,7 +20,8 @@ export class RoleOnPlayerModel extends TakaroModel {
 
   playerId!: string;
   roleId!: string;
-  gameServerId: string | null;
+  gameServerId: string | undefined;
+  expiresAt: string | undefined;
 
   static get relationMappings() {
     return {
@@ -152,19 +153,18 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     return new PlayerOutputDTO().construct(res);
   }
 
-  async assignRole(playerId: string, roleId: string, gameserverId?: string): Promise<void> {
-    if (gameserverId) {
-      const knex = await this.getKnex();
-      const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
-      await roleOnPlayerModel.query().insert({
-        playerId,
-        roleId,
-        gameServerId: gameserverId,
-      });
-    } else {
-      const { model } = await this.getModel();
-      await model.relatedQuery('roles').for(playerId).relate(roleId);
-    }
+  async assignRole(playerId: string, roleId: string, gameServerId?: string, expiresAt?: string): Promise<void> {
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+
+    const updateObj = {
+      playerId,
+      roleId,
+      expiresAt,
+      gameServerId,
+    };
+
+    await roleOnPlayerModel.query().insert(updateObj);
   }
 
   async removeRole(playerId: string, roleId: string, gameServerId?: string): Promise<void> {

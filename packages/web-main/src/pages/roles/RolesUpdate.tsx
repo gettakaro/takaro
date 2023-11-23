@@ -37,7 +37,7 @@ interface UpdateRoleformProps {
 
 interface IFormInputs {
   name: string;
-  permissions: Record<string, boolean>;
+  permissions: Record<string, { enabled: boolean; count?: number }>;
 }
 
 const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) => {
@@ -60,7 +60,10 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
           ...acc,
-          [permission.permission]: data.permissions.some((p) => p.permission.permission === permission.permission),
+          [permission.id]: {
+            enabled: data.permissions.some((p) => p.permissionId === permission.id),
+            count: data.permissions.find((p) => p.permissionId === permission.id)?.count,
+          },
         }),
         {}
       ),
@@ -69,8 +72,11 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions: formPermissions }) => {
     const activePermissions = Object.entries(formPermissions)
-      .filter(([_key, value]) => value === true)
-      .map(([key, _value]) => key);
+      .filter(([_key, value]) => value.enabled === true)
+      .map(([key, value]) => ({
+        permissionId: key,
+        count: value.count,
+      }));
     try {
       await mutateAsync({
         roleId,
@@ -99,19 +105,32 @@ const UpdateRoleForm: FC<UpdateRoleformProps> = ({ data, roleId, permissions }) 
                   loading={isLoading}
                   name="name"
                   placeholder="My cool role"
-                  required
+                  disabled={data.system}
                 />
               </CollapseList.Item>
               <CollapseList.Item title="Permissions">
-                {permissions.map((permission) => (
-                  <Switch
-                    control={control}
-                    label={permission.friendlyName}
-                    name={`permissions.${permission.permission}`}
-                    key={permission.permission}
-                    description={permission.description}
-                  />
-                ))}
+                {permissions.map((permission) => {
+                  return (
+                    <>
+                      <Switch
+                        control={control}
+                        label={permission.friendlyName}
+                        name={`permissions.${permission.id}.enabled`}
+                        key={permission.id}
+                        description={permission.description}
+                      />
+                      {permission.canHaveCount && (
+                        <TextField
+                          control={control}
+                          label="Amount"
+                          type="number"
+                          placeholder="Enter amount"
+                          name={`permissions.${permission.id}.count`}
+                        />
+                      )}
+                    </>
+                  );
+                })}
               </CollapseList.Item>
             </form>
           </CollapseList>

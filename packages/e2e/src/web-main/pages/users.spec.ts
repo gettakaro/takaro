@@ -18,11 +18,11 @@ test.describe('Role assignment', () => {
     await page.getByRole('button', { name: 'Assign role' }).click();
 
     await page.locator('#roleId').click();
-    await page.getByRole('option', { name: 'Player' }).click();
+    await page.getByRole('option', { name: 'Moderator' }).click();
 
     await page.getByRole('button', { name: 'Save changes' }).click();
 
-    await expect(page.getByRole('cell', { name: 'Player', exact: true })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Moderator', exact: true })).toBeVisible();
   });
 
   test('Can remove a role from a user', async ({ page }) => {
@@ -34,18 +34,18 @@ test.describe('Role assignment', () => {
     await page.getByRole('button', { name: 'Assign role' }).click();
 
     await page.locator('#roleId').click();
-    await page.getByRole('option', { name: 'Player' }).click();
+    await page.getByRole('option', { name: 'Moderator' }).click();
 
     await page.getByRole('button', { name: 'Save changes' }).click();
 
-    await expect(page.getByRole('cell', { name: 'Player', exact: true })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Moderator', exact: true })).toBeVisible();
 
     await page
-      .getByRole('row', { name: 'Player player-actions' })
+      .getByRole('row', { name: 'Moderator Never player-actions' })
       .getByRole('button', { name: 'player-actions' })
       .click();
     await page.getByRole('menuitem', { name: 'Unassign role' }).click();
 
-    await expect(page.getByRole('cell', { name: 'Player', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Moderator', exact: true })).not.toBeVisible();
   });
 });

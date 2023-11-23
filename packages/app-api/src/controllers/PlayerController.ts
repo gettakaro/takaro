@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
@@ -10,7 +10,6 @@ import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { ParamIdAndRoleId } from './UserController.js';
-import { RoleService } from '../service/RoleService.js';
 import { errors } from '@takaro/util';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
@@ -23,6 +22,12 @@ export class PlayerOutputArrayDTOAPI extends APIOutput<PlayerOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => PlayerOutputDTO)
   declare data: PlayerOutputDTO[];
+}
+
+export class PlayerOutputWithRolesDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
+  @Type(() => PlayerOutputWithRolesDTO)
+  @ValidateNested()
+  declare data: PlayerOutputWithRolesDTO;
 }
 
 class PlayerSearchInputAllowedFilters {
@@ -61,6 +66,10 @@ class PlayerRoleAssignChangeDTO {
   @IsUUID()
   @IsOptional()
   gameServerId?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  expiresAt?: string;
 }
 
 @OpenAPI({
@@ -86,7 +95,7 @@ export class PlayerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
-  @ResponseSchema(PlayerOutputDTOAPI)
+  @ResponseSchema(PlayerOutputWithRolesDTOAPI)
   @Get('/player/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new PlayerService(req.domainId);
@@ -101,10 +110,10 @@ export class PlayerController {
     @Params() params: ParamIdAndRoleId,
     @Body() data: PlayerRoleAssignChangeDTO
   ) {
-    const service = new RoleService(req.domainId);
+    const service = new PlayerService(req.domainId);
 
     try {
-      await service.assignRole(params.roleId, params.id, data.gameServerId);
+      await service.assignRole(params.roleId, params.id, data.gameServerId, data.expiresAt);
     } catch (error) {
       if (error instanceof Error && error.name === 'UniqueViolationError') {
         throw new errors.BadRequestError('Role already assigned');
@@ -124,7 +133,7 @@ export class PlayerController {
     @Params() params: ParamIdAndRoleId,
     @Body() data: PlayerRoleAssignChangeDTO
   ) {
-    const service = new RoleService(req.domainId);
+    const service = new PlayerService(req.domainId);
     return apiResponse(await service.removeRole(params.roleId, params.id, data.gameServerId));
   }
 }

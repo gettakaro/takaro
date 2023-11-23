@@ -12,7 +12,7 @@ import {
   PlayerOnGameServerUpdateDTO,
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
-import { RoleOutputDTO } from '../service/RoleService.js';
+import { PlayerRoleAssignmentOutputDTO } from '../service/RoleService.js';
 
 export class PlayerOnGameServerModel extends TakaroModel {
   static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
@@ -28,6 +28,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionX: number;
   positionY: number;
   positionZ: number;
+
+  currency: number;
 
   static get relationMappings() {
     return {
@@ -95,7 +97,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const uniqueRoles = filteredRoles.filter(
       (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
     );
-    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new RoleOutputDTO().construct(role)));
+    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO().construct(role)));
 
     data.roles = roleDTOs;
 
@@ -127,16 +129,16 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query
-      .updateAndFetchById(id, {
-        ping: data.ping,
-        ip: data.ip,
-        positionX: data.positionX,
-        positionY: data.positionY,
-        positionZ: data.positionZ,
-      })
-      .returning('*');
-    return new PlayerOnGameserverOutputDTO().construct(res);
+    const res = await query.updateAndFetchById(id, {
+      ping: data.ping,
+      ip: data.ip,
+      positionX: data.positionX,
+      positionY: data.positionY,
+      positionZ: data.positionZ,
+      currency: data.currency,
+    });
+
+    return this.findOne(res.id);
   }
 
   async findGameAssociations(gameId: string, gameServerId: string) {

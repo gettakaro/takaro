@@ -50,7 +50,7 @@ export const StyledTable = styled.table<{ density: Density }>`
   }
 
   td {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
+    border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   }
 
   tfoot {

@@ -11,7 +11,7 @@ const Container = styled.div`
     margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
   padding-bottom: ${({ theme }) => theme.spacing['0_75']};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
 interface FilterInputProps {

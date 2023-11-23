@@ -6,7 +6,7 @@ import { useTheme } from '../../../hooks';
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
-  border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
@@ -32,7 +32,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
             ref={arrowRef}
             context={floatingContext}
             fill={theme.colors.background}
-            stroke={theme.colors.backgroundAlt}
+            stroke={theme.colors.backgroundAccent}
             strokeWidth={1}
           />
         </Container>

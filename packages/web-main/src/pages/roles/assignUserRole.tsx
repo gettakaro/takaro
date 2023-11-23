@@ -1,44 +1,50 @@
-import { Drawer, CollapseList, FormError, Button, Select, TextField, Loading } from '@takaro/lib-components';
+import {
+  Drawer,
+  CollapseList,
+  FormError,
+  Button,
+  Select,
+  TextField,
+  Loading,
+  DatePicker,
+} from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { useRoles, useUserRoleUnassign } from 'queries/roles';
+import { useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userRoleAssignValidationschema } from './validationSchema';
+import { roleAssignValidationSchema } from './validationSchema';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoleOutputDTO } from '@takaro/apiclient';
-import { useUserAssignRole, useUser } from 'queries/users';
+import { useUserAssignRole } from 'queries/users';
+import { DateTime } from 'luxon';
 
 interface IFormInputs {
   id: string;
-  roleIds: string[];
+  roleId: string;
+  expiresAt?: string;
 }
 
 interface IAssignRoleFormProps {
   roles: RoleOutputDTO[];
-  assignedRoles: RoleOutputDTO[];
 }
 
 export const AssignUserRole: FC = () => {
   const { data: roles, isLoading: isLoadingRoles } = useRoles();
-  const { userId } = useParams();
-  const { data: user, isLoading: isLoadingUser } = useUser(userId!);
 
-  if (isLoadingRoles || isLoadingUser || !roles) {
+  if (isLoadingRoles || !roles) {
     return <Loading />;
   }
 
   const roleOptions = roles.pages.flatMap((page) => page.data);
 
-  return <AssignUserRoleForm roles={roleOptions} assignedRoles={user?.roles ?? []} />;
+  return <AssignUserRoleForm roles={roleOptions} />;
 };
 
-const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles, assignedRoles }) => {
+const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
   const [open, setOpen] = useState(true);
-  const { mutateAsync: assignRoleMutate, isLoading: isLoadingAssign, error: assignError } = useUserAssignRole();
-  const { mutateAsync: unAssignRoleMutate, isLoading: isLoadingUnAssign, error: unAssignError } = useUserRoleUnassign();
-
+  const { mutateAsync, isLoading, error } = useUserAssignRole();
   const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
 
@@ -53,33 +59,24 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles, assignedRoles }) 
     }
   }, [open, navigate]);
 
-  // TODO: should have the already assigned roles selected?
   const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    resolver: zodResolver(userRoleAssignValidationschema),
+    resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
       id: userId,
-      roleIds: assignedRoles.map((role) => role.id),
+      roleId: roles[0].id,
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleIds }) => {
-    const newAssignments = roleIds
-      .filter((roleId) => !assignedRoles.some((role) => role.id === roleId))
-      .map((roleId) => assignRoleMutate({ userId: id, roleId }));
-    // roles that are no longer assigned, meaning they should be in assignedRoles but not in roleIds
-    const removedRoles = assignedRoles
-      .filter((role) => !roleIds.some((roleId) => roleId === role.id))
-      .map((role) => unAssignRoleMutate({ id, roleId: role.id }));
-
-    await Promise.all([...newAssignments, ...removedRoles]);
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, expiresAt }) => {
+    await mutateAsync({ userId: id, roleId, expiresAt });
     navigate(PATHS.user.profile(id));
   };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>Assign roles</Drawer.Heading>
+        <Drawer.Heading>Assign role</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
@@ -88,48 +85,42 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles, assignedRoles }) 
 
                 <Select
                   control={control}
-                  multiSelect
-                  name="roleIds"
-                  label="Roles"
-                  inPortal
-                  enableFilter
-                  render={(selectedIndices) => (
-                    <div>
-                      {selectedIndices.length === 0
-                        ? 'Select...'
-                        : selectedIndices.length <= 3
-                        ? selectedIndices.map((index) => roles[index]?.name).join(', ')
-                        : `${selectedIndices
-                            .slice(0, 3)
-                            .map((index) => roles[index]?.name)
-                            .join(', ')} and ${selectedIndices.length - 3} more`}
-                    </div>
+                  name="roleId"
+                  label="Role"
+                  render={(selectedIndex) => (
+                    <div>{selectedIndex !== -1 ? roles[selectedIndex].name : roles[0].name}</div>
                   )}
                 >
                   <Select.OptionGroup label="Roles">
                     {roles.map((role) => (
-                      <Select.Option key={role.id} value={role.id} label={role.name}>
+                      <Select.Option key={role.id} value={role.id}>
                         {role.name}
                       </Select.Option>
                     ))}
                   </Select.OptionGroup>
                 </Select>
+
+                <DatePicker
+                  mode="absolute"
+                  control={control}
+                  label={'Expiration date'}
+                  name={'expiresAt'}
+                  required={false}
+                  loading={isLoading}
+                  description={'The role will be automatically removed after this date'}
+                  popOverPlacement={'bottom'}
+                  timePickerOptions={{ interval: 30 }}
+                  format={DateTime.DATETIME_SHORT}
+                />
               </CollapseList.Item>
-              {assignError && <FormError error={assignError} />}
-              {unAssignError && <FormError error={unAssignError} />}
+              {error && <FormError error={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button
-              fullWidth
-              text="Save changes"
-              isLoading={isLoadingAssign || isLoadingUnAssign}
-              type="submit"
-              form="assign-user-role-form"
-            />
+            <Button fullWidth text="Save changes" isLoading={isLoading} type="submit" form="assign-user-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

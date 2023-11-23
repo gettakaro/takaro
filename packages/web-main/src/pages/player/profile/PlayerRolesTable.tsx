@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { RoleAssignmentOutputDTO } from '@takaro/apiclient';
+import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
 import { useGameServers } from 'queries/gameservers';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
@@ -16,16 +16,16 @@ const AssignRole: FC<{ playerId: string }> = ({ playerId }) => {
 };
 
 interface IPlayerRolesTableProps {
-  roles: RoleAssignmentOutputDTO[];
+  roles: PlayerRoleAssignmentOutputDTO[];
   playerId: string;
   playerName: string;
 }
 
 export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, playerName }) => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleAssignmentOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerRoleAssignmentOutputDTO>();
   const { mutate } = usePlayerRoleUnassign();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [deletingInfo, setDeletingInfo] = useState<CellContext<RoleAssignmentOutputDTO, unknown> | null>(null);
+  const [deletingInfo, setDeletingInfo] = useState<CellContext<PlayerRoleAssignmentOutputDTO, unknown> | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
@@ -42,7 +42,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
 
   const gameServers = data?.pages.flatMap((page) => page.data);
 
-  const columnHelper = createColumnHelper<RoleAssignmentOutputDTO>();
+  const columnHelper = createColumnHelper<PlayerRoleAssignmentOutputDTO>();
 
   const columnDefs = [
     columnHelper.accessor('role.name', {
@@ -58,6 +58,18 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       cell: (info) => {
         const gameServer = gameServers.find((server) => server.id === info.getValue());
         return gameServer?.name;
+      },
+      enableColumnFilter: true,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('expiresAt', {
+      header: 'Expires at',
+      id: 'expiresAt',
+      cell: (info) => {
+        const value = info.getValue();
+        if (!value) return 'Never';
+        const date = DateTime.fromISO(value);
+        return date.toLocaleString(DateTime.DATETIME_FULL);
       },
       enableColumnFilter: true,
       enableSorting: true,

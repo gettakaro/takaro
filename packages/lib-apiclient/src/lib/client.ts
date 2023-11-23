@@ -12,6 +12,7 @@ import {
   VariableApi,
   DiscordApi,
   EventApi,
+  PlayerOnGameServerApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -61,6 +62,20 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   public logout() {
     delete this.axios.defaults.headers.common['Authorization'];
+  }
+
+  public async permissionCodesToInputs(permissions: string[]) {
+    const permissionsRes = await this.role.roleControllerGetPermissions();
+    const records = permissionsRes.data.data
+      .filter((p) => permissions.includes(p.permission))
+      .map((p) => ({
+        permissionId: p.id,
+      }));
+
+    if (records.length !== permissions.length)
+      throw new Error(`Not all permissions were found: ${permissions.join(', ')}`);
+
+    return records;
   }
 
   get user() {
@@ -185,6 +200,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   get event() {
     return new EventApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get playerOnGameserver() {
+    return new PlayerOnGameServerApi(
       {
         isJsonMime: this.isJsonMime,
       },
