@@ -114,7 +114,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     } catch (error) {
       Sentry.captureException(error);
     }
-  }, [canSubmit]);
+  }, [canSubmit, generalData, schema]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>

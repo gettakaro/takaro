@@ -29,7 +29,7 @@ const EditModule: FC = () => {
       moduleUpdate: {
         name: fields.name,
         description: fields.description,
-        configSchema: JSON.stringify(fields.schema),
+        configSchema: fields.schema, // this is already stringified
         permissions: fields.permissions,
       },
     });

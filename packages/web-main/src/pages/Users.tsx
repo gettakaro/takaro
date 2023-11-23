@@ -197,7 +197,7 @@ const InviteUser: FC = () => {
                 required
               />
               {isError && <FormError error={error} />}
-              <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
+              <Button isLoading={isLoading} text="Send invitation" type="submit" fullWidth />
             </form>
           </Dialog.Body>
         </Dialog.Content>
