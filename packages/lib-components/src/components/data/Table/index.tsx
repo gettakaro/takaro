@@ -45,7 +45,7 @@ export interface TableProps<DataType extends object> {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
   };
-  pagination: {
+  pagination?: {
     paginationState: PaginationState;
     setPaginationState: OnChangeFn<PaginationState>;
     pageOptions: PageOptions;
@@ -149,7 +149,7 @@ export function Table<DataType extends object>({
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
-      pagination: pagination.paginationState,
+      pagination: pagination?.paginationState,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
@@ -172,7 +172,7 @@ export function Table<DataType extends object>({
         <Flex>{renderToolbar && renderToolbar()}</Flex>
 
         <Flex>
-          <Filter table={table} />
+          {!isLoading && <Filter table={table} />}
           <ColumnVisibility
             table={table}
             setHasShownColumnVisibilityTooltip={setHasShownColumnVisibilityTooltip}

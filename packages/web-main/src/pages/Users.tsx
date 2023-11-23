@@ -1,9 +1,8 @@
-import { FC, Fragment, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import {
   Table,
-  Loading,
   useTableActions,
   IconButton,
   Dropdown,
@@ -12,7 +11,7 @@ import {
   TextField,
   FormError,
 } from '@takaro/lib-components';
-import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +24,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
   const navigate = useNavigate();
 
   const { data, isLoading } = useUsers({
@@ -45,7 +44,7 @@ const Users: FC = () => {
     },
   });
 
-  const columnHelper = createColumnHelper<UserOutputDTO>();
+  const columnHelper = createColumnHelper<UserOutputWithRolesDTO>();
   const columnDefs = [
     columnHelper.accessor('name', {
       header: 'Name',
@@ -104,26 +103,27 @@ const Users: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
-    <Fragment>
-      <Table
-        id="users"
-        columns={columnDefs}
-        data={data.data}
-        renderToolbar={() => <InviteUser />}
-        pagination={{
-          ...pagination,
-          pageOptions: pagination.getPageOptions(data),
-        }}
-        columnFiltering={columnFilters}
-        columnSearch={columnSearch}
-        sorting={sorting}
-      />
-    </Fragment>
+    <Table
+      id="users"
+      columns={columnDefs}
+      data={data ? data?.data : []}
+      renderToolbar={() => <InviteUser />}
+      pagination={p}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      sorting={sorting}
+    />
   );
 };
 
