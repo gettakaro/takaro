@@ -93,7 +93,6 @@ export const Input = styled.input<{
     ${({ hasSuffix }) => hasSuffix && 'border-right: none;'}
   }
   ::placeholder {
-    text-transform: capitalize;
     color: ${({ theme }): string => theme.colors.textAlt};
   }
   &[readOnly]::placeholder {
