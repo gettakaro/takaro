@@ -67,7 +67,7 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
                   description: '',
                   required: false,
                 }),
-              text: 'Add first permission',
+              text: 'Add first config field',
             }}
             text={`Config fields are a way to control the behavior of your module. When a module is installed
                   on a game server, Config fields can be tweaked to change the behavior of the module. For example,
