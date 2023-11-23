@@ -30,6 +30,7 @@ import { EventController } from './controllers/EventController.js';
 import { HookWorker } from './workers/hookWorker.js';
 import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
+import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
 
 export const server = new HTTP(
   {
@@ -49,6 +50,7 @@ export const server = new HTTP(
       ExternalAuthController,
       DiscordController,
       EventController,
+      PlayerOnGameServerController,
     ],
   },
   {

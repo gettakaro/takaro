@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing['0_5']};
   justify-content: space-between;
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['0_75']}`};
 
   border-radius: ${({ theme }) => theme.borderRadius.medium};

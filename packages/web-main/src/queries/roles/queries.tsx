@@ -205,14 +205,15 @@ interface IPlayerRoleAssign {
   id: string;
   roleId: string;
   gameServerId?: string;
+  expiresAt?: string;
 }
 
 export const usePlayerRoleAssign = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
   return useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-    mutationFn: async ({ id, roleId, gameServerId }) => {
-      const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId })).data;
+    mutationFn: async ({ id, roleId, gameServerId, expiresAt }) => {
+      const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId, expiresAt })).data;
       // TODO: _should_ happen in the onSuccess below I guess
       // But no access to the ID there
       // At this point, we technically already know the req was successful

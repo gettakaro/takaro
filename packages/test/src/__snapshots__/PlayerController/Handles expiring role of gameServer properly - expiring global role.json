@@ -1,0 +1,69 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "065c06e1-4483-40e3-8e2f-c4ad2b3b80fd",
+      "createdAt": "2023-11-19T15:58:02.286Z",
+      "updatedAt": "2023-11-19T15:58:02.287Z",
+      "name": "Melvina15",
+      "steamId": "q3albiue5x7zc6ch",
+      "xboxLiveId": null,
+      "epicOnlineServicesId": null,
+      "roleAssignments": [
+        {
+          "id": "390997db-ff2b-4418-934b-be19a57b9d21",
+          "createdAt": "2023-11-19T15:58:02.746Z",
+          "updatedAt": "2023-11-19T15:58:02.746Z",
+          "playerId": "065c06e1-4483-40e3-8e2f-c4ad2b3b80fd",
+          "roleId": "185426b9-b3cb-422e-8425-0ebc64c8a62f",
+          "gameServerId": "9a1ba1f7-65f9-40a8-a59a-89677d927728",
+          "expiresAt": null,
+          "role": {
+            "id": "185426b9-b3cb-422e-8425-0ebc64c8a62f",
+            "createdAt": "2023-11-19T15:58:02.678Z",
+            "updatedAt": "2023-11-19T15:58:02.678Z",
+            "name": "GameServer role",
+            "system": false,
+            "permissions": [
+              {
+                "id": "dafc0046-8cf3-46a3-9890-048ccd46172e",
+                "createdAt": "2023-11-19T15:58:02.683Z",
+                "updatedAt": "2023-11-19T15:58:02.683Z",
+                "permissionId": "5ba0c0b8-5830-465e-aef5-1678897bbe38",
+                "roleId": "185426b9-b3cb-422e-8425-0ebc64c8a62f",
+                "count": 0
+              }
+            ]
+          }
+        },
+        {
+          "playerId": "065c06e1-4483-40e3-8e2f-c4ad2b3b80fd",
+          "roleId": "47017f8e-aee1-41ec-9a25-768fae01a0a0",
+          "role": {
+            "id": "47017f8e-aee1-41ec-9a25-768fae01a0a0",
+            "createdAt": "2023-11-19T15:58:01.759Z",
+            "updatedAt": "2023-11-19T15:58:01.760Z",
+            "name": "Player",
+            "permissions": [],
+            "system": true
+          }
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Handles expiring role of gameServer properly - expiring global role",
+    "filteredFields": [
+      "name",
+      "playerId",
+      "steamId",
+      "roleId",
+      "gameServerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

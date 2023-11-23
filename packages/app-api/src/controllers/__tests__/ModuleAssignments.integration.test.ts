@@ -92,7 +92,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
         {
-          userConfig: JSON.stringify({ maxTeleports: 42, timeout: 1337 }),
+          userConfig: JSON.stringify({ timeout: 1337 }),
         }
       );
 
@@ -103,7 +103,6 @@ const tests = [
 
       expect(res.data.data.userConfig).to.deep.equal({
         allowPublicTeleports: false,
-        maxTeleports: 42,
         timeout: 1337,
       });
 

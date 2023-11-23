@@ -80,7 +80,7 @@ const EditorContent = styled.div`
 `;
 
 const Container = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 

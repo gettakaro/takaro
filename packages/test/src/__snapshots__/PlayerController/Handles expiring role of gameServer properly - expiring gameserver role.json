@@ -1,0 +1,68 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "1bc8b37c-0fdc-4a39-96af-a2b060d35927",
+      "createdAt": "2023-11-19T15:58:01.133Z",
+      "updatedAt": "2023-11-19T15:58:01.134Z",
+      "name": "Melvina15",
+      "steamId": "q3albiue5x7zc6ch",
+      "xboxLiveId": null,
+      "epicOnlineServicesId": null,
+      "roleAssignments": [
+        {
+          "id": "863c5e86-9804-45f4-97e8-f38de4081a05",
+          "createdAt": "2023-11-19T15:58:01.587Z",
+          "updatedAt": "2023-11-19T15:58:01.587Z",
+          "playerId": "1bc8b37c-0fdc-4a39-96af-a2b060d35927",
+          "roleId": "4fc5e760-a291-453e-9e1b-e6094dec112f",
+          "gameServerId": null,
+          "expiresAt": null,
+          "role": {
+            "id": "4fc5e760-a291-453e-9e1b-e6094dec112f",
+            "createdAt": "2023-11-19T15:58:01.508Z",
+            "updatedAt": "2023-11-19T15:58:01.508Z",
+            "name": "Global role",
+            "system": false,
+            "permissions": [
+              {
+                "id": "6ba1c41b-7fb9-47f0-9107-9402f271968c",
+                "createdAt": "2023-11-19T15:58:01.514Z",
+                "updatedAt": "2023-11-19T15:58:01.514Z",
+                "permissionId": "5ba0c0b8-5830-465e-aef5-1678897bbe38",
+                "roleId": "4fc5e760-a291-453e-9e1b-e6094dec112f",
+                "count": 0
+              }
+            ]
+          }
+        },
+        {
+          "playerId": "1bc8b37c-0fdc-4a39-96af-a2b060d35927",
+          "roleId": "b8fd3d89-d70f-49c6-bcae-d568d92834c2",
+          "role": {
+            "id": "b8fd3d89-d70f-49c6-bcae-d568d92834c2",
+            "createdAt": "2023-11-19T15:58:00.611Z",
+            "updatedAt": "2023-11-19T15:58:00.612Z",
+            "name": "Player",
+            "permissions": [],
+            "system": true
+          }
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Handles expiring role of gameServer properly - expiring gameserver role",
+    "filteredFields": [
+      "name",
+      "playerId",
+      "steamId",
+      "roleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

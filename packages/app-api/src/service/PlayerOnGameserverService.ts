@@ -1,13 +1,13 @@
 import { TakaroService } from './Base.js';
 
-import { IsIP, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
-import { RoleAssignmentOutputDTO, RoleService } from './RoleService.js';
+import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -38,12 +38,15 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
   @IsNumber()
   @IsOptional()
   ping: number;
+
+  @IsNumber()
+  currency: number;
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
-  @Type(() => RoleAssignmentOutputDTO)
+  @Type(() => PlayerRoleAssignmentOutputDTO)
   @ValidateNested({ each: true })
-  roles: RoleAssignmentOutputDTO[];
+  roles: PlayerRoleAssignmentOutputDTO[];
 }
 
 export class PlayerOnGameServerCreateDTO extends TakaroDTO<PlayerOnGameServerCreateDTO> {
@@ -77,6 +80,11 @@ export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpd
   @IsNumber()
   @IsOptional()
   ping: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  currency: number;
 }
 
 @traceableClass('service:playerOnGameserver')
@@ -128,7 +136,7 @@ export class PlayerOnGameServerService extends TakaroService<
     const roles = await roleService.find({ filters: { name: ['Player'] } });
 
     player.roles.push(
-      await new RoleAssignmentOutputDTO().construct({
+      await new PlayerRoleAssignmentOutputDTO().construct({
         roleId: roles.results[0].id,
         role: roles.results[0],
       })
@@ -143,5 +151,19 @@ export class PlayerOnGameServerService extends TakaroService<
   async addInfo(ref: IPlayerReferenceDTO, gameserverId: string, data: PlayerOnGameServerUpdateDTO) {
     const resolved = await this.resolveRef(ref, gameserverId);
     return this.update(resolved.id, data);
+  }
+
+  async setCurrency(id: string, currency: number) {
+    try {
+      const res = await this.repo.update(id, await new PlayerOnGameServerUpdateDTO().construct({ currency }));
+      return res;
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === 'CheckViolationError' && 'constraint' in error && error.constraint === 'currency_positive') {
+          throw new errors.BadRequestError('Currency must be positive');
+        }
+      }
+      throw error;
+    }
   }
 }

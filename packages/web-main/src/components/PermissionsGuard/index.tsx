@@ -21,11 +21,12 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
     }
 
     const permissionsFromRoles = userData.roles
-      .map((role) => role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
-      .reduce((acc, permissionList) => acc.concat(permissionList), [])
+      .flatMap((assignments) =>
+        assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS)
+      )
       .filter((permission) => Object.values(PERMISSIONS).includes(permission));
 
-    return Array.from(new Set(permissionsFromRoles));
+    return Array.from(new Set(permissionsFromRoles as PERMISSIONS[]));
   }, [userData]); // only recalculated when userData changes
 
   return (
@@ -44,7 +45,7 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
     }
 
     return userData.roles
-      .flatMap((role) => role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
+      .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
       .reduce((acc, permission) => acc.add(permission), new Set());
   }, [userData]) as Set<PERMISSIONS>;

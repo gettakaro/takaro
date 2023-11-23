@@ -10,7 +10,9 @@ async function main() {
 
   const { player, gameServerId, module: mod, arguments: args } = data;
 
-  if (!checkPermission(player, 'TELEPORTS_USE')) {
+  const hasPermission = checkPermission(player, 'TELEPORTS_USE');
+
+  if (!hasPermission) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: 'You do not have permission to use teleports.',
       opts: {
@@ -49,9 +51,9 @@ async function main() {
     },
   });
 
-  if (allPlayerTeleports.data.data.length >= mod.userConfig.maxTeleports) {
+  if (allPlayerTeleports.data.data.length >= hasPermission.count) {
     await data.player.pm(
-      `You have reached the maximum number of teleports, maximum allowed is ${mod.userConfig.maxTeleports}`
+      `You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`
     );
     return;
   }

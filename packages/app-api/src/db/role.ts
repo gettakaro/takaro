@@ -11,8 +11,6 @@ import {
   ServiceRoleCreateInputDTO,
 } from '../service/RoleService.js';
 import { ITakaroRepo } from './base.js';
-import { UserRepo } from './user.js';
-import { PlayerRepo } from './player.js';
 
 export const ROLE_TABLE_NAME = 'roles';
 export const PERMISSION_ON_ROLE_TABLE_NAME = 'permissionOnRole';
@@ -195,26 +193,6 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
         permissionId: permissionRecord.id,
       })
       .del();
-  }
-
-  async assignRoleToUser(userId: string, roleId: string) {
-    const userRepo = new UserRepo(this.domainId);
-    await userRepo.assignRole(userId, roleId);
-  }
-
-  async removeRoleFromUser(userId: string, roleId: string) {
-    const userRepo = new UserRepo(this.domainId);
-    await userRepo.removeRole(userId, roleId);
-  }
-
-  async assignRoleToPlayer(playerId: string, roleId: string, gameserverId?: string) {
-    const playerRepo = new PlayerRepo(this.domainId);
-    await playerRepo.assignRole(playerId, roleId, gameserverId);
-  }
-
-  async removeRoleFromPlayer(playerId: string, roleId: string, gameserverId?: string) {
-    const playerRepo = new PlayerRepo(this.domainId);
-    await playerRepo.removeRole(playerId, roleId, gameserverId);
   }
 
   async permissionCodeToRecord(permissionCode: string) {
