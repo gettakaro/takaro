@@ -1,7 +1,16 @@
 import { Page } from '@playwright/test';
+import { BasePage } from './BasePage.js';
 
-export class ModuleDefinitionsPage {
-  constructor(public readonly page: Page) {}
+interface createPermission {
+  name: string;
+  description: string;
+  friendlyName: string;
+}
+
+export class ModuleDefinitionsPage extends BasePage {
+  constructor(public readonly page: Page) {
+    super(page);
+  }
 
   async goto() {
     await this.page.goto('/modules', { waitUntil: 'domcontentloaded' });
@@ -15,15 +24,46 @@ export class ModuleDefinitionsPage {
     return studioPage;
   }
 
-  async edit(name: string) {
+  async edit({
+    name,
+    description,
+    permissions,
+  }: {
+    name?: string;
+    description?: string;
+    permissions?: createPermission[];
+  }) {
     await this.page.getByRole('link', { name }).getByRole('button', { name: 'Edit module' }).click();
+
+    if (name) {
+      await this.fillName(name);
+    }
+    if (description) {
+      await this.fillDescription(description);
+    }
+
+    // TODO: delete existing permissions first
+    if (permissions) {
+      permissions.forEach(async (permission, index) => {
+        await this.fillPermission(permission, index);
+      });
+    }
   }
+
   async delete(name: string) {
     await this.page.getByRole('link', { name }).getByRole('button', { name: 'Delete module' }).click();
   }
 
   // ===============================
-  async create({ name, description }: { name?: string; description?: string }) {
+  async create({
+    name,
+    description,
+    permissions,
+  }: {
+    name?: string;
+    description?: string;
+    permissions?: createPermission[];
+  }) {
     await this.page.getByText('new module').click();
 
     if (name) {
@@ -32,13 +72,28 @@ export class ModuleDefinitionsPage {
     if (description) {
       await this.fillDescription(description);
     }
+
+    if (permissions && permissions.length > 0) {
+      permissions.forEach(async (permission, index) => {
+        await this.fillPermission(permission, index);
+      });
+    }
+
+    await this.page.getByRole('button', { name: 'Save changes' }).click();
   }
 
   async fillName(name: string) {
-    await this.page.getByPlaceholder('module name').fill(name);
+    await this.page.getByLabel('Name').fill(name);
   }
 
   async fillDescription(description: string) {
-    await this.page.getByPlaceholder('description').fill(description);
+    await this.page.getByLabel('Description').fill(description);
+  }
+
+  async fillPermission({ name, description, friendlyName }: createPermission, index: number) {
+    await this.page.getByRole('button', { name: 'permission' }).click();
+    await this.page.locator(`[id="permissions.${index}.permission"]`).type(name);
+    await this.page.locator(`[id="permissions.${index}.description"]`).type(description);
+    await this.page.locator(`[id="permissions.${index}.friendlyName"]`).type(friendlyName);
   }
 }

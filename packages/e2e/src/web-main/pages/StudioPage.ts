@@ -1,11 +1,12 @@
 import { Locator, Page } from '@playwright/test';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import playwright from '@playwright/test';
+import { BasePage } from './BasePage.js';
 const { expect } = playwright;
 
-export class StudioPage {
+export class StudioPage extends BasePage {
   constructor(public readonly page: Page, public mod: ModuleOutputDTO) {
-    this.mod = mod;
+    super(page);
   }
 
   async goto() {
