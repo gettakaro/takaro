@@ -1,11 +1,11 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-10-20T20:04:25.761Z"
-    },
+    "meta": {},
     "data": {
       "commandPrefix": "/",
-      "serverChatName": "Takaro"
+      "serverChatName": "Takaro",
+      "economyEnabled": "false",
+      "currencyName": "Takaro coins"
     }
   },
   "status": 200,
