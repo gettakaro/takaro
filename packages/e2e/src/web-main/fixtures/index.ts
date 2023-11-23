@@ -15,7 +15,7 @@ import {
 import humanId from 'human-id/dist/index.js';
 import { ModuleDefinitionsPage, StudioPage, GameServersPage } from '../pages/index.js';
 import { EventTypes } from '@takaro/modules';
-import { getAdminClient, login } from './helpers.js';
+import { getAdminClient, login } from '../helpers.js';
 
 export enum PERMISSIONS {
   'ROOT' = 'ROOT',
@@ -123,7 +123,7 @@ const main = pwTest.extend<IBaseFixtures>({
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         mailhog: new MailhogAPI({
-          baseURL: integrationConfig.get('mailhog.url'),
+          baseURL: 'http://127.0.0.1:8025',
         }),
         domain,
         players: [],
@@ -158,7 +158,7 @@ export interface WithModuleFixture {
   module: ModuleOutputDTO;
 }
 
-export const ExtendedRootTest = main.extend<WithModuleFixture>({
+export const extendedTest = main.extend<WithModuleFixture>({
   module: [
     async ({ takaro, page }, use) => {
       const { rootUser, domain, gameServer } = takaro;
@@ -204,6 +204,8 @@ export const ExtendedRootTest = main.extend<WithModuleFixture>({
         name: 'my-cron',
         temporalValue: '* * * * *',
       });
+
+      takaro.studioPage.mod = mod.data.data;
       await connectedEvents;
       await use(mod.data.data);
     },
