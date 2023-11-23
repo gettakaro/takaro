@@ -13,7 +13,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 interface IFormInputs {
   commandPrefix: string;
   serverChatName: string;
-  economyEnabled: string;
+  economyEnabled: boolean;
   currencyName: string;
 }
 
@@ -60,7 +60,7 @@ export const GlobalGameServerSettings: FC = () => {
   const onSubmit: SubmitHandler<IFormInputs> = async () => {
     const formValues = getValues();
 
-    await mapSettings(formValues as Settings, async (key, value) =>
+    await mapSettings(formValues as unknown as Settings, async (key, value) =>
       apiClient.settings.settingsControllerSet(key, {
         value: value!,
         gameServerId: serverId,
@@ -73,12 +73,12 @@ export const GlobalGameServerSettings: FC = () => {
     if (data) {
       // TODO: this should be mapped using the new config generator
       mapSettings(data, async (key, value) => {
-        if (value) setValue(key, value);
-
         if (booleanFields.includes(key)) {
           settingsComponents.push(<CheckBox control={control} label={key} name={key} key={key} />);
+          setValue(key, value === 'true');
         } else {
           settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+          if (value) setValue(key, value);
         }
       });
     }

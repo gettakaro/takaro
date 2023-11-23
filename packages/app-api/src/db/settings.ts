@@ -98,7 +98,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     }
 
     if (!data.length) {
-      throw new errors.NotFoundError();
+      return DEFAULT_SETTINGS[key] as string;
     }
 
     return data[0][key];
@@ -115,7 +115,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
       data = await query.where({ domain: this.domainId });
     }
     if (!data.length) {
-      throw new errors.NotFoundError();
+      return this.create();
     }
 
     return new Settings().construct({
