@@ -13,7 +13,7 @@ import {
   UserOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
-import { ModuleDefinitionsPage, StudioPage, GameServersPage } from '../pages/index.js';
+import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
 import { EventTypes } from '@takaro/modules';
 import { getAdminClient, login } from '../helpers.js';
 
@@ -54,10 +54,10 @@ export interface IBaseFixtures {
     studioPage: StudioPage;
     moduleDefinitionsPage: ModuleDefinitionsPage;
     GameServersPage: GameServersPage;
+    usersPage: UsersPage;
     builtinModule: ModuleOutputDTO;
     gameServer: GameServerOutputDTO;
     mailhog: MailhogAPI;
-    players: PlayerOutputDTO[];
     rootUser: UserOutputDTO;
     testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
     domain: DomainCreateOutputDTO;
@@ -122,11 +122,11 @@ const main = pwTest.extend<IBaseFixtures>({
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
+        usersPage: new UsersPage(page),
         mailhog: new MailhogAPI({
           baseURL: 'http://127.0.0.1:8025',
         }),
         domain,
-        players: [],
         rootUser: domain.rootUser,
         testUser: { ...user.data.data, password, role: emptyRole.data.data },
       });
@@ -154,12 +154,15 @@ export const userTest = main.extend({
   },
 });
 
-export interface WithModuleFixture {
-  module: ModuleOutputDTO;
+export interface ExtendedFixture {
+  extended: {
+    mod: ModuleOutputDTO;
+    players: PlayerOutputDTO[];
+  };
 }
 
-export const extendedTest = main.extend<WithModuleFixture>({
-  module: [
+export const extendedTest = main.extend<ExtendedFixture>({
+  extended: [
     async ({ takaro, page }, use) => {
       const { rootUser, domain, gameServer } = takaro;
       await login(page, rootUser.email, domain.password);
@@ -206,8 +209,14 @@ export const extendedTest = main.extend<WithModuleFixture>({
       });
 
       takaro.studioPage.mod = mod.data.data;
+
       await connectedEvents;
-      await use(mod.data.data);
+      const players = (await client.player.playerControllerSearch()).data.data;
+
+      await use({
+        mod: mod.data.data,
+        players: players,
+      });
     },
     { auto: true },
   ],

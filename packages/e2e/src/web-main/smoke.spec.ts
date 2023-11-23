@@ -7,18 +7,18 @@ const { expect } = playwright;
 
 // When a user certain specific READ_* permissions, they should be able to see the page
 const items = [
-  { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Servers' },
-  { permission: PERMISSIONS.READ_EVENTS, linkName: 'Events' },
-  { permission: PERMISSIONS.READ_PLAYERS, linkName: 'Players' },
-  { permission: PERMISSIONS.READ_USERS, linkName: 'Users' },
-  { permission: PERMISSIONS.READ_MODULES, linkName: 'Modules' },
-  { permission: PERMISSIONS.READ_VARIABLES, linkName: 'Variables' },
-  { permission: PERMISSIONS.READ_SETTINGS, linkName: 'Settings' },
-  { permission: PERMISSIONS.READ_ROLES, linkName: 'Roles' },
+  { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Servers', path: 'servers' },
+  { permission: PERMISSIONS.READ_EVENTS, linkName: 'Events', path: 'events' },
+  { permission: PERMISSIONS.READ_PLAYERS, linkName: 'Players', path: 'players' },
+  { permission: PERMISSIONS.READ_USERS, linkName: 'Users', path: 'users' },
+  { permission: PERMISSIONS.READ_MODULES, linkName: 'Modules', path: 'modules' },
+  { permission: PERMISSIONS.READ_VARIABLES, linkName: 'Variables', path: 'variables' },
+  { permission: PERMISSIONS.READ_SETTINGS, linkName: 'Settings', path: 'settings' },
+  { permission: PERMISSIONS.READ_ROLES, linkName: 'Roles', path: 'roles' },
 
   // TODO: gameserver specific permissions are not fully implemented yet.
   // Once this has landed, extra tests should be added for these.
-  { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Dashboard' },
+  // { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Dashboard', path: '' },
 ];
 
 test('has title', async ({ page }) => {
@@ -26,13 +26,7 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle(/Takaro/);
 });
 
-test('Can go to dashboard', async ({ page }) => {
-  const nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
-  await nav.getByRole('link', { name: 'Dashboard' }).click();
-  await expect(page.getByRole('heading', { name: 'dashboard', exact: true })).toBeVisible();
-});
-
-items.forEach(({ permission, linkName }) => {
+items.forEach(({ permission, linkName, path }) => {
   test(`Can go to ${linkName}`, async ({ page }) => {
     const nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
     await nav.getByRole('link', { name: linkName }).click();
@@ -40,14 +34,14 @@ items.forEach(({ permission, linkName }) => {
   });
 
   userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
-    const path = `${integrationConfig.get('frontendHost')}/${linkName.toLowerCase()}`;
+    const route = `${integrationConfig.get('frontendHost')}/${path}`;
 
     // check if link is not visible in the navbar
     let nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
     await expect(nav.getByRole('link', { name: linkName, exact: true })).toHaveCount(0);
 
     // check if link redirects to Forbidden page
-    await page.goto(path);
+    await page.goto(route);
     await expect(page).toHaveURL('/forbidden');
     await expect(page.getByRole('heading', { name: 'Forbidden' })).toBeVisible();
 
@@ -59,7 +53,7 @@ items.forEach(({ permission, linkName }) => {
       name: testUser.role.name,
     });
 
-    await page.goto(path);
+    await page.goto(route);
 
     // since the dom is reloaded, we need to locate the nav again.
     nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);

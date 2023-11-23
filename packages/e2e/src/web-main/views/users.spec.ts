@@ -1,5 +1,6 @@
 import playwright from '@playwright/test';
 import { test } from '../fixtures/index.js';
+import { navigateTo } from '../helpers.js';
 
 const { expect } = playwright;
 
@@ -9,30 +10,29 @@ test('Can view users', async ({ page, takaro }) => {
 });
 
 test.describe('Role assignment', () => {
-  test('Can assign a role to a user', async ({ page }) => {
-    await page.getByRole('link', { name: 'Users' }).click();
+  test('Can assign a role to a user', async ({ page, takaro }) => {
+    await navigateTo(page, 'global-users');
 
-    await page.getByRole('button', { name: 'user-actions' }).click();
-    await page.getByRole('menuitem', { name: 'Go to user profile' }).click();
+    const { usersPage, testUser } = takaro;
+
+    await usersPage.goto();
+    await usersPage.action({ action: 'profile', email: testUser.email });
 
     await page.getByRole('button', { name: 'Assign role' }).click();
 
     await page.locator('#roleId').click();
     await page.getByRole('option', { name: 'Player' }).click();
-
     await page.getByRole('button', { name: 'Save changes' }).click();
-
     await expect(page.getByRole('cell', { name: 'Player', exact: true })).toBeVisible();
   });
 
-  test('Can remove a role from a user', async ({ page }) => {
-    await page.getByRole('link', { name: 'Users' }).click();
+  test('Can remove a role from a user', async ({ page, takaro }) => {
+    const { usersPage } = takaro;
+    await usersPage.goto();
 
-    await page.getByRole('button', { name: 'user-actions' }).click();
-    await page.getByRole('menuitem', { name: 'Go to user profile' }).click();
+    await usersPage.action({ action: 'profile', email: takaro.testUser.email });
 
     await page.getByRole('button', { name: 'Assign role' }).click();
-
     await page.locator('#roleId').click();
     await page.getByRole('option', { name: 'Player' }).click();
 

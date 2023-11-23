@@ -42,26 +42,28 @@ test('Can create module with permissions', async ({ page, takaro }) => {
     await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
 });
 
-test('Creating module with config, saves the config', async ({ page }) => {
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Creating module with config, saves the config', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
 
   const moduleName = 'My new module';
 
-  await page.getByPlaceholder('My cool module').fill(moduleName);
+  await moduleDefinitionsPage.create({
+    name: moduleName,
+    save: false,
+  });
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
 
   await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
-
   await page.getByLabel('Default value').fill('my string default value');
 
   await page.getByRole('button', { name: 'Save changes' }).click();
 
-  await page.getByRole('link', { name: 'Modules' }).click();
-
   await expect(page.getByText(moduleName)).toBeVisible();
+
+  await moduleDefinitionsPage.open(moduleName);
   await page
     .getByRole('link', { name: 'My new module Edit module Delete module No description provided.' })
     .getByRole('button', { name: 'Edit module' })
@@ -79,11 +81,16 @@ test('Creating a module but providing too short name, shows an error', async ({ 
   await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
 });
 
-test('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Creating a module with config but not providing a default value, shows an error', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  const moduleName = 'My new module';
 
-  await page.getByPlaceholder('My cool module').fill('My new module');
+  await moduleDefinitionsPage.goto();
+
+  await moduleDefinitionsPage.create({
+    name: moduleName,
+    save: false,
+  });
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
@@ -106,13 +113,14 @@ test('Can edit module', async ({ page, takaro }) => {
   // Create a module
   await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
-    description: 'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server',
     configSchema: JSON.stringify({}),
   });
 
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.edit({
+    oldName: oldModuleName,
     name: newModuleName,
     description: 'New description',
   });
@@ -123,18 +131,13 @@ test('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
   await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
-    description: 'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server.',
     configSchema: JSON.stringify({}),
   });
 
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  const cardDeleteButton = page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Delete module' });
-  await cardDeleteButton.click();
-
-  // dialog
-  await page.getByRole('button', { name: 'Delete module' }).click();
-
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.delete(moduleName);
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
@@ -144,17 +147,12 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   });
 
   const mod = modRes.data.data[0];
-
   expect(mod).toBeDefined();
 
-  await page.getByRole('link', { name: 'Servers' }).click();
-  await page.getByText('Test server').click();
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Modules' })
-    .click();
-
+  // there is only 1 server
+  // TODO: change to this when double slash issue is fixed
+  //await navigateTo(page, 'server-modules');
+  page.goto(`/server/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
 
   await page.getByRole('button', { name: 'Install' }).click();

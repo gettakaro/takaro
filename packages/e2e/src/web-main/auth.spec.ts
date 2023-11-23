@@ -42,7 +42,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await page.getByRole('link', { name: 'Users' }).click();
   await page.getByText('Invite user').click();
   await page.getByPlaceholder('example@example.com').type(newUserEmail);
-  await page.getByRole('button', { name: 'Send Invitation' }).click();
+  await page.getByRole('button', { name: 'Send invitation' }).click();
 
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 

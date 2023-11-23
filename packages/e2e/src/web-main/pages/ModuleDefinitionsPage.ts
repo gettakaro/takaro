@@ -1,7 +1,10 @@
 import { Page } from '@playwright/test';
 import { BasePage } from './BasePage.js';
+import playwright from '@playwright/test';
 
-interface createPermission {
+const { expect } = playwright;
+
+interface Permission {
   name: string;
   description: string;
   friendlyName: string;
@@ -26,14 +29,18 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async edit({
     name,
+    oldName,
     description,
     permissions,
+    save = true,
   }: {
+    oldName: string;
     name?: string;
     description?: string;
-    permissions?: createPermission[];
+    permissions?: Permission[];
+    save?: boolean;
   }) {
-    await this.page.getByRole('link', { name }).getByRole('button', { name: 'Edit module' }).click();
+    await this.page.getByRole('link', { name: oldName }).getByRole('button', { name: 'Edit module' }).click();
 
     if (name) {
       await this.fillName(name);
@@ -48,10 +55,17 @@ export class ModuleDefinitionsPage extends BasePage {
         await this.fillPermission(permission, index);
       });
     }
+
+    if (save) {
+      await this.page.getByRole('button', { name: 'Save changes' }).click();
+    }
   }
 
   async delete(name: string) {
     await this.page.getByRole('link', { name }).getByRole('button', { name: 'Delete module' }).click();
+    await this.page.getByRole('button', { name: 'Delete module' }).click();
+    await expect(this.page.getByText(name)).toHaveCount(0);
+    // TOOD: expect (module to be deleted)
   }
 
   // ===============================
@@ -59,10 +73,12 @@ export class ModuleDefinitionsPage extends BasePage {
     name,
     description,
     permissions,
+    save = true,
   }: {
     name?: string;
     description?: string;
-    permissions?: createPermission[];
+    permissions?: Permission[];
+    save?: boolean;
   }) {
     await this.page.getByText('new module').click();
 
@@ -74,12 +90,14 @@ export class ModuleDefinitionsPage extends BasePage {
     }
 
     if (permissions && permissions.length > 0) {
-      permissions.forEach(async (permission, index) => {
-        await this.fillPermission(permission, index);
-      });
+      for (let i = 0; i < permissions.length; i++) {
+        await this.fillPermission(permissions[i], i);
+      }
     }
 
-    await this.page.getByRole('button', { name: 'Save changes' }).click();
+    if (save) {
+      await this.page.getByRole('button', { name: 'Save changes' }).click();
+    }
   }
 
   async fillName(name: string) {
@@ -90,10 +108,17 @@ export class ModuleDefinitionsPage extends BasePage {
     await this.page.getByLabel('Description').fill(description);
   }
 
-  async fillPermission({ name, description, friendlyName }: createPermission, index: number) {
-    await this.page.getByRole('button', { name: 'permission' }).click();
-    await this.page.locator(`[id="permissions.${index}.permission"]`).type(name);
-    await this.page.locator(`[id="permissions.${index}.description"]`).type(description);
-    await this.page.locator(`[id="permissions.${index}.friendlyName"]`).type(friendlyName);
+  async fillPermission({ name, description, friendlyName }: Permission, index: number) {
+    // Creates a new permission field
+    // first button name is different
+    if (index == 0) {
+      await this.page.getByRole('button', { name: 'Add first permission' }).click();
+    } else {
+      await this.page.getByRole('button', { name: 'New permission' }).click();
+    }
+
+    await this.page.locator(`[id="permissions.${index}.permission"]`).fill(name);
+    await this.page.locator(`[id="permissions.${index}.description"]`).fill(description);
+    await this.page.locator(`[id="permissions.${index}.friendlyName"]`).fill(friendlyName);
   }
 }
