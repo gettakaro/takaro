@@ -4,48 +4,39 @@ import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect, test: pwTest } = playwright;
 
-test('Can create module', async ({ page }) => {
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Can create module', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
 
   const newModuleName = 'My new module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
-
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
+  await moduleDefinitionsPage.create({
+    name: newModuleName,
+  });
   await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
-test('Can create module with permissions', async ({ page }) => {
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
-
+test('Can create module with permissions', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
   const newModuleName = 'My new module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
 
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'New permission' }).click();
-  await page.getByRole('button', { name: 'New permission' }).click();
-
-  await page.locator('[id="permissions\\.0\\.permission"]').type('MY_PERMISSION');
-  await page.locator('[id="permissions\\.0\\.description"]').type('Informative description');
-  await page.locator('[id="permissions\\.0\\.friendlyName"]').type('My first permission');
-
-  await page.locator('[id="permissions\\.1\\.permission"]').type('MY_PERMISSION2');
-  await page.locator('[id="permissions\\.1\\.description"]').type('Informative description 2');
-  await page.locator('[id="permissions\\.1\\.friendlyName"]').type('My second permission');
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
-  /*   await expect(page.getByText(newModuleName)).toBeVisible();
-  
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.create({
+    name: newModuleName,
+    permissions: [
+      {
+        name: 'MY_PERMISSION',
+        description: 'Informative description',
+        friendlyName: 'My first permission',
+      },
+      {
+        name: 'MY_PERMISSION2',
+        description: 'Informative description 2',
+        friendlyName: 'My second permission',
+      },
+    ],
+  });
+  await expect(page.getByText(newModuleName)).toBeVisible();
+  /*   
     await page.getByRole('link', { name: 'My new module Edit module Delete module No description provided.' }).getByRole('button', { name: 'Edit module' }).click();
     await expect(page.getByText('MY_PERMISSION')).toBeVisible();
     await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
@@ -82,12 +73,9 @@ test('Creating module with config, saves the config', async ({ page }) => {
 test('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
-  await moduleDefinitionsPage.page.getByText('new module').click();
-
-  await page.getByPlaceholder('My cool module').fill('a');
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
+  await moduleDefinitionsPage.create({
+    name: 'a',
+  });
   await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
 });
 
@@ -113,24 +101,21 @@ test('Creating a module with config but not providing a default value, shows an 
 
 test('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'edit this module';
+  const newModuleName = 'My new module';
 
+  // Create a module
   await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
     description: 'Modules are the building blocks of your game server. They consist of commands, c',
     configSchema: JSON.stringify({}),
   });
 
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-
-  await page.getByRole('link', { name: oldModuleName }).getByRole('button', { name: 'Edit module' }).click();
-
-  const newModuleName = 'My edited module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.edit({
+    name: newModuleName,
+    description: 'New description',
+  });
   await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
 });
 
