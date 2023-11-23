@@ -10,6 +10,8 @@ export class SettingsModel extends TakaroModel {
 
   commandPrefix!: string;
   serverChatName!: string;
+  economyEnabled!: string;
+  currencyName!: string;
 }
 
 export class GameServerSettingsModel extends SettingsModel {
@@ -96,7 +98,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     }
 
     if (!data.length) {
-      throw new errors.NotFoundError();
+      return DEFAULT_SETTINGS[key] as string;
     }
 
     return data[0][key];
@@ -113,12 +115,14 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
       data = await query.where({ domain: this.domainId });
     }
     if (!data.length) {
-      throw new errors.NotFoundError();
+      return this.create();
     }
 
     return new Settings().construct({
       commandPrefix: data[0].commandPrefix,
       serverChatName: data[0].serverChatName,
+      economyEnabled: data[0].economyEnabled,
+      currencyName: data[0].currencyName,
     });
   }
 

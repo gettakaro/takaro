@@ -2174,6 +2174,8 @@ export interface GetSettingsInput {
 export const GetSettingsInputKeysEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -3764,6 +3766,8 @@ export interface ParamKey {
 export const ParamKeyKeyEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
@@ -5068,6 +5072,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  economyEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  currencyName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -5134,10 +5150,10 @@ export interface SettingsSetDTO {
   gameServerId?: string;
   /**
    *
-   * @type {string}
+   * @type {any}
    * @memberof SettingsSetDTO
    */
-  value: string;
+  value?: any;
 }
 /**
  *
@@ -13321,13 +13337,13 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet: async (
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
@@ -13458,13 +13474,13 @@ export const SettingsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputObjectDTOAPI>> {
@@ -13516,13 +13532,13 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: any
     ): AxiosPromise<SettingsOutputObjectDTOAPI> {
@@ -13569,14 +13585,14 @@ export class SettingsApi extends BaseAPI {
   /**
    *
    * @summary Get
-   * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+   * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
    * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof SettingsApi
    */
   public settingsControllerGet(
-    keys?: Array<'commandPrefix' | 'serverChatName'>,
+    keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
     gameServerId?: string,
     options?: AxiosRequestConfig
   ) {
