@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useSearchParams } from 'react-router-dom';
 import { Density } from '../../../styled';
+import { useTableSearchParamKeys } from './SearchParams';
 
 import {
   flexRender,
@@ -25,6 +27,7 @@ import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
 export interface TableProps<DataType extends object> {
+  /// Unique identifier for the table
   id: string;
 
   data: DataType[];
@@ -35,23 +38,28 @@ export interface TableProps<DataType extends object> {
 
   renderToolbar?: () => JSX.Element;
 
+  /// Callback for when the row selection changes
   rowSelection?: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
+
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
   };
+
   pagination: {
     paginationState: PaginationState;
     setPaginationState: OnChangeFn<PaginationState>;
     pageOptions: PageOptions;
   };
+
   columnFiltering: {
     columnFiltersState: ColumnFilter[];
     setColumnFiltersState: Dispatch<SetStateAction<ColumnFilter[]>>;
   };
+
   columnSearch: {
     columnSearchState: ColumnFilter[];
     setColumnSearchState: OnChangeFn<ColumnFilter[]>;
@@ -69,26 +77,40 @@ export function Table<DataType extends object>({
   columnSearch,
   renderToolbar,
 }: TableProps<DataType>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const TableSearchParamKeys = useTableSearchParamKeys(id);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    const columnVisibility = searchParams.get(TableSearchParamKeys.COLUMN_VISIBILITY);
+    return columnVisibility ? JSON.parse(columnVisibility) : {};
+  });
+
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    columns.map((column) => {
+
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() => {
+    const columnOrderString = searchParams.get(TableSearchParamKeys.COLUMN_ORDER);
+    if (columnOrderString) {
+      return columnOrderString.split(',');
+    }
+
+    return columns.map((column) => {
       if (column.id === undefined) {
         throw new Error('ColumnDef must have an id');
       }
       return column.id;
-    })
-  );
+    });
+  });
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
 
   // table size
   useEffect(() => {
     if (density === 'tight') {
+      // TODO: this should probably be based on the provided page size
       table.setPageSize(19);
     } else {
       table.resetPageSize(true);
@@ -109,6 +131,12 @@ export function Table<DataType extends object>({
       }, 3000);
     }
   }, [columnVisibility, hasShownColumnVisibilityTooltip]);
+
+  // Function to safely parse search params or use defaults
+  const getSafeNumberParam = (paramKey: string, defaultValue: number) => {
+    const value = searchParams.get(paramKey);
+    return value !== null ? Number(value) : defaultValue;
+  };
 
   const table = useReactTable({
     data,
@@ -132,21 +160,115 @@ export function Table<DataType extends object>({
     autoResetPageIndex: false,
 
     columnResizeMode: 'onChange',
-    onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: sorting?.setSortingState,
-    onPaginationChange: pagination?.setPaginationState,
-    onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
-    onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
-    onColumnOrderChange: setColumnOrder,
+    onColumnVisibilityChange: (columnVisibilityOrUpdaterFn) => {
+      if (typeof columnVisibilityOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_VISIBILITY, JSON.stringify(columnVisibilityOrUpdaterFn));
+          return prevSearchParams;
+        });
+        setColumnVisibility(columnVisibilityOrUpdaterFn);
+      } else {
+        setColumnVisibility((old) => {
+          const newColumnVisibility = columnVisibilityOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_VISIBILITY, JSON.stringify(newColumnVisibility));
+            return prevSearchParams;
+          });
+          return newColumnVisibility;
+        });
+      }
+    },
+
+    onSortingChange: (sortingStateOrUpdaterFn) => {
+      if (sorting.setSortingState) {
+        if (typeof sortingStateOrUpdaterFn !== 'function') {
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_SORT, JSON.stringify(sortingStateOrUpdaterFn));
+            return prevSearchParams;
+          });
+          return sorting?.setSortingState(sortingStateOrUpdaterFn);
+        } else {
+          sorting?.setSortingState((old) => {
+            const newSorting = sortingStateOrUpdaterFn(old);
+            setSearchParams((prevSearchParams) => {
+              prevSearchParams.set(TableSearchParamKeys.COLUMN_SORT, JSON.stringify(newSorting));
+              return prevSearchParams;
+            });
+            return newSorting;
+          });
+        }
+      }
+    },
+    onPaginationChange: (paginationOrUpdaterFn) => {
+      if (typeof paginationOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.PAGE_INDEX, String(paginationOrUpdaterFn.pageIndex as number));
+          prevSearchParams.set(TableSearchParamKeys.PAGE_SIZE, String(paginationOrUpdaterFn.pageSize));
+          return prevSearchParams;
+        });
+        pagination?.setPaginationState(paginationOrUpdaterFn);
+      }
+    },
+    onColumnFiltersChange: (filtersOrUpdaterFn) => {
+      // For some reason the filtersOrUpdaterFn can be a function or the new filters
+      if (typeof filtersOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_FILTER, JSON.stringify(filtersOrUpdaterFn));
+          return prevSearchParams;
+        });
+        columnFiltering?.setColumnFiltersState(filtersOrUpdaterFn as ColumnFilter[]);
+      } else {
+        columnFiltering?.setColumnFiltersState((old) => {
+          const newFilters = filtersOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_FILTER, JSON.stringify(newFilters));
+            return prevSearchParams;
+          });
+          return newFilters as ColumnFilter[];
+        });
+      }
+    },
+    onGlobalFilterChange: (filtersOrUpdaterFn) => {
+      // Same as column filters
+      if (typeof filtersOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_SEARCH, JSON.stringify(filtersOrUpdaterFn));
+          return prevSearchParams;
+        });
+        columnSearch?.setColumnSearchState(filtersOrUpdaterFn as ColumnFilter[]);
+      } else {
+        columnSearch?.setColumnSearchState((old) => {
+          const newFilters = filtersOrUpdaterFn(old);
+          setSearchParams((prevSearchParams) => {
+            prevSearchParams.set(TableSearchParamKeys.COLUMN_SEARCH, JSON.stringify(newFilters));
+            return prevSearchParams;
+          });
+          return newFilters as ColumnFilter[];
+        });
+      }
+    },
+    onColumnOrderChange: (columnOrderOrUpdaterFn) => {
+      if (typeof columnOrderOrUpdaterFn !== 'function') {
+        setSearchParams((prevSearchParams) => {
+          prevSearchParams.set(TableSearchParamKeys.COLUMN_ORDER, columnOrderOrUpdaterFn.join(','));
+          return prevSearchParams;
+        });
+      }
+      setColumnOrder(columnOrderOrUpdaterFn);
+    },
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
+    // InitialState is only used when a reset is triggered (e.g. resetPageIndex)
     initialState: {
       columnVisibility,
-      sorting: sorting.sortingState,
-      columnFilters: columnFiltering.columnFiltersState,
-      globalFilter: columnSearch.columnSearchState,
-      pagination: pagination.paginationState,
+      sorting: [],
+      columnFilters: [],
+      globalFilter: [],
+      pagination: {
+        pageIndex: getSafeNumberParam(TableSearchParamKeys.PAGE_INDEX, pagination.paginationState.pageIndex),
+        pageSize: getSafeNumberParam(TableSearchParamKeys.PAGE_SIZE, pagination.paginationState.pageSize),
+      },
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
@@ -156,7 +278,7 @@ export function Table<DataType extends object>({
       sorting: sorting?.sortingState,
       columnFilters: columnFiltering?.columnFiltersState,
       globalFilter: columnSearch?.columnSearchState,
-      pagination: pagination?.paginationState,
+      pagination: pagination.paginationState,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
     },
@@ -169,7 +291,7 @@ export function Table<DataType extends object>({
         <Flex>{renderToolbar && renderToolbar()}</Flex>
 
         <Flex>
-          <Filter table={table} />
+          <Filter table={table} tableId={id} />
           <ColumnVisibility
             table={table}
             setHasShownColumnVisibilityTooltip={setHasShownColumnVisibilityTooltip}
@@ -275,6 +397,7 @@ export function Table<DataType extends object>({
                         of {pagination.pageOptions.total} entries
                       </span>
                       <Pagination
+                        tableId={id}
                         pageCount={table.getPageCount()}
                         hasNext={table.getCanNextPage()}
                         hasPrevious={table.getCanPreviousPage()}

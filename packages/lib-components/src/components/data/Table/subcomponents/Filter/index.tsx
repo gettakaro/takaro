@@ -5,7 +5,9 @@ import { AiOutlineFilter as FilterIcon, AiOutlineClose as RemoveIcon } from 'rea
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ButtonContainer, FilterContainer } from './style';
+import { Wrapper, ButtonContainer, FilterContainer } from './style';
+import { useTableSearchParamKeys } from '../../SearchParams';
+import { useSearchParams } from 'react-router-dom';
 
 enum operators {
   is = 'is',
@@ -22,10 +24,13 @@ interface IFormInputs {
 
 interface FilterProps<DataType extends object> {
   table: Table<DataType>;
+  tableId: string;
 }
 
-export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
+export function Filter<DataType extends object>({ table, tableId }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
+  const tableSearchParamKeys = useTableSearchParamKeys(tableId);
+  const [_searchParams, setSearchParams] = useSearchParams();
 
   // Only get the columnIds on initial render
   const columnIds = useMemo(() => {
@@ -93,6 +98,12 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
   const handleClearFilters = useCallback(() => {
     table.resetColumnFilters();
     table.resetGlobalFilter();
+    setSearchParams((prevSearchParams) => {
+      prevSearchParams.delete(tableSearchParamKeys.COLUMN_SEARCH);
+      prevSearchParams.delete(tableSearchParamKeys.COLUMN_FILTER);
+      return prevSearchParams;
+    });
+
     remove();
     append({
       column: '',
@@ -144,101 +155,103 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
         />
       </Popover.Trigger>
       <Popover.Content>
-        <Button
-          onClick={() =>
-            append({
-              column: '',
-              operator: '',
-              value: '',
-            })
-          }
-          variant="clear"
-          text="Add condition to filter by"
-        />
-        <Divider fullWidth />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {fields.map((field, index) => {
-            return (
-              <FilterContainer key={field.id} hasMultipleFields={fields.length > 1}>
-                {fields.length > 1 && (
-                  <Tooltip key={`remove-${field.id}`}>
-                    <Tooltip.Trigger asChild>
-                      <IconButton
-                        size="tiny"
-                        icon={<RemoveIcon />}
-                        ariaLabel="remove filter"
-                        onClick={() => {
-                          remove(index);
-                        }}
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Remove filter</Tooltip.Content>
-                  </Tooltip>
-                )}
-                <Select
-                  key={`column-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.column`}
-                  label="Column"
-                  inPortal
-                  render={(selectedIndex) => {
-                    return columnIds[selectedIndex] ?? 'Select a column';
-                  }}
-                >
-                  <Select.OptionGroup>
-                    {columnIds.map((col) => (
-                      <Select.Option key={col} value={col}>
-                        <div>
-                          <span>{col}</span>
-                        </div>
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
+        <Wrapper>
+          <Button
+            onClick={() =>
+              append({
+                column: '',
+                operator: '',
+                value: '',
+              })
+            }
+            variant="clear"
+            text="Add condition to filter by"
+          />
+          <Divider fullWidth />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, index) => {
+              return (
+                <FilterContainer key={field.id} hasMultipleFields={fields.length > 1}>
+                  {fields.length > 1 && (
+                    <Tooltip key={`remove-${field.id}`}>
+                      <Tooltip.Trigger asChild>
+                        <IconButton
+                          size="tiny"
+                          icon={<RemoveIcon />}
+                          ariaLabel="remove filter"
+                          onClick={() => {
+                            remove(index);
+                          }}
+                        />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Remove filter</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                  <Select
+                    key={`column-${field.id}`}
+                    control={control}
+                    name={`filters.${index}.column`}
+                    label="Column"
+                    inPortal
+                    render={(selectedIndex) => {
+                      return columnIds[selectedIndex] ?? 'Select a column';
+                    }}
+                  >
+                    <Select.OptionGroup>
+                      {columnIds.map((col) => (
+                        <Select.Option key={col} value={col}>
+                          <div>
+                            <span>{col}</span>
+                          </div>
+                        </Select.Option>
+                      ))}
+                    </Select.OptionGroup>
+                  </Select>
 
-                <Select
-                  key={`operator-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.operator`}
-                  label="Condition"
-                  inPortal
-                  render={(selectedIndex) => {
-                    return Object.keys(operators)[selectedIndex] ?? 'select a condition';
-                  }}
-                >
-                  <Select.OptionGroup>
-                    {Object.keys(operators).map((operator) => (
-                      <Select.Option key={operator} value={operator}>
-                        <div>
-                          <span>{operator}</span>
-                        </div>
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
-                <TextField
-                  key={`value-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.value`}
-                  label="Value"
-                  placeholder="Enter a value"
-                />
-              </FilterContainer>
-            );
-          })}
+                  <Select
+                    key={`operator-${field.id}`}
+                    control={control}
+                    name={`filters.${index}.operator`}
+                    label="Condition"
+                    inPortal
+                    render={(selectedIndex) => {
+                      return Object.keys(operators)[selectedIndex] ?? 'select a condition';
+                    }}
+                  >
+                    <Select.OptionGroup>
+                      {Object.keys(operators).map((operator) => (
+                        <Select.Option key={operator} value={operator}>
+                          <div>
+                            <span>{operator}</span>
+                          </div>
+                        </Select.Option>
+                      ))}
+                    </Select.OptionGroup>
+                  </Select>
+                  <TextField
+                    key={`value-${field.id}`}
+                    control={control}
+                    name={`filters.${index}.value`}
+                    label="Value"
+                    placeholder="Enter a value"
+                  />
+                </FilterContainer>
+              );
+            })}
 
-          <ButtonContainer>
-            {fields.length > 0 && (
-              <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
-            )}
+            <ButtonContainer>
+              {fields.length > 0 && (
+                <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
+              )}
 
-            <Button type="submit" text="Apply filters" />
-          </ButtonContainer>
-        </form>
-        {/* dropdown with all columns */}
-        {/* dropdown with all operators */}
-        {/* input for value */}
-        {/* when all fields are valid, considered a filter */}
+              <Button type="submit" text="Apply filters" />
+            </ButtonContainer>
+          </form>
+          {/* dropdown with all columns */}
+          {/* dropdown with all operators */}
+          {/* input for value */}
+          {/* when all fields are valid, considered a filter */}
+        </Wrapper>
       </Popover.Content>
     </Popover>
   );

@@ -22,13 +22,30 @@ const getPageWindow = (pageCount: number, windowSize: number, currentPage: numbe
 };
 
 export interface PaginationProps {
-  setPageIndex: (index: number) => void;
+  /// The current page index
   pageIndex: number;
+
+  /// The function to set the current page index
+  setPageIndex: (index: number) => void;
+
+  /// Whether there is a previous page
   hasPrevious: boolean;
+
+  /// The function to go to the previous page
   previousPage: () => void;
-  nextPage: () => void;
+
+  /// Whether there is a next page
   hasNext: boolean;
+
+  /// The function to go to the next page
+  nextPage: () => void;
+
+  /// The total number of pages
   pageCount: number;
+
+  /// The id of the table
+  /// Used as identifier for the pagination buttons
+  tableId: string;
 }
 
 export const Pagination: FC<PaginationProps> = ({
@@ -39,6 +56,7 @@ export const Pagination: FC<PaginationProps> = ({
   pageCount,
   previousPage,
   nextPage,
+  tableId,
 }) => {
   const windowSize = 5;
   const pageWindow = getPageWindow(pageCount, windowSize, pageIndex + 1);
@@ -53,6 +71,10 @@ export const Pagination: FC<PaginationProps> = ({
     return showButtons && pageCount > windowSize;
   }, [showButtons, pageCount, windowSize]);
 
+  const handlePageChange = (page: number) => {
+    setPageIndex(page - 1);
+  };
+
   return (
     <PaginationContainer border={false}>
       {showJumps && <Button onClick={() => setPageIndex(0)} variant="outline" disabled={!hasPrevious} text="<<" />}
@@ -60,8 +82,9 @@ export const Pagination: FC<PaginationProps> = ({
       {showButtons &&
         pages.map((i) => (
           <Button
+            key={`page-${tableId}-${i}`}
             variant="outline"
-            onClick={() => setPageIndex(i - 1)}
+            onClick={() => handlePageChange(i)}
             className={i === pageIndex + 1 ? 'active' : ''}
             text={`${i}`}
           />
