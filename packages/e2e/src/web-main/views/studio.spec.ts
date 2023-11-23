@@ -1,22 +1,23 @@
 import playwright from '@playwright/test';
-import { test } from '../fixtures/index.js';
+import { extendedTest } from '../fixtures/index.js';
 
 import builtinModules from '../fixtures/modules.json' assert { type: 'json' };
 const { expect } = playwright;
 
-test.describe('smoke', () => {
-  test('should open onboarding when new module with no functions is created', async ({ takaro }) => {
-    const mod = await takaro.rootClient.module.moduleControllerCreate({
-      name: 'Module without functions',
-    });
+extendedTest.describe('smoke', () => {
+  extendedTest('should open onboarding when new module with no functions is created', async ({ takaro }) => {
+    // the Extended test sets the studiopage to a module with functions.
+    // So in this particular case, we need to set the correct module first.
+    const mod = await takaro.rootClient.module.moduleControllerCreate({ name: 'Module with no functions' });
     takaro.studioPage.mod = mod.data.data;
+
     await takaro.studioPage.goto();
     await expect(takaro.studioPage.page.locator('h1', { hasText: 'Choose one to get started' })).toBeVisible();
   });
 
-  // TODO: this test should move to modules
-  test('should open studio in new tab', async ({ page, context }) => {
-    await page.getByRole('link', { name: 'Modules' }).click();
+  // TODO: this extendedTest should move to modules
+  extendedTest('should open studio in new tab', async ({ page, context, takaro }) => {
+    await takaro.moduleDefinitionsPage.goto();
 
     const [studioPage] = await Promise.all([
       context.waitForEvent('page'),
@@ -27,18 +28,18 @@ test.describe('smoke', () => {
     await expect(studioPage.getByText('Module with functions')).toBeVisible();
   });
 
-  test.fixme('should redirect when surfed to non existing module', async ({ page }) => {
+  extendedTest.fixme('should redirect when surfed to non existing module', async ({ page }) => {
     await page.goto('studio/not-existing-module');
     await page.waitForURL('**/error404');
   });
 });
 
-test.describe('filetab', () => {
-  test.beforeEach(async ({ takaro }) => {
+extendedTest.describe('filetab', () => {
+  extendedTest.beforeEach(async ({ takaro }) => {
     await takaro.studioPage.goto();
   });
 
-  test('Editing shows dirty indicator', async ({ takaro }) => {
+  extendedTest('Editing shows dirty indicator', async ({ takaro }) => {
     const { studioPage } = takaro;
     const fileName = 'my-hook';
     await studioPage.openFile(fileName);
@@ -49,7 +50,7 @@ test.describe('filetab', () => {
     await expect(fileTab.getByTestId('close-my-hook-dirty')).toBeVisible();
   });
 
-  test('Saving hides dirty indicator', async ({ takaro }) => {
+  extendedTest('Saving hides dirty indicator', async ({ takaro }) => {
     const { studioPage } = takaro;
     await studioPage.openFile('my-hook');
 
@@ -61,7 +62,7 @@ test.describe('filetab', () => {
     await expect(studioPage.page.getByTestId('close-my-hook-clean')).toBeVisible();
   });
 
-  test('Closing dirty file should trigger discard dialog', async ({ takaro }) => {
+  extendedTest('Closing dirty file should trigger discard dialog', async ({ takaro }) => {
     const { studioPage } = takaro;
     const fileName = 'my-hook';
     await studioPage.openFile(fileName);
@@ -73,7 +74,7 @@ test.describe('filetab', () => {
     await expect(studioPage.page.getByRole('dialog')).toBeVisible();
   });
 
-  test('Closing clean file should close tab', async ({ takaro }) => {
+  extendedTest('Closing clean file should close tab', async ({ takaro }) => {
     const { studioPage } = takaro;
     const fileName = 'my-hook';
     await studioPage.openFile(fileName);
@@ -81,24 +82,24 @@ test.describe('filetab', () => {
     await expect(studioPage.page.getByRole('tab', { name: fileName })).not.toBeVisible();
   });
 
-  test.describe('context menu', () => {
-    test.fixme('should close all tabs to the right', async ({}) => {});
-    test.fixme('should close all saved tabs', async ({}) => {});
-    test.fixme('should close all ohter tabs', async ({}) => {});
+  extendedTest.describe('context menu', () => {
+    extendedTest.fixme('should close all tabs to the right', async ({}) => {});
+    extendedTest.fixme('should close all saved tabs', async ({}) => {});
+    extendedTest.fixme('should close all ohter tabs', async ({}) => {});
   });
 });
 
-test.describe('filetree', () => {
-  test.beforeEach(async ({ takaro }) => {
+extendedTest.describe('filetree', () => {
+  extendedTest.beforeEach(async ({ takaro }) => {
     await takaro.studioPage.goto();
   });
 
-  test.describe('file context menu', () => {
-    test.beforeEach(async ({ takaro }) => {
+  extendedTest.describe('file context menu', () => {
+    extendedTest.beforeEach(async ({ takaro }) => {
       await takaro.studioPage.goto();
     });
 
-    test('should open', async ({ takaro }) => {
+    extendedTest('should open', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
       await file.click({ button: 'right' });
@@ -108,7 +109,7 @@ test.describe('filetree', () => {
       await expect(studioPage.page.getByRole('menuitem', { name: 'Delete file' })).toBeVisible();
     });
 
-    test('Should trigger delete', async ({ takaro }) => {
+    extendedTest('Should trigger delete', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
       file.click({ button: 'right' });
@@ -119,7 +120,7 @@ test.describe('filetree', () => {
       await expect(studioPage.page.getByRole('dialog')).toBeVisible();
     });
 
-    test('Should trigger rename', async ({ takaro }) => {
+    extendedTest('Should trigger rename', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
       file.click({ button: 'right' });
@@ -127,33 +128,33 @@ test.describe('filetree', () => {
       await expect(studioPage.page.locator('input[name="file"]')).toBeFocused();
     });
   });
-  test('Should Create and Delete hook', async ({ page, takaro }) => {
-    const fileName = 'test-hook';
+  extendedTest('Should Create and Delete hook', async ({ page, takaro }) => {
+    const fileName = 'extendedTest-hook';
     await takaro.studioPage.createFile(fileName, 'hooks');
     await takaro.studioPage.deleteFile(fileName);
     await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
   });
 
-  test('Should Create and Delete command', async ({ page, takaro }) => {
-    const fileName = 'test-command';
+  extendedTest('Should Create and Delete command', async ({ page, takaro }) => {
+    const fileName = 'extendedTest-command';
     await takaro.studioPage.createFile(fileName, 'commands');
     await takaro.studioPage.deleteFile(fileName);
     await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
   });
 
-  test('Should Create and Delete cronjob', async ({ page, takaro }) => {
-    const fileName = 'test-cronjob';
+  extendedTest('Should Create and Delete cronjob', async ({ page, takaro }) => {
+    const fileName = 'extendedTest-cronjob';
     await takaro.studioPage.createFile(fileName, 'cronjobs');
     await takaro.studioPage.deleteFile(fileName);
     await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
   });
 
-  test.fixme('Can save command config', async ({}) => {});
+  extendedTest.fixme('Can save command config', async ({}) => {});
 });
 
-test.describe('Copy module', () => {
+extendedTest.describe('Copy module', () => {
   for (const mod of builtinModules) {
-    test(`Can copy ${mod.name}`, async ({ page, takaro }) => {
+    extendedTest(`Can copy ${mod.name}`, async ({ page, takaro }) => {
       await takaro.moduleDefinitionsPage.goto();
       const studioPage = await takaro.moduleDefinitionsPage.open(mod.name);
       await studioPage.getByRole('button', { name: 'Make copy of module' }).click();
@@ -163,12 +164,12 @@ test.describe('Copy module', () => {
       await expect(page.getByText(`${mod.name}-copy`)).toBeVisible();
     });
   }
-  test.fixme('Cannot copy module with name that already exists', async ({}) => {});
+  extendedTest.fixme('Cannot copy module with name that already exists', async ({}) => {});
 });
 
-test.describe('Built-in modules', () => {
-  test.describe('filetree', () => {
-    test('Cannot create file', async ({ takaro }) => {
+extendedTest.describe('Built-in modules', () => {
+  extendedTest.describe('filetree', () => {
+    extendedTest('Cannot create file', async ({ takaro }) => {
       const { studioPage } = takaro;
       studioPage.mod = takaro.builtinModule;
       await studioPage.goto();
@@ -177,7 +178,7 @@ test.describe('Built-in modules', () => {
       await expect(studioPage.page.locator('button[aria-label="Create file"]')).not.toBeVisible();
     });
 
-    test('Cannot edit file', async ({ takaro }) => {
+    extendedTest('Cannot edit file', async ({ takaro }) => {
       const { studioPage } = takaro;
       studioPage.mod = takaro.builtinModule;
       await studioPage.goto();
@@ -192,7 +193,7 @@ test.describe('Built-in modules', () => {
     });
   });
 
-  test('Cannot edit text in built-in module', async ({ takaro }) => {
+  extendedTest('Cannot edit text in built-in module', async ({ takaro }) => {
     const { studioPage } = takaro;
     studioPage.mod = takaro.builtinModule;
     await studioPage.goto();
@@ -209,24 +210,23 @@ test.describe('Built-in modules', () => {
     await expect(studioPage.page.locator('#takaro-root').getByText('Cannot edit in read-only editor')).toBeVisible();
   });
 
-  test.fixme('Cannot save command config', async ({}) => {});
-
-  test.fixme('Cannot delete command config argument', async ({}) => {});
+  extendedTest.fixme('Cannot save command config', async ({}) => {});
+  extendedTest.fixme('Cannot delete command config argument', async ({}) => {});
 });
 
-test.describe('Item configuration', () => {
-  test.describe('Cronjob config', () => {});
-  test.describe('Hook config', () => {});
+extendedTest.describe('Item configuration', () => {
+  extendedTest.describe('Cronjob config', () => {});
+  extendedTest.describe('Hook config', () => {});
 
-  test.describe('Command config', () => {
-    test('Can add argument', async ({ takaro }) => {
+  extendedTest.describe('Command config', () => {
+    extendedTest('Can add argument', async ({ takaro }) => {
       const { studioPage } = takaro;
       await studioPage.goto();
-      await studioPage.createFile('testCommand', 'commands');
-      await studioPage.openFile('testCommand');
+      await studioPage.createFile('extendedTestCommand', 'commands');
+      await studioPage.openFile('extendedTestCommand');
 
       await studioPage.page.getByRole('button', { name: 'New' }).click();
-      await studioPage.page.getByLabel('Name', { exact: true }).type('testArgument');
+      await studioPage.page.getByLabel('Name', { exact: true }).type('extendedTestArgument');
       await studioPage.page.getByText('Select...').click();
       await studioPage.page.getByRole('option', { name: 'String' }).click();
       await studioPage.page.getByRole('textbox', { name: 'Help text' }).type('Some helpful text for the user');
@@ -234,19 +234,19 @@ test.describe('Item configuration', () => {
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
 
       // TODO: studio jumps to another file for some reason... Not sure why
-      // await expect(studioPage.page.getByText('testArgument')).toBeVisible();
+      // await expect(studioPage.page.getByText('extendedTestArgument')).toBeVisible();
 
       await studioPage.page.reload();
 
-      await studioPage.openFile('testCommand');
-      await expect(studioPage.page.getByLabel('Name', { exact: true })).toHaveValue('testArgument');
+      await studioPage.openFile('extendedTestCommand');
+      await expect(studioPage.page.getByLabel('Name', { exact: true })).toHaveValue('extendedTestArgument');
     });
 
-    test('Can move arguments around', async ({ takaro }) => {
+    extendedTest('Can move arguments around', async ({ takaro }) => {
       const { studioPage } = takaro;
       await studioPage.goto();
-      await studioPage.createFile('testCommand', 'commands');
-      await studioPage.openFile('testCommand');
+      await studioPage.createFile('extendedTestCommand', 'commands');
+      await studioPage.openFile('extendedTestCommand');
 
       // Create 3 args, "one" "two" and "three"
       for (const [key, value] of Object.entries(['one', 'two', 'three'])) {
@@ -262,7 +262,7 @@ test.describe('Item configuration', () => {
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
 
       await studioPage.page.reload();
-      await studioPage.openFile('testCommand');
+      await studioPage.openFile('extendedTestCommand');
 
       // Now manually reverse the order of the args
       await studioPage.page.getByRole('button', { name: 'Move up' }).nth(2).click();
@@ -272,7 +272,7 @@ test.describe('Item configuration', () => {
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
 
       await studioPage.page.reload();
-      await studioPage.openFile('testCommand');
+      await studioPage.openFile('extendedTestCommand');
 
       // Now check that the order is correct
       await expect(studioPage.page.locator('input[name="arguments\\.0\\.name"]')).toHaveValue('three');
