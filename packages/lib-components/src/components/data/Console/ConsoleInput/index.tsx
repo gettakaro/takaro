@@ -1,4 +1,4 @@
-import { ChangeEvent, createRef, KeyboardEvent, Dispatch, FC, SetStateAction, useState } from 'react';
+import { ChangeEvent, useRef, KeyboardEvent, Dispatch, FC, SetStateAction, useState } from 'react';
 import { Message } from '../MessageModel';
 import { Container, StyledEnterIcon } from './style';
 import { useSnackbar } from 'notistack';
@@ -10,7 +10,7 @@ export interface ConsoleInputProps {
 
 export const ConsoleInput: FC<ConsoleInputProps> = ({ onExecuteCommand, setMessages }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const inputRef = createRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [input, setInput] = useState('');
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
 

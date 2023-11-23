@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, createRef, ReactElement } from 'react';
+import { FC, useState, useEffect, ReactElement, useRef } from 'react';
 import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
@@ -80,7 +80,7 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children }) => {
   const [selected, setSelected] = useState<number>(0);
   const { x, y, refs, strategy } = useFloating();
 
-  const parentRef = createRef<HTMLDivElement>();
+  const parentRef = useRef<HTMLDivElement>(null);
 
   useOutsideAlerter(parentRef, () => {
     setVisible(false);
