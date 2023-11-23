@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsDefined, IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { errors, TakaroDTO } from '@takaro/util';
 import { Settings, SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
@@ -57,7 +57,7 @@ class SettingsSetDTO {
   @IsUUID()
   gameServerId?: string;
 
-  @IsOptional()
+  @IsDefined()
   value!: Settings[SETTINGS_KEYS];
 }
 
