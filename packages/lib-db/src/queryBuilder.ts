@@ -88,8 +88,6 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
       qry.withGraphFetched(extend);
     }
 
-    console.log(qry.toKnexQuery().toSQL().sql);
-
     return qry;
   }
 
