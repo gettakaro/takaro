@@ -10,6 +10,8 @@ export class SettingsModel extends TakaroModel {
 
   commandPrefix!: string;
   serverChatName!: string;
+  economyEnabled!: string;
+  currencyName!: string;
 }
 
 export class GameServerSettingsModel extends SettingsModel {
@@ -119,6 +121,8 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     return new Settings().construct({
       commandPrefix: data[0].commandPrefix,
       serverChatName: data[0].serverChatName,
+      economyEnabled: data[0].economyEnabled,
+      currencyName: data[0].currencyName,
     });
   }
 

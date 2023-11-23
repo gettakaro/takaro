@@ -1,6 +1,6 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField } from '@takaro/lib-components';
+import { Button, CheckBox, TextField } from '@takaro/lib-components';
 import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
@@ -13,7 +13,11 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 interface IFormInputs {
   commandPrefix: string;
   serverChatName: string;
+  economyEnabled: string;
+  currencyName: string;
 }
+
+const booleanFields = ['economyEnabled'];
 
 function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
@@ -37,7 +41,13 @@ export const GlobalGameServerSettings: FC = () => {
   const validationSchema = useMemo(() => {
     const schema = {};
     if (data) {
-      mapSettings(data, async (key) => (schema[key] = z.string().nonempty()));
+      mapSettings(data, async (key) => {
+        if (booleanFields.includes(key)) {
+          schema[key] = z.boolean();
+        } else {
+          schema[key] = z.string();
+        }
+      });
     }
     return z.object(schema);
   }, [data]);
@@ -65,7 +75,11 @@ export const GlobalGameServerSettings: FC = () => {
       mapSettings(data, async (key, value) => {
         if (value) setValue(key, value);
 
-        settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+        if (booleanFields.includes(key)) {
+          settingsComponents.push(<CheckBox control={control} label={key} name={key} key={key} />);
+        } else {
+          settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+        }
       });
     }
 

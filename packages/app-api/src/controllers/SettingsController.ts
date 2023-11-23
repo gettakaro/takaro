@@ -57,7 +57,7 @@ class SettingsSetDTO {
   @IsUUID()
   gameServerId?: string;
 
-  @IsString()
+  @IsOptional()
   value!: Settings[SETTINGS_KEYS];
 }
 
