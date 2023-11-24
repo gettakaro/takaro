@@ -141,6 +141,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
 
   async getTriggeredCommands(input: string, gameServerId: string) {
     const { query } = await this.getModel();
+    const knex = await this.getKnex();
 
     const commandIds: string[] = (
       await query
@@ -149,9 +150,16 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
         .innerJoin('modules', 'commands.moduleId', 'modules.id')
         .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
         .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
-        .where({
-          'commands.trigger': input,
-          'gameservers.id': gameServerId,
+        .where('gameservers.id', gameServerId)
+        .andWhere(function () {
+          this.where('commands.trigger', input).orWhereExists(function () {
+            this.select(knex.raw('1'))
+              .from(
+                knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)')
+              )
+              .whereRaw('cmds.command = "commands"."name"')
+              .andWhereRaw("cmds.details -> 'aliases' \\?| array[?]", [input]);
+          });
         })
     )
       // @ts-expect-error Knex is confused because we start from the 'normal' query object
