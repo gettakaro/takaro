@@ -42,6 +42,10 @@ const tests = [
 
       const player = res.data.data[0];
 
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
         currency: 100,
       });
@@ -61,11 +65,39 @@ const tests = [
 
       const player = res.data.data[0];
 
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
       const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
         currency: -100,
       });
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Currency must be positive');
+
+      return rejectedRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Bad request when economy is not enabled',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'false',
+      });
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
+        currency: -100,
+      });
+
+      expect(rejectedRes.data.meta.error.message).to.be.eq('Economy is not enabled');
 
       return rejectedRes;
     },

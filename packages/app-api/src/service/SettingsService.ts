@@ -8,6 +8,8 @@ import { TakaroService } from './Base.js';
 export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
   serverChatName = 'serverChatName',
+  economyEnabled = 'economyEnabled',
+  currencyName = 'currencyName',
 }
 export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
@@ -15,11 +17,19 @@ export class Settings extends TakaroModelDTO<Settings> {
 
   @IsString()
   serverChatName: string;
+
+  @IsString()
+  economyEnabled: string;
+
+  @IsString()
+  currencyName: string;
 }
 
 export const DEFAULT_SETTINGS: Partial<Settings> = {
   commandPrefix: '/',
   serverChatName: 'Takaro',
+  economyEnabled: 'false',
+  currencyName: 'Takaro coins',
 };
 
 @traceableClass('service:settings')
