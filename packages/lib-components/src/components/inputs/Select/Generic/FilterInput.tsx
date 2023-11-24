@@ -28,7 +28,6 @@ export const FilterInput = forwardRef<HTMLInputElement, FilterInputProps>(({ sel
 
   return (
     <Container>
-      <h3>Select an item</h3>
       <GenericTextField
         ref={ref}
         id={`select-${selectName}`}

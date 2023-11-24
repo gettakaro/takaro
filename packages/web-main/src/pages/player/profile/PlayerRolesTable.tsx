@@ -1,65 +1,32 @@
+import { FC, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
-import { Loading, useTableActions, Table, Button, Dropdown, IconButton, Divider } from '@takaro/lib-components';
-import { PATHS } from 'paths';
-import { usePlayer } from 'queries/players';
-import { FC } from 'react';
-import { useParams, useNavigate, Outlet } from 'react-router-dom';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, CellContext } from '@tanstack/react-table';
 import { useGameServers } from 'queries/gameservers';
-import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { usePlayerRoleUnassign } from 'queries/roles';
-
-export const PlayerProfile: FC = () => {
-  const { playerId } = useParams<{ playerId: string }>();
-  const navigate = useNavigate();
-  if (!playerId) {
-    navigate(PATHS.players());
-    return <Loading />;
-  }
-
-  const { data, isLoading } = usePlayer(playerId);
-
-  if (isLoading || !data) {
-    return <Loading />;
-  }
-
-  return (
-    <div>
-      <h1>{data?.name}</h1>
-      <ul>
-        <li>Takaro ID: {data?.id}</li>
-        <li>Created at: {DateTime.fromISO(data?.createdAt).toLocaleString(DateTime.DATETIME_FULL)}</li>
-        <li>Updated at: {DateTime.fromISO(data?.updatedAt).toLocaleString(DateTime.DATETIME_FULL)}</li>
-        <li>Steam ID: {data?.steamId}</li>
-        <li>EOS ID: {data?.epicOnlineServicesId}</li>
-        <li>Xbox ID: {data?.xboxLiveId}</li>
-      </ul>
-
-      <Divider />
-
-      <h2>Roles</h2>
-
-      <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} />
-      <Outlet />
-    </div>
-  );
-};
+import { useNavigate } from 'react-router-dom';
+import { StyledDialogBody } from './style';
+import { Loading, useTableActions, Table, Button, Dropdown, IconButton, Dialog } from '@takaro/lib-components';
+import { PATHS } from 'paths';
+import { DateTime } from 'luxon';
 
 const AssignRole: FC<{ playerId: string }> = ({ playerId }) => {
   const navigate = useNavigate();
-
   return <Button onClick={() => navigate(PATHS.player.assignRole(playerId))} text="Assign role" />;
 };
 
 interface IPlayerRolesTableProps {
   roles: PlayerRoleAssignmentOutputDTO[];
   playerId: string;
+  playerName: string;
 }
 
-const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
+export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, playerName }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerRoleAssignmentOutputDTO>();
   const { mutate } = usePlayerRoleUnassign();
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [deletingInfo, setDeletingInfo] = useState<CellContext<PlayerRoleAssignmentOutputDTO, unknown> | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 
@@ -138,11 +105,8 @@ const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
               label="Unassign role"
               icon={<DeleteIcon />}
               onClick={() => {
-                mutate({
-                  id: playerId,
-                  roleId: info.row.original.role.id,
-                  gameServerId: info.row.original.gameServerId,
-                });
+                setOpenDialog(true);
+                setDeletingInfo(info);
               }}
             />
           </Dropdown.Menu>
@@ -151,20 +115,57 @@ const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId }) => {
     }),
   ];
 
+  const handleOnDelete = async () => {
+    if (deletingInfo) {
+      setIsDeleting(true);
+      mutate({
+        id: playerId,
+        roleId: deletingInfo.row.original.role.id,
+        gameServerId: deletingInfo.row.original.gameServerId,
+      });
+      setIsDeleting(false);
+      setOpenDialog(false);
+    }
+  };
+
   return (
-    <Table
-      id="players"
-      columns={columnDefs}
-      data={roles}
-      renderToolbar={() => <AssignRole playerId={playerId} />}
-      pagination={{
-        paginationState: pagination.paginationState,
-        setPaginationState: pagination.setPaginationState,
-        pageOptions: { total: roles.length, pageCount: 1 },
-      }}
-      columnFiltering={columnFilters}
-      columnSearch={columnSearch}
-      sorting={sorting}
-    />
+    <>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>
+            Role: <span style={{ textTransform: 'capitalize' }}>{deletingInfo?.row.original.role.name}</span>{' '}
+          </Dialog.Heading>
+          <StyledDialogBody size="medium">
+            <h2>Unassign Role</h2>
+            <p>
+              Are you sure you want to unassign <strong>{deletingInfo?.row.original.role.name} </strong> from{' '}
+              <strong>{playerName}</strong>?
+            </p>
+            <Button
+              isLoading={isDeleting}
+              onClick={() => handleOnDelete()}
+              fullWidth
+              text={'Unassign role'}
+              color="error"
+            />
+          </StyledDialogBody>
+        </Dialog.Content>
+      </Dialog>
+
+      <Table
+        id="players"
+        columns={columnDefs}
+        data={roles}
+        renderToolbar={() => <AssignRole playerId={playerId} />}
+        pagination={{
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: { total: roles.length, pageCount: 1 },
+        }}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
+        sorting={sorting}
+      />
+    </>
   );
 };

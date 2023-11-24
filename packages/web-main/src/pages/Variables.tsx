@@ -1,5 +1,5 @@
 import { FC, Fragment, useState } from 'react';
-import { Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button, Divider } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, Dialog, Button, Divider } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
@@ -115,9 +115,15 @@ const Variables: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
     <Fragment>
@@ -130,11 +136,8 @@ const Variables: FC = () => {
       <Table
         id="variables"
         columns={columnDefs}
-        data={data.data}
-        pagination={{
-          ...pagination,
-          pageOptions: pagination.getPageOptions(data),
-        }}
+        data={data ? data?.data : []}
+        pagination={p}
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
         sorting={sorting}

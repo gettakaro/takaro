@@ -83,7 +83,7 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
   scroll-margin: ${({ theme }) => theme.spacing['0_75']};
 
   &:focus {
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.background};
     color: rgba(255, 255, 255, 0.9);
     position: relative;
   }
@@ -102,7 +102,7 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
 
     span {
       cursor: pointer;
-      color: ${({ theme, isActive: isSelected }) => (isSelected ? theme.colors.white : theme.colors.text)};
+      color: ${({ theme, isActive }) => (isActive ? theme.colors.white : theme.colors.text)};
     }
   }
 `;

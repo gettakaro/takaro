@@ -46,17 +46,19 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
 
   // make sure we click on the server card, and not the select
   await page.getByRole('heading', { name: 'Test server' }).click();
+
+  // open server settings
   await page
     .getByRole('navigation')
     .filter({ hasText: 'ServerDashboardModulesSettings' })
     .getByRole('link', { name: 'Settings' })
     .click();
 
+  // Change the server name
   await page.getByLabel('serverChatName').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
 
-  await page.getByRole('link', { name: 'Takaro' }).click();
-  await page.getByRole('link', { name: 'Servers' }).click();
+  await takaro.GameServersPage.goto();
   await page.getByRole('heading', { name: 'Second Server' }).click();
   await page
     .getByRole('navigation')

@@ -165,7 +165,7 @@ export const MultiSelect: StoryFn<SelectProps> = (args) => {
         >
           <Select.OptionGroup label="films">
             {films.map(({ name }) => (
-              <Select.Option key={name} value={name}>
+              <Select.Option key={name} value={name} label={name}>
                 <div>
                   <span>{name}</span>
                 </div>
@@ -202,7 +202,7 @@ export const Filter: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
       >
         <Select.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
-            <Select.Option key={name} value={name}>
+            <Select.Option key={name} value={name} label={name}>
               <div>
                 <span>{name}</span>
               </div>

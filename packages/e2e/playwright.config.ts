@@ -42,6 +42,9 @@ export default defineConfig({
   // Retry on CI only.
   retries: process.env.CI ? 4 : 0,
 
+  // Limit the number of failures on CI (faster feedback loop).
+  maxFailures: process.env.CI ? 10 : undefined,
+
   // Opt out of parallel tests on CI.
   workers: process.env.CI ? 1 : undefined,
 

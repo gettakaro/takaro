@@ -3,4 +3,5 @@
 export enum TEST_IDS {
   GLOBAL_NAV = 'global-nav',
   SERVER_NAV = 'server-nav',
+  TAKARO_ICON_NAV = 'takaro-icon-nav',
 }

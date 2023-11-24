@@ -62,7 +62,7 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
   const isActive = activeIndex === index;
 
   const getIcon = () => {
-    if (icon) return cloneElement(icon, { size: 16 });
+    if (icon) return cloneElement(icon, { size: 17 });
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -109,7 +109,14 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
           id={`menu-item-checkbox-${label}`}
         />
       )}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: iconPosition === 'left' ? 'flex-start' : 'space-between',
+        }}
+      >
         {icon && iconPosition === 'left' && getIcon()}
         <span>{label}</span>
         {icon && iconPosition === 'right' && getIcon()}

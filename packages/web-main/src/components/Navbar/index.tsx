@@ -109,11 +109,13 @@ export const Navbar: FC = () => {
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
-      <div style={{ width: '100%' }}>
-        <Link className="company-icon" to={PATHS.home()}>
-          <Company />
+      <div data-testid="takaro-icon-nav" style={{ width: '100%' }}>
+        <Link className="company-icon" to={PATHS.home()} style={{ display: 'block', marginLeft: '15px' }}>
+          <Company textVisible={false} />
         </Link>
+
         {hasReadGameServerPermission && <GameServerNav />}
+
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}
           {domainLinks.map((link) => renderLink(link))}

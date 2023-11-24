@@ -135,5 +135,7 @@ test('Recover account and reset password', async ({ page, takaro }) => {
   await page.getByPlaceholder('hi cutie').type(user.email);
   await page.getByLabel('PasswordRequired').type(newPassword);
   await page.getByRole('button', { name: 'Log in with Email' }).click();
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
+
+  // check if we are on the dashboard
+  await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();
 });

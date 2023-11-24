@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { Table, Loading, useTableActions, IconButton, Dropdown, PERMISSIONS } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
@@ -116,24 +116,27 @@ const Players: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
     <Fragment>
       <Table
         id="players"
         columns={columnDefs}
-        data={data.data as PlayerOutputDTO[]}
-        pagination={{
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }}
+        data={data?.data as PlayerOutputDTO[]}
+        pagination={p}
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
         sorting={sorting}
+        isLoading={isLoading}
       />
     </Fragment>
   );

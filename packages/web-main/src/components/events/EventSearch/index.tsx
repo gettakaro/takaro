@@ -10,6 +10,7 @@ import {
   useRole,
   FloatingFocusManager,
   FloatingPortal,
+  offset,
 } from '@floating-ui/react';
 import {
   Input,
@@ -61,6 +62,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
     open,
     onOpenChange: setOpen,
     middleware: [
+      offset(5),
       flip({ padding: 10 }),
       size({
         apply({ rects, availableHeight, elements }) {

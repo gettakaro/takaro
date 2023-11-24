@@ -43,9 +43,14 @@ export const Default: StoryFn = () => {
           </DropdownMenu.Group>
 
           <DropdownMenu.Group label="Editing">
-            <Dropdown.Menu.Item label="Edit values..." onClick={() => {}} icon={<EditIcon />} />
-            <Dropdown.Menu.Item label="Filter by values" onClick={() => {}} icon={<FilterIcon />} />
-            <Dropdown.Menu.Item label="Group by values" onClick={() => {}} icon={<GroupIcon />} />
+            <Dropdown.Menu.Item iconPosition="right" label="Edit values..." onClick={() => {}} icon={<EditIcon />} />
+            <Dropdown.Menu.Item
+              iconPosition="right"
+              label="Filter by values"
+              onClick={() => {}}
+              icon={<FilterIcon />}
+            />
+            <Dropdown.Menu.Item iconPosition="right" label="Group by values" onClick={() => {}} icon={<GroupIcon />} />
           </DropdownMenu.Group>
 
           <DropdownMenu.Group>

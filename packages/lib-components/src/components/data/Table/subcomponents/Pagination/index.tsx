@@ -1,6 +1,12 @@
 import { FC, useMemo } from 'react';
-import { Button } from '../../../../../components';
+import { Button, IconButton } from '../../../../../components';
 import { PaginationContainer } from './style';
+import {
+  FaAngleRight as NextIcon,
+  FaAnglesRight as LastIcon,
+  FaChevronLeft as PreviousIcon,
+  FaAnglesLeft as FirstIcon,
+} from 'react-icons/fa6';
 
 const range = (start: number, end: number) => {
   return Array.from({ length: end - start }, (_, index) => index + start);
@@ -55,8 +61,24 @@ export const Pagination: FC<PaginationProps> = ({
 
   return (
     <PaginationContainer border={false}>
-      {showJumps && <Button onClick={() => setPageIndex(0)} variant="outline" disabled={!hasPrevious} text="<<" />}
-      {showButtons && <Button onClick={previousPage} variant="outline" disabled={!hasPrevious} text="<" />}
+      {showJumps && (
+        <IconButton
+          size="tiny"
+          onClick={() => setPageIndex(0)}
+          icon={<FirstIcon />}
+          disabled={!hasPrevious}
+          ariaLabel="First page"
+        />
+      )}
+      {showButtons && (
+        <IconButton
+          size="tiny"
+          onClick={previousPage}
+          icon={<PreviousIcon />}
+          disabled={!hasPrevious}
+          ariaLabel="Previous page"
+        />
+      )}
       {showButtons &&
         pages.map((i) => (
           <Button
@@ -66,9 +88,17 @@ export const Pagination: FC<PaginationProps> = ({
             text={`${i}`}
           />
         ))}
-      {showButtons && <Button variant="outline" onClick={nextPage} disabled={!hasNext} text=">" />}
+      {showButtons && (
+        <IconButton size="tiny" icon={<NextIcon />} onClick={nextPage} disabled={!hasNext} ariaLabel="next page" />
+      )}
       {showJumps && (
-        <Button variant="outline" onClick={() => setPageIndex(pageCount - 1)} disabled={!hasNext} text=">>" />
+        <IconButton
+          size="tiny"
+          icon={<LastIcon />}
+          onClick={() => setPageIndex(pageCount - 1)}
+          disabled={!hasNext}
+          ariaLabel="Last page"
+        />
       )}
     </PaginationContainer>
   );

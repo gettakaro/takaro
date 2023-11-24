@@ -104,10 +104,11 @@ export default {
   args: {
     sort: false,
     refetching: true,
+    isLoading: false,
   },
 } as Meta<TableProps<User>>;
 
-const Users: FC<TableProps<User>> = () => {
+const Users: FC<TableProps<User>> = (args) => {
   const { pagination, sorting, columnSearch, columnFilters, rowSelection } = useTableActions<User>();
 
   useEffect(() => {
@@ -129,6 +130,7 @@ const Users: FC<TableProps<User>> = () => {
           total: 20,
         },
       }}
+      isLoading={args.isLoading}
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
       rowSelection={rowSelection}
