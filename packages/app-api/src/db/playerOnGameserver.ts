@@ -182,4 +182,41 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
 
     return new IPlayerReferenceDTO().construct(foundProfiles[0]);
   }
+
+  async transact(senderId: string, receiverId: string, amount: number) {
+    const { model } = await this.getModel();
+
+    await model.transaction(async (trx) => {
+      const txQuery = () => model.query(trx).modify('domainScoped', this.domainId);
+
+      const sender = txQuery().findById(senderId);
+      const receiver = txQuery().findById(receiverId);
+
+      const [senderData, receiverData] = await Promise.all([sender, receiver]);
+
+      if (!senderData || !receiverData) {
+        throw new errors.NotFoundError();
+      }
+
+      if (senderData.gameServerId !== receiverData.gameServerId) {
+        throw new errors.BadRequestError('Players are not on the same game server');
+      }
+
+      if (senderData.currency < amount) {
+        throw new errors.BadRequestError('Insufficient funds');
+      }
+
+      await txQuery()
+        .findById(senderId)
+        .patch({ currency: senderData.currency - amount })
+        .returning('*');
+
+      await txQuery()
+        .findById(receiverId)
+        .patch({ currency: receiverData.currency + amount })
+        .returning('*');
+
+      return;
+    });
+  }
 }

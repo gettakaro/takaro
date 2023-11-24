@@ -166,4 +166,8 @@ export class PlayerOnGameServerService extends TakaroService<
       throw error;
     }
   }
+
+  async transact(senderId: string, receiverId: string, amount: number) {
+    return this.repo.transact(senderId, receiverId, amount);
+  }
 }

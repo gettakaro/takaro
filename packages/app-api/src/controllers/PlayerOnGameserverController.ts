@@ -56,6 +56,14 @@ class PlayerOnGameServerSetCurrencyInputDTO {
   currency!: number;
 }
 
+class ParamSenderReceiver {
+  @IsUUID(4)
+  sender!: string;
+
+  @IsUUID(4)
+  receiver!: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -100,5 +108,17 @@ export class PlayerOnGameServerController {
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     return apiResponse(await service.setCurrency(params.id, body.currency));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]), onlyIfEconomyEnabledMiddleware)
+  @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
+  @Post('/gameserver/player/:sender/:receiver/transfer')
+  async transactBetweenPlayers(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamSenderReceiver,
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+  ) {
+    const service = new PlayerOnGameServerService(req.domainId);
+    return apiResponse(await service.transact(params.sender, params.receiver, body.currency));
   }
 }

@@ -14,7 +14,7 @@ export async function onlyIfEconomyEnabledMiddleware(
 
   // Could be a playerOnGameServer route
   const playerOnGameServerService = new PlayerOnGameServerService(req.domainId);
-  const possiblePlayerId = req.params.id;
+  const possiblePlayerId = req.params.id || req.params.sender || req.params.receiver;
   const maybePlayer = await playerOnGameServerService.findOne(possiblePlayerId);
 
   if (maybePlayer) {
