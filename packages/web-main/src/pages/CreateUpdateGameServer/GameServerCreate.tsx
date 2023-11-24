@@ -54,7 +54,6 @@ const CreateGameServer: FC = () => {
 
       // set the new gameserver as selected.
       setSelectedGameServerId(newGameServer.id);
-
       navigate(PATHS.gameServers.overview());
     } catch (error) {
       Sentry.captureException(error);

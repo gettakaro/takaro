@@ -42,6 +42,7 @@ export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
   const [isWrapped, setIsWrapped] = useState<boolean>(false);
   const contentRef = useRef<HTMLSpanElement>(null);
 
+  // useEffect required since we depend on the DOM
   useEffect(() => {
     if (contentRef.current) {
       setIsWrapped(contentRef.current.offsetWidth < contentRef.current.scrollWidth);

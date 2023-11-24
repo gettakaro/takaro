@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Divider, Loading, styled } from '@takaro/lib-components';
+import { Divider, Loading, PERMISSIONS, styled } from '@takaro/lib-components';
 import { FiPlus } from 'react-icons/fi';
 import { useInfiniteModules } from 'queries/modules';
 import { useNavigate, Outlet } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { PATHS } from 'paths';
 import { ModuleCardDefinition } from '../components/modules/Cards/ModuleCardDefinition';
 import { AddModuleCard, ModuleCards } from '../components/modules/Cards/style';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -44,24 +45,26 @@ export const ModuleDefinitions: FC = () => {
       </p>
 
       <Divider />
-      <SubHeader>Custom</SubHeader>
-      <SubText>
-        You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
-        module click on a built-in module & inside the editor click on the copy icon next to it's name.
-      </SubText>
-      <ModuleCards>
-        <AddModuleCard
-          onClick={() => {
-            navigate(PATHS.modules.create());
-          }}
-        >
-          <FiPlus size={24} />
-          <h3>new module</h3>
-        </AddModuleCard>
-        {customModules.map((mod) => (
-          <ModuleCardDefinition key={mod.id} mod={mod} />
-        ))}
-      </ModuleCards>
+      <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_MODULES]}>
+        <SubHeader>Custom</SubHeader>
+        <SubText>
+          You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
+          module click on a built-in module & inside the editor click on the copy icon next to it's name.
+        </SubText>
+        <ModuleCards>
+          <AddModuleCard
+            onClick={() => {
+              navigate(PATHS.modules.create());
+            }}
+          >
+            <FiPlus size={24} />
+            <h3>new module</h3>
+          </AddModuleCard>
+          {customModules.map((mod) => (
+            <ModuleCardDefinition key={mod.id} mod={mod} />
+          ))}
+        </ModuleCards>
+      </PermissionsGuard>
       <SubHeader>Built-in</SubHeader>
       <SubText>
         These modules are built-in from Takaro and can be installed per server through the modules page for a selected

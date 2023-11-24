@@ -1,5 +1,5 @@
 import { FC, Fragment, useState } from 'react';
-import { Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
+import { Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button, Divider } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
@@ -126,6 +126,7 @@ const Variables: FC = () => {
         variables are the way that the teleports module stores the teleport locations.
       </p>
 
+      <Divider size="large" />
       <Table
         id="variables"
         columns={columnDefs}
