@@ -158,6 +158,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
                 knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)')
               )
               .whereRaw('cmds.command = "commands"."name"')
+              // eslint-disable-next-line quotes
               .andWhereRaw("cmds.details -> 'aliases' \\?| array[?]", [input]);
           });
         })
