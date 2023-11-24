@@ -2174,6 +2174,8 @@ export interface GetSettingsInput {
 export const GetSettingsInputKeysEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -3764,10 +3766,31 @@ export interface ParamKey {
 export const ParamKeyKeyEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
 
+/**
+ *
+ * @export
+ * @interface ParamSenderReceiver
+ */
+export interface ParamSenderReceiver {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  sender: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  receiver: string;
+}
 /**
  *
  * @export
@@ -5068,6 +5091,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  economyEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  currencyName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -5134,10 +5169,10 @@ export interface SettingsSetDTO {
   gameServerId?: string;
   /**
    *
-   * @type {string}
+   * @type {any}
    * @memberof SettingsSetDTO
    */
-  value: string;
+  value: any;
 }
 /**
  *
@@ -12652,6 +12687,57 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerTransactBetweenPlayers: async (
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'sender' is not null or undefined
+      assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'sender', sender);
+      // verify required parameter 'receiver' is not null or undefined
+      assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'receiver', receiver);
+      const localVarPath = `/gameserver/player/{sender}/{receiver}/transfer`
+        .replace(`{${'sender'}}`, encodeURIComponent(String(sender)))
+        .replace(`{${'receiver'}}`, encodeURIComponent(String(receiver)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSetCurrencyInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -12713,6 +12799,29 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerTransactBetweenPlayers(
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerTransactBetweenPlayers(
+        sender,
+        receiver,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
   };
 };
 
@@ -12767,6 +12876,30 @@ export const PlayerOnGameServerApiFactory = function (
     ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp
         .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerTransactBetweenPlayers(
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerTransactBetweenPlayers(
+          sender,
+          receiver,
+          playerOnGameServerSetCurrencyInputDTO,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -12826,6 +12959,32 @@ export class PlayerOnGameServerApi extends BaseAPI {
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
       .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Transact between players
+   * @param {string} sender
+   * @param {string} receiver
+   * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerTransactBetweenPlayers(
+    sender: string,
+    receiver: string,
+    playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerTransactBetweenPlayers(
+        sender,
+        receiver,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -13321,13 +13480,13 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet: async (
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
@@ -13458,13 +13617,13 @@ export const SettingsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputObjectDTOAPI>> {
@@ -13516,13 +13675,13 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: any
     ): AxiosPromise<SettingsOutputObjectDTOAPI> {
@@ -13569,14 +13728,14 @@ export class SettingsApi extends BaseAPI {
   /**
    *
    * @summary Get
-   * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+   * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
    * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof SettingsApi
    */
   public settingsControllerGet(
-    keys?: Array<'commandPrefix' | 'serverChatName'>,
+    keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
     gameServerId?: string,
     options?: AxiosRequestConfig
   ) {

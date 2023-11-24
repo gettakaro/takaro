@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Economy is not enabled"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "PlayerOnGameserverController",
+    "snapshot": true,
+    "name": "Bad request when economy is not enabled",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

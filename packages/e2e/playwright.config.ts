@@ -11,6 +11,24 @@ const { defineConfig, devices } = playwright;
  */
 global.afterEach = () => {};
 
+const isPR = process.env.GITHUB_HEAD_REF; // This is set for PRs
+const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main'; // Adjust the branch name if necessary
+
+const projects = [
+  {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+];
+
+// Add Firefox only if not a PR or if it's the main branch
+if (!isPR || isMainBranch) {
+  projects.push({
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  });
+}
+
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: 'src',
@@ -22,7 +40,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
 
   // Retry on CI only.
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 4 : 0,
 
   // Opt out of parallel tests on CI.
   workers: process.env.CI ? 1 : undefined,
@@ -43,15 +61,5 @@ export default defineConfig({
     trace: 'on',
   },
   // Configure projects for major browsers.
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-  ],
+  projects,
 });
