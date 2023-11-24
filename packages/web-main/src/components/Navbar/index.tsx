@@ -109,12 +109,11 @@ export const Navbar: FC = () => {
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
-      <div style={{ width: '100%' }}>
+      <div data-testid="takaro-icon-nav" style={{ width: '100%' }}>
         <Link className="company-icon" to={PATHS.home()} style={{ display: 'block', marginLeft: '15px' }}>
           <Company textVisible={false} />
         </Link>
 
-        <h3>Global</h3>
         {hasReadGameServerPermission && <GameServerNav />}
 
         <Nav data-testid="global-nav">
