@@ -13,13 +13,15 @@ export async function onlyIfEconomyEnabledMiddleware(
   // First, we need to try and find out if this route is gameserver-related
 
   // Could be a playerOnGameServer route
-  const playerOnGameServerService = new PlayerOnGameServerService(req.domainId);
-  const possiblePlayerId = req.params.id || req.params.sender || req.params.receiver;
-  const maybePlayer = await playerOnGameServerService.findOne(possiblePlayerId);
 
-  if (maybePlayer) {
-    gameServerId = maybePlayer.gameServerId;
-  }
+  try {
+    const playerOnGameServerService = new PlayerOnGameServerService(req.domainId);
+    const possiblePlayerId = req.params.id || req.params.sender || req.params.receiver;
+    const maybePlayer = await playerOnGameServerService.findOne(possiblePlayerId);
+    if (maybePlayer) {
+      gameServerId = maybePlayer.gameServerId;
+    }
+  } catch (e) {}
 
   let settingsService: SettingsService | null = null;
 
