@@ -15,8 +15,7 @@ export default {
     isEditOnRemove: true,
     readOnly: false,
     separators: [','],
-    description:
-      'Very basic description. But atleast it is here and can be improved in the future.',
+    description: 'Very basic description. But atleast it is here and can be improved in the future.',
     name: 'fruits',
     hint: '',
     onBlur: () => {},
@@ -40,7 +39,6 @@ export const OnSubmit: StoryFn<TagFieldProps> = (args) => {
   });
 
   const onSubmit: SubmitHandler<FormInputs> = ({ tags }) => {
-    console.log('in on submit', tags);
     setResult(() => [...tags]);
   };
 
@@ -49,12 +47,7 @@ export const OnSubmit: StoryFn<TagFieldProps> = (args) => {
       <h1>Add Fruits</h1>
       <pre>paste tester: apple,banana,jeroen</pre>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TagField
-          {...args}
-          tagValidationSchema={beforeAddValidationSchema}
-          control={control}
-          name="tags"
-        />
+        <TagField {...args} tagValidationSchema={beforeAddValidationSchema} control={control} name="tags" />
         <Button type="submit" text="Submit" />
       </form>
       <pre>result: {result.join(', ')}</pre>

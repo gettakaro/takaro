@@ -2,21 +2,22 @@ import playwright from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
+import { navigateTo } from '../helpers.js';
 
 const { expect } = playwright;
 
 test('Can set global settings', async ({ page }) => {
-  await page.getByText('Settings').click();
-  await page.getByLabel('serverChatName').fill('My cool server');
+  navigateTo(page, 'global-settings');
+  const serverName = 'My cool server';
+  await page.getByLabel('serverChatName').fill(serverName);
   await page.getByRole('button', { name: 'Save' }).click();
-
   await page.reload();
 
-  await expect(page.getByLabel('serverChatName')).toHaveValue('My cool server');
+  await expect(page.getByLabel('serverChatName')).toHaveValue(serverName);
 });
 
-test('Can set server-scoped settings', async ({ page }) => {
-  await page.getByRole('link', { name: 'Servers' }).click();
+test('Can set server-scoped settings', async ({ page, takaro }) => {
+  await takaro.GameServersPage.goto();
   await page.getByText('Test server').click();
   await page
     .getByRole('navigation')
@@ -33,7 +34,7 @@ test('Can set server-scoped settings', async ({ page }) => {
 });
 
 test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
-  await takaro.client.gameserver.gameServerControllerCreate({
+  await takaro.rootClient.gameserver.gameServerControllerCreate({
     name: 'Second server',
     type: GameServerCreateDTOTypeEnum.Mock,
     connectionInfo: JSON.stringify({
@@ -41,7 +42,8 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
     }),
   });
 
-  await page.getByRole('link', { name: 'Servers' }).click();
+  await takaro.GameServersPage.goto();
+
   // make sure we click on the server card, and not the select
   await page.getByRole('heading', { name: 'Test server' }).click();
   await page

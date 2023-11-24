@@ -1,76 +1,69 @@
 import playwright from '@playwright/test';
-import { basicTest, test } from '../fixtures/index.js';
+import { test } from '../fixtures/index.js';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect, test: pwTest } = playwright;
 
-basicTest('Can create module', async ({ page }) => {
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Can create module', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
 
   const newModuleName = 'My new module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
-
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
+  await moduleDefinitionsPage.create({
+    name: newModuleName,
+  });
   await expect(page.getByText(newModuleName)).toBeVisible();
 });
 
-basicTest('Can create module with permissions', async ({ page }) => {
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
-
+test('Can create module with permissions', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
   const newModuleName = 'My new module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
 
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'New permission' }).click();
-  await page.getByRole('button', { name: 'New permission' }).click();
-
-  await page.locator('[id="permissions\\.0\\.permission"]').type('MY_PERMISSION');
-  await page.locator('[id="permissions\\.0\\.description"]').type('Informative description');
-  await page.locator('[id="permissions\\.0\\.friendlyName"]').type('My first permission');
-
-  await page.locator('[id="permissions\\.1\\.permission"]').type('MY_PERMISSION2');
-  await page.locator('[id="permissions\\.1\\.description"]').type('Informative description 2');
-  await page.locator('[id="permissions\\.1\\.friendlyName"]').type('My second permission');
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
-  /*   await expect(page.getByText(newModuleName)).toBeVisible();
-  
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.create({
+    name: newModuleName,
+    permissions: [
+      {
+        name: 'MY_PERMISSION',
+        description: 'Informative description',
+        friendlyName: 'My first permission',
+      },
+      {
+        name: 'MY_PERMISSION2',
+        description: 'Informative description 2',
+        friendlyName: 'My second permission',
+      },
+    ],
+  });
+  await expect(page.getByText(newModuleName)).toBeVisible();
+  /*   
     await page.getByRole('link', { name: 'My new module Edit module Delete module No description provided.' }).getByRole('button', { name: 'Edit module' }).click();
     await expect(page.getByText('MY_PERMISSION')).toBeVisible();
     await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
 });
 
-basicTest('Creating module with config, saves the config', async ({ page }) => {
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Creating module with config, saves the config', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
 
   const moduleName = 'My new module';
 
-  await page.getByPlaceholder('My cool module').fill(moduleName);
+  await moduleDefinitionsPage.create({
+    name: moduleName,
+    save: false,
+  });
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
 
   await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
-
   await page.getByLabel('Default value').fill('my string default value');
 
   await page.getByRole('button', { name: 'Save changes' }).click();
 
-  await page.getByRole('link', { name: 'Modules' }).click();
-
   await expect(page.getByText(moduleName)).toBeVisible();
+
+  await moduleDefinitionsPage.open(moduleName);
   await page
     .getByRole('link', { name: 'My new module Edit module Delete module No description provided.' })
     .getByRole('button', { name: 'Edit module' })
@@ -79,23 +72,25 @@ basicTest('Creating module with config, saves the config', async ({ page }) => {
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 
-basicTest('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
+test('Creating a module but providing too short name, shows an error', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
-  await moduleDefinitionsPage.page.getByText('new module').click();
-
-  await page.getByPlaceholder('My cool module').fill('a');
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
+  await moduleDefinitionsPage.create({
+    name: 'a',
+  });
   await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
 });
 
-basicTest('Creating a module with config but not providing a default value, shows an error', async ({ page }) => {
-  await page.getByRole('link', { name: 'Modules' }).click();
-  await page.getByText('new module').click();
+test('Creating a module with config but not providing a default value, shows an error', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  const moduleName = 'My new module';
 
-  await page.getByPlaceholder('My cool module').fill('My new module');
+  await moduleDefinitionsPage.goto();
+
+  await moduleDefinitionsPage.create({
+    name: moduleName,
+    save: false,
+  });
 
   await page.getByRole('button', { name: 'Config Field' }).click();
   await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
@@ -111,63 +106,53 @@ basicTest('Creating a module with config but not providing a default value, show
   ).toBeVisible();
 });
 
-basicTest('Can edit module', async ({ page, takaro }) => {
+test('Can edit module', async ({ page, takaro }) => {
   const oldModuleName = 'edit this module';
+  const newModuleName = 'My new module';
 
-  await takaro.client.module.moduleControllerCreate({
+  // Create a module
+  await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
-    description: 'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server',
     configSchema: JSON.stringify({}),
   });
 
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-
-  await page.getByRole('link', { name: oldModuleName }).getByRole('button', { name: 'Edit module' }).click();
-
-  const newModuleName = 'My edited module';
-  const moduleNameInput = page.getByPlaceholder('My cool module');
-  await moduleNameInput.click();
-  await moduleNameInput.fill(newModuleName);
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.edit({
+    oldName: oldModuleName,
+    name: newModuleName,
+    description: 'New description',
+  });
   await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
 });
 
-basicTest('Can delete module', async ({ page, takaro }) => {
+test('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
-  await takaro.client.module.moduleControllerCreate({
+  await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
-    description: 'Modules are the building blocks of your game server. They consist of commands, c',
+    description: 'Modules are the building blocks of your game server.',
     configSchema: JSON.stringify({}),
   });
 
-  // open modules page
-  await page.getByRole('link', { name: 'Modules' }).click();
-  const cardDeleteButton = page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Delete module' });
-  await cardDeleteButton.click();
-
-  // dialog
-  await page.getByRole('button', { name: 'Delete module' }).click();
-
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.delete(moduleName);
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
-basicTest('Can install module with empty config', async ({ page, takaro }) => {
-  const modRes = await takaro.client.module.moduleControllerSearch({ filters: { name: ['Module without functions'] } });
+test('Can install module with empty config', async ({ page, takaro }) => {
+  const modRes = await takaro.rootClient.module.moduleControllerSearch({
+    filters: { name: ['Module without functions'] },
+  });
 
   const mod = modRes.data.data[0];
+  expect(mod).toBeDefined();
 
-  await expect(mod).toBeDefined();
-
-  await page.getByRole('link', { name: 'Servers' }).click();
-  await page.getByText('Test server').click();
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Modules' })
-    .click();
-
+  // there is only 1 server
+  // TODO: change to this when double slash issue is fixed
+  //await navigateTo(page, 'server-modules');
+  page.goto(`/server/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
 
   await page.getByRole('button', { name: 'Install' }).click();
@@ -175,14 +160,14 @@ basicTest('Can install module with empty config', async ({ page, takaro }) => {
   await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
 });
 
-basicTest('Can install a module with a discord hook', async ({ page, takaro }) => {
-  const mod = await takaro.client.module.moduleControllerCreate({
+test('Can install a module with a discord hook', async ({ page, takaro }) => {
+  const mod = await takaro.rootClient.module.moduleControllerCreate({
     name: 'Module with Discord hook',
     configSchema: JSON.stringify({}),
     description: 'aaa',
   });
 
-  await takaro.client.hook.hookControllerCreate({
+  await takaro.rootClient.hook.hookControllerCreate({
     name: 'My hook',
     eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
     moduleId: mod.data.data.id,
@@ -209,7 +194,7 @@ basicTest('Can install a module with a discord hook', async ({ page, takaro }) =
 });
 
 pwTest.describe('Module config', () => {
-  test('Can create string field', async ({}) => {
+  pwTest.fixme('Can create string field', async ({}) => {
     /*
     await page.getByRole('link', { name: 'Modules' }).click();
 
@@ -290,11 +275,11 @@ pwTest.describe('Module config', () => {
     */
   });
 
-  test.fixme('Can create number field', async ({}) => {});
+  pwTest.fixme('Can create number field', async ({}) => {});
 
-  test.fixme('Can create boolean field', async ({}) => {});
+  pwTest.fixme('Can create boolean field', async ({}) => {});
 
-  test.fixme('Can create array field', async ({}) => {});
+  pwTest.fixme('Can create array field', async ({}) => {});
 
-  test.fixme('Can create enum field', async ({}) => {});
+  pwTest.fixme('Can create enum field', async ({}) => {});
 });

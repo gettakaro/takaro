@@ -9,7 +9,8 @@ const Container = styled.div<{ elevation: Elevation }>`
   color: ${({ theme }) => theme.colors.text};
   box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
-  border-radius: ${({ theme }) => theme.borderRadius.small};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['0_75']}`};
   font-size: 1.4rem;
   width: max-content;

@@ -1,10 +1,13 @@
 import { Page } from '@playwright/test';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import playwright from '@playwright/test';
+import { BasePage } from './BasePage.js';
 const { expect } = playwright;
 
-export class GameServersPage {
-  constructor(public readonly page: Page, public gameServer: GameServerOutputDTO) {}
+export class GameServersPage extends BasePage {
+  constructor(public readonly page: Page, public gameServer: GameServerOutputDTO) {
+    super(page);
+  }
 
   async goto() {
     await this.page.goto('/servers', { waitUntil: 'domcontentloaded' });
@@ -26,7 +29,7 @@ export class GameServersPage {
 
   async nameCreateEdit(value: string) {
     const gameServerNameInput = this.page.getByPlaceholder('My cool server');
-    await gameServerNameInput.click();
+    await gameServerNameInput.focus();
     await gameServerNameInput.fill(value);
   }
 

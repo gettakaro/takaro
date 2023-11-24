@@ -1,13 +1,11 @@
 import { FC, useState, useEffect, useCallback } from 'react';
-import { Outlet } from 'react-router-dom';
-import { GlobalFrame } from '../frames/GlobalFrame';
-import { StudioFrame } from '../frames/StudioFrame';
-import { useAuth } from '../hooks/useAuth';
-import { useUser } from '../hooks/useUser';
+import { useAuth } from 'hooks/useAuth';
+import { useUser } from 'hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { setUser } from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100vw;
@@ -17,11 +15,7 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-interface AuthenticatedRouteProps {
-  frame: 'global' | 'studio' | 'gameserver';
-}
-
-export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
+export const AuthenticationGuard: FC = () => {
   const { session, isLoading: isLoadingSession } = useAuth();
   const { setUserData } = useUser();
   const navigate = useNavigate();
@@ -47,26 +41,17 @@ export const AuthenticatedRoute: FC<AuthenticatedRouteProps> = ({ frame }) => {
     handleAuth();
   }, [isLoadingSession]);
 
-  function handleFrame() {
-    switch (frame) {
-      case 'global':
-        return <GlobalFrame />;
-      case 'studio':
-        return <StudioFrame />;
-      default:
-        return <Outlet />;
-    }
-  }
-
   if (loading)
     return (
       <Container>
         <Loading fill="#fff" />
       </Container>
     );
+
   if (isAuth) {
-    return handleFrame();
+    return <Outlet />;
   }
+
   // This should not be reachable
-  return <div></div>;
+  return <></>;
 };
