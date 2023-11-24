@@ -218,6 +218,5 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
 
       return;
     });
-
   }
 }

@@ -43,6 +43,10 @@ const tests = [
 
       const player = res.data.data[0];
 
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
         currency: 100,
       });
@@ -62,6 +66,10 @@ const tests = [
 
       const player = res.data.data[0];
 
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
       const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
         currency: -100,
       });
@@ -103,8 +111,8 @@ const tests = [
     test: async function () {
       const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
-          gameServerId: [this.setupData.gameServer1.id]
-        }
+          gameServerId: [this.setupData.gameServer1.id],
+        },
       });
 
       const player1 = res.data.data[0];
@@ -141,8 +149,8 @@ const tests = [
     test: async function () {
       const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
-          gameServerId: [this.setupData.gameServer1.id]
-        }
+          gameServerId: [this.setupData.gameServer1.id],
+        },
       });
 
       const player1 = res.data.data[0];
@@ -160,15 +168,18 @@ const tests = [
       });
 
       try {
-        await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(player1.id, player2.id, {
-          currency: 150,
-        });
+        await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+          player1.id,
+          player2.id,
+          {
+            currency: 150,
+          }
+        );
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
         expect(error.response.data.meta.error.message).to.be.eq('Insufficient funds');
       }
-
 
       const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player1.id);
       const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player2.id);
@@ -186,13 +197,13 @@ const tests = [
     test: async function () {
       const res1 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
-          gameServerId: [this.setupData.gameServer1.id]
-        }
+          gameServerId: [this.setupData.gameServer1.id],
+        },
       });
       const res2 = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
-          gameServerId: [this.setupData.gameServer2.id]
-        }
+          gameServerId: [this.setupData.gameServer2.id],
+        },
       });
 
       const player1 = res1.data.data[0];
@@ -204,14 +215,17 @@ const tests = [
       });
 
       try {
-        await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(player1.id, player2.id, {
-          currency: 150,
-        });
+        await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+          player1.id,
+          player2.id,
+          {
+            currency: 150,
+          }
+        );
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
         expect(error.response.data.meta.error.message).to.be.eq('Players are not on the same game server');
-
       }
     },
   }),
