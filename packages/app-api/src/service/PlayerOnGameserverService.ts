@@ -160,7 +160,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const player = await this.repo.resolveRef(ref, gameserverId);
-    return player;
+    return this.findOne(player.id);
   }
 
   async getRef(playerId: string, gameserverId: string) {
