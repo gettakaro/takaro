@@ -3,8 +3,8 @@ import { ModuleInstallationOutputDTO, PlayerOnGameserverOutputWithRolesDTO } fro
 
 export interface IParsedCommand {
   command: string;
-  arguments: Record<string, string | number | boolean>;
-  [key: string]: string | Record<string, string | number | boolean>;
+  arguments: Record<string, string | number | boolean | PlayerOnGameserverOutputWithRolesDTO>;
+  [key: string]: string | Record<string, string | number | boolean | PlayerOnGameserverOutputWithRolesDTO>;
 }
 
 export interface IBaseJobData {

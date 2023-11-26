@@ -98,22 +98,51 @@ export class PlayerOnGameServerService extends TakaroService<
     return new PlayerOnGameServerRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<PlayerOnGameserverOutputDTO>): Promise<PaginatedOutput<PlayerOnGameserverOutputDTO>> {
-    return this.repo.find(filters);
+  private async extend(
+    players: PlayerOnGameserverOutputWithRolesDTO | PlayerOnGameserverOutputWithRolesDTO[]
+  ): Promise<PlayerOnGameserverOutputWithRolesDTO[]> {
+    const roleService = new RoleService(this.domainId);
+    const roles = await roleService.find({ filters: { name: ['Player'] } });
+
+    if (!Array.isArray(players)) {
+      players = [players];
+    }
+
+    for (const player of players) {
+      player.roles.push(
+        await new PlayerRoleAssignmentOutputDTO().construct({
+          roleId: roles.results[0].id,
+          role: roles.results[0],
+        })
+      );
+    }
+
+    return players;
   }
 
-  findOne(id: string): Promise<PlayerOnGameserverOutputDTO> {
-    return this.repo.findOne(id);
+  async find(
+    filters: ITakaroQuery<PlayerOnGameserverOutputDTO>
+  ): Promise<PaginatedOutput<PlayerOnGameserverOutputWithRolesDTO>> {
+    const res = await this.repo.find(filters);
+    return {
+      ...res,
+      results: await this.extend(res.results),
+    };
+  }
+
+  async findOne(id: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
+    const data = await this.repo.findOne(id);
+    return (await this.extend(data))[0];
   }
 
   async create(item: PlayerOnGameServerCreateDTO) {
     const created = await this.repo.create(item);
-    return created;
+    return this.findOne(created.id);
   }
 
   async update(id: string, item: PlayerOnGameServerUpdateDTO) {
     const updated = await this.repo.update(id, item);
-    return updated;
+    return this.findOne(updated.id);
   }
 
   async delete(id: string) {
@@ -131,17 +160,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const player = await this.repo.resolveRef(ref, gameserverId);
-
-    const roleService = new RoleService(this.domainId);
-    const roles = await roleService.find({ filters: { name: ['Player'] } });
-
-    player.roles.push(
-      await new PlayerRoleAssignmentOutputDTO().construct({
-        roleId: roles.results[0].id,
-        role: roles.results[0],
-      })
-    );
-    return player;
+    return this.findOne(player.id);
   }
 
   async getRef(playerId: string, gameserverId: string) {

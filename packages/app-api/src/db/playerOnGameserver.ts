@@ -73,7 +73,11 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const result = await new QueryBuilder<PlayerOnGameServerModel, PlayerOnGameserverOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new PlayerOnGameserverOutputDTO().construct(item))),
+      results: await Promise.all(
+        result.results.map(async (item) =>
+          new PlayerOnGameserverOutputWithRolesDTO().construct(await this.findOne(item.id))
+        )
+      ),
     };
   }
 
