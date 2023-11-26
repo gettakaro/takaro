@@ -1442,6 +1442,12 @@ export interface EventOutputDTO {
   module?: ModuleOutputDTO;
   /**
    *
+   * @type {UserOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  user?: UserOutputDTO;
+  /**
+   *
    * @type {string}
    * @memberof EventOutputDTO
    */
@@ -1564,6 +1570,12 @@ export type EventPlayerDisconnectedTypeEnum =
  * @interface EventSearchInputAllowedFilters
  */
 export interface EventSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  id?: Array<string>;
   /**
    *
    * @type {Array<string>}

@@ -1,4 +1,4 @@
-import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
+import { EventOutputDTO, EventOutputDTOEventNameEnum, EventSearchInputAllowedFilters } from '@takaro/apiclient';
 import { styled, DateRangePicker, Button } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
@@ -177,16 +177,30 @@ export const Events: FC = () => {
     return acc;
   }, {});
 
+  const lastEventFilters: EventSearchInputAllowedFilters = {};
+
+  if (lastEvent) {
+    lastEventFilters.id = [lastEvent.id];
+  }
+
+  const { data: lastEventResponse } = useEvents({
+    filters: lastEventFilters,
+    extend: ['gameServer', 'module', 'player', 'user'],
+  });
+
   useEffect(() => {
-    if (lastEvent && clientSideFilter(lastEvent, eventTypes, filters, startDate, endDate)) {
+    if (
+      lastEventResponse &&
+      clientSideFilter(lastEventResponse.pages[0].data[0], eventTypes, filters, startDate, endDate)
+    ) {
       setEvents((prev) => {
         if (prev) {
-          return [lastEvent, ...prev];
+          return [lastEventResponse.pages[0].data[0], ...prev];
         }
-        return [lastEvent];
+        return [lastEventResponse.pages[0].data[0]];
       });
     }
-  }, [lastEvent]);
+  }, [lastEventResponse]);
 
   const {
     data: rawEvents,
