@@ -235,6 +235,47 @@ const tests = [
       expect((await events)[1].data.msg).to.be.eq(pog.positionX?.toString());
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    name: 'Shows an error when multiple players are found',
+    group,
+    snapshot: false,
+    setup: playerArgSetup,
+    test: async function () {
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      // Find a letter contained in one of the players' names
+      const letterToSearch = ['e', 'a'].find((letter) => {
+        return this.setupData.players.some((player) => {
+          return player.name.includes(letter);
+        });
+      });
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `/test ${letterToSearch}`,
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.match(/Multiple players found/);
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    name: 'Shows an error when no players are found',
+    group,
+    snapshot: false,
+    setup: playerArgSetup,
+    test: async function () {
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/test itsimpossiblethatwewilleverfindaplayerwiththisnameright',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.match(/No player found with the name or ID/);
+    },
+  }),
 ];
 
 describe(group, function () {
