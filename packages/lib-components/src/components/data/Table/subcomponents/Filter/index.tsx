@@ -5,7 +5,6 @@ import { AiOutlineFilter as FilterIcon, AiOutlineClose as RemoveIcon } from 'rea
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { DevTool } from '@hookform/devtools';
 import { ButtonContainer, Container, FilterActions, FilterContainer } from './style';
 import { FilterRow } from './field';
 
@@ -14,12 +13,18 @@ export enum Operators {
   contains = 'contains',
 }
 
+export enum FilterInputType {
+  string = 'string',
+  uuid = 'uuid',
+  datetime = 'datetime',
+}
+
 export interface IFormInputs {
   filters: {
     column: string;
     operator: string;
     value: string;
-    type: string;
+    type: FilterInputType;
   }[];
 }
 
@@ -30,13 +35,17 @@ interface FilterProps<DataType extends object> {
 export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
 
-  // Only get the columnIds on initial render
+  // Only get the columnIds on initial table render
   const columnIds = useMemo(() => {
-    return table
-      .getAllLeafColumns()
-      .filter((column) => column.getCanFilter() && column.getCanGlobalFilter())
+    const ids = table
+      .getAllColumns()
+      .filter((column) => {
+        return column.getCanFilter();
+      })
       .map((column) => column.id);
-  }, [table.getAllLeafColumns()]);
+
+    return ids;
+  }, [table.getAllColumns()]);
 
   const basedShape = z.object({
     column: z.string().refine((value) => columnIds.includes(value), {
@@ -51,26 +60,25 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     }),
   });
 
-  // TODO: add typings
   const validationSchema = useMemo(() => {
     return z.object({
       filters: z.array(
         z
           .discriminatedUnion('type', [
             z.object({
-              type: z.literal('string'),
+              type: z.literal(FilterInputType.string),
               value: z.string().nonempty({
                 message: 'Value is required.',
               }),
             }),
             z.object({
-              type: z.literal('uuid'),
+              type: z.literal(FilterInputType.uuid),
               value: z.string().uuid().nonempty({
                 message: 'Value is required.',
               }),
             }),
             z.object({
-              type: z.literal('datetime'),
+              type: z.literal(FilterInputType.datetime),
               value: z.string().datetime().nonempty({
                 message: 'Value is required.',
               }),
@@ -124,7 +132,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
       column: '',
       operator: '',
       value: '',
-      type: 'string',
+      type: FilterInputType.string,
     });
   }, [remove]);
 
@@ -134,7 +142,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
         column: '',
         operator: '',
         value: '',
-        type: 'string',
+        type: FilterInputType.string,
       });
     }
   }, [fields]);
@@ -199,8 +207,8 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                 </FilterContainer>
               );
             })}
-            <ButtonContainer justifyContent={fields.length > 1 ? 'space-between' : 'flex-end'}>
-              {fields.length > 1 && (
+            <ButtonContainer justifyContent={fields.length > 0 ? 'space-between' : 'flex-end'}>
+              {fields.length > 0 && (
                 <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
               )}
               <FilterActions>
@@ -210,7 +218,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                       column: '',
                       operator: '',
                       value: '',
-                      type: 'string',
+                      type: FilterInputType.string,
                     })
                   }
                   variant="clear"
@@ -219,7 +227,6 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                 <Button type="submit" text="Apply filters" />
               </FilterActions>
             </ButtonContainer>
-            <DevTool control={control} /> {/* set up the dev tool */}
           </form>
           {/* dropdown with all columns */}
           {/* dropdown with all operators */}

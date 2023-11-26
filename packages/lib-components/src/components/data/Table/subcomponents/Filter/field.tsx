@@ -1,6 +1,6 @@
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { Select, TextField } from '../../../../../components';
-import { IFormInputs } from '.';
+import { FilterInputType, IFormInputs } from '.';
 import { Operators } from '.';
 import { Column } from '@tanstack/react-table';
 import { useLayoutEffect } from 'react';
@@ -60,7 +60,7 @@ export function FilterRow<DataType extends object>({
     const meta = column?.columnDef?.meta as Record<string, unknown> | undefined;
 
     setValue(`filters.${index}.operator`, Operators.is);
-    setValue(`filters.${index}.type`, (meta?.type as string | undefined) ?? 'string');
+    setValue(`filters.${index}.type`, (meta?.type as string | undefined as FilterInputType) ?? 'string');
   }, [currentColumn]);
 
   return (
