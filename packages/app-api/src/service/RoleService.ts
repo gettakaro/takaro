@@ -1,5 +1,5 @@
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { PERMISSIONS } from '@takaro/auth';
 import { Type } from 'class-transformer';
 import {
@@ -19,6 +19,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
 import { ModuleService } from './ModuleService.js';
+import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -190,7 +191,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   }
 
   async create(item: ServiceRoleCreateInputDTO): Promise<RoleOutputDTO> {
-    return this.createWithPermissions(item, item.permissions);
+    return await this.createWithPermissions(item, item.permissions);
   }
 
   async update(id: string, item: RoleUpdateInputDTO): Promise<RoleOutputDTO> {
@@ -205,7 +206,22 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     }
 
     await this.setPermissions(id, item.permissions);
-    return this.repo.findOne(id);
+    const res = await this.repo.findOne(id);
+
+    const eventsService = new EventService(this.domainId);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.ROLE_UPDATED,
+        userId,
+        meta: {
+          role: res,
+        },
+      })
+    );
+
+    return res;
   }
 
   async delete(id: string) {
@@ -216,13 +232,43 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     }
 
     await this.repo.delete(id);
+
+    const eventsService = new EventService(this.domainId);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.ROLE_DELETED,
+        userId,
+        meta: {
+          role: toDelete,
+        },
+      })
+    );
+
     return id;
   }
 
   async createWithPermissions(role: RoleCreateInputDTO, permissions: PermissionInputDTO[]): Promise<RoleOutputDTO> {
     const createdRole = await this.repo.create(role);
     await this.setPermissions(createdRole.id, permissions);
-    return this.repo.findOne(createdRole.id);
+
+    const res = await this.repo.findOne(createdRole.id);
+
+    const eventsService = new EventService(this.domainId);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.ROLE_CREATED,
+        userId,
+        meta: {
+          role: res,
+        },
+      })
+    );
+
+    return res;
   }
 
   async setPermissions(roleId: string, permissions: PermissionInputDTO[]) {
