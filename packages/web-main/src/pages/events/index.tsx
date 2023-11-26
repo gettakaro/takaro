@@ -98,6 +98,17 @@ const treeData = [
     ],
   },
   {
+    name: 'Economy',
+    children: [
+      {
+        name: EventOutputDTOEventNameEnum.CurrencyAdded,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.CurrencyDeducted,
+      },
+    ],
+  },
+  {
     name: 'Global',
     children: [
       {

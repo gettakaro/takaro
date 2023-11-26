@@ -1300,6 +1300,8 @@ export const EventCreateDTOEventNameEnum = {
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1475,6 +1477,8 @@ export const EventOutputDTOEventNameEnum = {
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1611,6 +1615,8 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =

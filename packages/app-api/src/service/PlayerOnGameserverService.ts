@@ -1,13 +1,14 @@
 import { TakaroService } from './Base.js';
 
 import { IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -187,14 +188,64 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
-    return this.repo.transact(senderId, receiverId, amount);
+    await this.repo.transact(senderId, receiverId, amount);
+
+    const eventsService = new EventService(this.domainId);
+    const senderRecord = await this.findOne(senderId);
+    const receiverRecord = await this.findOne(receiverId);
+    const userId = ctx.data.user;
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
+        playerId: senderRecord.playerId,
+        gameserverId: senderRecord.gameServerId,
+        userId,
+        meta: { amount, receiver: receiverRecord.playerId },
+      })
+    );
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_ADDED,
+        playerId: receiverRecord.playerId,
+        gameserverId: receiverRecord.gameServerId,
+        userId,
+        meta: { amount, sender: senderRecord.playerId },
+      })
+    );
   }
 
   async deductCurrency(id: string, amount: number) {
-    return this.repo.deductCurrency(id, amount);
+    await this.repo.deductCurrency(id, amount);
+    const eventsService = new EventService(this.domainId);
+    const record = await this.findOne(id);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
+        playerId: record.playerId,
+        gameserverId: record.gameServerId,
+        userId,
+        meta: { amount },
+      })
+    );
   }
 
   async addCurrency(id: string, amount: number) {
-    return this.repo.addCurrency(id, amount);
+    await this.repo.addCurrency(id, amount);
+    const eventsService = new EventService(this.domainId);
+    const record = await this.findOne(id);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_ADDED,
+        playerId: record.playerId,
+        gameserverId: record.gameServerId,
+        userId,
+        meta: { amount },
+      })
+    );
   }
 }
