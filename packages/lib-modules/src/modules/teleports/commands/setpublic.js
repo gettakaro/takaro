@@ -1,4 +1,4 @@
-import { getTakaro, getData, checkPermission } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -9,22 +9,13 @@ async function main() {
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   if (!mod.userConfig.allowPublicTeleports) {
-    await data.player.pm('Public teleports are disabled.');
-    return;
+    throw new TakaroUserError('Public teleports are disabled.');
   }
 
   const hasPermission = checkPermission(player, 'TELEPORTS_CREATE_PUBLIC');
 
   if (!hasPermission) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'You do not have permission to create public teleports.',
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
-    return;
+    throw new TakaroUserError('You do not have permission to create public teleports.');
   }
 
   const existingTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
@@ -44,10 +35,9 @@ async function main() {
   });
 
   if (existingPublicTeleportsForPlayer.length >= hasPermission.count) {
-    await data.player.pm(
+    throw new TakaroUserError(
       `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`
     );
-    return;
   }
 
   const teleportRes = await takaro.variable.variableControllerSearch({
@@ -64,7 +54,7 @@ async function main() {
   const teleports = teleportRes.data.data;
 
   if (teleports.length === 0) {
-    await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
+    throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
   }
 
   const teleportRecord = teleports[0];

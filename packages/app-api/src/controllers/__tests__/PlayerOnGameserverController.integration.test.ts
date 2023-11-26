@@ -229,6 +229,110 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Prevents double-spending or other concurrency-related errors when transacting currency',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameServerId: [this.setupData.gameServer1.id],
+        },
+      });
+
+      const player1 = res.data.data[0];
+      const player2 = res.data.data[1];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player1.gameServerId,
+        value: 'true',
+      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player1.id, {
+        currency: 100,
+      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player2.id, {
+        currency: 100,
+      });
+
+      // Send 10 times 10 from player 1 to player 2
+      const transactions = [...Array(10).keys()].map(() =>
+        this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(player1.id, player2.id, {
+          currency: 10,
+        })
+      );
+
+      await Promise.all(transactions);
+
+      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player1.id);
+      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player2.id);
+
+      expect(player1Res.data.data.currency).to.be.eq(0);
+      expect(player2Res.data.data.currency).to.be.eq(200);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Add currency for player',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      // Add 10 times 10 concurrently, to check for concurrency issues
+      const adds = [...Array(10).keys()].map(() =>
+        this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(player.id, {
+          currency: 10,
+        })
+      );
+
+      await Promise.all(adds);
+
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+
+      expect(playerRes.data.data.currency).to.be.eq(100);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Deduct currency for player',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const res = await this.client.playerOnGameserver.playerOnGameServerControllerSearch();
+
+      const player = res.data.data[0];
+
+      await this.client.settings.settingsControllerSet('economyEnabled', {
+        gameServerId: player.gameServerId,
+        value: 'true',
+      });
+
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
+        currency: 100,
+      });
+
+      // Deduct 10 times 10 concurrently, to check for concurrency issues
+      const deducts = [...Array(10).keys()].map(() =>
+        this.client.playerOnGameserver.playerOnGameServerControllerDeductCurrency(player.id, {
+          currency: 10,
+        })
+      );
+
+      await Promise.all(deducts);
+
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+
+      expect(playerRes.data.data.currency).to.be.eq(0);
+    },
+  }),
 ];
 
 describe(group, function () {
