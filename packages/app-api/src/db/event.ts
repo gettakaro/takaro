@@ -1,14 +1,19 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { EventCreateDTO, EventOutputDTO, EventUpdateDTO } from '../service/EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventUpdateDTO } from '../service/EventService.js';
+import { MODULE_TABLE_NAME, ModuleModel } from './module.js';
+import { Model } from 'objection';
+import { GAMESERVER_TABLE_NAME, GameServerModel } from './gameserver.js';
+import { PLAYER_TABLE_NAME, PlayerModel } from './player.js';
+import { USER_TABLE_NAME, UserModel } from './user.js';
 
 export const EVENT_TABLE_NAME = 'events';
 
 export class EventModel extends TakaroModel {
   static tableName = EVENT_TABLE_NAME;
 
-  eventName: string;
+  eventName: EVENT_TYPES;
 
   moduleId: string;
   playerId: string;
@@ -16,6 +21,43 @@ export class EventModel extends TakaroModel {
   gameserverId: string;
 
   meta: Record<string, string>;
+
+  static get relationMappings() {
+    return {
+      module: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleModel,
+        join: {
+          from: `${EVENT_TABLE_NAME}.moduleId`,
+          to: `${MODULE_TABLE_NAME}.id`,
+        },
+      },
+      gameServer: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: GameServerModel,
+        join: {
+          from: `${EVENT_TABLE_NAME}.gameserverId`,
+          to: `${GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+      player: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PlayerModel,
+        join: {
+          from: `${EVENT_TABLE_NAME}.playerId`,
+          to: `${PLAYER_TABLE_NAME}.id`,
+        },
+      },
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: UserModel,
+        join: {
+          from: `${EVENT_TABLE_NAME}.userId`,
+          to: `${USER_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
 }
 
 @traceableClass('repo:event')

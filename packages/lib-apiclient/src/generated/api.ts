@@ -1258,7 +1258,7 @@ export interface EventCreateDTO {
    * @type {string}
    * @memberof EventCreateDTO
    */
-  eventName: string;
+  eventName: EventCreateDTOEventNameEnum;
   /**
    *
    * @type {string}
@@ -1290,6 +1290,21 @@ export interface EventCreateDTO {
    */
   meta?: object;
 }
+
+export const EventCreateDTOEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventCreateDTOEventNameEnum =
+  (typeof EventCreateDTOEventNameEnum)[keyof typeof EventCreateDTOEventNameEnum];
+
 /**
  *
  * @export
@@ -1376,7 +1391,7 @@ export interface EventOutputDTO {
    * @type {string}
    * @memberof EventOutputDTO
    */
-  eventName: string;
+  eventName: EventOutputDTOEventNameEnum;
   /**
    *
    * @type {string}
@@ -1409,6 +1424,30 @@ export interface EventOutputDTO {
   meta?: object;
   /**
    *
+   * @type {PlayerOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  player?: PlayerOutputDTO;
+  /**
+   *
+   * @type {GameServerOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  gameServer?: GameServerOutputDTO;
+  /**
+   *
+   * @type {ModuleOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  module?: ModuleOutputDTO;
+  /**
+   *
+   * @type {UserOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  user?: UserOutputDTO;
+  /**
+   *
    * @type {string}
    * @memberof EventOutputDTO
    */
@@ -1426,6 +1465,21 @@ export interface EventOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const EventOutputDTOEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventOutputDTOEventNameEnum =
+  (typeof EventOutputDTOEventNameEnum)[keyof typeof EventOutputDTOEventNameEnum];
+
 /**
  *
  * @export
@@ -1521,7 +1575,13 @@ export interface EventSearchInputAllowedFilters {
    * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  eventName?: Array<string>;
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  eventName?: Array<EventSearchInputAllowedFiltersEventNameEnum>;
   /**
    *
    * @type {Array<string>}
@@ -1541,6 +1601,21 @@ export interface EventSearchInputAllowedFilters {
    */
   gameserverId?: Array<string>;
 }
+
+export const EventSearchInputAllowedFiltersEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventSearchInputAllowedFiltersEventNameEnum =
+  (typeof EventSearchInputAllowedFiltersEventNameEnum)[keyof typeof EventSearchInputAllowedFiltersEventNameEnum];
+
 /**
  *
  * @export
