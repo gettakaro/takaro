@@ -14,7 +14,16 @@ function normalizePath(path: string) {
 }
 
 // These are fields that are allowed to be different in snapshots
-const DEFAULT_FILTERED_FIELDS = ['createdAt', 'updatedAt', 'id', 'serverTime', 'domainId', 'url', 'snapshot'];
+const DEFAULT_FILTERED_FIELDS = [
+  'createdAt',
+  'updatedAt',
+  'id',
+  'serverTime',
+  'domainId',
+  'url',
+  'snapshot',
+  'permissionId',
+];
 
 function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): unknown {
   if (Array.isArray(data)) {

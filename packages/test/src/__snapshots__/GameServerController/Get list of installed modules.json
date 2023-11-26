@@ -3,18 +3,20 @@
     "meta": {},
     "data": [
       {
-        "id": "d6e3da22-ca4e-4189-b356-50eca27561ff",
-        "createdAt": "2023-07-02T19:56:19.137Z",
-        "updatedAt": "2023-07-02T19:56:19.137Z",
-        "gameserverId": "7937312e-8ad8-43fb-8fda-8dee053a47bb",
-        "moduleId": "a15a0e1e-ca75-435c-bc43-822ac134980e",
+        "id": "4901bbfa-0786-4f0b-a3ba-185e104f8465",
+        "createdAt": "2023-11-26T13:45:46.789Z",
+        "updatedAt": "2023-11-26T13:45:46.789Z",
+        "gameserverId": "d1caaaf3-7181-4169-be15-c5b6035b41ac",
+        "moduleId": "b42c767d-433b-46fe-8f99-6ab561c263b9",
         "userConfig": {},
         "systemConfig": {
           "commands": {
-            "ping": {
+            "help": {
+              "cost": 0,
               "delay": 0
             },
-            "help": {
+            "ping": {
+              "cost": 0,
               "delay": 0
             }
           }

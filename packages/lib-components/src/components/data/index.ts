@@ -17,3 +17,9 @@ export { InfiniteScroll } from './InfiniteScroll';
 export type { InfiniteScrollProps } from './InfiniteScroll';
 
 export { Drawer, DrawerSkeleton } from './Drawer';
+
+export { Stats } from './Stats';
+export type { StatsProps } from './Stats/';
+
+export { LinkCard } from './LinkCard';
+export type { LinkCardProps } from './LinkCard';

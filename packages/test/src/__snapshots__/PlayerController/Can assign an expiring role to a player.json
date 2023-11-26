@@ -1,0 +1,15 @@
+{
+  "body": {
+    "meta": {},
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Can assign an expiring role to a player",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

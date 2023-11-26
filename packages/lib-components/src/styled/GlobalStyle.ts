@@ -46,7 +46,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     overflow: hidden;
   }
 
-  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend{
+  a, p, div, ul, li, h1, h2, h3, h4, h5, h6, header, footer, fieldset, legend, dl, dt{
     transition: background-color 0.2s linear;
     transition: box-shadow 0.125s linear;
     margin: 0;

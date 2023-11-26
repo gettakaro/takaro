@@ -1,5 +1,5 @@
 import { Table } from '@tanstack/react-table';
-import { Button, Dropdown } from '../../../../../components';
+import { Dropdown, IconButton } from '../../../../../components';
 import { AiOutlineEye as EyeIcon } from 'react-icons/ai';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -28,7 +28,7 @@ export function ColumnVisibility<DataType extends object>({
           placement: 'right',
         }}
       >
-        <Button color="secondary" icon={<EyeIcon />} text="Columns" />
+        <IconButton size="large" icon={<EyeIcon />} ariaLabel="Columns" />
       </Dropdown.Trigger>
       <Dropdown.Menu>
         <Dropdown.Menu.Group label="Visible columns">

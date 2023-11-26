@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { GameEvents } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
@@ -29,35 +30,49 @@ export class EventsAwaiter {
     });
   }
 
-  async waitForEvents(expectedEvent: GameEvents, amount = 1) {
+  async waitForEvents(expectedEvent: GameEvents | string, amount = 1) {
     const events: IDetectedEvent[] = [];
     let hasFinished = false;
 
     return Promise.race([
       new Promise<IDetectedEvent[]>(async (resolve) => {
-        this.socket.on('gameEvent', (_gameserverId, event, data) => {
-          if (event !== expectedEvent) {
-            // log.warn(`Received event ${event} but expected ${expectedEvent}`);
-            // log.warn(JSON.stringify({ event, data }, null, 2));
-            return;
-          }
+        if (Object.values(GameEvents).includes(expectedEvent as GameEvents)) {
+          this.socket.on('gameEvent', (_gameserverId, event, data) => {
+            if (event !== expectedEvent) {
+              // log.warn(`Received event ${event} but expected ${expectedEvent}`);
+              //console.log(JSON.stringify({ event, data }, null, 2));
+              return;
+            }
 
-          if (event === expectedEvent) {
-            events.push({ event, data });
-          }
+            if (event === expectedEvent) {
+              events.push({ event, data });
+            }
 
-          if (events.length === amount) {
-            hasFinished = true;
-            resolve(events);
-          }
-        });
+            if (events.length === amount) {
+              hasFinished = true;
+              resolve(events);
+            }
+          });
+        } else {
+          this.socket.on('event', (event) => {
+            if (event.eventName === expectedEvent) {
+              events.push({ event, data: event });
+            }
+
+            if (events.length === amount) {
+              hasFinished = true;
+              resolve(events);
+            }
+          });
+        }
       }),
       new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
           if (hasFinished) return;
-          console.warn(`Event ${expectedEvent} timed out`);
+          const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events`;
+          console.warn(msg);
           console.warn(JSON.stringify(events, null, 2));
-          reject(new Error(`Event ${expectedEvent} timed out`));
+          reject(new Error(msg));
         }, 5000);
       }),
     ]);

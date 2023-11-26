@@ -24,7 +24,13 @@ Cronjobs are triggered based on time. This can be a simple repeating pattern lik
 
 Commands are triggered by a user. They are triggered when a player sends a chat message starting with the configured command prefix. Note that this means that commands are a _manual_ action, unlike Hooks and Cronjobs which are triggered with any user-intervention.
 
-Commands support parameters, allowing you to pass data to the Function. For example, you can create a command that allows players to teleport to a specific location. The command could look like `/teleport homeBase`
+### Arguments
+
+Commands support arguments, allowing you to pass data to the Function. For example, you can create a command that allows players to teleport to a specific location. The command could look like `/teleport homeBase`.
+
+Arguments can have different types, such as `string`, `number`, `boolean` and `player`. Each of these types gets validated before the command is executed. If the validation fails, the user will get an error message. So if you set an argument to be a `number`, but the user passes a string like `test`, the command will not be executed and the user will get an error message.
+
+The `player` type is a special type that allows you to pass a player as an argument. This is useful for commands that require a player to be passed, such as `/kick John Doe`. The `player` type can be a partial name, so `/kick John` would also work. It also supports case insensitivity, so `/kick john` would also work. You can also pass IDs to be most precise. If multiple players match the name, the user will get an error message.
 
 # Configuration
 

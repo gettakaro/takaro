@@ -1258,7 +1258,7 @@ export interface EventCreateDTO {
    * @type {string}
    * @memberof EventCreateDTO
    */
-  eventName: string;
+  eventName: EventCreateDTOEventNameEnum;
   /**
    *
    * @type {string}
@@ -1290,6 +1290,21 @@ export interface EventCreateDTO {
    */
   meta?: object;
 }
+
+export const EventCreateDTOEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventCreateDTOEventNameEnum =
+  (typeof EventCreateDTOEventNameEnum)[keyof typeof EventCreateDTOEventNameEnum];
+
 /**
  *
  * @export
@@ -1376,7 +1391,7 @@ export interface EventOutputDTO {
    * @type {string}
    * @memberof EventOutputDTO
    */
-  eventName: string;
+  eventName: EventOutputDTOEventNameEnum;
   /**
    *
    * @type {string}
@@ -1409,6 +1424,30 @@ export interface EventOutputDTO {
   meta?: object;
   /**
    *
+   * @type {PlayerOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  player?: PlayerOutputDTO;
+  /**
+   *
+   * @type {GameServerOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  gameServer?: GameServerOutputDTO;
+  /**
+   *
+   * @type {ModuleOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  module?: ModuleOutputDTO;
+  /**
+   *
+   * @type {UserOutputDTO}
+   * @memberof EventOutputDTO
+   */
+  user?: UserOutputDTO;
+  /**
+   *
    * @type {string}
    * @memberof EventOutputDTO
    */
@@ -1426,6 +1465,21 @@ export interface EventOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const EventOutputDTOEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventOutputDTOEventNameEnum =
+  (typeof EventOutputDTOEventNameEnum)[keyof typeof EventOutputDTOEventNameEnum];
+
 /**
  *
  * @export
@@ -1521,7 +1575,13 @@ export interface EventSearchInputAllowedFilters {
    * @type {Array<string>}
    * @memberof EventSearchInputAllowedFilters
    */
-  eventName?: Array<string>;
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof EventSearchInputAllowedFilters
+   */
+  eventName?: Array<EventSearchInputAllowedFiltersEventNameEnum>;
   /**
    *
    * @type {Array<string>}
@@ -1541,6 +1601,21 @@ export interface EventSearchInputAllowedFilters {
    */
   gameserverId?: Array<string>;
 }
+
+export const EventSearchInputAllowedFiltersEventNameEnum = {
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+} as const;
+
+export type EventSearchInputAllowedFiltersEventNameEnum =
+  (typeof EventSearchInputAllowedFiltersEventNameEnum)[keyof typeof EventSearchInputAllowedFiltersEventNameEnum];
+
 /**
  *
  * @export
@@ -2174,6 +2249,8 @@ export interface GetSettingsInput {
 export const GetSettingsInputKeysEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type GetSettingsInputKeysEnum = (typeof GetSettingsInputKeysEnum)[keyof typeof GetSettingsInputKeysEnum];
@@ -3764,10 +3841,31 @@ export interface ParamKey {
 export const ParamKeyKeyEnum = {
   CommandPrefix: 'commandPrefix',
   ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
 } as const;
 
 export type ParamKeyKeyEnum = (typeof ParamKeyKeyEnum)[keyof typeof ParamKeyKeyEnum];
 
+/**
+ *
+ * @export
+ * @interface ParamSenderReceiver
+ */
+export interface ParamSenderReceiver {
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  sender: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  receiver: string;
+}
 /**
  *
  * @export
@@ -3988,6 +4086,120 @@ export interface PlayerOnGameServerCreateDTO {
 /**
  *
  * @export
+ * @interface PlayerOnGameServerSearchInputAllowedFilters
+ */
+export interface PlayerOnGameServerSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  gameId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  gameServerId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  playerId?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerSearchInputDTO
+ */
+export interface PlayerOnGameServerSearchInputDTO {
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedFilters}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  filters?: PlayerOnGameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedFilters}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  search?: PlayerOnGameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  sortDirection?: PlayerOnGameServerSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const PlayerOnGameServerSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type PlayerOnGameServerSearchInputDTOSortDirectionEnum =
+  (typeof PlayerOnGameServerSearchInputDTOSortDirectionEnum)[keyof typeof PlayerOnGameServerSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface PlayerOnGameServerSetCurrencyInputDTO
+ */
+export interface PlayerOnGameServerSetCurrencyInputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerSetCurrencyInputDTO
+   */
+  currency: number;
+}
+/**
+ *
+ * @export
  * @interface PlayerOnGameServerUpdateDTO
  */
 export interface PlayerOnGameServerUpdateDTO {
@@ -4021,6 +4233,31 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   ping?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  currency?: number;
+}
+/**
+ *
+ * @export
+ * @interface PlayerOnGameserverOutputArrayDTOAPI
+ */
+export interface PlayerOnGameserverOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof PlayerOnGameserverOutputArrayDTOAPI
+   */
+  data: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOnGameserverOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -4078,6 +4315,12 @@ export interface PlayerOnGameserverOutputDTO {
   ping?: number;
   /**
    *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  currency: number;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOnGameserverOutputDTO
    */
@@ -4103,10 +4346,10 @@ export interface PlayerOnGameserverOutputDTO {
 export interface PlayerOnGameserverOutputDTOAPI {
   /**
    *
-   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @type {PlayerOnGameserverOutputDTO}
    * @memberof PlayerOnGameserverOutputDTOAPI
    */
-  data: Array<PlayerOnGameserverOutputDTO>;
+  data: PlayerOnGameserverOutputDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -4122,10 +4365,10 @@ export interface PlayerOnGameserverOutputDTOAPI {
 export interface PlayerOnGameserverOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleAssignmentOutputDTO>}
+   * @type {Array<PlayerRoleAssignmentOutputDTO>}
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
-  roles: Array<RoleAssignmentOutputDTO>;
+  roles: Array<PlayerRoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4192,6 +4435,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   ping?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  currency: number;
 }
 /**
  *
@@ -4294,10 +4543,10 @@ export interface PlayerOutputDTOAPI {
 export interface PlayerOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleAssignmentOutputDTO>}
+   * @type {Array<PlayerRoleAssignmentOutputDTO>}
    * @memberof PlayerOutputWithRolesDTO
    */
-  roleAssignments: Array<RoleAssignmentOutputDTO>;
+  roleAssignments: Array<PlayerRoleAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -4350,6 +4599,25 @@ export interface PlayerOutputWithRolesDTO {
 /**
  *
  * @export
+ * @interface PlayerOutputWithRolesDTOAPI
+ */
+export interface PlayerOutputWithRolesDTOAPI {
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof PlayerOutputWithRolesDTOAPI
+   */
+  data: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof PlayerOutputWithRolesDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface PlayerRoleAssignChangeDTO
  */
 export interface PlayerRoleAssignChangeDTO {
@@ -4359,6 +4627,67 @@ export interface PlayerRoleAssignChangeDTO {
    * @memberof PlayerRoleAssignChangeDTO
    */
   gameServerId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignChangeDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface PlayerRoleAssignmentOutputDTO
+ */
+export interface PlayerRoleAssignmentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  role: RoleOutputDTO;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerRoleAssignmentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -4492,55 +4821,6 @@ export interface RedirectQs {
    * @memberof RedirectQs
    */
   redirect: string;
-}
-/**
- *
- * @export
- * @interface RoleAssignmentOutputDTO
- */
-export interface RoleAssignmentOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  playerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  roleId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  gameServerId?: string;
-  /**
-   *
-   * @type {RoleOutputDTO}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  role: RoleOutputDTO;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof RoleAssignmentOutputDTO
-   */
-  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -4886,6 +5166,18 @@ export interface Settings {
    * @type {string}
    * @memberof Settings
    */
+  economyEnabled: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
+  currencyName: string;
+  /**
+   *
+   * @type {string}
+   * @memberof Settings
+   */
   id: string;
   /**
    *
@@ -4952,10 +5244,10 @@ export interface SettingsSetDTO {
   gameServerId?: string;
   /**
    *
-   * @type {string}
+   * @type {any}
    * @memberof SettingsSetDTO
    */
-  value: string;
+  value: any;
 }
 /**
  *
@@ -5123,6 +5415,61 @@ export interface TokenOutputDTOAPI {
 /**
  *
  * @export
+ * @interface UserAssignmentOutputDTO
+ */
+export interface UserAssignmentOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  roleId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {RoleOutputDTO}
+   * @memberof UserAssignmentOutputDTO
+   */
+  role: RoleOutputDTO;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof UserAssignmentOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserAssignmentOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface UserCreateInputDTO
  */
 export interface UserCreateInputDTO {
@@ -5159,10 +5506,10 @@ export interface UserCreateInputDTO {
 export interface UserOutputArrayDTOAPI {
   /**
    *
-   * @type {Array<UserOutputDTO>}
+   * @type {Array<UserOutputWithRolesDTO>}
    * @memberof UserOutputArrayDTOAPI
    */
-  data: Array<UserOutputDTO>;
+  data: Array<UserOutputWithRolesDTO>;
   /**
    *
    * @type {MetadataOutput}
@@ -5246,10 +5593,10 @@ export interface UserOutputDTOAPI {
 export interface UserOutputWithRolesDTO {
   /**
    *
-   * @type {Array<RoleOutputDTO>}
+   * @type {Array<UserAssignmentOutputDTO>}
    * @memberof UserOutputWithRolesDTO
    */
-  roles: Array<RoleOutputDTO>;
+  roles: Array<UserAssignmentOutputDTO>;
   /**
    *
    * @type {string}
@@ -5292,6 +5639,19 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   discordId?: string;
+}
+/**
+ *
+ * @export
+ * @interface UserRoleAssignChangeDTO
+ */
+export interface UserRoleAssignChangeDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserRoleAssignChangeDTO
+   */
+  expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -12082,7 +12442,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
     async playerControllerGetOne(
       id: string,
       options?: AxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputWithRolesDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetOne(id, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
@@ -12159,7 +12519,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputDTOAPI> {
+    playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputWithRolesDTOAPI> {
       return localVarFp.playerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
@@ -12273,6 +12633,638 @@ export class PlayerApi extends BaseAPI {
   public playerControllerSearch(playerSearchInputDTO?: PlayerSearchInputDTO, options?: AxiosRequestConfig) {
     return PlayerApiFp(this.configuration)
       .playerControllerSearch(playerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * PlayerOnGameServerApi - axios parameter creator
+ * @export
+ */
+export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *
+     * @summary Add currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerAddCurrency: async (
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerOnGameServerControllerAddCurrency', 'id', id);
+      const localVarPath = `/gameserver/player/{id}/add-currency`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSetCurrencyInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Deduct currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerDeductCurrency: async (
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerOnGameServerControllerDeductCurrency', 'id', id);
+      const localVarPath = `/gameserver/player/{id}/deduct-currency`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSetCurrencyInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerGetOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerOnGameServerControllerGetOne', 'id', id);
+      const localVarPath = `/gameserver/player/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerSearch: async (
+      playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/player/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Set currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerSetCurrency: async (
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('playerOnGameServerControllerSetCurrency', 'id', id);
+      const localVarPath = `/gameserver/player/{id}/currency`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSetCurrencyInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerTransactBetweenPlayers: async (
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'sender' is not null or undefined
+      assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'sender', sender);
+      // verify required parameter 'receiver' is not null or undefined
+      assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'receiver', receiver);
+      const localVarPath = `/gameserver/player/{sender}/{receiver}/transfer`
+        .replace(`{${'sender'}}`, encodeURIComponent(String(sender)))
+        .replace(`{${'receiver'}}`, encodeURIComponent(String(receiver)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerSetCurrencyInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * PlayerOnGameServerApi - functional programming interface
+ * @export
+ */
+export const PlayerOnGameServerApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = PlayerOnGameServerApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Add currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerAddCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerAddCurrency(
+        id,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Deduct currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerDeductCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerDeductCurrency(
+        id,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerGetOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerGetOne(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerSearch(
+      playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerSearch(
+        playerOnGameServerSearchInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Set currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerSetCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerSetCurrency(
+        id,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerTransactBetweenPlayers(
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerTransactBetweenPlayers(
+        sender,
+        receiver,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+  };
+};
+
+/**
+ * PlayerOnGameServerApi - factory interface
+ * @export
+ */
+export const PlayerOnGameServerApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = PlayerOnGameServerApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Add currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerAddCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerAddCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Deduct currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerDeductCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerDeductCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp.playerOnGameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerSearch(
+      playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputArrayDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Set currency
+     * @param {string} id
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerSetCurrency(
+      id: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Transact between players
+     * @param {string} sender
+     * @param {string} receiver
+     * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerTransactBetweenPlayers(
+      sender: string,
+      receiver: string,
+      playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerTransactBetweenPlayers(
+          sender,
+          receiver,
+          playerOnGameServerSetCurrencyInputDTO,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * PlayerOnGameServerApi - object-oriented interface
+ * @export
+ * @class PlayerOnGameServerApi
+ * @extends {BaseAPI}
+ */
+export class PlayerOnGameServerApi extends BaseAPI {
+  /**
+   *
+   * @summary Add currency
+   * @param {string} id
+   * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerAddCurrency(
+    id: string,
+    playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerAddCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Deduct currency
+   * @param {string} id
+   * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerDeductCurrency(
+    id: string,
+    playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerDeductCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerGetOne(id: string, options?: AxiosRequestConfig) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerSearch(
+    playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Set currency
+   * @param {string} id
+   * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerSetCurrency(
+    id: string,
+    playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Transact between players
+   * @param {string} sender
+   * @param {string} receiver
+   * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerTransactBetweenPlayers(
+    sender: string,
+    receiver: string,
+    playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
+    options?: AxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerTransactBetweenPlayers(
+        sender,
+        receiver,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -12768,13 +13760,13 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet: async (
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
@@ -12905,13 +13897,13 @@ export const SettingsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputObjectDTOAPI>> {
@@ -12963,13 +13955,13 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
     /**
      *
      * @summary Get
-     * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+     * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
      * @param {string} [gameServerId]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     settingsControllerGet(
-      keys?: Array<'commandPrefix' | 'serverChatName'>,
+      keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
       gameServerId?: string,
       options?: any
     ): AxiosPromise<SettingsOutputObjectDTOAPI> {
@@ -13016,14 +14008,14 @@ export class SettingsApi extends BaseAPI {
   /**
    *
    * @summary Get
-   * @param {Array<'commandPrefix' | 'serverChatName'>} [keys]
+   * @param {Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>} [keys]
    * @param {string} [gameServerId]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof SettingsApi
    */
   public settingsControllerGet(
-    keys?: Array<'commandPrefix' | 'serverChatName'>,
+    keys?: Array<'commandPrefix' | 'serverChatName' | 'economyEnabled' | 'currencyName'>,
     gameServerId?: string,
     options?: AxiosRequestConfig
   ) {
@@ -13074,12 +14066,14 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     userControllerAssignRole: async (
       id: string,
       roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
       options: AxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -13102,9 +14096,16 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
       // authentication domainAuth required
 
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        userRoleAssignChangeDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -13480,15 +14481,22 @@ export const UserApiFp = function (configuration?: Configuration) {
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async userControllerAssignRole(
       id: string,
       roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
       options?: AxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerAssignRole(id, roleId, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerAssignRole(
+        id,
+        roleId,
+        userRoleAssignChangeDTO,
+        options
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -13646,11 +14654,19 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
+     * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerAssignRole(id: string, roleId: string, options?: any): AxiosPromise<APIOutput> {
-      return localVarFp.userControllerAssignRole(id, roleId, options).then((request) => request(axios, basePath));
+    userControllerAssignRole(
+      id: string,
+      roleId: string,
+      userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -13767,13 +14783,19 @@ export class UserApi extends BaseAPI {
    * @summary Assign role
    * @param {string} id
    * @param {string} roleId
+   * @param {UserRoleAssignChangeDTO} [userRoleAssignChangeDTO] UserRoleAssignChangeDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UserApi
    */
-  public userControllerAssignRole(id: string, roleId: string, options?: AxiosRequestConfig) {
+  public userControllerAssignRole(
+    id: string,
+    roleId: string,
+    userRoleAssignChangeDTO?: UserRoleAssignChangeDTO,
+    options?: AxiosRequestConfig
+  ) {
     return UserApiFp(this.configuration)
-      .userControllerAssignRole(id, roleId, options)
+      .userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

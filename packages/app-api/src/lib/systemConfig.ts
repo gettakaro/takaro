@@ -82,6 +82,19 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
             maximum: ms('1 day') / 1000,
             description: 'How many seconds to wait before executing the command.',
           },
+          cost: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            description: 'How much currency to deduct from the player before executing the command.',
+          },
+          aliases: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Trigger the command with other names than the default',
+          },
         },
         required: [],
         default: {},

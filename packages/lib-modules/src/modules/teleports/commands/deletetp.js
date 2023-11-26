@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -16,8 +16,7 @@ async function main() {
   });
 
   if (existingVariable.data.data.length === 0) {
-    await data.player.pm(`Teleport ${args.tp} does not exist.`);
-    return;
+    throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);
   }
 
   await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);

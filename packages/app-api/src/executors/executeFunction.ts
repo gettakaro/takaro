@@ -1,12 +1,15 @@
 import { EXECUTION_MODE } from '@takaro/config';
 import { Sentry, errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
-import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
+import { AdminClient, Client } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
 import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
+import { CommandService } from '../service/CommandService.js';
+import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 
 let rateLimiter: RateLimiterRedis | null = null;
 
@@ -69,30 +72,51 @@ export async function executeFunction(
   });
 
   const functionRes = await client.function.functionControllerGetOne(functionId);
-
-  const eventData: EventCreateDTO & { meta: Record<string, unknown> } = {
-    eventName: '',
+  const eventService = new EventService(domainId);
+  const eventData = await new EventCreateDTO().construct({
     moduleId: data.module.moduleId,
     gameserverId: data.gameServerId,
     meta: {},
-  };
+  });
 
   if (isCommandData(data)) {
+    const commandService = new CommandService(domainId);
+    const command = await commandService.findOne(data.itemId);
     eventData.playerId = data.player.playerId;
-    eventData.eventName = 'command-executed';
+    eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
     eventData.meta['command'] = {
-      command: data.itemId,
+      id: command?.id,
+      name: command?.name,
       arguments: data.arguments,
     };
+
+    if (!command) throw new errors.InternalServerError();
+    if ('commands' in data.module.systemConfig) {
+      const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
+      const cost = commandsConfig[command?.name]?.cost;
+      if (cost) {
+        if (data.player.currency < cost) {
+          await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+            message: 'You do not have enough currency to execute this command.',
+            opts: {
+              recipient: {
+                gameId: data.player.gameId,
+              },
+            },
+          });
+          return;
+        }
+      }
+    }
   }
 
   if (isHookData(data)) {
-    eventData.eventName = 'hook-executed';
+    eventData.eventName = EVENT_TYPES.HOOK_EXECUTED;
     eventData.meta['eventData'] = data.eventData;
   }
 
   if (isCronData(data)) {
-    eventData.eventName = 'cronjob-executed';
+    eventData.eventName = EVENT_TYPES.CRONJOB_EXECUTED;
   }
 
   try {
@@ -113,17 +137,46 @@ export async function executeFunction(
     }
 
     if (isCommandData(data) && !result.success) {
-      await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-        message: 'Oops, something went wrong while executing your command. Please try again later.',
-        opts: {
-          recipient: {
-            gameId: data.player.gameId,
+      if (result.logs.length && (result.logs[result.logs.length - 1].details as string)?.includes('TakaroUserError')) {
+        await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+          message: result.logs[result.logs.length - 1].msg,
+          opts: {
+            recipient: {
+              gameId: data.player.gameId,
+            },
           },
-        },
-      });
+        });
+      } else {
+        await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+          message: 'Oops, something went wrong while executing your command. Please try again later.',
+          opts: {
+            recipient: {
+              gameId: data.player.gameId,
+            },
+          },
+        });
+      }
     }
 
-    await client.event.eventControllerCreate(eventData);
+    if (isCommandData(data)) {
+      const commandService = new CommandService(domainId);
+      const command = await commandService.findOne(data.itemId);
+      if (!command) throw new errors.InternalServerError();
+      if ('commands' in data.module.systemConfig) {
+        const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
+        const cost = commandsConfig[command?.name]?.cost;
+        if (cost) {
+          if (!result.success) {
+            log.warn('Command execution failed, not deducting cost');
+          } else {
+            const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+            await playerOnGameServerService.deductCurrency(data.player.id, cost);
+          }
+        }
+      }
+    }
+
+    await eventService.create(eventData);
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
@@ -132,7 +185,7 @@ export async function executeFunction(
         reason: 'rate limited',
         tryAgainIn: err.msBeforeNext,
       };
-      await client.event.eventControllerCreate(eventData);
+      await eventService.create(eventData);
       return null;
     }
 
@@ -145,7 +198,7 @@ export async function executeFunction(
 
     Sentry.captureException(err);
     log.error('executeFunction', err);
-    await client.event.eventControllerCreate(eventData);
+    await eventService.create(eventData);
     return null;
   }
 }

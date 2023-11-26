@@ -1,4 +1,13 @@
-import { Drawer, CollapseList, FormError, Button, Select, TextField, Loading } from '@takaro/lib-components';
+import {
+  Drawer,
+  CollapseList,
+  FormError,
+  Button,
+  Select,
+  TextField,
+  Loading,
+  DatePicker,
+} from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
@@ -9,10 +18,12 @@ import { roleAssignValidationSchema } from './validationSchema';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { useUserAssignRole } from 'queries/users';
+import { DateTime } from 'luxon';
 
 interface IFormInputs {
   id: string;
   roleId: string;
+  expiresAt?: string;
 }
 
 interface IAssignRoleFormProps {
@@ -57,8 +68,8 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId }) => {
-    await mutateAsync({ userId: id, roleId });
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, expiresAt }) => {
+    await mutateAsync({ userId: id, roleId, expiresAt });
     navigate(PATHS.user.profile(id));
   };
 
@@ -88,6 +99,19 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
                     ))}
                   </Select.OptionGroup>
                 </Select>
+
+                <DatePicker
+                  mode="absolute"
+                  control={control}
+                  label={'Expiration date'}
+                  name={'expiresAt'}
+                  required={false}
+                  loading={isLoading}
+                  description={'The role will be automatically removed after this date'}
+                  popOverPlacement={'bottom'}
+                  timePickerOptions={{ interval: 30 }}
+                  format={DateTime.DATETIME_SHORT}
+                />
               </CollapseList.Item>
               {error && <FormError error={error} />}
             </form>

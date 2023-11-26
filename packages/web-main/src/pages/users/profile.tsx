@@ -1,6 +1,6 @@
-import { RoleOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Loading, Table, useTableActions } from '@takaro/lib-components';
-import { useUser, useUserRemoveRole } from 'queries/users/queries';
+import { useUser, useUserRemoveRole } from 'queries/users';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { useParams, Outlet, useNavigate } from 'react-router-dom';
@@ -53,21 +53,33 @@ const AssignRole: FC<{ userId: string }> = ({ userId }) => {
 };
 
 interface IUserRolesTableProps {
-  roles: RoleOutputDTO[];
+  roles: UserAssignmentOutputDTO[];
   userId: string;
 }
 
 const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserAssignmentOutputDTO>();
   const { mutate } = useUserRemoveRole();
 
-  const columnHelper = createColumnHelper<RoleOutputDTO>();
+  const columnHelper = createColumnHelper<UserAssignmentOutputDTO>();
 
   const columnDefs = [
-    columnHelper.accessor('name', {
+    columnHelper.accessor('role.name', {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('expiresAt', {
+      header: 'Expires at',
+      id: 'expiresAt',
+      cell: (info) => {
+        const value = info.getValue();
+        if (!value) return 'Never';
+        const date = DateTime.fromISO(value);
+        return date.toLocaleString(DateTime.DATETIME_FULL);
+      },
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -94,7 +106,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
               onClick={() => {
                 mutate({
                   userId,
-                  roleId: info.row.original.id,
+                  roleId: info.row.original.roleId,
                 });
               }}
             />

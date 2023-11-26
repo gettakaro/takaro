@@ -1,5 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip, PERMISSIONS } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icon
 import { PATHS } from 'paths';
 import { useGameServerRemove, useGameServerReachabilityById } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -55,15 +56,17 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
             ) : (
               <Chip label={status} color="error" variant="outline" />
             )}
-            <Dropdown>
-              <Dropdown.Trigger asChild>
-                <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-              </Dropdown.Trigger>
-              <Dropdown.Menu>
-                <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
-                <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
-              </Dropdown.Menu>
-            </Dropdown>
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]]}>
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
+                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
+                </Dropdown.Menu>
+              </Dropdown>
+            </PermissionsGuard>
           </Header>
           <TitleContainer>
             <h3>{name}</h3>

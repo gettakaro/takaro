@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -15,7 +15,6 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { RoleService } from '../service/RoleService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -41,6 +40,12 @@ export class InviteCreateDTO {
   email!: string;
 }
 
+class UserRoleAssignChangeDTO {
+  @IsOptional()
+  @IsISO8601()
+  expiresAt?: string;
+}
+
 class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   @Type(() => LoginOutputDTO)
   @ValidateNested()
@@ -53,10 +58,10 @@ class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
   declare data: UserOutputWithRolesDTO;
 }
 
-class UserOutputArrayDTOAPI extends APIOutput<UserOutputDTO[]> {
+class UserOutputArrayDTOAPI extends APIOutput<UserOutputWithRolesDTO[]> {
   @ValidateNested({ each: true })
-  @Type(() => UserOutputDTO)
-  declare data: UserOutputDTO[];
+  @Type(() => UserOutputWithRolesDTO)
+  declare data: UserOutputWithRolesDTO[];
 }
 
 class UserSearchInputAllowedFilters {
@@ -161,16 +166,20 @@ export class UserController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
   @Post('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
-  async assignRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
-    const service = new RoleService(req.domainId);
-    return apiResponse(await service.assignRole(params.roleId, params.id));
+  async assignRole(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndRoleId,
+    @Body() data: UserRoleAssignChangeDTO
+  ) {
+    const service = new UserService(req.domainId);
+    return apiResponse(await service.assignRole(params.roleId, params.id, data.expiresAt));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
   @Delete('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
-    const service = new RoleService(req.domainId);
+    const service = new UserService(req.domainId);
     return apiResponse(await service.removeRole(params.roleId, params.id));
   }
 

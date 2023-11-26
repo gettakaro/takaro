@@ -105,13 +105,8 @@ jobs:
 
       - run: npm run test:style
 
-      - uses: nick-fields/retry@v2
-        name: Integration tests
-        with:
-          timeout_minutes: 60
-          max_attempts: 5
-          shell: pwsh
-          command: npx zx scripts/integration-tests.mjs
+      - name: Integration tests
+        run:  npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
       - uses: actions/upload-artifact@v3
@@ -133,13 +128,8 @@ jobs:
       - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - uses: nick-fields/retry@v2
-        name: Integration tests e2e
-        with:
-          timeout_minutes: 60
-          max_attempts: 5
-          shell: pwsh
-          command: npx zx scripts/integration-tests.mjs
+      - name: Integration tests e2e
+        run: npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
           IS_E2E: true

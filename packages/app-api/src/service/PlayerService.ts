@@ -9,7 +9,8 @@ import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './Player
 import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
-import { RoleAssignmentOutputDTO } from './RoleService.js';
+import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -32,9 +33,9 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
 }
 
 export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
-  @Type(() => RoleAssignmentOutputDTO)
+  @Type(() => PlayerRoleAssignmentOutputDTO)
   @ValidateNested({ each: true })
-  roleAssignments: RoleAssignmentOutputDTO[];
+  roleAssignments: PlayerRoleAssignmentOutputDTO[];
 }
 
 export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
@@ -63,12 +64,44 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return new PlayerRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputDTO>> {
-    return this.repo.find(filters);
+  private async handleRoleExpiry(player: PlayerOutputWithRolesDTO): Promise<PlayerOutputWithRolesDTO> {
+    const now = new Date();
+    const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
+
+    if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
+    await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id)));
+
+    // Delete expired roles from original object
+    player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));
+    return player;
   }
 
-  findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
-    return this.repo.findOne(id);
+  private async extend(player: PlayerOutputWithRolesDTO): Promise<PlayerOutputWithRolesDTO> {
+    const roleService = new RoleService(this.domainId);
+    const roles = await roleService.find({ filters: { name: ['Player'] } });
+
+    player.roleAssignments.push(
+      await new PlayerRoleAssignmentOutputDTO().construct({
+        playerId: player.id,
+        roleId: roles.results[0].id,
+        role: roles.results[0],
+      })
+    );
+
+    await this.handleRoleExpiry(player);
+
+    return player;
+  }
+
+  async find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputDTO>> {
+    const players = await this.repo.find(filters);
+    players.results = await Promise.all(players.results.map((item) => this.extend(item)));
+    return players;
+  }
+
+  async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
+    const player = await this.repo.findOne(id);
+    return this.extend(player);
   }
 
   async create(item: PlayerCreateDTO) {
@@ -128,5 +161,38 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async getRef(playerId: string, gameserverId: string) {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     return playerOnGameServerService.getRef(playerId, gameserverId);
+  }
+
+  async assignRole(roleId: string, targetId: string, gameserverId?: string, expiresAt?: string) {
+    const eventService = new EventService(this.domainId);
+
+    this.log.info('Assigning role to player');
+    await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
+    await eventService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.ROLE_ASSIGNED,
+        gameserverId,
+        playerId: targetId,
+        meta: {
+          roleId: roleId,
+        },
+      })
+    );
+  }
+
+  async removeRole(roleId: string, targetId: string, gameserverId?: string) {
+    this.log.info('Removing role from player');
+    const eventService = new EventService(this.domainId);
+    await this.repo.removeRole(targetId, roleId, gameserverId);
+    await eventService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.ROLE_REMOVED,
+        playerId: targetId,
+        gameserverId,
+        meta: {
+          roleId: roleId,
+        },
+      })
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { EventOutputDTO } from '@takaro/apiclient';
+import { EventOutputDTO, EventOutputDTOEventNameEnum, EventSearchInputAllowedFilters } from '@takaro/apiclient';
 import { styled, DateRangePicker, Button } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
@@ -12,7 +12,6 @@ import { useSocket } from 'hooks/useSocket';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
 import { useEvents } from 'queries/events';
-import { EnrichedEvent, useEnrichEvent } from 'queries/events/queries';
 import { FC, useEffect, useState } from 'react';
 
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
@@ -73,13 +72,13 @@ const treeData = [
     name: 'Gameserver',
     children: [
       {
-        name: 'player-connected',
+        name: EventOutputDTOEventNameEnum.PlayerConnected,
       },
       {
-        name: 'player-disconnected',
+        name: EventOutputDTOEventNameEnum.PlayerDisconnected,
       },
       {
-        name: 'chat-message',
+        name: EventOutputDTOEventNameEnum.ChatMessage,
       },
     ],
   },
@@ -88,13 +87,13 @@ const treeData = [
     defaultEnabled: true,
     children: [
       {
-        name: 'cronjob-executed',
+        name: EventOutputDTOEventNameEnum.CronjobExecuted,
       },
       {
-        name: 'hook-executed',
+        name: EventOutputDTOEventNameEnum.HookExecuted,
       },
       {
-        name: 'command-executed',
+        name: EventOutputDTOEventNameEnum.CommandExecuted,
       },
     ],
   },
@@ -102,10 +101,10 @@ const treeData = [
     name: 'Global',
     children: [
       {
-        name: 'role-created',
+        name: EventOutputDTOEventNameEnum.RoleAssigned,
       },
       {
-        name: 'role-assigned',
+        name: EventOutputDTOEventNameEnum.RoleRemoved,
       },
     ],
   },
@@ -114,8 +113,8 @@ const treeData = [
 const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
 function clientSideFilter(
-  event: EnrichedEvent,
-  eventTypes: string[],
+  event: EventOutputDTO,
+  eventTypes: EventOutputDTOEventNameEnum[],
   filters: Filter[],
   startDate: DateTime | null,
   endDate: DateTime | null
@@ -150,13 +149,13 @@ export const Events: FC = () => {
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
 
-  const [eventTypes, setEventTypes] = useState<string[]>([]);
+  const [eventTypes, setEventTypes] = useState<EventOutputDTOEventNameEnum[]>([]);
   const [tagFilters, setTagFilters] = useState<Filter[]>([]);
   const [searchFilters, setSearchFilters] = useState<Filter[]>([]);
 
   const [live, setLive] = useState<boolean>(false);
   const [lastEvent, setLastEvent] = useState<EventOutputDTO | null>(null);
-  const [events, setEvents] = useState<EnrichedEvent[] | null>(null);
+  const [events, setEvents] = useState<EventOutputDTO[] | null>(null);
 
   const { socket } = useSocket();
 
@@ -172,21 +171,33 @@ export const Events: FC = () => {
     });
   }, [live]);
 
-  const { data: lastEventResponse } = useEnrichEvent(lastEvent);
-
   const filters = [...tagFilters, ...searchFilters];
   const filterFields = filters.reduce((acc, f) => {
     acc[f.field] = [f.value];
     return acc;
   }, {});
 
+  const lastEventFilters: EventSearchInputAllowedFilters = {};
+
+  if (lastEvent) {
+    lastEventFilters.id = [lastEvent.id];
+  }
+
+  const { data: lastEventResponse } = useEvents({
+    filters: lastEventFilters,
+    extend: ['gameServer', 'module', 'player', 'user'],
+  });
+
   useEffect(() => {
-    if (lastEventResponse && clientSideFilter(lastEventResponse, eventTypes, filters, startDate, endDate)) {
+    if (
+      lastEventResponse &&
+      clientSideFilter(lastEventResponse.pages[0].data[0], eventTypes, filters, startDate, endDate)
+    ) {
       setEvents((prev) => {
         if (prev) {
-          return [lastEventResponse, ...prev];
+          return [lastEventResponse.pages[0].data[0], ...prev];
         }
-        return [lastEventResponse];
+        return [lastEventResponse.pages[0].data[0]];
       });
     }
   }, [lastEventResponse]);
@@ -202,6 +213,7 @@ export const Events: FC = () => {
     sortDirection: 'desc',
     startDate: startDate?.toISO() ?? undefined,
     endDate: endDate?.toISO() ?? undefined,
+    extend: ['gameServer', 'module', 'player', 'user'],
   });
 
   useEffect(() => {
@@ -294,7 +306,7 @@ export const Events: FC = () => {
           <TreeFilter
             data={treeData}
             addFilters={(f) => {
-              setEventTypes((prev) => [...prev, ...f]);
+              setEventTypes((prev) => [...prev, ...f] as EventOutputDTOEventNameEnum[]);
             }}
             removeFilters={(f) => {
               setEventTypes((prev) => prev.filter((filter) => !f.includes(filter)));

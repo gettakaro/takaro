@@ -1,6 +1,7 @@
+import React, { useRef } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Action, ActionMenu, ActionMenuProps } from '.';
-import { createRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { styled } from '../../../styled';
 import { useOutsideAlerter } from '../../../hooks';
 import { useFloating } from '@floating-ui/react';
@@ -24,10 +25,9 @@ const ParentContainer = styled.div`
 
 export const Default: StoryFn<ActionMenuProps> = () => {
   const [visible, setVisible] = useState(false);
-  const { x, y, reference, floating, strategy } = useFloating();
+  const { x, y, refs, strategy } = useFloating();
   const [selected, setSelected] = useState<number>(0);
-
-  const parentRef = createRef<HTMLDivElement>();
+  const parentRef = useRef<HTMLDivElement>(null);
   useOutsideAlerter(parentRef, () => {
     setVisible(false);
   });
@@ -38,18 +38,14 @@ export const Default: StoryFn<ActionMenuProps> = () => {
 
   return (
     <>
-      If you click outside of the gray parent component the popup will be
-      closed. The popup is positioned based on the reference element.
+      If you click outside of the gray parent component the popup will be closed. The popup is positioned based on the
+      reference element.
       <ParentContainer ref={parentRef}>
-        <Reference onClick={() => setVisible(true)} ref={reference}>
+        <Reference onClick={() => setVisible(true)} ref={refs.setReference}>
           reference element
         </Reference>
         {visible && (
-          <ActionMenu
-            selectedState={[selected, setSelected]}
-            attributes={{ x, y, strategy }}
-            ref={floating}
-          >
+          <ActionMenu selectedState={[selected, setSelected]} attributes={{ x, y, strategy }} ref={refs.setFloating}>
             <Action
               onClick={() => {
                 console.log('action 1 fired');

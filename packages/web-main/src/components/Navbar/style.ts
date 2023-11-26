@@ -47,7 +47,7 @@ export const Nav = styled.nav`
   gap: ${({ theme }) => theme.spacing['0_75']};
   width: 100%;
   flex-direction: column;
-  margin-top: ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[3]};
 
   h3 {
     font-size: ${({ theme }) => theme.fontSize.tiny};

@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { Table, Loading, useTableActions, IconButton, Dropdown } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const Players: FC = () => {
   useDocumentTitle('Players');
@@ -102,35 +103,40 @@ const Players: FC = () => {
               icon={<ProfileIcon />}
               onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
             />
-            <Dropdown.Menu.Item
-              label="Assign role"
-              icon={<EditIcon />}
-              onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
-            />
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_ROLES]]}>
+              <Dropdown.Menu.Item
+                label="Edit roles"
+                icon={<EditIcon />}
+                onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
+              />
+            </PermissionsGuard>
           </Dropdown.Menu>
         </Dropdown>
       ),
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
     <Fragment>
       <Table
         id="players"
         columns={columnDefs}
-        data={data.data as PlayerOutputDTO[]}
-        pagination={{
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }}
+        data={data?.data as PlayerOutputDTO[]}
+        pagination={p}
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
         sorting={sorting}
+        isLoading={isLoading}
       />
     </Fragment>
   );

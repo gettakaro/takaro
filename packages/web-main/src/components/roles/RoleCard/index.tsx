@@ -42,12 +42,12 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               <Dropdown.Menu>
                 {name !== 'root' ? <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" /> : null}
                 {!system ? <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" /> : null}
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage users" />
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage players" />
+                <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
+                <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
               </Dropdown.Menu>
             </Dropdown>
             {system ? (
-              <Tooltip placement="bottom">
+              <Tooltip placement="top">
                 <Tooltip.Trigger asChild>
                   <Chip label="system" color="primary" />
                 </Tooltip.Trigger>

@@ -1,10 +1,11 @@
 import { FC, Fragment } from 'react';
-import { Button, Empty, EmptyPage, Skeleton, styled } from '@takaro/lib-components';
+import { Button, Empty, EmptyPage, PERMISSIONS, Skeleton, styled } from '@takaro/lib-components';
 import { EmptyGameServerCard, GameServerCard } from '../components/GameServerCard';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useGameServers } from 'queries/gameservers';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const List = styled.ul`
   display: grid;
@@ -61,7 +62,9 @@ const GameServers: FC = () => {
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
-        <EmptyGameServerCard onClick={() => navigate(PATHS.gameServers.create())} />
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
+          <EmptyGameServerCard onClick={() => navigate(PATHS.gameServers.create())} />
+        </PermissionsGuard>
       </List>
       {InfiniteScroll}
       {/* show editGameServer and newGameServer drawers above this listView*/}

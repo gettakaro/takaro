@@ -35,7 +35,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
+import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -188,12 +188,6 @@ class BanOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
-}
-
-class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO[]> {
-  @Type(() => PlayerOnGameserverOutputDTO)
-  @ValidateNested({ each: true })
-  declare data: PlayerOnGameserverOutputDTO[];
 }
 
 @OpenAPI({

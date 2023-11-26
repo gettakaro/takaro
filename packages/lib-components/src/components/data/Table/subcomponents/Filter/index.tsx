@@ -132,16 +132,12 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     setOpen(false);
   };
 
-  const filterCount = table.getState().columnFilters.length + table.getState().globalFilter.length;
+  // const filterCount = table.getState().columnFilters.length + table.getState().globalFilter.length;
 
   return (
     <Popover open={open} onOpenChange={setOpen} placement="bottom-end">
       <Popover.Trigger asChild>
-        <Button
-          icon={<FilterIcon />}
-          text={`filter ${filterCount > 0 ? `(${filterCount})` : ''}`}
-          onClick={() => setOpen(true)}
-        />
+        <IconButton icon={<FilterIcon />} onClick={() => setOpen(true)} size="large" ariaLabel="filter" />
       </Popover.Trigger>
       <Popover.Content>
         <Button
