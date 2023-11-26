@@ -5,6 +5,8 @@ import { HighPingKicker } from './modules/highPingKicker/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
+import { DailyLoginReward } from './modules/dailyLoginReward/index.js';
+
 export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook } from './BuiltinModule.js';
 
 export * from './dto/index.js';
@@ -23,6 +25,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new ChatBridge(),
       new Gimme(),
       new HighPingKicker(),
+      new DailyLoginReward(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
