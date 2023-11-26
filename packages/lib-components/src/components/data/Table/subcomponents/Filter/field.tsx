@@ -3,6 +3,7 @@ import { Select, TextField } from '../../../../../components';
 import { IFormInputs } from '.';
 import { Operators } from '.';
 import { Column } from '@tanstack/react-table';
+import { useLayoutEffect } from 'react';
 
 interface FilterFieldProps<DataType> {
   index: number;
