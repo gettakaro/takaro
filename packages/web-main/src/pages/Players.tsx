@@ -71,12 +71,14 @@ const Players: FC = () => {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
