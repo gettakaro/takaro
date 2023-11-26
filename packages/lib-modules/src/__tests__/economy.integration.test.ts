@@ -1,14 +1,19 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Economy suite';
 
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
+
   await this.client.settings.settingsControllerSet('economyEnabled', {
     value: 'true',
     gameServerId: setupData.gameserver.id,
+  });
+
+  await this.client.settings.settingsControllerSet('economyEnabled', {
+    value: 'true',
   });
   await this.client.settings.settingsControllerSet('currencyName', {
     gameServerId: setupData.gameserver.id,
@@ -113,7 +118,6 @@ const tests = [
       const transferAmount = 500;
 
       const sender = this.setupData.players[0];
-      console.log(JSON.stringify(sender, null, 2));
       const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);
       if (!senderPog) throw new Error('Sender playerOnGameServer does not exist');
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id, {
@@ -124,7 +128,7 @@ const tests = [
       const receiverPog = receiver.playerOnGameServers?.find(
         (pog) => pog.gameServerId === this.setupData.gameserver.id
       );
-      if (!receiverPog) throw new Error('Sender player on game server does not exist');
+      if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
@@ -134,7 +138,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      const messages = (await events).map((e) => e.data.msg as string);
+      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(2);
 
       // check if balances are correct
@@ -144,8 +148,8 @@ const tests = [
       const updatedReceiver = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id);
       expect(updatedReceiver.data.data.currency).to.be.eq(transferAmount);
 
-      expect(messages[0]).to.be.eq(`You received ${transferAmount} from ${sender.name}`);
-      expect(messages[1]).to.be.eq(`You successfully transferred ${transferAmount} to ${receiver.name}`);
+      expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
+      expect(messages[1]).to.be.eq(`You successfully transferred ${transferAmount} test coin to ${receiver.name}`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -165,62 +169,168 @@ const tests = [
       );
 
       const transferAmount = 500;
+      const prefix = (
+        await this.client.settings.settingsControllerGetOne('commandPrefix', this.setupData.gameserver.id)
+      ).data.data;
 
       const sender = this.setupData.players[0];
       const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);
-      if (!senderPog) throw new Error('Sender player on game server does not exist');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id);
-      expect(senderPog.currency).to.be.eq(transferAmount);
+      if (!senderPog) throw new Error('Sender playerOnGameServer does not exist');
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id, {
+        currency: transferAmount,
+      });
 
       const receiver = this.setupData.players[1];
       const receiverPog = receiver.playerOnGameServers?.find(
         (pog) => pog.gameServerId === this.setupData.gameserver.id
       );
-      if (!receiverPog) throw new Error('Sender player on game server does not exist');
+      if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/transfer ${receiver.name} ${transferAmount}`,
         playerId: sender.id,
       });
 
+      let messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+
       // check if balances have not changed yet
-      const senderBeforeConfirmation = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        senderPog.id
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+      ).to.be.eq(transferAmount);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+      ).to.be.eq(0);
+      expect(messages.length).to.be.eq(1);
+      expect(messages[0]).to.be.eq(
+        `You are about to send ${transferAmount} test coin to ${receiver.name}. (Please confirm by typing ${prefix}confirmtransfer )`
       );
-      expect(senderBeforeConfirmation.data.data.currency).to.be.eq(transferAmount);
 
-      const receiverBeforeConfirmation = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        receiverPog.id
-      );
-      expect(receiverBeforeConfirmation.data.data.currency).to.be.eq(0);
-
-      // confirm transfer
+      // =================================================
+      // transfer confirmed
+      // =================================================
+      events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/confirmtransfer ${receiver.name} ${transferAmount}`,
         playerId: sender.id,
       });
 
-      const senderAfterConfirmation = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        senderPog.id
-      );
-      expect(senderAfterConfirmation.data.data.currency).to.be.eq(0);
+      messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      expect((await events).length).to.be.eq(2);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+      ).to.be.eq(0);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+      ).to.be.eq(transferAmount);
 
-      const receiverAfterConfirmation = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        receiverPog.id
-      );
-      expect(receiverAfterConfirmation.data.data.currency).to.be.eq(transferAmount);
-
-      const messages = (await events).map((e) => e.data.msg as string);
-      expect((await events).length).to.be.eq(3);
-
-      expect(messages[0]).to.be.eq(
-        `You are about to send ${transferAmount} to ${receiver.name}. (Please confirm by typing /confirmtransfer)`
-      );
       expect(messages[1]).to.be.eq(`You received ${transferAmount} from ${sender.name}`);
       expect(messages[2]).to.be.eq(`You successfully transferred ${transferAmount} to ${receiver.name}`);
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: customSetup,
+    name: 'Should require confirmation when transfer amount is above pendingAmount',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.economyModule.id,
+        {
+          userConfig: JSON.stringify({
+            pendingAmount: 100,
+          }),
+        }
+      );
+
+      const transferAmount = 500;
+      const prefix = (
+        await this.client.settings.settingsControllerGetOne('commandPrefix', this.setupData.gameserver.id)
+      ).data.data;
+
+      const sender = this.setupData.players[0];
+      const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);
+      if (!senderPog) throw new Error('Sender playerOnGameServer does not exist');
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id, {
+        currency: transferAmount,
+      });
+
+      const receiver = this.setupData.players[1];
+      const receiverPog = receiver.playerOnGameServers?.find(
+        (pog) => pog.gameServerId === this.setupData.gameserver.id
+      );
+      if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
+      expect(receiverPog.currency).to.be.eq(0);
+
+      let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `/transfer ${receiver.name} ${transferAmount}`,
+        playerId: sender.id,
+      });
+
+      let messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+
+      // check if balances have not changed yet
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+      ).to.be.eq(transferAmount);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+      ).to.be.eq(0);
+      expect(messages.length).to.be.eq(1);
+      expect(messages[0]).to.be.eq(
+        `You are about to send ${transferAmount} test coin to ${receiver.name}. (Please confirm by typing ${prefix}confirmtransfer )`
+      );
+
+      // =================================================
+      // transfer confirmed
+      // =================================================
+      events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `${prefix}confirmtransfer`,
+        playerId: sender.id,
+      });
+
+      messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      expect((await events).length).to.be.eq(2);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+      ).to.be.eq(0);
+      expect(
+        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+      ).to.be.eq(transferAmount);
+
+      expect(messages[1]).to.be.eq(`You received ${transferAmount} from ${sender.name}`);
+      expect(messages[2]).to.be.eq(`You successfully transferred ${transferAmount} to ${receiver.name}`);
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: customSetup,
+    name: 'Should return no pending transfers when there are none',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.economyModule.id,
+        {
+          userConfig: JSON.stringify({
+            pendingAmount: 100,
+          }),
+        }
+      );
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/confirmtransfer',
+        playerId: this.setupData.players[0].id,
+      });
+
+      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      expect(messages[0]).to.be.eq('You have no pending transfer.');
     },
   }),
 ];

@@ -3,57 +3,57 @@ import { getTakaro, getData } from '@takaro/helpers';
 async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
-  const { player, arguments: args, gameServerId, module: mod } = data;
+  const { player: sender, arguments: args, gameServerId, module: mod } = data;
 
-  // try to find playerOnGameServer with name provided in args.
-  const sender = player.id;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
   // args.receiver has an argument type of "player". Arguments of this type are automatically resolved to the player's id.
   // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.
   const receiver = args.receiver;
+  const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;
+  const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;
 
-  if (mod.userConfig.pendingTransfer !== 0 && amount >= mod.userConfig.pendingTransfer) {
+  if (mod.userConfig.pendingAmount !== 0 && args.amount >= mod.userConfig.pendingAmount) {
     // create a variable to store confirmation requirement
     // TODO: in the future, we should probably add an expiration date to this variable.
     await takaro.variable.variableControllerCreate({
       key: 'confirmTransfer',
-      gameServerId,
-      data: JSON.stringify({
+      value: JSON.stringify({
         amount: args.amount,
         receiver: args.receiver,
       }),
       moduleId: mod.moduleId,
-      playerId: player.playerId,
+      playerId: sender.playerId,
+      gameServerId,
     });
 
     // NOTE: we should maybe check if the player has enough balance to send the amount since this is only checked when the transaction is executed.
     await data.player.pm(
-      `You are about to send ${args.amount} to ${receiver.name}. (Please confirm by typing /confirmtransfer)`
+      // TODO: use correct prefix
+      `You are about to send ${args.amount} ${currencyName} to ${receiverName}. (Please confirm by typing ${prefix}confirmtransfer)`
     );
   }
 
-  const receiverPog = receiver.playerOnGameServer?.find((pog) => pog.gameServerId === gameServerId);
-
   // NOTE: we don't need to check if the sender has enough balance, because the API call will fail if the sender doesn't have enough balance.
-  await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
-    sender,
-    receiverPog.id,
-    args.amount
+  await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.id, receiver.id, {
+    currency: args.amount,
+  });
+
+  const messageToSender = data.player.pm(
+    `You successfully transferred ${args.amount} ${currencyName} to ${receiverName}`
   );
 
-  // get playername sender and receiver (currently global player name, not gameserver specific)
-  const senderName = player.name;
-
-  const messageToSender = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `You received ${args.amount} from ${senderName}`,
+  const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+    message: `You received ${args.amount} ${currencyName} from ${senderName}`,
     opts: {
       recipient: {
-        gameId: player.gameId,
+        gameId: receiver.gameId,
       },
     },
   });
 
-  const messageToReceiver = data.player.pm(`You successfully transferred ${args.amount} to ${receiver.name}`);
   // send messages simultaneously
   await Promise.all([messageToSender, messageToReceiver]);
 
