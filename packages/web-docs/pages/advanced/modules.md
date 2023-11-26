@@ -49,6 +49,33 @@ async function main() {
       message: `Welcome to the server, ${data.player.name}. ${data.config.extraMessage}`,
   });
 }
+### Command Arguments
+
+In Takaro, commands can have arguments that provide additional information for the command execution. These arguments are parsed by the `parseCommand` function in the `commandParser.ts` file.
+
+The `parseCommand` function takes three arguments: `rawMessage`, `command`, and `gameServerId`. The `rawMessage` is the original command string sent by the user. The `command` is the command object that contains information about the command, including its arguments. The `gameServerId` is the identifier of the game server where the command was issued.
+
+The function starts by splitting the `rawMessage` into separate parts. If the `rawMessage` cannot be split, an `InternalServerError` is thrown and the error is logged.
+
+Next, the function sorts the command arguments based on their position. For each argument, the function checks if a value was provided in the `rawMessage`. If a value was provided, it is used. If not, the function checks if a default value is available. If a default value is available, it is used. If not, a `BadRequestError` is thrown and the error is logged.
+
+The function then checks the type of the argument. If the type is 'player', the function attempts to resolve the player using the `tryResolvePlayer` function. If the type is 'string', the function removes any quotation marks from the value. If the type is 'number', the function attempts to parse the value as a number. If the value cannot be parsed as a number, a `BadRequestError` is thrown and the error is logged. If the type is 'boolean', the function checks if the value is 'true' or 'false'. If not, a `BadRequestError` is thrown and the error is logged.
+
+Finally, the function returns a parsed command object that includes the command trigger and the parsed arguments.
+
+Here is an example of a command and its parsed version:
+
+Command: `/teleport homeBase`
+Parsed Command: 
+```json
+{
+  "command": "teleport",
+  "arguments": {
+    "location": "homeBase"
+  }
+}
+```
+In this example, the command is 'teleport' and the argument is 'location' with a value of 'homeBase'.
 
 main();
 
