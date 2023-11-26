@@ -1,10 +1,15 @@
 import { errors, logger } from '@takaro/util';
 import { CommandOutputDTO } from '../service/CommandService.js';
 import { IParsedCommand } from '@takaro/queues';
+import { tryResolvePlayer } from './tryResolvePlayer.js';
 
 const log = logger('lib:commandParser');
 
-export function parseCommand(rawMessage: string, command: CommandOutputDTO): IParsedCommand {
+export async function parseCommand(
+  rawMessage: string,
+  command: CommandOutputDTO,
+  gameServerId: string
+): Promise<IParsedCommand> {
   const split = rawMessage.match(/(?:[^\s"]+|"[^"]*")+/g);
 
   if (!split) {
@@ -12,7 +17,7 @@ export function parseCommand(rawMessage: string, command: CommandOutputDTO): IPa
     throw new errors.InternalServerError();
   }
 
-  const parsedArgs: Record<string, string | number | boolean> = {};
+  const parsedArgs: IParsedCommand['arguments'] = {};
 
   const sortedArguments = command.arguments.sort((a, b) => a.position - b.position);
 
@@ -25,13 +30,16 @@ export function parseCommand(rawMessage: string, command: CommandOutputDTO): IPa
     } else if (argument.defaultValue) {
       value = argument.defaultValue;
     } else {
-      log.error('Missing argument', { rawMessage, command, argument });
+      log.warn('Missing argument', { rawMessage, command, argument });
       throw new errors.BadRequestError(
         `Oops! It seems you forgot to provide the "${argument.name}" value. Please check and try again.`
       );
     }
 
     switch (argument.type) {
+      case 'player':
+        parsedArgs[argument.name] = await tryResolvePlayer(value, gameServerId);
+        break;
       case 'string':
         parsedArgs[argument.name] = value.replace(/"/g, '');
         break;

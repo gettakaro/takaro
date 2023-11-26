@@ -1,4 +1,4 @@
-import { getTakaro, getData, checkPermission } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
 
 function getVariableKey(tpName) {
   return `tp_${tpName}`;
@@ -13,15 +13,7 @@ async function main() {
   const hasPermission = checkPermission(player, 'TELEPORTS_USE');
 
   if (!hasPermission) {
-    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'You do not have permission to use teleports.',
-      opts: {
-        recipient: {
-          gameId: player.gameId,
-        },
-      },
-    });
-    return;
+    throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
@@ -36,8 +28,7 @@ async function main() {
   });
 
   if (existingVariable.data.data.length > 0) {
-    await data.player.pm(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);
-    return;
+    throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);
   }
 
   const allPlayerTeleports = await takaro.variable.variableControllerSearch({
@@ -52,10 +43,9 @@ async function main() {
   });
 
   if (allPlayerTeleports.data.data.length >= hasPermission.count) {
-    await data.player.pm(
+    throw new TakaroUserError(
       `You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`
     );
-    return;
   }
 
   await takaro.variable.variableControllerCreate({

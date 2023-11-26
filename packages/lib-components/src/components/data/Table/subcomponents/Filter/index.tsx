@@ -1,22 +1,30 @@
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { Table } from '@tanstack/react-table';
-import { Button, Divider, IconButton, Popover, Select, TextField, Tooltip } from '../../../../../components';
+import { Button, IconButton, Popover, Tooltip } from '../../../../../components';
 import { AiOutlineFilter as FilterIcon, AiOutlineClose as RemoveIcon } from 'react-icons/ai';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ButtonContainer, FilterContainer } from './style';
+import { ButtonContainer, Container, FilterActions, FilterContainer } from './style';
+import { FilterRow } from './field';
 
-enum operators {
+export enum Operators {
   is = 'is',
   contains = 'contains',
 }
 
-interface IFormInputs {
+export enum FilterInputType {
+  string = 'string',
+  uuid = 'uuid',
+  datetime = 'datetime',
+}
+
+export interface IFormInputs {
   filters: {
     column: string;
     operator: string;
     value: string;
+    type: FilterInputType;
   }[];
 }
 
@@ -27,30 +35,56 @@ interface FilterProps<DataType extends object> {
 export function Filter<DataType extends object>({ table }: FilterProps<DataType>) {
   const [open, setOpen] = useState<boolean>(false);
 
-  // Only get the columnIds on initial render
+  // Only get the columnIds on initial table render
   const columnIds = useMemo(() => {
-    return table
-      .getAllLeafColumns()
-      .filter((column) => column.getCanFilter() && column.getCanGlobalFilter())
+    const ids = table
+      .getAllColumns()
+      .filter((column) => {
+        return column.getCanFilter();
+      })
       .map((column) => column.id);
-  }, []);
+
+    return ids;
+  }, [table.getAllColumns()]);
+
+  const basedShape = z.object({
+    column: z.string().refine((value) => columnIds.includes(value), {
+      message: 'Please select a valid column.',
+    }),
+    operator: z.nativeEnum(Operators, {
+      errorMap: () => {
+        return {
+          message: 'Condition is required.',
+        };
+      },
+    }),
+  });
 
   const validationSchema = useMemo(() => {
     return z.object({
       filters: z.array(
-        z.object({
-          column: z.string().refine((value) => columnIds.includes(value), {
-            message: 'Please select a valid column.',
-          }),
-          operator: z.nativeEnum(operators, {
-            errorMap: () => {
-              return {
-                message: 'Condition is required.',
-              };
-            },
-          }),
-          value: z.string().nonempty('Value cannot be empty.'),
-        })
+        z
+          .discriminatedUnion('type', [
+            z.object({
+              type: z.literal(FilterInputType.string),
+              value: z.string().nonempty({
+                message: 'Value is required.',
+              }),
+            }),
+            z.object({
+              type: z.literal(FilterInputType.uuid),
+              value: z.string().uuid().nonempty({
+                message: 'Value is required.',
+              }),
+            }),
+            z.object({
+              type: z.literal(FilterInputType.datetime),
+              value: z.string().datetime().nonempty({
+                message: 'Value is required.',
+              }),
+            }),
+          ])
+          .and(basedShape)
       ),
     });
   }, [columnIds]);
@@ -62,7 +96,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     .map(({ id, value }) => {
       return {
         column: id,
-        operator: operators.is,
+        operator: Operators.is,
         value: [...(value as string[])],
       };
     });
@@ -74,12 +108,12 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
     .map(({ value, id }: { value: string[]; id: string }) => {
       return {
         column: id,
-        operator: operators.contains,
+        operator: Operators.contains,
         value: [...value],
       };
     });
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, setValue } = useForm<IFormInputs>({
     mode: 'onSubmit',
 
     resolver: zodResolver(validationSchema),
@@ -98,6 +132,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
       column: '',
       operator: '',
       value: '',
+      type: FilterInputType.string,
     });
   }, [remove]);
 
@@ -107,6 +142,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
         column: '',
         operator: '',
         value: '',
+        type: FilterInputType.string,
       });
     }
   }, [fields]);
@@ -140,101 +176,63 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
         <IconButton icon={<FilterIcon />} onClick={() => setOpen(true)} size="large" ariaLabel="filter" />
       </Popover.Trigger>
       <Popover.Content>
-        <Button
-          onClick={() =>
-            append({
-              column: '',
-              operator: '',
-              value: '',
-            })
-          }
-          variant="clear"
-          text="Add condition to filter by"
-        />
-        <Divider fullWidth />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {fields.map((field, index) => {
-            return (
-              <FilterContainer key={field.id} hasMultipleFields={fields.length > 1}>
-                {fields.length > 1 && (
-                  <Tooltip key={`remove-${field.id}`}>
-                    <Tooltip.Trigger asChild>
-                      <IconButton
-                        size="tiny"
-                        icon={<RemoveIcon />}
-                        ariaLabel="remove filter"
-                        onClick={() => {
-                          remove(index);
-                        }}
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Remove filter</Tooltip.Content>
-                  </Tooltip>
-                )}
-                <Select
-                  key={`column-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.column`}
-                  label="Column"
-                  inPortal
-                  render={(selectedIndex) => {
-                    return columnIds[selectedIndex] ?? 'Select a column';
-                  }}
-                >
-                  <Select.OptionGroup>
-                    {columnIds.map((col) => (
-                      <Select.Option key={col} value={col}>
-                        <div>
-                          <span>{col}</span>
-                        </div>
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
-
-                <Select
-                  key={`operator-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.operator`}
-                  label="Condition"
-                  inPortal
-                  render={(selectedIndex) => {
-                    return Object.keys(operators)[selectedIndex] ?? 'select a condition';
-                  }}
-                >
-                  <Select.OptionGroup>
-                    {Object.keys(operators).map((operator) => (
-                      <Select.Option key={operator} value={operator}>
-                        <div>
-                          <span>{operator}</span>
-                        </div>
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
-                <TextField
-                  key={`value-${field.id}`}
-                  control={control}
-                  name={`filters.${index}.value`}
-                  label="Value"
-                  placeholder="Enter a value"
+        <Container>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, index) => {
+              return (
+                <FilterContainer key={field.id} hasMultipleFields={fields.length > 1}>
+                  {fields.length > 1 && (
+                    <Tooltip key={`remove-${field.id}`}>
+                      <Tooltip.Trigger asChild>
+                        <IconButton
+                          size="tiny"
+                          icon={<RemoveIcon />}
+                          ariaLabel="remove filter"
+                          onClick={() => {
+                            remove(index);
+                          }}
+                        />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Remove filter</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                  <FilterRow
+                    index={index}
+                    id={field.id}
+                    columnIds={columnIds}
+                    control={control}
+                    setValue={setValue}
+                    getColumn={table.getColumn}
+                  />
+                </FilterContainer>
+              );
+            })}
+            <ButtonContainer justifyContent={fields.length > 0 ? 'space-between' : 'flex-end'}>
+              {fields.length > 0 && (
+                <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
+              )}
+              <FilterActions>
+                <Button
+                  onClick={() =>
+                    append({
+                      column: '',
+                      operator: '',
+                      value: '',
+                      type: FilterInputType.string,
+                    })
+                  }
+                  variant="clear"
+                  text="Add filter"
                 />
-              </FilterContainer>
-            );
-          })}
-
-          <ButtonContainer>
-            {fields.length > 0 && (
-              <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
-            )}
-
-            <Button type="submit" text="Apply filters" />
-          </ButtonContainer>
-        </form>
-        {/* dropdown with all columns */}
-        {/* dropdown with all operators */}
-        {/* input for value */}
-        {/* when all fields are valid, considered a filter */}
+                <Button type="submit" text="Apply filters" />
+              </FilterActions>
+            </ButtonContainer>
+          </form>
+          {/* dropdown with all columns */}
+          {/* dropdown with all operators */}
+          {/* input for value */}
+          {/* when all fields are valid, considered a filter */}
+        </Container>
       </Popover.Content>
     </Popover>
   );

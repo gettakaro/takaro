@@ -10,7 +10,7 @@ import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
-import { EventCreateDTO, EventService } from './EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -170,7 +170,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
     await eventService.create(
       await new EventCreateDTO().construct({
-        eventName: 'roleAssigned',
+        eventName: EVENT_TYPES.ROLE_ASSIGNED,
         gameserverId,
         playerId: targetId,
         meta: {
@@ -186,7 +186,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
       await new EventCreateDTO().construct({
-        eventName: 'roleRemoved',
+        eventName: EVENT_TYPES.ROLE_REMOVED,
         playerId: targetId,
         gameserverId,
         meta: {

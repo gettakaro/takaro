@@ -73,7 +73,11 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const result = await new QueryBuilder<PlayerOnGameServerModel, PlayerOnGameserverOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new PlayerOnGameserverOutputDTO().construct(item))),
+      results: await Promise.all(
+        result.results.map(async (item) =>
+          new PlayerOnGameserverOutputWithRolesDTO().construct(await this.findOne(item.id))
+        )
+      ),
     };
   }
 
@@ -189,10 +193,9 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     await model.transaction(async (trx) => {
       const txQuery = () => model.query(trx).modify('domainScoped', this.domainId);
 
-      const sender = txQuery().findById(senderId);
-      const receiver = txQuery().findById(receiverId);
-
-      const [senderData, receiverData] = await Promise.all([sender, receiver]);
+      // Lock the rows for sender and receiver
+      const senderData = await txQuery().forUpdate().findById(senderId);
+      const receiverData = await txQuery().forUpdate().findById(receiverId);
 
       if (!senderData || !receiverData) {
         throw new errors.NotFoundError();
@@ -206,17 +209,64 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Insufficient funds');
       }
 
-      await txQuery()
-        .findById(senderId)
-        .patch({ currency: senderData.currency - amount })
-        .returning('*');
+      // Update sender and receiver in the same transaction
+      await trx.raw(
+        `
+        UPDATE "playerOnGameServer"
+        SET currency = currency - ?
+        WHERE id = ?
+      `,
+        [amount, senderId]
+      );
 
-      await txQuery()
-        .findById(receiverId)
-        .patch({ currency: receiverData.currency + amount })
-        .returning('*');
+      await trx.raw(
+        `
+        UPDATE "playerOnGameServer"
+        SET currency = currency + ?
+        WHERE id = ?
+      `,
+        [amount, receiverId]
+      );
+    });
+  }
 
-      return;
+  async deductCurrency(playerId: string, amount: number) {
+    const { model } = await this.getModel();
+
+    await model.transaction(async (trx) => {
+      const result = await trx.raw(
+        `
+        UPDATE "playerOnGameServer"
+        SET currency = currency - ?
+        WHERE id = ?
+        RETURNING *;
+      `,
+        [amount, playerId]
+      );
+
+      if (result.rowCount === 0) {
+        throw new errors.BadRequestError('Player not found');
+      }
+    });
+  }
+
+  async addCurrency(playerId: string, amount: number) {
+    const { model } = await this.getModel();
+
+    await model.transaction(async (trx) => {
+      const result = await trx.raw(
+        `
+        UPDATE "playerOnGameServer"
+        SET currency = currency + ?
+        WHERE id = ?
+        RETURNING *;
+      `,
+        [amount, playerId]
+      );
+
+      if (result.rowCount === 0) {
+        throw new errors.BadRequestError('Player not found');
+      }
     });
   }
 }

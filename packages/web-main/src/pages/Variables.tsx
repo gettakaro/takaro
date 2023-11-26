@@ -41,6 +41,7 @@ const Variables: FC = () => {
     columnHelper.accessor('key', {
       header: 'Key',
       id: 'key',
+      meta: { type: 'uuid' },
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
@@ -53,7 +54,8 @@ const Variables: FC = () => {
     }),
     columnHelper.accessor('gameServerId', {
       header: 'Game Server',
-      id: 'gameServerId',
+      id: 'gameServerName',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.gameServer?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -61,6 +63,7 @@ const Variables: FC = () => {
     columnHelper.accessor('playerId', {
       header: 'Player',
       id: 'playerId',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.player?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -68,6 +71,7 @@ const Variables: FC = () => {
     columnHelper.accessor('moduleId', {
       header: 'Module',
       id: 'moduleId',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.module?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -75,12 +79,14 @@ const Variables: FC = () => {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),

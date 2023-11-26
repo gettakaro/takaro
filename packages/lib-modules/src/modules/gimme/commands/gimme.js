@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -9,10 +9,9 @@ async function main() {
   const commands = data.module.userConfig.commands;
 
   if (items.length + commands.length === 0) {
-    await data.player.pm(
+    throw new TakaroUserError(
       'No items or commands configured, please ask your server administrator to configure this module.'
     );
-    return;
   }
 
   // pick a random item between 0 and the length of both the items and commands arrays
