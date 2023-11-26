@@ -21,6 +21,8 @@ export enum EVENT_TYPES {
   COMMAND_EXECUTED = 'command-executed',
   HOOK_EXECUTED = 'hook-executed',
   CRONJOB_EXECUTED = 'cronjob-executed',
+  CURRENCY_ADDED = 'currency-added',
+  CURRENCY_DEDUCTED = 'currency-deducted',
 }
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {

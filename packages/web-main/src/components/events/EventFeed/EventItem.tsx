@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
-import { EventOutputDTO } from '@takaro/apiclient';
+import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
 
 const Header = styled.div`
   display: flex;
@@ -76,7 +76,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   let properties = <></>;
 
   switch (event.eventName) {
-    case 'chat-message':
+    case EventOutputDTOEventNameEnum.ChatMessage:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
@@ -85,7 +85,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'command-executed':
+    case EventOutputDTOEventNameEnum.CommandExecuted:
       properties = (
         <>
           <EventProperty name="module" value={event.module?.name} />
@@ -96,8 +96,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'hook-executed':
-    case 'cronjob-executed':
+    case EventOutputDTOEventNameEnum.HookExecuted:
+    case EventOutputDTOEventNameEnum.CronjobExecuted:
       properties = (
         <>
           <EventProperty name="module" value={event?.module?.name} />
@@ -105,8 +105,18 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'player-connected':
-    case 'player-disconnected':
+    case EventOutputDTOEventNameEnum.PlayerConnected:
+    case EventOutputDTOEventNameEnum.PlayerDisconnected:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="game" value={event.gameServer?.type} />
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.CurrencyAdded:
+    case EventOutputDTOEventNameEnum.CurrencyDeducted:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
