@@ -176,9 +176,9 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         // if the index is not -1, set the index as the selected index
         // Otherwise we should set the selected index to null
         // TODO: when set value is not in the list of values, we should throw an error.
-        if (index === -1) {
-          throw new Error('The value that is set is not in the list of values');
-        }
+        // if (index === -1) {
+        //   // throw new Error('The value that is set is not in the list of values');
+        // }
 
         // for now just set the selected index to null (this should result in an empty select)
         setSelectedIndex(index);
