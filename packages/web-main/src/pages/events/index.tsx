@@ -117,6 +117,18 @@ const treeData = [
       {
         name: EventOutputDTOEventNameEnum.RoleRemoved,
       },
+      {
+        name: EventOutputDTOEventNameEnum.RoleCreated,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.RoleUpdated,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.RoleDeleted,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.SettingsSet,
+      },
     ],
   },
 ];
