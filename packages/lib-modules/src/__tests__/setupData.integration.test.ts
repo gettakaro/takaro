@@ -15,6 +15,7 @@ export interface IModuleTestsSetupData {
   gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
+  bountyModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
   eventAwaiter: EventsAwaiter;
@@ -48,6 +49,9 @@ export const modulesTestSetup = async function (
 
   const gimmeModule = modules.find((m) => m.name === 'gimme');
   if (!gimmeModule) throw new Error('gimme module not found');
+
+  const bountyModule = modules.find((m) => m.name === 'bounty');
+  if (!bountyModule) throw new Error('bounty module not found');
 
   const utilsModule = modules.find((m) => m.name === 'utils');
   if (!utilsModule) throw new Error('utils module not found');
@@ -86,6 +90,7 @@ export const modulesTestSetup = async function (
     serverMessagesModule,
     onboardingModule,
     gimmeModule,
+    bountyModule,
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,

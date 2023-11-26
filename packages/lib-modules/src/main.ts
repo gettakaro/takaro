@@ -1,4 +1,5 @@
 import { BuiltinModule } from './BuiltinModule.js';
+import { Bounty } from './modules/bounty/index.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
 import { Gimme } from './modules/gimme/index.js';
 import { HighPingKicker } from './modules/highPingKicker/index.js';
@@ -23,6 +24,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new ChatBridge(),
       new Gimme(),
       new HighPingKicker(),
+      new Bounty(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
