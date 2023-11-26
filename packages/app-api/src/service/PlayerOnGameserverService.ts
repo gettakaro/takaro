@@ -189,4 +189,12 @@ export class PlayerOnGameServerService extends TakaroService<
   async transact(senderId: string, receiverId: string, amount: number) {
     return this.repo.transact(senderId, receiverId, amount);
   }
+
+  async deductCurrency(id: string, amount: number) {
+    return this.repo.deductCurrency(id, amount);
+  }
+
+  async addCurrency(id: string, amount: number) {
+    return this.repo.addCurrency(id, amount);
+  }
 }

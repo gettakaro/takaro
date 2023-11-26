@@ -121,4 +121,28 @@ export class PlayerOnGameServerController {
     const service = new PlayerOnGameServerService(req.domainId);
     return apiResponse(await service.transact(params.sender, params.receiver, body.currency));
   }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]), onlyIfEconomyEnabledMiddleware)
+  @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
+  @Post('/gameserver/player/:id/add-currency')
+  async addCurrency(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+  ) {
+    const service = new PlayerOnGameServerService(req.domainId);
+    return apiResponse(await service.addCurrency(params.id, body.currency));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]), onlyIfEconomyEnabledMiddleware)
+  @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
+  @Post('/gameserver/player/:id/deduct-currency')
+  async deductCurrency(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+  ) {
+    const service = new PlayerOnGameServerService(req.domainId);
+    return apiResponse(await service.deductCurrency(params.id, body.currency));
+  }
 }

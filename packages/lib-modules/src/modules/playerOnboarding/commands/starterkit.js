@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 const VARIABLE_KEY = 't_starterkit_lock';
 
@@ -9,8 +9,9 @@ async function main() {
   const items = data.module.userConfig.starterKitItems;
 
   if (!items.length) {
-    await data.player.pm('No starter kit items configured. Please ask your server administrator to configure this.');
-    return;
+    throw new TakaroUserError(
+      'No starter kit items configured. Please ask your server administrator to configure this.'
+    );
   }
 
   const starterKitLockRes = await takaro.variable.variableControllerSearch({
@@ -22,8 +23,7 @@ async function main() {
   });
 
   if (starterKitLockRes.data.data.length > 0) {
-    await data.player.pm('You already used starterkit on this server');
-    return;
+    throw new TakaroUserError('You already used starterkit on this server');
   }
 
   await data.player.pm('You are about to receive your starter kit...');

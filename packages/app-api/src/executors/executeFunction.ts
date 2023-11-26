@@ -7,6 +7,8 @@ import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData,
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
+import { CommandService } from '../service/CommandService.js';
+import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 
 let rateLimiter: RateLimiterRedis | null = null;
 
@@ -84,6 +86,27 @@ export async function executeFunction(
       command: data.itemId,
       arguments: data.arguments,
     };
+
+    const commandService = new CommandService(domainId);
+    const command = await commandService.findOne(data.itemId);
+    if (!command) throw new errors.InternalServerError();
+    if ('commands' in data.module.systemConfig) {
+      const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
+      const cost = commandsConfig[command?.name]?.cost;
+      if (cost) {
+        if (data.player.currency < cost) {
+          await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+            message: 'You do not have enough currency to execute this command.',
+            opts: {
+              recipient: {
+                gameId: data.player.gameId,
+              },
+            },
+          });
+          return;
+        }
+      }
+    }
   }
 
   if (isHookData(data)) {
@@ -113,14 +136,43 @@ export async function executeFunction(
     }
 
     if (isCommandData(data) && !result.success) {
-      await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-        message: 'Oops, something went wrong while executing your command. Please try again later.',
-        opts: {
-          recipient: {
-            gameId: data.player.gameId,
+      if (result.logs.length && (result.logs[result.logs.length - 1].details as string)?.includes('TakaroUserError')) {
+        await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+          message: result.logs[result.logs.length - 1].msg,
+          opts: {
+            recipient: {
+              gameId: data.player.gameId,
+            },
           },
-        },
-      });
+        });
+      } else {
+        await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+          message: 'Oops, something went wrong while executing your command. Please try again later.',
+          opts: {
+            recipient: {
+              gameId: data.player.gameId,
+            },
+          },
+        });
+      }
+    }
+
+    if (isCommandData(data)) {
+      const commandService = new CommandService(domainId);
+      const command = await commandService.findOne(data.itemId);
+      if (!command) throw new errors.InternalServerError();
+      if ('commands' in data.module.systemConfig) {
+        const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
+        const cost = commandsConfig[command?.name]?.cost;
+        if (cost) {
+          if (!result.success) {
+            log.warn('Command execution failed, not deducting cost');
+          } else {
+            const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+            await playerOnGameServerService.deductCurrency(data.player.id, cost);
+          }
+        }
+      }
     }
 
     await client.event.eventControllerCreate(eventData);

@@ -1,4 +1,4 @@
-import { getTakaro, checkPermission } from '@takaro/helpers';
+import { getTakaro, checkPermission, TakaroUserError } from '@takaro/helpers';
 import vm from 'node:vm';
 import axios from 'axios';
 import * as _ from 'lodash-es';
@@ -45,10 +45,11 @@ export const executeFunctionLocal: FunctionExecutor = async (
 
   await toEval.link((specifier: string, referencingModule) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'checkPermission', 'getData', 'axios', '_', 'lodash'],
+      ['getTakaro', 'checkPermission', 'TakaroUserError', 'getData', 'axios', '_', 'lodash'],
       function () {
         this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
+        this.setExport('TakaroUserError', TakaroUserError);
         this.setExport('getData', monkeyPatchedGetData);
         this.setExport('axios', axios);
         this.setExport('_', _);
