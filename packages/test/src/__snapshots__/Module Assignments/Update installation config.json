@@ -2,33 +2,39 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "85af190d-e5d6-4ac5-80c6-4583cb04d843",
-      "createdAt": "2023-07-03T10:39:31.693Z",
-      "updatedAt": "2023-07-03T10:39:31.710Z",
-      "gameserverId": "1225343a-ca6a-4d64-b2a9-c7d2d3cd8270",
-      "moduleId": "eacf283f-760b-4ed0-b55f-3e33db83c4b5",
+      "id": "e88c158b-42c5-4cf0-92f7-3928b4b47ab4",
+      "createdAt": "2023-11-26T13:45:54.778Z",
+      "updatedAt": "2023-11-26T13:45:54.825Z",
+      "gameserverId": "db1d7e45-6a66-4363-bf76-4661a41fcfa5",
+      "moduleId": "6df2243e-d4f3-484e-af1b-ff94fef3015e",
       "userConfig": {
         "timeout": 1337,
         "allowPublicTeleports": false
       },
       "systemConfig": {
         "commands": {
-          "tplist": {
-            "delay": 0
-          },
-          "teleport": {
-            "delay": 0
-          },
           "settp": {
+            "cost": 0,
             "delay": 0
           },
-          "setpublic": {
-            "delay": 0
-          },
-          "setprivate": {
+          "tplist": {
+            "cost": 0,
             "delay": 0
           },
           "deletetp": {
+            "cost": 0,
+            "delay": 0
+          },
+          "teleport": {
+            "cost": 0,
+            "delay": 0
+          },
+          "setpublic": {
+            "cost": 0,
+            "delay": 0
+          },
+          "setprivate": {
+            "cost": 0,
             "delay": 0
           }
         }

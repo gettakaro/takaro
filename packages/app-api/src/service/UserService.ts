@@ -8,7 +8,7 @@ import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { RoleService, UserAssignmentOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
-import { EventCreateDTO, EventService } from './EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -136,7 +136,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       await new EventCreateDTO().construct({
-        eventName: 'roleAssigned',
+        eventName: EVENT_TYPES.ROLE_ASSIGNED,
         userId,
         meta: {
           roleId,
@@ -150,7 +150,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.repo.removeRole(userId, roleId);
     await eventService.create(
       await new EventCreateDTO().construct({
-        eventName: 'roleRemoved',
+        eventName: EVENT_TYPES.ROLE_REMOVED,
         userId,
         meta: {
           roleId,

@@ -280,7 +280,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           let parsedCommand: IParsedCommand | null = null;
 
           try {
-            parsedCommand = parseCommand(chatMessage.msg, c);
+            parsedCommand = await parseCommand(chatMessage.msg, c, gameServerId);
           } catch (error: any) {
             await gameServerService.sendMessage(
               gameServerId,
