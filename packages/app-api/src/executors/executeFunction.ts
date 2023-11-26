@@ -1,7 +1,7 @@
 import { EXECUTION_MODE } from '@takaro/config';
 import { Sentry, errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
-import { AdminClient, Client, EventCreateDTO } from '@takaro/apiclient';
+import { AdminClient, Client } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
 import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData, isCronData } from '@takaro/queues';
 import { executeLambda } from '@takaro/aws';
@@ -9,6 +9,7 @@ import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 import { CommandService } from '../service/CommandService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 
 let rateLimiter: RateLimiterRedis | null = null;
 
@@ -71,24 +72,24 @@ export async function executeFunction(
   });
 
   const functionRes = await client.function.functionControllerGetOne(functionId);
-
-  const eventData: EventCreateDTO & { meta: Record<string, unknown> } = {
-    eventName: '',
+  const eventService = new EventService(domainId);
+  const eventData = await new EventCreateDTO().construct({
     moduleId: data.module.moduleId,
     gameserverId: data.gameServerId,
     meta: {},
-  };
+  });
 
   if (isCommandData(data)) {
+    const commandService = new CommandService(domainId);
+    const command = await commandService.findOne(data.itemId);
     eventData.playerId = data.player.playerId;
-    eventData.eventName = 'command-executed';
+    eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
     eventData.meta['command'] = {
-      command: data.itemId,
+      id: command?.id,
+      name: command?.name,
       arguments: data.arguments,
     };
 
-    const commandService = new CommandService(domainId);
-    const command = await commandService.findOne(data.itemId);
     if (!command) throw new errors.InternalServerError();
     if ('commands' in data.module.systemConfig) {
       const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
@@ -110,12 +111,12 @@ export async function executeFunction(
   }
 
   if (isHookData(data)) {
-    eventData.eventName = 'hook-executed';
+    eventData.eventName = EVENT_TYPES.HOOK_EXECUTED;
     eventData.meta['eventData'] = data.eventData;
   }
 
   if (isCronData(data)) {
-    eventData.eventName = 'cronjob-executed';
+    eventData.eventName = EVENT_TYPES.CRONJOB_EXECUTED;
   }
 
   try {
@@ -175,7 +176,7 @@ export async function executeFunction(
       }
     }
 
-    await client.event.eventControllerCreate(eventData);
+    await eventService.create(eventData);
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
@@ -184,7 +185,7 @@ export async function executeFunction(
         reason: 'rate limited',
         tryAgainIn: err.msBeforeNext,
       };
-      await client.event.eventControllerCreate(eventData);
+      await eventService.create(eventData);
       return null;
     }
 
@@ -197,7 +198,7 @@ export async function executeFunction(
 
     Sentry.captureException(err);
     log.error('executeFunction', err);
-    await client.event.eventControllerCreate(eventData);
+    await eventService.create(eventData);
     return null;
   }
 }

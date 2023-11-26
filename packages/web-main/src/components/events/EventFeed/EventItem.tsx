@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
-import { EnrichedEvent } from 'queries/events/queries';
+import { EventOutputDTO } from '@takaro/apiclient';
 
 const Header = styled.div`
   display: flex;
@@ -63,7 +63,7 @@ const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) =>
 };
 
 export type EventItemProps = {
-  event: EnrichedEvent;
+  event: EventOutputDTO;
   onDetailClick: () => void;
 };
 
@@ -79,7 +79,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
     case 'chat-message':
       properties = (
         <>
-          <EventProperty name="gameserver" value={event.gameserver?.name} />
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
           <EventProperty name="player" value={event.player?.name} />
           <EventProperty name="message" value={meta?.message} />
         </>
@@ -89,8 +89,10 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
       properties = (
         <>
           <EventProperty name="module" value={event.module?.name} />
-          <EventProperty name="command" value={event.command?.name} />
-          <EventProperty name="arguments" value={JSON.stringify(event.command?.arguments)} />
+          <EventProperty name="command" value={meta.command?.name} />
+          {Object.values(meta.command?.arguments).length ? (
+            <EventProperty name="args" value={JSON.stringify(meta.command?.arguments)} />
+          ) : null}
         </>
       );
       break;
@@ -107,8 +109,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
     case 'player-disconnected':
       properties = (
         <>
-          <EventProperty name="gameserver" value={event.gameserver?.name} />
-          <EventProperty name="game" value={event.gameserver?.type} />
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="game" value={event.gameServer?.type} />
           <EventProperty name="player" value={event.player?.name} />
         </>
       );

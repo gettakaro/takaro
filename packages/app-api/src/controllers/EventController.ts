@@ -1,4 +1,4 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -7,11 +7,11 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
 
 class EventSearchInputAllowedFilters {
   @IsOptional()
-  @IsString({ each: true })
+  @IsEnum(EVENT_TYPES, { each: true })
   eventName!: string[];
 
   @IsOptional()
