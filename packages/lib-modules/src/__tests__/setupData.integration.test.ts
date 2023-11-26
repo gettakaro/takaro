@@ -75,7 +75,7 @@ export const modulesTestSetup = async function (
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
-  const playersRes = await this.client.player.playerControllerSearch();
+  const playersRes = await this.client.player.playerControllerSearch({ extend: ['playerOnGameServers'] });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
