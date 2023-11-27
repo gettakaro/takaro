@@ -22,7 +22,7 @@ async function main() {
     return;
   }
 
-  // remove the variable
+  // Remove the variable before potentially executing the transaction.
   await takaro.variable.variableControllerDelete(variables[0].id);
   const pendingTransfer = JSON.parse(variables[0].value);
 
@@ -36,13 +36,14 @@ async function main() {
 
   const receiverName = (await takaro.player.playerControllerGetOne(pendingTransfer.receiver.playerId)).data.data.name;
   const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
 
-  const messageToSender = data.player.pm(
-    `You successfully transferred ${args.amount} ${currencyName} to ${receiverName}`
+  const messageToSender = sender.pm(
+    `You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`
   );
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `You received ${args.amount} ${currencyName} from ${senderName}`,
+    message: `You received ${pendingTransfer.amount} ${currencyName} from ${senderName}`,
     opts: {
       recipient: {
         gameId: pendingTransfer.receiver.gameId,

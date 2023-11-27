@@ -22,7 +22,11 @@ async function main() {
       key: 'confirmTransfer',
       value: JSON.stringify({
         amount: args.amount,
-        receiver: args.receiver,
+        receiver: {
+          id: receiver.id,
+          gameId: receiver.gameId,
+          playerId: receiver.playerId,
+        },
       }),
       moduleId: mod.moduleId,
       playerId: sender.playerId,
@@ -30,20 +34,16 @@ async function main() {
     });
 
     // NOTE: we should maybe check if the player has enough balance to send the amount since this is only checked when the transaction is executed.
-    await data.player.pm(
-      // TODO: use correct prefix
+    await sender.pm(
       `You are about to send ${args.amount} ${currencyName} to ${receiverName}. (Please confirm by typing ${prefix}confirmtransfer)`
     );
+    return;
   }
 
   // NOTE: we don't need to check if the sender has enough balance, because the API call will fail if the sender doesn't have enough balance.
   await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.id, receiver.id, {
     currency: args.amount,
   });
-
-  const messageToSender = data.player.pm(
-    `You successfully transferred ${args.amount} ${currencyName} to ${receiverName}`
-  );
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `You received ${args.amount} ${currencyName} from ${senderName}`,
@@ -54,8 +54,10 @@ async function main() {
     },
   });
 
-  // send messages simultaneously
-  await Promise.all([messageToSender, messageToReceiver]);
+  await Promise.all([
+    sender.pm(`You successfully transferred ${args.amount} ${currencyName} to ${receiverName}`),
+    messageToReceiver,
+  ]);
 
   return;
 }

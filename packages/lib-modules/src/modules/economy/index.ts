@@ -21,6 +21,15 @@ export class Economy extends BuiltinModule {
       })
     );
 
+    this.permissions = [
+      {
+        permission: 'ECONOMY_MANAGE_CURRENCY',
+        friendlyName: 'Manage currency',
+        description:
+          'Allows players to manage currency of other players. This includes granting and revoking currency.',
+      },
+    ];
+
     this.commands = [
       {
         function: '',
@@ -31,14 +40,54 @@ export class Economy extends BuiltinModule {
       },
       {
         function: '',
-        name: 'topmoney',
-        trigger: 'topmoney',
+        name: 'topCurrency',
+        trigger: 'topcurrency',
         helpText: 'List of the 10 players with the highest balance',
         arguments: [],
       },
       {
         function: '',
-        name: 'confirmtransfer',
+        name: 'grantCurrency',
+        trigger: 'grantcurrency',
+        helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
+        arguments: [
+          {
+            name: 'receiver',
+            type: 'player',
+            helpText: 'The player to grant currency to',
+            position: 0,
+          },
+          {
+            name: 'amount',
+            type: 'number',
+            helpText: 'The amount of money',
+            position: 1,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'revokeCurrency',
+        trigger: 'revokecurrency',
+        helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
+        arguments: [
+          {
+            name: 'receiver',
+            type: 'player',
+            helpText: 'The player to revoke currency from',
+            position: 0,
+          },
+          {
+            name: 'amount',
+            type: 'number',
+            helpText: 'The amount of money',
+            position: 1,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'confirmTransfer',
         trigger: 'confirmtransfer',
         helpText: 'Confirms a pending transfer',
       },
