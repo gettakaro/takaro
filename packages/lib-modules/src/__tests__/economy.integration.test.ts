@@ -156,6 +156,35 @@ const tests = [
     group,
     snapshot: false,
     setup: customSetup,
+    name: 'Should return friendly user error when not enough currency',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.economyModule.id
+      );
+
+      const sender = this.setupData.players[0];
+      const receiver = this.setupData.players[1];
+      const transferAmount = 500;
+
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `/transfer ${receiver.name} ${transferAmount}`,
+        playerId: sender.id,
+      });
+
+      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      expect((await events).length).to.be.eq(1);
+      expect(messages[0]).to.be.eq(
+        `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`
+      );
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: customSetup,
     name: 'Should require confirmation when transfer amount is above pendingAmount',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(

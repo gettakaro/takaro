@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -40,10 +40,15 @@ async function main() {
     return;
   }
 
-  // NOTE: we don't need to check if the sender has enough balance, because the API call will fail if the sender doesn't have enough balance.
-  await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.id, receiver.id, {
-    currency: args.amount,
-  });
+  try {
+    await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.id, receiver.id, {
+      currency: args.amount,
+    });
+  } catch (e) {
+    throw new TakaroUserError(
+      `Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`
+    );
+  }
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `You received ${args.amount} ${currencyName} from ${senderName}`,

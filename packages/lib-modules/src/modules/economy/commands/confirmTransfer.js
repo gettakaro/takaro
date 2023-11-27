@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -18,8 +18,7 @@ async function main() {
   ).data.data;
 
   if (variables.length === 0) {
-    await data.player.pm('You have no pending transfer.');
-    return;
+    throw new TakaroUserError('You have no pending transfer.');
   }
 
   // Remove the variable before potentially executing the transaction.
