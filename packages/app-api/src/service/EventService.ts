@@ -18,11 +18,15 @@ export enum EVENT_TYPES {
   CHAT_MESSAGE = 'chat-message',
   ROLE_ASSIGNED = 'role-assigned',
   ROLE_REMOVED = 'role-removed',
+  ROLE_CREATED = 'role-created',
+  ROLE_UPDATED = 'role-updated',
+  ROLE_DELETED = 'role-deleted',
   COMMAND_EXECUTED = 'command-executed',
   HOOK_EXECUTED = 'hook-executed',
   CRONJOB_EXECUTED = 'cronjob-executed',
   CURRENCY_ADDED = 'currency-added',
   CURRENCY_DEDUCTED = 'currency-deducted',
+  SETTINGS_SET = 'settings-set',
 }
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {

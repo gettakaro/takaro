@@ -1,9 +1,10 @@
-import { TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroModelDTO, ctx, traceableClass } from '@takaro/util';
 import { IsString } from 'class-validator';
 import { errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsModel, SettingsRepo } from '../db/settings.js';
 import { TakaroService } from './Base.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
@@ -78,6 +79,19 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
 
   async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS]): Promise<Settings[SETTINGS_KEYS]> {
     await this.repo.set(key, value);
+
+    const eventsService = new EventService(this.domainId);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.SETTINGS_SET,
+        gameserverId: this.gameServerId,
+        userId,
+        meta: { key, value },
+      })
+    );
+
     return value;
   }
 

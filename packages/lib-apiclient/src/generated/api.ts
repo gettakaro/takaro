@@ -1297,11 +1297,15 @@ export const EventCreateDTOEventNameEnum = {
   ChatMessage: 'chat-message',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1474,11 +1478,15 @@ export const EventOutputDTOEventNameEnum = {
   ChatMessage: 'chat-message',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1612,11 +1620,15 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   ChatMessage: 'chat-message',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
   CommandExecuted: 'command-executed',
   HookExecuted: 'hook-executed',
   CronjobExecuted: 'cronjob-executed',
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =
