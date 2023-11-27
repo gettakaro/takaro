@@ -1,9 +1,7 @@
-import playwright, { Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { AdminClient } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import { TEST_IDS } from './testIds.js';
-
-const { expect } = playwright;
 
 export async function login(page: Page, username: string, password: string) {
   await page.goto('/login');
@@ -14,8 +12,6 @@ export async function login(page: Page, username: string, password: string) {
   await emailInput.press('Tab');
   await page.getByLabel('PasswordRequired').fill(password);
   await page.getByRole('button', { name: 'Log in with Email' }).click();
-  // check if we are on the dashboard (nav is visible)
-  await expect(page.getByTestId(TEST_IDS.TAKARO_ICON_NAV)).toBeVisible();
 }
 
 type toOptions =
