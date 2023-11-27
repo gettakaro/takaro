@@ -155,6 +155,11 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
   useEffect(() => {
+    // ensure that the values arrays is fully populated
+    if (values.length === 0 || !value) {
+      return;
+    }
+
     if (value) {
       if (multiSelect) {
         if (Array.isArray(value)) {
