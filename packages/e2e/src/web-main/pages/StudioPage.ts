@@ -11,7 +11,7 @@ export class StudioPage extends BasePage {
 
   async goto() {
     expect(this.mod.id).toBeTruthy();
-    await this.page.goto(`studio/${this.mod.id}`, { waitUntil: 'domcontentloaded' });
+    await this.page.goto(`studio/${this.mod.id}`);
   }
 
   async getTreeFile(name: string): Promise<Locator> {

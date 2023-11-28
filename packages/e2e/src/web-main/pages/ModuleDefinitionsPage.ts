@@ -16,7 +16,7 @@ export class ModuleDefinitionsPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/modules', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/modules');
   }
 
   async open(name: string) {

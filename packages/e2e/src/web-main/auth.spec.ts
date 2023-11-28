@@ -12,8 +12,11 @@ test('can logout', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
   expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/login`);
+
+  // try to go to authenticated page
+  await page.goto('/servers');
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/forbidden`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
@@ -37,6 +40,7 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
 });
 
 test('Invite user - happy path', async ({ page, takaro }) => {
+  test.slow();
   const newUserEmail = `test_user_${randomUUID()}+e2e@takaro.dev`;
 
   await page.getByRole('link', { name: 'Users' }).click();
@@ -83,6 +87,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
 });
 
 test('Recover account and reset password', async ({ page, takaro }) => {
+  test.slow();
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
   await page.getByRole('button').filter({ hasText: user.email }).click();

@@ -26,7 +26,7 @@ test('has title', async ({ page }) => {
   await expect(page).toHaveTitle(/Takaro/);
 });
 
-items.forEach(({ permission, linkName, path }) => {
+for (const { linkName, path, permission } of items) {
   test(`Can go to ${linkName}`, async ({ page }) => {
     const nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
     await nav.getByRole('link', { name: linkName }).click();
@@ -34,6 +34,7 @@ items.forEach(({ permission, linkName, path }) => {
   });
 
   userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
+    userTest.slow();
     const route = `${integrationConfig.get('frontendHost')}/${path}`;
 
     // check if link is not visible in the navbar
@@ -63,4 +64,4 @@ items.forEach(({ permission, linkName, path }) => {
 
     await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
-});
+}
