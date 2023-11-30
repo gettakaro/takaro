@@ -65,10 +65,7 @@ test.describe('Dashboard', () => {
   test.describe('Command history', () => {
     test('Pressing arrow up should show last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
-
-      await GameServersPage.goto();
-
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
+      await GameServersPage.gotoGameServer();
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
@@ -82,9 +79,7 @@ test.describe('Dashboard', () => {
     test('Pressing up arrow twice should show the command before the last', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -101,9 +96,7 @@ test.describe('Dashboard', () => {
     test('Pressing down arrow after pressing up arrow should return to last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -117,9 +110,7 @@ test.describe('Dashboard', () => {
     test('Reaching top of history and pressing up arrow again should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -133,9 +124,7 @@ test.describe('Dashboard', () => {
     test('Reaching bottom or empty command and pressing down arrow should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
       await GameServersPage.page.keyboard.press('ArrowDown');
 
@@ -145,8 +134,7 @@ test.describe('Dashboard', () => {
     test('Command history should have a cap of 50 commands', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
+      await GameServersPage.gotoGameServer();
 
       for (let i = 1; i <= 52; i++) {
         await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type(`Command ${i}`);

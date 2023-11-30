@@ -10,8 +10,15 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
+    // TODO: navigate using the navbar
     await this.page.goto('/servers');
   }
+
+  async gotoGameServer() {
+    // TODO: navigate using the servers list
+    await this.page.goto(`/server/${this.gameServer.id}/dashboard`);
+  }
+
   async create() {
     await this.page.goto('/servers/create');
   }

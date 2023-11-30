@@ -238,7 +238,7 @@ extendedTest.describe('Item configuration', () => {
 
       await studioPage.page.reload();
       await studioPage.openFile('extendedTestCommand');
-      await expect(studioPage.page.getByLabel('Name')).toHaveValue('extendedTestArgument');
+      await expect(studioPage.page.locator('input[name="arguments.0.name"]')).toHaveValue('extendedTestArgument');
     });
 
     extendedTest('Can move arguments around', async ({ takaro }) => {

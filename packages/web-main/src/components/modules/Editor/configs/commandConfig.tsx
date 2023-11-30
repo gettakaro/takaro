@@ -269,9 +269,9 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
             ></Button>
           )}
           {error && <FormError error={error} />}
-          {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
         </ContentContainer>
       </CollapseList.Item>
+      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
     </form>
   );
 };

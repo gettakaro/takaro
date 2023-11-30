@@ -17,6 +17,7 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async goto() {
     await this.page.goto('/modules');
+    await this.page.waitForLoadState();
   }
 
   async open(name: string) {
