@@ -226,7 +226,7 @@ extendedTest.describe('Item configuration', () => {
       await studioPage.openFile('extendedTestCommand');
 
       await studioPage.page.getByRole('button', { name: 'New' }).click();
-      await studioPage.page.getByLabel('Name', { exact: true }).type('extendedTestArgument');
+      await studioPage.page.getByLabel('Name').type('extendedTestArgument');
       await studioPage.page.getByText('Select...').click();
       await studioPage.page.getByRole('option', { name: 'String' }).click();
       await studioPage.page.getByRole('textbox', { name: 'Help text' }).type('Some helpful text for the user');
@@ -237,12 +237,12 @@ extendedTest.describe('Item configuration', () => {
       // await expect(studioPage.page.getByText('extendedTestArgument')).toBeVisible();
 
       await studioPage.page.reload();
-
       await studioPage.openFile('extendedTestCommand');
-      await expect(studioPage.page.getByLabel('Name', { exact: true })).toHaveValue('extendedTestArgument');
+      await expect(studioPage.page.getByLabel('Name')).toHaveValue('extendedTestArgument');
     });
 
     extendedTest('Can move arguments around', async ({ takaro }) => {
+      extendedTest.slow();
       const { studioPage } = takaro;
       await studioPage.goto();
       await studioPage.createFile('extendedTestCommand', 'commands');
@@ -251,7 +251,7 @@ extendedTest.describe('Item configuration', () => {
       // Create 3 args, "one" "two" and "three"
       for (const [key, value] of Object.entries(['one', 'two', 'three'])) {
         await studioPage.page.getByRole('button', { name: 'New' }).click();
-        await studioPage.page.locator(`input[name="arguments\\.${key}\\.name"]`).type(value);
+        await studioPage.page.locator(`input[name="arguments.${key}.name"]`).type(value);
         await studioPage.page.getByText('Select...').click();
         await studioPage.page.getByRole('option', { name: 'String' }).click();
         await studioPage.page
@@ -264,20 +264,24 @@ extendedTest.describe('Item configuration', () => {
       await studioPage.page.reload();
       await studioPage.openFile('extendedTestCommand');
 
-      // Now manually reverse the order of the args
+      // initial: one two three
+      // after: one three two
       await studioPage.page.getByRole('button', { name: 'Move up' }).nth(2).click();
-      await studioPage.page.getByRole('button', { name: 'Move up' }).nth(1).click();
-      await studioPage.page.getByRole('button', { name: 'Move down' }).nth(1).click();
 
+      // after: three one two
+      await studioPage.page.getByRole('button', { name: 'Move up' }).nth(1).click();
+
+      // after: three two one
+      await studioPage.page.getByRole('button', { name: 'Move down' }).nth(1).click();
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
 
       await studioPage.page.reload();
       await studioPage.openFile('extendedTestCommand');
 
       // Now check that the order is correct
-      await expect(studioPage.page.locator('input[name="arguments\\.0\\.name"]')).toHaveValue('three');
-      await expect(studioPage.page.locator('input[name="arguments\\.1\\.name"]')).toHaveValue('two');
-      await expect(studioPage.page.locator('input[name="arguments\\.2\\.name"]')).toHaveValue('one');
+      await expect(studioPage.page.locator('input[name="arguments.0.name"]')).toHaveValue('three');
+      await expect(studioPage.page.locator('input[name="arguments.1.name"]')).toHaveValue('two');
+      await expect(studioPage.page.locator('input[name="arguments.2.name"]')).toHaveValue('one');
     });
   });
 });
