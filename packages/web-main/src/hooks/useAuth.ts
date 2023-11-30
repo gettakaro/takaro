@@ -7,6 +7,7 @@ import { UserOutputDTO } from '@takaro/apiclient';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
+import { TakaroConfig } from 'context/configContext';
 
 let cachedClient: FrontendApi | null = null;
 
@@ -16,6 +17,17 @@ export interface IAuthContext {
   getSession: () => Promise<UserOutputDTO>;
 }
 
+const createClient = (config: TakaroConfig) => {
+  return new FrontendApi(
+    new Configuration({
+      basePath: config.oryUrl,
+      baseOptions: {
+        withCredentials: true,
+      },
+    })
+  );
+};
+
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
@@ -24,18 +36,13 @@ export function useAuth() {
   });
 
   if (!cachedClient) {
-    cachedClient = new FrontendApi(
-      new Configuration({
-        basePath: config.oryUrl,
-        baseOptions: {
-          withCredentials: true,
-        },
-      })
-    );
+    cachedClient = createClient(config);
   }
 
   async function logOut(): Promise<boolean> {
-    const logoutFlowRes = await cachedClient!.createBrowserLogoutFlow();
+    if (!cachedClient) cachedClient = createClient(config);
+    const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
     return true;
   }
