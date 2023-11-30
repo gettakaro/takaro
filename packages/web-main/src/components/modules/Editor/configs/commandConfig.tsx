@@ -101,16 +101,19 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
       setValue('helpText', data?.helpText);
 
       replace(
-        data.arguments.map((arg) => {
-          return {
-            commandId: moduleItem.itemId,
-            name: arg.name,
-            type: arg.type,
-            position: arg.position,
-            helpText: arg.helpText,
-            defaultValue: arg.defaultValue,
-          };
-        })
+        // order arguments by position
+        data.arguments
+          .sort((a, b) => a.position - b.position)
+          .map((arg) => {
+            return {
+              commandId: moduleItem.itemId,
+              name: arg.name,
+              type: arg.type,
+              position: arg.position,
+              helpText: arg.helpText,
+              defaultValue: arg.defaultValue,
+            };
+          })
       );
     }
   }, [data, moduleItem.itemId]);
