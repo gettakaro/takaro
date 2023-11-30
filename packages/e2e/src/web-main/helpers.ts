@@ -12,6 +12,7 @@ export async function login(page: Page, username: string, password: string) {
   await emailInput.press('Tab');
   await page.getByLabel('PasswordRequired').fill(password);
   await page.getByRole('button', { name: 'Log in with Email' }).click();
+  await page.waitForLoadState();
 }
 
 type toOptions =
