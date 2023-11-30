@@ -4,6 +4,7 @@ import { integrationConfig } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import he from 'he';
 import { sleep } from '@takaro/util';
+import { login } from './helpers.js';
 
 const { expect, test: pwTest } = playwright;
 
@@ -12,17 +13,16 @@ test('can logout', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/login`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 
   // try to go to authenticated page
   await page.goto('/servers');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/forbidden`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
   await page.goto('/servers');
-  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/login`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
@@ -30,12 +30,10 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
-  await page.getByPlaceholder('hi cutie').type('invalid+e2e@takaro.dev');
-  await page.getByLabel('PasswordRequired').type('invalid');
-
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
-
+  await login(page, 'invalid+e2e@takaro.dev', 'invalid');
   await expect(page.getByText('Incorrect email or password')).toBeVisible();
 });
 
@@ -47,11 +45,11 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await page.getByText('Invite user').click();
   await page.getByPlaceholder('example@example.com').type(newUserEmail);
   await page.getByRole('button', { name: 'Send invitation' }).click();
-
-  const user = (await takaro.rootClient.user.userControllerMe()).data.data;
-
-  await page.getByRole('button').filter({ hasText: user.email }).click();
+  await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
   await page.getByText('Logout').click();
+
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
   await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
 
   const mails = await takaro.mailhog.searchMessages({
@@ -73,16 +71,15 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await page.getByTestId('node/input/password').getByPlaceholder(' ').type(password);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Your changes have been saved!')).toBeVisible();
-
   await page.getByRole('button').filter({ hasText: newUserEmail }).click();
   await page.getByText('Logout').click();
 
-  await page.getByPlaceholder('hi cutie').type(newUserEmail);
-  await page.getByLabel('PasswordRequired').type(password);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
+  await login(page, newUserEmail, password);
 
-  // since the user has no permissions, they should be redirected to the forbidden page
+  // since the user has no permissions, he should be redirected to the forbidden page
   await expect(page.getByText('Forbidden')).toBeVisible();
 });
 
@@ -92,7 +89,8 @@ test('Recover account and reset password', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
 
@@ -135,11 +133,9 @@ test('Recover account and reset password', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
-
-  await page.getByPlaceholder('hi cutie').type(user.email);
-  await page.getByLabel('PasswordRequired').type(newPassword);
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
+  await login(page, user.email, newPassword);
 
   // check if we are on the dashboard
   await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();
