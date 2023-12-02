@@ -38,6 +38,7 @@ import { UserProfile } from 'pages/users/profile';
 import { AssignUserRole } from 'pages/roles/assignUserRole';
 import { PERMISSIONS } from '@takaro/lib-components';
 import Forbidden from 'pages/Forbidden';
+import { LogOut } from 'pages/LogOut';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -162,6 +163,7 @@ export const Router: FC = () => (
       </Route>
 
       <Route element={<LogIn />} path={PATHS.login()} />
+      <Route element={<LogOut />} path={PATHS.logout()} />
       <Route element={<Recovery />} path={PATHS.auth.recovery()} />
       <Route element={<NotFound />} path={PATHS.notFound()} />
       <Route element={<Forbidden />} path={PATHS.forbidden()} />

@@ -1,8 +1,7 @@
 import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
-
 import { Configuration, FrontendApi } from '@ory/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserOutputDTO } from '@takaro/apiclient';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +30,8 @@ const createClient = (config: TakaroConfig) => {
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
   const { data: sessionData, isLoading } = useQuery(['session'], () => apiClient.user.userControllerMe(), {
     retry: 0,
   });
@@ -39,12 +40,17 @@ export function useAuth() {
     cachedClient = createClient(config);
   }
 
-  async function logOut(): Promise<boolean> {
+  async function logOut(): Promise<void> {
     if (!cachedClient) cachedClient = createClient(config);
     const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    queryClient.invalidateQueries();
+
+    // remove data specific local storage data.
+    localStorage.removeItem('selectedGameServerId');
+
     cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
-    return true;
+    return Promise.resolve();
   }
 
   /**

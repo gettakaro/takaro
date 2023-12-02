@@ -92,7 +92,7 @@ export interface NavbarLink {
 }
 
 export const renderLink = ({ path, icon, label, end, requiredPermissions }: NavbarLink) => (
-  <PermissionsGuard requiredPermissions={requiredPermissions || []}>
+  <PermissionsGuard key={`guard-${path}`} requiredPermissions={requiredPermissions || []}>
     <div key={`wrapper-${path}`}>
       <NavLink to={path} key={`link-${path}`} end={end}>
         <span key={`inner-${path}`}>
