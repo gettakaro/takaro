@@ -1,9 +1,9 @@
-import { Page } from '@playwright/test';
+import playwright from '@playwright/test';
 import { AdminClient } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import { TEST_IDS } from './testIds.js';
 
-export async function login(page: Page, username: string, password: string) {
+export async function login(page: playwright.Page, username: string, password: string) {
   await page.goto('/login');
   const emailInput = page.getByPlaceholder('hi cutie');
   await emailInput.click();
@@ -28,7 +28,7 @@ type toOptions =
   | 'server-settings'
   | 'server-dashboard'
   | 'server-modules';
-export async function navigateTo(page: Page, to: toOptions) {
+export async function navigateTo(page: playwright.Page, to: toOptions) {
   const [n, opt] = to.split('-');
   const nav = n === 'global' ? page.getByTestId(TEST_IDS.GLOBAL_NAV) : page.getByTestId(TEST_IDS.SERVER_NAV);
   const link = opt.charAt(0).toUpperCase() + opt.slice(1);
