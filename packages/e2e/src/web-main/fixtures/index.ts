@@ -85,34 +85,40 @@ const main = pwTest.extend<IBaseFixtures>({
 
       // User with no permissions
       const password = 'test';
-      const user = await client.user.userControllerCreate({
-        name: 'test',
-        email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
-        password,
-      });
 
-      const emptyRole = await client.role.roleControllerCreate({
-        name: 'test',
-        permissions: [],
-      });
-      client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
-
-      // simple gameserver
-      const gameServer = await client.gameserver.gameServerControllerCreate({
-        name: 'Test server',
-        type: GameServerCreateDTOTypeEnum.Mock,
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
+      const [user, emptyRole, gameServer, mod, mods] = await Promise.all([
+        // User creation
+        client.user.userControllerCreate({
+          name: 'test',
+          email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
+          password: 'test',
         }),
-      });
 
-      // empty module
-      const mod = await client.module.moduleControllerCreate({
-        name: 'Module without functions',
-        configSchema: JSON.stringify({}),
-        description: 'Empty module with no functions',
-      });
-      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
+        // Empty role creation
+        client.role.roleControllerCreate({
+          name: 'test',
+          permissions: [],
+        }),
+
+        // Game server creation
+        client.gameserver.gameServerControllerCreate({
+          name: 'Test server',
+          type: GameServerCreateDTOTypeEnum.Mock,
+          connectionInfo: JSON.stringify({
+            host: integrationConfig.get('mockGameserver.host'),
+          }),
+        }),
+
+        // Module creation
+        client.module.moduleControllerCreate({
+          name: 'Module without functions',
+          configSchema: JSON.stringify({}),
+          description: 'Empty module with no functions',
+        }),
+
+        // Get builtin module
+        client.module.moduleControllerSearch({ filters: { name: ['utils'] } }),
+      ]);
 
       await use({
         rootClient: client,
@@ -149,6 +155,7 @@ export const test = main.extend({
 // NO Permissions user test
 export const userTest = main.extend({
   takaro: async ({ takaro, page }, use) => {
+    console.log('password in fixture', takaro.testUser.password);
     await login(page, takaro.testUser.email, takaro.testUser.password);
     await use(takaro);
   },
@@ -170,6 +177,8 @@ export const extendedTest = main.extend<ExtendedFixture>({
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(rootClient);
       const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
+
+      // this creates a bunch of players
       await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
         command: 'connectAll',
       });
@@ -182,29 +191,28 @@ export const extendedTest = main.extend<ExtendedFixture>({
         description: 'Module with functions',
       });
 
-      await rootClient.command.commandControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-command',
-        trigger: 'test',
-      });
-
-      await rootClient.hook.hookControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-hook',
-        regex: 'test',
-        eventType: HookCreateDTOEventTypeEnum.Log,
-      });
-
-      await rootClient.cronjob.cronJobControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-cron',
-        temporalValue: '* * * * *',
-      });
-
+      // create command, hook and cronjob
+      Promise.all([
+        await rootClient.command.commandControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-command',
+          trigger: 'test',
+        }),
+        await rootClient.hook.hookControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-hook',
+          regex: 'test',
+          eventType: HookCreateDTOEventTypeEnum.Log,
+        }),
+        await rootClient.cronjob.cronJobControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-cron',
+          temporalValue: '* * * * *',
+        }),
+      ]);
       takaro.studioPage.mod = mod.data.data;
-
-      const players = (await rootClient.player.playerControllerSearch()).data.data;
       await connectedEvents;
+      const players = (await rootClient.player.playerControllerSearch()).data.data;
 
       await use({
         mod: mod.data.data,
