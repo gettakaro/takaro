@@ -13,15 +13,18 @@ export const PermissionsGuard: FC<PermissionsRouteProps> = ({ permissions }) => 
   // This extra state is required to prevent the user from seeing the page for a split second before being redirected.
   // Because the useEffect runs after the render, resulting in 401/403 responses.
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
-  const hasPermission = useHasPermission(permissions);
+  const { isLoading, hasPermission } = useHasPermission(permissions);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     hasPermission ? setIsAuthorized(true) : navigate(PATHS.forbidden());
   }, [permissions, hasPermission, navigate]);
 
   // here we load until we are certain the user is authorized.
-  if (!isAuthorized) {
+  if (!isAuthorized || isLoading) {
     return <Loading />;
   }
 

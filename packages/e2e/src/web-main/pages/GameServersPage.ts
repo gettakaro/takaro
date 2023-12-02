@@ -10,7 +10,6 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
-    // TODO: navigate using the navbar
     await this.page.goto('/servers');
   }
 

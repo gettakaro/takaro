@@ -8,12 +8,13 @@ export const LogOut = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // We do not want to add session as a dependency here
     if (session) {
       logOut().then(() => {});
     } else {
-      // already logged out
       navigate(PATHS.login());
     }
-  }, [logOut, session]);
+  }, [logOut]);
+
   return <div>Logging out...</div>;
 };

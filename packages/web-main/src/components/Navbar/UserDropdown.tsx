@@ -1,6 +1,5 @@
 import { Dropdown, styled, getInitials } from '@takaro/lib-components';
 import { useAuth } from 'hooks/useAuth';
-import { useUser } from 'hooks/useUser';
 import {
   AiOutlineUser as ProfileIcon,
   AiOutlineLogout as LogoutIcon,
@@ -55,18 +54,26 @@ const Name = styled.div`
 `;
 
 export const UserDropdown = () => {
-  const { userData } = useUser();
+  const { isLoadingSession, session, isSessionError } = useAuth();
   const { logOut } = useAuth();
   const navigate = useNavigate();
+
+  // TODO: handle error case
+  if (!session || isSessionError) return <></>;
+
+  // TODO: add a loading block
+  if (isLoadingSession) return <></>;
+
+  const { name, email } = session;
 
   return (
     <Dropdown placement="top">
       <Dropdown.Trigger asChild>
         <User role="button">
-          <InitialsBlock>{getInitials(userData.name ? userData.name : 'u u')}</InitialsBlock>
+          <InitialsBlock>{getInitials(name ? name : 'u u')}</InitialsBlock>
           <Name>
-            <h4>{userData.name ? userData.name : 'unknown user'}</h4>
-            <p>{userData.email ? userData.email : 'unknown email'}</p>
+            <h4>{name ? name : 'unknown user'}</h4>
+            <p>{email ? email : 'unknown email'}</p>
           </Name>
           <ArrowDownIcon />
         </User>

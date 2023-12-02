@@ -1,6 +1,5 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { useAuth } from 'hooks/useAuth';
-import { useUser } from 'hooks/useUser';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { setUser } from '@sentry/react';
@@ -16,32 +15,35 @@ const Container = styled.div`
 `;
 
 export const AuthenticationGuard: FC = () => {
-  const { session, isLoading: isLoadingSession } = useAuth();
-  const { setUserData } = useUser();
+  const { session, isLoadingSession, sessionError, isSessionError } = useAuth();
   const navigate = useNavigate();
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [loading, isLoading] = useState<boolean>(true);
 
   const handleAuth = useCallback(() => {
+    if (isSessionError) {
+      console.error(sessionError);
+    }
+
     if (isLoadingSession) return;
     try {
-      if (!session) return navigate(PATHS.login());
-
-      setUser({ id: session.id! });
+      if (!session) {
+        return navigate(PATHS.login());
+      }
+      setUser({ id: session.id });
       setIsAuth(true);
-      setUserData(session); // because on refresh the context is cleared. we need to re-set the user data.
     } catch (error) {
       navigate(PATHS.login());
     } finally {
       isLoading(false);
     }
-  }, [session, setUserData, isLoadingSession, navigate]);
+  }, [session, isLoadingSession, navigate]);
 
   useEffect(() => {
     handleAuth();
   }, [isLoadingSession]);
 
-  if (loading)
+  if (loading || isLoadingSession)
     return (
       <Container>
         <Loading fill="#fff" />

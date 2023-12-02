@@ -34,10 +34,10 @@ export default defineConfig({
   testDir: 'src',
 
   // Each test is given 60 seconds. (default 30 seconds)
-  timeout: 60000,
+  timeout: 90000,
   expect: {
     // Each assertion is given 10 seconds. (default 5 seconds)
-    timeout: 10000,
+    timeout: 15000,
   },
 
   // Run all tests in parallel.

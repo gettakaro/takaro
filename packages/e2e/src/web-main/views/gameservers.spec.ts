@@ -5,15 +5,13 @@ const { expect } = playwright;
 
 test('Can use call to action if there are no gameservers', async ({ page, takaro }) => {
   // by default we always create 1 gameserver in the test setup
-  // lets delete it so we can test the call to action
+  // lets delete it so we can test the call to action popup in navbar
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
   await GameServersPage.action('Delete');
   await expect(page.getByText(takaro.gameServer.name)).toHaveCount(0);
-
-  const button = page.getByRole('button').getByText('Add a server');
-  await button.click();
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
+  await page.getByRole('button').getByText('Add a server').click();
+  expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/servers/create`);
 });
 
 // currently broken because when server is created the selectedGameServerId is set to the newly created server

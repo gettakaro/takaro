@@ -120,6 +120,9 @@ const main = pwTest.extend<IBaseFixtures>({
         client.module.moduleControllerSearch({ filters: { name: ['utils'] } }),
       ]);
 
+      // assign role to user
+      await client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
+
       await use({
         rootClient: client,
         adminClient,

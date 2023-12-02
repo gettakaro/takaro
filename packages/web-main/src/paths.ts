@@ -9,6 +9,7 @@ export const PATHS = {
   notFound: () => '/not-found',
   forbidden: () => '/forbidden',
   logout: () => '/logout',
+  logoutReturn: () => '/logout-return',
   events: () => '/events',
 
   roles: {

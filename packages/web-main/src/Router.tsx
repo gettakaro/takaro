@@ -39,6 +39,7 @@ import { AssignUserRole } from 'pages/roles/assignUserRole';
 import { PERMISSIONS } from '@takaro/lib-components';
 import Forbidden from 'pages/Forbidden';
 import { LogOut } from 'pages/LogOut';
+import { LogoutSuccess } from 'pages/LogoutSuccess';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -163,7 +164,13 @@ export const Router: FC = () => (
       </Route>
 
       <Route element={<LogIn />} path={PATHS.login()} />
+
+      {/* Although this is an authenticated route, we cannot add it to the authenticationGuard. 
+        because the authentication guard redirects to the login page when no session is found.
+        But when logging out via a route, there is race between the session being removed and the actual logout on the backend.
+       */}
       <Route element={<LogOut />} path={PATHS.logout()} />
+      <Route element={<LogoutSuccess />} path={PATHS.logoutReturn()} />
       <Route element={<Recovery />} path={PATHS.auth.recovery()} />
       <Route element={<NotFound />} path={PATHS.notFound()} />
       <Route element={<Forbidden />} path={PATHS.forbidden()} />

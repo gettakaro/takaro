@@ -1,12 +1,12 @@
-import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
 import { Configuration, FrontendApi } from '@ory/client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { UserOutputDTO } from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
+import { UserOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { TakaroConfig } from 'context/configContext';
+import { useApiClient } from './useApiClient';
 
 let cachedClient: FrontendApi | null = null;
 
@@ -30,10 +30,22 @@ const createClient = (config: TakaroConfig) => {
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
-  const queryClient = useQueryClient();
-
-  const { data: sessionData, isLoading } = useQuery(['session'], () => apiClient.user.userControllerMe(), {
-    retry: 0,
+  const {
+    data: sessionData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
+    queryKey: ['session'],
+    queryFn: async () =>
+      (
+        await apiClient.user.userControllerMe({
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        })
+      ).data.data,
+    cacheTime: 0,
   });
 
   if (!cachedClient) {
@@ -43,11 +55,6 @@ export function useAuth() {
   async function logOut(): Promise<void> {
     if (!cachedClient) cachedClient = createClient(config);
     const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
-    queryClient.invalidateQueries();
-
-    // remove data specific local storage data.
-    localStorage.removeItem('selectedGameServerId');
-
     cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
     return Promise.resolve();
@@ -207,8 +214,10 @@ export function useAuth() {
 
   return {
     logOut,
-    session: sessionData?.data.data,
-    isLoading,
+    session: sessionData,
+    isSessionError: isError,
+    isLoadingSession: isLoading,
+    sessionError: error,
     oryClient: cachedClient,
     oryError,
   };
