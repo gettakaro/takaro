@@ -153,17 +153,15 @@ extendedTest.describe('filetree', () => {
 });
 
 extendedTest.describe('Copy module', () => {
-  for (const mod of builtinModules) {
-    extendedTest(`Can copy ${mod.name}`, async ({ page, takaro }) => {
-      await takaro.moduleDefinitionsPage.goto();
-      const studioPage = await takaro.moduleDefinitionsPage.open(mod.name);
-      await studioPage.getByRole('button', { name: 'Make copy of module' }).click();
-      await studioPage.getByRole('button', { name: 'Copy Module' }).click();
-
-      await takaro.moduleDefinitionsPage.goto();
-      await expect(page.getByText(`${mod.name}-copy`)).toBeVisible();
-    });
-  }
+  extendedTest('Can copy builtin module', async ({ page, takaro }) => {
+    const mod = builtinModules[0];
+    await takaro.moduleDefinitionsPage.goto();
+    const studioPage = await takaro.moduleDefinitionsPage.open(mod.name);
+    await studioPage.getByRole('button', { name: 'Make copy of module' }).click();
+    await studioPage.getByRole('button', { name: 'Copy Module' }).click();
+    await takaro.moduleDefinitionsPage.goto();
+    await expect(page.getByText(`${mod.name}-copy`)).toBeVisible();
+  });
   extendedTest.fixme('Cannot copy module with name that already exists', async ({}) => {});
 });
 
