@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import ms from 'ms';
-import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DiscordEvents } from '@takaro/modules';
+import { ModuleOutputDTO } from '../service/ModuleService.js';
 
 export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
   return {

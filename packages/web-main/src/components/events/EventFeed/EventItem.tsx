@@ -107,11 +107,27 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
       break;
     case EventOutputDTOEventNameEnum.PlayerConnected:
     case EventOutputDTOEventNameEnum.PlayerDisconnected:
+    case EventOutputDTOEventNameEnum.PlayerDeath:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
           <EventProperty name="game" value={event.gameServer?.type} />
           <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.EntityKilled:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="game" value={event.gameServer?.type} />
+          <EventProperty name="player" value={event.player?.name} />
+          {event.meta && 'weapon' in event.meta ? (
+            <EventProperty name="weapon" value={(event.meta as any).weapon} />
+          ) : null}
+          {event.meta && 'entity' in event.meta ? (
+            <EventProperty name="entity" value={(event.meta as any).entity} />
+          ) : null}
         </>
       );
       break;
