@@ -23,7 +23,7 @@ export const PermissionsGuard: FC<PermissionsRouteProps> = ({ permissions }) => 
   useEffect(() => {
     if (isLoading) {
       return;
-
+    }
 
     // Logout the user because he can't do anything wihout premissions & redirect to the forbidden page.
     if (userPermissions.size === 0) {
