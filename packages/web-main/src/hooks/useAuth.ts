@@ -59,7 +59,6 @@ export function useAuth() {
     });
     cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
-    console.log('logout', logoutFlowRes);
     return Promise.resolve();
   }
 
