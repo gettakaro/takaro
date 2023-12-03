@@ -92,7 +92,7 @@ export interface NavbarLink {
 }
 
 export const renderLink = ({ path, icon, label, end, requiredPermissions }: NavbarLink) => (
-  <PermissionsGuard requiredPermissions={requiredPermissions || []}>
+  <PermissionsGuard key={`guard-${path}`} requiredPermissions={requiredPermissions || []}>
     <div key={`wrapper-${path}`}>
       <NavLink to={path} key={`link-${path}`} end={end}>
         <span key={`inner-${path}`}>
@@ -105,7 +105,7 @@ export const renderLink = ({ path, icon, label, end, requiredPermissions }: Navb
 );
 
 export const Navbar: FC = () => {
-  const hasReadGameServerPermission = useHasPermission([PERMISSIONS.READ_GAMESERVERS]);
+  const { hasPermission: hasReadGameServerPermission, isLoading } = useHasPermission([PERMISSIONS.READ_GAMESERVERS]);
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
@@ -114,7 +114,7 @@ export const Navbar: FC = () => {
           <Company textVisible={false} />
         </Link>
 
-        {hasReadGameServerPermission && <GameServerNav />}
+        {!isLoading && hasReadGameServerPermission && <GameServerNav />}
 
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}

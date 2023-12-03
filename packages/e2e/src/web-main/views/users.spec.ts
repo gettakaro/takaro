@@ -6,7 +6,7 @@ const { expect } = playwright;
 
 test('Can view users', async ({ page, takaro }) => {
   await page.getByRole('link', { name: 'Users' }).click();
-  await expect(page.getByText(takaro.rootUser.email)).toBeVisible();
+  await expect(page.getByRole('row', { name: takaro.rootUser.email })).toBeVisible();
 });
 
 test.describe('Role assignment', () => {

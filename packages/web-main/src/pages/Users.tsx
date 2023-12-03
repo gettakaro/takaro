@@ -28,8 +28,12 @@ const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
   const navigate = useNavigate();
-  const hasReadUsersPermission = useHasPermission([PERMISSIONS.READ_USERS]);
-  const hasManageRolesPermission = useHasPermission([PERMISSIONS.MANAGE_ROLES]);
+  const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
+    PERMISSIONS.READ_USERS,
+  ]);
+  const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_ROLES,
+  ]);
 
   const { data, isLoading } = useUsers({
     page: pagination.paginationState.pageIndex,
@@ -97,7 +101,7 @@ const Users: FC = () => {
           <Dropdown.Menu>
             <Dropdown.Menu.Group divider>
               <Dropdown.Menu.Item
-                disabled={!hasReadUsersPermission}
+                disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
                 label="Go to user profile"
                 icon={<ProfileIcon />}
                 onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
@@ -108,7 +112,7 @@ const Users: FC = () => {
               icon={<EditIcon />}
               // TODO: navigate to edit roles page for user
               onClick={() => navigate('')}
-              disabled={!hasManageRolesPermission}
+              disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
             />
           </Dropdown.Menu>
         </Dropdown>
@@ -146,7 +150,9 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const hasManageUsersPermission = useHasPermission([PERMISSIONS.MANAGE_USERS]);
+  const { hasPermission: hasManageUsersPermission, isLoading: isLoadingManageUserPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_USERS,
+  ]);
 
   const validationSchema = useMemo(
     () =>
@@ -178,7 +184,7 @@ const InviteUser: FC = () => {
         onClick={() => setOpen(true)}
         text="Invite user"
         icon={<PlusIcon />}
-        disabled={!hasManageUsersPermission}
+        disabled={!isLoadingManageUserPermission && !hasManageUsersPermission}
       />
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
