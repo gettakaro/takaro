@@ -66,5 +66,5 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
     return hasPermissionHelper(Array.from(userPermissions), requiredPermissions);
   }, [requiredPermissions, userPermissions]);
 
-  return { hasPermission, isLoading: isLoadingSession };
+  return { hasPermission, userPermissions, isLoading: isLoadingSession };
 };
