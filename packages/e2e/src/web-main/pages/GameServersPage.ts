@@ -10,10 +10,16 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/servers', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/servers');
   }
+
+  async gotoGameServer() {
+    // TODO: navigate using the servers list
+    await this.page.goto(`/server/${this.gameServer.id}/dashboard`);
+  }
+
   async create() {
-    await this.page.goto('/servers/create', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/servers/create');
   }
 
   async action(action: 'Edit' | 'Delete') {

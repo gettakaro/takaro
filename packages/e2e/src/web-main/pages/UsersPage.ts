@@ -9,7 +9,7 @@ export class UsersPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/users', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/users');
   }
 
   async inviteUser(email: string) {

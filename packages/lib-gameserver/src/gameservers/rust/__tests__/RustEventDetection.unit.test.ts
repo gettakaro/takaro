@@ -13,6 +13,16 @@ const MOCK_RUST_PLAYER_CONNECTED: RustEvent = {
   Stacktrace: '',
 };
 
+const MOCK_PLAYER_DIED = (overrides: Partial<RustEvent> = {}) => {
+  return {
+    Message: 'Emiel[76561198035925898] was killed by Catalysm[76561198028175941] at (-864.67, 23.15, -497.24)',
+    Identifier: 0,
+    Type: RustEventType.DEFAULT,
+    Stacktrace: '',
+    ...overrides,
+  };
+};
+
 const MOCK_PLAYER = new IGamePlayer().construct({
   ip: '169.169.169.80',
   name: 'brunkel',
@@ -42,6 +52,51 @@ describe('rust event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
 
     expect(emitStub.getCalls()[0].args[1].player).to.deep.equal(await MOCK_PLAYER);
+  });
+
+  it('[PlayerDeath]: Can detect player death in pvp', async () => {
+    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(
+      MOCK_PLAYER_DIED({
+        Message: 'Emiel[76561198035925898] was killed by Catalysm[76561198028175941] at (-864.67, 23.15, -497.24)',
+      })
+    );
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DEATH);
+    expect(emitStub.getCalls()[0].args[1].player.name).to.equal('Emiel');
+    expect(emitStub.getCalls()[0].args[1].position.x).to.equal(-864.67);
+    expect(emitStub.getCalls()[0].args[1].position.y).to.equal(23.15);
+    expect(emitStub.getCalls()[0].args[1].position.z).to.equal(-497.24);
+  });
+
+  it('[PlayerDeath]: Can detect player death by entity', async () => {
+    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(
+      MOCK_PLAYER_DIED({
+        Message: 'Emiel[76561198035925898] was killed by carshredder.entity (entity) at (-709.28, 18.52, 635.37)',
+      })
+    );
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DEATH);
+    expect(emitStub.getCalls()[0].args[1].position.x).to.equal(-709.28);
+    expect(emitStub.getCalls()[0].args[1].position.y).to.equal(18.52);
+    expect(emitStub.getCalls()[0].args[1].position.z).to.equal(635.37);
+  });
+
+  it('[PlayerDeath]: Can detect player died by drowning', async () => {
+    await new RustEmitter(await MOCK_CONNECTION_INFO).parseMessage(
+      MOCK_PLAYER_DIED({ Message: 'Catalysm[76561198028175941] was killed by Drowned at (-886.38, -3.29, -1190.99)' })
+    );
+
+    expect(emitStub).to.have.been.calledTwice;
+
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DEATH);
+    expect(emitStub.getCalls()[0].args[1].player.name).to.equal('Catalysm');
+    expect(emitStub.getCalls()[0].args[1].position.x).to.equal(-886.38);
+    expect(emitStub.getCalls()[0].args[1].position.y).to.equal(-3.29);
+    expect(emitStub.getCalls()[0].args[1].position.z).to.equal(-1190.99);
   });
 
   describe('[getPlayerLocation]', () => {

@@ -1,11 +1,13 @@
 import {
   EventChatMessage,
+  EventEntityKilled,
   EventLogLine,
   EventPlayerConnected,
+  EventPlayerDeath,
   EventPlayerDisconnected,
   GameEvents,
 } from '@takaro/modules';
-import { isTakaroDTO, errors, logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 import { isPromise } from 'util/types';
 
 const log = logger('TakaroEmitter');
@@ -19,6 +21,8 @@ export interface IEventMap {
   [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => Promise<void>;
   [GameEvents.PLAYER_DISCONNECTED]: (player: EventPlayerDisconnected) => Promise<void>;
   [GameEvents.CHAT_MESSAGE]: (chatMessage: EventChatMessage) => Promise<void>;
+  [GameEvents.PLAYER_DEATH]: (playerDeath: EventPlayerDeath) => Promise<void>;
+  [GameEvents.ENTITY_KILLED]: (entityKilled: EventEntityKilled) => Promise<void>;
   error: (error: errors.TakaroError | Error) => Promise<void> | void;
 }
 
@@ -38,9 +42,9 @@ export abstract class TakaroEmitter {
       if (!this.listenerMap.has(event)) return;
 
       // Validate the data, it is user-input after all :)
-      if (isTakaroDTO(data)) {
-        await data.validate();
-      }
+      /*       if (isTakaroDTO(data)) {
+              await data.validate();
+            } */
 
       const listeners = this.listenerMap.get(event);
 

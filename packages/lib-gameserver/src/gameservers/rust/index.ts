@@ -1,13 +1,12 @@
 import { logger, errors, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
   IGameServer,
   IItemDTO,
   IPlayerReferenceDTO,
-  IPosition,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
