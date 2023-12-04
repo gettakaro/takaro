@@ -3,8 +3,10 @@ import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
   EventChatMessage,
+  EventEntityKilled,
   EventLogLine,
   EventPlayerConnected,
+  EventPlayerDeath,
   EventPlayerDisconnected,
   GameEvents,
   IGamePlayer,
@@ -24,6 +26,10 @@ const EventRegexMap = {
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
   [GameEvents.CHAT_MESSAGE]:
     /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
+  [GameEvents.PLAYER_DEATH]:
+    /GMSG: Player '(?<name1>.+)' died|\[CSMM_Patrons\]playerDied: (?<name2>.+) \((?<steamOrXboxId>.+)\) died @ (?<xCoord>[-\d]+) (?<yCoord>[-\d]+) (?<zCoord>[-\d]+)/,
+  [GameEvents.ENTITY_KILLED]:
+    /\[CSMM_Patrons\]entityKilled: (?<killerName>.+) \((?<steamOrXboxId>.+)\) killed (?<entityType>\w+) (?<entityName>\w+) with (?<weapon>.+)|Entity (?<entityName2>\w+) \d+ killed by (?<killerName2>.+) \d+/,
 };
 
 export class SevenDaysToDieEmitter extends TakaroEmitter {
@@ -112,9 +118,17 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (EventRegexMap[GameEvents.CHAT_MESSAGE].test(logLine.msg)) {
       const data = await this.handleChatMessage(logLine);
-      if (data) {
-        await this.emit(GameEvents.CHAT_MESSAGE, data);
-      }
+      if (data) await this.emit(GameEvents.CHAT_MESSAGE, data);
+    }
+
+    if (EventRegexMap[GameEvents.PLAYER_DEATH].test(logLine.msg)) {
+      const data = await this.handlePlayerDeath(logLine);
+      if (data) await this.emit(GameEvents.PLAYER_DEATH, data);
+    }
+
+    if (EventRegexMap[GameEvents.ENTITY_KILLED].test(logLine.msg)) {
+      const data = await this.handleEntityKilled(logLine);
+      if (data) await this.emit(GameEvents.ENTITY_KILLED, data);
     }
 
     await this.emit(
@@ -210,6 +224,53 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         });
       }
     }
+  }
+
+  private async handlePlayerDeath(logLine: I7DaysToDieEvent) {
+    if (logLine.msg.includes('[CSMM_Patrons]') && !this.config.useCPM) return;
+    if (logLine.msg.includes('GMSG') && this.config.useCPM) return;
+
+    const match = EventRegexMap[GameEvents.PLAYER_DEATH].exec(logLine.msg);
+    if (!match) throw new Error('Could not parse player death message');
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse player death message');
+
+    const { xCoord, yCoord, zCoord, steamOrXboxId } = groups;
+
+    const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
+
+    return new EventPlayerDeath().construct({
+      msg: logLine.msg,
+      player,
+      position: {
+        x: parseFloat(xCoord),
+        y: parseFloat(yCoord),
+        z: parseFloat(zCoord),
+      },
+    });
+  }
+
+  private async handleEntityKilled(logLine: I7DaysToDieEvent) {
+    if (logLine.msg.includes('[CSMM_Patrons]') && !this.config.useCPM) return;
+    if (logLine.msg.includes('killed by') && this.config.useCPM) return;
+
+    const match = EventRegexMap[GameEvents.ENTITY_KILLED].exec(logLine.msg);
+    if (!match) throw new Error('Could not parse entity killed message');
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse entity killed message');
+
+    // Extracting the relevant details from the named groups
+    const { entityName, entityName2, weapon, steamOrXboxId } = groups;
+
+    const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
+
+    // Constructing the EventEntityKilled object with the parsed data
+    return new EventEntityKilled().construct({
+      msg: logLine.msg,
+      entity: entityName || entityName2,
+      player,
+      weapon: weapon || undefined, // Assuming that 'weapon' might not be present in some log lines
+    });
   }
 
   async listener(data: MessageEvent) {

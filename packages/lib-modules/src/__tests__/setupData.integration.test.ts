@@ -14,6 +14,7 @@ export interface IModuleTestsSetupData {
   teleportsModule: ModuleOutputDTO;
   gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
+  economyModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
   bountyModule: ModuleOutputDTO;
   role: RoleOutputDTO;
@@ -47,6 +48,9 @@ export const modulesTestSetup = async function (
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
 
+  const economyModule = modules.find((m) => m.name === 'economy');
+  if (!economyModule) throw new Error('economy module not found');
+
   const gimmeModule = modules.find((m) => m.name === 'gimme');
   if (!gimmeModule) throw new Error('gimme module not found');
 
@@ -75,7 +79,7 @@ export const modulesTestSetup = async function (
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
-  const playersRes = await this.client.player.playerControllerSearch();
+  const playersRes = await this.client.player.playerControllerSearch({ extend: ['playerOnGameServers'] });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
@@ -91,6 +95,7 @@ export const modulesTestSetup = async function (
     onboardingModule,
     gimmeModule,
     bountyModule,
+    economyModule,
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,

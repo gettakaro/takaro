@@ -152,7 +152,7 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   // there is only 1 server
   // TODO: change to this when double slash issue is fixed
   //await navigateTo(page, 'server-modules');
-  page.goto(`/server/${takaro.gameServer.id}/modules`);
+  await page.goto(`/server/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
 
   await page.getByRole('button', { name: 'Install' }).click();

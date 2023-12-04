@@ -1,12 +1,12 @@
-import { useApiClient } from 'hooks/useApiClient';
 import { useConfig } from 'hooks/useConfig';
-
 import { Configuration, FrontendApi } from '@ory/client';
 import { useQuery } from '@tanstack/react-query';
-import { UserOutputDTO } from '@takaro/apiclient';
+import { UserOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
+import { TakaroConfig } from 'context/configContext';
+import { useApiClient } from './useApiClient';
 
 let cachedClient: FrontendApi | null = null;
 
@@ -16,28 +16,48 @@ export interface IAuthContext {
   getSession: () => Promise<UserOutputDTO>;
 }
 
+const createClient = (config: TakaroConfig) => {
+  return new FrontendApi(
+    new Configuration({
+      basePath: config.oryUrl,
+      baseOptions: {
+        withCredentials: true,
+      },
+    })
+  );
+};
+
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
-  const { data: sessionData, isLoading } = useQuery(['session'], () => apiClient.user.userControllerMe(), {
-    retry: 0,
+  const {
+    data: sessionData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
+    queryKey: ['session'],
+    queryFn: async () =>
+      (
+        await apiClient.user.userControllerMe({
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        })
+      ).data.data,
+    cacheTime: 0,
   });
 
   if (!cachedClient) {
-    cachedClient = new FrontendApi(
-      new Configuration({
-        basePath: config.oryUrl,
-        baseOptions: {
-          withCredentials: true,
-        },
-      })
-    );
+    cachedClient = createClient(config);
   }
 
-  async function logOut(): Promise<boolean> {
-    const logoutFlowRes = await cachedClient!.createBrowserLogoutFlow();
+  async function logOut(): Promise<void> {
+    if (!cachedClient) cachedClient = createClient(config);
+    const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
-    return true;
+    return Promise.resolve();
   }
 
   /**
@@ -194,8 +214,10 @@ export function useAuth() {
 
   return {
     logOut,
-    session: sessionData?.data.data,
-    isLoading,
+    session: sessionData,
+    isSessionError: isError,
+    isLoadingSession: isLoading,
+    sessionError: error,
     oryClient: cachedClient,
     oryError,
   };

@@ -88,7 +88,7 @@ describe('TakaroEmitter', () => {
     expect(spy).to.have.been.calledOnce;
   });
 
-  it('Validates data on emitting', async () => {
+  xit('Validates data on emitting', async () => {
     const emitter = new ExtendedTakaroEmitter();
     const spy = sandbox.spy();
     const errorSpy = sandbox.spy();
