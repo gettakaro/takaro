@@ -2,15 +2,7 @@ import { errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 
 import { getSocketServer } from '../socket/index.js';
-import {
-  IPosition,
-  IPlayerReferenceDTO,
-  IGameServer,
-  IMessageOptsDTO,
-  CommandOutput,
-  BanDTO,
-  IItemDTO,
-} from '@takaro/gameserver';
+import { IPlayerReferenceDTO, IGameServer, IMessageOptsDTO, CommandOutput, BanDTO, IItemDTO } from '@takaro/gameserver';
 import {
   EventLogLine,
   GameEvents,
@@ -19,6 +11,7 @@ import {
   EventPlayerConnected,
   EventTypes,
   EventPlayerDisconnected,
+  IPosition,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';

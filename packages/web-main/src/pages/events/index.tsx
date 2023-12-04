@@ -80,6 +80,12 @@ const treeData = [
       {
         name: EventOutputDTOEventNameEnum.ChatMessage,
       },
+      {
+        name: EventOutputDTOEventNameEnum.PlayerDeath,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.EntityKilled,
+      },
     ],
   },
   {

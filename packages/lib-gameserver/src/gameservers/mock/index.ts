@@ -1,5 +1,5 @@
 import { logger, traceableClass } from '@takaro/util';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
@@ -7,7 +7,6 @@ import {
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
-  IPosition,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';

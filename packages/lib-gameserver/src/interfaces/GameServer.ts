@@ -1,5 +1,5 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -44,12 +44,6 @@ export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
   @ValidateNested()
   /** When specified, will send a DM to this player instead of a global message */
   recipient?: IPlayerReferenceDTO;
-}
-
-export interface IPosition {
-  x: number;
-  y: number;
-  z: number;
 }
 
 export class BanDTO extends TakaroDTO<BanDTO> {

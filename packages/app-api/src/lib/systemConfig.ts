@@ -1,7 +1,8 @@
 import Ajv from 'ajv';
 import ms from 'ms';
-import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DiscordEvents } from '@takaro/modules';
+import { ModuleOutputDTO } from '../service/ModuleService.js';
+import { ModuleOutputDTO as ModuleOutputDTOApi } from '@takaro/apiclient';
 
 export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
   return {
@@ -11,7 +12,7 @@ export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
   };
 }
 
-export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
+export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi): string {
   const systemConfigSchema = getEmptySystemConfigSchema();
 
   if (mod.cronJobs.length) {
