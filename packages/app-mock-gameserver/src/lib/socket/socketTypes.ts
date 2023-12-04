@@ -7,6 +7,8 @@ import {
   EventChatMessage,
   EventPlayerConnected,
   EventPlayerDisconnected,
+  EventPlayerDeath,
+  EventEntityKilled,
 } from '@takaro/modules';
 import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
@@ -17,6 +19,8 @@ export interface ServerToClientEvents {
   [GameEvents.CHAT_MESSAGE]: (message: EventChatMessage) => void;
   [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => void;
   [GameEvents.PLAYER_DISCONNECTED]: (player: EventPlayerDisconnected) => void;
+  [GameEvents.PLAYER_DEATH]: (player: EventPlayerDeath) => void;
+  [GameEvents.ENTITY_KILLED]: (player: EventEntityKilled) => void;
   pong: () => void;
 }
 

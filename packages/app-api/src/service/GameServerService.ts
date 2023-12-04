@@ -5,7 +5,6 @@ import { IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from '
 import {
   IMessageOptsDTO,
   IGameServer,
-  IPosition,
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
@@ -19,6 +18,7 @@ import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
+import { IPosition } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';

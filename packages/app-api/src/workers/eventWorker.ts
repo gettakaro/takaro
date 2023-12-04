@@ -2,7 +2,13 @@ import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
-import { isChatMessageEvent, isConnectedEvent, isDisconnectedEvent } from '@takaro/modules';
+import {
+  isChatMessageEvent,
+  isConnectedEvent,
+  isDisconnectedEvent,
+  isEntityKilledEvent,
+  isPlayerDeathEvent,
+} from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
@@ -86,6 +92,33 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
+        })
+      );
+    }
+
+    if (isPlayerDeathEvent(event)) {
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: EVENT_TYPES.PLAYER_DEATH,
+          gameserverId: gameServerId,
+          playerId: resolvedPlayer.id,
+          meta: {
+            position: event.position,
+          },
+        })
+      );
+    }
+
+    if (isEntityKilledEvent(event)) {
+      await eventService.create(
+        await new EventCreateDTO().construct({
+          eventName: EVENT_TYPES.ENTITY_KILLED,
+          gameserverId: gameServerId,
+          playerId: resolvedPlayer.id,
+          meta: {
+            entity: event.entity,
+            weapon: event.weapon,
+          },
         })
       );
     }

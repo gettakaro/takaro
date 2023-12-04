@@ -138,6 +138,8 @@ export const BaseGameEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
 } as const;
 
 export type BaseGameEventTypeEnum = (typeof BaseGameEventTypeEnum)[keyof typeof BaseGameEventTypeEnum];
@@ -1243,6 +1245,8 @@ export const EventChatMessageTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
 } as const;
 
 export type EventChatMessageTypeEnum = (typeof EventChatMessageTypeEnum)[keyof typeof EventChatMessageTypeEnum];
@@ -1295,6 +1299,8 @@ export const EventCreateDTOEventNameEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
   RoleCreated: 'role-created',
@@ -1367,6 +1373,61 @@ export interface EventDiscordUser {
    */
   isTakaroBot: boolean;
 }
+/**
+ *
+ * @export
+ * @interface EventEntityKilled
+ */
+export interface EventEntityKilled {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventEntityKilled
+   */
+  killer: IGamePlayer;
+  /**
+   *
+   * @type {string}
+   * @memberof EventEntityKilled
+   */
+  entity: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventEntityKilled
+   */
+  weapon: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof EventEntityKilled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof EventEntityKilled
+   */
+  type: EventEntityKilledTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof EventEntityKilled
+   */
+  msg: string;
+}
+
+export const EventEntityKilledTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+} as const;
+
+export type EventEntityKilledTypeEnum = (typeof EventEntityKilledTypeEnum)[keyof typeof EventEntityKilledTypeEnum];
+
 /**
  *
  * @export
@@ -1476,6 +1537,8 @@ export const EventOutputDTOEventNameEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
   RoleCreated: 'role-created',
@@ -1529,10 +1592,67 @@ export const EventPlayerConnectedTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
 } as const;
 
 export type EventPlayerConnectedTypeEnum =
   (typeof EventPlayerConnectedTypeEnum)[keyof typeof EventPlayerConnectedTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface EventPlayerDeath
+ */
+export interface EventPlayerDeath {
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerDeath
+   */
+  player: IGamePlayer;
+  /**
+   *
+   * @type {IGamePlayer}
+   * @memberof EventPlayerDeath
+   */
+  attacker?: IGamePlayer;
+  /**
+   *
+   * @type {IPosition}
+   * @memberof EventPlayerDeath
+   */
+  position?: IPosition;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof EventPlayerDeath
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerDeath
+   */
+  type: EventPlayerDeathTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof EventPlayerDeath
+   */
+  msg: string;
+}
+
+export const EventPlayerDeathTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+} as const;
+
+export type EventPlayerDeathTypeEnum = (typeof EventPlayerDeathTypeEnum)[keyof typeof EventPlayerDeathTypeEnum];
 
 /**
  *
@@ -1571,6 +1691,8 @@ export const EventPlayerDisconnectedTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
 } as const;
 
 export type EventPlayerDisconnectedTypeEnum =
@@ -1618,6 +1740,8 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   RoleAssigned: 'role-assigned',
   RoleRemoved: 'role-removed',
   RoleCreated: 'role-created',
@@ -2613,6 +2737,8 @@ export const HookCreateDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   DiscordMessage: 'discord-message',
 } as const;
 
@@ -2729,6 +2855,8 @@ export const HookOutputDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   DiscordMessage: 'discord-message',
 } as const;
 
@@ -2790,6 +2918,8 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   DiscordMessage: 'discord-message',
 } as const;
 
@@ -2903,6 +3033,8 @@ export const HookTriggerDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   DiscordMessage: 'discord-message',
 } as const;
 
@@ -2952,6 +3084,8 @@ export const HookUpdateDTOEventTypeEnum = {
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
   DiscordMessage: 'discord-message',
 } as const;
 
@@ -3056,6 +3190,31 @@ export interface IPlayerReferenceDTO {
    * @memberof IPlayerReferenceDTO
    */
   gameId: string;
+}
+/**
+ *
+ * @export
+ * @interface IPosition
+ */
+export interface IPosition {
+  /**
+   *
+   * @type {number}
+   * @memberof IPosition
+   */
+  x: number;
+  /**
+   *
+   * @type {number}
+   * @memberof IPosition
+   */
+  y: number;
+  /**
+   *
+   * @type {number}
+   * @memberof IPosition
+   */
+  z: number;
 }
 /**
  *
