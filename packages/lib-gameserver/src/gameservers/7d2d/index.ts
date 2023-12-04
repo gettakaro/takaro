@@ -1,5 +1,5 @@
 import { logger, traceableClass } from '@takaro/util';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
@@ -7,7 +7,6 @@ import {
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
-  IPosition,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
@@ -58,6 +57,8 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
+    if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
     const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
     return player;

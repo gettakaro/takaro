@@ -4,8 +4,10 @@ import { RustConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import {
   EventChatMessage,
+  EventEntityKilled,
   EventLogLine,
   EventPlayerConnected,
+  EventPlayerDeath,
   EventPlayerDisconnected,
   GameEvents,
   IGamePlayer,
@@ -15,12 +17,14 @@ export enum RustEventType {
   DEFAULT = 'Generic',
   WARNING = 'Warning',
   CHAT = 'Chat',
-  // pretty sure chat messages have their own type as well.
 }
 
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]: /\d{17}\/.+ joined \[.+\/\d{17}\]/,
   [GameEvents.PLAYER_DISCONNECTED]: /.* disconnecting\: disconnect/,
+  [GameEvents.PLAYER_DEATH]: /(?<name>.+)\[\d+\] (was killed by|died) (.+)/,
+  [GameEvents.ENTITY_KILLED]:
+    /(?<killerName>.+)\[\d+\] killed (?<entityName>.+) at \((?<xCoord>[-\d.]+), (?<yCoord>[-\d.]+), (?<zCoord>[-\d.]+)\)/,
 };
 
 export interface RustEvent {
@@ -94,13 +98,22 @@ export class RustEmitter extends TakaroEmitter {
     // TODO: We probably want to handle the stacktrace first, because in that case it might be an invalid message.
     // TODO: Certain events have a different type. We could split the events based on these types to improve performance.
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.Message)) {
-      this.log.debug('regexje');
       const data = await this.handlePlayerConnected(e);
       this.emit(GameEvents.PLAYER_CONNECTED, data);
     }
     if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.Message)) {
       const data = await this.handlePlayerDisconnected(e);
       this.emit(GameEvents.PLAYER_DISCONNECTED, data);
+    }
+
+    if (EventRegexMap[GameEvents.PLAYER_DEATH].test(e.Message)) {
+      const data = await this.handlePlayerDeath(e);
+      this.emit(GameEvents.PLAYER_DEATH, data);
+    }
+
+    if (EventRegexMap[GameEvents.ENTITY_KILLED].test(e.Message)) {
+      const data = await this.handleEntityKilled(e);
+      this.emit(GameEvents.ENTITY_KILLED, data);
     }
 
     if (e.Type === RustEventType.CHAT) {
@@ -189,6 +202,52 @@ export class RustEmitter extends TakaroEmitter {
         name: parsed.Username,
       }),
       timestamp: new Date(parsed.Time * 1000),
+    });
+  }
+
+  private async handlePlayerDeath(logLine: RustEvent) {
+    const match = EventRegexMap[GameEvents.PLAYER_DEATH].exec(logLine.Message);
+    if (!match) throw new Error('Could not parse player death message');
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse player death message');
+
+    const { name } = groups;
+
+    const locationMatches = /at \((?<xCoord>[-\d.]+), (?<yCoord>[-\d.]+), (?<zCoord>[-\d.]+)\)/.exec(logLine.Message);
+    if (!locationMatches) throw new Error('Could not parse player death message');
+    const { xCoord, yCoord, zCoord } = locationMatches.groups || {};
+    if (!xCoord || !yCoord || !zCoord) throw new Error('Could not parse player death message');
+
+    return new EventPlayerDeath().construct({
+      msg: logLine.Message,
+      player: await new IGamePlayer().construct({
+        name,
+      }),
+      position: {
+        x: parseFloat(xCoord),
+        y: parseFloat(yCoord),
+        z: parseFloat(zCoord),
+      },
+      timestamp: new Date(),
+    });
+  }
+
+  private async handleEntityKilled(logLine: RustEvent) {
+    const match = EventRegexMap[GameEvents.ENTITY_KILLED].exec(logLine.Message);
+    if (!match) throw new Error('Could not parse entity killed message');
+    const { groups } = match;
+    if (!groups) throw new Error('Could not parse entity killed message');
+
+    const { killerName, entityName } = groups;
+
+    return new EventEntityKilled().construct({
+      msg: logLine.Message,
+      player: await new IGamePlayer().construct({
+        name: killerName,
+      }),
+      entity: entityName,
+
+      timestamp: new Date(),
     });
   }
 
