@@ -3,7 +3,7 @@ import { useDrag, useDragLayer, useDrop, XYCoord } from 'react-dnd';
 import { ColumnSettings } from './ColumnSettings';
 import { Identifier } from 'dnd-core';
 import { styled } from '../../../../../styled';
-import { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { Target, Content, Container, ResizeHandle } from './style';
 
@@ -20,6 +20,7 @@ interface CollectedProps {
 export interface ColumnHeaderProps<DataType extends object> {
   header: Header<DataType, unknown>;
   table: Table<DataType>;
+  isLoading: boolean;
 }
 
 const reorder = (draggedColumnId: string, targetColumnId: string, columnOrder: string[]): ColumnOrderState => {
@@ -31,11 +32,13 @@ const reorder = (draggedColumnId: string, targetColumnId: string, columnOrder: s
   return [...columnOrder];
 };
 
-export function ColumnHeader<DataType extends object>({ header, table }: ColumnHeaderProps<DataType>) {
+export function ColumnHeader<DataType extends object>({ header, table, isLoading }: ColumnHeaderProps<DataType>) {
   const { getState, setColumnOrder } = table;
   const { columnOrder } = getState();
   const { column } = header;
+  const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const canDrag = !isLoading;
 
   const [{ isActive, isRight }, dropRef] = useDrop<Column<DataType>, void, CollectedProps>({
     accept: ItemTypes.COLUMN,
@@ -99,6 +102,9 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
       ...column,
       draggedIndex: columnOrder.indexOf(column.id),
     }),
+
+    // Disable dragging whnen loading
+    canDrag: !isLoading,
     type: ItemTypes.COLUMN,
   });
 
@@ -116,12 +122,15 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
 
   return (
     <Container
+      canDrag={canDrag}
       colSpan={header.colSpan}
       scope="col"
       isDragging={isDragging}
       isActive={isActive}
       isRight={isRight}
       width={header.getSize()}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
         <CustomDragLayer />
@@ -131,10 +140,12 @@ export function ColumnHeader<DataType extends object>({ header, table }: ColumnH
           {/* Only show columnSettings when sorting and filtering is enabled 
             NOTE: getCanGlobalFilter cannot be used to base render logic on because it is set to false when the table has no data.
           */}
-          {column.getCanFilter() && column.getCanSort() && <ColumnSettings header={header} table={table} />}
+          {column.getCanFilter() && column.getCanSort() && (
+            <ColumnSettings columnIsHovered={isHovered} header={header} table={table} />
+          )}
         </Content>
       </Target>
-      {header.column.getCanResize() && (
+      {header.column.getCanResize() && !isLoading && (
         <ResizeHandle
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}

@@ -2,15 +2,17 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "6d0a41aa-bb84-4a4d-b6a9-fb2c35c5a792",
-      "moduleId": "61c464ff-f307-44db-930f-63573e63fdf0",
+      "gameserverId": "ac07a539-f16d-4527-929c-cb4debebcfd0",
+      "moduleId": "af910065-9db3-4dc4-ab5b-a8a3893a37cc",
       "userConfig": {},
       "systemConfig": {
         "commands": {
-          "ping": {
+          "help": {
+            "cost": 0,
             "delay": 0
           },
-          "help": {
+          "ping": {
+            "cost": 0,
             "delay": 0
           }
         }

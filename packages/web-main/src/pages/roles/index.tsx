@@ -49,12 +49,12 @@ export const Roles: FC = () => {
   return (
     <>
       <Grid>
-        <EmptyRolesCard onClick={() => navigate(PATHS.roles.create())} />
         {roles.pages
           .flatMap((page) => page.data)
           .map((role) => (
             <RoleCard key={role.id} {...role} />
           ))}
+        <EmptyRolesCard onClick={() => navigate(PATHS.roles.create())} />
       </Grid>
       {InfiniteScroll}
       {/* show rolesCreate and rolesUpdate drawers above this listView */}

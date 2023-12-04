@@ -68,7 +68,7 @@ selfservice:
 
     logout:
       after:
-        default_browser_return_url: http://127.0.0.1:13001/login
+        default_browser_return_url: http://127.0.0.1:13001/logout-return
 
     login:
       ui_url: http://127.0.0.1:13001/login

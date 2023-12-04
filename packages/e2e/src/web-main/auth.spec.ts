@@ -1,53 +1,55 @@
 import playwright from '@playwright/test';
-import { basicTest } from './fixtures/index.js';
+import { test } from './fixtures/index.js';
 import { integrationConfig } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import he from 'he';
 import { sleep } from '@takaro/util';
+import { login } from './helpers.js';
 
 const { expect, test: pwTest } = playwright;
 
-basicTest('can logout', async ({ page, takaro }) => {
-  const user = (await takaro.client.user.userControllerMe()).data.data;
+test('can logout', async ({ page, takaro }) => {
+  const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/login`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+
+  // try to go to authenticated page
+  await page.goto('/servers');
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
   await page.goto('/servers');
-  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/login`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
-basicTest('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
-  const user = (await takaro.client.user.userControllerMe()).data.data;
+test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
+  const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
-  await page.getByPlaceholder('hi cutie').type('invalid+e2e@takaro.dev');
-  await page.getByLabel('PasswordRequired').type('invalid');
-
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
-
+  await login(page, 'invalid+e2e@takaro.dev', 'invalid');
   await expect(page.getByText('Incorrect email or password')).toBeVisible();
 });
 
-basicTest('Invite user - happy path', async ({ page, takaro }) => {
+test('Invite user - happy path', async ({ page, takaro }) => {
+  test.slow();
   const newUserEmail = `test_user_${randomUUID()}+e2e@takaro.dev`;
 
   await page.getByRole('link', { name: 'Users' }).click();
   await page.getByText('Invite user').click();
   await page.getByPlaceholder('example@example.com').type(newUserEmail);
-  await page.getByRole('button', { name: 'Send Invitation' }).click();
-
-  const user = (await takaro.client.user.userControllerMe()).data.data;
-
-  await page.getByRole('button').filter({ hasText: user.email }).click();
+  await page.getByRole('button', { name: 'Send invitation' }).click();
+  await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
   await page.getByText('Logout').click();
+
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
   await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
 
   const mails = await takaro.mailhog.searchMessages({
@@ -69,24 +71,26 @@ basicTest('Invite user - happy path', async ({ page, takaro }) => {
   await page.getByTestId('node/input/password').getByPlaceholder(' ').type(password);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Your changes have been saved!')).toBeVisible();
-
   await page.getByRole('button').filter({ hasText: newUserEmail }).click();
   await page.getByText('Logout').click();
 
-  await page.getByPlaceholder('hi cutie').type(newUserEmail);
-  await page.getByLabel('PasswordRequired').type(password);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
+  await login(page, newUserEmail, password);
 
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
+  // since the user has no permissions, he should be redirected to the forbidden page
+  await expect(page.getByText('Forbidden')).toBeVisible();
 });
 
-basicTest('Recover account and reset password', async ({ page, takaro }) => {
-  const user = (await takaro.client.user.userControllerMe()).data.data;
+test('Recover account and reset password', async ({ page, takaro }) => {
+  test.slow();
+  const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
 
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
 
@@ -129,10 +133,10 @@ basicTest('Recover account and reset password', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForLoadState();
+  await login(page, user.email, newPassword);
 
-  await page.getByPlaceholder('hi cutie').type(user.email);
-  await page.getByLabel('PasswordRequired').type(newPassword);
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
+  // check if we are on the dashboard
+  await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();
 });

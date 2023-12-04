@@ -18,7 +18,10 @@ export const moduleValidationSchema = z.object({
     .optional(),
   permissions: z.array(
     z.object({
-      permission: z.string().nonempty('Permission cannot be empty'),
+      permission: z
+        .string()
+        .nonempty('Permission cannot be empty')
+        .refine((val) => !val.includes(' '), 'Spaces are not allowed.'),
       description: z.string().optional(),
       friendlyName: z.string().optional(),
     })

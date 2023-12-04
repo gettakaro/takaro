@@ -5,7 +5,6 @@ import {
   isValidElement,
   useRef,
   useState,
-  useLayoutEffect,
   PropsWithChildren,
   useEffect,
   ReactNode,
@@ -81,22 +80,15 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
-  const listContentRef = useRef([
-    ...(Children.map(children, (child) =>
-      Children.map(isValidElement(child) && child.props.children, (child) => child.props.value)
-    ) ?? []),
-  ]);
 
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | number[]>(() => {
+    // if the select is a multiSelect, the default value should be an empty array.
     if (multiSelect) {
       return [];
     }
-
-    const defaultIndex = Math.max(0, listContentRef.current.indexOf(value));
-    onChange(listContentRef.current[defaultIndex]);
-    return defaultIndex;
+    return -1;
   });
 
   const [filterText, setFilterText] = useState<string>('');
@@ -139,9 +131,10 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     useDismiss(context),
     useListNavigation(context, {
       listRef: listItemsRef,
-      activeIndex,
+      activeIndex: activeIndex,
       selectedIndex: multiSelect ? null : (selectedIndex as number),
       onNavigate: setActiveIndex,
+      scrollItemIntoView: multiSelect ? false : true,
     }),
   ]);
 
@@ -157,34 +150,49 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     );
   }, [children]);
 
-  /* This handles the case where the value is set by default by react-hook-form an initial value coming from the api.*/
+  /* This handles the case where the value is changed externally (e.g. from a parent component) */
+  /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
+   * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
+   */
   useEffect(() => {
-    if (multiSelect && value && Array.isArray(value)) {
-      const values = value as unknown as string[];
-      const indices = values.map((v) => listContentRef.current.indexOf(v));
-      setSelectedIndex(indices);
-    } else {
-      const index = values.indexOf(value);
-      if (index !== -1) {
-        setSelectedIndex(index + 1);
+    // ensure that the values arrays is fully populated
+    if (values.length === 0 || !value) {
+      return;
+    }
+
+    if (value) {
+      if (multiSelect) {
+        if (Array.isArray(value)) {
+          // convert value to values since it is an array of values
+          const valuesThatNeedToBeSelected = value as unknown as string[];
+
+          // get the indices of the values that need to be selected
+          const indices = valuesThatNeedToBeSelected.map((value) => values.indexOf(value));
+
+          // set these indices as the selected indices
+          setSelectedIndex(indices);
+        }
+      } else {
+        // Selected value is singular value
+        // get the index of the value
+        const index = values.indexOf(value);
+
+        // if the index is -1, the value is not in the list of values
+        // if the index is not -1, set the index as the selected index
+        // Otherwise we should set the selected index to null
+        // TODO: when set value is not in the list of values, we should throw an error.
+        // if (index === -1) {
+        //   // throw new Error('The value that is set is not in the list of values');
+        // }
+
+        // for now just set the selected index to null (this should result in an empty select)
+        setSelectedIndex(index);
       }
     }
-  }, [value]);
-
-  // Scroll the active or selected item into view when in `controlledScrolling`
-  // mode (i.e. arrow key nav).
-  useLayoutEffect(() => {
-    if (open && activeIndex != null && !pointer) {
-      requestAnimationFrame(() => {
-        listItemsRef.current[activeIndex]?.scrollIntoView({
-          block: 'nearest',
-        });
-      });
-    }
-  }, [open, activeIndex, pointer]);
+  }, [value, values]);
 
   const options = useMemo(() => {
-    let optionIndex = 0;
+    let optionIndex = -1;
 
     return Children.map(children, (group) => {
       if (!isValidElement(group)) return null;
@@ -192,8 +200,12 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
       const filteredOptions = Children.toArray(group.props.children)
         .filter(isValidElement) // Ensures that only valid elements are processed
         .filter((option: ReactElement) => {
+          if (enableFilter && !('label' in option.props)) {
+            throw new Error('When enableFilter is true, all options must have a label prop');
+          }
+
           // Perform the filtering based on your condition
-          const valueMatches = filterText === '' || option.props.value.toLowerCase().includes(filterText.toLowerCase());
+          const valueMatches = filterText === '' || option.props.label.toLowerCase().includes(filterText.toLowerCase());
           return valueMatches;
         })
         .map((option: ReactElement) => {
@@ -222,10 +234,14 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     });
   }, [children, onChange, filterText]);
 
-  // clear filter when dropdown is closed
   useEffect(() => {
+    // clear filter when dropdown is closed
     if (!open) {
       setFilterText('');
+    }
+    // focus on the filter input when the dropdown is opened
+    else {
+      filterInputRef.current?.focus();
     }
   }, [open]);
 
@@ -244,11 +260,6 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
             overflow: 'auto',
           }}
           onPointerMove={() => setPointer(true)}
-          onKeyDown={(event) => {
-            if (event.key === 'Tab') {
-              setOpen(false);
-            }
-          }}
           {...getFloatingProps()}
         >
           {enableFilter && <FilterInput ref={filterInputRef} selectName={name} onFilterChange={setFilterText} />}
@@ -258,15 +269,17 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     );
   };
 
-  const renderContent = () => {
+  const renderedContent = useMemo(() => {
     if (Array.isArray(selectedIndex)) {
+      // sort
+      const sorted = selectedIndex.sort((a, b) => a - b);
       // Typescript does not infer the correct type for render here
-      return render(selectedIndex as number[] & number);
+      return render(sorted as number[] & number);
     } else {
       // Typescript does not infer the correct type for render here
-      return render((selectedIndex - 1) as number[] & number);
+      return render(selectedIndex as number[] & number);
     }
-  };
+  }, [selectedIndex]);
 
   return (
     <SelectContext.Provider
@@ -296,7 +309,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
-        {renderContent()}
+        {renderedContent}
         {!readOnly && <StyledArrowIcon size={16} />}
       </SelectButton>
       {open &&

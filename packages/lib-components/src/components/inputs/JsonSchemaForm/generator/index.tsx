@@ -55,7 +55,29 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
 
     return (
       <>
-        <Alert text="Every config field name should be unique!" variant="warning" />
+        {fields.length === 0 && (
+          <Alert
+            variant="info"
+            title="What are Config fields?"
+            action={{
+              execute: () =>
+                append({
+                  name: `Config field ${fields.length + 1}`,
+                  type: InputType.string,
+                  description: '',
+                  required: false,
+                }),
+              text: 'Add first config field',
+            }}
+            text={`Config fields are a way to control the behavior of your module. When a module is installed
+                  on a game server, Config fields can be tweaked to change the behavior of the module. For example,
+                  if you want to write a module that allows players to teleport to each other, you might want to have a config
+                  field that controls the cooldown of the command.
+                `}
+          />
+        )}
+
+        {fields.length > 0 && <Alert text="Every config field name should be unique!" variant="warning" />}
         <Form onSubmit={handleSubmit(onSubmitWrapper)} ref={ref}>
           {formValues.configFields
             ? fields.map((field, index) => {
@@ -75,20 +97,22 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
                 );
               })
             : []}
-          <Button
-            text="Config Field"
-            type="button"
-            fullWidth
-            icon={<PlusIcon />}
-            onClick={() => {
-              append({
-                name: `Config field ${fields.length + 1}`,
-                type: InputType.string,
-                description: '',
-                required: false,
-              });
-            }}
-          />
+          {fields.length > 0 && (
+            <Button
+              text="Config Field"
+              type="button"
+              fullWidth
+              icon={<PlusIcon />}
+              onClick={() => {
+                append({
+                  name: `Config field ${fields.length + 1}`,
+                  type: InputType.string,
+                  description: '',
+                  required: false,
+                });
+              }}
+            />
+          )}
 
           {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
         unique name validation. So for now we just add note to the user that the name must be unique 

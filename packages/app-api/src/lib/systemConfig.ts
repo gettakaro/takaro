@@ -1,7 +1,8 @@
 import Ajv from 'ajv';
 import ms from 'ms';
-import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DiscordEvents } from '@takaro/modules';
+import { ModuleOutputDTO } from '../service/ModuleService.js';
+import { ModuleOutputDTO as ModuleOutputDTOApi } from '@takaro/apiclient';
 
 export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
   return {
@@ -11,7 +12,7 @@ export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
   };
 }
 
-export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
+export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi): string {
   const systemConfigSchema = getEmptySystemConfigSchema();
 
   if (mod.cronJobs.length) {
@@ -81,6 +82,19 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO): string {
             minimum: 0,
             maximum: ms('1 day') / 1000,
             description: 'How many seconds to wait before executing the command.',
+          },
+          cost: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            description: 'How much currency to deduct from the player before executing the command.',
+          },
+          aliases: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Trigger the command with other names than the default',
           },
         },
         required: [],

@@ -11,9 +11,14 @@ const StyledCheckIcon = styled(CheckIcon)`
 
 export interface OptionProps extends PropsWithChildren {
   value: string;
+
+  // This is required for filtering
+  label?: string;
   // Properties set by the Select component
   index?: number;
   onChange?: (value: string | string[]) => unknown;
+
+  disabled?: boolean;
 }
 
 // check if the index is already selected, if so remove it, otherwise add it.
@@ -30,7 +35,7 @@ function getselectedValues(selectedIndices: number[], options: string[]): string
   return selectedIndices.map((i) => options[i]);
 }
 
-export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }) => {
+export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, disabled }) => {
   const {
     selectedIndex,
     setSelectedIndex,
@@ -56,21 +61,26 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
       if (onChange) onChange(value);
       setOpen(false);
     }
+
+    // Reset the active index
     setActiveIndex(null);
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // select the option on enter
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSelect();
     }
 
+    // prevent the page from scrolling when using the spacebar
     if (e.key === ' ') {
       e.preventDefault();
     }
   };
 
   const handleKeyUp = (e: React.KeyboardEvent) => {
+    // select the option on spacebar
     if (e.key === ' ' && !dataRef.current.typing) {
       handleSelect();
     }
@@ -83,7 +93,9 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
       tabIndex={activeIndex === index ? 0 : 1}
       isMultiSelect={multiSelect}
       isActive={activeIndex === index}
+      // Selected in this case means the one we are hovering
       aria-selected={activeIndex === index}
+      aria-disabled={disabled}
       data-selected={selectedIndex === index}
       {...getItemProps({
         onClick: handleSelect,
@@ -98,7 +110,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange }
           hasDescription={false}
           hasError={false}
           onChange={() => {
-            /* bubbles up? */
+            /* bubbles up tot he optionContainer which handles the selection */
           }}
           name={`${name}-checkbox-${index}`}
           value={(selectedIndex as number[]).includes(index)}

@@ -1,9 +1,8 @@
-import { FC, Fragment, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import {
   Table,
-  Loading,
   useTableActions,
   IconButton,
   Dropdown,
@@ -11,8 +10,9 @@ import {
   Button,
   TextField,
   FormError,
+  PERMISSIONS,
 } from '@takaro/lib-components';
-import { UserOutputDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
 import { useNavigate } from 'react-router-dom';
@@ -22,11 +22,18 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useHasPermission } from 'components/PermissionsGuard';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
   const navigate = useNavigate();
+  const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
+    PERMISSIONS.READ_USERS,
+  ]);
+  const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_ROLES,
+  ]);
 
   const { data, isLoading } = useUsers({
     page: pagination.paginationState.pageIndex,
@@ -45,7 +52,7 @@ const Users: FC = () => {
     },
   });
 
-  const columnHelper = createColumnHelper<UserOutputDTO>();
+  const columnHelper = createColumnHelper<UserOutputWithRolesDTO>();
   const columnDefs = [
     columnHelper.accessor('name', {
       header: 'Name',
@@ -65,12 +72,14 @@ const Users: FC = () => {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
@@ -92,38 +101,46 @@ const Users: FC = () => {
           <Dropdown.Menu>
             <Dropdown.Menu.Group divider>
               <Dropdown.Menu.Item
+                disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
                 label="Go to user profile"
                 icon={<ProfileIcon />}
                 onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
               />
             </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item label="Edit roles" icon={<EditIcon />} onClick={() => navigate('')} />
+            <Dropdown.Menu.Item
+              label="Edit roles"
+              icon={<EditIcon />}
+              // TODO: navigate to edit roles page for user
+              onClick={() => navigate('')}
+              disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
+            />
           </Dropdown.Menu>
         </Dropdown>
       ),
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
-    <Fragment>
-      <Table
-        id="users"
-        columns={columnDefs}
-        data={data.data}
-        renderToolbar={() => <InviteUser />}
-        pagination={{
-          ...pagination,
-          pageOptions: pagination.getPageOptions(data),
-        }}
-        columnFiltering={columnFilters}
-        columnSearch={columnSearch}
-        sorting={sorting}
-      />
-    </Fragment>
+    <Table
+      id="users"
+      columns={columnDefs}
+      data={data ? data?.data : []}
+      renderToolbar={() => <InviteUser />}
+      pagination={p}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      sorting={sorting}
+    />
   );
 };
 
@@ -133,6 +150,9 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const { hasPermission: hasManageUsersPermission, isLoading: isLoadingManageUserPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_USERS,
+  ]);
 
   const validationSchema = useMemo(
     () =>
@@ -160,7 +180,12 @@ const InviteUser: FC = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} text="Invite user" icon={<PlusIcon />} />
+      <Button
+        onClick={() => setOpen(true)}
+        text="Invite user"
+        icon={<PlusIcon />}
+        disabled={!isLoadingManageUserPermission && !hasManageUsersPermission}
+      />
       <Dialog open={open} onOpenChange={setOpen}>
         <Dialog.Content>
           <Dialog.Heading />
@@ -179,7 +204,7 @@ const InviteUser: FC = () => {
                 required
               />
               {isError && <FormError error={error} />}
-              <Button isLoading={isLoading} text="Send Invitation" type="submit" fullWidth />
+              <Button isLoading={isLoading} text="Send invitation" type="submit" fullWidth />
             </form>
           </Dialog.Body>
         </Dialog.Content>

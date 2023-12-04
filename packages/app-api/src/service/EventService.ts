@@ -1,15 +1,39 @@
 import { TakaroService } from './Base.js';
 
-import { IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
 import { getSocketServer } from '../lib/socketServer.js';
+import { PlayerOutputDTO } from './PlayerService.js';
+import { Type } from 'class-transformer';
+import { GameServerOutputDTO } from './GameServerService.js';
+import { ModuleOutputDTO } from './ModuleService.js';
+import { UserOutputDTO } from './UserService.js';
+
+export enum EVENT_TYPES {
+  PLAYER_CONNECTED = 'player-connected',
+  PLAYER_DISCONNECTED = 'player-disconnected',
+  CHAT_MESSAGE = 'chat-message',
+  PLAYER_DEATH = 'player-death',
+  ENTITY_KILLED = 'entity-killed',
+  ROLE_ASSIGNED = 'role-assigned',
+  ROLE_REMOVED = 'role-removed',
+  ROLE_CREATED = 'role-created',
+  ROLE_UPDATED = 'role-updated',
+  ROLE_DELETED = 'role-deleted',
+  COMMAND_EXECUTED = 'command-executed',
+  HOOK_EXECUTED = 'hook-executed',
+  CRONJOB_EXECUTED = 'cronjob-executed',
+  CURRENCY_ADDED = 'currency-added',
+  CURRENCY_DEDUCTED = 'currency-deducted',
+  SETTINGS_SET = 'settings-set',
+}
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
-  @IsString()
-  eventName!: string;
+  @IsEnum(EVENT_TYPES)
+  eventName!: EVENT_TYPES;
 
   @IsOptional()
   @IsUUID()
@@ -30,11 +54,31 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsOptional()
   @IsObject()
   meta: Record<string, unknown>;
+
+  @IsOptional()
+  @Type(() => PlayerOutputDTO)
+  @ValidateNested()
+  player: typeof PlayerOutputDTO;
+
+  @IsOptional()
+  @Type(() => GameServerOutputDTO)
+  @ValidateNested()
+  gameServer: typeof GameServerOutputDTO;
+
+  @IsOptional()
+  @Type(() => ModuleOutputDTO)
+  @ValidateNested()
+  module: typeof ModuleOutputDTO;
+
+  @IsOptional()
+  @Type(() => UserOutputDTO)
+  @ValidateNested()
+  user: typeof UserOutputDTO;
 }
 
 export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
-  @IsString()
-  eventName!: string;
+  @IsEnum(EVENT_TYPES)
+  eventName!: EVENT_TYPES;
 
   @IsOptional()
   @IsUUID()
@@ -65,8 +109,18 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     return new EventRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<EventOutputDTO>): Promise<PaginatedOutput<EventOutputDTO>> {
-    return this.repo.find(filters);
+  async find(filters: ITakaroQuery<EventOutputDTO>): Promise<PaginatedOutput<EventOutputDTO>> {
+    const res = await this.repo.find(filters);
+
+    res.results = res.results.map((event) => {
+      if (event.gameServer) {
+        if ('connectionInfo' in event.gameServer) delete event.gameServer.connectionInfo;
+      }
+
+      return event;
+    });
+
+    return res;
   }
 
   findOne(id: string): Promise<EventOutputDTO | undefined> {

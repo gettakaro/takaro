@@ -1,6 +1,6 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Loading, Table, useTableActions } from '@takaro/lib-components';
-import { useUser, useUserRemoveRole } from 'queries/users/queries';
+import { useUser, useUserRemoveRole } from 'queries/users';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { useParams, Outlet, useNavigate } from 'react-router-dom';

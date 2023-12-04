@@ -1,214 +1,226 @@
-import playwright, { Page } from '@playwright/test';
+import playwright from '@playwright/test';
 import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
 import {
   AdminClient,
   Client,
+  DomainCreateOutputDTO,
   GameServerCreateDTOTypeEnum,
   GameServerOutputDTO,
   HookCreateDTOEventTypeEnum,
   ModuleOutputDTO,
   PlayerOutputDTO,
+  RoleOutputDTO,
   UserOutputDTO,
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
-import { GameServersPage } from './GameServersPage.js';
-import { ModuleDefinitionsPage } from './ModuleDefinitionsPage.js';
-import { StudioPage } from './StudioPage.js';
+import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
 import { EventTypes } from '@takaro/modules';
+import { getAdminClient, login } from '../helpers.js';
 
-const { expect, test: base } = playwright;
-
-export async function login(page: Page, username: string, password: string) {
-  await page.goto('/login');
-  const emailInput = page.getByPlaceholder('hi cutie');
-  await emailInput.click();
-  await emailInput.fill(username);
-  emailInput.press('Tab');
-  await emailInput.press('Tab');
-  await page.getByLabel('PasswordRequired').fill(password);
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
-  await expect(page.getByRole('link', { name: 'Takaro' })).toBeVisible();
+export enum PERMISSIONS {
+  'ROOT' = 'ROOT',
+  'MANAGE_USERS' = 'MANAGE_USERS',
+  'READ_USERS' = 'READ_USERS',
+  'MANAGE_ROLES' = 'MANAGE_ROLES',
+  'READ_ROLES' = 'READ_ROLES',
+  'MANAGE_GAMESERVERS' = 'MANAGE_GAMESERVERS',
+  'READ_GAMESERVERS' = 'READ_GAMESERVERS',
+  'READ_FUNCTIONS' = 'READ_FUNCTIONS',
+  'MANAGE_FUNCTIONS' = 'MANAGE_FUNCTIONS',
+  'READ_CRONJOBS' = 'READ_CRONJOBS',
+  'MANAGE_CRONJOBS' = 'MANAGE_CRONJOBS',
+  'READ_HOOKS' = 'READ_HOOKS',
+  'MANAGE_HOOKS' = 'MANAGE_HOOKS',
+  'READ_COMMANDS' = 'READ_COMMANDS',
+  'MANAGE_COMMANDS' = 'MANAGE_COMMANDS',
+  'READ_MODULES' = 'READ_MODULES',
+  'MANAGE_MODULES' = 'MANAGE_MODULES',
+  'READ_PLAYERS' = 'READ_PLAYERS',
+  'MANAGE_PLAYERS' = 'MANAGE_PLAYERS',
+  'MANAGE_SETTINGS' = 'MANAGE_SETTINGS',
+  'READ_SETTINGS' = 'READ_SETTINGS',
+  'READ_VARIABLES' = 'READ_VARIABLES',
+  'MANAGE_VARIABLES' = 'MANAGE_VARIABLES',
+  'READ_EVENTS' = 'READ_EVENTS',
+  'MANAGE_EVENTS' = 'MANAGE_EVENTS',
 }
 
-export const getAdminClient = () => {
-  return new AdminClient({
-    url: integrationConfig.get('host'),
-    auth: {
-      clientId: integrationConfig.get('auth.adminClientId'),
-      clientSecret: integrationConfig.get('auth.adminClientSecret'),
-    },
-    OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
-  });
-};
+const { test: pwTest } = playwright;
 
-interface IFixtures {
+export interface IBaseFixtures {
   takaro: {
-    client: Client;
+    rootClient: Client;
     adminClient: AdminClient;
     studioPage: StudioPage;
     moduleDefinitionsPage: ModuleDefinitionsPage;
     GameServersPage: GameServersPage;
+    usersPage: UsersPage;
     builtinModule: ModuleOutputDTO;
     gameServer: GameServerOutputDTO;
     mailhog: MailhogAPI;
-    players: PlayerOutputDTO[];
     rootUser: UserOutputDTO;
+    testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
+    domain: DomainCreateOutputDTO;
   };
 }
 
-export const basicTest = base.extend<IFixtures>({
+const main = pwTest.extend<IBaseFixtures>({
   takaro: [
     async ({ page }, use) => {
-      // fixture setup
       const adminClient = getAdminClient();
-      const createdDomainRes = await adminClient.domain.domainControllerCreate({
-        name: `e2e-${humanId.default()}`.slice(0, 49),
-      });
-
-      const data = createdDomainRes.data.data;
-      await login(page, data.rootUser.email, data.password);
+      const domain = (
+        await adminClient.domain.domainControllerCreate({
+          name: `e2e-${humanId.default()}`.slice(0, 49),
+        })
+      ).data.data;
 
       const client = new Client({
         url: integrationConfig.get('host'),
         auth: {
-          username: data.rootUser.email,
-          password: data.password,
+          username: domain.rootUser.email,
+          password: domain.password,
         },
       });
       await client.login();
 
-      const mailhog = new MailhogAPI({
-        baseURL: integrationConfig.get('mailhog.url'),
-      });
+      // User with no permissions
+      const password = 'test';
 
-      const gameServer = await client.gameserver.gameServerControllerCreate({
-        name: 'Test server',
-        type: GameServerCreateDTOTypeEnum.Mock,
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
+      const [user, emptyRole, gameServer, mod, mods] = await Promise.all([
+        // User creation
+        client.user.userControllerCreate({
+          name: 'test',
+          email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
+          password: 'test',
         }),
-      });
 
-      // empty module
-      const mod = await client.module.moduleControllerCreate({
-        name: 'Module without functions',
-        configSchema: JSON.stringify({}),
-        description: 'Empty module with no functions',
-      });
+        // Empty role creation
+        client.role.roleControllerCreate({
+          name: 'test',
+          permissions: [],
+        }),
 
-      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
+        // Game server creation
+        client.gameserver.gameServerControllerCreate({
+          name: 'Test server',
+          type: GameServerCreateDTOTypeEnum.Mock,
+          connectionInfo: JSON.stringify({
+            host: integrationConfig.get('mockGameserver.host'),
+          }),
+        }),
+
+        // Module creation
+        client.module.moduleControllerCreate({
+          name: 'Module without functions',
+          configSchema: JSON.stringify({}),
+          description: 'Empty module with no functions',
+        }),
+
+        // Get builtin module
+        client.module.moduleControllerSearch({ filters: { name: ['utils'] } }),
+      ]);
+
+      // assign role to user
+      await client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
 
       await use({
-        client,
+        rootClient: client,
         adminClient,
         builtinModule: mods.data.data[0],
         gameServer: gameServer.data.data,
         studioPage: new StudioPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
-        mailhog,
-        players: [],
-        rootUser: data.rootUser,
+        usersPage: new UsersPage(page),
+        mailhog: new MailhogAPI({
+          baseURL: 'http://127.0.0.1:8025',
+        }),
+        domain,
+        rootUser: domain.rootUser,
+        testUser: { ...user.data.data, password, role: emptyRole.data.data },
       });
 
       // fixture teardown
-      await adminClient.domain.domainControllerRemove(data.createdDomain.id);
+      await adminClient.domain.domainControllerRemove(domain.createdDomain.id);
     },
     { auto: true },
   ],
 });
 
-export const test = base.extend<IFixtures>({
-  takaro: [
-    async ({ page }, use) => {
-      const adminClient = getAdminClient();
-      const createdDomainRes = await adminClient.domain.domainControllerCreate({
-        name: `e2e-${humanId.default()}`.slice(0, 49),
-      });
+// this uses the root user
+export const test = main.extend({
+  takaro: async ({ takaro, page }, use) => {
+    await login(page, takaro.rootUser.email, takaro.domain.password);
+    await use(takaro);
+  },
+});
 
-      const data = createdDomainRes.data.data;
-      await login(page, data.rootUser.email, data.password);
+// NO Permissions user test
+export const userTest = main.extend({
+  takaro: async ({ takaro, page }, use) => {
+    console.log('password in fixture', takaro.testUser.password);
+    await login(page, takaro.testUser.email, takaro.testUser.password);
+    await use(takaro);
+  },
+});
 
-      const client = new Client({
-        url: integrationConfig.get('host'),
-        auth: {
-          username: data.rootUser.email,
-          password: data.password,
-        },
-      });
-      await client.login();
+export interface ExtendedFixture {
+  extended: {
+    mod: ModuleOutputDTO;
+    players: PlayerOutputDTO[];
+  };
+}
 
-      const gameServer = await client.gameserver.gameServerControllerCreate({
-        name: 'Test server',
-        type: GameServerCreateDTOTypeEnum.Mock,
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-        }),
-      });
+export const extendedTest = main.extend<ExtendedFixture>({
+  extended: [
+    async ({ takaro, page }, use) => {
+      const { rootUser, domain, gameServer, rootClient } = takaro;
 
+      // required to add players to the gameserver
       const eventAwaiter = new EventsAwaiter();
-      await eventAwaiter.connect(client);
-
+      await eventAwaiter.connect(rootClient);
       const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
 
-      await client.gameserver.gameServerControllerExecuteCommand(gameServer.data.data.id, {
+      // this creates a bunch of players
+      await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
         command: 'connectAll',
       });
 
-      const mod = await client.module.moduleControllerCreate({
+      await login(page, rootUser.email, domain.password);
+
+      const mod = await rootClient.module.moduleControllerCreate({
         name: 'Module with functions',
         configSchema: JSON.stringify({}),
         description: 'Module with functions',
       });
 
-      await client.command.commandControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-command',
-        trigger: 'test',
-      });
-
-      await client.hook.hookControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-hook',
-        regex: 'test',
-        eventType: HookCreateDTOEventTypeEnum.Log,
-      });
-
-      await client.cronjob.cronJobControllerCreate({
-        moduleId: mod.data.data.id,
-        name: 'my-cron',
-        temporalValue: '* * * * *',
-      });
-
-      const mailhog = new MailhogAPI({
-        baseURL: integrationConfig.get('mailhog.url'),
-      });
-
+      // create command, hook and cronjob
+      Promise.all([
+        await rootClient.command.commandControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-command',
+          trigger: 'test',
+        }),
+        await rootClient.hook.hookControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-hook',
+          regex: 'test',
+          eventType: HookCreateDTOEventTypeEnum.Log,
+        }),
+        await rootClient.cronjob.cronJobControllerCreate({
+          moduleId: mod.data.data.id,
+          name: 'my-cron',
+          temporalValue: '* * * * *',
+        }),
+      ]);
+      takaro.studioPage.mod = mod.data.data;
       await connectedEvents;
-
-      const players = await client.player.playerControllerSearch();
-
-      /* TODO: should probably add more custom modules with complex config schemas
-       * probably a good idea to add one for each type of config field
-       */
-
-      const mods = await client.module.moduleControllerSearch({ filters: { name: ['utils'] } });
+      const players = (await rootClient.player.playerControllerSearch()).data.data;
 
       await use({
-        client,
-        adminClient,
-        builtinModule: mods.data.data[0],
-        studioPage: new StudioPage(page, mod.data.data),
-        GameServersPage: new GameServersPage(page, gameServer.data.data),
-        moduleDefinitionsPage: new ModuleDefinitionsPage(page),
-        mailhog,
-        gameServer: gameServer.data.data,
-        players: players.data.data,
-        rootUser: data.rootUser,
+        mod: mod.data.data,
+        players: players,
       });
-
-      // fixture teardown
-      await adminClient.domain.domainControllerRemove(data.createdDomain.id);
     },
     { auto: true },
   ],

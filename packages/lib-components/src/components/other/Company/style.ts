@@ -3,7 +3,7 @@ import { Color, Size, styled } from '../../../styled';
 export const Container = styled.div<{ textVisible?: boolean; size: Size }>`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: ${({ textVisible }) => (textVisible ? 'center' : 'flex-start')};
   flex-direction: row;
 
   gap: ${({ theme, textVisible }) => (textVisible ? theme.spacing['1'] : theme.spacing[0])};

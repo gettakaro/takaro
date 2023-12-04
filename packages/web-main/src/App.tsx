@@ -4,35 +4,30 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { Router } from './Router';
-import { useMemo, useState } from 'react';
-import { UserContext } from 'context/userContext';
+import { useState } from 'react';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
-import { UserOutputDTO } from '@takaro/apiclient';
 
 import '@ory/elements/style.css';
+import { AxiosError } from 'axios';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // This is a temporary fix for the flashing behaviour in studio
       refetchOnWindowFocus: false,
+      retry: (failureCount, error) => {
+        // retry 3 times (failureCount goes up on every fail)
+        if ((error as AxiosError).response!.status >= 500 && failureCount <= 2) return true;
+        return false;
+      },
     },
   },
 });
 
-const defaultUserData: Partial<UserOutputDTO> = {
-  id: undefined,
-  email: undefined,
-  name: undefined,
-};
-
 function App() {
-  const [userData, setUserData] = useState<Partial<UserOutputDTO>>(defaultUserData);
   const [config, setConfig] = useState<TakaroConfig>();
   const [loading, setLoading] = useState<boolean>(true);
-
-  const providerUserData = useMemo(() => ({ userData, setUserData }), [userData, setUserData]);
 
   // the config can be loaded before or after the app is loaded
   // if before window.__env__ will contain the env variables
@@ -106,21 +101,19 @@ function App() {
   return (
     <OryThemeProvider themeOverrides={oryThemeOverrides}>
       <ThemeProvider theme={darkTheme}>
-        <UserContext.Provider value={providerUserData}>
-          <ConfigContext.Provider value={config}>
-            <SnackbarProvider>
-              <QueryClientProvider client={queryClient}>
-                <GlobalStyle />
-                <Router />
-                {
-                  // React query devtools are only included in bundles with NODE_ENV === 'development'.
-                  // No need to manually exclude them.
-                }
-                <ReactQueryDevtools initialIsOpen={false} position="top-left" />
-              </QueryClientProvider>
-            </SnackbarProvider>
-          </ConfigContext.Provider>
-        </UserContext.Provider>
+        <ConfigContext.Provider value={config}>
+          <SnackbarProvider>
+            <QueryClientProvider client={queryClient}>
+              <GlobalStyle />
+              <Router />
+              {
+                // React query devtools are only included in bundles with NODE_ENV === 'development'.
+                // No need to manually exclude them.
+              }
+              <ReactQueryDevtools initialIsOpen={false} position="top-left" />
+            </QueryClientProvider>
+          </SnackbarProvider>
+        </ConfigContext.Provider>
       </ThemeProvider>
     </OryThemeProvider>
   );

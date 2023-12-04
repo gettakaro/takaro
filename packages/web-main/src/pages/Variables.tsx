@@ -1,5 +1,5 @@
 import { FC, Fragment, useState } from 'react';
-import { Table, Loading, useTableActions, IconButton, Dropdown, Dialog, Button } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, Dialog, Button, Divider } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariableDelete, useVariables } from 'queries/variables';
@@ -41,6 +41,7 @@ const Variables: FC = () => {
     columnHelper.accessor('key', {
       header: 'Key',
       id: 'key',
+      meta: { type: 'uuid' },
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
@@ -53,7 +54,8 @@ const Variables: FC = () => {
     }),
     columnHelper.accessor('gameServerId', {
       header: 'Game Server',
-      id: 'gameServerId',
+      id: 'gameServerName',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.gameServer?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -61,6 +63,7 @@ const Variables: FC = () => {
     columnHelper.accessor('playerId', {
       header: 'Player',
       id: 'playerId',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.player?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -68,6 +71,7 @@ const Variables: FC = () => {
     columnHelper.accessor('moduleId', {
       header: 'Module',
       id: 'moduleId',
+      meta: { type: 'uuid' },
       cell: (info) => info.row.original.module?.name,
       enableColumnFilter: true,
       enableSorting: true,
@@ -75,12 +79,14 @@ const Variables: FC = () => {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
+      meta: { type: 'datetime' },
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
@@ -115,9 +121,15 @@ const Variables: FC = () => {
     }),
   ];
 
-  if (isLoading || data === undefined) {
-    return <Loading />;
-  }
+  // since pagination depends on data, we need to make sure that data is not undefined
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   return (
     <Fragment>
@@ -126,14 +138,12 @@ const Variables: FC = () => {
         variables are the way that the teleports module stores the teleport locations.
       </p>
 
+      <Divider size="large" />
       <Table
         id="variables"
         columns={columnDefs}
-        data={data.data}
-        pagination={{
-          ...pagination,
-          pageOptions: pagination.getPageOptions(data),
-        }}
+        data={data ? data?.data : []}
+        pagination={p}
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
         sorting={sorting}

@@ -5,7 +5,11 @@ export const PATHS = {
   players: () => '/players',
   moduleDefinitions: () => '/modules',
   variables: () => '/variables',
-  notFound: () => '/404',
+
+  notFound: () => '/not-found',
+  forbidden: () => '/forbidden',
+  logout: () => '/logout',
+  logoutReturn: () => '/logout-return',
   events: () => '/events',
 
   roles: {
@@ -53,12 +57,12 @@ export const PATHS = {
   },
 
   player: {
-    profile: (playerId: string) => `/player/${playerId}`,
-    assignRole: (playerId: string) => `/player/${playerId}/assign-role`,
+    profile: (playerId: string) => `/players/${playerId}`,
+    assignRole: (playerId: string) => `/players/${playerId}/assign-role`,
   },
 
   user: {
-    profile: (userId: string) => `/user/${userId}`,
-    assignRole: (userId: string) => `/user/${userId}/assign-role`,
+    profile: (userId: string) => `/users/${userId}`,
+    assignRole: (userId: string) => `/users/${userId}/assign-role`,
   },
 };

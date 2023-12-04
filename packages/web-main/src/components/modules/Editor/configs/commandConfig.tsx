@@ -41,7 +41,7 @@ const validationSchema = z.object({
     z.object({
       commandId: z.string().nonempty(),
       name: z.string().nonempty(),
-      type: z.enum(['string', 'number', 'boolean'], {
+      type: z.enum(['string', 'number', 'boolean', 'player'], {
         errorMap: () => {
           return {
             message: 'Invalid argument type',
@@ -67,6 +67,10 @@ const argumentTypeSelectOptions = [
   {
     name: 'Boolean',
     value: 'boolean',
+  },
+  {
+    name: 'Player',
+    value: 'player',
   },
 ];
 
@@ -97,16 +101,19 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
       setValue('helpText', data?.helpText);
 
       replace(
-        data.arguments.map((arg) => {
-          return {
-            commandId: moduleItem.itemId,
-            name: arg.name,
-            type: arg.type,
-            position: arg.position,
-            helpText: arg.helpText,
-            defaultValue: arg.defaultValue,
-          };
-        })
+        // order arguments by position
+        data.arguments
+          .sort((a, b) => a.position - b.position)
+          .map((arg) => {
+            return {
+              commandId: moduleItem.itemId,
+              name: arg.name,
+              type: arg.type,
+              position: arg.position,
+              helpText: arg.helpText,
+              defaultValue: arg.defaultValue,
+            };
+          })
       );
     }
   }, [data, moduleItem.itemId]);
@@ -262,9 +269,9 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
             ></Button>
           )}
           {error && <FormError error={error} />}
-          {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
         </ContentContainer>
       </CollapseList.Item>
+      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
     </form>
   );
 };

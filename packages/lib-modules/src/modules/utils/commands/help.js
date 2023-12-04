@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -29,7 +29,7 @@ async function main() {
     });
 
     if (!requestedCommand) {
-      await data.player.pm(
+      throw new TakaroUserError(
         `Unknown command "${data.arguments.command}", use this command without arguments to see all available commands.`
       );
     } else {

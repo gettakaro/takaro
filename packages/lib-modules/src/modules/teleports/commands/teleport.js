@@ -1,4 +1,4 @@
-import { getTakaro, getData, checkPermission } from '@takaro/helpers';
+import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -7,8 +7,7 @@ async function main() {
   const { player, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(player, 'TELEPORTS_USE')) {
-    await data.player.pm('You do not have permission to use teleports.');
-    return;
+    throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
   const ownedTeleportRes = await takaro.variable.variableControllerSearch({
@@ -44,8 +43,7 @@ async function main() {
   }
 
   if (teleports.length === 0) {
-    await data.player.pm(`Teleport ${args.tp} does not exist.`);
-    return;
+    throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);
   }
 
   const timeout = mod.userConfig.timeout;
@@ -78,8 +76,7 @@ async function main() {
     const diff = now.getTime() - lastExecutedTime.getTime();
 
     if (diff < timeout) {
-      await data.player.pm('You cannot teleport yet. Please wait before trying again.');
-      return;
+      throw new TakaroUserError('You cannot teleport yet. Please wait before trying again.');
     }
   }
 

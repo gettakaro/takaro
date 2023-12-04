@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const data = await getData();
@@ -22,7 +22,7 @@ async function main() {
   const teleports = teleportRes.data.data;
 
   if (teleports.length === 0) {
-    await data.player.pm(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
+    throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
   }
 
   const teleportRecord = teleports[0];

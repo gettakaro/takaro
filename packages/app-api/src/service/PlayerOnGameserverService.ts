@@ -1,13 +1,14 @@
 import { TakaroService } from './Base.js';
 
 import { IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -98,22 +99,51 @@ export class PlayerOnGameServerService extends TakaroService<
     return new PlayerOnGameServerRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<PlayerOnGameserverOutputDTO>): Promise<PaginatedOutput<PlayerOnGameserverOutputDTO>> {
-    return this.repo.find(filters);
+  private async extend(
+    players: PlayerOnGameserverOutputWithRolesDTO | PlayerOnGameserverOutputWithRolesDTO[]
+  ): Promise<PlayerOnGameserverOutputWithRolesDTO[]> {
+    const roleService = new RoleService(this.domainId);
+    const roles = await roleService.find({ filters: { name: ['Player'] } });
+
+    if (!Array.isArray(players)) {
+      players = [players];
+    }
+
+    for (const player of players) {
+      player.roles.push(
+        await new PlayerRoleAssignmentOutputDTO().construct({
+          roleId: roles.results[0].id,
+          role: roles.results[0],
+        })
+      );
+    }
+
+    return players;
   }
 
-  findOne(id: string): Promise<PlayerOnGameserverOutputDTO> {
-    return this.repo.findOne(id);
+  async find(
+    filters: ITakaroQuery<PlayerOnGameserverOutputDTO>
+  ): Promise<PaginatedOutput<PlayerOnGameserverOutputWithRolesDTO>> {
+    const res = await this.repo.find(filters);
+    return {
+      ...res,
+      results: await this.extend(res.results),
+    };
+  }
+
+  async findOne(id: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
+    const data = await this.repo.findOne(id);
+    return (await this.extend(data))[0];
   }
 
   async create(item: PlayerOnGameServerCreateDTO) {
     const created = await this.repo.create(item);
-    return created;
+    return this.findOne(created.id);
   }
 
   async update(id: string, item: PlayerOnGameServerUpdateDTO) {
     const updated = await this.repo.update(id, item);
-    return updated;
+    return this.findOne(updated.id);
   }
 
   async delete(id: string) {
@@ -131,17 +161,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const player = await this.repo.resolveRef(ref, gameserverId);
-
-    const roleService = new RoleService(this.domainId);
-    const roles = await roleService.find({ filters: { name: ['Player'] } });
-
-    player.roles.push(
-      await new PlayerRoleAssignmentOutputDTO().construct({
-        roleId: roles.results[0].id,
-        role: roles.results[0],
-      })
-    );
-    return player;
+    return this.findOne(player.id);
   }
 
   async getRef(playerId: string, gameserverId: string) {
@@ -165,5 +185,67 @@ export class PlayerOnGameServerService extends TakaroService<
       }
       throw error;
     }
+  }
+
+  async transact(senderId: string, receiverId: string, amount: number) {
+    await this.repo.transact(senderId, receiverId, amount);
+
+    const eventsService = new EventService(this.domainId);
+    const senderRecord = await this.findOne(senderId);
+    const receiverRecord = await this.findOne(receiverId);
+    const userId = ctx.data.user;
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
+        playerId: senderRecord.playerId,
+        gameserverId: senderRecord.gameServerId,
+        userId,
+        meta: { amount, receiver: receiverRecord.playerId },
+      })
+    );
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_ADDED,
+        playerId: receiverRecord.playerId,
+        gameserverId: receiverRecord.gameServerId,
+        userId,
+        meta: { amount, sender: senderRecord.playerId },
+      })
+    );
+  }
+
+  async deductCurrency(id: string, amount: number) {
+    await this.repo.deductCurrency(id, amount);
+    const eventsService = new EventService(this.domainId);
+    const record = await this.findOne(id);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
+        playerId: record.playerId,
+        gameserverId: record.gameServerId,
+        userId,
+        meta: { amount },
+      })
+    );
+  }
+
+  async addCurrency(id: string, amount: number) {
+    await this.repo.addCurrency(id, amount);
+    const eventsService = new EventService(this.domainId);
+    const record = await this.findOne(id);
+    const userId = ctx.data.user;
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.CURRENCY_ADDED,
+        playerId: record.playerId,
+        gameserverId: record.gameServerId,
+        userId,
+        meta: { amount },
+      })
+    );
   }
 }

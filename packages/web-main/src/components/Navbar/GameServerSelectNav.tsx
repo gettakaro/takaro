@@ -66,14 +66,14 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
   return (
     <Select
       loading={isLoading}
-      readOnly={gameServers.length === 1}
       control={control}
       name="gameServerId"
+      enableFilter={data.pages[0].meta.total! > 5 ? true : false}
       render={(selectedIndex) => <div>{gameServers[selectedIndex]?.name ?? gameServers[0]?.name}</div>}
     >
       <Select.OptionGroup>
         {gameServers.map(({ name, id }) => (
-          <Select.Option key={id} value={id}>
+          <Select.Option key={id} value={id} label={name}>
             <div>
               <span>{name}</span>
             </div>
