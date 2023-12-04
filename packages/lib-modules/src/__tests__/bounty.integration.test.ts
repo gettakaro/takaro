@@ -248,6 +248,40 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
+    name: 'Should receive bounty when player is killed who has a bounty on them',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.bountyModule.id
+      );
+
+      // set bounty on player
+      const target = this.setupData.players[1];
+      const bountyAmount = 500;
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `/bounty ${target.name} ${bountyAmount}`,
+        playerId: this.setupData.players[0].id,
+      });
+
+      await this.client.hook.hookControllerTrigger({ gameServerId: this.setupData.gameserver.id });
+
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: `/deletebounty ${target.name}`,
+        playerId: this.setupData.players[0].id,
+      });
+
+      const messages = (await events).map((e) => e.data.msg);
+      expect(messages.length).to.be.eq(1);
+      expect(messages[0]).to.be.eq(`You do not have a bounty set on ${target.name}`);
+    },
+  }),
+
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
     name: 'Cannot delete a bounty on a player if no bounty is set',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(

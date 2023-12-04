@@ -18,7 +18,7 @@ export class Bounty extends BuiltinModule {
     this.hooks = [
       {
         // TODO: set correct event type
-        eventType: EventTypes.PLAYER_CONNECTED,
+        eventType: EventTypes.PLAYER_DEATH,
         name: 'resolveBounty',
         function: '',
       },
