@@ -17,9 +17,8 @@ export class Bounty extends BuiltinModule {
 
     this.hooks = [
       {
-        // TODO: set correct event type
+        name: 'grantBounty',
         eventType: EventTypes.PLAYER_DEATH,
-        name: 'resolveBounty',
         function: '',
       },
     ];
@@ -46,9 +45,9 @@ export class Bounty extends BuiltinModule {
         ],
       },
       {
-        function: '',
         name: 'deleteBounty',
         trigger: 'deletebounty',
+        function: '',
         helpText: 'Delete a bounty on a player',
         arguments: [
           {
@@ -60,16 +59,15 @@ export class Bounty extends BuiltinModule {
         ],
       },
       {
-        function: '',
         name: 'listBounties',
-        trigger: 'listbounteis',
+        trigger: 'listbounties',
+        function: '',
         helpText: 'List the top 10 bounties (if available)',
       },
-
       {
-        function: '',
-        name: 'getbounty',
+        name: 'getBounty',
         trigger: 'getbounty',
+        function: '',
         helpText: 'Get the bounty on a player',
         arguments: [
           {

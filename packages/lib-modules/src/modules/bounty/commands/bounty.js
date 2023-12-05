@@ -19,9 +19,7 @@ async function main() {
   // check if you have a bounty on the target player
   const hasBountyOnTarget = v.data.data.some((v) => {
     const value = JSON.parse(v.value);
-    if (value.target.id === args.target.id) {
-      return true;
-    }
+    return value.target.id === args.target.id;
   });
 
   if (hasBountyOnTarget) {
