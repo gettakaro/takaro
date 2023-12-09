@@ -129,10 +129,6 @@ export class GameServerService extends TakaroService<
 
     const createdServer = await this.repo.create(item);
 
-    const settingsService = new SettingsService(this.domainId, createdServer.id);
-
-    await settingsService.init();
-
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: createdServer.id,
