@@ -397,7 +397,7 @@ export class GameServerController {
     @Body() data: GiveItemInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.giveItem(params.gameserverId, params.playerId, data);
+    const result = await service.giveItem(params.gameserverId, params.playerId, data.name, data.amount);
     return apiResponse(result);
   }
 

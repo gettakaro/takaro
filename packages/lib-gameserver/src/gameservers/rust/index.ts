@@ -13,6 +13,8 @@ import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
 import { Settings } from '@takaro/apiclient';
 
+const itemsJson = (await import('./items-rust.json', { assert: { type: 'json' } })).default;
+
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
   private log = logger('rust');
@@ -62,8 +64,8 @@ export class Rust implements IGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item.name} ${item.amount}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
+    await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item} ${amount}`);
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
@@ -205,5 +207,17 @@ export class Rust implements IGameServer {
     }
 
     return bans;
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    return Promise.all(
+      Object.values(itemsJson).map((item) => {
+        return new IItemDTO().construct({
+          code: item.shortname,
+          name: item.Name,
+          description: item.Description,
+        });
+      })
+    );
   }
 }
