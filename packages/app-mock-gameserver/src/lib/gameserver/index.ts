@@ -55,8 +55,8 @@ class MockGameserver implements IMockGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    this.sendLog(`Giving ${player.gameId} ${item.name}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
@@ -262,6 +262,21 @@ class MockGameserver implements IMockGameServer {
     );
 
     return banDataWithPlayer.filter(Boolean) as BanDTO[];
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    return [
+      await new IItemDTO().construct({
+        code: 'wood',
+        name: 'Wood',
+        description: 'Wood is good',
+      }),
+      await new IItemDTO().construct({
+        code: 'stone',
+        name: 'Stone',
+        description: 'Stone can get you stoned',
+      }),
+    ];
   }
 
   private async sendLog(msg: string) {

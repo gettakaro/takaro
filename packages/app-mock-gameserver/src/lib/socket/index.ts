@@ -20,6 +20,7 @@ class SocketServer {
     'banPlayer',
     'unbanPlayer',
     'listBans',
+    'listItems',
   ];
 
   constructor(app: HttpServer) {

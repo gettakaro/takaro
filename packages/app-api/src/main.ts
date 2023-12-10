@@ -31,6 +31,8 @@ import { HookWorker } from './workers/hookWorker.js';
 import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
+import { ItemController } from './controllers/ItemController.js';
+import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
 
 export const server = new HTTP(
   {
@@ -51,6 +53,7 @@ export const server = new HTTP(
       DiscordController,
       EventController,
       PlayerOnGameServerController,
+      ItemController,
     ],
   },
   {
@@ -89,6 +92,9 @@ async function main() {
 
   new HookWorker(config.get('queues.hooks.concurrency'));
   log.info('👷 Hook worker started');
+
+  new ItemsSyncWorker();
+  log.info('👷 Items sync worker started');
 
   await getSocketServer(server.server as HttpServer);
   await server.start();

@@ -5,6 +5,7 @@ import {
   ICronJobData,
   IEventQueueData,
   IHookJobData,
+  IItemsSyncQueueData,
 } from './dataDefinitions.js';
 import { TakaroQueue } from './TakaroQueue.js';
 
@@ -33,6 +34,9 @@ class QueuesService {
     },
     connector: {
       queue: new TakaroQueue<IConnectorQueueData>(config.get('queues.connector.name')),
+    },
+    itemsSync: {
+      queue: new TakaroQueue<IItemsSyncQueueData>(config.get('queues.itemsSync.name')),
     },
   };
 

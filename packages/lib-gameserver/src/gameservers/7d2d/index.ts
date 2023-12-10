@@ -15,6 +15,8 @@ import { Settings } from '@takaro/apiclient';
 
 import { SdtdConnectionInfo } from './connectionInfo.js';
 
+const vanillaItems = (await import('./items-7d2d.json', { assert: { type: 'json' } })).default as Record<string, any>;
+
 @traceableClass('game:7d2d')
 export class SevenDaysToDie implements IGameServer {
   private logger = logger('7D2D');
@@ -79,12 +81,12 @@ export class SevenDaysToDie implements IGameServer {
     };
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
     if (this.connectionInfo.useCPM) {
-      const command = `giveplus EOS_${player.gameId} ${item.name} ${item.amount}`;
+      const command = `giveplus EOS_${player.gameId} ${item} ${amount}`;
       await this.executeConsoleCommand(command);
     } else {
-      const command = `give EOS_${player.gameId} ${item.name} ${item.amount}`;
+      const command = `give EOS_${player.gameId} ${item} ${amount}`;
       await this.executeConsoleCommand(command);
     }
   }
@@ -210,5 +212,29 @@ export class SevenDaysToDie implements IGameServer {
     }
 
     return bans;
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    const itemsRes = await this.executeConsoleCommand('li *');
+    const itemLines = itemsRes.rawResult.split('\n').slice(0, -2);
+
+    const parsedItems: IItemDTO[] = [];
+
+    for (const line of itemLines) {
+      const trimmed = line.trim();
+
+      const dto = await new IItemDTO().construct({ code: trimmed });
+
+      if (trimmed in vanillaItems) {
+        dto.name = vanillaItems[trimmed].name;
+        dto.description = vanillaItems[trimmed].description;
+      }
+
+      if (!dto.name) dto.name = dto.code;
+
+      parsedItems.push(dto);
+    }
+
+    return parsedItems;
   }
 }

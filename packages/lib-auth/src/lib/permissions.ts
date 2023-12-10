@@ -24,6 +24,8 @@ export enum PERMISSIONS {
   'MANAGE_VARIABLES' = 'MANAGE_VARIABLES',
   'READ_EVENTS' = 'READ_EVENTS',
   'MANAGE_EVENTS' = 'MANAGE_EVENTS',
+  'READ_ITEMS' = 'READ_ITEMS',
+  'MANAGE_ITEMS' = 'MANAGE_ITEMS',
 }
 
 export interface IPermissionDetails {
@@ -157,5 +159,15 @@ export const PERMISSION_DETAILS: Record<PERMISSIONS, IPermissionDetails> = {
     permission: PERMISSIONS.MANAGE_EVENTS,
     friendlyName: 'Manage Events',
     description: 'Can create, update, and delete events',
+  },
+  [PERMISSIONS.READ_ITEMS]: {
+    permission: PERMISSIONS.READ_ITEMS,
+    friendlyName: 'Read Items',
+    description: 'Can view item details',
+  },
+  [PERMISSIONS.MANAGE_ITEMS]: {
+    permission: PERMISSIONS.MANAGE_ITEMS,
+    friendlyName: 'Manage Items',
+    description: 'Can create, update, and delete items',
   },
 };
