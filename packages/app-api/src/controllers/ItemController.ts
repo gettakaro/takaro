@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsOptional, IsString } from 'class-validator';
+import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ItemCreateDTO, ItemsOutputDTO, ItemsService, ItemUpdateDTO } from '../service/ItemsService.js';
@@ -30,6 +30,10 @@ class ItemSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   code!: string[];
+
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  gameserverId!: string[];
 }
 
 class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
