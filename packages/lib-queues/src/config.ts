@@ -137,7 +137,7 @@ export const queuesConfigSchema = {
       interval: {
         doc: 'The interval to run the items sync',
         format: Number,
-        default: ms('15minutes'),
+        default: ms('1hour'),
         env: 'ITEMS_SYNC_QUEUE_INTERVAL',
       },
     },

@@ -15,6 +15,7 @@ export class ItemsSyncWorker extends TakaroWorker<IItemsSyncQueueData> {
       {
         jobId: 'itemsSync',
         repeat: {
+          jobId: 'itemsSync',
           every: config.get('queues.itemsSync.interval'),
         },
       }
