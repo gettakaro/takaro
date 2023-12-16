@@ -1384,7 +1384,7 @@ export interface EventEntityKilled {
    * @type {IGamePlayer}
    * @memberof EventEntityKilled
    */
-  killer: IGamePlayer;
+  player: IGamePlayer;
   /**
    *
    * @type {string}
@@ -3160,10 +3160,22 @@ export interface IItemDTO {
   name: string;
   /**
    *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  description?: string;
+  /**
+   *
    * @type {number}
    * @memberof IItemDTO
    */
-  amount: number;
+  amount?: number;
 }
 /**
  *
@@ -3349,6 +3361,262 @@ export interface InviteOutputDTO {
    * @memberof InviteOutputDTO
    */
   devServer: string;
+}
+/**
+ *
+ * @export
+ * @interface ItemCreateDTO
+ */
+export interface ItemCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ItemCreateDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemCreateDTO
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemCreateDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemCreateDTO
+   */
+  icon?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemCreateDTO
+   */
+  gameserverId: string;
+}
+/**
+ *
+ * @export
+ * @interface ItemOutputArrayDTOAPI
+ */
+export interface ItemOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ItemsOutputDTO>}
+   * @memberof ItemOutputArrayDTOAPI
+   */
+  data: Array<ItemsOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ItemOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ItemOutputDTOAPI
+ */
+export interface ItemOutputDTOAPI {
+  /**
+   *
+   * @type {ItemsOutputDTO}
+   * @memberof ItemOutputDTOAPI
+   */
+  data: ItemsOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ItemOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ItemSearchInputAllowedFilters
+ */
+export interface ItemSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  code?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  gameserverId?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ItemSearchInputDTO
+ */
+export interface ItemSearchInputDTO {
+  /**
+   *
+   * @type {ItemSearchInputAllowedFilters}
+   * @memberof ItemSearchInputDTO
+   */
+  filters?: ItemSearchInputAllowedFilters;
+  /**
+   *
+   * @type {ItemSearchInputAllowedFilters}
+   * @memberof ItemSearchInputDTO
+   */
+  search?: ItemSearchInputAllowedFilters;
+  /**
+   *
+   * @type {number}
+   * @memberof ItemSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ItemSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemSearchInputDTO
+   */
+  sortDirection?: ItemSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemSearchInputDTO
+   */
+  startDate?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemSearchInputDTO
+   */
+  endDate?: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const ItemSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type ItemSearchInputDTOSortDirectionEnum =
+  (typeof ItemSearchInputDTOSortDirectionEnum)[keyof typeof ItemSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface ItemUpdateDTO
+ */
+export interface ItemUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ItemUpdateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemUpdateDTO
+   */
+  code?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemUpdateDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemUpdateDTO
+   */
+  icon?: string;
+}
+/**
+ *
+ * @export
+ * @interface ItemsOutputDTO
+ */
+export interface ItemsOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  icon?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  gameserverId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ItemsOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ItemsOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ItemsOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -4425,10 +4693,10 @@ export interface PlayerOnGameServerUpdateDTO {
 export interface PlayerOnGameserverOutputArrayDTOAPI {
   /**
    *
-   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @type {Array<PlayerOnGameserverOutputWithRolesDTO>}
    * @memberof PlayerOnGameserverOutputArrayDTOAPI
    */
-  data: Array<PlayerOnGameserverOutputDTO>;
+  data: Array<PlayerOnGameserverOutputWithRolesDTO>;
   /**
    *
    * @type {MetadataOutput}
@@ -4498,6 +4766,12 @@ export interface PlayerOnGameserverOutputDTO {
   currency: number;
   /**
    *
+   * @type {Array<IItemDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  inventory: Array<IItemDTO>;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOnGameserverOutputDTO
    */
@@ -4523,10 +4797,10 @@ export interface PlayerOnGameserverOutputDTO {
 export interface PlayerOnGameserverOutputDTOAPI {
   /**
    *
-   * @type {PlayerOnGameserverOutputDTO}
+   * @type {PlayerOnGameserverOutputWithRolesDTO}
    * @memberof PlayerOnGameserverOutputDTOAPI
    */
-  data: PlayerOnGameserverOutputDTO;
+  data: PlayerOnGameserverOutputWithRolesDTO;
   /**
    *
    * @type {MetadataOutput}
@@ -4618,6 +4892,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   currency: number;
+  /**
+   *
+   * @type {Array<IItemDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  inventory: Array<IItemDTO>;
 }
 /**
  *
@@ -11624,6 +11904,418 @@ export class HookApi extends BaseAPI {
   public hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: AxiosRequestConfig) {
     return HookApiFp(this.configuration)
       .hookControllerUpdate(id, hookUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * ItemApi - axios parameter creator
+ * @export
+ */
+export const ItemApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerCreate: async (
+      itemCreateDTO?: ItemCreateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/items`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(itemCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerDelete: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('itemControllerDelete', 'id', id);
+      const localVarPath = `/items/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerFindOne: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('itemControllerFindOne', 'id', id);
+      const localVarPath = `/items/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerSearch: async (
+      itemSearchInputDTO?: ItemSearchInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/items/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(itemSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerUpdate: async (
+      id: string,
+      itemUpdateDTO?: ItemUpdateDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('itemControllerUpdate', 'id', id);
+      const localVarPath = `/items/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(itemUpdateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ItemApi - functional programming interface
+ * @export
+ */
+export const ItemApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ItemApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async itemControllerCreate(
+      itemCreateDTO?: ItemCreateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerCreate(itemCreateDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async itemControllerDelete(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerDelete(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async itemControllerFindOne(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerFindOne(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async itemControllerSearch(
+      itemSearchInputDTO?: ItemSearchInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerSearch(itemSearchInputDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async itemControllerUpdate(
+      id: string,
+      itemUpdateDTO?: ItemUpdateDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerUpdate(id, itemUpdateDTO, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+  };
+};
+
+/**
+ * ItemApi - factory interface
+ * @export
+ */
+export const ItemApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+  const localVarFp = ItemApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Create
+     * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerCreate(itemCreateDTO?: ItemCreateDTO, options?: any): AxiosPromise<ItemOutputDTOAPI> {
+      return localVarFp.itemControllerCreate(itemCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerDelete(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.itemControllerDelete(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Find one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerFindOne(id: string, options?: any): AxiosPromise<ItemOutputDTOAPI> {
+      return localVarFp.itemControllerFindOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: any): AxiosPromise<ItemOutputArrayDTOAPI> {
+      return localVarFp.itemControllerSearch(itemSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Update
+     * @param {string} id
+     * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    itemControllerUpdate(id: string, itemUpdateDTO?: ItemUpdateDTO, options?: any): AxiosPromise<ItemOutputDTOAPI> {
+      return localVarFp.itemControllerUpdate(id, itemUpdateDTO, options).then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ItemApi - object-oriented interface
+ * @export
+ * @class ItemApi
+ * @extends {BaseAPI}
+ */
+export class ItemApi extends BaseAPI {
+  /**
+   *
+   * @summary Create
+   * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ItemApi
+   */
+  public itemControllerCreate(itemCreateDTO?: ItemCreateDTO, options?: AxiosRequestConfig) {
+    return ItemApiFp(this.configuration)
+      .itemControllerCreate(itemCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Delete
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ItemApi
+   */
+  public itemControllerDelete(id: string, options?: AxiosRequestConfig) {
+    return ItemApiFp(this.configuration)
+      .itemControllerDelete(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Find one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ItemApi
+   */
+  public itemControllerFindOne(id: string, options?: AxiosRequestConfig) {
+    return ItemApiFp(this.configuration)
+      .itemControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ItemApi
+   */
+  public itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: AxiosRequestConfig) {
+    return ItemApiFp(this.configuration)
+      .itemControllerSearch(itemSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Update
+   * @param {string} id
+   * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ItemApi
+   */
+  public itemControllerUpdate(id: string, itemUpdateDTO?: ItemUpdateDTO, options?: AxiosRequestConfig) {
+    return ItemApiFp(this.configuration)
+      .itemControllerUpdate(id, itemUpdateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

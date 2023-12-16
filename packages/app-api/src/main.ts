@@ -33,6 +33,7 @@ import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
 import { ItemController } from './controllers/ItemController.js';
 import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
+import { InventoryWorker } from './workers/inventoryWorker.js';
 
 export const server = new HTTP(
   {
@@ -95,6 +96,9 @@ async function main() {
 
   new ItemsSyncWorker();
   log.info('👷 Items sync worker started');
+
+  new InventoryWorker();
+  log.info('👷 Inventory worker started');
 
   await getSocketServer(server.server as HttpServer);
   await server.start();

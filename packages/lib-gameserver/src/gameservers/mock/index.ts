@@ -144,4 +144,8 @@ export class Mock implements IGameServer {
   async listItems(): Promise<IItemDTO[]> {
     return this.requestFromServer('listItems');
   }
+
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    return this.requestFromServer('getPlayerInventory', player);
+  }
 }

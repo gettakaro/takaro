@@ -5,18 +5,18 @@ import { logger } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
 
-const log = logger('worker:itemsSync');
+const log = logger('worker:inventory');
 
-export class ItemsSyncWorker extends TakaroWorker<IGameServerQueueData> {
+export class InventoryWorker extends TakaroWorker<IGameServerQueueData> {
   constructor() {
-    super(config.get('queues.itemsSync.name'), 1, processJob);
-    queueService.queues.itemsSync.queue.add(
+    super(config.get('queues.inventory.name'), 1, processJob);
+    queueService.queues.inventory.queue.add(
       { domainId: 'all' },
       {
-        jobId: 'itemsSync',
+        jobId: 'inventory',
         repeat: {
-          jobId: 'itemsSync',
-          every: config.get('queues.itemsSync.interval'),
+          jobId: 'inventory',
+          every: config.get('queues.inventory.interval'),
         },
       }
     );
@@ -25,7 +25,7 @@ export class ItemsSyncWorker extends TakaroWorker<IGameServerQueueData> {
 
 export async function processJob(job: Job<IGameServerQueueData>) {
   if (job.data.domainId === 'all') {
-    log.info('Processing items sync job for all domains');
+    log.info('Processing inventory job for all domains');
 
     const domainsService = new DomainService();
     const domains = await domainsService.find({});
@@ -34,9 +34,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
       for (const gs of gameServers.results) {
-        await queueService.queues.itemsSync.queue.add(
+        await queueService.queues.inventory.queue.add(
           { domainId: domain.id, gameServerId: gs.id },
-          { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` }
+          { jobId: `inventory-${domain.id}-${gs.id}-${Date.now()}` }
         );
       }
     }
@@ -45,11 +45,11 @@ export async function processJob(job: Job<IGameServerQueueData>) {
   }
 
   if (job.data.gameServerId) {
-    // Processing for a specific game server
-    log.info(`Processing items sync job for domain: ${job.data.domainId} and game server: ${job.data.gameServerId}`);
     const gameserverService = new GameServerService(job.data.domainId);
-    await gameserverService.syncItems(job.data.gameServerId);
 
+    // Processing for a specific game server
+    log.info(`Processing inventory job for domain: ${job.data.domainId} and game server: ${job.data.gameServerId}`);
+    await gameserverService.syncInventories(job.data.gameServerId);
     return;
   }
 
