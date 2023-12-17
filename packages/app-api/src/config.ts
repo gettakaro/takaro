@@ -31,6 +31,7 @@ interface IHttpConfig extends IBaseConfig {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
     url: string;
+    startWorkers: boolean;
   };
 }
 
@@ -133,6 +134,12 @@ const configSchema = {
       format: String,
       default: 'http://localhost:3000',
       env: 'TAKARO_HOST',
+    },
+    startWorkers: {
+      doc: 'Whether to start the workers, this can be used to separate the workers from the API processes',
+      format: Boolean,
+      default: true,
+      env: 'START_WORKERS',
     },
   },
 };
