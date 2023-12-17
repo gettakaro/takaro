@@ -15,6 +15,8 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ playerId }) =>
 
   if (isLoading) return <Loading />;
 
+  if (!data?.data.length) return <p>No inventory data</p>;
+
   return data?.data.map((player) => {
     return (
       <pre>
