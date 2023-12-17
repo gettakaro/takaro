@@ -9,7 +9,7 @@ const log = logger('worker:inventory');
 
 export class InventoryWorker extends TakaroWorker<IGameServerQueueData> {
   constructor() {
-    super(config.get('queues.inventory.name'), 1, processJob);
+    super(config.get('queues.inventory.name'), config.get('queues.inventory.concurrency'), processJob);
     queueService.queues.inventory.queue.add(
       { domainId: 'all' },
       {

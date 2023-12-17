@@ -29,6 +29,7 @@ export interface IQueuesConfig extends IBaseConfig {
     inventory: {
       name: string;
       interval: number;
+      concurrency: number;
     };
   };
   redis: {
@@ -157,6 +158,12 @@ export const queuesConfigSchema = {
         format: Number,
         default: ms('30seconds'),
         env: 'INVENTORY_QUEUE_INTERVAL',
+      },
+      concurrency: {
+        doc: 'The number of inventory to run at once',
+        format: Number,
+        default: 10,
+        env: 'INVENTORY_QUEUE_CONCURRENCY',
       },
     },
   },
