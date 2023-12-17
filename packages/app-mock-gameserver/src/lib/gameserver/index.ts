@@ -286,6 +286,19 @@ class MockGameserver implements IMockGameServer {
     });
     this.socketServer.io.emit(GameEvents.LOG_LINE, logLine);
   }
+
+  async getPlayerInventory(/* playerRef: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
+    return [
+      await new IItemDTO().construct({
+        code: 'wood',
+        amount: parseInt(faker.random.numeric(2), 10),
+      }),
+      await new IItemDTO().construct({
+        code: 'stone',
+        amount: parseInt(faker.random.numeric(2), 10),
+      }),
+    ];
+  }
 }
 
 let cachedMockServer: MockGameserver | null = null;

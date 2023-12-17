@@ -65,6 +65,6 @@ export interface IConnectorQueueData extends IBaseJobData {
   operation: 'create' | 'update' | 'delete';
 }
 
-export interface IItemsSyncQueueData extends IBaseJobData {
+export interface IGameServerQueueData extends IBaseJobData {
   gameServerId?: string;
 }

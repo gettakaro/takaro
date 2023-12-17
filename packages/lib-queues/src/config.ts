@@ -26,6 +26,10 @@ export interface IQueuesConfig extends IBaseConfig {
       name: string;
       interval: number;
     };
+    inventory: {
+      name: string;
+      interval: number;
+    };
   };
   redis: {
     host: string;
@@ -139,6 +143,20 @@ export const queuesConfigSchema = {
         format: Number,
         default: ms('1hour'),
         env: 'ITEMS_SYNC_QUEUE_INTERVAL',
+      },
+    },
+    inventory: {
+      name: {
+        doc: 'The name of the queue to use for inventory',
+        format: String,
+        default: 'inventory',
+        env: 'INVENTORY_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the inventory',
+        format: Number,
+        default: ms('30seconds'),
+        env: 'INVENTORY_QUEUE_INTERVAL',
       },
     },
   },

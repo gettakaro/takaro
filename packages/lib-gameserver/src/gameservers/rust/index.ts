@@ -65,7 +65,7 @@ export class Rust implements IGameServer {
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item} ${amount}`);
+    await this.executeConsoleCommand(`inventory.giveid ${player.gameId} ${item} ${amount}`);
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
@@ -219,5 +219,9 @@ export class Rust implements IGameServer {
         });
       })
     );
+  }
+
+  async getPlayerInventory(/* player: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

@@ -1,6 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { PlayerOutputArrayDTOAPI, PlayerOutputWithRolesDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
+import {
+  PlayerOnGameServerSearchInputDTO,
+  PlayerOnGameserverOutputArrayDTOAPI,
+  PlayerOutputArrayDTOAPI,
+  PlayerOutputWithRolesDTO,
+  PlayerSearchInputDTO,
+} from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
@@ -10,6 +16,8 @@ export const playerKeys = {
   all: ['players'] as const,
   list: () => [...playerKeys.all, 'list'] as const,
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
+  pogs: ['playerOnGameServers'] as const,
+  pogsList: () => [...playerKeys.pogs, 'list'] as const,
 };
 
 export const useInfinitePlayers = ({ page, ...queryParams }: PlayerSearchInputDTO = { page: 0 }) => {
@@ -55,4 +63,16 @@ export const usePlayer = (id: string) => {
     queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
     useErrorBoundary: (error) => error.response!.status >= 500,
   });
+};
+
+export const usePlayerOnGameServers = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
+  const apiClient = useApiClient();
+
+  const queryOpts = useQuery<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
+    queryKey: [...playerKeys.pogsList(), { queryParams }],
+    queryFn: async () => (await apiClient.playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
+    keepPreviousData: true,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+  return queryOpts;
 };

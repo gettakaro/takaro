@@ -21,6 +21,7 @@ class SocketServer {
     'unbanPlayer',
     'listBans',
     'listItems',
+    'getPlayerInventory',
   ];
 
   constructor(app: HttpServer) {

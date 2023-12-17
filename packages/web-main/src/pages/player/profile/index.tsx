@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { SiEpicgames as EpicGamesIcon } from 'react-icons/si';
 import { FaSteam as SteamIcon, FaXbox as XboxIcon, FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { PlayerRolesTable } from './PlayerRolesTable';
+import { PlayerInventoryTable } from './PlayerInventoryTable';
 
 export const ChipContainer = styled.div`
   display: flex;
@@ -73,8 +74,11 @@ export const PlayerProfile: FC = () => {
       <Divider />
 
       <h2>Roles</h2>
-
       <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} playerName={data?.name} />
+
+      <h2>Inventory</h2>
+      <PlayerInventoryTable playerId={data.id} />
+
       <Outlet />
     </div>
   );

@@ -428,4 +428,20 @@ export class GameServerService extends TakaroService<
       })
     );
   }
+
+  async syncInventories(gameServerId: string) {
+    const onlinePlayers = await this.getPlayers(gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    const pogService = new PlayerOnGameServerService(this.domainId);
+    const pogRepo = pogService.repo;
+
+    await Promise.all(
+      onlinePlayers.map(async (p) => {
+        const inventory = await gameInstance.getPlayerInventory(p);
+        const pog = await pogService.resolveRef(p, gameServerId);
+        if (!pog) throw new errors.NotFoundError('Player not found');
+        await pogRepo.syncInventory(pog.id, inventory);
+      })
+    );
+  }
 }

@@ -14,6 +14,7 @@ import { SdtdApiClient } from './sdtdAPIClient.js';
 import { Settings } from '@takaro/apiclient';
 
 import { SdtdConnectionInfo } from './connectionInfo.js';
+import { InventoryItem } from './apiResponses.js';
 
 const vanillaItems = (await import('./items-7d2d.json', { assert: { type: 'json' } })).default as Record<string, any>;
 
@@ -236,5 +237,32 @@ export class SevenDaysToDie implements IGameServer {
     }
 
     return parsedItems;
+  }
+
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    const inventoryRes = await this.apiClient.getPlayerInventory(`EOS_${player.gameId}`);
+    const resp: IItemDTO[] = [];
+
+    const mapSdtdItemToDto = async (item: InventoryItem | null) => {
+      if (!item) return null;
+      return new IItemDTO().construct({ code: item.name, amount: item.count });
+    };
+
+    const dtos = await Promise.all([
+      ...inventoryRes.data.bag.map(mapSdtdItemToDto),
+      ...inventoryRes.data.belt.map(mapSdtdItemToDto),
+    ]);
+
+    const filteredDTOs = dtos.filter((item) => item !== null) as IItemDTO[];
+    resp.push(...filteredDTOs);
+
+    for (const slot in inventoryRes.data.equipment) {
+      if (Object.prototype.hasOwnProperty.call(inventoryRes.data.equipment, slot)) {
+        const element = inventoryRes.data.equipment[slot];
+        if (element) resp.push(await new IItemDTO().construct({ code: element.name, amount: element.count }));
+      }
+    }
+
+    return resp;
   }
 }

@@ -8,19 +8,22 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
+import {
+  PlayerOnGameServerService,
+  PlayerOnGameserverOutputWithRolesDTO,
+} from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 
-export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO> {
-  @Type(() => PlayerOnGameserverOutputDTO)
+export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
+  @Type(() => PlayerOnGameserverOutputWithRolesDTO)
   @ValidateNested()
-  declare data: PlayerOnGameserverOutputDTO;
+  declare data: PlayerOnGameserverOutputWithRolesDTO;
 }
 
-export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO[]> {
-  @Type(() => PlayerOnGameserverOutputDTO)
+export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO[]> {
+  @Type(() => PlayerOnGameserverOutputWithRolesDTO)
   @ValidateNested({ each: true })
-  declare data: PlayerOnGameserverOutputDTO[];
+  declare data: PlayerOnGameserverOutputWithRolesDTO[];
 }
 
 class PlayerOnGameServerSearchInputAllowedFilters {
