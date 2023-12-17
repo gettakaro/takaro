@@ -82,23 +82,25 @@ async function main() {
   const initProviders = await AuthService.initPassport();
   log.info(`🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`);
 
-  new EventsWorker();
-  log.info('👷 Event worker started');
+  if (config.get('takaro.startWorkers')) {
+    new EventsWorker();
+    log.info('👷 Event worker started');
 
-  new CommandWorker(config.get('queues.commands.concurrency'));
-  log.info('👷 Command worker started');
+    new CommandWorker(config.get('queues.commands.concurrency'));
+    log.info('👷 Command worker started');
 
-  new CronJobWorker(config.get('queues.cronjobs.concurrency'));
-  log.info('👷 CronJob worker started');
+    new CronJobWorker(config.get('queues.cronjobs.concurrency'));
+    log.info('👷 CronJob worker started');
 
-  new HookWorker(config.get('queues.hooks.concurrency'));
-  log.info('👷 Hook worker started');
+    new HookWorker(config.get('queues.hooks.concurrency'));
+    log.info('👷 Hook worker started');
 
-  new ItemsSyncWorker();
-  log.info('👷 Items sync worker started');
+    new ItemsSyncWorker();
+    log.info('👷 Items sync worker started');
 
-  new InventoryWorker();
-  log.info('👷 Inventory worker started');
+    new InventoryWorker();
+    log.info('👷 Inventory worker started');
+  }
 
   await getSocketServer(server.server as HttpServer);
   await server.start();
