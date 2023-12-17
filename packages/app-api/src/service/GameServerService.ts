@@ -440,7 +440,7 @@ export class GameServerService extends TakaroService<
         const inventory = await gameInstance.getPlayerInventory(p);
         const pog = await pogService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
-        await pogRepo.syncInventory(pog.id, inventory);
+        await pogRepo.syncInventory(pog.id, gameServerId, inventory);
       })
     );
   }

@@ -106,4 +106,15 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
 
     return this.create(item);
   }
+
+  async findItemByCode(code: string, gameServerId: string): Promise<ItemsOutputDTO> {
+    const { query } = await this.getModel();
+    const data = await query.where('code', code).andWhere('gameserverId', gameServerId).first();
+
+    if (!data) {
+      throw new errors.NotFoundError();
+    }
+
+    return new ItemsOutputDTO().construct(data);
+  }
 }

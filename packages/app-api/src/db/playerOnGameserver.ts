@@ -317,31 +317,28 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return Promise.all(items.map((item) => new IItemDTO().construct(item)));
   }
 
-  async syncInventory(playerId: string, items: IItemDTO[]) {
+  async syncInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {
     const { query, model } = await this.getInventoryModel();
     const { query: query2 } = await this.getInventoryModel();
 
     const itemRepo = new ItemRepo(this.domainId);
-    const existingItems = await itemRepo.find({
-      filters: {
-        code: items.map((item) => item.code),
-      },
-    });
 
-    const toInsert = items.map((item) => {
-      const itemDef = existingItems.results.find((i) => i.code === item.code);
+    const toInsert = await Promise.all(
+      items.map(async (item) => {
+        const itemDef = await itemRepo.findItemByCode(item.code, gameServerId);
 
-      if (!itemDef) {
-        throw new errors.BadRequestError(`Item ${item.code} not found`);
-      }
+        if (!itemDef) {
+          throw new errors.BadRequestError(`Item ${item.code} not found`);
+        }
 
-      return {
-        playerId,
-        itemId: itemDef.id,
-        quantity: item.amount,
-        domain: this.domainId,
-      };
-    });
+        return {
+          playerId,
+          itemId: itemDef.id,
+          quantity: item.amount,
+          domain: this.domainId,
+        };
+      })
+    );
 
     const trx = await transaction.start(model.knex());
 
