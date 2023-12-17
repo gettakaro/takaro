@@ -4,6 +4,7 @@ import { Job } from 'bullmq';
 import { logger } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
+import { ctx } from '@takaro/util';
 
 const log = logger('worker:inventory');
 
@@ -24,6 +25,12 @@ export class InventoryWorker extends TakaroWorker<IGameServerQueueData> {
 }
 
 export async function processJob(job: Job<IGameServerQueueData>) {
+  ctx.addData({
+    domain: job.data.domainId,
+    gameServer: job.data.gameServerId,
+    jobId: job.id,
+  });
+
   if (job.data.domainId === 'all') {
     log.info('Processing inventory job for all domains');
 
@@ -33,12 +40,19 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     for (const domain of domains.results) {
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
-      for (const gs of gameServers.results) {
-        await queueService.queues.inventory.queue.add(
-          { domainId: domain.id, gameServerId: gs.id },
-          { jobId: `inventory-${domain.id}-${gs.id}-${Date.now()}` }
-        );
-      }
+
+      const promises = gameServers.results.map(async (gs) => {
+        const reachable = await gameserverService.testReachability(gs.id);
+
+        if (reachable.connectable) {
+          await queueService.queues.itemsSync.queue.add(
+            { domainId: domain.id, gameServerId: gs.id },
+            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` }
+          );
+        }
+      });
+
+      await Promise.all(promises);
     }
 
     return;

@@ -29,6 +29,7 @@ async function processJob(job: Job<IEventQueueData>) {
   ctx.addData({
     domain: job.data.domainId,
     gameServer: job.data.gameServerId,
+    jobId: job.id,
   });
   log.info('Processing an event', job.data);
 
