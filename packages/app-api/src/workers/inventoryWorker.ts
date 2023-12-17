@@ -45,9 +45,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         const reachable = await gameserverService.testReachability(gs.id);
 
         if (reachable.connectable) {
-          await queueService.queues.itemsSync.queue.add(
+          await queueService.queues.inventory.queue.add(
             { domainId: domain.id, gameServerId: gs.id },
-            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` }
+            { jobId: `inventory-${domain.id}-${gs.id}-${Date.now()}` }
           );
         }
       });
