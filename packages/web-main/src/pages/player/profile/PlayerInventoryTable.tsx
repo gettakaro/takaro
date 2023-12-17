@@ -17,11 +17,15 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ playerId }) =>
 
   if (!data?.data.length) return <p>No inventory data</p>;
 
-  return data?.data.map((player) => {
-    return (
-      <pre>
-        <code>{JSON.stringify(player.inventory, null, 2)}</code>
-      </pre>
-    );
-  });
+  return (
+    <>
+      {data?.data.map((player) => {
+        return (
+          <pre>
+            <code>{JSON.stringify(player.inventory, null, 2)}</code>
+          </pre>
+        );
+      })}
+    </>
+  );
 };
