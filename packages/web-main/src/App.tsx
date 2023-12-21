@@ -3,7 +3,7 @@ import { ThemeProvider as OryThemeProvider } from '@ory/elements';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
-import { Router } from './Router';
+import { Router } from './Router.js';
 import { useState } from 'react';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';

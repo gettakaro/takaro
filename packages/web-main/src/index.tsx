@@ -5,12 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/react';
-import {
-  useLocation,
-  useNavigationType,
-  createRoutesFromChildren,
-  matchRoutes,
-} from 'react-router-dom';
+import { init, sentry } from '@spotlightjs/spotlight';
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 
 // styles required for slider component we rely on
 import 'rc-slider/assets/index.css';
@@ -40,6 +36,15 @@ Sentry.init({
   // To prevent this from being exceeded, we can should lower the sample to only send e.g. 20% of traces.
   tracesSampleRate: 1,
 });
+
+if (import.meta.env.DEV) {
+  init({
+    integrations: [sentry()],
+    debug: true,
+    sidecarUrl: 'http://127.0.0.1:8969/stream',
+    anchor: 'bottomRight',
+  });
+}
 
 root.render(<App />);
 

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import checker from 'vite-plugin-checker';
+import spotlightSidecar from '@spotlightjs/sidecar/vite-plugin';
 
 export default defineConfig({
   build: {
@@ -23,6 +24,6 @@ export default defineConfig({
   css: {
     transformer: 'lightningcss',
   },
-  plugins: [react(), tsconfigPaths(), checker({ typescript: true })],
+  plugins: [react(),  spotlightSidecar(),tsconfigPaths(), checker({ typescript: true }), ],
   envDir: '../../',
 });
