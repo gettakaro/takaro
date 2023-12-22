@@ -12,7 +12,6 @@ import {
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
-  IItemDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -30,6 +29,7 @@ import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
+import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -129,15 +129,21 @@ export class GameServerService extends TakaroService<
 
     const createdServer = await this.repo.create(item);
 
-    const settingsService = new SettingsService(this.domainId, createdServer.id);
-
-    await settingsService.init();
-
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: createdServer.id,
       operation: 'create',
     });
+
+    await queueService.queues.itemsSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
+
+    await queueService.queues.playerSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
     return createdServer;
   }
 
@@ -361,11 +367,11 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, item: IItemDTO) {
+  async giveItem(gameServerId: string, playerId: string, item: string, amount: number) {
     const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
     const playerRef = await playerService.getRef(playerId, gameServerId);
-    return gameInstance.giveItem(playerRef, item);
+    return gameInstance.giveItem(playerRef, item, amount);
   }
 
   async getPlayers(gameServerId: string) {
@@ -414,5 +420,38 @@ export class GameServerService extends TakaroService<
     );
 
     return location;
+  }
+
+  async syncItems(gameServerId: string) {
+    const itemsService = new ItemsService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const items = await gameInstance.listItems();
+
+    await Promise.all(
+      items.map(async (item) => {
+        return itemsService.upsert(
+          await new ItemCreateDTO().construct({
+            ...item,
+            gameserverId: gameServerId,
+          })
+        );
+      })
+    );
+  }
+
+  async syncInventories(gameServerId: string) {
+    const onlinePlayers = await this.getPlayers(gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    const pogService = new PlayerOnGameServerService(this.domainId);
+    const pogRepo = pogService.repo;
+
+    await Promise.all(
+      onlinePlayers.map(async (p) => {
+        const inventory = await gameInstance.getPlayerInventory(p);
+        const pog = await pogService.resolveRef(p, gameServerId);
+        if (!pog) throw new errors.NotFoundError('Player not found');
+        await pogRepo.syncInventory(pog.id, gameServerId, inventory);
+      })
+    );
   }
 }

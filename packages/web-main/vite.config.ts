@@ -10,6 +10,16 @@ export default defineConfig({
     sourcemap: true,
     cssMinify: 'lightningcss',
   },
+
+  server: {
+    warmup: {
+      clientFiles: [
+        // commonly used files to warm up the esbuild cache
+        './src/Router.tsx',
+        './src/index.tsx',
+      ],
+    },
+  },
   css: {
     transformer: 'lightningcss',
   },

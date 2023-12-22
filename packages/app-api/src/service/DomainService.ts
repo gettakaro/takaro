@@ -9,7 +9,6 @@ import { DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
 import { GameServerService } from './GameServerService.js';
-import { SettingsService } from './SettingsService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -114,10 +113,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
-    const settingsService = new SettingsService(domain.id);
     const moduleService = new ModuleService(domain.id);
-
-    await settingsService.init();
 
     const rootPermission = await roleService.permissionCodeToRecord(PERMISSIONS.ROOT);
     const readPlayersPermission = await roleService.permissionCodeToRecord(PERMISSIONS.READ_PLAYERS);

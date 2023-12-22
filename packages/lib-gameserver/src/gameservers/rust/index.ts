@@ -1,4 +1,4 @@
-import { logger, errors, traceableClass } from '@takaro/util';
+import { logger, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
@@ -12,6 +12,8 @@ import {
 import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
 import { Settings } from '@takaro/apiclient';
+
+const itemsJson = (await import('./items-rust.json', { assert: { type: 'json' } })).default;
 
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
@@ -54,7 +56,7 @@ export class Rust implements IGameServer {
         return new IGamePlayer().construct({
           gameId: player.SteamID,
           steamId: player.SteamID,
-          ip: player.Address,
+          ip: player.Address.split(':')[0],
           name: player.DisplayName,
           ping: player.Ping,
         });
@@ -62,8 +64,8 @@ export class Rust implements IGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    await this.executeConsoleCommand(`inventory.giveto ${player.gameId} ${item.name} ${item.amount}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
+    await this.executeConsoleCommand(`inventory.giveid ${player.gameId} ${item} ${amount}`);
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
@@ -81,9 +83,9 @@ export class Rust implements IGameServer {
 
         if (steamId === player.gameId) {
           return {
-            x: parseFloat(x),
-            y: parseFloat(y),
-            z: parseFloat(z),
+            x: parseInt(x, 10),
+            y: parseInt(y, 10),
+            z: parseInt(z, 10),
           };
         }
       }
@@ -138,8 +140,7 @@ export class Rust implements IGameServer {
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    throw new errors.NotImplementedError();
-    console.log(`say "${player}" was teleported to ${x}, ${y}, ${z}`);
+    await this.executeConsoleCommand(`teleportplayer.pos ${player.gameId} ${x} ${y} ${z}`);
   }
 
   async kickPlayer(player: IGamePlayer, reason: string) {
@@ -205,5 +206,25 @@ export class Rust implements IGameServer {
     }
 
     return bans;
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    return Promise.all(
+      Object.values(itemsJson).map((item) => {
+        return new IItemDTO().construct({
+          code: item.shortname,
+          name: item.Name,
+          description: item.Description,
+        });
+      })
+    );
+  }
+
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    const res = await this.executeConsoleCommand(`viewinventory ${player.gameId}`);
+    const toParse = res.rawResult.replace('[ViewInventory] ', '');
+    const parsed = JSON.parse(toParse);
+    const items = JSON.parse(parsed.Inventory);
+    return await Promise.all(items.map((i: any) => new IItemDTO().construct({ code: i.itemName, amount: i.amount })));
   }
 }

@@ -1,7 +1,13 @@
 import { Axios, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
-import { CommandResponse, OnlinePlayerResponse, PlayerLocation, StatsResponse } from './apiResponses.js';
+import {
+  CommandResponse,
+  InventoryResponse,
+  OnlinePlayerResponse,
+  PlayerLocation,
+  StatsResponse,
+} from './apiResponses.js';
 import { errors } from '@takaro/util';
 
 export class SdtdApiClient {
@@ -63,5 +69,9 @@ export class SdtdApiClient {
 
   async getOnlinePlayers(): Promise<AxiosResponse<Array<OnlinePlayerResponse>>> {
     return this.client.get('/api/getplayersonline');
+  }
+
+  async getPlayerInventory(id: string): Promise<AxiosResponse<InventoryResponse>> {
+    return this.client.get(`/api/getplayerinventory?userid=${id}`);
   }
 }

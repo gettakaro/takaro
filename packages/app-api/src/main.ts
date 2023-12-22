@@ -31,6 +31,9 @@ import { HookWorker } from './workers/hookWorker.js';
 import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
+import { ItemController } from './controllers/ItemController.js';
+import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
+import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 
 export const server = new HTTP(
   {
@@ -51,6 +54,7 @@ export const server = new HTTP(
       DiscordController,
       EventController,
       PlayerOnGameServerController,
+      ItemController,
     ],
   },
   {
@@ -78,17 +82,25 @@ async function main() {
   const initProviders = await AuthService.initPassport();
   log.info(`🔑 External auth provider(s) initialized: ${initProviders.join(' ')}`);
 
-  new EventsWorker();
-  log.info('👷 Event worker started');
+  if (config.get('takaro.startWorkers')) {
+    new EventsWorker();
+    log.info('👷 Event worker started');
 
-  new CommandWorker(config.get('queues.commands.concurrency'));
-  log.info('👷 Command worker started');
+    new CommandWorker(config.get('queues.commands.concurrency'));
+    log.info('👷 Command worker started');
 
-  new CronJobWorker(config.get('queues.cronjobs.concurrency'));
-  log.info('👷 CronJob worker started');
+    new CronJobWorker(config.get('queues.cronjobs.concurrency'));
+    log.info('👷 CronJob worker started');
 
-  new HookWorker(config.get('queues.hooks.concurrency'));
-  log.info('👷 Hook worker started');
+    new HookWorker(config.get('queues.hooks.concurrency'));
+    log.info('👷 Hook worker started');
+
+    new ItemsSyncWorker();
+    log.info('👷 Items sync worker started');
+
+    new PlayerSyncWorker();
+    log.info('👷 playerSync worker started');
+  }
 
   await getSocketServer(server.server as HttpServer);
   await server.start();

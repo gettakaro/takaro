@@ -5,7 +5,7 @@ import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
@@ -42,6 +42,10 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 
   @IsNumber()
   currency: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => IItemDTO)
+  inventory: IItemDTO[];
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {

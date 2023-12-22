@@ -12,6 +12,7 @@ import {
   ModuleInstallationOutputDTO,
 } from '../service/GameServerService.js';
 import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
+import { ITEMS_TABLE_NAME, ItemsModel } from './items.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
@@ -32,6 +33,14 @@ export class GameServerModel extends TakaroModel {
         join: {
           from: `${GAMESERVER_TABLE_NAME}.id`,
           to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+        },
+      },
+      items: {
+        relation: Model.HasManyRelation,
+        modelClass: ItemsModel,
+        join: {
+          from: `${GAMESERVER_TABLE_NAME}.id`,
+          to: `${ITEMS_TABLE_NAME}.gameserverId`,
         },
       },
     };

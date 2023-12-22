@@ -35,8 +35,14 @@ export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
 export class IItemDTO extends TakaroDTO<IItemDTO> {
   @IsString()
   name: string;
+  @IsString()
+  code: string;
+  @IsString()
+  @IsOptional()
+  description: string;
   @IsNumber()
-  amount: number;
+  @IsOptional()
+  amount?: number;
 }
 
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
@@ -66,8 +72,10 @@ export interface IGameServer {
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
+  getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]>;
 
-  giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
+  giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void>;
+  listItems(): Promise<IItemDTO[]>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;

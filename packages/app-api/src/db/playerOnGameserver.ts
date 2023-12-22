@@ -1,9 +1,8 @@
-export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { Model } from 'objection';
+import { Model, transaction } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { GameServerModel } from './gameserver.js';
 import { PlayerModel, RoleOnPlayerModel } from './player.js';
 import {
@@ -13,6 +12,10 @@ import {
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { PlayerRoleAssignmentOutputDTO } from '../service/RoleService.js';
+import { ItemRepo } from './items.js';
+
+export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
+const PLAYER_INVENTORY_TABLE_NAME = 'playerInventory';
 
 export class PlayerOnGameServerModel extends TakaroModel {
   static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
@@ -53,6 +56,27 @@ export class PlayerOnGameServerModel extends TakaroModel {
   }
 }
 
+export class PlayerInventoryModel extends TakaroModel {
+  static tableName = PLAYER_INVENTORY_TABLE_NAME;
+
+  playerId!: string;
+  itemId!: string;
+  quantity!: number;
+
+  static get relationMappings() {
+    return {
+      player: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${PLAYER_INVENTORY_TABLE_NAME}.playerId`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
+}
+
 @traceableClass('repo:playerOnGameserver')
 export class PlayerOnGameServerRepo extends ITakaroRepo<
   PlayerOnGameServerModel,
@@ -68,6 +92,16 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       query: model.query().modify('domainScoped', this.domainId),
     };
   }
+
+  async getInventoryModel() {
+    const knex = await this.getKnex();
+    const model = PlayerInventoryModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
   async find(filters: ITakaroQuery<PlayerOnGameserverOutputDTO>) {
     const { query } = await this.getModel();
     const result = await new QueryBuilder<PlayerOnGameServerModel, PlayerOnGameserverOutputDTO>(filters).build(query);
@@ -104,6 +138,8 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const roleDTOs = await Promise.all(uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO().construct(role)));
 
     data.roles = roleDTOs;
+
+    data.inventory = await this.getInventory(data.id);
 
     return new PlayerOnGameserverOutputWithRolesDTO().construct(data);
   }
@@ -268,5 +304,54 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Player not found');
       }
     });
+  }
+
+  async getInventory(playerId: string): Promise<IItemDTO[]> {
+    const { query } = await this.getInventoryModel();
+
+    const items = await query
+      .select('items.name', 'items.code', 'items.description', 'playerInventory.quantity')
+      .join('items', 'items.id', '=', 'playerInventory.itemId')
+      .where('playerInventory.playerId', playerId);
+
+    return Promise.all(items.map((item) => new IItemDTO().construct(item)));
+  }
+
+  async syncInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {
+    const { query, model } = await this.getInventoryModel();
+    const { query: query2 } = await this.getInventoryModel();
+
+    const itemRepo = new ItemRepo(this.domainId);
+
+    const toInsert = await Promise.all(
+      items.map(async (item) => {
+        const itemDef = await itemRepo.findItemByCode(item.code, gameServerId);
+
+        if (!itemDef) {
+          throw new errors.BadRequestError(`Item ${item.code} not found`);
+        }
+
+        return {
+          playerId,
+          itemId: itemDef.id,
+          quantity: item.amount,
+          domain: this.domainId,
+        };
+      })
+    );
+
+    const trx = await transaction.start(model.knex());
+
+    try {
+      await query.delete().where({ playerId }).transacting(trx);
+      await query2.insert(toInsert).transacting(trx);
+
+      // If everything is ok, commit the transaction
+      await trx.commit();
+    } catch (error) {
+      // If we got an error, rollback the transaction
+      await trx.rollback();
+      throw error;
+    }
   }
 }
