@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { parseString } = require('xml2js');
 const { promisify } = require('node:util');
-const { readFile } = require('fs/promises');
+const { readFile, readdir } = require('fs/promises');
 const { parse } = require('csv/sync');
+const { mkdir, copyFile } = require('node:fs/promises');
 const parseXml = promisify(parseString);
+const sharp = require('sharp');
 
 function lowerCaseFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
@@ -48,6 +50,39 @@ async function main() {
   }
 
   console.log(JSON.stringify(items, null, 2));
+  await parseIcons(items);
+}
+
+async function parseIcons(items) {
+  const outputFolder = 'packages/web-main/public/icons/7d2d';
+  const vanillaIconsFolder = '_data/sdtd/serverfiles/Data/ItemIcons';
+  const itemIcons = await readdir(vanillaIconsFolder);
+  await mkdir(outputFolder, { recursive: true });
+
+  for (const itemKey in items) {
+    if (Object.hasOwnProperty.call(items, itemKey)) {
+      const item = items[itemKey];
+
+      let iconFile = itemIcons.find((i) => i.toLowerCase().includes(itemKey.toLowerCase()));
+
+      if (!iconFile && item.customIcon) {
+        iconFile = itemIcons.find((i) => i.toLowerCase().includes(item.customIcon.toLowerCase()));
+      }
+      if (!iconFile) {
+        throw new Error(`Could not find icon for ${itemKey}`);
+      }
+
+      if (item.tintColor) {
+        const rgb = item.tintColor.split(',').map((num) => parseInt(num.trim()));
+
+        await sharp(`${vanillaIconsFolder}/${iconFile}`)
+          .tint({ r: rgb[0], g: rgb[1], b: rgb[2] })
+          .toFile(`${outputFolder}/${itemKey}.png`);
+      } else {
+        await copyFile(`${vanillaIconsFolder}/${iconFile}`, `${outputFolder}/${itemKey}.png`);
+      }
+    }
+  }
 }
 
 main().catch(console.error);
