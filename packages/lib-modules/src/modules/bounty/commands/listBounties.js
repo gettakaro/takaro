@@ -10,14 +10,14 @@ async function main() {
   const bounties = await takaro.variable.variableControllerSearch({
     filters: {
       key: ['bounty'],
-      moduleId: [mod.id],
+      moduleId: [mod.moduleId],
       gameServerId: [gameServerId],
     },
   });
 
   const bountySums = bounties.reduce((acc, bounty) => {
     const bountyValue = JSON.parse(bounty.value);
-    acc[bountyValue.target.id] = (acc[bountyValue.target.id] || 0) + bountyValue.amount;
+    acc[bountyValue.targetId] = (acc[bountyValue.targetId] || 0) + bountyValue.amount;
     return acc;
   });
 

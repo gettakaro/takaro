@@ -1,13 +1,13 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
-import { HookTriggerDTOEventTypeEnum } from '@takaro/apiclient';
 
 const group = 'Bounty suite';
 
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
   await this.client.settings.settingsControllerSet('economyEnabled', {
+    gameServerId: setupData.gameserver.id,
     value: 'true',
   });
 
@@ -21,7 +21,10 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
     (pog) => pog.gameServerId === setupData.gameserver.id
   )[0];
   if (!pog) throw new Error('pog not found');
-  this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, { currency: 1000 });
+  await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(pog.id, { currency: 1000 });
+  const updatedPog = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(pog.id);
+  expect(updatedPog.data.data.currency).to.be.eq(1000);
+
   return setupData;
 };
 
@@ -61,19 +64,20 @@ const tests = [
       });
       expect(bountyVariable.data.data.length).to.be.eq(1);
 
-      // expect currency to be deducted
       const pog = this.setupData.players[0].playerOnGameServers?.filter(
         (pog) => pog.gameServerId === this.setupData.gameserver.id
       )[0];
-      if (!pog) throw new Error('pog not found');
+      if (!pog) throw new Error('Bounty setter pog not found');
+
+      // expect currency to be deducted
       const updatedPog = (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(pog.id)).data.data;
-      expect(updatedPog.currency).to.be.eq(pog.currency - bountyAmount);
+      expect(updatedPog.currency).to.be.eq(1000 - bountyAmount);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Cannot set multiple bounties on the same player',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -82,7 +86,7 @@ const tests = [
       );
 
       const target = this.setupData.players[1];
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events1 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       const amount = 500;
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -90,15 +94,19 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
+      const messages1 = (await events1).map((e) => e.data.msg);
+      expect(messages1.length).to.be.eq(1);
+      expect(messages1[0]).to.be.eq(`set bounty of ${amount} test coin on ${target.name}`);
+
+      const events2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/bounty ${target.name} ${amount}`,
         playerId: this.setupData.players[0].id,
       });
 
-      const messages = (await events).map((e) => e.data.msg);
-      expect(messages.length).to.be.eq(2);
-      expect(messages[0]).to.be.eq(`set bounty of ${amount} test coin on ${target.name}`);
-      expect(messages[1]).to.be.eq(`You already have a bounty set for ${target.name}`);
+      const messages2 = (await events2).map((e) => e.data.msg);
+      expect(messages2.length).to.be.eq(1);
+      expect(messages2[0]).to.be.eq(`You already have a bounty set on ${target.name}`);
 
       const bountyVariable = await this.client.variable.variableControllerSearch({
         filters: {
@@ -115,7 +123,7 @@ const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Can check if a player has a bounty',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -126,19 +134,22 @@ const tests = [
       const target = this.setupData.players[1];
       const amount = 500;
 
+      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/bounty ${target.name} ${amount}`,
         playerId: this.setupData.players[0].id,
       });
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await setEvents;
+      const getEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/getbounty ${target.name}`,
         playerId: this.setupData.players[0].id,
       });
 
-      const messages = (await events).map((e) => e.data.msg);
+      const messages = (await getEvents).map((e) => e.data.msg);
       expect(messages.length).to.be.eq(1);
       expect(messages[0]).to.be.eq(`${target.name} has a total bounty of ${amount} test coin`);
     },
@@ -147,7 +158,7 @@ const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Can get `no bounty on a player message` if no bounty is set',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -156,7 +167,6 @@ const tests = [
       );
 
       const target = this.setupData.players[1];
-      const amount = 500;
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -166,14 +176,14 @@ const tests = [
 
       const messages = (await events).map((e) => e.data.msg);
       expect(messages.length).to.be.eq(1);
-      expect(messages[0]).to.be.eq(`${target.name} has a total bounty of ${amount} test coin`);
+      expect(messages[0]).to.be.eq(`there are currently no bounties set on ${target.name}`);
     },
   }),
 
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Can delete a bounty on a player',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -184,25 +194,28 @@ const tests = [
       const target = this.setupData.players[1];
       const bountyAmount = 500;
 
+      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/bounty ${target.name} ${bountyAmount}`,
         playerId: this.setupData.players[0].id,
       });
+      await setEvents;
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
-
+      const deleteEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/deletebounty ${target.name}`,
         playerId: this.setupData.players[0].id,
       });
-
-      const messages = (await events).map((e) => e.data.msg);
-      expect(messages.length).to.be.eq(1);
+      const messages = (await deleteEvents).map((e) => e.data.msg);
+      expect(messages.length).to.be.eq(2);
       expect(messages[0]).to.be.eq(
         `Bounty on ${target.name} has been removed and you have been refunded ${bountyAmount} test coin`
       );
+      expect(messages[1]).to.be.eq(
+        `${this.setupData.players[0].name} removed Bounty of ${bountyAmount} test coin on ${this.setupData.players[1].name}.`
+      );
 
-      // expect there be no bounty variable
+      // expect there to be NO bounty variable left
       const bountyVariable = await this.client.variable.variableControllerSearch({
         filters: {
           gameServerId: [this.setupData.gameserver.id],
@@ -219,13 +232,14 @@ const tests = [
       )[0];
       if (!pog) throw new Error('pog not found');
       const updatedPog = (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(pog.id)).data.data;
-      expect(updatedPog.currency).to.be.eq(pog.currency);
+      // should have the original amount of currency again
+      expect(updatedPog.currency).to.be.eq(1000);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Should receive bounty when player is killed who has a bounty on them',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -254,7 +268,7 @@ const tests = [
 
       // trigger hook
       await this.client.hook.hookControllerTrigger({
-        eventType: HookTriggerDTOEventTypeEnum.PlayerDeath,
+        eventType: GameEvents.PLAYER_DEATH,
         gameServerId: this.setupData.gameserver.id,
         player: {
           gameId: targetPog.gameId,
@@ -270,7 +284,7 @@ const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
-    setup: modulesTestSetup,
+    setup: customSetup,
     name: 'Cannot delete a bounty on a player if no bounty is set',
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(

@@ -10,7 +10,7 @@ async function main() {
   const v = await takaro.variable.variableControllerSearch({
     filters: {
       key: ['bounty'],
-      moduleId: [mod.id],
+      moduleId: [mod.moduleId],
       playerId: [player.playerId],
       gameServerId: [gameServerId],
     },
@@ -19,7 +19,7 @@ async function main() {
   // check if you have a bounty on the target player
   const bountyVar = v.data.data.find((v) => {
     const value = JSON.parse(v.value);
-    if (value.target === args.target) {
+    if (value.targetId === args.target.id) {
       return true;
     }
   });
@@ -33,7 +33,7 @@ async function main() {
     await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(player.id, { currency: amount });
     await player.pm(`Bounty on ${targetName} has been removed and you have been refunded ${amount} ${currencyName}`);
 
-    takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
       message: `${playerName} removed Bounty of ${amount} ${currencyName} on ${targetName}.`,
     });
     return;

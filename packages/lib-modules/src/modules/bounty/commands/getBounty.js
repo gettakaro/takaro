@@ -10,7 +10,7 @@ async function main() {
   const bountyVariable = await takaro.variable.variableControllerSearch({
     filters: {
       key: ['bounty'],
-      moduleId: [mod.id],
+      moduleId: [mod.moduleId],
       gameServerId: [gameServerId],
     },
   });
@@ -18,7 +18,7 @@ async function main() {
   // check if you have a bounty on the target player
   const bountiesOnTarget = bountyVariable.data.data.filter((v) => {
     const value = JSON.parse(v.value);
-    if (value.target.id === args.target.id) {
+    if (value.targetId === args.target.id) {
       return true;
     }
   });
@@ -26,7 +26,7 @@ async function main() {
   const targetName = (await takaro.player.playerControllerGetOne(args.target.playerId)).data.data.name;
 
   if (bountiesOnTarget.length === 0) {
-    player.pm(`there are currently no bounties set on ${targetName}`);
+    await player.pm(`there are currently no bounties set on ${targetName}`);
     return;
   }
 
