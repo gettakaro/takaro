@@ -314,7 +314,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       .join('items', 'items.id', '=', 'playerInventory.itemId')
       .where('playerInventory.playerId', playerId);
 
-    return Promise.all(items.map((item) => new IItemDTO().construct(item)));
+    return Promise.all(items.map((item) => new IItemDTO().construct({ ...item, amount: item.quantity })));
   }
 
   async syncInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {
