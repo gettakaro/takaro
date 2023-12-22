@@ -1,4 +1,4 @@
-import { logger, errors, traceableClass } from '@takaro/util';
+import { logger, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
@@ -56,7 +56,7 @@ export class Rust implements IGameServer {
         return new IGamePlayer().construct({
           gameId: player.SteamID,
           steamId: player.SteamID,
-          ip: player.Address,
+          ip: player.Address.split(':')[0],
           name: player.DisplayName,
           ping: player.Ping,
         });
@@ -83,9 +83,9 @@ export class Rust implements IGameServer {
 
         if (steamId === player.gameId) {
           return {
-            x: parseFloat(x),
-            y: parseFloat(y),
-            z: parseFloat(z),
+            x: parseInt(x, 10),
+            y: parseInt(y, 10),
+            z: parseInt(z, 10),
           };
         }
       }
@@ -140,8 +140,7 @@ export class Rust implements IGameServer {
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    throw new errors.NotImplementedError();
-    console.log(`say "${player}" was teleported to ${x}, ${y}, ${z}`);
+    await this.executeConsoleCommand(`teleportplayer.pos ${player.gameId} ${x} ${y} ${z}`);
   }
 
   async kickPlayer(player: IGamePlayer, reason: string) {
@@ -221,7 +220,11 @@ export class Rust implements IGameServer {
     );
   }
 
-  async getPlayerInventory(/* player: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
-    throw new errors.NotImplementedError();
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    const res = await this.executeConsoleCommand(`viewinventory ${player.gameId}`);
+    const toParse = res.rawResult.replace('[ViewInventory] ', '');
+    const parsed = JSON.parse(toParse);
+    const items = JSON.parse(parsed.Inventory);
+    return await Promise.all(items.map((i: any) => new IItemDTO().construct({ code: i.itemName, amount: i.amount })));
   }
 }
