@@ -76,12 +76,19 @@ async function parseIcons(items) {
         throw new Error(`Could not find icon for ${itemKey}`);
       }
 
-      if (item.tintColor) {
-        const rgb = item.tintColor.split(',').map((num) => parseInt(num.trim()));
+      let tint;
+      if (item.customIconTint) {
+        const hex = item.customIconTint;
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        tint = { r, g, b };
+      } else if (item.tintColor) {
+        tint = item.tintColor.split(',').map((num) => parseInt(num.trim()));
+      }
 
-        await sharp(`${vanillaIconsFolder}/${iconFile}`)
-          .tint({ r: rgb[0], g: rgb[1], b: rgb[2] })
-          .toFile(`${outputFolder}/${itemKey}.png`);
+      if (tint) {
+        await sharp(`${vanillaIconsFolder}/${iconFile}`).tint(tint).toFile(`${outputFolder}/${itemKey}.png`);
       } else {
         await copyFile(`${vanillaIconsFolder}/${iconFile}`, `${outputFolder}/${itemKey}.png`);
       }
