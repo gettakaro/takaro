@@ -73,7 +73,7 @@ export class EventsAwaiter {
           console.warn(msg);
           console.warn(JSON.stringify(events, null, 2));
           reject(new Error(msg));
-        }, 5000);
+        }, integrationConfig.get('eventAwaiterTimeout'));
       }),
     ]);
   }

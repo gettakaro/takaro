@@ -16,6 +16,7 @@ interface IIntegrationTestConfig extends IBaseConfig {
   mailhog: {
     url: string;
   };
+  eventAwaiterTimeout: number;
   overwriteSnapshots: boolean;
 }
 
@@ -79,6 +80,12 @@ const configSchema = {
       default: 'http://mailhog:8025',
       env: 'MAILHOG_URL',
     },
+  },
+  eventAwaiterTimeout: {
+    doc: 'The timeout for events awaiter during tests',
+    format: Number,
+    default: 5000,
+    env: 'EVENT_AWAITER_TIMEOUT',
   },
   overwriteSnapshots: {
     doc: 'Setting this to true will overwrite the snapshots with the current test results instead of reporting errors',
