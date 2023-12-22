@@ -15,8 +15,10 @@ import { Settings } from '@takaro/apiclient';
 
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import { InventoryItem } from './apiResponses.js';
-
-const vanillaItems = (await import('./items-7d2d.json', { assert: { type: 'json' } })).default as Record<string, any>;
+import { Worker } from 'worker_threads';
+import path from 'path';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 @traceableClass('game:7d2d')
 export class SevenDaysToDie implements IGameServer {
@@ -219,24 +221,28 @@ export class SevenDaysToDie implements IGameServer {
     const itemsRes = await this.executeConsoleCommand('li *');
     const itemLines = itemsRes.rawResult.split('\n').slice(0, -2);
 
-    const parsedItems: IItemDTO[] = [];
+    return new Promise((resolve, reject) => {
+      const workerPath = path.join(__dirname, 'itemWorker.js');
 
-    for (const line of itemLines) {
-      const trimmed = line.trim();
+      const worker = new Worker(workerPath);
+      worker.postMessage(itemLines);
 
-      const dto = await new IItemDTO().construct({ code: trimmed });
+      worker.on('message', (parsedItems) => {
+        if (parsedItems.error) {
+          reject(parsedItems.error);
+        } else {
+          resolve(parsedItems);
+        }
+        worker.terminate();
+      });
 
-      if (trimmed in vanillaItems) {
-        dto.name = vanillaItems[trimmed].name;
-        dto.description = vanillaItems[trimmed].description;
-      }
-
-      if (!dto.name) dto.name = dto.code;
-
-      parsedItems.push(dto);
-    }
-
-    return parsedItems;
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Worker stopped with exit code ${code}`));
+        }
+      });
+    });
   }
 
   async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
