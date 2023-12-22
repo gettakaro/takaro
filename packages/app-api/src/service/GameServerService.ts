@@ -134,6 +134,16 @@ export class GameServerService extends TakaroService<
       gameServerId: createdServer.id,
       operation: 'create',
     });
+
+    await queueService.queues.itemsSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
+
+    await queueService.queues.playerSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
     return createdServer;
   }
 

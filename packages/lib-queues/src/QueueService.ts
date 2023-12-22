@@ -38,8 +38,8 @@ class QueuesService {
     itemsSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.itemsSync.name')),
     },
-    inventory: {
-      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.inventory.name')),
+    playerSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
     },
   };
 

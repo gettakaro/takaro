@@ -13,8 +13,6 @@ import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { CommandService } from '../service/CommandService.js';
-import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
-import { GameServerService } from '../service/GameServerService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 
 const log = logger('worker:events');
@@ -44,22 +42,7 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if ('player' in event && event.player) {
     const playerService = new PlayerService(domainId);
-    await playerService.sync(event.player, gameServerId);
-
-    const gameServerService = new GameServerService(domainId);
-    const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-
     const resolvedPlayer = await playerService.resolveRef(event.player, gameServerId);
-    await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
-
-    await playerOnGameServerService.addInfo(
-      event.player,
-      gameServerId,
-      await new PlayerOnGameServerUpdateDTO().construct({
-        ip: event.player.ip,
-        ping: event.player.ping,
-      })
-    );
 
     if (isChatMessageEvent(event)) {
       const commandService = new CommandService(domainId);

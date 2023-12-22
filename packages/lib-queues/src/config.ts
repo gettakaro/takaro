@@ -26,7 +26,7 @@ export interface IQueuesConfig extends IBaseConfig {
       name: string;
       interval: number;
     };
-    inventory: {
+    playerSync: {
       name: string;
       interval: number;
       concurrency: number;
@@ -146,24 +146,24 @@ export const queuesConfigSchema = {
         env: 'ITEMS_SYNC_QUEUE_INTERVAL',
       },
     },
-    inventory: {
+    playerSync: {
       name: {
-        doc: 'The name of the queue to use for inventory',
+        doc: 'The name of the queue to use for player sync',
         format: String,
-        default: 'inventory',
-        env: 'INVENTORY_QUEUE_NAME',
+        default: 'playerSync',
+        env: 'PLAYER_SYNC_QUEUE_NAME',
       },
       interval: {
-        doc: 'The interval to run the inventory',
+        doc: 'The interval to run the player sync',
         format: Number,
         default: ms('30seconds'),
-        env: 'INVENTORY_QUEUE_INTERVAL',
+        env: 'PLAYER_SYNC_QUEUE_INTERVAL',
       },
       concurrency: {
-        doc: 'The number of inventory to run at once',
+        doc: 'Job concurrency',
         format: Number,
-        default: 10,
-        env: 'INVENTORY_QUEUE_CONCURRENCY',
+        default: 5,
+        env: 'PLAYER_SYNC_QUEUE_CONCURRENCY',
       },
     },
   },
