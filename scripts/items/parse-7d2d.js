@@ -59,6 +59,10 @@ async function parseIcons(items) {
   const itemIcons = await readdir(vanillaIconsFolder);
   await mkdir(outputFolder, { recursive: true });
 
+  // Some items have an icon but are not listed in the json (🙄)
+  // So we just copy all icons to the output folder as a base
+  await Promise.all(itemIcons.map((icon) => copyFile(`${vanillaIconsFolder}/${icon}`, `${outputFolder}/${icon}`)));
+
   for (const itemKey in items) {
     if (Object.hasOwnProperty.call(items, itemKey)) {
       const item = items[itemKey];
