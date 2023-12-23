@@ -28,6 +28,8 @@ export default {
     description: 'This is a description',
     popOverPlacement: 'bottom',
     readOnly: false,
+    allowPastDates: true,
+    allowFutureDates: true,
     loading: false,
     timePickerOptions: {
       interval: 30,
@@ -70,6 +72,44 @@ export const OnDateSubmit: StoryFn<DatePickerProps> = (args) => {
           hint={args.hint}
           description={args.description}
           popOverPlacement={args.popOverPlacement}
+          allowFutureDates={args.allowFutureDates}
+          allowPastDates={args.allowPastDates}
+        />
+        <Button type="submit" text="Submit form" />
+      </form>
+      <p>result: {result}</p>
+    </Wrapper>
+  );
+};
+
+export const CustomDateFilter: StoryFn<DatePickerProps> = (args) => {
+  const [result, setResult] = useState<string>('none');
+
+  const { control, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
+  };
+
+  return (
+    <Wrapper>
+      Note: for zod to accept the date, an extra option is needed: {'{ offset: true }'}
+      <strong>Custom datefilter that only allows weekends</strong>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DatePicker
+          mode="absolute"
+          control={control}
+          label={args.label}
+          name={args.name}
+          required={args.required}
+          loading={args.loading}
+          hint={args.hint}
+          description={args.description}
+          popOverPlacement={args.popOverPlacement}
+          customDateFilter={(date) => date.weekday == 6 || date.weekday == 7}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -106,6 +146,8 @@ export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           timePickerOptions={args.timePickerOptions}
           description={args.description}
           popOverPlacement={args.popOverPlacement}
+          allowPastDates={args.allowPastDates}
+          allowFutureDates={args.allowFutureDates}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -142,6 +184,8 @@ export const onTimeSubmit: StoryFn<DatePickerProps> = (args) => {
           timePickerOptions={args.timePickerOptions}
           description={args.description}
           popOverPlacement={args.popOverPlacement}
+          allowPastDates={args.allowPastDates}
+          allowFutureDates={args.allowFutureDates}
         />
         <Button type="submit" text="Submit form" />
       </form>
@@ -179,6 +223,8 @@ export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
           relativePickerOptions={args.relativePickerOptions}
           description={args.description}
           popOverPlacement={args.popOverPlacement}
+          allowPastDates={args.allowPastDates}
+          allowFutureDates={args.allowFutureDates}
         />
         <Button type="submit" text="Submit form" />
       </form>

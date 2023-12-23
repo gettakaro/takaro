@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -42,6 +42,10 @@ class PlayerOnGameServerSearchInputAllowedFilters {
   @IsUUID(4, { each: true })
   @IsOptional()
   playerId!: string;
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  online!: boolean;
 }
 
 class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSearchInputAllowedFilters> {

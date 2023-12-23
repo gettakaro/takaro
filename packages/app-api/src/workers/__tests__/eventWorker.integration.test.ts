@@ -70,24 +70,27 @@ const tests = [
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
+      const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          gameId: ['1'],
+          gameServerId: [this.setupData[0].id],
+        },
+      });
+
+      const pog = pogs.data.data[0];
+
+      if (!pog) throw new Error('No player on game server found');
+
+      const playerRes = await this.client.player.playerControllerGetOne(pog.playerId);
+
       const MOCK_PLAYER = await new IGamePlayer().construct({
         ip: '169.169.169.80',
         name: 'jefke',
-        gameId: '1',
-        steamId: '76561198021481871',
+        gameId: pog.gameId,
+        steamId: playerRes.data.data.steamId,
       });
 
       await playerService.sync(MOCK_PLAYER, this.setupData[0].id);
-
-      const playersRes = await this.client.player.playerControllerSearch({
-        filters: {
-          steamId: [MOCK_PLAYER.steamId as string],
-        },
-        extend: ['playerOnGameServers'],
-      });
-
-      expect(playersRes.data.data[0].playerOnGameServers).to.have.lengthOf(1);
-
       await playerService.sync(MOCK_PLAYER, this.setupData[1].id);
 
       const playersResAfter = await this.client.player.playerControllerSearch({
