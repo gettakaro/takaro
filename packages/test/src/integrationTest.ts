@@ -18,15 +18,47 @@ export class IIntegrationTest<SetupData> {
   filteredFields?: string[];
 }
 
-export class IntegrationTest<SetupData> {
-  protected log = {
-    info: () => {},
-    error: () => {},
-    warn: () => {},
-    debug: () => {},
-  };
+const noopLog = {
+  info: () => {},
+  error: () => {},
+  warn: () => {},
+  debug: () => {},
+};
 
-  public readonly adminClient: AdminClient;
+const testDomainPrefix = 'integration-';
+
+const adminClient = new AdminClient({
+  url: integrationConfig.get('host'),
+  auth: {
+    clientId: integrationConfig.get('auth.adminClientId'),
+    clientSecret: integrationConfig.get('auth.adminClientSecret'),
+  },
+  OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
+  log: noopLog,
+});
+
+before(async () => {
+  const danglingDomains = await adminClient.domain.domainControllerSearch({
+    search: {
+      name: [testDomainPrefix],
+    },
+  });
+
+  await Promise.allSettled(
+    danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id))
+  );
+
+  if (danglingDomains.data.data.length > 0) {
+    console.log(
+      `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`
+    );
+  }
+});
+
+export class IntegrationTest<SetupData> {
+  protected log = noopLog;
+
+  public readonly adminClient: AdminClient = adminClient;
   public readonly client: Client;
 
   public standardDomainId: string | null = null;
@@ -43,16 +75,6 @@ export class IntegrationTest<SetupData> {
     }
     this.test.standardEnvironment = this.test.standardEnvironment ?? true;
 
-    this.adminClient = new AdminClient({
-      url: integrationConfig.get('host'),
-      auth: {
-        clientId: integrationConfig.get('auth.adminClientId'),
-        clientSecret: integrationConfig.get('auth.adminClientSecret'),
-      },
-      OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
-      log: this.log,
-    });
-
     this.client = new Client({
       url: integrationConfig.get('host'),
       auth: {},
@@ -62,7 +84,7 @@ export class IntegrationTest<SetupData> {
 
   private async setupStandardEnvironment() {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
-      name: `integration-${this.test.name}`.slice(0, 49),
+      name: `${testDomainPrefix}${this.test.name}`.slice(0, 49),
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
 
