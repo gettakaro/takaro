@@ -252,7 +252,12 @@ const tests = [
       const targetPog = this.setupData.players[1].playerOnGameServers?.filter(
         (pog) => pog.gameServerId === this.setupData.gameserver.id
       )[0];
-      if (!targetPog) throw new Error('pog not found');
+      if (!targetPog) throw new Error('Target pog not found');
+
+      const attackerPog = this.setupData.players[2].playerOnGameServers?.filter(
+        (pog) => pog.gameServerId === this.setupData.gameserver.id
+      )[0];
+      if (!attackerPog) throw new Error('Attacker pog not found');
 
       const bountyAmount = 500;
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -272,6 +277,9 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         player: {
           gameId: targetPog.gameId,
+        },
+        attacker: {
+          gameId: attackerPog.gameId,
         },
       });
 
