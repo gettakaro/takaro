@@ -152,7 +152,7 @@ const configSchema = {
     apiKey: {
       doc: 'The Steam API key',
       format: String,
-      default: null,
+      default: '',
       env: 'STEAM_API_KEY',
     },
     refreshOlderThanMs: {

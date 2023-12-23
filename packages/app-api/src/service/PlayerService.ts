@@ -12,6 +12,7 @@ import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { steamApi } from '../lib/steamApi.js';
+import { config } from '../config.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -226,6 +227,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async handleSteamSync() {
+    if (!config.get('steam.apiKey')) return;
     const toRefresh = await this.repo.getPlayersToRefreshSteam();
 
     if (!toRefresh.length) return;
