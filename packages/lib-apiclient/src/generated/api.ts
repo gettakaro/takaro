@@ -4950,6 +4950,48 @@ export interface PlayerOutputDTO {
   epicOnlineServicesId?: string;
   /**
    *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  steamAvatar?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  steamAccountCreated?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputDTO
+   */
+  steamCommunityBanned?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  steamEconomyBan?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputDTO
+   */
+  steamVacBanned?: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputDTO
+   */
+  steamsDaysSinceLastBan?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputDTO
+   */
+  steamNumberOfVACBans?: number;
+  /**
+   *
    * @type {Array<PlayerOnGameserverOutputDTO>}
    * @memberof PlayerOutputDTO
    */
@@ -5046,6 +5088,48 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamAvatar?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamAccountCreated?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamCommunityBanned?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamEconomyBan?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamVacBanned?: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamsDaysSinceLastBan?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamNumberOfVACBans?: number;
   /**
    *
    * @type {Array<PlayerOnGameserverOutputDTO>}
@@ -5182,6 +5266,18 @@ export interface PlayerSearchInputAllowedFilters {
    * @memberof PlayerSearchInputAllowedFilters
    */
   xboxLiveId?: Array<string>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamCommunityBanned?: Array<boolean>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamVacBanned?: Array<boolean>;
 }
 /**
  *
