@@ -4,7 +4,7 @@ Takaro is a web-based, multi-gameserver manager. It features a web interface to 
 
 ## Concrete
 
-Takaro offers a versatile collection of [modules](./modules.md), simplifying your gameserver management tasks while also extending game functionality.
+Takaro offers a versatile collection of [modules](./advanced/modules.md), simplifying your gameserver management tasks while also extending game functionality.
 Each module can be enabled/disabled per game server you manage. Each module has its own configuration which you can further fine tune to your own needs.
 
 Here are some examples of modules that are available:
