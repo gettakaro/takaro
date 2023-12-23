@@ -1,6 +1,11 @@
-# Takaro
 
-Takaro is a web-based, multi-gameserver manager. It features a web interface to manage your gameservers, and a REST API to interact with them. For detailed information, visit our [DOCUMENTATION](https://docs.takaro.io).
+
+<p align="center">
+  <img align="center" src="https://github.com/gettakaro/takaro/blob/main/logo.png?raw=true" width="200" height="200" />
+  <h2 align="center">Takaro</h2>
+</p>
+
+Takaro is a web-based, multi-gameserver manager. It features a web interface to manage your gameservers, and a REST API to interact with them. For detailed information, visit our [documentation](https://docs.takaro.io).
 
 ## Modules
 
@@ -19,7 +24,7 @@ Here are some examples:
 
 ### Custom modules
 The above modules represent only a **tiny fraction** of the modules maintained by the Takaro team. 
-To explore all the modules we offer, please visit our [full List of Built-In Modules](https://docs.takaro.io/built-in-modules)
+To explore all the modules we offer, visit our [full List of Built-In Modules](https://docs.takaro.io/built-in-modules)
 
 If however the current modules don't cater to your specific needs, don't worry. Takaro also provides a development environment to create your own custom modules.
 
