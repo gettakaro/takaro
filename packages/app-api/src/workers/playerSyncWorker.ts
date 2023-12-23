@@ -59,7 +59,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         })
       );
 
-      await Promise.all(promises);
+      await Promise.allSettled(promises);
     }
 
     return;
