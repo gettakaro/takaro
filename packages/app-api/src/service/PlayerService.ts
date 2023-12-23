@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
-import { PlayerModel, PlayerRepo } from '../db/player.js';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -11,6 +11,8 @@ import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { steamApi } from '../lib/steamApi.js';
+import { config } from '../config.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -25,6 +27,34 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+
+  @IsString()
+  @IsOptional()
+  steamAvatar?: string;
+
+  @IsISO8601()
+  @IsOptional()
+  steamAccountCreated?: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  steamCommunityBanned?: boolean;
+
+  @IsString()
+  @IsOptional()
+  steamEconomyBan?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  steamVacBanned?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  steamsDaysSinceLastBan?: number;
+
+  @IsNumber()
+  @IsOptional()
+  steamNumberOfVACBans?: number;
 
   @IsOptional()
   @ValidateNested({ each: true })
@@ -194,5 +224,40 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         },
       })
     );
+  }
+
+  async handleSteamSync() {
+    if (!config.get('steam.apiKey')) return;
+    const toRefresh = await this.repo.getPlayersToRefreshSteam();
+
+    if (!toRefresh.length) return;
+
+    const [summaries, bans] = await Promise.all([
+      steamApi.getPlayerSummaries(toRefresh),
+      steamApi.getPlayerBans(toRefresh),
+    ]);
+
+    const fullData: (ISteamData | undefined)[] = toRefresh.map((steamId) => {
+      const summary = summaries.find((item) => item.steamid === steamId);
+      const ban = bans.find((item) => item.SteamId === steamId);
+
+      if (!summary || !ban) {
+        this.log.warn('Steam data missing', { steamId, summary, ban });
+        return;
+      }
+
+      return {
+        steamId,
+        steamAvatar: summary.avatarfull,
+        steamAccountCreated: summary.timecreated,
+        steamCommunityBanned: ban.CommunityBanned,
+        steamEconomyBan: ban.EconomyBan,
+        steamVacBanned: ban.VACBanned,
+        steamsDaysSinceLastBan: ban.DaysSinceLastBan,
+        steamNumberOfVACBans: ban.NumberOfVACBans,
+      };
+    });
+
+    await this.repo.setSteamData(fullData);
   }
 }

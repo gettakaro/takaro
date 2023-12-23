@@ -40,21 +40,26 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const domains = await domainsService.find({});
 
     for (const domain of domains.results) {
+      const promises = [];
+
+      const playerService = new PlayerService(domain.id);
+      promises.push(playerService.handleSteamSync());
+
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
+      promises.push(
+        gameServers.results.map(async (gs) => {
+          const reachable = await gameserverService.testReachability(gs.id);
+          if (reachable.connectable) {
+            await queueService.queues.playerSync.queue.add(
+              { domainId: domain.id, gameServerId: gs.id },
+              { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
+            );
+          }
+        })
+      );
 
-      const promises = gameServers.results.map(async (gs) => {
-        const reachable = await gameserverService.testReachability(gs.id);
-
-        if (reachable.connectable) {
-          await queueService.queues.playerSync.queue.add(
-            { domainId: domain.id, gameServerId: gs.id },
-            { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
-          );
-        }
-      });
-
-      await Promise.all(promises);
+      await Promise.allSettled(promises);
     }
 
     return;
