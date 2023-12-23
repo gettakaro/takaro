@@ -13,6 +13,7 @@ import {
 } from '../service/PlayerOnGameserverService.js';
 import { PlayerRoleAssignmentOutputDTO } from '../service/RoleService.js';
 import { ItemRepo } from './items.js';
+import { IGamePlayer } from '@takaro/modules';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 const PLAYER_INVENTORY_TABLE_NAME = 'playerInventory';
@@ -33,6 +34,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionZ: number;
 
   currency: number;
+
+  online: boolean;
 
   static get relationMappings() {
     return {
@@ -353,5 +356,17 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       await trx.rollback();
       throw error;
     }
+  }
+
+  async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
+    const { query: query1 } = await this.getModel();
+    const { query: query2 } = await this.getModel();
+    const gameIds = players.map((player) => player.gameId);
+
+    await Promise.all([
+      query1.whereNotIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: false }),
+
+      query2.whereIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: true }),
+    ]);
   }
 }
