@@ -48,7 +48,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
       promises.push(
-        gameServers.results.map(async (gs) => {
+        ...gameServers.results.map(async (gs) => {
           const reachable = await gameserverService.testReachability(gs.id);
           if (reachable.connectable) {
             await queueService.queues.playerSync.queue.add(
@@ -77,7 +77,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const promises = [];
 
     promises.push(
-      onlinePlayers.map(async (player) => {
+      ...onlinePlayers.map(async (player) => {
         log.debug(`Syncing player ${player.gameId} on game server ${gameServerId}`);
         await playerService.sync(player, gameServerId);
         const resolvedPlayer = await playerService.resolveRef(player, gameServerId);
