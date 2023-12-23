@@ -10,6 +10,7 @@ dotenv.config();
  * Since we don't use sinon in our tests, we need to define a dummy afterEach function.
  */
 global.afterEach = () => {};
+global.before = () => {};
 
 const isPR = process.env.GITHUB_HEAD_REF; // This is set for PRs
 const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main'; // Adjust the branch name if necessary
