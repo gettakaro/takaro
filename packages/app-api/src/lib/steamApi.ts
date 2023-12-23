@@ -103,7 +103,6 @@ class SteamApi {
         steamids: steamIds.join(','),
       },
     });
-
     return response.data.response.players;
   }
 
