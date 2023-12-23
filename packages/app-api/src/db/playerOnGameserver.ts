@@ -347,7 +347,9 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
 
     try {
       await query.delete().where({ playerId }).transacting(trx);
-      await query2.insert(toInsert).transacting(trx);
+      if (toInsert.length) {
+        await query2.insert(toInsert).transacting(trx);
+      }
 
       // If everything is ok, commit the transaction
       await trx.commit();

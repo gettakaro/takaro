@@ -8,7 +8,7 @@ import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 
-const log = logger('worker:inventory');
+const log = logger('worker:playerSync');
 
 export class PlayerSyncWorker extends TakaroWorker<IGameServerQueueData> {
   constructor() {
@@ -59,7 +59,18 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         })
       );
 
-      await Promise.allSettled(promises);
+      const res = await Promise.allSettled(promises);
+
+      for (const r of res) {
+        if (r.status === 'rejected') {
+          log.error(r.reason);
+          await job.log(r.reason);
+        }
+      }
+
+      if (res.some((r) => r.status === 'rejected')) {
+        throw new Error('Some promises failed');
+      }
     }
 
     return;
@@ -75,6 +86,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const onlinePlayers = await gameServerService.getPlayers(gameServerId);
 
     const promises = [];
+
+    promises.push(playerOnGameServerService.setOnlinePlayers(gameServerId, onlinePlayers));
+    promises.push(gameServerService.syncInventories(gameServerId));
 
     promises.push(
       ...onlinePlayers.map(async (player) => {
@@ -94,12 +108,18 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       })
     );
 
-    promises.push(playerOnGameServerService.setOnlinePlayers(gameServerId, onlinePlayers));
+    const res = await Promise.allSettled(promises);
 
-    await Promise.all(promises);
+    for (const r of res) {
+      if (r.status === 'rejected') {
+        log.error(r.reason);
+        await job.log(r.reason);
+      }
+    }
 
-    // Processing for a specific game server
-    await gameServerService.syncInventories(gameServerId);
+    if (res.some((r) => r.status === 'rejected')) {
+      throw new Error('Some promises failed');
+    }
 
     return;
   }
