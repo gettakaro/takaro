@@ -31,6 +31,7 @@ import {
   EventPlayerDisconnected,
   EventLogLine,
   isDiscordMessageEvent,
+  EventPlayerDeath,
 } from '@takaro/modules';
 
 @ValidatorConstraint()
@@ -122,6 +123,11 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @ValidateNested()
   @IsOptional()
   player: IPlayerReferenceDTO;
+
+  @Type(() => IPlayerReferenceDTO)
+  @ValidateNested()
+  @IsOptional()
+  attacker: IPlayerReferenceDTO;
 
   @IsString()
   @IsOptional()
@@ -257,6 +263,15 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
         eventData = await new EventPlayerDisconnected().construct({
           player,
           msg: 'Player disconnected',
+        });
+        break;
+      case EventTypes.PLAYER_DEATH:
+        const attacker = await gameServerService.getPlayer(data.gameServerId, data.attacker);
+        if (!attacker) throw new errors.NotFoundError('Attacker not found');
+        eventData = await new EventPlayerDeath().construct({
+          player,
+          msg: 'Player died',
+          attacker: attacker,
         });
         break;
       case EventTypes.LOG_LINE:
