@@ -7,26 +7,41 @@ async function main() {
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
 
   // check if you already have a bounty on the player
-  const bounties = await takaro.variable.variableControllerSearch({
-    filters: {
-      key: ['bounty'],
-      moduleId: [mod.moduleId],
-      gameServerId: [gameServerId],
-    },
-  });
+  const bounties = (
+    await takaro.variable.variableControllerSearch({
+      filters: {
+        key: ['bounty'],
+        moduleId: [mod.moduleId],
+        gameServerId: [gameServerId],
+      },
+    })
+  ).data.data;
 
-  const bountySums = bounties.reduce((acc, bounty) => {
+  const bountySumsMap = bounties.reduce((acc, bounty) => {
     const bountyValue = JSON.parse(bounty.value);
-    acc[bountyValue.targetId] = (acc[bountyValue.targetId] || 0) + bountyValue.amount;
+    const targetId = bountyValue.targetId;
+    const amount = bountyValue.amount;
+
+    if (acc.has(targetId)) {
+      // If an entry for this targetId already exists, update its total
+      acc.set(targetId, acc.get(targetId) + amount);
+    } else {
+      // Otherwise, add a new entry to the map
+      acc.set(targetId, amount);
+    }
     return acc;
-  });
+  }, new Map());
 
-  const bountyPerTarget = Object.entries(bountySums).map(([target, total]) => ({
-    target,
-    total,
-  }));
+  // Convert the Map into the desired array of objects
+  const bountySums = Array.from(bountySumsMap, ([targetId, total]) => ({ targetId, total }));
 
-  const topBounties = bountyPerTarget.sort((a, b) => b.total - a.total).slice(0, Math.min(10, summedBounties.length));
+  // order by total
+  const topBounties = bountySums.sort((a, b) => b.total - a.total).slice(0, Math.min(10, bountySums.length));
+
+  if (topBounties.length === 0) {
+    await player.pm('There are no bounties set.');
+    return;
+  }
 
   player.pm('Top 10 bounties:');
   for (let i = 0; i < topBounties.length; i++) {

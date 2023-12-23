@@ -6,6 +6,7 @@ async function main() {
   const takaro = await getTakaro(data);
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
   const targetPlayerName = (await takaro.player.playerControllerGetOne(args.target.playerId)).data.data.name;
+  const setterPlayerName = (await takaro.player.playerControllerGetOne(player.playerId)).data.data.name;
 
   // check if you already have a bounty on the player
   const v = await takaro.variable.variableControllerSearch({
@@ -39,7 +40,9 @@ async function main() {
     gameServerId,
   });
 
-  await player.pm(`set bounty of ${args.amount} ${currencyName} on ${targetPlayerName}`);
+  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+    message: `${setterPlayerName} set bounty of ${args.amount} ${currencyName} on ${targetPlayerName}`,
+  });
 }
 
 await main();
