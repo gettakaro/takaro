@@ -4558,6 +4558,12 @@ export interface PlayerOnGameServerSearchInputAllowedFilters {
    * @memberof PlayerOnGameServerSearchInputAllowedFilters
    */
   playerId?: Array<string>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  online?: Array<boolean>;
 }
 /**
  *
@@ -4684,6 +4690,12 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   currency?: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  online?: boolean;
 }
 /**
  *
@@ -4764,6 +4776,12 @@ export interface PlayerOnGameserverOutputDTO {
    * @memberof PlayerOnGameserverOutputDTO
    */
   currency: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  online: boolean;
   /**
    *
    * @type {Array<IItemDTO>}
@@ -4892,6 +4910,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   currency: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  online: boolean;
   /**
    *
    * @type {Array<IItemDTO>}

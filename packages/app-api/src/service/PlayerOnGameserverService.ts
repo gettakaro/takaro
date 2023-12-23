@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -9,6 +9,7 @@ import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { IGamePlayer } from '@takaro/modules';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -42,6 +43,9 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 
   @IsNumber()
   currency: number;
+
+  @IsBoolean()
+  online: boolean;
 
   @ValidateNested({ each: true })
   @Type(() => IItemDTO)
@@ -251,5 +255,8 @@ export class PlayerOnGameServerService extends TakaroService<
         meta: { amount },
       })
     );
+  }
+  async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
+    await this.repo.setOnlinePlayers(gameServerId, players);
   }
 }

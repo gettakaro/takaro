@@ -48,7 +48,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
       promises.push(
-        gameServers.results.map(async (gs) => {
+        ...gameServers.results.map(async (gs) => {
           const reachable = await gameserverService.testReachability(gs.id);
           if (reachable.connectable) {
             await queueService.queues.playerSync.queue.add(
@@ -67,32 +67,38 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
   if (job.data.gameServerId) {
     const { domainId, gameServerId } = job.data;
+    log.info(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
     const gameServerService = new GameServerService(domainId);
     const playerService = new PlayerService(domainId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
 
     const onlinePlayers = await gameServerService.getPlayers(gameServerId);
 
-    const promises = onlinePlayers.map(async (player) => {
-      log.debug(`Syncing player ${player.gameId} on game server ${gameServerId}`);
-      await playerService.sync(player, gameServerId);
-      const resolvedPlayer = await playerService.resolveRef(player, gameServerId);
-      await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
+    const promises = [];
 
-      await playerOnGameServerService.addInfo(
-        player,
-        gameServerId,
-        await new PlayerOnGameServerUpdateDTO().construct({
-          ip: player.ip,
-          ping: player.ping,
-        })
-      );
-    });
+    promises.push(
+      ...onlinePlayers.map(async (player) => {
+        log.debug(`Syncing player ${player.gameId} on game server ${gameServerId}`);
+        await playerService.sync(player, gameServerId);
+        const resolvedPlayer = await playerService.resolveRef(player, gameServerId);
+        await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
 
-    await Promise.allSettled(promises);
+        await playerOnGameServerService.addInfo(
+          player,
+          gameServerId,
+          await new PlayerOnGameServerUpdateDTO().construct({
+            ip: player.ip,
+            ping: player.ping,
+          })
+        );
+      })
+    );
+
+    promises.push(playerOnGameServerService.setOnlinePlayers(gameServerId, onlinePlayers));
+
+    await Promise.all(promises);
 
     // Processing for a specific game server
-    log.info(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
     await gameServerService.syncInventories(gameServerId);
 
     return;
