@@ -90,31 +90,61 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     return new ItemsOutputDTO().construct(res);
   }
 
-  async upsert(item: ItemCreateDTO): Promise<ItemsOutputDTO> {
-    // Use raw SQL for performance reasons
+  async upsertMany(items: ItemCreateDTO[]): Promise<void> {
     const knex = await this.getKnex();
-    const existing = await knex(ITEMS_TABLE_NAME)
-      .select('*')
-      .where('code', item.code)
-      .andWhere('gameserverId', item.gameserverId)
-      .andWhere('domain', this.domainId)
-      .first();
 
-    if (existing) {
-      return this.update(existing.id, item);
+    // Ensure all unique
+    items = items.filter((item, index, self) => {
+      return self.findIndex((t) => t.code === item.code && t.gameserverId === item.gameserverId) === index;
+    });
+
+    // Transform items into a format suitable for bulk insert
+    const dataToInsert = items.map((item) => ({
+      ...item.toJSON(),
+      description: item.description || null,
+      icon: item.icon || null,
+      domain: this.domainId,
+    }));
+
+    const chunks = [];
+
+    // Split data into chunks of 1000 items each
+    for (let i = 0; i < dataToInsert.length; i += 1000) {
+      chunks.push(dataToInsert.slice(i, i + 1000));
     }
 
-    return this.create(item);
+    const promises = chunks.map(async (chunk) => {
+      const values = chunk.flatMap(Object.values);
+      // Perform the bulk upsert operation
+      try {
+        await knex.raw(
+          `
+        INSERT INTO ${ITEMS_TABLE_NAME} (name, code, description, icon, "gameserverId", domain)
+        VALUES ${chunk.map(() => '(?, ?, ?, ?, ?, ?)').join(', ')}
+        ON CONFLICT (code, "gameserverId", domain)
+        DO UPDATE SET
+          name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          icon = EXCLUDED.icon
+      `,
+          values
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    await Promise.all(promises);
   }
 
-  async findItemByCode(code: string, gameServerId: string): Promise<ItemsOutputDTO> {
+  async findItemsByCodes(codes: string[], gameServerId: string): Promise<ItemsOutputDTO[]> {
     const { query } = await this.getModel();
-    const data = await query.where('code', code).andWhere('gameserverId', gameServerId).first();
+    const data = await query.whereIn('code', codes).andWhere('gameserverId', gameServerId);
 
     if (!data) {
       throw new errors.NotFoundError();
     }
 
-    return new ItemsOutputDTO().construct(data);
+    return Promise.all(data.map((item) => new ItemsOutputDTO().construct(item)));
   }
 }
