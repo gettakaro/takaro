@@ -6,27 +6,31 @@ import { usePlayerOnGameServers, usePlayers } from 'queries/players/queries';
 import { FC } from 'react';
 
 const SteamAvatar = styled.img`
-  height: 100%;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  margin: auto;
 `;
 
 const PlayerCards = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   overflow-y: scroll;
 `;
 
 const PlayerCard = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
   align-items: center;
   background-color: ${(props) => props.theme.colors.background};
   border-radius: ${(props) => props.theme.borderRadius.large};
-  padding: ${(props) => props.theme.spacing[1]};
-  margin: ${(props) => props.theme.spacing[1]};
-  height: 50px;
+  padding: ${(props) => props.theme.spacing['0_5']};
+  padding-left: ${(props) => props.theme.spacing['2']};
+  margin: ${(props) => props.theme.spacing['0_25']};
+  height: 3rem;
+
+  :hover {
+    background-color: ${(props) => props.theme.colors.primary};
+  }
 `;
 
 const OnlinePlayer: FC<{ player: PlayerOutputDTO; pog: PlayerOnGameserverOutputDTO }> = ({ player }) => {
