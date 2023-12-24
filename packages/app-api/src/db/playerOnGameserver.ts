@@ -325,10 +325,14 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const { query: query2 } = await this.getInventoryModel();
 
     const itemRepo = new ItemRepo(this.domainId);
+    const itemDefs = await itemRepo.findItemsByCodes(
+      items.map((item) => item.code),
+      gameServerId
+    );
 
     const toInsert = await Promise.all(
       items.map(async (item) => {
-        const itemDef = await itemRepo.findItemByCode(item.code, gameServerId);
+        const itemDef = itemDefs.find((itemDef) => itemDef.code === item.code);
 
         if (!itemDef) {
           throw new errors.BadRequestError(`Item ${item.code} not found`);

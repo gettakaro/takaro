@@ -88,7 +88,7 @@ export class ItemsService extends TakaroService<ItemsModel, ItemsOutputDTO, Item
     return id;
   }
 
-  async upsert(item: ItemCreateDTO): Promise<ItemsOutputDTO> {
-    return this.repo.upsert(item);
+  async upsertMany(items: ItemCreateDTO[]): Promise<void> {
+    await this.repo.upsertMany(items);
   }
 }
