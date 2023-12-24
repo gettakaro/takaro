@@ -43,7 +43,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       const promises = [];
 
       const playerService = new PlayerService(domain.id);
-      promises.push(playerService.handleSteamSync());
+      promises.push(
+        playerService.handleSteamSync().then(() => job.log(`Synced steam players for domain: ${domain.id}`))
+      );
 
       const gameserverService = new GameServerService(domain.id);
       const gameServers = await gameserverService.find({});
@@ -55,6 +57,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
               { domainId: domain.id, gameServerId: gs.id },
               { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
             );
+            await job.log(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
           }
         })
       );
@@ -87,8 +90,16 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
     const promises = [];
 
-    promises.push(playerOnGameServerService.setOnlinePlayers(gameServerId, onlinePlayers));
-    promises.push(gameServerService.syncInventories(gameServerId));
+    promises.push(
+      playerOnGameServerService
+        .setOnlinePlayers(gameServerId, onlinePlayers)
+        .then(() => job.log(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`))
+    );
+    promises.push(
+      gameServerService
+        .syncInventories(gameServerId)
+        .then(() => job.log(`Synced inventories for game server: ${gameServerId}`))
+    );
 
     promises.push(
       ...onlinePlayers.map(async (player) => {
@@ -105,6 +116,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             ping: player.ping,
           })
         );
+        await job.log(`Synced player ${player.gameId} on game server ${gameServerId}`);
       })
     );
 
