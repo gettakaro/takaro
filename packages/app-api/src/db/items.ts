@@ -139,7 +139,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
 
   async findItemsByCodes(codes: string[], gameServerId: string): Promise<ItemsOutputDTO[]> {
     const { query } = await this.getModel();
-    const data = await query.where('code', codes).andWhere('gameserverId', gameServerId);
+    const data = await query.whereIn('code', codes).andWhere('gameserverId', gameServerId);
 
     if (!data) {
       throw new errors.NotFoundError();
