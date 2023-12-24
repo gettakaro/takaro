@@ -1,9 +1,10 @@
-import { PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { EventOutputDTO, PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { Loading, styled } from '@takaro/lib-components';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { useSocket } from 'hooks/useSocket';
 import { PATHS } from 'paths';
 import { usePlayerOnGameServers, usePlayers } from 'queries/players/queries';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 const SteamAvatar = styled.img`
   width: 2rem;
@@ -50,8 +51,9 @@ const OnlinePlayer: FC<{ player: PlayerOutputDTO; pog: PlayerOnGameserverOutputD
 
 export const OnlinePlayersCard: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
+  const { socket } = useSocket();
 
-  const { data, isLoading } = usePlayerOnGameServers({
+  const { data, isLoading, refetch } = usePlayerOnGameServers({
     filters: {
       online: [true],
       gameServerId: [selectedGameServerId],
@@ -64,6 +66,17 @@ export const OnlinePlayersCard: FC = () => {
       id: data?.data.map((playerOnGameServer) => playerOnGameServer.playerId),
     },
   });
+
+  useEffect(() => {
+    socket.on('event', (event: EventOutputDTO) => {
+      if (event.eventName === 'player-connected') refetch();
+      if (event.eventName === 'player-disconnected') refetch();
+    });
+
+    return () => {
+      socket.off('event');
+    };
+  }, []);
 
   if (isLoading || isLoadingPlayers) return <Loading />;
 

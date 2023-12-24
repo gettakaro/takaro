@@ -94,6 +94,9 @@ export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpd
   @IsOptional()
   @Min(0)
   currency: number;
+
+  @IsBoolean()
+  online: boolean;
 }
 
 @traceableClass('service:playerOnGameserver')
