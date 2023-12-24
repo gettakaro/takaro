@@ -2086,6 +2086,12 @@ export interface GameServerOutputDTO {
   type: GameServerOutputDTOTypeEnum;
   /**
    *
+   * @type {boolean}
+   * @memberof GameServerOutputDTO
+   */
+  reachable: boolean;
+  /**
+   *
    * @type {string}
    * @memberof GameServerOutputDTO
    */
@@ -2357,6 +2363,12 @@ export interface GameServerUpdateDTO {
    * @memberof GameServerUpdateDTO
    */
   type: GameServerUpdateDTOTypeEnum;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GameServerUpdateDTO
+   */
+  reachable?: boolean;
 }
 
 export const GameServerUpdateDTOTypeEnum = {
@@ -4690,12 +4702,6 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   currency?: number;
-  /**
-   *
-   * @type {boolean}
-   * @memberof PlayerOnGameServerUpdateDTO
-   */
-  online?: boolean;
 }
 /**
  *

@@ -1,23 +1,23 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-13T19:27:39.990Z"
-    },
+    "meta": {},
     "data": {
+      "id": "4218a6e4-001a-4175-a346-f9b8a920c3f4",
+      "createdAt": "2023-12-24T15:22:57.938Z",
+      "updatedAt": "2023-12-24T15:22:58.000Z",
       "name": "Test gameserver 2",
       "connectionInfo": {
         "host": "somewhere.else",
         "port": 9876
       },
       "type": "MOCK",
-      "updatedAt": "2022-09-13T19:27:39.988Z",
-      "createdAt": "2022-09-13T19:27:39.979Z",
-      "id": "0ada19e8-710d-4e68-9ff1-ffb7a3c1405f"
+      "reachable": true
     }
   },
   "status": 200,
   "test": {
     "group": "GameServerController",
+    "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
     "filteredFields": [],

@@ -1,27 +1,27 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-13T19:27:39.353Z"
-    },
+    "meta": {},
     "data": {
-      "createdAt": "2022-09-13T19:27:39.342Z",
-      "updatedAt": "2022-09-13T19:27:39.343Z",
-      "id": "4bca3c37-b82a-47fc-80e4-096e27758804",
+      "id": "2600aac2-d5b8-455d-bf6a-12a242f5ee0a",
+      "createdAt": "2023-12-24T15:22:57.034Z",
+      "updatedAt": "2023-12-24T15:22:57.034Z",
       "name": "Test gameserver",
-      "type": "MOCK",
       "connectionInfo": {
         "host": "http://takaro:3002"
-      }
+      },
+      "type": "MOCK",
+      "reachable": true
     }
   },
   "status": 200,
   "test": {
     "group": "GameServerController",
+    "snapshot": true,
     "name": "Get by ID",
-    "expectedStatus": 200,
     "filteredFields": [
       "connectionInfo"
     ],
+    "expectedStatus": 200,
     "standardEnvironment": true
   }
 }

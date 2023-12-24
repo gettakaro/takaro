@@ -1,20 +1,19 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, Skeleton, IconButton, Tooltip, PERMISSIONS } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, PERMISSIONS } from '@takaro/lib-components';
 import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
 import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
-import { useGameServerRemove, useGameServerReachabilityById } from 'queries/gameservers';
+import { useGameServerRemove } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 
-export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
+export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const { isLoading, data } = useGameServerReachabilityById(id);
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
 
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
@@ -38,8 +37,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
     await mutateAsync({ id });
   };
 
-  const status = data?.connectable ? 'online' : 'offline';
-
   return (
     <>
       <Container
@@ -49,12 +46,10 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type }) => {
       >
         <Body>
           <Header>
-            {isLoading || !data ? (
-              <Skeleton variant="text" width="50px" height="15px" />
-            ) : status === 'online' ? (
-              <>{status}</>
+            {reachable ? (
+              <Chip label={'online'} color="success" variant="outline" />
             ) : (
-              <Chip label={status} color="error" variant="outline" />
+              <Chip label={'offline'} color="error" variant="outline" />
             )}
             <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]]}>
               <Dropdown>
