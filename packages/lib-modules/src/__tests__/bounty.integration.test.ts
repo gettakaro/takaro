@@ -51,7 +51,9 @@ const tests = [
 
       const messages = (await events).map((e) => e.data.msg);
       expect(messages.length).to.be.eq(1);
-      expect(messages[0]).to.be.eq(`set bounty of ${bountyAmount} test coin on ${target.name}`);
+      expect(messages[0]).to.be.eq(
+        `${this.setupData.players[0].name} set bounty of ${bountyAmount} test coin on ${target.name}`
+      );
 
       // expect bounty variable to be set
       const bountyVariable = await this.client.variable.variableControllerSearch({
@@ -96,7 +98,9 @@ const tests = [
 
       const messages1 = (await events1).map((e) => e.data.msg);
       expect(messages1.length).to.be.eq(1);
-      expect(messages1[0]).to.be.eq(`set bounty of ${amount} test coin on ${target.name}`);
+      expect(messages1[0]).to.be.eq(
+        `${this.setupData.players[0].name} set bounty of ${amount} test coin on ${target.name}`
+      );
 
       const events2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -247,7 +251,6 @@ const tests = [
         this.setupData.bountyModule.id
       );
 
-      // set bounty on player
       const target = this.setupData.players[1];
       const targetPog = this.setupData.players[1].playerOnGameServers?.filter(
         (pog) => pog.gameServerId === this.setupData.gameserver.id
@@ -269,17 +272,22 @@ const tests = [
       const setBountyEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       const setBountyMessages = (await setBountyEvents).map((e) => e.data.msg);
       expect(setBountyMessages.length).to.be.eq(1);
-      expect(setBountyMessages[0]).to.be.eq(`set bounty of ${bountyAmount} test coin on ${target.name}`);
+
+      expect(setBountyMessages[0]).to.be.eq(
+        `${this.setupData.players[0].name} set bounty of ${bountyAmount} test coin on ${target.name}`
+      );
 
       // trigger hook
       await this.client.hook.hookControllerTrigger({
-        eventType: GameEvents.PLAYER_DEATH,
         gameServerId: this.setupData.gameserver.id,
-        player: {
-          gameId: targetPog.gameId,
-        },
-        attacker: {
-          gameId: attackerPog.gameId,
+        eventData: {
+          type: GameEvents.PLAYER_DEATH,
+          player: {
+            gameId: targetPog.gameId,
+          },
+          attacker: {
+            gameId: attackerPog.gameId,
+          },
         },
       });
 
@@ -288,7 +296,15 @@ const tests = [
       expect(bountyGrantedMessages.length).to.be.eq(1);
     },
   }),
-
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: customSetup,
+    name: 'Can get list of top bounties',
+    test: async function () {
+      // TODO
+    },
+  }),
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,

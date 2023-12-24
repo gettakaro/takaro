@@ -1,10 +1,10 @@
 import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
   IsEnum,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -32,6 +32,10 @@ import {
   EventLogLine,
   isDiscordMessageEvent,
   EventPlayerDeath,
+  isPlayerDeathEvent,
+  isChatMessageEvent,
+  isConnectedEvent,
+  isDisconnectedEvent,
 } from '@takaro/modules';
 
 @ValidatorConstraint()
@@ -116,22 +120,8 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
 
-  @IsEnum(EventTypes)
-  eventType!: HookEventTypes;
-
-  @Type(() => IPlayerReferenceDTO)
-  @ValidateNested()
-  @IsOptional()
-  player: IPlayerReferenceDTO;
-
-  @Type(() => IPlayerReferenceDTO)
-  @ValidateNested()
-  @IsOptional()
-  attacker: IPlayerReferenceDTO;
-
-  @IsString()
-  @IsOptional()
-  msg: string;
+  @IsObject()
+  eventData!: EventMapping[HookEvents];
 }
 
 @traceableClass('service:hook')
@@ -240,48 +230,44 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
   async trigger(data: HookTriggerDTO) {
     let eventData: EventMapping[keyof EventMapping] | null = null;
-    const gameServerService = new GameServerService(this.domainId);
 
-    const player = await gameServerService.getPlayer(data.gameServerId, data.player);
-
-    if (!player) throw new errors.NotFoundError('Player not found');
-
-    switch (data.eventType) {
+    switch (data.eventData.type) {
       case EventTypes.CHAT_MESSAGE:
-        eventData = await new EventChatMessage().construct({
-          player,
-          msg: data.msg,
-        });
+        if (!isChatMessageEvent(data.eventData)) {
+          throw new errors.BadRequestError('Invalid event data');
+        }
+        eventData = await new EventChatMessage().construct(data.eventData);
         break;
       case EventTypes.PLAYER_CONNECTED:
-        eventData = await new EventPlayerConnected().construct({
-          player,
-          msg: 'Player connected',
-        });
+        if (!isConnectedEvent(data.eventData)) {
+          throw new errors.BadRequestError('Invalid event data');
+        }
+        eventData = await new EventPlayerConnected().construct(data.eventData);
         break;
       case EventTypes.PLAYER_DISCONNECTED:
-        eventData = await new EventPlayerDisconnected().construct({
-          player,
-          msg: 'Player disconnected',
-        });
+        if (!isDisconnectedEvent(data.eventData)) {
+          throw new errors.BadRequestError('Invalid event data');
+        }
+        eventData = await new EventPlayerDisconnected().construct(data.eventData);
         break;
       case EventTypes.PLAYER_DEATH:
-        const attacker = await gameServerService.getPlayer(data.gameServerId, data.attacker);
-        if (!attacker) throw new errors.NotFoundError('Attacker not found');
-        eventData = await new EventPlayerDeath().construct({
-          player,
-          msg: 'Player died',
-          attacker: attacker,
-        });
+        if (!isPlayerDeathEvent(data.eventData)) {
+          throw new errors.BadRequestError('Invalid event data');
+        }
+        eventData = await new EventPlayerDeath().construct(data.eventData);
         break;
       case EventTypes.LOG_LINE:
         eventData = await new EventLogLine().construct({
-          msg: data.msg,
+          timestamp: data.eventData.timestamp,
+          type: EventTypes.LOG_LINE,
+          msg: data.eventData.msg,
         });
         break;
       default:
         throw new errors.NotFoundError('Unknown event');
     }
+
+    // await eventData.validate()
 
     return this.handleEvent(eventData, data.gameServerId);
   }

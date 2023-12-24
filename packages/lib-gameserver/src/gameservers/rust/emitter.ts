@@ -22,8 +22,7 @@ export enum RustEventType {
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]: /\d{17}\/.+ joined \[.+\/\d{17}\]/,
   [GameEvents.PLAYER_DISCONNECTED]: /.* disconnecting\: disconnect/,
-  [GameEvents.PLAYER_DEATH]:
-    /(?<name>.+)\[\d+\] (was killed by (?<killer>.+?)(?: \((?:entity)\))? at \((?<xCoord>[-\d]+\.\d+), (?<yCoord>[-\d]+\.\d+), (?<zCoord>[-\d]+\.\d+)\)|was killed by (?<cause>[^ ]+) at \((?<xCauseCoord>[-\d]+\.\d+), (?<yCauseCoord>[-\d]+\.\d+), (?<zCauseCoord>[-\d]+\.\d+)\)|died(?: \((?<deathCause>.+)\))?) (.*)/,
+  [GameEvents.PLAYER_DEATH]: /(?<name>.+)\[\d+\] (was killed by (?<attacker>.+\[\d+\])|(?<cause>.+)|died) /,
   [GameEvents.ENTITY_KILLED]:
     /(?<killerName>.+)\[\d+\] killed (?<entityName>.+) at \((?<xCoord>[-\d.]+), (?<yCoord>[-\d.]+), (?<zCoord>[-\d.]+)\)/,
 };

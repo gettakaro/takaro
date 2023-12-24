@@ -16,12 +16,18 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.onboardingModule.id
       );
+
+      const pogs = this.setupData.players[0].playerOnGameServers;
+      if (!pogs || pogs.length === 0) {
+        throw new Error('PlayerOnGameServer not found');
+      }
+
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
-        eventType: GameEvents.PLAYER_CONNECTED,
-        player: {
-          gameId: '1',
+        eventData: {
+          player: pogs[0],
+          type: GameEvents.PLAYER_CONNECTED,
         },
       });
 
