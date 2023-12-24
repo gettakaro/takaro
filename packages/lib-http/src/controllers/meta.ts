@@ -82,10 +82,26 @@ export class Meta {
       <body>
         <rapi-doc
           spec-url="/openapi.json"
-          theme="dark"
-          render-style="view"
+          render-style="read"
           fill-request-fields-with-example="false"
           persist-auth="true"
+
+          sort-tags="true"
+          sort-endpoints-by="method"
+
+          show-method-in-nav-bar="as-colored-block"
+          show-header="false"
+          allow-authentication="false"
+          allow-server-selection="false"
+
+          schema-style="table"
+          schema-expand-level="1"
+          default-schema-tab="schema"
+
+          primary-color="#664de5"
+          bg-color="#151515"
+          text-color="#c2c2c2"
+          header-color="#353535"
         />
       </body>
     </html>

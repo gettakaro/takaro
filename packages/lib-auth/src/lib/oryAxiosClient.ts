@@ -13,7 +13,7 @@ export function createAxiosClient(baseURL: string) {
   });
 
   client.interceptors.request.use((request) => {
-    log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
+    log.silly(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
       method: request.method,
       url: request.url,
     });
@@ -22,7 +22,7 @@ export function createAxiosClient(baseURL: string) {
 
   client.interceptors.response.use(
     (response) => {
-      log.info(
+      log.silly(
         `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
           response.statusText
         }`,

@@ -193,7 +193,6 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
   }
 
   async handleEvent(eventData: EventMapping[HookEvents], gameServerId: string) {
-    this.log.debug('Handling hooks', { eventData });
     const gameServerService = new GameServerService(this.domainId);
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventData.type, gameServerId);
@@ -208,7 +207,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       });
 
     if (hooksAfterFilters.length) {
-      this.log.debug(`Found ${hooksAfterFilters.length} hooks that match the event`);
+      this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
 
       await Promise.all(
         hooksAfterFilters.map(async (hook) => {

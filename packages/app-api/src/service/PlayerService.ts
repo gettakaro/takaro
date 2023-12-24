@@ -227,7 +227,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async handleSteamSync() {
-    if (!config.get('steam.apiKey')) return;
+    if (!config.get('steam.apiKey')) {
+      this.log.warn('Steam API key not set, skipping sync');
+      return;
+    }
     const toRefresh = await this.repo.getPlayersToRefreshSteam();
 
     if (!toRefresh.length) return;

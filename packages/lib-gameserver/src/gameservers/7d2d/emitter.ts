@@ -101,7 +101,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async parseMessage(logLine: I7DaysToDieEvent) {
-    this.logger.debug(`Received message from game server: ${logLine.msg}`);
+    this.logger.silly(`Received message from game server: ${logLine.msg}`);
     if (!logLine.msg || typeof logLine.msg !== 'string') {
       throw new Error('Invalid logLine');
     }
