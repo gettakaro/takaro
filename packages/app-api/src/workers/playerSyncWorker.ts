@@ -39,42 +39,46 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const domainsService = new DomainService();
     const domains = await domainsService.find({});
 
-    for (const domain of domains.results) {
-      const promises = [];
+    const domainPromises = [];
 
-      const playerService = new PlayerService(domain.id);
-      promises.push(
-        playerService.handleSteamSync().then(() => job.log(`Synced steam players for domain: ${domain.id}`))
-      );
+    domainPromises.push(
+      ...domains.results.map(async (domain) => {
+        const promises = [];
 
-      const gameserverService = new GameServerService(domain.id);
-      const gameServers = await gameserverService.find({});
-      promises.push(
-        ...gameServers.results.map(async (gs) => {
-          const reachable = await gameserverService.testReachability(gs.id);
-          if (reachable.connectable) {
-            await queueService.queues.playerSync.queue.add(
-              { domainId: domain.id, gameServerId: gs.id },
-              { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
-            );
-            await job.log(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
+        const playerService = new PlayerService(domain.id);
+        promises.push(
+          playerService.handleSteamSync().then(() => job.log(`Synced steam players for domain: ${domain.id}`))
+        );
+
+        const gameserverService = new GameServerService(domain.id);
+        const gameServers = await gameserverService.find({});
+        promises.push(
+          ...gameServers.results.map(async (gs) => {
+            const reachable = await gameserverService.testReachability(gs.id);
+            if (reachable.connectable) {
+              await queueService.queues.playerSync.queue.add(
+                { domainId: domain.id, gameServerId: gs.id },
+                { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
+              );
+              await job.log(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
+            }
+          })
+        );
+
+        const res = await Promise.allSettled(promises);
+
+        for (const r of res) {
+          if (r.status === 'rejected') {
+            log.error(r.reason);
+            await job.log(r.reason);
           }
-        })
-      );
-
-      const res = await Promise.allSettled(promises);
-
-      for (const r of res) {
-        if (r.status === 'rejected') {
-          log.error(r.reason);
-          await job.log(r.reason);
         }
-      }
 
-      if (res.some((r) => r.status === 'rejected')) {
-        throw new Error('Some promises failed');
-      }
-    }
+        if (res.some((r) => r.status === 'rejected')) {
+          throw new Error('Some promises failed');
+        }
+      })
+    );
 
     return;
   }
