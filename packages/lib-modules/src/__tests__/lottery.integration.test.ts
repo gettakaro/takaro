@@ -169,6 +169,7 @@ const tests = [
       const events = await waitForEvents;
 
       expect(events.length).to.be.eq(1);
+      expect(events[0].data.msg).to.contain('The next lottery draw is in');
     },
   }),
 ];
