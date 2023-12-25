@@ -1,4 +1,4 @@
-import { Stats, styled, Loading, Divider, Chip } from '@takaro/lib-components';
+import { Stats, styled, Loading, Divider, Chip, Tooltip } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -8,6 +8,9 @@ import { SiEpicgames as EpicGamesIcon } from 'react-icons/si';
 import { FaSteam as SteamIcon, FaXbox as XboxIcon, FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { PlayerRolesTable } from './PlayerRolesTable';
 import { PlayerInventoryTable } from './PlayerInventoryTable';
+import { usePlayerOnGameServers } from 'queries/players/queries';
+import { IpHistoryOutputDTO } from '@takaro/apiclient';
+import { CountryCodeToEmoji } from 'components/countryCodeToEmoji';
 
 export const ChipContainer = styled.div`
   display: flex;
@@ -15,6 +18,50 @@ export const ChipContainer = styled.div`
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['1']};
 `;
+
+const IpInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+  margin-bottom: ${({ theme }) => theme.spacing['2']};
+`;
+
+const IpInfoLine = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+const IpWhoisLink = styled.a`
+  color: ${({ theme }) => theme.colors.primary};
+  text-decoration: underline;
+`;
+
+const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
+  return (
+    <IpInfoContainer>
+      {ipInfo.map((ip) => {
+        return (
+          <IpInfoLine>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <CountryCodeToEmoji countryCode={ip.country} />
+              </Tooltip.Trigger>
+              <Tooltip.Content>{ip.country}</Tooltip.Content>
+            </Tooltip>
+            <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
+            <span>
+              <IpWhoisLink href={`https://www.whois.com/whois/${ip.ip}`} target="_blank">
+                {ip.ip}
+              </IpWhoisLink>
+            </span>
+            <span>{ip.city}</span>
+          </IpInfoLine>
+        );
+      })}
+    </IpInfoContainer>
+  );
+};
 
 export const PlayerProfile: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -26,7 +73,13 @@ export const PlayerProfile: FC = () => {
 
   const { data, isLoading } = usePlayer(playerId);
 
-  if (isLoading || !data) {
+  const { data: pogs, isLoading: isLoadingPogs } = usePlayerOnGameServers({
+    filters: {
+      playerId: [playerId],
+    },
+  });
+
+  if (isLoading || isLoadingPogs || !data || !pogs) {
     return <Loading />;
   }
 
@@ -73,11 +126,14 @@ export const PlayerProfile: FC = () => {
       </ChipContainer>
       <Divider />
 
+      <h2>IP History</h2>
+      <IpInfo ipInfo={pogs.data.map((pog) => pog.ipHistory).flat()} />
+
       <h2>Roles</h2>
       <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} playerName={data?.name} />
 
       <h2>Inventory</h2>
-      <PlayerInventoryTable playerId={data.id} />
+      <PlayerInventoryTable pogs={pogs.data} />
 
       <Outlet />
     </div>

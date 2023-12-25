@@ -1312,6 +1312,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1550,6 +1551,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1753,6 +1755,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =
@@ -3377,6 +3380,49 @@ export interface InviteOutputDTO {
 /**
  *
  * @export
+ * @interface IpHistoryOutputDTO
+ */
+export interface IpHistoryOutputDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof IpHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  ip: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  latitude?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  longitude?: string;
+}
+/**
+ *
+ * @export
  * @interface ItemCreateDTO
  */
 export interface ItemCreateDTO {
@@ -4702,6 +4748,12 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   currency?: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  online: boolean;
 }
 /**
  *
@@ -4794,6 +4846,12 @@ export interface PlayerOnGameserverOutputDTO {
    * @memberof PlayerOnGameserverOutputDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
    * @type {string}
@@ -4928,6 +4986,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  *

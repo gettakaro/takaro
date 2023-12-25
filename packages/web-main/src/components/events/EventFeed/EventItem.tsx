@@ -3,6 +3,7 @@ import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
+import { CountryCodeToEmoji } from 'components/countryCodeToEmoji';
 
 const Header = styled.div`
   display: flex;
@@ -102,6 +103,24 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         <>
           <EventProperty name="module" value={event?.module?.name} />
           <EventProperty name="success" value={`${meta.result?.success}`} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.PlayerNewIpDetected:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty
+            name="country"
+            value={
+              <>
+                <CountryCodeToEmoji countryCode={(event.meta as any).new.country} />
+                {(event.meta as any).new.country}
+              </>
+            }
+          />
+
+          <EventProperty name="player" value={event.player?.name} />
         </>
       );
       break;

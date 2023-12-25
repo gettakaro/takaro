@@ -10,6 +10,7 @@ import {
   PlayerOnGameServerCreateDTO,
   PlayerOnGameServerUpdateDTO,
   PlayerOnGameserverOutputWithRolesDTO,
+  IpHistoryOutputDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { PlayerRoleAssignmentOutputDTO } from '../service/RoleService.js';
 import { ItemRepo } from './items.js';
@@ -17,6 +18,13 @@ import { IGamePlayer } from '@takaro/modules';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 const PLAYER_INVENTORY_TABLE_NAME = 'playerInventory';
+
+interface IObserveIPOpts {
+  country: string | null;
+  city: string | null;
+  longitude: string | null;
+  latitude: string | null;
+}
 
 export class PlayerOnGameServerModel extends TakaroModel {
   static tableName = PLAYER_ON_GAMESERVER_TABLE_NAME;
@@ -27,7 +35,6 @@ export class PlayerOnGameServerModel extends TakaroModel {
   gameId!: string;
 
   ping: number;
-  ip: string;
 
   positionX: number;
   positionY: number;
@@ -80,6 +87,30 @@ export class PlayerInventoryModel extends TakaroModel {
   }
 }
 
+export class PlayerIPHistoryModel extends TakaroModel {
+  static tableName = 'playerOnGameServerIp';
+
+  pogId!: string;
+  ip!: string;
+  country!: string | null;
+  city!: string | null;
+  longitude!: string | null;
+  latitude!: string | null;
+
+  static get relationMappings() {
+    return {
+      player: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PlayerOnGameServerModel,
+        join: {
+          from: `${PlayerIPHistoryModel.tableName}.pogId`,
+          to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.id`,
+        },
+      },
+    };
+  }
+}
+
 @traceableClass('repo:playerOnGameserver')
 export class PlayerOnGameServerRepo extends ITakaroRepo<
   PlayerOnGameServerModel,
@@ -105,6 +136,15 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     };
   }
 
+  async getIPHistoryModel() {
+    const knex = await this.getKnex();
+    const model = PlayerIPHistoryModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
   async find(filters: ITakaroQuery<PlayerOnGameserverOutputDTO>) {
     const { query } = await this.getModel();
     const result = await new QueryBuilder<PlayerOnGameServerModel, PlayerOnGameserverOutputDTO>(filters).build(query);
@@ -121,6 +161,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   async findOne(id: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const { query } = await this.getModel();
     const data = (await query.findById(id)) as unknown as PlayerOnGameserverOutputWithRolesDTO;
+    const { query: ipQuery } = await this.getIPHistoryModel();
 
     if (!data) {
       throw new errors.NotFoundError();
@@ -143,6 +184,9 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     data.roles = roleDTOs;
 
     data.inventory = await this.getInventory(data.id);
+
+    const ipHistory = await ipQuery.where({ pogId: data.id }).orderBy('createdAt', 'desc').limit(10);
+    data.ipHistory = await Promise.all(ipHistory.map((ip) => new IpHistoryOutputDTO().construct(ip)));
 
     return new PlayerOnGameserverOutputWithRolesDTO().construct(data);
   }
@@ -174,7 +218,6 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, {
       ping: data.ping,
-      ip: data.ip,
       positionX: data.positionX,
       positionY: data.positionY,
       positionZ: data.positionZ,
@@ -375,5 +418,44 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
 
       query2.whereIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: true }),
     ]);
+  }
+
+  /**
+   * Checks if the last ip address of the player is the same as the current one.
+   * If not, it will add the new ip address to the history.
+   * @param ip Ip address
+   * @param country Country code
+   */
+  async observeIp(pogId: string, ip: string, ipData: IObserveIPOpts | null) {
+    const { query } = await this.getIPHistoryModel();
+    const { query: query2 } = await this.getIPHistoryModel();
+
+    const lastIp = await query.select('ip').where({ pogId }).orderBy('createdAt', 'desc').limit(1).first();
+
+    if (lastIp && lastIp.ip === ip) {
+      return;
+    }
+
+    let res: PlayerIPHistoryModel;
+
+    if (ipData) {
+      res = await query.insert({
+        pogId,
+        ip,
+        country: ipData.country,
+        city: ipData.city,
+        longitude: ipData.longitude,
+        latitude: ipData.latitude,
+        domain: this.domainId,
+      });
+    } else {
+      res = await query.insert({
+        pogId,
+        ip,
+        domain: this.domainId,
+      });
+    }
+
+    return await query2.findById(res.id);
   }
 }

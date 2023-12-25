@@ -1,11 +1,10 @@
 import { FC } from 'react';
 import { Loading, Tooltip, styled } from '@takaro/lib-components';
-import { usePlayerOnGameServers } from 'queries/players/queries';
 import { useGameServers } from 'queries/gameservers';
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
+import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 
 interface IPlayerInventoryProps {
-  playerId: string;
+  pogs: PlayerOnGameserverOutputDTO[];
 }
 
 const Grid = styled.div`
@@ -33,22 +32,16 @@ const ItemName = styled.p`
   overflow-x: scroll;
 `;
 
-export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ playerId }) => {
-  const { data, isLoading } = usePlayerOnGameServers({
+export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pogs }) => {
+  const { data: gameservers, isLoading } = useGameServers({
     filters: {
-      playerId: [playerId],
-    },
-  });
-
-  const { data: gameservers } = useGameServers({
-    filters: {
-      id: data?.data.map((player) => player.gameServerId),
+      id: pogs.map((player) => player.gameServerId),
     },
   });
 
   if (isLoading) return <Loading />;
 
-  if (!data?.data.length) return <p>No inventory data</p>;
+  if (!pogs.length) return <p>No inventory data</p>;
 
   function getServerType(server: GameServerOutputDTO | undefined) {
     if (!server) return null;
@@ -63,10 +56,10 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ playerId }) =>
     }
   }
 
-  if (!data.data.length) return null;
+  if (!pogs.length) return null;
   const placeholderIcon = '/favicon.ico';
 
-  const components = data.data.map((player) => {
+  const components = pogs.map((player) => {
     if (!player.inventory.length) return null;
     const server = gameservers?.pages[0].data.find((server) => server.id === player.gameServerId);
 
