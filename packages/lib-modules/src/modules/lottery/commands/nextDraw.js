@@ -1,6 +1,9 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function formatMs(milliseconds) {
+function formatIso(isoDateString) {
+  // Convert ISO date string to milliseconds
+  const milliseconds = new Date(isoDateString).getTime();
+
   const oneSecond = 1000;
   const oneMinute = oneSecond * 60;
   const oneHour = oneMinute * 60;
@@ -39,7 +42,7 @@ async function main() {
     await takaro.cronjob.cronJobControllerSearch({ filters: { name: ['drawLottery'], moduleId: [mod.moduleId] } })
   ).data.data[0];
 
-  await player.pm(`The next lottery draw is in about ${formatMs(cronjob.nextRunIn)}`);
+  await player.pm(`The next lottery draw is in about ${formatIso(cronjob.nextRunIn)}`);
 }
 
 await main();

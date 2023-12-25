@@ -2,7 +2,7 @@ import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
 
 import { CronJobModel, CronJobRepo } from '../db/cronjob.js';
-import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
@@ -26,8 +26,8 @@ export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsUUID()
   moduleId: string;
 
-  @IsNumber()
-  nextRunIn: number;
+  @IsISO8601()
+  nextRunAt: string;
 }
 
 export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {

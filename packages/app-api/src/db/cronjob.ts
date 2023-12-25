@@ -29,13 +29,13 @@ export class CronJobModel extends TakaroModel {
   }
 
   static get virtualAttributes() {
-    return ['nextRunIn'];
+    return ['nextRunAt'];
   }
 
-  nextRunIn(): number {
+  nextRunAt(): string {
     const interval = cronParser.parseExpression(this.temporalValue);
 
-    return interval.next().getTime() - Date.now();
+    return new Date(interval.next().getTime() - Date.now()).toISOString();
   }
 }
 
@@ -54,10 +54,10 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
     };
   }
 
-  private outputMapper(item: CronJobModel): Promise<CronJobOutputDTO> {
+  private outputDTOMapper(item: CronJobModel): Promise<CronJobOutputDTO> {
     return new CronJobOutputDTO().construct({
       ...item,
-      nextRunIn: item.nextRunIn(),
+      nextRunAt: item.nextRunAt(),
     });
   }
 
@@ -70,7 +70,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
 
     return {
       total: result.total,
-      results: await Promise.all(result.results.map(this.outputMapper)),
+      results: await Promise.all(result.results.map(this.outputDTOMapper)),
     };
   }
 
@@ -82,7 +82,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return this.outputMapper(data);
+    return this.outputDTOMapper(data);
   }
 
   async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
@@ -111,7 +111,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
-    return this.outputMapper(item);
+    return this.outputDTOMapper(item);
   }
 
   async assign(id: string, functionId: string) {
