@@ -218,15 +218,32 @@ export class PlayerOnGameServerService extends TakaroService<
     if (data.ip) {
       const lookupResult = (await ipLookup).get(data.ip);
 
+      let newIpRecord;
+
       if (lookupResult && lookupResult.country) {
-        await this.repo.observeIp(resolved.id, data.ip, {
+        newIpRecord = await this.repo.observeIp(resolved.id, data.ip, {
           country: lookupResult.country.iso_code,
           city: lookupResult.city?.names.en || null,
           latitude: lookupResult.location?.latitude.toString() || null,
           longitude: lookupResult.location?.longitude.toString() || null,
         });
       } else {
-        await this.repo.observeIp(resolved.id, data.ip, null);
+        newIpRecord = await this.repo.observeIp(resolved.id, data.ip, null);
+      }
+
+      if (newIpRecord) {
+        const eventsService = new EventService(this.domainId);
+        await eventsService.create(
+          await new EventCreateDTO().construct({
+            gameserverId,
+            playerId: resolved.playerId,
+            eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
+            meta: {
+              new: newIpRecord,
+              old: resolved.ipHistory[resolved.ipHistory.length - 1],
+            },
+          })
+        );
       }
     }
 

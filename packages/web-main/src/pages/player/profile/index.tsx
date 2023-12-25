@@ -10,6 +10,7 @@ import { PlayerRolesTable } from './PlayerRolesTable';
 import { PlayerInventoryTable } from './PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
+import { CountryCodeToEmoji } from 'components/countryCodeToEmoji';
 
 export const ChipContainer = styled.div`
   display: flex;
@@ -37,15 +38,6 @@ const IpWhoisLink = styled.a`
 `;
 
 const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
-  const isoToEmoji = (isoCode) => {
-    if (!isoCode) return '';
-    return isoCode
-      .toUpperCase()
-      .split('')
-      .map((char) => String.fromCodePoint(127397 + char.charCodeAt()))
-      .join('');
-  };
-
   return (
     <IpInfoContainer>
       {ipInfo.map((ip) => {
@@ -53,7 +45,7 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
           <IpInfoLine>
             <Tooltip>
               <Tooltip.Trigger asChild>
-                <span>{isoToEmoji(ip.country)}</span>
+                <CountryCodeToEmoji countryCode={ip.country} />
               </Tooltip.Trigger>
               <Tooltip.Content>{ip.country}</Tooltip.Content>
             </Tooltip>

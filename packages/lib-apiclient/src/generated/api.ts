@@ -1312,6 +1312,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1550,6 +1551,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1753,6 +1755,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =

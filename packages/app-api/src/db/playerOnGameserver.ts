@@ -428,6 +428,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
    */
   async observeIp(pogId: string, ip: string, ipData: IObserveIPOpts | null) {
     const { query } = await this.getIPHistoryModel();
+    const { query: query2 } = await this.getIPHistoryModel();
 
     const lastIp = await query.select('ip').where({ pogId }).orderBy('createdAt', 'desc').limit(1).first();
 
@@ -435,8 +436,10 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       return;
     }
 
+    let res: PlayerIPHistoryModel;
+
     if (ipData) {
-      await query.insert({
+      res = await query.insert({
         pogId,
         ip,
         country: ipData.country,
@@ -446,11 +449,13 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         domain: this.domainId,
       });
     } else {
-      await query.insert({
+      res = await query.insert({
         pogId,
         ip,
         domain: this.domainId,
       });
     }
+
+    return await query2.findById(res.id);
   }
 }
