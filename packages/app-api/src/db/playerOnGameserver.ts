@@ -179,6 +179,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       positionY: data.positionY,
       positionZ: data.positionZ,
       currency: data.currency,
+      online: data.online,
     });
 
     return this.findOne(res.id);

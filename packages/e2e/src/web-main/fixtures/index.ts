@@ -158,7 +158,6 @@ export const test = main.extend({
 // NO Permissions user test
 export const userTest = main.extend({
   takaro: async ({ takaro, page }, use) => {
-    console.log('password in fixture', takaro.testUser.password);
     await login(page, takaro.testUser.email, takaro.testUser.password);
     await use(takaro);
   },

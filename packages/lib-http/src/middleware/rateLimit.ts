@@ -52,7 +52,6 @@ export async function createRateLimitMiddleware(opts: IRateLimitMiddlewareOption
     let rateLimiterRes: RateLimiterRes | null = null;
 
     try {
-      console.log(`Consuming one for ${limitedKey}`);
       rateLimiterRes = await rateLimiter.consume(limitedKey);
     } catch (err) {
       if (err instanceof RateLimiterRes) {
