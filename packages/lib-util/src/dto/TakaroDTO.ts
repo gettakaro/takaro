@@ -5,6 +5,10 @@ import * as errors from '../errors.js';
 
 const log = logger('TakaroDTO');
 
+type Nullable<T> = {
+  [P in keyof T]: T[P] | null | undefined;
+};
+
 /**
  * Generic Data Transfer Object, used widely in Takaro to pass data back and forth between components
  * Allows validation of properties when instantiated and JSON (de)serialization
@@ -28,7 +32,10 @@ export class TakaroDTO<T> {
     return instanceToPlain(this, {});
   }
 
-  async construct(data: Partial<T> = {}) {
+  async construct(data?: Nullable<Partial<T>>) {
+    if (!data) {
+      return this;
+    }
     Object.assign(this, data);
 
     // TODO: enable this for much tighter validation of all DTOs
