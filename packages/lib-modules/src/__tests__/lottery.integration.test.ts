@@ -122,7 +122,7 @@ const tests = [
         )
       ).data.data;
 
-      const userConfig: Record<string, number> = mod.userConfig;
+      const userConfig: Record<string, any> = mod.userConfig;
       const prize = userConfig.ticketPrice * playerAmount * (1 - userConfig.profitMargin);
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
@@ -159,14 +159,16 @@ const tests = [
     setup,
     name: 'can view next lottery draw',
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/nextDraw',
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      const events = await waitForEvents;
+
+      expect(events.length).to.be.eq(1);
     },
   }),
 ];

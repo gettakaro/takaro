@@ -12,7 +12,7 @@ async function main() {
     throw new TakaroUserError('You do not have permission to view lottery tickets.');
   }
 
-  const vars = (
+  const tickets = (
     await takaro.variable.variableControllerSearch({
       filters: {
         gameServerId,
@@ -25,8 +25,8 @@ async function main() {
 
   let ticketsBought = 0;
 
-  if (vars.length > 0) {
-    ticketsBought = parseInt(JSON.parse(vars[0].value).amount, 10);
+  if (tickets.length === 1) {
+    ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);
   }
 
   await player.pm(`You have bought ${ticketsBought} tickets.`);

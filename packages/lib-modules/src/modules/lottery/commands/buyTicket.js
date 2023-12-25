@@ -12,8 +12,6 @@ async function main() {
     throw new TakaroUserError('You do not have permission to buy lottery tickets.');
   }
 
-  // TODO: check if lottery is running
-
   const tickets = (
     await takaro.variable.variableControllerSearch({
       filters: {
@@ -47,12 +45,10 @@ async function main() {
     });
   }
 
-  const ticketPrice = mod.userConfig.ticketPrice;
-  const price = args.amount * ticketPrice;
-
+  const ticketPrice = args.amount * mod.userConfig.ticketPrice;
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
 
-  await player.pm(`You have successfully bought ${args.amount} tickets for ${price} ${currencyName}. Good luck!`);
+  await player.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);
 }
 
 await main();
