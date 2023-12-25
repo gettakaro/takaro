@@ -11,10 +11,13 @@ import { PlayerInventoryTable } from './PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/countryCodeToEmoji';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const ChipContainer = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['1']};
 `;
@@ -35,6 +38,15 @@ const IpInfoLine = styled.div`
 const IpWhoisLink = styled.a`
   color: ${({ theme }) => theme.colors.primary};
   text-decoration: underline;
+`;
+
+const EventWidgetContainer = styled.div`
+  height: 100px;
+`;
+
+const Columns = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 `;
 
 const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
@@ -79,6 +91,8 @@ export const PlayerProfile: FC = () => {
     },
   });
 
+  useDocumentTitle(data?.name || 'Player Profile');
+
   if (isLoading || isLoadingPogs || !data || !pogs) {
     return <Loading />;
   }
@@ -86,44 +100,48 @@ export const PlayerProfile: FC = () => {
   return (
     <div>
       <h1>{data?.name}</h1>
+      <Columns>
+        <div style={{ maxWidth: '800px' }}>
+          <Stats border={false} direction="horizontal">
+            <Stats.Stat
+              description="Member since"
+              value={DateTime.fromISO(data?.createdAt).toLocaleString({
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            />
+            <Stats.Stat
+              description="Last seen"
+              value={DateTime.fromISO(data?.updatedAt).toLocaleString({
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            />
+          </Stats>
+        </div>
+        <ChipContainer>
+          {data?.id && <Chip color="secondary" avatar={<TakaroIcon />} label={`Takaro ID: ${data.id}`} />}
+          {data?.steamId && (
+            <Chip
+              color="secondary"
+              avatar={<SteamIcon />}
+              onClick={() => {
+                window.open(`https://steamcommunity.com/profiles/${data?.steamId}`, '_blank');
+              }}
+              label={`Steam ID: ${data.steamId}`}
+            />
+          )}
+          {data.epicOnlineServicesId && (
+            <Chip color="secondary" avatar={<EpicGamesIcon />} onClick={() => {}} label={data.epicOnlineServicesId} />
+          )}
+          {data.xboxLiveId && (
+            <Chip color="secondary" avatar={<XboxIcon />} onClick={() => {}} label={data.xboxLiveId} />
+          )}
+        </ChipContainer>
+      </Columns>
 
-      <div style={{ maxWidth: '800px' }}>
-        <Stats border={false} direction="horizontal">
-          <Stats.Stat
-            description="Member since"
-            value={DateTime.fromISO(data?.createdAt).toLocaleString({
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          />
-          <Stats.Stat
-            description="Last seen"
-            value={DateTime.fromISO(data?.updatedAt).toLocaleString({
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          />
-        </Stats>
-      </div>
-      <ChipContainer>
-        {data?.id && <Chip color="secondary" avatar={<TakaroIcon />} label={`Takaro ID: ${data.id}`} />}
-        {data?.steamId && (
-          <Chip
-            color="secondary"
-            avatar={<SteamIcon />}
-            onClick={() => {
-              window.open(`https://steamcommunity.com/profiles/${data?.steamId}`, '_blank');
-            }}
-            label={`Steam ID: ${data.steamId}`}
-          />
-        )}
-        {data.epicOnlineServicesId && (
-          <Chip color="secondary" avatar={<EpicGamesIcon />} onClick={() => {}} label={data.epicOnlineServicesId} />
-        )}
-        {data.xboxLiveId && <Chip color="secondary" avatar={<XboxIcon />} onClick={() => {}} label={data.xboxLiveId} />}
-      </ChipContainer>
       <Divider />
 
       <h2>IP History</h2>
@@ -132,8 +150,16 @@ export const PlayerProfile: FC = () => {
       <h2>Roles</h2>
       <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} playerName={data?.name} />
 
-      <h2>Inventory</h2>
-      <PlayerInventoryTable pogs={pogs.data} />
+      <Divider />
+
+      <Columns>
+        <h2>Inventory</h2>
+        <PlayerInventoryTable pogs={pogs.data} />
+
+        <EventWidgetContainer>
+          <EventFeedWidget query={{ filters: { playerId: [playerId] } }} />
+        </EventWidgetContainer>
+      </Columns>
 
       <Outlet />
     </div>
