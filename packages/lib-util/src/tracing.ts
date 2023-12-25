@@ -21,6 +21,7 @@ if (process.env.TRACING_ENABLED === 'true') {
     })
   );
 
+  // eslint-disable-next-line no-console
   console.log('Starting Takaro Tracing');
   TracingSDK.start();
 }

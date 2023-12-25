@@ -55,8 +55,6 @@ for (const { linkName, path, permission } of items) {
       permissions,
     });
 
-    console.log('updated role', (await rootClient.role.roleControllerGetOne(testUser.role.id)).data.data);
-
     // because we are adding a role using the api, react query will not know about this change
     // we need to get rid of the cached user data. We do this by logging out.
     await page.goto('/logout');

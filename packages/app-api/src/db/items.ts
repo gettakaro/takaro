@@ -130,7 +130,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
           values
         );
       } catch (error) {
-        console.error(error);
+        this.log.error(error);
       }
     });
 
