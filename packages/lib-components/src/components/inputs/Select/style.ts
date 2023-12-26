@@ -69,7 +69,7 @@ export const SelectContainer = styled.div`
   z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
-export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: boolean }>`
+export const OptionContainer = styled.li<{ isActive: boolean; isMultiSelect: boolean; isGrouped: boolean }>`
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
@@ -81,6 +81,7 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
   transition: transform 0.15s ease-out;
   outline: 0;
   scroll-margin: ${({ theme }) => theme.spacing['0_75']};
+  padding-left: ${({ isGrouped, theme }) => (isGrouped ? `calc(1.7 * ${theme.spacing['2']})` : theme.spacing['1'])}};
 
   &:focus {
     background-color: ${({ theme }) => theme.colors.background};
@@ -107,7 +108,28 @@ export const OptionContainer = styled.div<{ isActive: boolean; isMultiSelect: bo
   }
 `;
 
+export const GroupContainer = styled.ul`
+  padding-bottom: ${({ theme }) => theme.spacing['0_75']};
+  &:last-child {
+    padding-bottom: 0;
+  }
+`;
+
 export const GroupLabel = styled.li`
   opacity: 0.5;
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
+  align-items: center;
+  justify-content: flex-start;
+  display: flex;
+  padding-left: ${({ theme }) => theme.spacing['0_25']};
+
+  img,
+  svg {
+    width: ${({ theme }) => theme.spacing[2]}!important;
+    height: ${({ theme }) => theme.spacing[2]}!important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    margin-right: ${({ theme }) => theme.spacing['1']}!important;
+    fill: ${({ theme }) => theme.colors.primary};
+  }
 `;

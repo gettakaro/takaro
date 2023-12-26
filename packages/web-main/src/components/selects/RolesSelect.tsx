@@ -1,10 +1,17 @@
-import { Select, Chip } from '@takaro/lib-components';
+import { Select, styled } from '@takaro/lib-components';
 import { FC } from 'react';
-import { SelectProps } from '.';
+import { CustomSelectProps } from '.';
 import { useRoles } from 'queries/roles';
 
-export const GameServerSelect: FC<SelectProps> = ({ control, isLoading, name }) => {
-  const { data, isLoading: isLoadingData } = useRoles();
+const Inner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+`;
+
+export const RolesSelect: FC<CustomSelectProps> = ({ control, name, loading }) => {
+  const { data, isLoading: isLoadingData } = useRoles({ sortBy: 'system', sortDirection: 'asc' });
 
   if (isLoadingData) {
     // TODO: better loading state
@@ -22,20 +29,34 @@ export const GameServerSelect: FC<SelectProps> = ({ control, isLoading, name }) 
     <Select
       control={control}
       name={name}
-      label="Game Server"
+      label="Roles"
       required
       enableFilter={roles.length > 10}
-      loading={isLoading}
+      loading={loading}
       render={(selectedIndex) => <div>{roles[selectedIndex]?.name ?? 'Select...'}</div>}
     >
-      <Select.OptionGroup label="Games">
-        {roles.map(({ name, id, system }) => (
-          <Select.Option key={`select-${name}`} value={id}>
-            <div>
-              <span>{name}</span> && {system} && <Chip color="primary" label="System" />
-            </div>
-          </Select.Option>
-        ))}
+      <Select.OptionGroup label="Custom">
+        {roles
+          .filter((role) => !role.system)
+          .map(({ name, id }) => (
+            <Select.Option key={`select-${name}`} value={id}>
+              <Inner>
+                <span>{name}</span>
+              </Inner>
+            </Select.Option>
+          ))}
+      </Select.OptionGroup>
+
+      <Select.OptionGroup label="System">
+        {roles
+          .filter((role) => role.system)
+          .map(({ name, id }) => (
+            <Select.Option key={`select-${name}`} value={id}>
+              <Inner>
+                <span>{name}</span>
+              </Inner>
+            </Select.Option>
+          ))}
       </Select.OptionGroup>
     </Select>
   );

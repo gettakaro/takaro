@@ -1,9 +1,7 @@
-export { GameServerSelect } from './GameServerSelect';
-import { Control } from 'react-hook-form';
+import { SelectProps } from '@takaro/lib-components';
 
-export interface SelectProps {
-  control: Control;
-  isLoading?: boolean;
-  name: string;
-  label: string;
-}
+// TODO: implement multiSelect
+export type CustomSelectProps = Omit<SelectProps, 'render' | 'children' | 'enableFilter' | 'required' | 'multiSelect'>;
+
+export { GameServerSelect } from './GameServerSelect';
+export { RolesSelect } from './RolesSelect';
