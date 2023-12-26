@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PATHS } from 'paths';
+import { VariableValueDetail } from './variables/ValueDetail';
 
 const Variables: FC = () => {
   useDocumentTitle('Variables');
@@ -50,7 +51,7 @@ const Variables: FC = () => {
     columnHelper.accessor('value', {
       header: 'Value',
       id: 'value',
-      cell: (info) => info.getValue(),
+      cell: (info) => (info.getValue().length > 10 ? <VariableValueDetail value={info.getValue()} /> : info.getValue()),
       enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
@@ -107,7 +108,11 @@ const Variables: FC = () => {
             <IconButton icon={<ActionIcon />} ariaLabel="variable-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
-            <Dropdown.Menu.Item label="Edit variable" icon={<EditIcon />} onClick={() => navigate('')} />
+            <Dropdown.Menu.Item
+              label="Edit variable"
+              icon={<EditIcon />}
+              onClick={() => navigate(PATHS.variables.update(info.row.original.id))}
+            />
             <Dropdown.Menu.Item
               label="Delete variable"
               icon={<DeleteIcon />}
