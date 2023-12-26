@@ -25,16 +25,16 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
 
-    // if the gameserver was selected, deselect it
-    if (selectedGameServerId === id) {
-      setSelectedGameServerId('');
-    }
-
     setOpenDialog(true);
   };
 
   const handleOnDelete = async () => {
     await mutateAsync({ id });
+
+    // if the gameserver was selected, deselect it
+    if (selectedGameServerId === id) {
+      setSelectedGameServerId('');
+    }
   };
 
   return (
