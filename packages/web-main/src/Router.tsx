@@ -129,7 +129,7 @@ export const Router: FC = () => (
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.READ_VARIABLES]} />}>
             <Route element={<Variables />} path={PATHS.variables.overview()} />
           </Route>
-          <Route element=<PermissionsGuard permissions={[PERMISSIONS.MANAGE_VARIABLES]} />>
+          <Route element={<PermissionsGuard permissions={[PERMISSIONS.MANAGE_VARIABLES]} />}>
             <Route element={<VariablesCreate />} path={PATHS.variables.create()} />
             <Route element={<VariablesUpdate />} path={PATHS.variables.update(':variableId')} />
           </Route>
