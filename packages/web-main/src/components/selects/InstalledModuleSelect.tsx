@@ -26,6 +26,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
   disabled,
   label = 'Installed module',
   size,
+  required,
   hint,
   gameServerId,
 }) => {
@@ -54,6 +55,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
       hint={hint}
       disabled={disabled}
       size={size}
+      required={required}
       inPortal={inPortal}
       loading={loading}
       render={(selectedIndex) => {

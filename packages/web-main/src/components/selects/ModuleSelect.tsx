@@ -24,6 +24,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   disabled,
   size,
   hint,
+  required,
   label = 'Module',
 }) => {
   const { data, isLoading: isLoadingData } = useModules();
@@ -51,6 +52,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
       disabled={disabled}
       size={size}
       inPortal={inPortal}
+      required={required}
       loading={loading}
       render={(selectedIndex) => {
         if (selectedIndex === undefined || selectedIndex === -1) {

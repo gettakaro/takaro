@@ -50,6 +50,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   disabled,
   inPortal,
   description,
+  required,
 }) => {
   const { data, isLoading: isLoadingData } = useGameServers({ sortBy: 'type' });
 
@@ -107,6 +108,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       disabled={disabled}
       inPortal={inPortal}
       hint={hint}
+      required={required}
       loading={loading}
       render={(selectedIndex) => {
         if (selectedIndex === undefined || selectedIndex === -1) {

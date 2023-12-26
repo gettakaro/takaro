@@ -24,6 +24,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
   inPortal,
   disabled,
   size,
+  required,
   hint,
 }) => {
   const { data, isLoading: isLoadingData } = usePlayers();
@@ -47,6 +48,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
       description={description}
       readOnly={readOnly}
       hint={hint}
+      required={required}
       disabled={disabled}
       size={size}
       inPortal={inPortal}

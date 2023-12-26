@@ -10,7 +10,19 @@ const Inner = styled.div`
   width: 100%;
 `;
 
-export const RolesSelect: FC<CustomSelectProps> = ({ control, name, loading }) => {
+export const RolesSelect: FC<CustomSelectProps> = ({
+  control,
+  name,
+  loading,
+  required,
+  hint,
+  size,
+  label = 'Role',
+  disabled,
+  inPortal,
+  description,
+  readOnly,
+}) => {
   const { data, isLoading: isLoadingData } = useRoles({ sortBy: 'system', sortDirection: 'asc' });
 
   if (isLoadingData) {
@@ -29,8 +41,14 @@ export const RolesSelect: FC<CustomSelectProps> = ({ control, name, loading }) =
     <Select
       control={control}
       name={name}
-      label="Roles"
-      required
+      label={label}
+      readOnly={readOnly}
+      hint={hint}
+      disabled={disabled}
+      size={size}
+      inPortal={inPortal}
+      description={description}
+      required={required}
       enableFilter={roles.length > 10}
       loading={loading}
       render={(selectedIndex) => <div>{roles[selectedIndex]?.name ?? 'Select...'}</div>}
