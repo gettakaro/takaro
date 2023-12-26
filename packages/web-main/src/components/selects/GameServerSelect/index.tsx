@@ -43,7 +43,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   readOnly = false,
   label = 'Game Server',
   hint,
-  name,
+  name: selectName,
   size,
   loading,
   control,
@@ -76,7 +76,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
           }
 
           return type === typeEnum ? (
-            <Select.Option key={`select-${name}`} value={id}>
+            <Select.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
                 {isOnline && (
@@ -98,7 +98,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   return (
     <Select
       control={control}
-      name={name}
+      name={selectName}
       readOnly={readOnly}
       label={label}
       enableFilter={gameServers.length > 6}
@@ -115,7 +115,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
         return (
           <Inner>
             {gameTypeMap[gameServers[selectedIndex]?.type].icon}
-            {gameServers[selectedIndex]?.name ?? 'Select...'}
+            {gameServers[selectedIndex]?.name}
           </Inner>
         );
       }}

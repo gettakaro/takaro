@@ -5,3 +5,5 @@ export type CustomSelectProps = Omit<SelectProps, 'render' | 'children' | 'enabl
 
 export { GameServerSelect } from './GameServerSelect';
 export { RolesSelect } from './RolesSelect';
+export { PlayerSelect } from './PlayerSelect';
+export { ModuleSelect } from './ModuleSelect';
