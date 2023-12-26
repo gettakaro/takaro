@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { NetworkDetector } from '.';
@@ -5,12 +6,11 @@ import { NetworkDetector } from '.';
 const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
-  background-color: white;
 `;
 
 export default {
   title: 'Feedback/NetworkDetector',
-  component: NetworkDetector
+  component: NetworkDetector,
 } as Meta;
 
 export const Default: StoryFn = () => (
