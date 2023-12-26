@@ -210,6 +210,7 @@ export const useGameServerSettings = (id?: string) => {
   return useQuery<Settings, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: gameServerKeys.settings(id),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
+    cacheTime: 0,
   });
 };
 
@@ -234,7 +235,6 @@ export const useGameServerUpdate = () => {
         // update cache of gameserver
         queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
       } catch (e) {
-        // TODO: pass extra context to the error
         Sentry.captureException(e);
       }
     },
@@ -264,7 +264,6 @@ export const useGameServerRemove = () => {
           queryKey: gameServerKeys.reachability(removedGameServer.id),
         });
       } catch (e) {
-        // TODO: pass extra context to the error
         Sentry.captureException(e);
       }
     },
@@ -307,8 +306,6 @@ export const useGameServerReachabilityByConfig = () => {
           connectionInfo,
         })
       ).data.data;
-
-      // TODO:
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
   });

@@ -4,10 +4,6 @@ export const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.large};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
-
-  &:active {
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
 `;
 
 export const EmptyContainer = styled(Container)`

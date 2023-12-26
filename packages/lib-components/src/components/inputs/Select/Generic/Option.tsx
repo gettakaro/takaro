@@ -11,14 +11,14 @@ const StyledCheckIcon = styled(CheckIcon)`
 
 export interface OptionProps extends PropsWithChildren {
   value: string;
+  disabled?: boolean;
 
   // This is required for filtering
   label?: string;
   // Properties set by the Select component
   index?: number;
+  isGrouped?: boolean;
   onChange?: (value: string | string[]) => unknown;
-
-  disabled?: boolean;
 }
 
 // check if the index is already selected, if so remove it, otherwise add it.
@@ -35,7 +35,7 @@ function getselectedValues(selectedIndices: number[], options: string[]): string
   return selectedIndices.map((i) => options[i]);
 }
 
-export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, disabled }) => {
+export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, disabled, isGrouped }) => {
   const {
     selectedIndex,
     setSelectedIndex,
@@ -93,6 +93,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
       tabIndex={activeIndex === index ? 0 : 1}
       isMultiSelect={multiSelect}
       isActive={activeIndex === index}
+      isGrouped={isGrouped}
       // Selected in this case means the one we are hovering
       aria-selected={activeIndex === index}
       aria-disabled={disabled}

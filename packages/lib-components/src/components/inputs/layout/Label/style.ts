@@ -7,10 +7,7 @@ export const Container = styled.label<{
   position: LabelPosition;
   disabled: boolean;
 }>`
-  color: ${({ theme, error, disabled }): string => {
-    if (disabled) {
-      return theme.colors.gray;
-    }
+  color: ${({ theme, error }): string => {
     if (error) {
       return theme.colors.error;
     }

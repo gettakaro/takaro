@@ -70,7 +70,7 @@ const domainLinks: NavbarLink[] = [
   },
   {
     label: 'Variables',
-    path: PATHS.variables(),
+    path: PATHS.variables.overview(),
     icon: <VariablesIcon />,
     requiredPermissions: [PERMISSIONS.READ_VARIABLES],
   },

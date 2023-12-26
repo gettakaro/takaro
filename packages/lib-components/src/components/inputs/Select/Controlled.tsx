@@ -1,18 +1,18 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Container } from './style';
+import { Container, LoadingContainer } from './style';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
 import { GenericSelect, SubComponentTypes } from '.';
 import { SelectProps } from './Generic';
 import { Option } from './Generic/Option';
 import { OptionGroup } from './Generic/OptionGroup';
 import { ErrorMessage, Label, Wrapper, Description } from '../layout';
+import { Skeleton } from '../../../components';
 
 export type ControlledSelectProps = PropsWithChildren<ControlledInputProps & SelectProps>;
 
 const defaultsApplier = defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
 
-// TODO: handle select loading state
 export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (props) => {
   const {
     required,
@@ -52,7 +52,29 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   };
 
   if (loading) {
-    return <div>loading...</div>;
+    return (
+      <Wrapper>
+        <Container>
+          {label && (
+            <Label
+              error={!!error}
+              text={label}
+              required={required}
+              position="top"
+              size={componentSize}
+              disabled={disabled}
+              hint={hint}
+            />
+          )}
+          <LoadingContainer>
+            <div>
+              <Skeleton variant="rectangular" width="100%" height="38px" />
+            </div>
+          </LoadingContainer>
+        </Container>
+        {description && <Description description={description} inputName={name} />}
+      </Wrapper>
+    );
   }
 
   return (
