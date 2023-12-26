@@ -35,7 +35,7 @@ export class CronJobModel extends TakaroModel {
   nextRunAt(): string {
     const interval = cronParser.parseExpression(this.temporalValue);
 
-    return new Date(interval.next().getTime() - Date.now()).toISOString();
+    return interval.next().toISOString();
   }
 }
 

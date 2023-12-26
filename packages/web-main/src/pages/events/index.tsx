@@ -86,6 +86,9 @@ const treeData = [
       {
         name: EventOutputDTOEventNameEnum.EntityKilled,
       },
+      {
+        name: EventOutputDTOEventNameEnum.PlayerNewIpDetected,
+      },
     ],
   },
   {

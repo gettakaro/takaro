@@ -1291,22 +1291,23 @@ export interface EventCreateDTO {
 }
 
 export const EventCreateDTOEventNameEnum = {
-    PlayerConnected: 'player-connected',
-    PlayerDisconnected: 'player-disconnected',
-    ChatMessage: 'chat-message',
-    PlayerDeath: 'player-death',
-    EntityKilled: 'entity-killed',
-    RoleAssigned: 'role-assigned',
-    RoleRemoved: 'role-removed',
-    RoleCreated: 'role-created',
-    RoleUpdated: 'role-updated',
-    RoleDeleted: 'role-deleted',
-    CommandExecuted: 'command-executed',
-    HookExecuted: 'hook-executed',
-    CronjobExecuted: 'cronjob-executed',
-    CurrencyAdded: 'currency-added',
-    CurrencyDeducted: 'currency-deducted',
-    SettingsSet: 'settings-set'
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventCreateDTOEventNameEnum = typeof EventCreateDTOEventNameEnum[keyof typeof EventCreateDTOEventNameEnum];
@@ -1528,22 +1529,23 @@ export interface EventOutputDTO {
 }
 
 export const EventOutputDTOEventNameEnum = {
-    PlayerConnected: 'player-connected',
-    PlayerDisconnected: 'player-disconnected',
-    ChatMessage: 'chat-message',
-    PlayerDeath: 'player-death',
-    EntityKilled: 'entity-killed',
-    RoleAssigned: 'role-assigned',
-    RoleRemoved: 'role-removed',
-    RoleCreated: 'role-created',
-    RoleUpdated: 'role-updated',
-    RoleDeleted: 'role-deleted',
-    CommandExecuted: 'command-executed',
-    HookExecuted: 'hook-executed',
-    CronjobExecuted: 'cronjob-executed',
-    CurrencyAdded: 'currency-added',
-    CurrencyDeducted: 'currency-deducted',
-    SettingsSet: 'settings-set'
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventOutputDTOEventNameEnum = typeof EventOutputDTOEventNameEnum[keyof typeof EventOutputDTOEventNameEnum];
@@ -1728,22 +1730,23 @@ export interface EventSearchInputAllowedFilters {
 }
 
 export const EventSearchInputAllowedFiltersEventNameEnum = {
-    PlayerConnected: 'player-connected',
-    PlayerDisconnected: 'player-disconnected',
-    ChatMessage: 'chat-message',
-    PlayerDeath: 'player-death',
-    EntityKilled: 'entity-killed',
-    RoleAssigned: 'role-assigned',
-    RoleRemoved: 'role-removed',
-    RoleCreated: 'role-created',
-    RoleUpdated: 'role-updated',
-    RoleDeleted: 'role-deleted',
-    CommandExecuted: 'command-executed',
-    HookExecuted: 'hook-executed',
-    CronjobExecuted: 'cronjob-executed',
-    CurrencyAdded: 'currency-added',
-    CurrencyDeducted: 'currency-deducted',
-    SettingsSet: 'settings-set'
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum = typeof EventSearchInputAllowedFiltersEventNameEnum[keyof typeof EventSearchInputAllowedFiltersEventNameEnum];
@@ -3353,6 +3356,49 @@ export interface InviteOutputDTO {
 /**
  * 
  * @export
+ * @interface IpHistoryOutputDTO
+ */
+export interface IpHistoryOutputDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof IpHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  ip: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  latitude?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  longitude?: string;
+}
+/**
+ *
+ * @export
  * @interface ItemCreateDTO
  */
 export interface ItemCreateDTO {
@@ -4639,48 +4685,48 @@ export interface PlayerOnGameServerSetCurrencyInputDTO {
  * @interface PlayerOnGameServerUpdateDTO
  */
 export interface PlayerOnGameServerUpdateDTO {
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'positionX'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'positionY'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'positionZ'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'ip'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'ping'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'currency'?: number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PlayerOnGameServerUpdateDTO
-     */
-    'online': boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  ping?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  currency?: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  online: boolean;
 }
 /**
  * 
@@ -4707,90 +4753,96 @@ export interface PlayerOnGameserverOutputArrayDTOAPI {
  * @interface PlayerOnGameserverOutputDTO
  */
 export interface PlayerOnGameserverOutputDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'gameServerId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'playerId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'gameId': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'positionX'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'positionY'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'positionZ'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'ip'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'ping'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'currency': number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'online': boolean;
-    /**
-     * 
-     * @type {Array<IItemDTO>}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'inventory': Array<IItemDTO>;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'id': string;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  gameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ping?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  currency: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  online: boolean;
+  /**
+   *
+   * @type {Array<IItemDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -4817,96 +4869,102 @@ export interface PlayerOnGameserverOutputDTOAPI {
  * @interface PlayerOnGameserverOutputWithRolesDTO
  */
 export interface PlayerOnGameserverOutputWithRolesDTO {
-    /**
-     * 
-     * @type {Array<PlayerRoleAssignmentOutputDTO>}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'roles': Array<PlayerRoleAssignmentOutputDTO>;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'id': string;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'gameServerId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'playerId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'gameId': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'positionX'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'positionY'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'positionZ'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'ip'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'ping'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'currency': number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'online': boolean;
-    /**
-     * 
-     * @type {Array<IItemDTO>}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'inventory': Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<PlayerRoleAssignmentOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  roles: Array<PlayerRoleAssignmentOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  gameId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  positionZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ip?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ping?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  currency: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  online: boolean;
+  /**
+   *
+   * @type {Array<IItemDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  * 

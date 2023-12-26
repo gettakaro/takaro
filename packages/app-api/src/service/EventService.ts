@@ -29,6 +29,7 @@ export enum EVENT_TYPES {
   CURRENCY_ADDED = 'currency-added',
   CURRENCY_DEDUCTED = 'currency-deducted',
   SETTINGS_SET = 'settings-set',
+  PLAYER_NEW_IP_DETECTED = 'player-new-ip-detected',
 }
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {

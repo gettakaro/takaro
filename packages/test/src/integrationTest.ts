@@ -38,20 +38,24 @@ const adminClient = new AdminClient({
 });
 
 before(async () => {
-  const danglingDomains = await adminClient.domain.domainControllerSearch({
-    search: {
-      name: [testDomainPrefix],
-    },
-  });
+  try {
+    const danglingDomains = await adminClient.domain.domainControllerSearch({
+      search: {
+        name: [testDomainPrefix],
+      },
+    });
 
-  await Promise.allSettled(
-    danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id))
-  );
-
-  if (danglingDomains.data.data.length > 0) {
-    console.log(
-      `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`
+    await Promise.allSettled(
+      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id))
     );
+
+    if (danglingDomains.data.data.length > 0) {
+      console.log(
+        `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`
+      );
+    }
+  } catch (error) {
+    console.warn('Failed to clean up dangling domains');
   }
 });
 

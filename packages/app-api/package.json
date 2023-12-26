@@ -9,6 +9,7 @@
     "start": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
     "start:dev": "nodemon --exec 'npm run build && node  --experimental-vm-modules --inspect=0.0.0.0:12001 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json",
     "prestart:dev": "npm run db:migrate",
+    "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts --exit",
@@ -28,8 +29,10 @@
     "basic-auth": "^2.0.1",
     "bcrypt": "^5.0.1",
     "cron-parser": "4.9.0",
+    "geolite2-redist": "^3.0.4",
     "human-id": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
+    "maxmind": "^4.3.18",
     "passport": "^0.6.0",
     "passport-oauth2": "^1.7.0",
     "pg": "^8.8.0"

@@ -3,11 +3,20 @@ import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration
 import { GameEvents } from '../dto/index.js';
 
 const group = 'lottery suite';
+const ticketCost = 50;
 
 const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const data = await modulesTestSetup.call(this);
 
-  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.lotteryModule.id);
+  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.lotteryModule.id, {
+    systemConfig: JSON.stringify({
+      commands: {
+        buyTicket: {
+          cost: ticketCost,
+        },
+      },
+    }),
+  });
 
   return data;
 };
@@ -22,7 +31,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       const ticketAmount = 1;
-      const ticketPrice = ticketAmount * 50;
+      const ticketPrice = ticketAmount * ticketCost;
 
       const useLotteryRole = await this.client.permissionCodesToInputs(['LOTTERY_BUY']);
 
@@ -123,7 +132,7 @@ const tests = [
       ).data.data;
 
       const userConfig: Record<string, any> = mod.userConfig;
-      const prize = userConfig.ticketPrice * playerAmount * (1 - userConfig.profitMargin);
+      const prize = ticketCost * playerAmount * (1 - userConfig.profitMargin);
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
       ).data.data;

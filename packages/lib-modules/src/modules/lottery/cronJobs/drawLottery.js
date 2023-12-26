@@ -1,7 +1,7 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function getTotalPrize(playerAmount, ticketPrice, profitMargin) {
-  const rawTotal = playerAmount * ticketPrice;
+function getTotalPrize(amount, ticketPrice, profitMargin) {
+  const rawTotal = amount * ticketPrice;
   const profit = rawTotal * profitMargin;
   const totalPrize = rawTotal - profit;
 
@@ -39,14 +39,23 @@ async function main() {
     })
   ).data.data;
 
-  if (tickets.length === 0) {
+  const ticketAmount = tickets.map((ticket) => parseInt(JSON.parse(ticket.value).amount, 10)).sum();
+
+  if (ticketAmount === 0) {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: 'No one has bought any tickets. The lottery has been cancelled.',
     });
     return;
   }
 
-  const totalPrize = getTotalPrize(tickets.length, mod.userConfig.ticketPrice, mod.userConfig.profitMargin);
+  if (ticketAmount === 1) {
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+      message: 'Only one person has bought a ticket. The lottery has been cancelled.',
+    });
+    return;
+  }
+
+  const totalPrize = getTotalPrize(tickets, mod.systemConfig.commands.buyTicket.cost, mod.userConfig.profitMargin);
   const winner = await drawWinner(takaro, tickets);
 
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;

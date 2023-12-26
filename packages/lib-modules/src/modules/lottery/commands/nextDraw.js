@@ -1,35 +1,41 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function formatIso(isoDateString) {
-  // Convert ISO date string to milliseconds
-  const milliseconds = new Date(isoDateString).getTime();
+function formatTimeToReach(timestamp) {
+  // Parse the ISO string to get the timestamp
+  const targetDate = new Date(timestamp);
 
-  const oneSecond = 1000;
-  const oneMinute = oneSecond * 60;
-  const oneHour = oneMinute * 60;
-  const oneDay = oneHour * 24;
+  // Get the current date and time
+  const currentDate = new Date();
 
-  if (milliseconds < oneSecond) {
-    return milliseconds + ' milliseconds';
-  } else if (milliseconds < oneMinute) {
-    const seconds = Math.floor(milliseconds / oneSecond);
-    return seconds + ' seconds';
-  } else if (milliseconds < oneHour) {
-    const minutes = Math.floor(milliseconds / oneMinute);
-    const seconds = Math.floor((milliseconds % oneMinute) / oneSecond);
-    return `${minutes} minutes ${seconds} seconds`;
-  } else if (milliseconds < oneDay) {
-    const hours = Math.floor(milliseconds / oneHour);
-    const minutes = Math.floor((milliseconds % oneHour) / oneMinute);
-    const seconds = Math.floor((milliseconds % oneMinute) / oneSecond);
-    return `${hours} hours ${minutes} minutes ${seconds} seconds`;
-  } else {
-    const days = Math.floor(milliseconds / oneDay);
-    const hours = Math.floor((milliseconds % oneDay) / oneHour);
-    const minutes = Math.floor((milliseconds % oneHour) / oneMinute);
-    const seconds = Math.floor((milliseconds % oneMinute) / oneSecond);
-    return `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+  // Calculate the time difference in milliseconds
+  const delta = targetDate - currentDate;
+
+  // Calculate days, hours, minutes, and seconds
+  const days = Math.floor(delta / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((delta % (1000 * 60)) / 1000);
+
+  // Build the formatted string
+  let formattedString = '';
+
+  if (days > 0) {
+    formattedString += `${days} day${days > 1 ? 's' : ''} `;
   }
+
+  if (hours > 0) {
+    formattedString += `${hours} hour${hours > 1 ? 's' : ''} `;
+  }
+
+  if (minutes > 0) {
+    formattedString += `${minutes} minute${minutes > 1 ? 's' : ''} `;
+  }
+
+  if (seconds > 0) {
+    formattedString += `${seconds} second${seconds > 1 ? 's' : ''} `;
+  }
+
+  return formattedString.trim();
 }
 
 async function main() {
@@ -42,7 +48,7 @@ async function main() {
     await takaro.cronjob.cronJobControllerSearch({ filters: { name: ['drawLottery'], moduleId: [mod.moduleId] } })
   ).data.data[0];
 
-  await player.pm(`The next lottery draw is in about ${formatIso(cronjob.nextRunIn)}`);
+  await player.pm(`The next lottery draw is in about ${formatTimeToReach(cronjob.nextRunAt)}`);
 }
 
 await main();

@@ -45,7 +45,7 @@ async function main() {
     });
   }
 
-  const ticketPrice = args.amount * mod.userConfig.ticketPrice;
+  const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
 
   await player.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);

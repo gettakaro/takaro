@@ -7,6 +7,7 @@ import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { ChatMessagesCard } from './cards/ChatMessages';
 import { OnlinePlayersCard } from './cards/OnlinePlayers';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
 const GridContainer = styled.div`
   display: grid;
@@ -24,7 +25,11 @@ const DashboardCard = styled.div`
 `;
 
 const ConsoleContainer = styled.div`
-  height: 80vh;
+  height: 100%;
+`;
+
+const EventsContainer = styled.div`
+  margin-top: 5rem;
 `;
 
 const OnlinePlayerContainer = styled(DashboardCard)``;
@@ -133,6 +138,9 @@ const GameServerDashboard: FC = () => {
           }}
         />
       </ConsoleContainer>
+      <EventsContainer>
+        <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
+      </EventsContainer>
     </Fragment>
   );
 };

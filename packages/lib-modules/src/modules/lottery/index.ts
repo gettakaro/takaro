@@ -16,12 +16,6 @@ export class Lottery extends BuiltinModule {
             description: 'The profit margin the server takes from the lottery',
             default: 0.1,
           },
-          ticketPrice: {
-            type: 'number',
-            minimum: 0,
-            description: 'The price of a single ticket',
-            default: 50,
-          },
         },
         required: [],
         additionalProperties: false,
