@@ -6,6 +6,7 @@ import { useVariableDelete, useVariables } from 'queries/variables';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PATHS } from 'paths';
 
 const Variables: FC = () => {
   useDocumentTitle('Variables');
@@ -140,6 +141,16 @@ const Variables: FC = () => {
 
       <Divider size="large" />
       <Table
+        renderToolbar={() => {
+          return (
+            <Button
+              text="Create variable"
+              onClick={() => {
+                navigate(PATHS.variables.create());
+              }}
+            />
+          );
+        }}
         id="variables"
         columns={columnDefs}
         data={data ? data?.data : []}
