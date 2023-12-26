@@ -13,12 +13,17 @@ import { useVariable, useVariableUpdate } from 'queries/variables/queries';
 import { GameServerSelect, PlayerSelect } from 'components/selects';
 import { ModuleSelect } from 'components/selects/ModuleSelect';
 
+enum ExecutionType {
+  CREATE = 'create',
+  UPDATE = 'update',
+}
+
 const validationSchema = z.object({
   key: z.string().nonempty().max(25),
   value: z.string().nonempty().max(255),
-  playerId: z.string().uuid(),
-  gameServerId: z.string().uuid(),
-  moduleId: z.string().uuid(),
+  playerId: z.string().uuid().optional(),
+  gameServerId: z.string().uuid().optional(),
+  moduleId: z.string().uuid().optional(),
 });
 
 export const ButtonContainer = styled.div`
@@ -39,7 +44,7 @@ export const VariablesCreate = () => {
       gameServerId: variable.gameServerId,
     });
   }
-  return <VariableCreateAndUpdateForm isLoading={isLoading} submit={createVariable} title="Create variable" />;
+  return <VariableCreateAndUpdateForm isLoading={isLoading} submit={createVariable} type={ExecutionType.CREATE} />;
 };
 
 export const VariablesUpdate = () => {
@@ -57,15 +62,32 @@ export const VariablesUpdate = () => {
   }
   const { data, isLoading } = useVariable(variableId!);
   const { mutateAsync } = useVariableUpdate();
+
+  // set null values to undefined otherwise zod will complain
+  if (data?.playerId === null) {
+    data.playerId = undefined;
+  }
+  if (data?.gameServerId === null) {
+    data.gameServerId = undefined;
+  }
+  if (data?.moduleId === null) {
+    data.moduleId = undefined;
+  }
+
   return (
-    <VariableCreateAndUpdateForm isLoading={isLoading} variable={data} submit={updateVariable} title="Edit variable" />
+    <VariableCreateAndUpdateForm
+      isLoading={isLoading}
+      variable={data}
+      submit={updateVariable}
+      type={ExecutionType.UPDATE}
+    />
   );
 };
 
 interface CreateAndUpdateVariableformProps {
   variable?: VariableOutputDTO;
   isLoading: boolean;
-  title: string;
+  type: ExecutionType;
   submit: (variable: IFormInputs) => Promise<void>;
 }
 
@@ -77,7 +99,7 @@ interface IFormInputs {
   moduleId?: string;
 }
 
-const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ variable, isLoading, submit, title }) => {
+const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ variable, isLoading, submit, type }) => {
   const [open, setOpen] = useState(true);
   const [error] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -92,18 +114,23 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ var
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      ...variable,
+      key: variable?.key,
+      value: variable?.value,
+      playerId: variable?.playerId,
+      gameServerId: variable?.gameServerId,
+      moduleId: variable?.moduleId,
     },
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (variable) => {
     await submit(variable);
+    setOpen(false);
   };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{title}</Drawer.Heading>
+        <Drawer.Heading>{type === ExecutionType.CREATE ? 'Create' : 'Edit'} variable</Drawer.Heading>
         <Drawer.Body>
           <Alert
             variant="warning"
@@ -117,7 +144,10 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ var
             combination of a player, a game server, and a module, but you cannot have two variables with the same key
             for the same combination.
           </details>
-          <form onSubmit={handleSubmit(onSubmit)} id="create-variable-form">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            id={`${type === ExecutionType.CREATE ? 'create' : 'update'}-variable-form`}
+          >
             <TextField control={control} label="Key" loading={isLoading} name="key" required />
             <TextAreaField
               control={control}
@@ -148,7 +178,12 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ var
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" type="submit" form="create-role-form" />
+            <Button
+              fullWidth
+              text="Save changes"
+              type="submit"
+              form={`${type === ExecutionType.CREATE ? 'create' : 'update'}-variable-form`}
+            />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>
