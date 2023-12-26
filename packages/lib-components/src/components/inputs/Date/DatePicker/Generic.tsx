@@ -59,6 +59,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   readOnly = false,
   hasError,
   onChange,
+  name,
   onFocus,
   onBlur,
   timePickerOptions,
