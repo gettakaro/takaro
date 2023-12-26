@@ -2,7 +2,6 @@ import { FloatingOverlay } from '@floating-ui/react';
 import { styled } from '../../../styled';
 import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
-// This wraps everything
 export const Container = styled.div`
   position: relative;
 `;
@@ -133,3 +132,5 @@ export const GroupLabel = styled.li`
     fill: ${({ theme }) => theme.colors.primary};
   }
 `;
+
+export const LoadingContainer = styled.div``;

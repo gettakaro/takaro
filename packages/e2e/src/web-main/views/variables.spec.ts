@@ -71,6 +71,28 @@ extendedTest('Can delete variable', async ({ page, takaro }) => {
   await expect(page.getByRole('cell', { name: variableValue })).not.toBeVisible();
 });
 
+extendedTest('Should show error when variable with same key exists', async ({ page, takaro }) => {
+  const variableKey = 'test-variable';
+  const variableValue = 'val';
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: variableKey,
+    value: variableValue,
+  });
+
+  await navigateTo(page, 'global-variables');
+  await expect(page.getByText(variableKey)).toBeVisible();
+  await expect(page.getByRole('cell', { name: variableValue })).toBeVisible();
+
+  // try to create variable with same key
+  await page.getByText('Create variable').click();
+  await expect(page).toHaveURL(/\/variables\/create$/);
+  await page.getByLabel('Key').fill(variableKey);
+  await page.getByLabel('Value').fill(variableValue);
+
+  await page.getByRole('button', { name: 'Save variable' }).click();
+  await expect(page.getByText('Variable with this key already exists')).toBeVisible();
+});
+
 extendedTest('Can view value details', async ({ page, takaro }) => {
   const variableKey = 'test-variable';
   const variableValue = 'my very very very very very very very very long variable value';
