@@ -185,7 +185,7 @@ export class AuthService extends DomainScoped {
   }
 
   static getAuthMiddleware(permissions: PERMISSIONS[]) {
-    return async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
+    const fn = async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       try {
         const user = await this.getUserFromReq(req);
 
@@ -216,6 +216,15 @@ export class AuthService extends DomainScoped {
         return next(new errors.ForbiddenError());
       }
     };
+
+    const name = `authMiddleware(${permissions.join(',')})`;
+
+    Object.defineProperty(fn, 'name', {
+      writable: true,
+      value: name,
+    });
+
+    return fn;
   }
 
   static initPassport(): string[] {
