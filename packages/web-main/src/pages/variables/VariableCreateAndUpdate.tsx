@@ -180,7 +180,7 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({ var
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
-              text="Save changes"
+              text={type === ExecutionType.CREATE ? 'Save variable' : 'Update variable'}
               type="submit"
               form={`${type === ExecutionType.CREATE ? 'create' : 'update'}-variable-form`}
             />

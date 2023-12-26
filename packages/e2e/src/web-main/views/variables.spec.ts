@@ -4,7 +4,7 @@ import { navigateTo } from '../helpers.js';
 
 const { expect } = playwright;
 
-extendedTest('Can view variables', async ({ page, takaro, extended }) => {
+extendedTest('Can view variables', async ({ page, extended, takaro }) => {
   await takaro.rootClient.variable.variableControllerCreate({
     key: 'test-variable',
     value: 'test-value',
@@ -20,4 +20,103 @@ extendedTest('Can view variables', async ({ page, takaro, extended }) => {
   await expect(page.getByText(takaro.builtinModule.name)).toBeVisible();
   await expect(page.getByText(takaro.gameServer.name)).toBeVisible();
   await expect(page.getByText(extended.players[0].name)).toBeVisible();
+});
+
+extendedTest('Can create variable', async ({ page, takaro, extended }) => {
+  const variableName = 'test-variable';
+  const variableValue = 'test-value';
+
+  await navigateTo(page, 'global-variables');
+  await page.getByText('Create variable').click();
+  await expect(page).toHaveURL(/\/variables\/create$/);
+
+  await page.getByLabel('Key').fill(variableName);
+  await page.getByLabel('Value').fill(variableValue);
+
+  // select game server
+  await page.locator('#gameServerId').click();
+  await page.getByRole('option', { name: takaro.gameServer.name }).click();
+
+  // select player
+  await page.locator('#playerId').click();
+  await page.getByRole('option', { name: extended.players[0].name }).click();
+
+  // select module
+  await page.locator('#moduleId').click();
+  await page.getByRole('option', { name: takaro.builtinModule.name }).click();
+
+  await page.getByRole('button', { name: 'Save variable' }).click();
+  await expect(page.getByText(variableName)).toBeVisible();
+  await expect(page.getByText(variableValue)).toBeVisible();
+});
+
+extendedTest('Can delete variable', async ({ page, takaro }) => {
+  const variableKey = 'test-variable';
+  const variableValue = 'val';
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: variableKey,
+    value: variableValue,
+    gameServerId: takaro.gameServer.id,
+    moduleId: takaro.builtinModule.id,
+  });
+
+  await navigateTo(page, 'global-variables');
+  await expect(page.getByText(variableKey)).toBeVisible();
+  await expect(page.getByRole('cell', { name: variableValue })).toBeVisible();
+
+  await page.getByRole('button', { name: 'variable-actions' }).click();
+  await page.getByRole('menuitem', { name: 'Delete variable' }).click();
+
+  await page.getByRole('button', { name: 'Delete variable' }).click();
+  await expect(page.getByRole('cell', { name: variableValue })).not.toBeVisible();
+});
+
+extendedTest('Can view value details', async ({ page, takaro }) => {
+  const variableKey = 'test-variable';
+  const variableValue = 'my very very very very very very very very long variable value';
+
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: variableKey,
+    value: variableValue,
+    gameServerId: takaro.gameServer.id,
+    moduleId: takaro.builtinModule.id,
+  });
+
+  await navigateTo(page, 'global-variables');
+  await expect(page.getByText(variableKey)).toBeVisible();
+  await expect(page.getByText(variableValue)).not.toBeVisible();
+
+  // we consider there to be only one variable at this point.
+  await page.getByText('View value').click();
+
+  expect(page.getByText(variableValue)).toBeVisible();
+});
+
+extendedTest('Can update variable', async ({ page, takaro }) => {
+  const oldVariableKey = 'test-variable-old';
+  const oldVariableValue = 'old-value';
+
+  const newVariableKey = 'test-variable-new';
+  const newVariableValue = 'new-value';
+
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: oldVariableKey,
+    value: oldVariableValue,
+    gameServerId: takaro.gameServer.id,
+    moduleId: takaro.builtinModule.id,
+  });
+
+  await navigateTo(page, 'global-variables');
+
+  await page.getByRole('button', { name: 'variable-actions' }).click();
+  await page.getByRole('menuitem', { name: 'Edit variable' }).click();
+
+  await expect(page).toHaveURL(/\/variables\/update/);
+
+  await page.getByLabel('Key').fill(newVariableKey);
+  await page.getByLabel('Value').fill(newVariableValue);
+
+  await page.getByRole('button', { name: 'Update variable' }).click();
+  await expect(page.getByText(newVariableKey)).toBeVisible();
+  await expect(page.getByText(newVariableValue)).toBeVisible();
 });
