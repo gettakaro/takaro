@@ -5,7 +5,7 @@ import { Identifier } from 'dnd-core';
 import { styled } from '../../../../../styled';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { Target, Content, Container, ResizeHandle } from './style';
+import { Target, Content, Container, ResizeHandle, InnerTh } from './style';
 
 const ItemTypes = {
   COLUMN: 'column',
@@ -132,19 +132,21 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
-        <CustomDragLayer />
-        <Content>
-          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+      <InnerTh>
+        <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
+          <CustomDragLayer />
+          <Content canDrag={canDrag}>
+            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+          </Content>
+        </Target>
 
-          {/* Only show columnSettings when sorting and filtering is enabled 
+        {/* Only show columnSettings when sorting and filtering is enabled 
             NOTE: getCanGlobalFilter cannot be used to base render logic on because it is set to false when the table has no data.
           */}
-          {column.getCanFilter() && column.getCanSort() && (
-            <ColumnSettings columnIsHovered={isHovered} header={header} table={table} />
-          )}
-        </Content>
-      </Target>
+        {column.getCanFilter() && column.getCanSort() && (
+          <ColumnSettings columnIsHovered={isHovered} header={header} table={table} />
+        )}
+      </InnerTh>
       {header.column.getCanResize() && !isLoading && (
         <ResizeHandle
           onMouseDown={header.getResizeHandler()}

@@ -9,14 +9,18 @@ export const Container = styled.th<{
 }>`
   position: relative;
   width: ${({ width }) => width}px;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} 0`};
-  background-color: ${({ theme }) => theme.colors.background};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
+  & > div {
+    font-weight: 600;
+  }
+
+  /* NOTE: Required to match with the resizeHandle */
   border-right: ${({ theme, isActive, isRight }) =>
     isActive && isRight ? `4px solid ${theme.colors.primary}` : `1px solid ${theme.colors.background}`};
   border-left: ${({ theme, isActive, isRight }) =>
     isActive && !isRight ? `4px solid ${theme.colors.primary}` : `1px solid ${theme.colors.background}`};
-  cursor: ${({ canDrag }) => (canDrag ? 'grab' : 'default')};
 
   &:first-child {
     border-left: ${({ theme, isActive, isRight }) =>
@@ -31,40 +35,42 @@ export const Container = styled.th<{
       isActive && isRight ? `4px solid ${theme.colors.primary}` : `1px solid ${theme.colors.background}`};
     border-bottom-right-radius: ${({ theme }) => theme.borderRadius.medium};
   }
-
-  &:active {
-    cursor: ${({ canDrag }) => (canDrag ? 'grabbing' : 'default')};
-  }
-
-  & > div {
-    font-weight: 600;
-  }
 `;
 
-export const Target = styled.div<{ isDragging: boolean }>`
-  opacity: ${({ isDragging }) => (isDragging ? 0.1 : 1)};
-`;
-
-export const Content = styled.div`
+export const InnerTh = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-export const ResizeHandle = styled.div<{ isResizing: boolean }>`
+export const Target = styled.div<{ isDragging: boolean }>`
+  opacity: ${({ isDragging }) => (isDragging ? 0.1 : 1)};
+`;
+
+export const Content = styled.span<{ canDrag: boolean }>`
+  cursor: ${({ canDrag }) => (canDrag ? 'grabbing' : 'default')};
+`;
+
+export const ResizeHandle = styled.span<{ isResizing: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
   width: 4px;
   right: -1px;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   height: 100vh;
   cursor: col-resize;
   user-select: none;
   /* prevents from scrolling while dragging on touch devices */
   touch-action: none;
   opacity: ${({ isResizing }) => (isResizing ? 1 : 0)};
-  background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.secondary)};
+  background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.tertiary)};
+  transition: opacity 0.1s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 export const MenuTrigger = styled.div<{ isVisible: boolean }>`

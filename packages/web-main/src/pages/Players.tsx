@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS, styled } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS, Avatar, getInitials } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
@@ -8,14 +8,6 @@ import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-
-const SteamAvatar = styled.img`
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  margin: auto;
-  display: block;
-`;
 
 const Players: FC = () => {
   useDocumentTitle('Players');
@@ -48,23 +40,32 @@ const Players: FC = () => {
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
-    columnHelper.accessor('steamAvatar', {
-      header: '',
-      id: 'steamAvatar',
-      cell: (info) => {
-        const avatar = info.getValue();
-        if (!avatar) return <SteamAvatar src={'/favicon.ico'} alt="placeholder-avatar" />;
-        return <SteamAvatar src={avatar} alt="steam-avatar" />;
-      },
-      enableColumnFilter: true,
-    }),
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
       cell: (info) => {
         const name = info.getValue();
         if (!name) return '';
-        return <a href={PATHS.player.profile(info.row.original.id)}>{name}</a>;
+
+        const avatar = info.row.original.steamAvatar;
+        return (
+          <div style={{ display: 'flex', gap: '10px' }}>
+            {!avatar ? (
+              <Avatar size="tiny" alt="steam-avatar">
+                {getInitials(name)}
+              </Avatar>
+            ) : (
+              <Avatar size="tiny" src={avatar} alt="steam-avatar" />
+            )}
+            <span
+              style={{ cursor: 'pointer' }}
+              role="link"
+              onClick={() => navigate(PATHS.player.profile(info.row.original.id))}
+            >
+              {name}
+            </span>
+          </div>
+        );
       },
       enableColumnFilter: true,
       enableSorting: true,
@@ -180,6 +181,7 @@ const Players: FC = () => {
   return (
     <Fragment>
       <Table
+        title="List of players"
         id="players"
         columns={columnDefs}
         data={data?.data as PlayerOutputDTO[]}
