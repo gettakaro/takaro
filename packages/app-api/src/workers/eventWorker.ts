@@ -14,6 +14,7 @@ import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
+import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 
 const log = logger('worker:events');
 
@@ -29,7 +30,7 @@ async function processJob(job: Job<IEventQueueData>) {
     gameServer: job.data.gameServerId,
     jobId: job.id,
   });
-  log.info('Processing an event', job.data);
+  log.silly('Processing an event', job.data);
 
   const { type, event, domainId, gameServerId } = job.data;
 
@@ -42,7 +43,10 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if ('player' in event && event.player) {
     const playerService = new PlayerService(domainId);
+    const playerOnGameServerService = new PlayerOnGameServerService(domainId);
     const resolvedPlayer = await playerService.resolveRef(event.player, gameServerId);
+    const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
+    const pog = pogs[0];
 
     if (isChatMessageEvent(event)) {
       const commandService = new CommandService(domainId);
@@ -61,6 +65,11 @@ async function processJob(job: Job<IEventQueueData>) {
     }
 
     if (isConnectedEvent(event)) {
+      await playerOnGameServerService.update(
+        pog.id,
+        await new PlayerOnGameServerUpdateDTO().construct({ online: true })
+      );
+
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_CONNECTED,
@@ -71,6 +80,11 @@ async function processJob(job: Job<IEventQueueData>) {
     }
 
     if (isDisconnectedEvent(event)) {
+      await playerOnGameServerService.update(
+        pog.id,
+        await new PlayerOnGameServerUpdateDTO().construct({ online: false })
+      );
+
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,

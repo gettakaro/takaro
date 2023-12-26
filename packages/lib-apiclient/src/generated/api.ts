@@ -1312,6 +1312,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1550,6 +1551,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1753,6 +1755,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =
@@ -2086,6 +2089,12 @@ export interface GameServerOutputDTO {
   type: GameServerOutputDTOTypeEnum;
   /**
    *
+   * @type {boolean}
+   * @memberof GameServerOutputDTO
+   */
+  reachable: boolean;
+  /**
+   *
    * @type {string}
    * @memberof GameServerOutputDTO
    */
@@ -2357,6 +2366,12 @@ export interface GameServerUpdateDTO {
    * @memberof GameServerUpdateDTO
    */
   type: GameServerUpdateDTOTypeEnum;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GameServerUpdateDTO
+   */
+  reachable?: boolean;
 }
 
 export const GameServerUpdateDTOTypeEnum = {
@@ -3361,6 +3376,49 @@ export interface InviteOutputDTO {
    * @memberof InviteOutputDTO
    */
   devServer: string;
+}
+/**
+ *
+ * @export
+ * @interface IpHistoryOutputDTO
+ */
+export interface IpHistoryOutputDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof IpHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  ip: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  latitude?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  longitude?: string;
 }
 /**
  *
@@ -4558,6 +4616,12 @@ export interface PlayerOnGameServerSearchInputAllowedFilters {
    * @memberof PlayerOnGameServerSearchInputAllowedFilters
    */
   playerId?: Array<string>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerOnGameServerSearchInputAllowedFilters
+   */
+  online?: Array<boolean>;
 }
 /**
  *
@@ -4684,6 +4748,12 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   currency?: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  online: boolean;
 }
 /**
  *
@@ -4766,10 +4836,22 @@ export interface PlayerOnGameserverOutputDTO {
   currency: number;
   /**
    *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  online: boolean;
+  /**
+   *
    * @type {Array<IItemDTO>}
    * @memberof PlayerOnGameserverOutputDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
    * @type {string}
@@ -4894,10 +4976,22 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
   currency: number;
   /**
    *
+   * @type {boolean}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  online: boolean;
+  /**
+   *
    * @type {Array<IItemDTO>}
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  *
@@ -4948,6 +5042,48 @@ export interface PlayerOutputDTO {
    * @memberof PlayerOutputDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  steamAvatar?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputDTO
+   */
+  steamAccountCreated?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputDTO
+   */
+  steamCommunityBanned?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
+  steamEconomyBan?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputDTO
+   */
+  steamVacBanned?: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputDTO
+   */
+  steamsDaysSinceLastBan?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputDTO
+   */
+  steamNumberOfVACBans?: number;
   /**
    *
    * @type {Array<PlayerOnGameserverOutputDTO>}
@@ -5046,6 +5182,48 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamAvatar?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamAccountCreated?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamCommunityBanned?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamEconomyBan?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamVacBanned?: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamsDaysSinceLastBan?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  steamNumberOfVACBans?: number;
   /**
    *
    * @type {Array<PlayerOnGameserverOutputDTO>}
@@ -5182,6 +5360,18 @@ export interface PlayerSearchInputAllowedFilters {
    * @memberof PlayerSearchInputAllowedFilters
    */
   xboxLiveId?: Array<string>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamCommunityBanned?: Array<boolean>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  steamVacBanned?: Array<boolean>;
 }
 /**
  *

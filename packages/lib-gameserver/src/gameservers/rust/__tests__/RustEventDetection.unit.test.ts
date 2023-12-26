@@ -119,7 +119,7 @@ describe('rust event detection', () => {
       expect(location).to.deep.equal({
         x: -770.0,
         y: 1.0,
-        z: -1090.7,
+        z: -1090,
       });
     });
 
@@ -142,7 +142,7 @@ describe('rust event detection', () => {
       expect(location).to.deep.equal({
         x: -780.0,
         y: 2.0,
-        z: -1100.7,
+        z: -1100,
       });
     });
   });

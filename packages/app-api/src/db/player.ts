@@ -11,6 +11,18 @@ import {
 } from '../service/PlayerService.js';
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
+import { config } from '../config.js';
+
+export interface ISteamData {
+  steamId: string;
+  steamAvatar: string;
+  steamAccountCreated: number | null;
+  steamCommunityBanned: boolean;
+  steamEconomyBan: string;
+  steamVacBanned: boolean;
+  steamsDaysSinceLastBan: number;
+  steamNumberOfVACBans: number;
+}
 
 export const PLAYER_TABLE_NAME = 'players';
 const ROLE_ON_PLAYER_TABLE_NAME = 'roleOnPlayer';
@@ -43,6 +55,15 @@ export class PlayerModel extends TakaroModel {
   steamId?: string;
   xboxLiveId?: string;
   epicOnlineServicesId?: string;
+
+  steamLastFetch: Date;
+  steamAvatar: string;
+  steamAccountCreated: Date;
+  steamCommunityBanned: boolean;
+  steamEconomyBan: string;
+  steamVacBanned: boolean;
+  steamsDaysSinceLastBan: number;
+  steamNumberOfVACBans: number;
 
   static get relationMappings() {
     return {
@@ -183,5 +204,38 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }
 
     await roleOnPlayerModel.query().delete().where(whereObj);
+  }
+
+  async getPlayersToRefreshSteam(): Promise<string[]> {
+    const { query } = await this.getModel();
+
+    const refreshOlderThanDate = new Date(Date.now() - config.get('steam.refreshOlderThanMs')).toISOString();
+
+    const players = await query
+      .select('steamId')
+      .where('steamId', 'is not', null)
+      .andWhere(function () {
+        this.where('steamLastFetch', '<', refreshOlderThanDate).orWhere('steamLastFetch', 'is', null);
+      })
+      .orderBy('steamLastFetch', 'asc')
+      .limit(config.get('steam.refreshBatchSize'));
+
+    return players.filter((item) => item.steamId).map((item) => item.steamId) as string[];
+  }
+
+  async setSteamData(data: (ISteamData | undefined)[]) {
+    await Promise.all(
+      data.map(async (item) => {
+        if (!item) return;
+        const { query } = await this.getModel();
+        const updateObj: Partial<PlayerModel> = {
+          ...item,
+          steamAccountCreated: item.steamAccountCreated ? new Date(item.steamAccountCreated * 1000) : undefined,
+          steamLastFetch: new Date(),
+        };
+
+        return query.update(updateObj).where('steamId', item.steamId);
+      })
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS, styled } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
@@ -8,6 +8,14 @@ import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
+
+const SteamAvatar = styled.img`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin: auto;
+  display: block;
+`;
 
 const Players: FC = () => {
   useDocumentTitle('Players');
@@ -40,10 +48,24 @@ const Players: FC = () => {
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
+    columnHelper.accessor('steamAvatar', {
+      header: '',
+      id: 'steamAvatar',
+      cell: (info) => {
+        const avatar = info.getValue();
+        if (!avatar) return <SteamAvatar src={'/favicon.ico'} alt="placeholder-avatar" />;
+        return <SteamAvatar src={avatar} alt="steam-avatar" />;
+      },
+      enableColumnFilter: true,
+    }),
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const name = info.getValue();
+        if (!name) return '';
+        return <a href={PATHS.player.profile(info.row.original.id)}>{name}</a>;
+      },
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -68,17 +90,44 @@ const Players: FC = () => {
       enableColumnFilter: true,
       enableSorting: true,
     }),
-    columnHelper.accessor('createdAt', {
-      header: 'Created at',
-      id: 'createdAt',
-      meta: { type: 'datetime' },
+
+    columnHelper.accessor('steamAccountCreated', {
+      header: 'Account Created',
+      id: 'steamAccountCreated',
+      cell: (info) => {
+        const date = info.getValue();
+        if (!date) return '';
+        return new Date(date).toLocaleDateString();
+      },
+      enableSorting: true,
+    }),
+    columnHelper.accessor('steamCommunityBanned', {
+      header: 'Community Banned',
+      id: 'steamCommunityBanned',
+      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+      enableColumnFilter: true,
+    }),
+    columnHelper.accessor('steamEconomyBan', {
+      header: 'Economy Ban',
+      id: 'steamEconomyBan',
+      cell: (info) => info.getValue(),
+      enableColumnFilter: true,
+    }),
+    columnHelper.accessor('steamVacBanned', {
+      header: 'VAC Banned',
+      id: 'steamVacBanned',
+      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+      enableColumnFilter: true,
+    }),
+    columnHelper.accessor('steamsDaysSinceLastBan', {
+      header: 'Days Since Last Ban',
+      id: 'steamsDaysSinceLastBan',
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
-    columnHelper.accessor('updatedAt', {
-      header: 'Updated at',
-      id: 'updatedAt',
-      meta: { type: 'datetime' },
+    columnHelper.accessor('steamNumberOfVACBans', {
+      header: 'Number of VAC Bans',
+      id: 'steamNumberOfVACBans',
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),

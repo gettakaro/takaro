@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import { IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -52,6 +52,8 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsBoolean()
+  reachable: boolean;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -74,6 +76,9 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsBoolean()
+  @IsOptional()
+  reachable: boolean;
 }
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
@@ -177,7 +182,15 @@ export class GameServerService extends TakaroService<
   async testReachability(id?: string, connectionInfo?: Record<string, unknown>, type?: GAME_SERVER_TYPE) {
     if (id) {
       const instance = await this.getGame(id);
-      return instance.testReachability();
+      const reachability = await instance.testReachability();
+
+      if (reachability.connectable) {
+        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: true }));
+      } else {
+        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: false }));
+      }
+
+      return reachability;
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
       return instance.testReachability();
@@ -427,16 +440,16 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     const items = await gameInstance.listItems();
 
-    await Promise.all(
-      items.map(async (item) => {
-        return itemsService.upsert(
-          await new ItemCreateDTO().construct({
-            ...item,
-            gameserverId: gameServerId,
-          })
-        );
-      })
+    const toInsert = await Promise.all(
+      items.map((item) =>
+        new ItemCreateDTO().construct({
+          ...item,
+          gameserverId: gameServerId,
+        })
+      )
     );
+
+    await itemsService.upsertMany(toInsert);
   }
 
   async syncInventories(gameServerId: string) {

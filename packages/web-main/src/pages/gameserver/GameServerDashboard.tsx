@@ -5,10 +5,36 @@ import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
+import { ChatMessagesCard } from './cards/ChatMessages';
+import { OnlinePlayersCard } from './cards/OnlinePlayers';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
+
+const GridContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  min-height: 25vh;
+  max-height: 25vh;
+`;
+
+const DashboardCard = styled.div`
+  background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  padding: 1rem;
+  border-radius: 1rem;
+`;
 
 const ConsoleContainer = styled.div`
-  height: 80vh;
+  height: 100%;
 `;
+
+const EventsContainer = styled.div`
+  margin-top: 5rem;
+`;
+
+const OnlinePlayerContainer = styled(DashboardCard)``;
+
+const ChatContainer = styled(DashboardCard)``;
 
 const GameServerDashboard: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
@@ -88,6 +114,14 @@ const GameServerDashboard: FC = () => {
 
   return (
     <Fragment>
+      <GridContainer>
+        <OnlinePlayerContainer>
+          <OnlinePlayersCard />
+        </OnlinePlayerContainer>
+        <ChatContainer>
+          <ChatMessagesCard />
+        </ChatContainer>
+      </GridContainer>
       <ConsoleContainer>
         <Console
           messages={messages}
@@ -104,6 +138,9 @@ const GameServerDashboard: FC = () => {
           }}
         />
       </ConsoleContainer>
+      <EventsContainer>
+        <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
+      </EventsContainer>
     </Fragment>
   );
 };
