@@ -6,6 +6,7 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
 import { getMetrics, health } from '@takaro/util';
 import { OpenAPIObject } from 'openapi3-ts';
+import { PERMISSIONS } from '@takaro/auth';
 
 let spec: OpenAPIObject | undefined;
 
@@ -98,6 +99,12 @@ export class Meta {
         });
       });
     });
+
+    if (spec.components?.schemas) {
+      spec.components.schemas.PERMISSIONS = {
+        enum: Object.values(PERMISSIONS),
+      };
+    }
 
     return spec;
   }
