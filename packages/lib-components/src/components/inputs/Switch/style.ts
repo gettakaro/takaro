@@ -15,7 +15,7 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
   display: block;
   cursor: pointer;
   border-radius: 9999px;
-  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   margin: ${({ theme }) => theme.spacing[0]};
   background-color: ${({ theme, isChecked, hasError }) => {
     if (isChecked && hasError) {
@@ -38,7 +38,7 @@ export const Dot = styled(motion.span)<{
   readOnly: boolean;
 }>`
   position: absolute;
-  margin-top: -${({ theme }) => theme.spacing['0_5']};
+  margin-top: -0.45rem;
   top: 50%;
   border-radius: 50%;
   transform: translateY(-30%);

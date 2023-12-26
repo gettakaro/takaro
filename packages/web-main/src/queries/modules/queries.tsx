@@ -1,4 +1,10 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   CommandCreateDTO,
@@ -86,16 +92,31 @@ export const useInfiniteModules = ({ page, ...queryParams }: ModuleSearchInputDT
   return { ...queryOpts, InfiniteScroll };
 };
 
-export const useModules = (queryParams: ModuleSearchInputDTO = {}) => {
+export const useModules = (
+  queryParams: ModuleSearchInputDTO = { page: 0 },
+  opts?: UseInfiniteQueryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI, any>>
+) => {
   const apiClient = useApiClient();
 
-  const queryOpts = useQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.list(), { queryParams }],
-    queryFn: async () => (await apiClient.module.moduleControllerSearch(queryParams)).data,
+  const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.list(), { ...queryParams }],
+    queryFn: async ({ pageParam = queryParams.page }) =>
+      (
+        await apiClient.module.moduleControllerSearch({
+          ...queryParams,
+          page: pageParam,
+        })
+      ).data,
     keepPreviousData: true,
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    ...opts,
   });
-  return queryOpts;
+
+  const InfiniteScroll = useMemo(() => {
+    return <InfiniteScrollComponent {...queryOpts} />;
+  }, [queryOpts]);
+
+  return { ...queryOpts, InfiniteScroll };
 };
 
 export const useModule = (id: string) => {

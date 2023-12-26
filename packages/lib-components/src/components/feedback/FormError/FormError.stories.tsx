@@ -9,13 +9,13 @@ export default {
   },
 } as Meta<FormErrorProps>;
 
-export const Success: StoryObj<FormErrorProps> = {
+export const SingleError: StoryObj<FormErrorProps> = {
   args: {
     message: 'Your password must be at least 8 characters',
   },
 };
 
-export const Error: StoryObj<FormErrorProps> = {
+export const MultipleErrors: StoryObj<FormErrorProps> = {
   args: {
     message: [
       'Your password must be at least 8 characters',

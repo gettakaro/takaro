@@ -3,7 +3,7 @@ import { useDrawerContext } from './DrawerContext';
 import { styled } from '../../../styled';
 
 const Container = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing['2_5']}`};
+  padding: ${({ theme }) => `0 ${theme.spacing['2_5']} ${theme.spacing[2]} ${theme.spacing['2_5']}`};
 `;
 
 export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {
