@@ -1,13 +1,43 @@
-import { FC, Fragment } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, PERMISSIONS, Avatar, getInitials } from '@takaro/lib-components';
+import { FC, Fragment, useState } from 'react';
+import {
+  styled,
+  Table,
+  useTableActions,
+  IconButton,
+  Dropdown,
+  PERMISSIONS,
+  Avatar,
+  getInitials,
+  Dialog,
+  Button,
+  TextField,
+} from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import {
+  AiOutlineUser as ProfileIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineRight as ActionIcon,
+  AiOutlineUndo as UnBanIcon,
+} from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { useHasPermission } from 'components/PermissionsGuard';
+import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameservers';
+import { useApiClient } from 'hooks/useApiClient';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSnackbar } from 'notistack';
+import { FaBan as BanIcon } from 'react-icons/fa';
+
+export const StyledDialogBody = styled(Dialog.Body)`
+  h2 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
 
 const Players: FC = () => {
   useDocumentTitle('Players');
@@ -143,28 +173,7 @@ const Players: FC = () => {
       enableGlobalFilter: false,
       enableResizing: false,
       maxSize: 50,
-
-      cell: (info) => (
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
-          </Dropdown.Trigger>
-          <Dropdown.Menu>
-            <Dropdown.Menu.Item
-              label="Go to player profile"
-              icon={<ProfileIcon />}
-              onClick={() => navigate(`${PATHS.player.profile(info.row.original.id)}`)}
-            />
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_ROLES]]}>
-              <Dropdown.Menu.Item
-                label="Edit roles"
-                icon={<EditIcon />}
-                onClick={() => navigate(PATHS.player.assignRole(info.row.original.id))}
-              />
-            </PermissionsGuard>
-          </Dropdown.Menu>
-        </Dropdown>
-      ),
+      cell: (info) => <PlayerActions player={info.row.original} />,
     }),
   ];
 
@@ -192,6 +201,161 @@ const Players: FC = () => {
         isLoading={isLoading}
       />
     </Fragment>
+  );
+};
+
+interface BanPlayerDialogProps {
+  player: PlayerOutputDTO;
+}
+
+interface FormInputs {
+  reason: string;
+}
+
+const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
+  const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
+  const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
+  const { hasPermission: hasManagePlayers, isLoading: isLoadingManagePlayersPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_PLAYERS,
+  ]);
+  const { hasPermission: hasManageRoles, isLoading: isLoadingManageRolesPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_ROLES,
+  ]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const navigate = useNavigate();
+
+  const validationSchema = z.object({
+    reason: z.string().min(1).max(100).nonempty(),
+  });
+
+  const { handleSubmit, control } = useForm<FormInputs>({
+    resolver: zodResolver(validationSchema),
+  });
+
+  const apiclient = useApiClient();
+  const { mutateAsync: mutateBanPlayer, isLoading: isLoadingBanPlayer } = useBanPlayerOnGameServer();
+  const { mutateAsync: mutateUnbanPlayer, isLoading: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
+
+  const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
+    const pogs = (
+      await apiclient.playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
+    ).data.data;
+
+    const bans = pogs.map((pog) => {
+      return mutateBanPlayer({
+        playerId: pog.id,
+        gameServerId: pog.gameServerId,
+        opts: {
+          reason: reason,
+        },
+      });
+    });
+
+    try {
+      await Promise.all(bans);
+      enqueueSnackbar(`${player.name} is banned from all your game servers.`, { variant: 'default', type: 'info' });
+    } catch (error) {
+      /* TODO */
+    } finally {
+      setOpenBanDialog(false);
+    }
+  };
+
+  const handleOnUnbanPlayer = async () => {
+    const pogs = (
+      await apiclient.playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
+    ).data.data;
+
+    const bans = pogs.map((pog) => {
+      return mutateUnbanPlayer({
+        playerId: pog.id,
+        gameServerId: pog.gameServerId,
+      });
+    });
+
+    try {
+      await Promise.all(bans);
+      enqueueSnackbar(`${player.name} is unbanned from all your game servers.`, { variant: 'default', type: 'info' });
+    } catch (error) {
+      /* TODO */
+    } finally {
+      setOpenBanDialog(false);
+    }
+  };
+
+  return (
+    <>
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <Dropdown.Menu.Item
+            label="Go to player profile"
+            icon={<ProfileIcon />}
+            onClick={() => navigate(`${PATHS.player.profile(player.id)}`)}
+          />
+
+          <Dropdown.Menu.Item
+            label="Edit roles"
+            icon={<EditIcon />}
+            onClick={() => navigate(PATHS.player.assignRole(player.id))}
+            disabled={!isLoadingManageRolesPermission && !hasManageRoles}
+          />
+
+          <Dropdown.Menu.Item
+            label="Ban from ALL game servers"
+            icon={<BanIcon />}
+            onClick={async () => {
+              setOpenBanDialog(true);
+            }}
+            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+          />
+          <Dropdown.Menu.Item
+            label="Unban from ALL game servers"
+            icon={<UnBanIcon />}
+            onClick={async () => {
+              setOpenBanDialog(true);
+            }}
+            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+          />
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Dialog open={openBanDialog} onOpenChange={setOpenBanDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>Ban Player: {player.name}</Dialog.Heading>
+          <Dialog.Body size="medium">
+            <h2>Ban player</h2>
+            <form onSubmit={handleSubmit(handleOnBanPlayer)}>
+              <p>
+                Are you sure you want to ban <strong>{player.name}</strong> from <strong>all</strong> game servers?
+              </p>
+              <TextField control={control} name="reason" label="Ban Reason" placeholder="Cheating, Racism, etc." />
+              <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth text={'Ban player'} color="error" />
+            </form>
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+      <Dialog open={openUnbanDialog} onOpenChange={setOpenUnbanDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>UnBan Player: {player.name}</Dialog.Heading>
+          <Dialog.Body size="medium">
+            <h2>Unban player</h2>
+            <Button
+              isLoading={isLoadingUnbanPlayer}
+              type="submit"
+              fullWidth
+              onClick={() => handleOnUnbanPlayer()}
+              text={'Ban player'}
+              color="error"
+            />
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+    </>
   );
 };
 

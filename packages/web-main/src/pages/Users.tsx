@@ -99,19 +99,16 @@ const Users: FC = () => {
             <IconButton icon={<ActionIcon />} ariaLabel="user-actions" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
-            <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
-                label="Go to user profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
-              />
-            </Dropdown.Menu.Group>
+            <Dropdown.Menu.Item
+              disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
+              label="Go to user profile"
+              icon={<ProfileIcon />}
+              onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
+            />
             <Dropdown.Menu.Item
               label="Edit roles"
               icon={<EditIcon />}
-              // TODO: navigate to edit roles page for user
-              onClick={() => navigate('')}
+              onClick={() => navigate(`${PATHS.user.assignRole(info.row.original.id)}`)}
               disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
             />
           </Dropdown.Menu>
@@ -132,6 +129,7 @@ const Users: FC = () => {
 
   return (
     <Table
+      title="List of users"
       id="users"
       columns={columnDefs}
       data={data ? data?.data : []}

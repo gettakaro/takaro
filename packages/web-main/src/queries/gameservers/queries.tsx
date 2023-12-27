@@ -1,5 +1,6 @@
 import {
   APIOutput,
+  BanPlayerInputDTO,
   GameServerCreateDTO,
   GameServerOutputArrayDTOAPI,
   GameServerOutputDTO,
@@ -10,6 +11,7 @@ import {
   GameServerUpdateDTO,
   IdUuidDTO,
   IdUuidDTOAPI,
+  KickPlayerInputDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallDTO,
@@ -308,5 +310,49 @@ export const useGameServerReachabilityByConfig = () => {
       ).data.data;
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
+  });
+};
+
+interface GameServerKickPlayerInput {
+  gameServerId: string;
+  playerId: string;
+  opts: KickPlayerInputDTO;
+}
+
+export const useKickPlayerOnGameServer = () => {
+  const apiClient = useApiClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
+    mutationFn: async ({ gameServerId, playerId, opts }) =>
+      (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
+  });
+};
+
+interface GameServerBanPlayerInput {
+  gameServerId: string;
+  playerId: string;
+  opts: BanPlayerInputDTO;
+}
+
+export const useBanPlayerOnGameServer = () => {
+  const apiClient = useApiClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, GameServerBanPlayerInput>({
+    mutationFn: async ({ gameServerId, playerId, opts }) =>
+      (await apiClient.gameserver.gameServerControllerBanPlayer(gameServerId, playerId, opts)).data,
+  });
+};
+
+interface GameServerUnbanPlayerInput {
+  gameServerId: string;
+  playerId: string;
+}
+
+export const useUnbanPlayerOnGameServer = () => {
+  const apiClient = useApiClient();
+
+  return useMutation<APIOutput, AxiosError<APIOutput>, GameServerUnbanPlayerInput>({
+    mutationFn: async ({ gameServerId, playerId }) =>
+      (await apiClient.gameserver.gameServerControllerUnbanPlayer(gameServerId, playerId)).data,
   });
 };
