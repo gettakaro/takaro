@@ -727,12 +727,6 @@ export interface CronJobOutputDTO {
     'moduleId': string;
     /**
      * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof CronJobOutputDTO
-     */
-    'nextRunAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
      * @type {string}
      * @memberof CronJobOutputDTO
      */
