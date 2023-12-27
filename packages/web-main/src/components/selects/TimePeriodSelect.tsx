@@ -59,15 +59,15 @@ export const TimePeriodSelect: FC<TimePeriodSelectProps> = ({
       inPortal={inPortal}
       render={(selectedIndex) => <div>{options[selectedIndex]?.label ?? selectedIndex}</div>}
     >
-      {options.map(({ label, value }) => (
-        <Select.OptionGroup>
+      <Select.OptionGroup>
+        {options.map(({ label, value }) => (
           <Select.Option key={value} value={value}>
             <div>
               <span>{label}</span>
             </div>
           </Select.Option>
-        </Select.OptionGroup>
-      ))}
+        ))}
+      </Select.OptionGroup>
     </Select>
   );
 };

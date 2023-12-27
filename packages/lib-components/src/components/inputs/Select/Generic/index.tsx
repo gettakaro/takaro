@@ -234,7 +234,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           {group.props.label && (
             <GroupLabel role="presentation" id={`select-${group.props.label}`} aria-hidden="true">
               {group.props.icon && group.props.icon}
-              <span>{group.props.label}</span>
+              <span key={`select-span-${group.props.label}`}>{group.props.label}</span>
             </GroupLabel>
           )}
           {filteredOptions}
