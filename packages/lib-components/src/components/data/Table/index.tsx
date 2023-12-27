@@ -123,6 +123,13 @@ export function Table<DataType extends object>({
     }
   }, [columnVisibility, hasShownColumnVisibilityTooltip]);
 
+  useEffect(() => {
+    // whenever the data changes, remove the selection
+    if (rowSelection) {
+      rowSelection.setRowSelectionState({});
+    }
+  }, [data]);
+
   const table = useReactTable({
     data,
     columns,
