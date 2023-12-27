@@ -1,26 +1,36 @@
-import { VariableOutputDTO } from '@takaro/apiclient';
-import { Button, Dialog } from '@takaro/lib-components';
-import { useVariableDelete } from 'queries/variables';
-import { FC } from 'react';
+import { UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { Button, Dialog, errors, FormError } from '@takaro/lib-components';
+import { useUserRemove } from 'queries/users';
+import { FC, useMemo } from 'react';
 
 interface VariableDeleteProps {
-  variable: VariableOutputDTO | null;
+  user: UserOutputWithRolesDTO;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
 }
 
-export const UserDeleteDialog: FC<VariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isLoading: isDeleting } = useVariableDelete();
+export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, setOpenDialog }) => {
+  const { mutateAsync, isLoading: isDeleting, error } = useUserRemove();
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    if (variable) {
-      await mutateAsync(variable.id);
-      setOpenDialog(false);
-    }
+
+    await mutateAsync({ id: user.id });
+    setOpenDialog(false);
   };
 
-  if (!variable) return null;
+  const errorMessage = useMemo(() => {
+    if (!error) return null;
+
+    const err = errors.defineErrorType(error);
+
+    if (err instanceof errors.InternalServerError) {
+      return 'Something went wrong. Please try again later.';
+    }
+    if (err instanceof errors.NotAuthorizedError) {
+      return 'You are not authorized to perform this action.';
+    }
+  }, [error]);
 
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -30,34 +40,15 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ variable, openDialog
         </Dialog.Heading>
         <Dialog.Body>
           <h2>Delete variable</h2>
-          <p>Are you sure you want to delete the following variable? This action cannot be undone.</p>
-          <ul style={{ width: '100%', marginBottom: '1.2rem' }}>
-            {variable.key && (
-              <li>
-                <strong>Key:</strong> {variable.key}
-              </li>
-            )}
-            {variable.module && (
-              <li>
-                <strong>Module:</strong> {variable.module.name}
-              </li>
-            )}
-            {variable.gameServer && (
-              <li>
-                <strong>Game Server:</strong> {variable.gameServer.name}
-              </li>
-            )}
-            {variable.player && (
-              <li>
-                <strong>Player Name:</strong> {variable.player.name}
-              </li>
-            )}
-          </ul>
+          <p>
+            Are you sure you want to delete <strong>{user.name}</strong>? This action cannot be undone!
+          </p>
+          <FormError error={errorMessage} />
           <Button
             isLoading={isDeleting}
             onClick={(e) => handleOnDelete(e)}
             fullWidth
-            text={'Delete variable'}
+            text={'Delete user'}
             color="error"
           />
         </Dialog.Body>
