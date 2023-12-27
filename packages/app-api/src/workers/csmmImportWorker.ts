@@ -19,6 +19,7 @@ interface ICSMMPlayer {
   ip: string;
   crossId: string;
   role: number;
+  currency: number;
 }
 
 interface ICSMMRole {
@@ -128,7 +129,7 @@ async function process(job: Job<ICSMMImportData>) {
     await playerService.sync(await new IGamePlayer().construct(createData), server.id);
   }
 
-  // Sync the player roles
+  // Sync the player data
   for (const player of data.players) {
     if (!player.crossId) {
       log.warn(`Player ${player.name} has no crossId, skipping role assignment`);
@@ -157,6 +158,10 @@ async function process(job: Job<ICSMMImportData>) {
     if (!takaroRole.system) {
       log.info(`Assigning role ${takaroRole.name} to player ${player.name}`);
       await playerService.assignRole(takaroRole.id, pog[0].playerId, server.id);
+    }
+
+    if (player.currency) {
+      await pogService.setCurrency(pog[0].id, player.currency);
     }
   }
 }
