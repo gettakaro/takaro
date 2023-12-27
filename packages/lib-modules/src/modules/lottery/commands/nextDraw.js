@@ -1,7 +1,7 @@
-import { getData, cronParser } from '@takaro/helpers';
+import { getData, nextCronJobRun, getTakaro } from '@takaro/helpers';
 
 function formatTimeToReach(cronJob) {
-  const targetDate = new Date(cronParser.parseExpression(cronJob).next().toISOString());
+  const targetDate = nextCronJobRun(cronJob);
 
   // Get the current date and time
   const currentDate = new Date();
@@ -39,6 +39,7 @@ function formatTimeToReach(cronJob) {
 
 async function main() {
   const data = await getData();
+  const _ = await getTakaro();
 
   const { player, module: mod } = data;
 
