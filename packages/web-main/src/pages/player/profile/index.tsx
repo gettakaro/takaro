@@ -10,7 +10,7 @@ import { PlayerRolesTable } from './PlayerRolesTable';
 import { PlayerInventoryTable } from './PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
-import { CountryCodeToEmoji } from 'components/countryCodeToEmoji';
+import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
