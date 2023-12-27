@@ -18,7 +18,6 @@ async function drawWinner(takaro, gameServerId, tickets) {
   const randomIndex = Math.floor(Math.random() * tickets.length);
   const winnerTicket = tickets[randomIndex];
 
-  debugger;
   const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;
   const winnerPog = (
     await takaro.playerOnGameserver.playerOnGameServerControllerSearch({

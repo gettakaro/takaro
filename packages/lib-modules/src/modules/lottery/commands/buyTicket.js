@@ -51,7 +51,6 @@ async function main() {
   }
 
   if (args.amount > 1) {
-    debugger;
     const pog = (
       await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
