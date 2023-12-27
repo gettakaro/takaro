@@ -24,13 +24,13 @@ export const Inner = styled.div`
   }
 `;
 
-export const StatusDot = styled.div<{ isOnline: boolean }>`
+export const StatusDot = styled.div<{ isReachable: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
   margin-top: 3px;
   margin-left: ${({ theme }) => theme.spacing['0_75']};
-  background-color: ${({ isOnline, theme }) => (isOnline ? theme.colors.success : theme.colors.error)};
+  background-color: ${({ isReachable, theme }) => (isReachable ? theme.colors.success : theme.colors.error)};
 `;
 
 const gameTypeMap = {
@@ -69,9 +69,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
       <Select.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
-        {gameServers.map(({ id, type, name: serverName }) => {
-          const isOnline = true;
-
+        {gameServers.map(({ id, type, name: serverName, reachable }) => {
           if (type !== typeEnum) {
             return null;
           }
@@ -80,14 +78,12 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
             <Select.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
-                {isOnline && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <StatusDot isOnline={isOnline} />
-                    </TooltipTrigger>
-                    <Tooltip.Content>{isOnline ? 'Server online' : 'Server offline'}</Tooltip.Content>
-                  </Tooltip>
-                )}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <StatusDot isReachable={reachable} />
+                  </TooltipTrigger>
+                  <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
+                </Tooltip>
               </Inner>
             </Select.Option>
           ) : null;
