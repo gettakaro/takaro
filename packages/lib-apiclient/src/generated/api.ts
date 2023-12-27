@@ -3348,6 +3348,51 @@ export interface IdUuidDTOAPI {
 /**
  *
  * @export
+ * @interface ImportInputDTO
+ */
+export interface ImportInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ImportInputDTO
+   */
+  csmmData: string;
+}
+/**
+ *
+ * @export
+ * @interface ImportOutputDTO
+ */
+export interface ImportOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ImportOutputDTO
+   */
+  id: string;
+}
+/**
+ *
+ * @export
+ * @interface ImportOutputDTOAPI
+ */
+export interface ImportOutputDTOAPI {
+  /**
+   *
+   * @type {ImportOutputDTO}
+   * @memberof ImportOutputDTOAPI
+   */
+  data: ImportOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ImportOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface InviteCreateDTO
  */
 export interface InviteCreateDTO {
@@ -9851,6 +9896,39 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetImport', 'id', id);
+      const localVarPath = `/gameserver/import/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
@@ -10065,6 +10143,43 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
       localVarRequestOptions.data = serializeDataIfNeeded(giveItemInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {ImportInputDTO} [importInputDTO] ImportInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM: async (
+      importInputDTO?: ImportInputDTO,
+      options: AxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/import`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(importInputDTO, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -10637,6 +10752,20 @@ export const GameServerApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetImport(
+      id: string,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
@@ -10729,6 +10858,23 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         gameserverId,
         playerId,
         giveItemInputDTO,
+        options
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {ImportInputDTO} [importInputDTO] ImportInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerImportFromCSMM(
+      importInputDTO?: ImportInputDTO,
+      options?: AxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerImportFromCSMM(
+        importInputDTO,
         options
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -11020,6 +11166,16 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport(id: string, options?: any): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
@@ -11097,6 +11253,21 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
     ): AxiosPromise<void> {
       return localVarFp
         .gameServerControllerGiveItem(gameserverId, playerId, giveItemInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {ImportInputDTO} [importInputDTO] ImportInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM(
+      importInputDTO?: ImportInputDTO,
+      options?: any
+    ): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerImportFromCSMM(importInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -11350,6 +11521,20 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Get import
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetImport(id: string, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetImport(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *  Required permissions: `READ_GAMESERVERS`
    * @summary Get installed modules
    * @param {string} id
@@ -11441,6 +11626,20 @@ export class GameServerApi extends BaseAPI {
   ) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGiveItem(gameserverId, playerId, giveItemInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Import from csmm
+   * @param {ImportInputDTO} [importInputDTO] ImportInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerImportFromCSMM(importInputDTO?: ImportInputDTO, options?: AxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerImportFromCSMM(importInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

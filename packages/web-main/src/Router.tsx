@@ -41,6 +41,7 @@ import Forbidden from 'pages/Forbidden';
 import { LogOut } from 'pages/LogOut';
 import { LogoutSuccess } from 'pages/LogoutSuccess';
 import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
+import { ImportGameServer } from 'pages/gameserver/import';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -91,6 +92,7 @@ export const Router: FC = () => (
             <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.MANAGE_GAMESERVERS]} />}>
                 <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
+                <Route element={<ImportGameServer />} path={PATHS.gameServers.import()} />
                 <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
               </Route>
             </Route>

@@ -34,6 +34,7 @@ import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverCo
 import { ItemController } from './controllers/ItemController.js';
 import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
+import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 
 export const server = new HTTP(
   {
@@ -100,6 +101,9 @@ async function main() {
 
     new PlayerSyncWorker();
     log.info('👷 playerSync worker started');
+
+    new CSMMImportWorker();
+    log.info('👷 csmmImport worker started');
   }
 
   await getSocketServer(server.server as HttpServer);
