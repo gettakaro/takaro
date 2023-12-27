@@ -28,7 +28,6 @@
     "@takaro/modules": "0.0.1",
     "basic-auth": "^2.0.1",
     "bcrypt": "^5.0.1",
-    "cron-parser": "4.9.0",
     "geolite2-redist": "^3.0.4",
     "human-id": "^4.0.0",
     "jsonwebtoken": "^8.5.1",

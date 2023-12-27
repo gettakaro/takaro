@@ -1,8 +1,7 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { getData, cronParser } from '@takaro/helpers';
 
-function formatTimeToReach(timestamp) {
-  // Parse the ISO string to get the timestamp
-  const targetDate = new Date(timestamp);
+function formatTimeToReach(cronJob) {
+  const targetDate = new Date(cronParser.parseExpression(cronJob).next().toISOString());
 
   // Get the current date and time
   const currentDate = new Date();
@@ -40,15 +39,10 @@ function formatTimeToReach(timestamp) {
 
 async function main() {
   const data = await getData();
-  const takaro = await getTakaro();
 
   const { player, module: mod } = data;
 
-  const cronjob = (
-    await takaro.cronjob.cronJobControllerSearch({ filters: { name: ['drawLottery'], moduleId: [mod.moduleId] } })
-  ).data.data[0];
-
-  await player.pm(`The next lottery draw is in about ${formatTimeToReach(cronjob.nextRunAt)}`);
+  await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery)}`);
 }
 
 await main();

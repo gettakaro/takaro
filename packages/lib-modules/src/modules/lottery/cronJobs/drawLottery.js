@@ -1,6 +1,12 @@
 import { getTakaro, getData } from '@takaro/helpers';
 
-function getTotalPrize(amount, ticketPrice, profitMargin) {
+function getTotalPrize(tickets, ticketPrice, profitMargin) {
+  const amount = tickets.reduce((acc, ticket) => {
+    const ticketAmount = parseInt(JSON.parse(ticket.value).amount, 10);
+
+    return acc + ticketAmount;
+  }, 0);
+
   const rawTotal = amount * ticketPrice;
   const profit = rawTotal * profitMargin;
   const totalPrize = rawTotal - profit;
@@ -8,13 +14,49 @@ function getTotalPrize(amount, ticketPrice, profitMargin) {
   return totalPrize;
 }
 
-async function drawWinner(takaro, tickets) {
+async function drawWinner(takaro, gameServerId, tickets) {
   const randomIndex = Math.floor(Math.random() * tickets.length);
   const winnerTicket = tickets[randomIndex];
 
-  const winner = await takaro.player.playerControllerGetOne(winnerTicket.playerId);
+  debugger;
+  const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;
+  const winnerPog = (
+    await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: {
+        gameServerId: [gameServerId],
+        playerId: [winner.id],
+      },
+    })
+  ).data.data[0];
 
-  return winner.data.data;
+  return {
+    name: winner.name,
+    pogId: winnerPog.id,
+  };
+}
+
+async function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {
+  const pog = (
+    await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: {
+        gameServerId: [gameServerId],
+        playerId: [playerId],
+      },
+    })
+  ).data.data[0];
+
+  await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, {
+    currency: amount,
+  });
+
+  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+    message: `You have been refunded ${amount} ${currencyName} because the lottery has been cancelled.`,
+    opts: {
+      recipient: {
+        gameId: pog.gameId,
+      },
+    },
+  });
 }
 
 async function cleanUp(takaro, tickets) {
@@ -28,48 +70,60 @@ async function main() {
 
   const { gameServerId, module: mod } = data;
 
-  // check how many players are in the lottery
-  const tickets = (
-    await takaro.variable.variableControllerSearch({
-      filters: {
-        gameServerId: [gameServerId],
-        moduleId: [mod.moduleId],
-        key: ['lottery_tickets_bought'],
-      },
-    })
-  ).data.data;
+  let tickets = [];
 
-  const ticketAmount = tickets.map((ticket) => parseInt(JSON.parse(ticket.value).amount, 10)).sum();
+  try {
+    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+    const ticketCost = mod.systemConfig.commands.buyTicket.cost;
 
-  if (ticketAmount === 0) {
+    tickets = (
+      await takaro.variable.variableControllerSearch({
+        filters: {
+          gameServerId: [gameServerId],
+          moduleId: [mod.moduleId],
+          key: ['lottery_tickets_bought'],
+        },
+      })
+    ).data.data;
+
+    if (tickets.length === 0) {
+      await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+        message: 'No one has bought any tickets. The lottery has been cancelled.',
+      });
+
+      return;
+    }
+    if (tickets.length === 1) {
+      await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
+        message: 'Only one person has bought a ticket. The lottery has been cancelled.',
+      });
+
+      const amount = parseInt(JSON.parse(tickets[0].value).amount, 10) * ticketCost;
+
+      await refundPlayer(takaro, gameServerId, tickets[0].playerId, amount, currencyName);
+
+      return;
+    }
+
+    const totalPrize = getTotalPrize(tickets, ticketCost, mod.userConfig.profitMargin);
+    const { name: winnerName, pogId: winnerPogId } = await drawWinner(takaro, gameServerId, tickets);
+
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'No one has bought any tickets. The lottery has been cancelled.',
+      message: 'The lottery raffle is about to start!',
     });
-    return;
-  }
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });
+    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });
 
-  if (ticketAmount === 1) {
+    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(winnerPogId, {
+      currency: totalPrize,
+    });
+
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-      message: 'Only one person has bought a ticket. The lottery has been cancelled.',
+      message: `${winnerName}! Congratulations! You have won ${totalPrize} ${currencyName}!`,
     });
-    return;
+  } finally {
+    await cleanUp(takaro, tickets);
   }
-
-  const totalPrize = getTotalPrize(tickets, mod.systemConfig.commands.buyTicket.cost, mod.userConfig.profitMargin);
-  const winner = await drawWinner(takaro, tickets);
-
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
-
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: 'The lottery raffle is about to start!',
-  });
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });
-  await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
-    message: `${winner.name}! Congratulations! You have won ${totalPrize} ${currencyName}!`,
-  });
-
-  await cleanUp(takaro, tickets);
 }
 
 await main();

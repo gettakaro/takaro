@@ -25,11 +25,16 @@ async function main() {
 
   // Player already has some tickets bought
   if (tickets.length > 0) {
-    const ticketBought = tickets[0];
+    const ticketsBought = tickets[0];
 
-    await takaro.variable.variableControllerUpdate({
-      id: ticketBought.id,
-      value: ticketBought.value + args.amount,
+    const ticketsBoughtAmount = parseInt(JSON.parse(ticketsBought.value).amount, 10);
+
+    await takaro.variable.variableControllerUpdate(ticketsBought.id, {
+      key: varKey,
+      playerId: player.playerId,
+      moduleId: mod.moduleId,
+      gameServerId,
+      value: JSON.stringify({ amount: ticketsBoughtAmount + args.amount }),
     });
   }
   // Player has no tickets bought
@@ -42,6 +47,24 @@ async function main() {
       gameServerId,
       moduleId: mod.moduleId,
       playerId: player.playerId,
+    });
+  }
+
+  if (args.amount > 1) {
+    debugger;
+    const pog = (
+      await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+          playerId: [player.playerId],
+          gameServerId: [gameServerId],
+        },
+      })
+    ).data.data[0];
+
+    const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
+
+    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(pog.id, {
+      currency: amount,
     });
   }
 

@@ -1,7 +1,5 @@
-import { getTakaro, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { getTakaro, checkPermission, TakaroUserError, axios, cronParser, _ } from '@takaro/helpers';
 import vm from 'node:vm';
-import axios from 'axios';
-import * as _ from 'lodash-es';
 import { FunctionExecutor, ILog } from './executeFunction.js';
 import { config } from '../config.js';
 
@@ -45,7 +43,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
 
   await toEval.link((specifier: string, referencingModule) => {
     const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'checkPermission', 'TakaroUserError', 'getData', 'axios', '_', 'lodash'],
+      ['getTakaro', 'checkPermission', 'TakaroUserError', 'getData', 'axios', '_', 'lodash', 'cronParser'],
       function () {
         this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
@@ -54,6 +52,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
         this.setExport('axios', axios);
         this.setExport('_', _);
         this.setExport('lodash', _);
+        this.setExport('cronParser', cronParser);
       },
       { context: referencingModule.context }
     );
