@@ -48,9 +48,11 @@ export const StyledTable = styled.table<{ density: Density }>`
     border-right: none;
     border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
     padding: ${({ theme, density }) =>
-      density === 'tight'
-        ? `${theme.spacing['0_5']} ${theme.spacing[1]}`
-        : `${theme.spacing['1_5']} ${theme.spacing[1]}`};
+      density === 'tight' ? `${theme.spacing['0_5']} 0` : `${theme.spacing['1_5']} 0`};
+
+    &:first-child {
+      padding-left: ${({ theme }) => theme.spacing['1']};
+    }
   }
 
   tfoot {

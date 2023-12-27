@@ -5,7 +5,7 @@ import { Identifier } from 'dnd-core';
 import { styled } from '../../../../../styled';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { Target, Content, Container, ResizeHandle, InnerTh } from './style';
+import { Target, Content, Th, ResizeHandle, InnerTh } from './style';
 
 const ItemTypes = {
   COLUMN: 'column',
@@ -121,7 +121,7 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
   }, [dragRef, dropRef]);
 
   return (
-    <Container
+    <Th
       canDrag={canDrag}
       colSpan={header.colSpan}
       scope="col"
@@ -131,6 +131,7 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
       width={header.getSize()}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      isRowSelection={false}
     >
       <InnerTh>
         <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
@@ -155,7 +156,7 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
           onDoubleClick={() => header.column.resetSize()}
         ></ResizeHandle>
       )}
-    </Container>
+    </Th>
   );
 }
 

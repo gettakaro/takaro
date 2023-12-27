@@ -1,16 +1,25 @@
 import { styled } from '../../../../../styled';
 
-export const Container = styled.th<{
+export const Th = styled.th<{
   isActive: boolean;
   isRight: boolean;
   isDragging: boolean;
   width: number;
   canDrag: boolean;
+  isRowSelection: boolean;
 }>`
   position: relative;
   width: ${({ width }) => width}px;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `${theme.spacing['0_75']} 0`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+
+  &:first-child {
+    padding-left: ${({ theme, isRowSelection }) => (isRowSelection ? 0 : theme.spacing['1'])};
+  }
+
+  &:last-of-type {
+    padding-right: ${({ theme }) => theme.spacing['1']};
+  }
 
   & > div {
     font-weight: 600;

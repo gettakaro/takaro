@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
+import { Th } from './subcomponents/ColumnHeader/style';
 
 import {
   flexRender,
@@ -35,7 +36,11 @@ export interface TableProps<DataType extends object> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
 
+  /// Renders actions that are always visible
   renderToolbar?: () => JSX.Element;
+
+  /// Renders actions that are only visible when one or more rows are selected.
+  renderRowSelectionActions?: () => JSX.Element;
 
   title?: string;
 
@@ -43,6 +48,7 @@ export interface TableProps<DataType extends object> {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
+
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
@@ -73,6 +79,7 @@ export function Table<DataType extends object>({
   rowSelection,
   columnSearch,
   renderToolbar,
+  renderRowSelectionActions,
   isLoading = false,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -168,12 +175,22 @@ export function Table<DataType extends object>({
     },
   });
 
+  // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
+  const hasRowSelection = useMemo(() => {
+    return (
+      rowSelection &&
+      Object.keys(rowSelection.rowSelectionState).filter((key) => rowSelection.rowSelectionState[key]).length > 0
+    );
+  }, [rowSelection?.rowSelectionState]);
+
   return (
     <Wrapper>
       <Toolbar role="toolbar">
         {/* custom toolbar is rendered on left side*/}
-        <Flex>{title && <h2>{title}</h2>}</Flex>
-
+        <Flex>
+          {!hasRowSelection && title && <h2>{title}</h2>}
+          {hasRowSelection && renderRowSelectionActions && renderRowSelectionActions()}
+        </Flex>
         <Flex>
           {renderToolbar && renderToolbar()}
           {!isLoading && <Filter table={table} />}
@@ -207,18 +224,27 @@ export function Table<DataType extends object>({
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  {rowSelection && !isLoading && (
-                    <th style={{ width: '10px' }}>
-                      <CheckBox
-                        hasDescription={false}
-                        hasError={false}
-                        id={`select-all-header-${headerGroup.id}`}
-                        name={`select-all-header-${headerGroup.id}`}
-                        onChange={() => table.toggleAllRowsSelected()}
-                        size="small"
-                        value={table.getIsAllRowsSelected()}
-                      />
-                    </th>
+                  {rowSelection && table.getRowModel().rows.length !== 0 && !isLoading && (
+                    <Th
+                      isActive={false}
+                      isRight={false}
+                      isDragging={false}
+                      canDrag={false}
+                      isRowSelection={true}
+                      width={10}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CheckBox
+                          hasDescription={false}
+                          hasError={false}
+                          id={`select-all-header-${headerGroup.id}`}
+                          name={`select-all-header-${headerGroup.id}`}
+                          onChange={() => table.toggleAllRowsSelected()}
+                          size="small"
+                          value={table.getIsAllRowsSelected()}
+                        />
+                      </div>
+                    </Th>
                   )}
                   {headerGroup.headers.map((header) => (
                     <ColumnHeader
