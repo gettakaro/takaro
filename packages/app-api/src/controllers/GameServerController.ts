@@ -172,7 +172,7 @@ class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
   reason!: string;
 }
 
-class BanInputDTO extends TakaroDTO<BanInputDTO> {
+class BanPlayerInputDTO extends TakaroDTO<BanPlayerInputDTO> {
   @IsString()
   @MinLength(1)
   @MaxLength(150)
@@ -184,7 +184,7 @@ class BanInputDTO extends TakaroDTO<BanInputDTO> {
   expiresAt!: string;
 }
 
-class BanOutputDTO extends APIOutput<BanDTO[]> {
+class BanPlayerOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
@@ -365,7 +365,11 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:gameserverId/player/:playerId/ban')
-  async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId, @Body() data: BanInputDTO) {
+  async banPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId,
+    @Body() data: BanPlayerInputDTO
+  ) {
     const service = new GameServerService(req.domainId);
     const result = await service.banPlayer(params.gameserverId, params.playerId, data.reason, data.expiresAt);
     return apiResponse(result);
@@ -381,7 +385,7 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(BanOutputDTO)
+  @ResponseSchema(BanPlayerOutputDTO)
   @Get('/gameserver/:id/bans')
   async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
