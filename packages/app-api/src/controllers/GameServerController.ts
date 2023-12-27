@@ -29,7 +29,19 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  UploadedFile,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -440,7 +452,11 @@ export class GameServerController {
     description: 'Import a gameserver from CSMM',
   })
   @ResponseSchema(ImportOutputDTOAPI)
-  async importFromCSMM(@Req() req: AuthenticatedRequest, @Body() data: ImportInputDTO) {
+  async importFromCSMM(
+    @Req() req: AuthenticatedRequest,
+    @Body() data: ImportInputDTO,
+    @UploadedFile('test') _file: any
+  ) {
     const service = new GameServerService(req.domainId);
     const result = await service.import(data);
     return apiResponse(result);

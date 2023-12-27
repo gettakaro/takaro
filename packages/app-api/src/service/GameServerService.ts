@@ -31,6 +31,7 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
+import { randomUUID } from 'crypto';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -491,7 +492,12 @@ export class GameServerService extends TakaroService<
       throw new errors.BadRequestError('Invalid JSON');
     }
 
-    const job = await queueService.queues.csmmImport.queue.add({ csmmExport: parsed, domainId: this.domainId });
+    const job = await queueService.queues.csmmImport.queue.add(
+      { csmmExport: parsed, domainId: this.domainId },
+      {
+        jobId: randomUUID(),
+      }
+    );
 
     return {
       id: job.id,

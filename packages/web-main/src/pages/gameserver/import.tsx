@@ -6,13 +6,16 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApiClient } from 'hooks/useApiClient';
+import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 
 export interface IFormInputs {
   data: string;
+  file: string;
 }
 
 const validationSchema = z.object({
   data: z.string(),
+  file: z.string(),
 });
 
 export const ImportGameServer: FC = () => {
@@ -20,6 +23,7 @@ export const ImportGameServer: FC = () => {
   const [importError, setError] = useState<Error | null>(null);
   const [jobStatus, setJobStatus] = useState<any | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const navigate = useNavigate();
   const api = useApiClient();
 
@@ -38,22 +42,52 @@ export const ImportGameServer: FC = () => {
   useEffect(() => {
     fetchJobStatus();
 
-    const refreshInterval = setInterval(() => {
-      fetchJobStatus();
-    }, 5000);
+    setRefreshInterval(
+      setInterval(() => {
+        fetchJobStatus();
+      }, 1000) as unknown as number
+    );
 
     return () => {
-      clearInterval(refreshInterval);
+      if (refreshInterval) clearInterval(refreshInterval);
     };
   }, [jobId]);
 
-  const { control, handleSubmit, watch } = useForm<IFormInputs>({
+  useEffect(() => {
+    const handleRedirect = async () => {
+      const newestServerRes = await api.gameserver.gameServerControllerSearch({
+        sortBy: 'createdAt',
+        sortDirection: GameServerSearchInputDTOSortDirectionEnum.Desc,
+        limit: 1,
+      });
+      navigate(PATHS.gameServer.dashboard(newestServerRes.data.data[0].id));
+    };
+
+    if (!jobStatus) return;
+
+    if (jobStatus.status === 'failed' || jobStatus.status === 'completed') {
+      clearInterval(refreshInterval as unknown as number);
+    }
+
+    if (jobStatus.status === 'completed') {
+      handleRedirect();
+    }
+  }, [jobStatus]);
+
+  const { control, handleSubmit, watch, register } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ data }) => {
     try {
+      /*       const formData = new FormData();
+      formData.append('import.json', file.files[0]);
+
+
+      TODO: submit via axios somehow
+ */
+
       const res = await api.gameserver.gameServerControllerImportFromCSMM({
         csmmData: data,
       });
@@ -68,7 +102,7 @@ export const ImportGameServer: FC = () => {
     }
   };
 
-  const { data } = watch();
+  const { data, file } = watch();
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -92,6 +126,10 @@ export const ImportGameServer: FC = () => {
               label="CSMM Data"
               description="Paste your CSMM data JSON here."
             />
+
+            <input type="file" accept=".json" {...register('file', { required: true })} />
+
+            <input type="submit" />
           </form>
           {<FormError error={importError} />}
           {jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed' && <Loading />}
@@ -104,6 +142,7 @@ export const ImportGameServer: FC = () => {
             onClick={() => {
               onSubmit({
                 data,
+                file,
               });
             }}
             form="create-game-server-form"
