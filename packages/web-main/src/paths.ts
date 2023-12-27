@@ -4,8 +4,11 @@ export const PATHS = {
   users: () => '/users',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
-  variables: () => '/variables',
-
+  variables: {
+    overview: () => '/variables',
+    create: () => '/variables/create',
+    update: (variableId: string) => `/variables/update/${variableId}`,
+  },
   notFound: () => '/not-found',
   forbidden: () => '/forbidden',
   logout: () => '/logout',

@@ -1,7 +1,6 @@
 import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi, OAuth2Api } from '@ory/client';
 import { config } from '../config.js';
 import { errors, logger, TakaroDTO } from '@takaro/util';
-import { AdminClient as TakaroClient } from '@takaro/apiclient';
 import { createAxiosClient } from './oryAxiosClient.js';
 import { paginateIdentities } from './paginationHelpers.js';
 import { Request } from 'express';
@@ -50,7 +49,6 @@ class Ory {
   private adminClient: OAuth2Api;
   private identityClient: IdentityApi;
   private frontendClient: FrontendApi;
-  private takaro: TakaroClient;
 
   constructor() {
     this.identityClient = new IdentityApi(
