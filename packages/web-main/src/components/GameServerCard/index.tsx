@@ -98,13 +98,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
 interface EmptyGameServerCardProps {
   onClick: () => void;
+  title?: string;
 }
 
-export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({ onClick }) => {
+export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({ onClick, title }) => {
   return (
     <EmptyContainer onClick={onClick}>
       <PlusIcon size={24} />
-      <h3>Gameserver</h3>
+      <h3>{title ? title : 'Gameserver'}</h3>
     </EmptyContainer>
   );
 };

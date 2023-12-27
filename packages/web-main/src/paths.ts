@@ -35,6 +35,7 @@ export const PATHS = {
   gameServers: {
     overview: () => '/servers',
     create: () => '/servers/create',
+    import: () => '/servers/import',
     update: (serverId: string) => `/servers/update/${serverId}`,
   },
 

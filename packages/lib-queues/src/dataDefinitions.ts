@@ -68,3 +68,7 @@ export interface IConnectorQueueData extends IBaseJobData {
 export interface IGameServerQueueData extends IBaseJobData {
   gameServerId?: string;
 }
+
+export interface ICSMMImportData extends IBaseJobData {
+  csmmExport: Record<string, unknown>;
+}
