@@ -190,6 +190,21 @@ class BanOutputDTO extends APIOutput<BanDTO[]> {
   declare data: BanDTO[];
 }
 
+export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
+  @IsJSON()
+  csmmData: string;
+}
+
+class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
+  @IsString()
+  id!: string;
+}
+
+class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
+  @Type(() => ImportOutputDTO)
+  @ValidateNested()
+  declare data: ImportOutputDTO;
+}
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -407,6 +422,27 @@ export class GameServerController {
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const result = await service.getPlayers(params.id);
+    return apiResponse(result);
+  }
+
+  @Get('/gameserver/import/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(ImportOutputDTOAPI)
+  async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getImport(params.id);
+    return apiResponse(result);
+  }
+
+  @Post('/gameserver/import')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Import a gameserver from CSMM',
+  })
+  @ResponseSchema(ImportOutputDTOAPI)
+  async importFromCSMM(@Req() req: AuthenticatedRequest, @Body() data: ImportInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.import(data);
     return apiResponse(result);
   }
 }

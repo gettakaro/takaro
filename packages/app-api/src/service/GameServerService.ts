@@ -30,6 +30,7 @@ import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
+import { ImportInputDTO } from '../controllers/GameServerController.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -466,5 +467,34 @@ export class GameServerService extends TakaroService<
         await pogRepo.syncInventory(pog.id, gameServerId, inventory);
       })
     );
+  }
+
+  async getImport(id: string) {
+    const job = await queueService.queues.csmmImport.queue.bullQueue.getJob(id);
+
+    if (!job) {
+      throw new errors.NotFoundError('Job not found');
+    }
+
+    return {
+      jobId: job.id,
+      status: await job.getState(),
+      failedReason: job.failedReason,
+    };
+  }
+
+  async import(data: ImportInputDTO) {
+    let parsed;
+    try {
+      parsed = JSON.parse(data.csmmData);
+    } catch (error) {
+      throw new errors.BadRequestError('Invalid JSON');
+    }
+
+    const job = await queueService.queues.csmmImport.queue.add({ csmmExport: parsed, domainId: this.domainId });
+
+    return {
+      id: job.id,
+    };
   }
 }
