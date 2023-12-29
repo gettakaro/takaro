@@ -155,13 +155,27 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     let player: PlayerOutputDTO;
 
     if (!existingAssociations.length) {
-      const existingPlayers = await this.find({
+      const findOpts: ITakaroQuery<PlayerOutputDTO> & { filters: Record<string, unknown> } = {
         filters: {
-          steamId: [playerData.steamId],
-          epicOnlineServicesId: [playerData.epicOnlineServicesId],
-          xboxLiveId: [playerData.xboxLiveId],
+          steamId: [],
+          epicOnlineServicesId: [],
+          xboxLiveId: [],
         },
-      });
+      };
+
+      if (playerData.steamId) {
+        findOpts.filters.steamId = [playerData.steamId];
+      }
+
+      if (playerData.epicOnlineServicesId) {
+        findOpts.filters.epicOnlineServicesId = [playerData.epicOnlineServicesId];
+      }
+
+      if (playerData.xboxLiveId) {
+        findOpts.filters.xboxLiveId = [playerData.xboxLiveId];
+      }
+
+      const existingPlayers = await this.find(findOpts);
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
         this.log.debug('No existing associations found, creating new global player');

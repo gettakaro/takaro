@@ -46,15 +46,24 @@ export class SevenDaysToDie implements IGameServer {
 
     const players = await Promise.all(
       onlinePlayersRes.data.map((p) => {
-        return new IGamePlayer().construct({
+        const data: Partial<IGamePlayer> = {
           gameId: p.crossplatformid.replace('EOS_', ''),
           ip: p.ip,
           name: p.name,
-          steamId: p.steamid.replace('Steam_', ''),
-          epicOnlineServicesId: p.crossplatformid,
+          epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
           platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
-        });
+        };
+
+        if (p.steamid.startsWith('XBL_')) {
+          data.xboxLiveId = p.steamid.replace('XBL_', '');
+        }
+
+        if (p.steamid.startsWith('Steam_')) {
+          data.steamId = p.steamid.replace('Steam_', '');
+        }
+
+        return new IGamePlayer().construct(data);
       })
     );
 
