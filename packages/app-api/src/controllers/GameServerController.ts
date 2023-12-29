@@ -202,11 +202,6 @@ class BanOutputDTO extends APIOutput<BanDTO[]> {
   declare data: BanDTO[];
 }
 
-export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
-  @IsJSON()
-  csmmData: string;
-}
-
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
   @IsString()
   id!: string;
@@ -452,13 +447,9 @@ export class GameServerController {
     description: 'Import a gameserver from CSMM',
   })
   @ResponseSchema(ImportOutputDTOAPI)
-  async importFromCSMM(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: ImportInputDTO,
-    @UploadedFile('test') _file: any
-  ) {
+  async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {
     const service = new GameServerService(req.domainId);
-    const result = await service.import(data);
+    const result = await service.import(_file);
     return apiResponse(result);
   }
 }

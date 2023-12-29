@@ -161,7 +161,7 @@ async function process(job: Job<ICSMMImportData>) {
     }
 
     if (player.currency) {
-      await pogService.setCurrency(pog[0].id, player.currency);
+      await pogService.setCurrency(pog[0].id, Math.floor(player.currency));
     }
   }
 }

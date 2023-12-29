@@ -30,7 +30,6 @@ import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
-import { ImportInputDTO } from '../controllers/GameServerController.js';
 import { randomUUID } from 'crypto';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
@@ -484,10 +483,13 @@ export class GameServerService extends TakaroService<
     };
   }
 
-  async import(data: ImportInputDTO) {
+  async import(data: Express.Multer.File) {
     let parsed;
+
+    const raw = data.buffer.toString();
+
     try {
-      parsed = JSON.parse(data.csmmData);
+      parsed = JSON.parse(raw);
     } catch (error) {
       throw new errors.BadRequestError('Invalid JSON');
     }
