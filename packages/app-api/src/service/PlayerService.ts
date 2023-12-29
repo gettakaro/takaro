@@ -195,6 +195,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async assignRole(roleId: string, targetId: string, gameserverId?: string, expiresAt?: string) {
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+
+    const role = await roleService.findOne(roleId);
 
     this.log.info('Assigning role to player');
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
@@ -204,7 +207,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         gameserverId,
         playerId: targetId,
         meta: {
-          roleId: roleId,
+          role,
         },
       })
     );
@@ -213,6 +216,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
     this.log.info('Removing role from player');
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+
+    const role = await roleService.findOne(roleId);
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
       await new EventCreateDTO().construct({
@@ -220,7 +226,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: targetId,
         gameserverId,
         meta: {
-          roleId: roleId,
+          role,
         },
       })
     );
