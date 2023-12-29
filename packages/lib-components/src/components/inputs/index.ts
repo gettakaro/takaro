@@ -17,6 +17,9 @@ export { GenericSwitch as UnControlledSwitch } from './Switch/Generic';
 export { ControlledTextField as TextField } from './TextField';
 export type { ControlledTextFieldProps as TextFieldProps } from './TextField';
 
+export { ControlledFileField as FileField } from './FileField';
+export type { ControlledFileFieldProps as FileFieldProps } from './FileField';
+
 export { ControlledTextAreaField as TextAreaField } from './TextAreaField';
 export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField';
 
