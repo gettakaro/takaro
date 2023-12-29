@@ -31,6 +31,7 @@ const blackListedMessages = [
   'IsMovementBlocked',
   'Particle System is trying to spawn on a mesh with zero surface area',
   'AddDecorationAt',
+  'EntityFactory CreateEntity: unknown type',
 ];
 
 const EventRegexMap = {

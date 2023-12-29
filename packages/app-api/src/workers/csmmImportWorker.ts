@@ -53,6 +53,11 @@ async function process(job: Job<ICSMMImportData>) {
 
   const data = job.data.csmmExport as unknown as ICSMMData;
 
+  if (!data) {
+    log.warn('No data found in job, skipping');
+    return;
+  }
+
   const gameserverService = new GameServerService(job.data.domainId);
   const roleService = new RoleService(job.data.domainId);
   const playerService = new PlayerService(job.data.domainId);
@@ -180,4 +185,6 @@ async function process(job: Job<ICSMMImportData>) {
       })
     );
   }
+
+  await job.update({} as ICSMMImportData);
 }
