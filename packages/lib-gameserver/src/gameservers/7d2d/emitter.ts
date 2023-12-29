@@ -20,6 +20,19 @@ interface I7DaysToDieEvent extends JsonObject {
   msg: string;
 }
 
+/**
+ * 7d2d servers can get really spammy with bugged vehicles, buggy mods, etc.
+ * This is a list of messages that we don't want to emit events for.
+ */
+const blackListedMessages = [
+  'NullReferenceException',
+  'VehicleManager write #',
+  'Infinity or NaN floating point numbers appear when calculating the transform matrix for a Collider',
+  'IsMovementBlocked',
+  'Particle System is trying to spawn on a mesh with zero surface area',
+  'AddDecorationAt',
+];
+
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]:
     /PlayerSpawnedInWorld \(reason: (JoinMultiplayer|EnterMultiplayer), position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
@@ -104,6 +117,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     this.logger.silly(`Received message from game server: ${logLine.msg}`);
     if (!logLine.msg || typeof logLine.msg !== 'string') {
       throw new Error('Invalid logLine');
+    }
+
+    if (blackListedMessages.some((msg) => logLine.msg.includes(msg))) {
+      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(logLine.msg)) {
