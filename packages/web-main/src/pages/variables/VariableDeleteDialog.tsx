@@ -29,7 +29,6 @@ export const VariableDeleteDialog: FC<VariableDeleteProps> = ({ variable, openDi
           <span>Delete variable</span>
         </Dialog.Heading>
         <Dialog.Body>
-          <h2>Delete variable</h2>
           <p>Are you sure you want to delete the following variable? This action cannot be undone.</p>
           <ul style={{ width: '100%', marginBottom: '1.2rem' }}>
             {variable.key && (
