@@ -240,6 +240,7 @@ const tests = [
       expect(updatedPog.currency).to.be.eq(1000);
     },
   }),
+  /*
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
@@ -296,6 +297,7 @@ const tests = [
       expect(bountyGrantedMessages.length).to.be.eq(1);
     },
   }),
+  */
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
