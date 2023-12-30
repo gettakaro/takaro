@@ -40,6 +40,8 @@ import { PERMISSIONS } from '@takaro/lib-components';
 import Forbidden from 'pages/Forbidden';
 import { LogOut } from 'pages/LogOut';
 import { LogoutSuccess } from 'pages/LogoutSuccess';
+import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
+import { ImportGameServer } from 'pages/gameserver/import';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -90,6 +92,7 @@ export const Router: FC = () => (
             <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.MANAGE_GAMESERVERS]} />}>
                 <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
+                <Route element={<ImportGameServer />} path={PATHS.gameServers.import()} />
                 <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
               </Route>
             </Route>
@@ -126,7 +129,11 @@ export const Router: FC = () => (
 
           {/* ======================== Variables ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.READ_VARIABLES]} />}>
-            <Route element={<Variables />} path={PATHS.variables()} />
+            <Route element={<Variables />} path={PATHS.variables.overview()} />
+          </Route>
+          <Route element={<PermissionsGuard permissions={[PERMISSIONS.MANAGE_VARIABLES]} />}>
+            <Route element={<VariablesCreate />} path={PATHS.variables.create()} />
+            <Route element={<VariablesUpdate />} path={PATHS.variables.update(':variableId')} />
           </Route>
 
           {/* ======================== Events ======================== */}

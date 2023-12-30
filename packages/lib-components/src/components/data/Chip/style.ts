@@ -39,6 +39,7 @@ export const Container = styled.div<{
     overflow-wrap: anywhere;
     margin-left: ${({ hasAvatar, theme }) => (hasAvatar ? theme.spacing['0_5'] : 0)};
     font-size: ${({ theme }) => theme.fontSize.tiny};
+    user-select: none;
 
     ${({ theme, color, outline }) => {
       if (!outline) {

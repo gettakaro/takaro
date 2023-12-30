@@ -16,7 +16,7 @@ import { config } from '../config.js';
 export interface ISteamData {
   steamId: string;
   steamAvatar: string;
-  steamAccountCreated: number;
+  steamAccountCreated: number | null;
   steamCommunityBanned: boolean;
   steamEconomyBan: string;
   steamVacBanned: boolean;
@@ -224,17 +224,17 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
   }
 
   async setSteamData(data: (ISteamData | undefined)[]) {
-    const { query } = await this.getModel();
     await Promise.all(
-      data.map((item) => {
+      data.map(async (item) => {
         if (!item) return;
-        return query
-          .update({
-            ...item,
-            steamAccountCreated: new Date(item.steamAccountCreated * 1000),
-            steamLastFetch: new Date(),
-          })
-          .where('steamId', item.steamId);
+        const { query } = await this.getModel();
+        const updateObj: Partial<PlayerModel> = {
+          ...item,
+          steamAccountCreated: item.steamAccountCreated ? new Date(item.steamAccountCreated * 1000) : undefined,
+          steamLastFetch: new Date(),
+        };
+
+        return query.update(updateObj).where('steamId', item.steamId);
       })
     );
   }

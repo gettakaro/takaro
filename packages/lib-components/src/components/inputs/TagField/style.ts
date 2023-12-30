@@ -12,6 +12,7 @@ export const TagsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[1]};
   margin-bottom: ${({ theme }) => theme.spacing['0_75']};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
   input {
     display: inline;

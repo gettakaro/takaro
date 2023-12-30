@@ -5,6 +5,10 @@ import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
 import { getMetrics, health } from '@takaro/util';
+import { OpenAPIObject } from 'openapi3-ts';
+import { PERMISSIONS } from '@takaro/auth';
+
+let spec: OpenAPIObject | undefined;
 
 export class HealthOutputDTO {
   @IsBoolean()
@@ -27,6 +31,8 @@ export class Meta {
 
   @Get('/openapi.json')
   async getOpenApi() {
+    if (spec) return spec;
+
     const { getMetadataStorage } = await import('class-validator');
     const classTransformerStorage = await import(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -43,7 +49,7 @@ export class Meta {
       forbidNonWhitelisted: true,
     });
 
-    return routingControllersToSpec(
+    spec = routingControllersToSpec(
       storage,
       {},
       {
@@ -66,6 +72,41 @@ export class Meta {
         },
       }
     );
+
+    const requiredPermsRegex = /authMiddleware\((.+)\)/;
+
+    storage.uses.forEach((use) => {
+      const requiredPerms =
+        use.middleware.name
+          .match(requiredPermsRegex)?.[1]
+          .split(',')
+          .map((p) => `\`${p}\``)
+          .join(', ') || [];
+
+      const operationId = `${use.target.name}.${use.method}`;
+
+      if (!requiredPerms.length) return;
+
+      // Find the corresponding path and method in spec
+      Object.keys(spec?.paths ?? []).forEach((pathKey) => {
+        const pathItem = spec?.paths[pathKey];
+        Object.keys(pathItem).forEach((method) => {
+          const operation = pathItem[method];
+          if (operation.operationId === operationId) {
+            // Update the description with required permissions
+            operation.description = (operation.description || '') + ` Required permissions: ${requiredPerms}`;
+          }
+        });
+      });
+    });
+
+    if (spec.components?.schemas) {
+      spec.components.schemas.PERMISSIONS = {
+        enum: Object.values(PERMISSIONS),
+      };
+    }
+
+    return spec;
   }
 
   @Get('/api.html')
@@ -82,10 +123,26 @@ export class Meta {
       <body>
         <rapi-doc
           spec-url="/openapi.json"
-          theme="dark"
-          render-style="view"
+          render-style="read"
           fill-request-fields-with-example="false"
           persist-auth="true"
+
+          sort-tags="true"
+          sort-endpoints-by="method"
+
+          show-method-in-nav-bar="as-colored-block"
+          show-header="false"
+          allow-authentication="false"
+          allow-server-selection="false"
+
+          schema-style="table"
+          schema-expand-level="1"
+          default-schema-tab="schema"
+
+          primary-color="#664de5"
+          bg-color="#151515"
+          text-color="#c2c2c2"
+          header-color="#353535"
         />
       </body>
     </html>

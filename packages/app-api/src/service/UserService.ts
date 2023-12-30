@@ -133,13 +133,17 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
   async assignRole(roleId: string, userId: string, expiresAt?: string): Promise<void> {
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+
+    const role = await roleService.findOne(roleId);
+
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         userId,
         meta: {
-          roleId,
+          role,
         },
       })
     );
@@ -147,13 +151,17 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
   async removeRole(roleId: string, userId: string): Promise<void> {
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+    const role = await roleService.findOne(roleId);
+
     await this.repo.removeRole(userId, roleId);
+
     await eventService.create(
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         userId,
         meta: {
-          roleId,
+          role,
         },
       })
     );

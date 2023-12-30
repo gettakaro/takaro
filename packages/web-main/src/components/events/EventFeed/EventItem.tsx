@@ -3,6 +3,7 @@ import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
+import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 
 const Header = styled.div`
   display: flex;
@@ -105,6 +106,24 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.PlayerNewIpDetected:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty
+            name="country"
+            value={
+              <>
+                <CountryCodeToEmoji countryCode={(event.meta as any).new.country} />
+                {(event.meta as any).new.country}
+              </>
+            }
+          />
+
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.PlayerConnected:
     case EventOutputDTOEventNameEnum.PlayerDisconnected:
     case EventOutputDTOEventNameEnum.PlayerDeath:
@@ -152,9 +171,12 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
     case EventOutputDTOEventNameEnum.RoleCreated:
     case EventOutputDTOEventNameEnum.RoleDeleted:
     case EventOutputDTOEventNameEnum.RoleUpdated:
+    case EventOutputDTOEventNameEnum.RoleAssigned:
+    case EventOutputDTOEventNameEnum.RoleRemoved:
       properties = (
         <>
-          <EventProperty name="user" value={event.user?.name} />
+          {event.player ? <EventProperty name="player" value={event.player?.name} /> : null}
+          {event.user ? <EventProperty name="user" value={event.user?.name} /> : null}
           {event.meta && 'role' in event.meta && 'name' in (event.meta as any).role ? (
             <EventProperty name="role" value={(event.meta as any).role.name} />
           ) : null}

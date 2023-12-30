@@ -56,6 +56,8 @@ export const OnChange: StoryFn<TextAreaFieldProps> = (args) => {
         hint={args.hint}
         label={args.label}
         control={control}
+        readOnly={args.readOnly}
+        disabled={args.disabled}
       />
       <pre>value: {TextAreaFieldValue}</pre>
     </>

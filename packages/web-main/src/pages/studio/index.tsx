@@ -11,6 +11,7 @@ import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
 import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
 import { Header } from 'components/studio/Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
 const Wrapper = styled.div`
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}} ${theme.spacing[2]} 0`};
@@ -90,6 +91,11 @@ const Studio: FC = () => {
             </CollapseList.Item>
             <CollapseList.Item title={configMap[activeModule.type]}>
               <ConfigWrapper>{getConfigComponent(activeModule.type)}</ConfigWrapper>
+            </CollapseList.Item>
+            <CollapseList.Item title={'Last executions'}>
+              <ConfigWrapper>
+                <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
+              </ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>

@@ -20,6 +20,20 @@ interface I7DaysToDieEvent extends JsonObject {
   msg: string;
 }
 
+/**
+ * 7d2d servers can get really spammy with bugged vehicles, buggy mods, etc.
+ * This is a list of messages that we don't want to emit events for.
+ */
+const blackListedMessages = [
+  'NullReferenceException',
+  'VehicleManager write #',
+  'Infinity or NaN floating point numbers appear when calculating the transform matrix for a Collider',
+  'IsMovementBlocked',
+  'Particle System is trying to spawn on a mesh with zero surface area',
+  'AddDecorationAt',
+  'EntityFactory CreateEntity: unknown type',
+];
+
 const EventRegexMap = {
   [GameEvents.PLAYER_CONNECTED]:
     /PlayerSpawnedInWorld \(reason: (JoinMultiplayer|EnterMultiplayer), position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
@@ -101,9 +115,13 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   async parseMessage(logLine: I7DaysToDieEvent) {
-    this.logger.debug(`Received message from game server: ${logLine.msg}`);
+    this.logger.silly(`Received message from game server: ${logLine.msg}`);
     if (!logLine.msg || typeof logLine.msg !== 'string') {
       throw new Error('Invalid logLine');
+    }
+
+    if (blackListedMessages.some((msg) => logLine.msg.includes(msg))) {
+      return;
     }
 
     if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(logLine.msg)) {
@@ -199,19 +217,21 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const { groups } = match;
     if (!groups) throw new Error('Could not parse chat message');
 
-    const { platformId, entityId, name, message } = groups;
+    const { platformId, name, message } = groups;
+
+    if (platformId === '-non-player-' && name !== 'Server') {
+      return;
+    }
 
     const trimmedMessage = message.trim();
-    if (this.recentMessages.has(trimmedMessage)) return; // Ignore if recently processed
+    if (this.recentMessages.has(trimmedMessage)) {
+      return; // Ignore if recently processed
+    }
     this.recentMessages.add(trimmedMessage);
     setTimeout(() => this.recentMessages.delete(trimmedMessage), 1000);
 
     const xboxLiveId = platformId.startsWith('XBL_') ? platformId.replace('XBL_', '') : undefined;
     const steamId = platformId.startsWith('Steam_') ? platformId.replace('Steam_', '') : undefined;
-
-    if ((platformId === '-non-player-' && name !== 'Server') || entityId === '-1') {
-      return;
-    }
 
     if (steamId || xboxLiveId) {
       const id = steamId || xboxLiveId || '';

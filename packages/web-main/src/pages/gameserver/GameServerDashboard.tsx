@@ -7,6 +7,7 @@ import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { ChatMessagesCard } from './cards/ChatMessages';
 import { OnlinePlayersCard } from './cards/OnlinePlayers';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
 const GridContainer = styled.div`
   display: grid;
@@ -24,7 +25,11 @@ const DashboardCard = styled.div`
 `;
 
 const ConsoleContainer = styled.div`
-  height: 80vh;
+  height: 100%;
+`;
+
+const EventsContainer = styled.div`
+  margin-top: 5rem;
 `;
 
 const OnlinePlayerContainer = styled(DashboardCard)``;
@@ -116,23 +121,26 @@ const GameServerDashboard: FC = () => {
         <ChatContainer>
           <ChatMessagesCard />
         </ChatContainer>
+        <ConsoleContainer>
+          <Console
+            messages={messages}
+            setMessages={setMessages}
+            listenerFactory={handleMessageFactory}
+            onExecuteCommand={async (command: string) => {
+              const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
+              return {
+                type: 'command',
+                data: command,
+                result: result.data.data.rawResult,
+                timestamp: new Date().toISOString(),
+              };
+            }}
+          />
+        </ConsoleContainer>
+        <EventsContainer>
+          <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
+        </EventsContainer>
       </GridContainer>
-      <ConsoleContainer>
-        <Console
-          messages={messages}
-          setMessages={setMessages}
-          listenerFactory={handleMessageFactory}
-          onExecuteCommand={async (command: string) => {
-            const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
-            return {
-              type: 'command',
-              data: command,
-              result: result.data.data.rawResult,
-              timestamp: new Date().toISOString(),
-            };
-          }}
-        />
-      </ConsoleContainer>
     </Fragment>
   );
 };

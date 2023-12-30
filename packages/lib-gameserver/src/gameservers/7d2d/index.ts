@@ -46,15 +46,24 @@ export class SevenDaysToDie implements IGameServer {
 
     const players = await Promise.all(
       onlinePlayersRes.data.map((p) => {
-        return new IGamePlayer().construct({
+        const data: Partial<IGamePlayer> = {
           gameId: p.crossplatformid.replace('EOS_', ''),
           ip: p.ip,
           name: p.name,
-          steamId: p.steamid.replace('Steam_', ''),
-          epicOnlineServicesId: p.crossplatformid,
+          epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
           platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
-        });
+        };
+
+        if (p.steamid.startsWith('XBL_')) {
+          data.xboxLiveId = p.steamid.replace('XBL_', '');
+        }
+
+        if (p.steamid.startsWith('Steam_')) {
+          data.steamId = p.steamid.replace('Steam_', '');
+        }
+
+        return new IGamePlayer().construct(data);
       })
     );
 
@@ -107,7 +116,6 @@ export class SevenDaysToDie implements IGameServer {
       if (error instanceof Object && 'details' in error) {
         reason =
           'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
-        console.log(error);
         if (error.details instanceof Object) {
           if ('status' in error.details) {
             if (error.details.status === 403 || error.details.status === 401) {

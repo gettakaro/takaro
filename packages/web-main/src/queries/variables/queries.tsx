@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useApiClient } from 'hooks/useApiClient';
 import {
   IdUuidDTO,
+  VariableCreateDTO,
   VariableOutputArrayDTOAPI,
   VariableOutputDTO,
   VariableSearchInputDTO,
@@ -53,11 +54,24 @@ export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) 
   return queryOpts;
 };
 
+export const useVariable = (id: string) => {
+  const apiClient = useApiClient();
+
+  return useQuery<VariableOutputDTO, AxiosError<VariableOutputDTO>>({
+    queryKey: variableKeys.detail(id),
+    queryFn: async () => {
+      const resp = (await apiClient.variable.variableControllerFindOne(id)).data.data;
+      return resp;
+    },
+    enabled: Boolean(id),
+  });
+};
+
 export const useVariableCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<VariableOutputDTO, AxiosError<VariableOutputDTO>, VariableOutputDTO>({
+  return useMutation<VariableOutputDTO, AxiosError<VariableCreateDTO>, VariableCreateDTO>({
     mutationFn: async (variable) => (await apiClient.variable.variableControllerCreate(variable)).data.data,
     onSuccess: async (newVariable) => {
       // update the list of variables to reflect the new variable

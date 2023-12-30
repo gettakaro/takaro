@@ -8,13 +8,11 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-console": ["error"],
     "semi": ["error", "always"],
     "quotes": ["error", "single"],
 
-    "@typescript-eslint/no-empty-function": [
-      "error",
-      { "allow": ["arrowFunctions"] }
-    ],
+    "@typescript-eslint/no-empty-function": ["error", { "allow": ["arrowFunctions"] }],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-inferrable-types": [

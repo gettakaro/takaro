@@ -8,7 +8,7 @@ const baseShape = z.object({
     .min(4, {
       message: 'Server name requires a minimum length of 4 characters',
     })
-    .max(25, {
+    .max(21, {
       message: 'Server name requires a maximum length of 25 characters',
     })
     .nonempty('Server name cannot be empty'),

@@ -1,5 +1,7 @@
+// TODO: add custom replace option
 export function getInitials(name: string) {
-  const parts = name.split(' ');
+  const replacedName = name.replace(/[._]/g, ' ');
+  const parts = replacedName.split(' ');
 
   if (parts.length === 1) {
     return parts[0].slice(0, 1);

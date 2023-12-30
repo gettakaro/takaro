@@ -48,7 +48,7 @@ export const StepperHeaderItem = styled.div<{
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.COMPLETE || stepState === StepStates.CURRENT
       ? theme.colors.primary
-      : theme.colors.backgroundAlt};
+      : theme.colors.backgroundAccent};
 
   @media (max-width: 768px) {
     font-size: ${({ theme }) => theme.fontSize.small};

@@ -171,7 +171,7 @@ describe('7d2d event detection', () => {
 
     await emitter.parseMessage({
       // eslint-disable-next-line quotes
-      msg: `Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): 'Catalysm':&ping`,
+      msg: `"Chat (from '-non-player-', entity id '-1', to 'Global'): 'Cata': a"`,
     });
 
     await emitter.parseMessage({
@@ -181,10 +181,55 @@ describe('7d2d event detection', () => {
 
     expect(emitStub).to.have.been.calledThrice;
 
-    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
-    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
+    expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.LOG_LINE);
+    expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
     expect(emitStub.getCalls()[2].args[0]).to.equal(GameEvents.LOG_LINE);
+
+    expect((emitStub.getCalls()[1].args[1] as EventChatMessage).player).to.deep.equal({
+      name: 'Catalysm',
+      ping: undefined,
+      gameId: '0002b5d970954287afdcb5dc35af0424',
+      steamId: '76561198028175941',
+      xboxLiveId: undefined,
+      ip: undefined,
+      platformId: undefined,
+      epicOnlineServicesId: undefined,
+    });
   });
+
+  it('[ChatMessage] Can deduplicate messages when a mod handles it (bulk test)', async () => {
+    const messages = ['Hello', 'Testing', 'If the', 'chat is', 'working'];
+
+    const logsToSend = messages
+      .map((message) => {
+        return [
+          {
+            msg: `Chat handled by mod 'ServerTools': Chat (from 'Steam_76561198028175941', entity id '2196446', to 'Global'): 'Catalysm': ${message}`,
+          },
+          {
+            msg: `Chat (from 'Steam_76561198028175941', entity id '-1', to 'Global'): 'Catalysm': ${message}`,
+          },
+        ];
+      })
+      .flat();
+
+    const logsToSendRandomized = logsToSend.sort(() => Math.random() - 0.5);
+
+    const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
+
+    await Promise.all(logsToSendRandomized.map(emitter.parseMessage));
+
+    expect(emitStub).to.have.callCount(messages.length * 3);
+
+    for (const msg of messages) {
+      expect(
+        emitStub.getCalls().some((call) => {
+          return call.args[0] === GameEvents.CHAT_MESSAGE && (call.args[1] as EventChatMessage).msg === msg;
+        })
+      ).to.equal(true);
+    }
+  });
+
   it('[PlayerDeath] Can detect player death', async () => {
     const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
 

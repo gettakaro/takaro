@@ -15,4 +15,7 @@ export {
   useGameServerModuleInstallation,
   useGameServerModuleInstallations,
   useGameServerReachabilityByConfig,
+  useBanPlayerOnGameServer,
+  useUnbanPlayerOnGameServer,
+  useKickPlayerOnGameServer,
 } from './queries';

@@ -1,14 +1,39 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, CheckBox, TextField } from '@takaro/lib-components';
+import { Button, Switch, TextField } from '@takaro/lib-components';
 import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
 import { useApiClient } from 'hooks/useApiClient';
-import { useParams } from 'react-router-dom';
 import { useGameServerSettings } from 'queries/gameservers';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useSnackbar } from 'notistack';
+import { useQueryClient } from '@tanstack/react-query';
+
+export function camelCaseToSpaces(str: string) {
+  return (
+    str
+      // Insert a space before all caps
+      .replace(/([A-Z])/g, ' $1')
+      // Uppercase the first character
+      .replace(/^./, function (str) {
+        return str.toUpperCase();
+      })
+      // Trim and convert the string to lowercase
+      .toLowerCase()
+  );
+}
+
+export function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
+  // If *any* item in an array was modified, the entire array must be submitted, because there's no way to indicate
+  // "placeholders" for unchanged elements. `dirtyFields` is `true` for leaves.
+  if (dirtyFields === true || Array.isArray(dirtyFields)) return allValues;
+  // Here, we have an object
+  return Object.fromEntries(
+    Object.keys(dirtyFields).map((key) => [key, dirtyValues(dirtyFields[key], allValues[key])])
+  );
+}
 
 interface IFormInputs {
   commandPrefix: string;
@@ -17,9 +42,12 @@ interface IFormInputs {
   currencyName: string;
 }
 
-const booleanFields = ['economyEnabled'];
+export const booleanFields = ['economyEnabled'];
 
-function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
+export function mapSettings<T extends Promise<unknown>>(
+  data: Settings,
+  fn: (key: keyof IFormInputs, value?: string) => T
+) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
     const settingsKey = key as keyof IFormInputs;
@@ -34,9 +62,10 @@ function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof
 export const GlobalGameServerSettings: FC = () => {
   useDocumentTitle('Settings');
   const apiClient = useApiClient();
-  const { serverId } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading } = useGameServerSettings(serverId!);
+  const { data, isLoading } = useGameServerSettings();
 
   const validationSchema = useMemo(() => {
     const schema = {};
@@ -52,20 +81,29 @@ export const GlobalGameServerSettings: FC = () => {
     return z.object(schema);
   }, [data]);
 
-  const { control, handleSubmit, getValues, setValue } = useForm<IFormInputs>({
+  const { control, handleSubmit, setValue, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async () => {
-    const formValues = getValues();
+  const onSubmit: SubmitHandler<IFormInputs> = async (values) => {
+    const dirty = dirtyValues(formState.dirtyFields, values);
+    try {
+      await mapSettings(dirty as unknown as Settings, async (key, value) =>
+        apiClient.settings.settingsControllerSet(key, {
+          value: value!,
+        })
+      );
 
-    await mapSettings(formValues as unknown as Settings, async (key, value) =>
-      apiClient.settings.settingsControllerSet(key, {
-        value: value!,
-        gameServerId: serverId,
-      })
-    );
+      // Since all server settings are affected, we invalidate the entire settings query
+      queryClient.invalidateQueries(['settings']);
+
+      enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
+      reset({}, { keepValues: true });
+    } catch (error) {
+      enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
+      return;
+    }
   };
 
   const settings = useMemo(() => {
@@ -74,10 +112,10 @@ export const GlobalGameServerSettings: FC = () => {
       // TODO: this should be mapped using the new config generator
       mapSettings(data, async (key, value) => {
         if (booleanFields.includes(key)) {
-          settingsComponents.push(<CheckBox control={control} label={key} name={key} key={key} />);
+          settingsComponents.push(<Switch control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
           setValue(key, value === 'true');
         } else {
-          settingsComponents.push(<TextField control={control} label={key} name={key} key={key} />);
+          settingsComponents.push(<TextField control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
           if (value) setValue(key, value);
         }
       });
@@ -91,7 +129,14 @@ export const GlobalGameServerSettings: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Fragment>
           {settings}
-          <Button icon={<AiFillSave />} isLoading={isLoading} text="Save" type="submit" variant="default" />
+          <Button
+            disabled={!formState.isDirty}
+            icon={<AiFillSave />}
+            isLoading={isLoading}
+            text="Save"
+            type="submit"
+            variant="default"
+          />
         </Fragment>
       </form>
     </Fragment>

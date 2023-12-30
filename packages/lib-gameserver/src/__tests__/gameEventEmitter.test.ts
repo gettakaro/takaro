@@ -16,7 +16,7 @@ describe('GameEventEmitter', () => {
     const listenerSpy = sandbox.spy();
 
     emitter.on(GameEvents.PLAYER_CONNECTED, async (e) => {
-      expect(() => console.log(e.player.name)).to.throw(
+      expect(() => e.player.name).to.throw(
         // Eslint and prettier disagree on how to format this
         // And I cba fixing it for this specific instance :)
         // eslint-disable-next-line quotes

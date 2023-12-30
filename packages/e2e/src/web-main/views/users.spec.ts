@@ -5,9 +5,18 @@ import { navigateTo } from '../helpers.js';
 const { expect } = playwright;
 
 test('Can view users', async ({ page, takaro }) => {
-  await page.getByRole('link', { name: 'Users' }).click();
+  await navigateTo(page, 'global-users');
   await expect(page.getByRole('row', { name: takaro.rootUser.email })).toBeVisible();
 });
+
+test('Can Delete a user', async ({ page, takaro }) => {
+  const { usersPage, testUser } = takaro;
+  await usersPage.goto();
+  await usersPage.action({ action: 'delete', email: testUser.email });
+  await page.getByRole('button', { name: 'delete user' }).click();
+  expect(page.getByRole('row', { name: testUser.email })).not.toBeVisible();
+});
+test.fixme('Can delete an invited user that has not accepted their invitation', async ({}) => {});
 
 test.describe('Role assignment', () => {
   test('Can assign a role to a user', async ({ page, takaro }) => {

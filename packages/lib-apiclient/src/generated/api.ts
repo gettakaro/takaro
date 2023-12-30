@@ -74,38 +74,38 @@ export interface BanDTO {
 /**
  *
  * @export
- * @interface BanInputDTO
+ * @interface BanPlayerInputDTO
  */
-export interface BanInputDTO {
+export interface BanPlayerInputDTO {
   /**
    *
    * @type {string}
-   * @memberof BanInputDTO
+   * @memberof BanPlayerInputDTO
    */
   reason?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BanInputDTO
+   * @memberof BanPlayerInputDTO
    */
   expiresAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
  * @export
- * @interface BanOutputDTO
+ * @interface BanPlayerOutputDTO
  */
-export interface BanOutputDTO {
+export interface BanPlayerOutputDTO {
   /**
    *
    * @type {Array<BanDTO>}
-   * @memberof BanOutputDTO
+   * @memberof BanPlayerOutputDTO
    */
   data: Array<BanDTO>;
   /**
    *
    * @type {MetadataOutput}
-   * @memberof BanOutputDTO
+   * @memberof BanPlayerOutputDTO
    */
   meta: MetadataOutput;
 }
@@ -1340,6 +1340,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventCreateDTOEventNameEnum =
@@ -1578,6 +1579,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventOutputDTOEventNameEnum =
@@ -1781,6 +1783,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyAdded: 'currency-added',
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum =
@@ -2114,6 +2117,12 @@ export interface GameServerOutputDTO {
   type: GameServerOutputDTOTypeEnum;
   /**
    *
+   * @type {boolean}
+   * @memberof GameServerOutputDTO
+   */
+  reachable: boolean;
+  /**
+   *
    * @type {string}
    * @memberof GameServerOutputDTO
    */
@@ -2385,6 +2394,12 @@ export interface GameServerUpdateDTO {
    * @memberof GameServerUpdateDTO
    */
   type: GameServerUpdateDTOTypeEnum;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GameServerUpdateDTO
+   */
+  reachable?: boolean;
 }
 
 export const GameServerUpdateDTOTypeEnum = {
@@ -3349,6 +3364,38 @@ export interface IdUuidDTOAPI {
 /**
  *
  * @export
+ * @interface ImportOutputDTO
+ */
+export interface ImportOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ImportOutputDTO
+   */
+  id: string;
+}
+/**
+ *
+ * @export
+ * @interface ImportOutputDTOAPI
+ */
+export interface ImportOutputDTOAPI {
+  /**
+   *
+   * @type {ImportOutputDTO}
+   * @memberof ImportOutputDTOAPI
+   */
+  data: ImportOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ImportOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface InviteCreateDTO
  */
 export interface InviteCreateDTO {
@@ -3377,6 +3424,49 @@ export interface InviteOutputDTO {
    * @memberof InviteOutputDTO
    */
   devServer: string;
+}
+/**
+ *
+ * @export
+ * @interface IpHistoryOutputDTO
+ */
+export interface IpHistoryOutputDTO {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof IpHistoryOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  ip: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  country?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  city?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  latitude?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IpHistoryOutputDTO
+   */
+  longitude?: string;
 }
 /**
  *
@@ -4218,6 +4308,44 @@ export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
 /**
  *
  * @export
+ * @enum {string}
+ */
+
+export const PERMISSIONS = {
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadFunctions: 'READ_FUNCTIONS',
+  ManageFunctions: 'MANAGE_FUNCTIONS',
+  ReadCronjobs: 'READ_CRONJOBS',
+  ManageCronjobs: 'MANAGE_CRONJOBS',
+  ReadHooks: 'READ_HOOKS',
+  ManageHooks: 'MANAGE_HOOKS',
+  ReadCommands: 'READ_COMMANDS',
+  ManageCommands: 'MANAGE_COMMANDS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
+  ReadEvents: 'READ_EVENTS',
+  ManageEvents: 'MANAGE_EVENTS',
+  ReadItems: 'READ_ITEMS',
+  ManageItems: 'MANAGE_ITEMS',
+} as const;
+
+export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+
+/**
+ *
+ * @export
  * @interface ParamId
  */
 export interface ParamId {
@@ -4706,6 +4834,12 @@ export interface PlayerOnGameServerUpdateDTO {
    * @memberof PlayerOnGameServerUpdateDTO
    */
   currency?: number;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PlayerOnGameServerUpdateDTO
+   */
+  online: boolean;
 }
 /**
  *
@@ -4798,6 +4932,12 @@ export interface PlayerOnGameserverOutputDTO {
    * @memberof PlayerOnGameserverOutputDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
    * @type {string}
@@ -4932,6 +5072,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  *
@@ -6661,7 +6807,7 @@ export interface VariableUpdateDTO {
 export const CommandApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create
      * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
      * @param {*} [options] Override http request option.
@@ -6698,7 +6844,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create argument
      * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
      * @param {*} [options] Override http request option.
@@ -6739,7 +6885,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -6772,7 +6918,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -6805,7 +6951,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove argument
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -6838,7 +6984,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -6875,7 +7021,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Trigger
      * @param {string} id
      * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
@@ -6916,7 +7062,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -6957,7 +7103,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update argument
      * @param {string} id
      * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
@@ -7012,7 +7158,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = CommandApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create
      * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
      * @param {*} [options] Override http request option.
@@ -7034,7 +7180,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create argument
      * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
      * @param {*} [options] Override http request option.
@@ -7059,7 +7205,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7081,7 +7227,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7103,7 +7249,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove argument
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7125,7 +7271,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -7147,7 +7293,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Trigger
      * @param {string} id
      * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
@@ -7175,7 +7321,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -7199,7 +7345,7 @@ export const CommandApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update argument
      * @param {string} id
      * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
@@ -7237,7 +7383,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
   const localVarFp = CommandApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create
      * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
      * @param {*} [options] Override http request option.
@@ -7247,7 +7393,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerCreate(commandCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Create argument
      * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
      * @param {*} [options] Override http request option.
@@ -7262,7 +7408,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7272,7 +7418,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7282,7 +7428,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Remove argument
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7292,7 +7438,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.commandControllerRemoveArgument(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_COMMANDS`
      * @summary Search
      * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -7307,7 +7453,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Trigger
      * @param {string} id
      * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
@@ -7320,7 +7466,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update
      * @param {string} id
      * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -7337,7 +7483,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_COMMANDS`
      * @summary Update argument
      * @param {string} id
      * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
@@ -7364,7 +7510,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
  */
 export class CommandApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Create
    * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
    * @param {*} [options] Override http request option.
@@ -7378,7 +7524,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Create argument
    * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
    * @param {*} [options] Override http request option.
@@ -7395,7 +7541,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_COMMANDS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -7409,7 +7555,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -7423,7 +7569,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Remove argument
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -7437,7 +7583,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_COMMANDS`
    * @summary Search
    * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -7451,7 +7597,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Trigger
    * @param {string} id
    * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
@@ -7466,7 +7612,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Update
    * @param {string} id
    * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
@@ -7481,7 +7627,7 @@ export class CommandApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_COMMANDS`
    * @summary Update argument
    * @param {string} id
    * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
@@ -7507,7 +7653,7 @@ export class CommandApi extends BaseAPI {
 export const CronJobApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Create
      * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
      * @param {*} [options] Override http request option.
@@ -7544,7 +7690,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7577,7 +7723,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7610,7 +7756,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -7647,7 +7793,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Trigger
      * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
      * @param {*} [options] Override http request option.
@@ -7684,7 +7830,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -7735,7 +7881,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Create
      * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
      * @param {*} [options] Override http request option.
@@ -7757,7 +7903,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7779,7 +7925,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7801,7 +7947,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -7823,7 +7969,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Trigger
      * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
      * @param {*} [options] Override http request option.
@@ -7845,7 +7991,7 @@ export const CronJobApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -7879,7 +8025,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
   const localVarFp = CronJobApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Create
      * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
      * @param {*} [options] Override http request option.
@@ -7889,7 +8035,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.cronJobControllerCreate(cronJobCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7899,7 +8045,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.cronJobControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -7909,7 +8055,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
       return localVarFp.cronJobControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_CRONJOBS`
      * @summary Search
      * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -7924,7 +8070,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Trigger
      * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
      * @param {*} [options] Override http request option.
@@ -7936,7 +8082,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_CRONJOBS`
      * @summary Update
      * @param {string} id
      * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -7963,7 +8109,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
  */
 export class CronJobApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_CRONJOBS`
    * @summary Create
    * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
    * @param {*} [options] Override http request option.
@@ -7977,7 +8123,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_CRONJOBS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -7991,7 +8137,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_CRONJOBS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -8005,7 +8151,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_CRONJOBS`
    * @summary Search
    * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -8019,7 +8165,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_CRONJOBS`
    * @summary Trigger
    * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
    * @param {*} [options] Override http request option.
@@ -8033,7 +8179,7 @@ export class CronJobApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_CRONJOBS`
    * @summary Update
    * @param {string} id
    * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
@@ -9025,7 +9171,7 @@ export class DomainApi extends BaseAPI {
 export const EventApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_EVENTS`
      * @summary Create
      * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
      * @param {*} [options] Override http request option.
@@ -9062,7 +9208,7 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9109,7 +9255,7 @@ export const EventApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = EventApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_EVENTS`
      * @summary Create
      * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
      * @param {*} [options] Override http request option.
@@ -9131,7 +9277,7 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9163,7 +9309,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
   const localVarFp = EventApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_EVENTS`
      * @summary Create
      * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
      * @param {*} [options] Override http request option.
@@ -9173,7 +9319,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9196,7 +9342,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
  */
 export class EventApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_EVENTS`
    * @summary Create
    * @param {EventCreateDTO} [eventCreateDTO] EventCreateDTO
    * @param {*} [options] Override http request option.
@@ -9210,7 +9356,7 @@ export class EventApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_EVENTS`
    * @summary Search
    * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -9429,7 +9575,7 @@ export class ExternalAuthApi extends BaseAPI {
 export const FunctionApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Create
      * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
      * @param {*} [options] Override http request option.
@@ -9466,7 +9612,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9499,7 +9645,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9532,7 +9678,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9573,7 +9719,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Update
      * @param {string} id
      * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
@@ -9624,7 +9770,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = FunctionApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Create
      * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
      * @param {*} [options] Override http request option.
@@ -9646,7 +9792,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9668,7 +9814,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9690,7 +9836,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9715,7 +9861,7 @@ export const FunctionApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Update
      * @param {string} id
      * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
@@ -9753,7 +9899,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
   const localVarFp = FunctionApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Create
      * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
      * @param {*} [options] Override http request option.
@@ -9765,7 +9911,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9775,7 +9921,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.functionControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -9785,7 +9931,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.functionControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_FUNCTIONS`
      * @summary Search
      * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9800,7 +9946,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_FUNCTIONS`
      * @summary Update
      * @param {string} id
      * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
@@ -9827,7 +9973,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
  */
 export class FunctionApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_FUNCTIONS`
    * @summary Create
    * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
    * @param {*} [options] Override http request option.
@@ -9841,7 +9987,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_FUNCTIONS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -9855,7 +10001,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_FUNCTIONS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -9869,7 +10015,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_FUNCTIONS`
    * @summary Search
    * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -9883,7 +10029,7 @@ export class FunctionApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_FUNCTIONS`
    * @summary Update
    * @param {string} id
    * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
@@ -9905,18 +10051,18 @@ export class FunctionApi extends BaseAPI {
 export const GameServerApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameserverId
      * @param {string} playerId
-     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerBanPlayer: async (
       gameserverId: string,
       playerId: string,
-      banInputDTO?: BanInputDTO,
+      banPlayerInputDTO?: BanPlayerInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'gameserverId' is not null or undefined
@@ -9944,7 +10090,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-      localVarRequestOptions.data = serializeDataIfNeeded(banInputDTO, localVarRequestOptions, configuration);
+      localVarRequestOptions.data = serializeDataIfNeeded(banPlayerInputDTO, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -9952,7 +10098,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -9989,7 +10135,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -10034,7 +10180,40 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetImport', 'id', id);
+      const localVarPath = `/gameserver/import/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10070,7 +10249,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10112,7 +10291,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10145,7 +10324,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10178,7 +10357,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10208,7 +10387,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameserverId
      * @param {string} playerId
@@ -10255,7 +10434,37 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/import`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10302,7 +10511,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -10349,7 +10558,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10382,7 +10591,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10415,7 +10624,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -10456,7 +10665,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -10497,7 +10706,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -10548,7 +10757,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -10589,7 +10798,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10625,7 +10834,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -10667,7 +10876,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10709,7 +10918,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -10760,24 +10969,24 @@ export const GameServerApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = GameServerApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameserverId
      * @param {string} playerId
-     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async gameServerControllerBanPlayer(
       gameserverId: string,
       playerId: string,
-      banInputDTO?: BanInputDTO,
+      banPlayerInputDTO?: BanPlayerInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerBanPlayer(
         gameserverId,
         playerId,
-        banInputDTO,
+        banPlayerInputDTO,
         options
       );
       const index = configuration?.serverIndex ?? 0;
@@ -10791,7 +11000,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -10816,7 +11025,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -10844,7 +11053,29 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetImport(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetImport']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10867,7 +11098,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -10896,7 +11127,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10918,7 +11149,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10940,7 +11171,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10960,7 +11191,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameserverId
      * @param {string} playerId
@@ -10991,7 +11222,27 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerImportFromCSMM(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerImportFromCSMM(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerImportFromCSMM']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -11022,7 +11273,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11053,7 +11304,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11062,7 +11313,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     async gameServerControllerListBans(
       id: string,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputDTO>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanPlayerOutputDTO>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerListBans(id, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['GameServerApi.gameServerControllerListBans']?.[index]?.url;
@@ -11075,7 +11326,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11097,7 +11348,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -11122,7 +11373,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -11150,7 +11401,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11181,7 +11432,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -11206,7 +11457,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11229,7 +11480,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11257,7 +11508,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -11285,7 +11536,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -11323,26 +11574,26 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
   const localVarFp = GameServerApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameserverId
      * @param {string} playerId
-     * @param {BanInputDTO} [banInputDTO] BanInputDTO
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     gameServerControllerBanPlayer(
       gameserverId: string,
       playerId: string,
-      banInputDTO?: BanInputDTO,
+      banPlayerInputDTO?: BanPlayerInputDTO,
       options?: any
     ): AxiosPromise<APIOutput> {
       return localVarFp
-        .gameServerControllerBanPlayer(gameserverId, playerId, banInputDTO, options)
+        .gameServerControllerBanPlayer(gameserverId, playerId, banPlayerInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -11357,7 +11608,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -11374,7 +11625,17 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport(id: string, options?: any): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11389,7 +11650,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -11406,7 +11667,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11416,7 +11677,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11426,7 +11687,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -11435,7 +11696,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetTypes(options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11454,7 +11715,16 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM(options?: any): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp.gameServerControllerImportFromCSMM(options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -11473,7 +11743,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11492,17 +11762,17 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    gameServerControllerListBans(id: string, options?: any): AxiosPromise<BanOutputDTO> {
+    gameServerControllerListBans(id: string, options?: any): AxiosPromise<BanPlayerOutputDTO> {
       return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11512,7 +11782,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -11527,7 +11797,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -11544,7 +11814,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11563,7 +11833,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -11578,7 +11848,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11593,7 +11863,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameserverId
      * @param {string} playerId
@@ -11606,7 +11876,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameserverId
      * @param {string} moduleId
@@ -11623,7 +11893,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -11650,11 +11920,11 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
  */
 export class GameServerApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Ban player
    * @param {string} gameserverId
    * @param {string} playerId
-   * @param {BanInputDTO} [banInputDTO] BanInputDTO
+   * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof GameServerApi
@@ -11662,16 +11932,16 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerBanPlayer(
     gameserverId: string,
     playerId: string,
-    banInputDTO?: BanInputDTO,
+    banPlayerInputDTO?: BanPlayerInputDTO,
     options?: RawAxiosRequestConfig
   ) {
     return GameServerApiFp(this.configuration)
-      .gameServerControllerBanPlayer(gameserverId, playerId, banInputDTO, options)
+      .gameServerControllerBanPlayer(gameserverId, playerId, banPlayerInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Create
    * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
    * @param {*} [options] Override http request option.
@@ -11685,7 +11955,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Execute command
    * @param {string} id
    * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -11704,7 +11974,21 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Get import
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetImport(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Get installed modules
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11718,7 +12002,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Get module installation
    * @param {string} gameserverId
    * @param {string} moduleId
@@ -11737,7 +12021,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11751,7 +12035,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get players
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11765,7 +12049,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Get types
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -11778,7 +12062,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Give item
    * @param {string} gameserverId
    * @param {string} playerId
@@ -11799,7 +12083,20 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Import from csmm
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerImportFromCSMM(options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerImportFromCSMM(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Install module
    * @param {string} gameserverId
    * @param {string} moduleId
@@ -11820,7 +12117,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Kick player
    * @param {string} gameserverId
    * @param {string} playerId
@@ -11841,7 +12138,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary List bans
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11855,7 +12152,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11869,7 +12166,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Search
    * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -11886,7 +12183,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Send message
    * @param {string} id
    * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -11905,7 +12202,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Teleport player
    * @param {string} gameserverId
    * @param {string} playerId
@@ -11926,7 +12223,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Test reachability
    * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
    * @param {*} [options] Override http request option.
@@ -11943,7 +12240,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_GAMESERVERS`
    * @summary Test reachability for id
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -11957,7 +12254,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Unban player
    * @param {string} gameserverId
    * @param {string} playerId
@@ -11972,7 +12269,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Uninstall module
    * @param {string} gameserverId
    * @param {string} moduleId
@@ -11987,7 +12284,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_GAMESERVERS`
    * @summary Update
    * @param {string} id
    * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -12013,7 +12310,7 @@ export class GameServerApi extends BaseAPI {
 export const HookApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Create
      * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
      * @param {*} [options] Override http request option.
@@ -12050,7 +12347,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12083,7 +12380,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12116,7 +12413,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12153,7 +12450,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -12190,7 +12487,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -12241,7 +12538,7 @@ export const HookApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = HookApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Create
      * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
      * @param {*} [options] Override http request option.
@@ -12263,7 +12560,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12285,7 +12582,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12307,7 +12604,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12329,7 +12626,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -12351,7 +12648,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -12385,7 +12682,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
   const localVarFp = HookApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Create
      * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
      * @param {*} [options] Override http request option.
@@ -12395,7 +12692,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerCreate(hookCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12405,7 +12702,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12415,7 +12712,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_HOOKS`
      * @summary Search
      * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12425,7 +12722,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerSearch(hookSearchInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -12435,7 +12732,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerTrigger(hookTriggerDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_HOOKS`
      * @summary Update
      * @param {string} id
      * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -12456,7 +12753,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
  */
 export class HookApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_HOOKS`
    * @summary Create
    * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
    * @param {*} [options] Override http request option.
@@ -12470,7 +12767,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_HOOKS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12484,7 +12781,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_HOOKS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12498,7 +12795,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_HOOKS`
    * @summary Search
    * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -12512,7 +12809,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_HOOKS`
    * @summary Trigger
    * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
    * @param {*} [options] Override http request option.
@@ -12526,7 +12823,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_HOOKS`
    * @summary Update
    * @param {string} id
    * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
@@ -12548,7 +12845,7 @@ export class HookApi extends BaseAPI {
 export const ItemApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Create
      * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
      * @param {*} [options] Override http request option.
@@ -12585,7 +12882,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12618,7 +12915,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12651,7 +12948,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12688,7 +12985,7 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Update
      * @param {string} id
      * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
@@ -12739,7 +13036,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ItemApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Create
      * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
      * @param {*} [options] Override http request option.
@@ -12761,7 +13058,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12783,7 +13080,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12805,7 +13102,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12827,7 +13124,7 @@ export const ItemApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Update
      * @param {string} id
      * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
@@ -12861,7 +13158,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
   const localVarFp = ItemApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Create
      * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
      * @param {*} [options] Override http request option.
@@ -12871,7 +13168,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerCreate(itemCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12881,7 +13178,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerDelete(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12891,7 +13188,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_ITEMS`
      * @summary Search
      * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12901,7 +13198,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.itemControllerSearch(itemSearchInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ITEMS`
      * @summary Update
      * @param {string} id
      * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
@@ -12922,7 +13219,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
  */
 export class ItemApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_ITEMS`
    * @summary Create
    * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
    * @param {*} [options] Override http request option.
@@ -12936,7 +13233,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_ITEMS`
    * @summary Delete
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12950,7 +13247,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_ITEMS`
    * @summary Find one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12964,7 +13261,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_ITEMS`
    * @summary Search
    * @param {ItemSearchInputDTO} [itemSearchInputDTO] ItemSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -12978,7 +13275,7 @@ export class ItemApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_ITEMS`
    * @summary Update
    * @param {string} id
    * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
@@ -13387,7 +13684,7 @@ export class MetaApi extends BaseAPI {
 export const ModuleApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Create
      * @param {ModuleCreateDTO} [moduleCreateDTO] ModuleCreateDTO
      * @param {*} [options] Override http request option.
@@ -13424,7 +13721,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13457,7 +13754,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13490,7 +13787,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Search
      * @param {ModuleSearchInputDTO} [moduleSearchInputDTO] ModuleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -13527,7 +13824,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Update
      * @param {string} id
      * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -13578,7 +13875,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = ModuleApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Create
      * @param {ModuleCreateDTO} [moduleCreateDTO] ModuleCreateDTO
      * @param {*} [options] Override http request option.
@@ -13600,7 +13897,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13622,7 +13919,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13644,7 +13941,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Search
      * @param {ModuleSearchInputDTO} [moduleSearchInputDTO] ModuleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -13666,7 +13963,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Update
      * @param {string} id
      * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -13700,7 +13997,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
   const localVarFp = ModuleApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Create
      * @param {ModuleCreateDTO} [moduleCreateDTO] ModuleCreateDTO
      * @param {*} [options] Override http request option.
@@ -13710,7 +14007,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.moduleControllerCreate(moduleCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13720,7 +14017,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.moduleControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13730,7 +14027,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.moduleControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_MODULES`
      * @summary Search
      * @param {ModuleSearchInputDTO} [moduleSearchInputDTO] ModuleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -13745,7 +14042,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_MODULES`
      * @summary Update
      * @param {string} id
      * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -13772,7 +14069,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
  */
 export class ModuleApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_MODULES`
    * @summary Create
    * @param {ModuleCreateDTO} [moduleCreateDTO] ModuleCreateDTO
    * @param {*} [options] Override http request option.
@@ -13786,7 +14083,7 @@ export class ModuleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_MODULES`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -13800,7 +14097,7 @@ export class ModuleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_MODULES`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -13814,7 +14111,7 @@ export class ModuleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_MODULES`
    * @summary Search
    * @param {ModuleSearchInputDTO} [moduleSearchInputDTO] ModuleSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -13828,7 +14125,7 @@ export class ModuleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_MODULES`
    * @summary Update
    * @param {string} id
    * @param {ModuleUpdateDTO} [moduleUpdateDTO] ModuleUpdateDTO
@@ -13850,7 +14147,7 @@ export class ModuleApi extends BaseAPI {
 export const PlayerApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -13901,7 +14198,7 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13934,7 +14231,7 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -13985,7 +14282,7 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14032,7 +14329,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = PlayerApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -14063,7 +14360,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14085,7 +14382,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -14116,7 +14413,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14148,7 +14445,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
   const localVarFp = PlayerApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -14167,7 +14464,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14177,7 +14474,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.playerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -14196,7 +14493,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14221,7 +14518,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
  */
 export class PlayerApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
    * @summary Assign role
    * @param {string} id
    * @param {string} roleId
@@ -14242,7 +14539,7 @@ export class PlayerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14256,7 +14553,7 @@ export class PlayerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
    * @summary Remove role
    * @param {string} id
    * @param {string} roleId
@@ -14277,7 +14574,7 @@ export class PlayerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_PLAYERS`
    * @summary Search
    * @param {PlayerSearchInputDTO} [playerSearchInputDTO] PlayerSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -14298,7 +14595,7 @@ export class PlayerApi extends BaseAPI {
 export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14343,7 +14640,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14391,7 +14688,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
       };
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14427,7 +14724,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
       };
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14468,7 +14765,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14513,7 +14810,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
      * @param {string} sender
      * @param {string} receiver
@@ -14574,7 +14871,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
   const localVarAxiosParamCreator = PlayerOnGameServerApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14603,7 +14900,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14632,7 +14929,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14655,7 +14952,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14681,7 +14978,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14710,7 +15007,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
      * @param {string} sender
      * @param {string} receiver
@@ -14756,7 +15053,7 @@ export const PlayerOnGameServerApiFactory = function (
   const localVarFp = PlayerOnGameServerApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14773,7 +15070,7 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14790,7 +15087,7 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14800,7 +15097,7 @@ export const PlayerOnGameServerApiFactory = function (
       return localVarFp.playerOnGameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14815,7 +15112,7 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
      * @param {string} id
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14832,7 +15129,7 @@ export const PlayerOnGameServerApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
      * @param {string} sender
      * @param {string} receiver
@@ -14866,7 +15163,7 @@ export const PlayerOnGameServerApiFactory = function (
  */
 export class PlayerOnGameServerApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`
    * @summary Add currency
    * @param {string} id
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14885,7 +15182,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`
    * @summary Deduct currency
    * @param {string} id
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14904,7 +15201,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14918,7 +15215,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_PLAYERS`
    * @summary Search
    * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -14935,7 +15232,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`
    * @summary Set currency
    * @param {string} id
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14954,7 +15251,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_PLAYERS`
    * @summary Transact between players
    * @param {string} sender
    * @param {string} receiver
@@ -14987,7 +15284,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
 export const RoleApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Create
      * @param {RoleCreateInputDTO} [roleCreateInputDTO] RoleCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -15024,7 +15321,7 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15087,7 +15384,7 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15120,7 +15417,7 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Search
      * @param {RoleSearchInputDTO} [roleSearchInputDTO] RoleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15157,7 +15454,7 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Update
      * @param {string} id
      * @param {RoleUpdateInputDTO} [roleUpdateInputDTO] RoleUpdateInputDTO
@@ -15208,7 +15505,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = RoleApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Create
      * @param {RoleCreateInputDTO} [roleCreateInputDTO] RoleCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -15230,7 +15527,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15272,7 +15569,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15294,7 +15591,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Search
      * @param {RoleSearchInputDTO} [roleSearchInputDTO] RoleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15316,7 +15613,7 @@ export const RoleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Update
      * @param {string} id
      * @param {RoleUpdateInputDTO} [roleUpdateInputDTO] RoleUpdateInputDTO
@@ -15350,7 +15647,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
   const localVarFp = RoleApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Create
      * @param {RoleCreateInputDTO} [roleCreateInputDTO] RoleCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -15360,7 +15657,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.roleControllerCreate(roleCreateInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15379,7 +15676,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.roleControllerGetPermissions(options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15389,7 +15686,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.roleControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_ROLES`
      * @summary Search
      * @param {RoleSearchInputDTO} [roleSearchInputDTO] RoleSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15399,7 +15696,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.roleControllerSearch(roleSearchInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_ROLES`
      * @summary Update
      * @param {string} id
      * @param {RoleUpdateInputDTO} [roleUpdateInputDTO] RoleUpdateInputDTO
@@ -15426,7 +15723,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
  */
 export class RoleApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_ROLES`
    * @summary Create
    * @param {RoleCreateInputDTO} [roleCreateInputDTO] RoleCreateInputDTO
    * @param {*} [options] Override http request option.
@@ -15440,7 +15737,7 @@ export class RoleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_ROLES`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -15467,7 +15764,7 @@ export class RoleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_ROLES`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -15481,7 +15778,7 @@ export class RoleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_ROLES`
    * @summary Search
    * @param {RoleSearchInputDTO} [roleSearchInputDTO] RoleSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -15495,7 +15792,7 @@ export class RoleApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_ROLES`
    * @summary Update
    * @param {string} id
    * @param {RoleUpdateInputDTO} [roleUpdateInputDTO] RoleUpdateInputDTO
@@ -15517,7 +15814,7 @@ export class RoleApi extends BaseAPI {
 export const SettingsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -15561,7 +15858,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -15603,7 +15900,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_SETTINGS`
      * @summary Set
      * @param {string} key
      * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
@@ -15654,7 +15951,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = SettingsApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -15678,7 +15975,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -15702,7 +15999,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_SETTINGS`
      * @summary Set
      * @param {string} key
      * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
@@ -15736,7 +16033,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
   const localVarFp = SettingsApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -15751,7 +16048,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.settingsControllerGet(keys, gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_SETTINGS`
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -15764,7 +16061,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_SETTINGS`
      * @summary Set
      * @param {string} key
      * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
@@ -15789,7 +16086,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
  */
 export class SettingsApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `READ_SETTINGS`
    * @summary Get
    * @param {Array<SettingsControllerGetKeysEnum>} [keys]
    * @param {string} [gameServerId]
@@ -15808,7 +16105,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_SETTINGS`
    * @summary Get one
    * @param {string} key
    * @param {string} [gameServerId]
@@ -15823,7 +16120,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_SETTINGS`
    * @summary Set
    * @param {string} key
    * @param {SettingsSetDTO} [settingsSetDTO] SettingsSetDTO
@@ -15857,7 +16154,7 @@ export type SettingsControllerGetKeysEnum =
 export const UserApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -15908,7 +16205,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Create
      * @param {UserCreateInputDTO} [userCreateInputDTO] UserCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -15945,7 +16242,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15978,7 +16275,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Invite
      * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
      * @param {*} [options] Override http request option.
@@ -16109,7 +16406,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16142,7 +16439,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -16184,7 +16481,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Search
      * @param {UserSearchInputDTO} [userSearchInputDTO] UserSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16221,7 +16518,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
      * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
@@ -16272,7 +16569,7 @@ export const UserApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = UserApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -16303,7 +16600,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Create
      * @param {UserCreateInputDTO} [userCreateInputDTO] UserCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -16325,7 +16622,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16347,7 +16644,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Invite
      * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
      * @param {*} [options] Override http request option.
@@ -16431,7 +16728,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16453,7 +16750,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -16477,7 +16774,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Search
      * @param {UserSearchInputDTO} [userSearchInputDTO] UserSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16499,7 +16796,7 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
      * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
@@ -16533,7 +16830,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
   const localVarFp = UserApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Assign role
      * @param {string} id
      * @param {string} roleId
@@ -16552,7 +16849,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Create
      * @param {UserCreateInputDTO} [userCreateInputDTO] UserCreateInputDTO
      * @param {*} [options] Override http request option.
@@ -16562,7 +16859,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerCreate(userCreateInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16572,7 +16869,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Invite
      * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
      * @param {*} [options] Override http request option.
@@ -16610,7 +16907,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerMe(options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16620,7 +16917,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
      * @summary Remove role
      * @param {string} id
      * @param {string} roleId
@@ -16631,7 +16928,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerRemoveRole(id, roleId, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_USERS`
      * @summary Search
      * @param {UserSearchInputDTO} [userSearchInputDTO] UserSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16641,7 +16938,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerSearch(userSearchInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
      * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
@@ -16662,7 +16959,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
  */
 export class UserApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
    * @summary Assign role
    * @param {string} id
    * @param {string} roleId
@@ -16683,7 +16980,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`
    * @summary Create
    * @param {UserCreateInputDTO} [userCreateInputDTO] UserCreateInputDTO
    * @param {*} [options] Override http request option.
@@ -16697,7 +16994,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_USERS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -16711,7 +17008,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`
    * @summary Invite
    * @param {InviteCreateDTO} [inviteCreateDTO] InviteCreateDTO
    * @param {*} [options] Override http request option.
@@ -16765,7 +17062,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -16779,7 +17076,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
    * @summary Remove role
    * @param {string} id
    * @param {string} roleId
@@ -16794,7 +17091,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_USERS`
    * @summary Search
    * @param {UserSearchInputDTO} [userSearchInputDTO] UserSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -16808,7 +17105,7 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_USERS`
    * @summary Update
    * @param {string} id
    * @param {UserUpdateDTO} [userUpdateDTO] UserUpdateDTO
@@ -16830,7 +17127,7 @@ export class UserApi extends BaseAPI {
 export const VariableApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Create
      * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
      * @param {*} [options] Override http request option.
@@ -16867,7 +17164,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16900,7 +17197,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16933,7 +17230,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -16974,7 +17271,7 @@ export const VariableApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Update
      * @param {string} id
      * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
@@ -17025,7 +17322,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = VariableApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Create
      * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
      * @param {*} [options] Override http request option.
@@ -17047,7 +17344,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -17069,7 +17366,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -17091,7 +17388,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -17116,7 +17413,7 @@ export const VariableApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Update
      * @param {string} id
      * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
@@ -17154,7 +17451,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
   const localVarFp = VariableApiFp(configuration);
   return {
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Create
      * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
      * @param {*} [options] Override http request option.
@@ -17166,7 +17463,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Delete
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -17176,7 +17473,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.variableControllerDelete(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Find one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -17186,7 +17483,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `READ_VARIABLES`
      * @summary Search
      * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -17201,7 +17498,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     *  Required permissions: `MANAGE_VARIABLES`
      * @summary Update
      * @param {string} id
      * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
@@ -17228,7 +17525,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
  */
 export class VariableApi extends BaseAPI {
   /**
-   *
+   *  Required permissions: `MANAGE_VARIABLES`
    * @summary Create
    * @param {VariableCreateDTO} [variableCreateDTO] VariableCreateDTO
    * @param {*} [options] Override http request option.
@@ -17242,7 +17539,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_VARIABLES`
    * @summary Delete
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -17256,7 +17553,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_VARIABLES`
    * @summary Find one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -17270,7 +17567,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `READ_VARIABLES`
    * @summary Search
    * @param {VariableSearchInputDTO} [variableSearchInputDTO] VariableSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -17284,7 +17581,7 @@ export class VariableApi extends BaseAPI {
   }
 
   /**
-   *
+   *  Required permissions: `MANAGE_VARIABLES`
    * @summary Update
    * @param {string} id
    * @param {VariableUpdateDTO} [variableUpdateDTO] VariableUpdateDTO
