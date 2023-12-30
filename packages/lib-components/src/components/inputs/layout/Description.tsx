@@ -3,7 +3,6 @@ import { FC, CSSProperties } from 'react';
 import { styled } from '../../../styled';
 
 const StyledP = styled.p`
-  margin-top: ${({ theme }) => theme.spacing['1']};
   color: ${({ theme }) => theme.colors.textAlt};
   white-space: pre-wrap;
   line-height: 1.5;

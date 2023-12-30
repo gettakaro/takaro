@@ -123,6 +123,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                   loading={isLoading}
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
+                  allowPastDates={false}
                   timePickerOptions={{ interval: 30 }}
                   format={DateTime.DATETIME_SHORT}
                 />
