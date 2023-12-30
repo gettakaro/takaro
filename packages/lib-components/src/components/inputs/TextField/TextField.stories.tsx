@@ -30,6 +30,8 @@ export default {
     suffix: '.io',
     loading: false,
     name: 'name',
+    readOnly: false,
+    disabled: false,
   },
 } as Meta<TextFieldProps>;
 
@@ -52,6 +54,8 @@ export const onChange: StoryFn<TextFieldProps> = (args) => {
         loading={args.loading}
         label={args.label}
         hint={args.hint}
+        readOnly={args.readOnly}
+        disabled={args.disabled}
       />
       <p>Value: {TextFieldValue}</p>
     </>
@@ -84,6 +88,8 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           required={args.required}
           loading={args.loading}
           hint={args.hint}
+          readOnly={args.readOnly}
+          disabled={args.disabled}
         />
         <TextField
           control={control}
@@ -94,6 +100,8 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           loading={args.loading}
           required={args.required}
           hint={args.hint}
+          readOnly={args.readOnly}
+          disabled={args.disabled}
         />
         <TextField
           control={control}
@@ -104,6 +112,8 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           loading={args.loading}
           required={args.required}
           hint={args.hint}
+          readOnly={args.readOnly}
+          disabled={args.disabled}
         />
         <TextField
           control={control}
@@ -115,6 +125,8 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           required={args.required}
           loading={args.loading}
           hint={args.hint}
+          readOnly={args.readOnly}
+          disabled={args.disabled}
         />
         <Button type="submit" text="Submit form" size="large" />
       </form>
@@ -142,6 +154,8 @@ export const Password: StoryFn<TextFieldProps> = (args) => {
         hint={args.hint}
         required={args.required}
         loading={args.loading}
+        readOnly={args.readOnly}
+        disabled={args.disabled}
       />
     </Wrapper>
   );
@@ -161,6 +175,8 @@ export const Generic: StoryFn = () => {
         value={value}
         id="generic-text-field"
         hasDescription={false}
+        disabled={false}
+        readOnly={false}
       />
       <pre>{value}</pre>
     </>

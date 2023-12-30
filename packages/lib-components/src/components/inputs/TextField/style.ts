@@ -75,7 +75,7 @@ export const Input = styled.input<{
   padding-left: ${({ hasIcon, theme }): string => (hasIcon ? theme.spacing[4] : theme.spacing['1'])};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding-right: ${({ theme, isPassword }) => (isPassword ? theme.spacing[4] : theme.spacing['1'])};
-  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   color: ${({ theme }) => theme.colors.text};
 
   ::selection {
@@ -94,9 +94,5 @@ export const Input = styled.input<{
   }
   ::placeholder {
     color: ${({ theme }): string => theme.colors.textAlt};
-  }
-  &[readOnly]::placeholder {
-    border-color: ${({ theme }) => theme.colors.background};
-    color: ${({ theme }): string => theme.colors.primary};
   }
 `;

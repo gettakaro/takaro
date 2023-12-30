@@ -71,7 +71,7 @@ export const CheckboxContainer = styled.button<{
       if (hasError) {
         return theme.colors.error;
       }
-      return theme.colors.primary;
+      return theme.colors.backgroundAccent;
     }};
 
   border-radius: ${({ theme }) => theme.borderRadius.small};

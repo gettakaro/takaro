@@ -82,6 +82,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasDescription,
     name,
     inPortal = true,
+    disabled,
     enableFilter = false,
     multiSelect = false,
   } = defaultsApplier(props);
@@ -313,7 +314,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         onBlur={onBlur}
         onFocus={onFocus}
         isOpen={open}
-        tabIndex={readOnly ? -1 : 0}
+        tabIndex={disabled ? -1 : 0}
         hasError={hasError}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
