@@ -50,8 +50,8 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
-                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
-                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
+                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit gameserver" />
+                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete gameserver" />
                 </Dropdown.Menu>
               </Dropdown>
             </PermissionsGuard>
@@ -71,11 +71,8 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
       </Card>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
-          <Dialog.Heading>
-            gameserver: <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
-          </Dialog.Heading>
+          <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
-            <h2>Delete gameserver</h2>
             <p>
               Are you sure you want to delete <strong>{name}</strong>?
             </p>
