@@ -19,6 +19,7 @@ import { useState } from 'react';
 
 const PopoverBody = styled.div`
   max-width: 400px;
+  padding: ${({ theme }) => theme.spacing[2]};
 `;
 
 const PopoverHeading = styled.div`

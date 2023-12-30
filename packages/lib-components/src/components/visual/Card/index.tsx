@@ -1,68 +1,43 @@
-import { CSSProperties, FC, PropsWithChildren } from 'react';
-import { Elevation, Size, styled } from '../../../styled';
+import { PropsWithChildren, forwardRef } from 'react';
+import { styled } from '../../../styled';
 
-const Container = styled.div<{
-  size: Size;
-  elevation: Elevation;
-}>`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  margin: ${({ theme }) => `${theme.spacing[1]} 0`};
-  box-shadow: ${({ theme, elevation }): string => theme.elevation[elevation]};
-  color: ${({ theme }) => theme.colors.text};
+type Variant = 'default' | 'outline';
 
-  ${({ theme, size }) => {
-    switch (size) {
-      case 'tiny':
-        return `padding: ${theme.spacing['0_25']}`;
-      case 'small':
-        return `padding: ${theme.spacing['0_5']}`;
-      case 'medium':
-        return `padding: ${theme.spacing['1_5']}`;
-      case 'large':
-        return `padding: ${theme.spacing['2_5']}`;
-      case 'huge':
-        return `padding: ${theme.spacing[5]}`;
-    }
-  }};
+const Container = styled.div<{ canClick: boolean; variant: Variant }>`
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  background-color: ${({ theme, variant }) =>
+    variant === 'outline' ? theme.colors.background : theme.colors.backgroundAlt};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
+  padding: ${({ theme }) => theme.spacing[2]};
 
-  &.placeholder {
-    width: 100%;
-    height: 500px; /* TODO: this should be based on the **density** and **size** */
+  &:focus-within {
+    border-color: none;
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  }
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &:active {
+    border-color: ${({ theme, canClick }) => (canClick ? theme.colors.primary : theme.colors.backgroundAccent)};
   }
 `;
 
 export interface CardProps {
-  size?: Size;
-  loading?: boolean;
-  elevation?: Elevation;
-  onClick?: (e: React.MouseEvent) => void;
-  className?: string;
-  style?: CSSProperties;
+  onClick?: (e: React.MouseEvent) => unknown;
+  variant?: Variant;
 }
 
-// TODO: implement skeleton loading
-export const Card: FC<PropsWithChildren<CardProps>> = ({
-  children,
-  size = 'medium',
-  loading = false,
-  elevation = 0,
-  className = '',
-  style = {},
-  onClick,
-}) => {
-  if (loading)
-    return <Container elevation={0} size="large" className="placeholder" />;
-
-  return (
-    <Container
-      elevation={elevation}
-      size={size}
-      onClick={onClick}
-      className={className}
-      style={style}
-    >
-      {children}
-    </Container>
-  );
-};
+export const Card = forwardRef<HTMLDivElement, PropsWithChildren<CardProps>>(
+  ({ children, onClick, variant = 'default' }, ref) => {
+    return (
+      <Container ref={ref} onClick={onClick} canClick={onClick ? true : false} variant={variant}>
+        {children}
+      </Container>
+    );
+  }
+);

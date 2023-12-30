@@ -100,10 +100,6 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
   );
 };
 
-const ClickableCard = styled(Card)`
-  cursor: pointer;
-`;
-
 type InfoCardProps = {
   title: string;
   onClick?: (e: React.MouseEvent) => void;
@@ -116,7 +112,7 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick,
   };
 
   return (
-    <ClickableCard elevation={1} size="large" onClick={onClick}>
+    <Card onClick={onClick}>
       <Flex>
         <h2>{title}</h2>
         {children}
@@ -129,6 +125,6 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick,
           Learn more
         </Link>
       </Flex>
-    </ClickableCard>
+    </Card>
   );
 };
