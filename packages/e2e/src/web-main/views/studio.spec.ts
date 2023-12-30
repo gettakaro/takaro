@@ -112,7 +112,7 @@ extendedTest.describe('filetree', () => {
     extendedTest('Should trigger delete', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
-      file.click({ button: 'right' });
+      await file.click({ button: 'right' });
 
       await studioPage.page.getByRole('menuitem', { name: 'Delete file' }).click();
 
@@ -123,7 +123,7 @@ extendedTest.describe('filetree', () => {
     extendedTest('Should trigger rename', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
-      file.click({ button: 'right' });
+      await file.click({ button: 'right' });
       await studioPage.page.getByRole('menuitem', { name: 'Rename file' }).click();
       await expect(studioPage.page.locator('input[name="file"]')).toBeFocused();
     });
@@ -224,7 +224,7 @@ extendedTest.describe('Item configuration', () => {
       await studioPage.openFile('extendedTestCommand');
 
       await studioPage.page.getByRole('button', { name: 'New' }).click();
-      await studioPage.page.getByLabel('Name').type('extendedTestArgument');
+      await studioPage.page.getByLabel('Name', { exact: true }).type('extendedTestArgument');
       await studioPage.page.getByText('Select...').click();
       await studioPage.page.getByRole('option', { name: 'String' }).click();
       await studioPage.page.getByRole('textbox', { name: 'Help text' }).type('Some helpful text for the user');
@@ -252,9 +252,9 @@ extendedTest.describe('Item configuration', () => {
         await studioPage.page.locator(`input[name="arguments.${key}.name"]`).type(value);
         await studioPage.page.getByText('Select...').click();
         await studioPage.page.getByRole('option', { name: 'String' }).click();
-        await studioPage.page
-          .locator(`input[name="arguments\\.${key}\\.helpText"]`)
-          .type('Some helpful text for the user');
+        const helpText = studioPage.page.locator(`input[name="arguments\\.${key}\\.helpText"]`);
+        await helpText.focus();
+        await helpText.fill('Some helpful text for the user');
       }
 
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
