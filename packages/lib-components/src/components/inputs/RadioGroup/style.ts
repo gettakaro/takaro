@@ -12,7 +12,7 @@ export const Container = styled.div`
   margin: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[0]}`};
   display: flex;
   align-items: center;
-  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   padding: ${({ theme }) => theme.spacing[2]};
 

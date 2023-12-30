@@ -71,6 +71,38 @@ extendedTest('Can delete variable', async ({ page, takaro }) => {
   await expect(page.getByRole('cell', { name: variableValue })).not.toBeVisible();
 });
 
+extendedTest('Can delete multiple variables at once', async ({ page, takaro }) => {
+  const variable1Key = 'test-variable-1';
+  const variable1Value = 'val';
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: variable1Key,
+    value: variable1Value,
+    gameServerId: takaro.gameServer.id,
+    moduleId: takaro.builtinModule.id,
+  });
+
+  const variable2Key = 'test-variable-2';
+  const variable2Value = 'val';
+  await takaro.rootClient.variable.variableControllerCreate({
+    key: variable2Key,
+    value: variable2Value,
+    gameServerId: takaro.gameServer.id,
+    moduleId: takaro.builtinModule.id,
+  });
+
+  await navigateTo(page, 'global-variables');
+  await expect(page.getByText(variable1Key)).toBeVisible();
+  await expect(page.getByText(variable2Key)).toBeVisible();
+
+  await page.locator('#select-all-header-0').click();
+  await page.getByRole('button', { name: 'Delete variables (2)', exact: false }).click();
+  await page.getByRole('button', { name: 'Delete variables', exact: false }).click();
+
+  await expect(page.getByRole('cell', { name: variable1Key })).not.toBeVisible();
+  await expect(page.getByRole('cell', { name: variable2Key })).not.toBeVisible();
+  await expect(page.getByText('No data')).toBeVisible();
+});
+
 extendedTest('Should show error when variable with same key exists', async ({ page, takaro }) => {
   const variableKey = 'test-variable';
   const variableValue = 'val';

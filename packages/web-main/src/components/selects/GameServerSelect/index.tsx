@@ -1,4 +1,4 @@
-import { Select, styled, Tooltip } from '@takaro/lib-components';
+import { Select, Tooltip } from '@takaro/lib-components';
 import { useGameServers } from 'queries/gameservers';
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
@@ -6,32 +6,7 @@ import { CustomSelectProps } from '..';
 import icon7d2d from './7d2d-icon.png';
 import iconRust from './rust-icon.png';
 import { FaLeaf as TakaroIcon } from 'react-icons/fa';
-import { TooltipTrigger } from '@takaro/lib-components/src/components/feedback/Tooltip/TooltipTrigger';
-
-export const Inner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  img,
-  svg {
-    width: ${({ theme }) => theme.spacing[2]}!important;
-    height: ${({ theme }) => theme.spacing[2]}!important;
-    margin: 0 !important;
-    margin-bottom: 0 !important;
-    margin-right: ${({ theme }) => theme.spacing['1']}!important;
-    fill: ${({ theme }) => theme.colors.primary};
-  }
-`;
-
-export const StatusDot = styled.div<{ isOnline: boolean }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-top: 3px;
-  margin-left: ${({ theme }) => theme.spacing['0_75']};
-  background-color: ${({ isOnline, theme }) => (isOnline ? theme.colors.success : theme.colors.error)};
-`;
+import { Inner, StatusDot } from './style';
 
 const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Mock]: { icon: <TakaroIcon /> },
@@ -69,9 +44,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
       <Select.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
-        {gameServers.map(({ id, type, name: serverName }) => {
-          const isOnline = true;
-
+        {gameServers.map(({ id, type, name: serverName, reachable }) => {
           if (type !== typeEnum) {
             return null;
           }
@@ -80,14 +53,12 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
             <Select.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
-                {isOnline && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <StatusDot isOnline={isOnline} />
-                    </TooltipTrigger>
-                    <Tooltip.Content>{isOnline ? 'Server online' : 'Server offline'}</Tooltip.Content>
-                  </Tooltip>
-                )}
+                <Tooltip>
+                  <Tooltip.Trigger asChild>
+                    <StatusDot isReachable={reachable} />
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
+                </Tooltip>
               </Inner>
             </Select.Option>
           ) : null;

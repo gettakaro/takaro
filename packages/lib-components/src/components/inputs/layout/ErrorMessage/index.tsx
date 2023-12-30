@@ -12,7 +12,7 @@ const Container = styled(motion.div)<{ isWrapped: boolean }>`
   height: auto;
   background-color: ${({ theme }): string => theme.colors.error};
   overflow: hidden;
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
   z-index: ${({ theme }) => theme.zIndex.errorMessage};
   top: 100%;
   bottom: auto;

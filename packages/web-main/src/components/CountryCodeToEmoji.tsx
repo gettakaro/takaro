@@ -1,6 +1,10 @@
 import { FC } from 'react';
 
-export const CountryCodeToEmoji: FC<{ countryCode: string | undefined }> = ({ countryCode }) => {
+interface CountryCodeToEmojiProps {
+  countryCode?: string;
+}
+
+export const CountryCodeToEmoji: FC<CountryCodeToEmojiProps> = ({ countryCode }) => {
   const isoToEmoji = (isoCode) => {
     if (!isoCode) return '';
     return isoCode

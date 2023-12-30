@@ -7,3 +7,4 @@ export { GameServerSelect } from './GameServerSelect';
 export { RolesSelect } from './RolesSelect';
 export { PlayerSelect } from './PlayerSelect';
 export { ModuleSelect } from './ModuleSelect';
+export { TimePeriodSelect } from './TimePeriodSelect';

@@ -1,10 +1,17 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
-import { APIOutput, UserOutputArrayDTOAPI, UserOutputWithRolesDTO, UserSearchInputDTO } from '@takaro/apiclient';
+import {
+  APIOutput,
+  IdUuidDTO,
+  UserOutputArrayDTOAPI,
+  UserOutputWithRolesDTO,
+  UserSearchInputDTO,
+} from '@takaro/apiclient';
 import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
+import { useSnackbar } from 'notistack';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -106,6 +113,21 @@ export const useInviteUser = () => {
     useErrorBoundary: (error) => error.response!.status >= 500,
     onSuccess: async () => {
       await queryClient.invalidateQueries(userKeys.list());
+    },
+  });
+};
+
+export const useUserRemove = () => {
+  const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, { id: string }>({
+    mutationFn: async ({ id }) => (await apiClient.user.userControllerRemove(id)).data.data,
+    useErrorBoundary: (error) => error.response!.status >= 500,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(userKeys.list());
+      enqueueSnackbar('User has been deleted', { variant: 'default' });
     },
   });
 };
