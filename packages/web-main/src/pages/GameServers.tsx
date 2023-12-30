@@ -56,7 +56,7 @@ const GameServers: FC = () => {
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
         <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
-          <AddCard onClick={() => navigate(PATHS.gameServers.create())} />
+          <AddCard title="Gameserver" onClick={() => navigate(PATHS.gameServers.create())} />
         </PermissionsGuard>
         <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
           <AddCard title="Import from CSMM" onClick={() => navigate(PATHS.gameServers.import())} />

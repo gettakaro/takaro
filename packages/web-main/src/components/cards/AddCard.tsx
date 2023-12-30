@@ -12,7 +12,7 @@ const AddCardBody = styled(CardBody)`
 
 interface AddCardProps {
   onClick: () => void;
-  title?: string;
+  title: string;
 }
 
 export const AddCard: FC<AddCardProps> = ({ onClick, title }) => {
@@ -20,7 +20,7 @@ export const AddCard: FC<AddCardProps> = ({ onClick, title }) => {
     <Card onClick={onClick} variant="outline">
       <AddCardBody>
         <PlusIcon size={24} />
-        <h3>{title ? title : 'Gameserver'}</h3>
+        <h3>{title}</h3>
       </AddCardBody>
     </Card>
   );

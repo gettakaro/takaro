@@ -26,7 +26,6 @@ export const ModuleDefinitions: FC = () => {
     return <Loading />;
   }
 
-  // TODO: handle empty state
   if (!modules) {
     return <p></p>;
   }
@@ -50,8 +49,8 @@ export const ModuleDefinitions: FC = () => {
           module click on a built-in module & inside the editor click on the copy icon next to it's name.
         </SubText>
         <CardList>
-          <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
-            <AddCard onClick={() => () => navigate(PATHS.modules.create())} />
+          <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_MODULES]}>
+            <AddCard title="Module" onClick={() => navigate(PATHS.modules.create())} />
           </PermissionsGuard>
           {customModules.map((mod) => (
             <ModuleDefinitionCard key={mod.id} mod={mod} />
