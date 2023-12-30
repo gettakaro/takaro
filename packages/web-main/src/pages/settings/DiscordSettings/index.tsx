@@ -1,9 +1,9 @@
 import { Fragment, ReactNode } from 'react';
 import { Button, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { LoginDiscord } from 'components/DiscordSettings/LoginDiscord';
+import { LoginDiscord } from './LoginDiscord';
 import { useDiscordGuilds } from 'queries/discord';
-import { ServerCard } from 'components/DiscordSettings/ServerCard';
-import { InviteCard } from 'components/DiscordSettings/InviteCard';
+import { ServerCard } from './ServerCard';
+import { InviteCard } from './InviteCard';
 
 const List = styled.div`
   display: grid;
