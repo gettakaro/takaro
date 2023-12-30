@@ -32,6 +32,7 @@ export default {
     name: 'name',
     readOnly: false,
     disabled: false,
+    description: 'this is the description',
   },
 } as Meta<TextFieldProps>;
 
@@ -48,11 +49,14 @@ export const onChange: StoryFn<TextFieldProps> = (args) => {
     <>
       <TextField
         name={args.name}
+        description={args.description}
         control={control}
         placeholder={args.placeholder}
         required={args.required}
         loading={args.loading}
         label={args.label}
+        prefix={args.prefix}
+        suffix={args.suffix}
         hint={args.hint}
         readOnly={args.readOnly}
         disabled={args.disabled}
@@ -90,6 +94,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           hint={args.hint}
           readOnly={args.readOnly}
           disabled={args.disabled}
+          description={args.description}
         />
         <TextField
           control={control}
@@ -102,6 +107,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           hint={args.hint}
           readOnly={args.readOnly}
           disabled={args.disabled}
+          description={args.description}
         />
         <TextField
           control={control}
@@ -114,6 +120,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           hint={args.hint}
           readOnly={args.readOnly}
           disabled={args.disabled}
+          description={args.description}
         />
         <TextField
           control={control}
@@ -127,6 +134,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           hint={args.hint}
           readOnly={args.readOnly}
           disabled={args.disabled}
+          description={args.description}
         />
         <Button type="submit" text="Submit form" size="large" />
       </form>
@@ -156,6 +164,7 @@ export const Password: StoryFn<TextFieldProps> = (args) => {
         loading={args.loading}
         readOnly={args.readOnly}
         disabled={args.disabled}
+        description={args.description}
       />
     </Wrapper>
   );
