@@ -245,7 +245,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
 
     const bans = pogs.map((pog) => {
       return mutateBanPlayer({
-        playerId: pog.id,
+        playerId: player.id,
         gameServerId: pog.gameServerId,
         opts: {
           reason: reason,
@@ -270,7 +270,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
 
     const bans = pogs.map((pog) => {
       return mutateUnbanPlayer({
-        playerId: pog.id,
+        playerId: player.id,
         gameServerId: pog.gameServerId,
       });
     });
@@ -317,7 +317,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
             label="Unban from ALL game servers"
             icon={<UnBanIcon />}
             onClick={async () => {
-              setOpenBanDialog(true);
+              setOpenUnbanDialog(true);
             }}
             disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
           />
@@ -326,12 +326,11 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
 
       <Dialog open={openBanDialog} onOpenChange={setOpenBanDialog}>
         <Dialog.Content>
-          <Dialog.Heading>Ban Player: {player.name}</Dialog.Heading>
+          <Dialog.Heading>ban player: {player.name}</Dialog.Heading>
           <Dialog.Body size="medium">
-            <h2>Ban player</h2>
             <form onSubmit={handleSubmit(handleOnBanPlayer)}>
-              <p>
-                Are you sure you want to ban <strong>{player.name}</strong> from <strong>all</strong> game servers?
+              <p style={{ marginBottom: 0 }}>
+                This will ban <strong>{player.name}</strong> from <strong>all</strong> your game servers?
               </p>
               <TextField control={control} name="reason" label="Ban Reason" placeholder="Cheating, Racism, etc." />
               <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth text={'Ban player'} color="error" />
@@ -341,9 +340,11 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
       </Dialog>
       <Dialog open={openUnbanDialog} onOpenChange={setOpenUnbanDialog}>
         <Dialog.Content>
-          <Dialog.Heading>UnBan Player: {player.name}</Dialog.Heading>
+          <Dialog.Heading>unban player</Dialog.Heading>
           <Dialog.Body size="medium">
-            <h2>Unban player</h2>
+            <p>
+              this will unban <strong>{player.name}</strong> from <strong>all</strong> your game servers.
+            </p>
             <Button
               isLoading={isLoadingUnbanPlayer}
               type="submit"
