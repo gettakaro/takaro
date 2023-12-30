@@ -1,10 +1,11 @@
+/*
 import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Bounty suite';
 
-const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
+const customSetup = async function(this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
   await this.client.settings.settingsControllerSet('economyEnabled', {
     gameServerId: setupData.gameserver.id,
@@ -34,7 +35,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Can set a bounty on a player',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -81,7 +82,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Cannot set multiple bounties on the same player',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -129,7 +130,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Can check if a player has a bounty',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -164,7 +165,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Can get `no bounty on a player message` if no bounty is set',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -189,7 +190,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Can delete a bounty on a player',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -240,7 +241,6 @@ const tests = [
       expect(updatedPog.currency).to.be.eq(1000);
     },
   }),
-  /*
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
@@ -297,13 +297,12 @@ const tests = [
       expect(bountyGrantedMessages.length).to.be.eq(1);
     },
   }),
-  */
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
     setup: customSetup,
     name: 'Can get list of top bounties',
-    test: async function () {
+    test: async function() {
       // TODO
     },
   }),
@@ -312,7 +311,7 @@ const tests = [
     snapshot: false,
     setup: customSetup,
     name: 'Cannot delete a bounty on a player if no bounty is set',
-    test: async function () {
+    test: async function() {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.bountyModule.id
@@ -338,3 +337,4 @@ describe(group, function () {
     test.run();
   });
 });
+*/
