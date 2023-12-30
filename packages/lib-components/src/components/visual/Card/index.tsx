@@ -1,4 +1,4 @@
-import { PropsWithChildren, forwardRef } from 'react';
+import { forwardRef, HTMLProps } from 'react';
 import { styled } from '../../../styled';
 
 type Variant = 'default' | 'outline';
@@ -28,17 +28,20 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
   }
 `;
 
-export interface CardProps {
-  onClick?: (e: React.MouseEvent) => unknown;
+// Extend HTMLProps for standard HTML attributes and add custom props
+export interface CardProps extends HTMLProps<HTMLDivElement> {
   variant?: Variant;
 }
 
-export const Card = forwardRef<HTMLDivElement, PropsWithChildren<CardProps>>(
-  ({ children, onClick, variant = 'default' }, ref) => {
-    return (
-      <Container ref={ref} onClick={onClick} canClick={onClick ? true : false} variant={variant}>
+// Forward ref and spread all props to the Container
+export const Card = forwardRef<HTMLDivElement, CardProps>(({ children, variant = 'default', ...props }, ref) => {
+  const canClick = 'onClick' in props;
+
+  return (
+    <div {...props}>
+      <Container ref={ref} canClick={canClick} variant={variant}>
         {children}
       </Container>
-    );
-  }
-);
+    </div>
+  );
+});

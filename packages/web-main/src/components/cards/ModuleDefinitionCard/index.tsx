@@ -37,7 +37,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   return (
     <>
-      <Card onClick={() => window.open(PATHS.studio.module(mod.id))}>
+      <Card role="link" onClick={() => window.open(PATHS.studio.module(mod.id))}>
         <CardBody>
           <SpacedRow>
             <h2>{mod.name}</h2>

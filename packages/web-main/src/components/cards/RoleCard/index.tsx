@@ -32,7 +32,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   return (
     <>
-      {/* TODO: we might want to add a click event here that when card is clicked user is navigated to list of player or users that have this role active */}
       <Card>
         <CardBody>
           <Header>

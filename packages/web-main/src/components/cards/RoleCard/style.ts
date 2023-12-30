@@ -14,8 +14,4 @@ export const TitleContainer = styled.div`
   h3 {
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
-  p {
-    width: fit-content;
-    text-transform: lowercase;
-  }
 `;

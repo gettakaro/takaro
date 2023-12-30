@@ -17,7 +17,7 @@ interface AddCardProps {
 
 export const AddCard: FC<AddCardProps> = ({ onClick, title }) => {
   return (
-    <Card onClick={onClick} variant="outline">
+    <Card role="link" onClick={onClick} variant="outline">
       <AddCardBody>
         <PlusIcon size={24} />
         <h3>{title}</h3>
