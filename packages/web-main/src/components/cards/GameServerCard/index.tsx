@@ -1,5 +1,6 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, PERMISSIONS, Card } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { Header, TitleContainer } from './style';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +45,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]]}>
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.ReadGameservers, PERMISSIONS.ManageGameservers]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />

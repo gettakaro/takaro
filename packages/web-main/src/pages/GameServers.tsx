@@ -1,5 +1,6 @@
 import { FC, Fragment } from 'react';
-import { Button, Empty, EmptyPage, PERMISSIONS, Skeleton } from '@takaro/lib-components';
+import { Button, Empty, EmptyPage, Skeleton } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useGameServers } from 'queries/gameservers';
@@ -55,10 +56,10 @@ const GameServers: FC = () => {
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
-        <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
           <AddCard title="Gameserver" onClick={() => navigate(PATHS.gameServers.create())} />
         </PermissionsGuard>
-        <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
           <AddCard title="Import from CSMM" onClick={() => navigate(PATHS.gameServers.import())} />
         </PermissionsGuard>
       </CardList>

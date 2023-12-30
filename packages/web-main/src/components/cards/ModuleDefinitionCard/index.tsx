@@ -1,5 +1,6 @@
 import { ModuleOutputDTO } from '@takaro/apiclient';
-import { Company, Tooltip, Dialog, Button, IconButton, Card, Dropdown, PERMISSIONS } from '@takaro/lib-components';
+import { Company, Tooltip, Dialog, Button, IconButton, Card, Dropdown } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
@@ -60,7 +61,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   </Tooltip.Content>
                 </Tooltip>
               ) : (
-                <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_MODULES]]}>
+                <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                   <Dropdown>
                     <Dropdown.Trigger asChild>
                       <IconButton icon={<MenuIcon />} ariaLabel="Settings" />

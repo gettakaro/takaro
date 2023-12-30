@@ -5,14 +5,13 @@ import {
   useTableActions,
   IconButton,
   Dropdown,
-  PERMISSIONS,
   Avatar,
   getInitials,
   Dialog,
   Button,
   TextField,
 } from '@takaro/lib-components';
-import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { usePlayers } from 'queries/players';
 import { useNavigate } from 'react-router-dom';
@@ -216,10 +215,10 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
   const { hasPermission: hasManagePlayers, isLoading: isLoadingManagePlayersPermission } = useHasPermission([
-    PERMISSIONS.MANAGE_PLAYERS,
+    PERMISSIONS.ManagePlayers,
   ]);
   const { hasPermission: hasManageRoles, isLoading: isLoadingManageRolesPermission } = useHasPermission([
-    PERMISSIONS.MANAGE_ROLES,
+    PERMISSIONS.ManageRoles,
   ]);
 
   const { enqueueSnackbar } = useSnackbar();

@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { Divider, Loading, PERMISSIONS, styled } from '@takaro/lib-components';
+import { Divider, Loading, styled } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { useInfiniteModules } from 'queries/modules';
 import { Outlet } from 'react-router-dom';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
@@ -42,14 +43,14 @@ export const ModuleDefinitions: FC = () => {
       </p>
 
       <Divider />
-      <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_MODULES]}>
+      <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
         <SubHeader>Custom</SubHeader>
         <SubText>
           You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
           module click on a built-in module & inside the editor click on the copy icon next to it's name.
         </SubText>
         <CardList>
-          <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_MODULES]}>
+          <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
             <AddCard title="Module" onClick={() => navigate(PATHS.modules.create())} />
           </PermissionsGuard>
           {customModules.map((mod) => (
