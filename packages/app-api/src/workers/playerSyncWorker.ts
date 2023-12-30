@@ -80,6 +80,8 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       })
     );
 
+    await Promise.allSettled(domainPromises);
+
     return;
   }
 

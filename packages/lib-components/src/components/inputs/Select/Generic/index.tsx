@@ -12,7 +12,14 @@ import {
   ReactElement,
 } from 'react';
 import { SelectContext } from './context';
-import { GroupLabel, SelectButton, SelectContainer, StyledFloatingOverlay, StyledArrowIcon } from '../style';
+import {
+  GroupContainer,
+  GroupLabel,
+  SelectButton,
+  SelectContainer,
+  StyledFloatingOverlay,
+  StyledArrowIcon,
+} from '../style';
 import { FilterInput } from './FilterInput';
 
 import {
@@ -75,6 +82,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasDescription,
     name,
     inPortal = true,
+    disabled,
     enableFilter = false,
     multiSelect = false,
   } = defaultsApplier(props);
@@ -216,20 +224,22 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           return cloneElement(option, {
             index: optionIndex,
             onChange: onChange,
+            isGrouped: 'label' in group.props && 'icon' in group.props,
           });
         });
 
       if (filteredOptions.length === 0) return null;
 
       return (
-        <ul key={group.props.label} role="group" aria-labelledby={`select-${group.props.label}`}>
+        <GroupContainer key={group.props.label} role="group" aria-labelledby={`select-${group.props.label}`}>
           {group.props.label && (
             <GroupLabel role="presentation" id={`select-${group.props.label}`} aria-hidden="true">
-              {group.props.label}
+              {group.props.icon && group.props.icon}
+              <span key={`select-span-${group.props.label}`}>{group.props.label}</span>
             </GroupLabel>
           )}
           {filteredOptions}
-        </ul>
+        </GroupContainer>
       );
     });
   }, [children, onChange, filterText]);
@@ -304,7 +314,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         onBlur={onBlur}
         onFocus={onFocus}
         isOpen={open}
-        tabIndex={readOnly ? -1 : 0}
+        tabIndex={disabled ? -1 : 0}
         hasError={hasError}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}

@@ -25,16 +25,16 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
 
-    // if the gameserver was selected, deselect it
-    if (selectedGameServerId === id) {
-      setSelectedGameServerId('');
-    }
-
     setOpenDialog(true);
   };
 
   const handleOnDelete = async () => {
     await mutateAsync({ id });
+
+    // if the gameserver was selected, deselect it
+    if (selectedGameServerId === id) {
+      setSelectedGameServerId('');
+    }
   };
 
   return (
@@ -46,11 +46,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
       >
         <Body>
           <Header>
-            {reachable ? (
-              <Chip label={'online'} color="success" variant="outline" />
-            ) : (
-              <Chip label={'offline'} color="error" variant="outline" />
-            )}
+            {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
             <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
@@ -102,13 +98,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
 interface EmptyGameServerCardProps {
   onClick: () => void;
+  title?: string;
 }
 
-export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({ onClick }) => {
+export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({ onClick, title }) => {
   return (
     <EmptyContainer onClick={onClick}>
       <PlusIcon size={24} />
-      <h3>Gameserver</h3>
+      <h3>{title ? title : 'Gameserver'}</h3>
     </EmptyContainer>
   );
 };

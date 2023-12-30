@@ -15,7 +15,8 @@
 import type { Configuration } from './configuration.js';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
+
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 
 export const BASE_PATH = 'http://localhost'.replace(/\/+$/, '');
@@ -38,7 +39,7 @@ export const COLLECTION_FORMATS = {
  */
 export interface RequestArgs {
   url: string;
-  options: AxiosRequestConfig;
+  options: RawAxiosRequestConfig;
 }
 
 /**
@@ -56,7 +57,7 @@ export class BaseAPI {
   ) {
     if (configuration) {
       this.configuration = configuration;
-      this.basePath = configuration.basePath || this.basePath;
+      this.basePath = configuration.basePath ?? basePath;
     }
   }
 }
@@ -73,3 +74,16 @@ export class RequiredError extends Error {
     this.name = 'RequiredError';
   }
 }
+
+interface ServerMap {
+  [key: string]: {
+    url: string;
+    description: string;
+  }[];
+}
+
+/**
+ *
+ * @export
+ */
+export const operationServerMap: ServerMap = {};

@@ -9,7 +9,7 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Inputs/Checkbox/Default',
+  title: 'Inputs/Checkbox',
   component: CheckBox,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
@@ -25,9 +25,7 @@ export default {
   },
 } as Meta<CheckBoxProps>;
 
-export const OnSubmit: StoryFn<CheckBoxProps & { defaultValue: boolean }> = (
-  args
-) => {
+export const OnSubmit: StoryFn<CheckBoxProps & { defaultValue: boolean }> = (args) => {
   type FormFields = { checkbox: boolean };
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -48,10 +46,7 @@ export const OnSubmit: StoryFn<CheckBoxProps & { defaultValue: boolean }> = (
         <Button type="submit" text="submit" />
       </form>
       <pre>value: {result ? 'true' : 'false'}</pre>
-      <p>
-        NOTE: defaultValue will only be set on initial load. Limitation of
-        react-hook-form.
-      </p>
+      <p>NOTE: defaultValue will only be set on initial load. Limitation of react-hook-form.</p>
     </>
   );
 };

@@ -65,6 +65,9 @@ const GameServers: FC = () => {
         <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
           <EmptyGameServerCard onClick={() => navigate(PATHS.gameServers.create())} />
         </PermissionsGuard>
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
+          <EmptyGameServerCard title="Import from CSMM" onClick={() => navigate(PATHS.gameServers.import())} />
+        </PermissionsGuard>
       </List>
       {InfiniteScroll}
       {/* show editGameServer and newGameServer drawers above this listView*/}

@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { AiOutlinePlus as PlusIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import {
   Table,
   useTableActions,
@@ -23,17 +23,11 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useHasPermission } from 'components/PermissionsGuard';
+import { UserDeleteDialog } from './users/DeleteUserDialog';
 
 const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
-  const navigate = useNavigate();
-  const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
-    PERMISSIONS.READ_USERS,
-  ]);
-  const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
-    PERMISSIONS.MANAGE_ROLES,
-  ]);
 
   const { data, isLoading } = useUsers({
     page: pagination.paginationState.pageIndex,
@@ -93,30 +87,7 @@ const Users: FC = () => {
       enableGlobalFilter: false,
       enableResizing: false,
       maxSize: 50,
-      cell: (info) => (
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <IconButton icon={<ActionIcon />} ariaLabel="user-actions" />
-          </Dropdown.Trigger>
-          <Dropdown.Menu>
-            <Dropdown.Menu.Group divider>
-              <Dropdown.Menu.Item
-                disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
-                label="Go to user profile"
-                icon={<ProfileIcon />}
-                onClick={() => navigate(`${PATHS.user.profile(info.row.original.id)}`)}
-              />
-            </Dropdown.Menu.Group>
-            <Dropdown.Menu.Item
-              label="Edit roles"
-              icon={<EditIcon />}
-              // TODO: navigate to edit roles page for user
-              onClick={() => navigate('')}
-              disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
-            />
-          </Dropdown.Menu>
-        </Dropdown>
-      ),
+      cell: (info) => <UserMenu user={info.row.original} />,
     }),
   ];
 
@@ -132,6 +103,7 @@ const Users: FC = () => {
 
   return (
     <Table
+      title="List of users"
       id="users"
       columns={columnDefs}
       data={data ? data?.data : []}
@@ -209,6 +181,48 @@ const InviteUser: FC = () => {
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
+    </>
+  );
+};
+
+const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
+  const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
+    PERMISSIONS.READ_USERS,
+  ]);
+  const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
+    PERMISSIONS.MANAGE_ROLES,
+  ]);
+
+  return (
+    <>
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <IconButton icon={<ActionIcon />} ariaLabel="user-actions" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <Dropdown.Menu.Item
+            disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
+            label="Go to user profile"
+            icon={<ProfileIcon />}
+            onClick={() => navigate(`${PATHS.user.profile(user.id)}`)}
+          />
+          <Dropdown.Menu.Item
+            label="Edit roles"
+            icon={<EditIcon />}
+            onClick={() => navigate(`${PATHS.user.assignRole(user.id)}`)}
+            disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
+          />
+          <Dropdown.Menu.Item
+            label="Delete user"
+            icon={<DeleteIcon />}
+            onClick={() => setOpenDeleteUserDialog(true)}
+            disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
+          />
+        </Dropdown.Menu>
+      </Dropdown>
+      <UserDeleteDialog openDialog={openDeleteUserDialog} setOpenDialog={setOpenDeleteUserDialog} user={user} />
     </>
   );
 };

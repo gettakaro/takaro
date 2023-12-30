@@ -12,9 +12,15 @@ interface Film {
 
 export default {
   title: 'Inputs/SearchField',
+  args: {
+    placeholder: 'Search for a film',
+    label: 'Film',
+    debounce: 250,
+    readOnly: false,
+  },
 } as Meta<SearchFieldProps>;
 
-export const ServerSideSubmit: StoryFn<SearchFieldProps> = () => {
+export const ServerSideSubmit: StoryFn<SearchFieldProps> = (args) => {
   interface FormValues {
     film: string;
   }
@@ -49,11 +55,11 @@ export const ServerSideSubmit: StoryFn<SearchFieldProps> = () => {
       something, but does not select an item from the list, the input will be reset.
       <form onSubmit={handleSubmit(onSubmit)}>
         <SearchField
-          debounce={250}
+          debounce={args.debounce}
           control={control}
           loading={loading}
-          placeholder="Search for a film"
-          label="Film"
+          placeholder={args.placeholder}
+          label={args.placeholder}
           /* The onChange returns the not debounced value, probably never needed, but is inherited by all inputFields */
           handleInputValueChange={mockAPICall}
           isLoadingData={loading}

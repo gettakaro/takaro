@@ -18,13 +18,13 @@ export const RadioContainer = styled.div<{
   justify-content: center;
   border: 0.1rem solid
     ${({ theme, readOnly, isSelected, isError }): string => {
-      if (readOnly) return theme.colors.gray;
+      if (readOnly) return theme.colors.backgroundAccent;
       if (isError) return theme.colors.error;
       if (isSelected) return theme.colors.primary;
-      return theme.colors.gray;
+      return theme.colors.backgroundAccent;
     }};
 
-  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.gray : theme.colors.backgroundAlt)};
+  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.gray : theme.colors.background)};
   border-radius: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   overflow: visible;

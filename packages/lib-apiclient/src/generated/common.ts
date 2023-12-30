@@ -155,7 +155,10 @@ export const createRequestFunction = function (
   configuration?: Configuration
 ) {
   return <T = unknown, R = AxiosResponse<T>>(axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
-    const axiosRequestArgs = { ...axiosArgs.options, url: (configuration?.basePath || basePath) + axiosArgs.url };
+    const axiosRequestArgs = {
+      ...axiosArgs.options,
+      url: (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) + axiosArgs.url,
+    };
     return axios.request<T, R>(axiosRequestArgs);
   };
 };

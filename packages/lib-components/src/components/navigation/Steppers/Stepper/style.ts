@@ -22,7 +22,7 @@ export const StepperHeaderItem = styled.div<{ stepState: StepStates }>`
   &::after {
     position: absolute;
     content: '';
-    border-bottom: 2px solid ${({ theme }) => theme.colors.backgroundAlt};
+    border-bottom: 2px solid ${({ theme }) => theme.colors.backgroundAccent};
     width: 100%;
     top: 22px;
     left: calc(50% + 20px);
@@ -79,7 +79,7 @@ export const StepCounter = styled.div<{
   padding: 0.8rem;
   border-radius: 50%;
   border: 0.1rem solid
-    ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.primary : theme.colors.backgroundAlt)};
+    ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.primary : theme.colors.backgroundAccent)};
   background-color: ${({ stepState, theme }) =>
     stepState === StepStates.CURRENT ? theme.colors.primary : theme.colors.background};
   transition: all 0.2s ease-in-out;

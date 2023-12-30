@@ -17,7 +17,7 @@ export const TextAreaContainer = styled.div``;
 
 export const TextArea = styled.textarea<{ hasError: boolean }>`
   width: 100%;
-  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
 
   &:focus {
     border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};

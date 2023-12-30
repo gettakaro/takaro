@@ -31,6 +31,9 @@ export interface IQueuesConfig extends IBaseConfig {
       interval: number;
       concurrency: number;
     };
+    csmmImport: {
+      name: string;
+    };
   };
   redis: {
     host: string;
@@ -164,6 +167,14 @@ export const queuesConfigSchema = {
         format: Number,
         default: 5,
         env: 'PLAYER_SYNC_QUEUE_CONCURRENCY',
+      },
+    },
+    csmmImport: {
+      name: {
+        doc: 'The name of the queue to use for csmm import',
+        format: String,
+        default: 'csmmImport',
+        env: 'CSMM_IMPORT_QUEUE_NAME',
       },
     },
   },
