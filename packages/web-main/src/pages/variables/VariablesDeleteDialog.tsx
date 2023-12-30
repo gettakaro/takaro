@@ -23,11 +23,12 @@ export const VariablesDeleteDialog: FC<VariablesDeleteProps> = ({ variableIds, o
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <Dialog.Content>
         <Dialog.Heading>
-          <span>Delete variables</span>
+          <span>delete variables</span>
         </Dialog.Heading>
         <Dialog.Body>
-          <h2>Delete variables</h2>
-          <p>Are you sure you want to delete {variableIds.length} variables? This action cannot be undone.</p>
+          <p>
+            Are you sure you want to delete <strong>{variableIds.length} variables</strong>?{' '}
+          </p>
           <Button
             isLoading={isDeleting}
             onClick={(e) => handleOnDelete(e)}

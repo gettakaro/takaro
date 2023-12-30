@@ -39,11 +39,11 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
           <span>Delete User</span>
         </Dialog.Heading>
         <Dialog.Body>
-          <h2>Delete variable</h2>
           <p>
             Are you sure you want to delete <strong>{user.name}</strong>? This action cannot be undone!
+            <br />
           </p>
-          <FormError error={errorMessage} />
+          {errorMessage && <FormError error={errorMessage} />}
           <Button
             isLoading={isDeleting}
             onClick={(e) => handleOnDelete(e)}
