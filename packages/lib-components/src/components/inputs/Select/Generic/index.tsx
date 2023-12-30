@@ -82,6 +82,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasDescription,
     name,
     inPortal = true,
+    disabled,
     enableFilter = false,
     multiSelect = false,
   } = defaultsApplier(props);
@@ -234,7 +235,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
           {group.props.label && (
             <GroupLabel role="presentation" id={`select-${group.props.label}`} aria-hidden="true">
               {group.props.icon && group.props.icon}
-              <span>{group.props.label}</span>
+              <span key={`select-span-${group.props.label}`}>{group.props.label}</span>
             </GroupLabel>
           )}
           {filteredOptions}
@@ -313,7 +314,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         onBlur={onBlur}
         onFocus={onFocus}
         isOpen={open}
-        tabIndex={readOnly ? -1 : 0}
+        tabIndex={disabled ? -1 : 0}
         hasError={hasError}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}

@@ -6,7 +6,7 @@ export const Container = styled.div`
 `;
 
 export const Input = styled.input<{ hasError: boolean; isLoading: boolean }>`
-  border: 1px solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 1px solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   padding-right: ${({ theme }) => theme.spacing['2']};
   width: 100%;
 

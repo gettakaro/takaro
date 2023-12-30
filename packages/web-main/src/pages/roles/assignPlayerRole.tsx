@@ -19,6 +19,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
+import { RolesSelect } from 'components/selects';
 
 interface IFormInputs {
   id: string;
@@ -92,22 +93,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="Player" />
 
-                <Select
-                  control={control}
-                  name="roleId"
-                  label="Role"
-                  render={(selectedIndex) => (
-                    <div>{selectedIndex !== -1 ? roles[selectedIndex].name : roles[0].name}</div>
-                  )}
-                >
-                  <Select.OptionGroup label="Roles">
-                    {roles.map((role) => (
-                      <Select.Option key={role.id} value={role.id}>
-                        {role.name}
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
+                <RolesSelect control={control} name="roleId" />
 
                 <Select
                   control={control}

@@ -6,4 +6,5 @@ export {
   useInfiniteUsers,
   useUser,
   useInviteUser,
+  useUserRemove,
 } from './queries';
