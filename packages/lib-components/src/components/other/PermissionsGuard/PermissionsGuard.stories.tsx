@@ -1,10 +1,22 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { PermissionsGuard, PermissionsGuardProps, PERMISSIONS } from '.';
+import { Alert } from '../../feedback';
 
 export default {
   title: 'Other/PermissionsGuard',
   component: PermissionsGuard,
+  decorators: [
+    (story) => (
+      <div>
+        <Alert
+          variant="warning"
+          text="It is unlikely you will use THIS permissionguard directly. There should be a specific permissionguard in web-* application"
+        />
+        {story()}
+      </div>
+    ),
+  ],
 } as Meta<PermissionsGuardProps>;
 
 export const Default: StoryObj<typeof PermissionsGuard> = {
