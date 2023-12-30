@@ -92,13 +92,14 @@ export const FileTabs: FC<FileTabsProps> = ({ closableTabs, dirtyFiles, setDirty
     */
   };
 
+  /*
   const _findTab = (filePath: string) => {
     const tab = sandpack.visibleFiles.filter((c) => `${c}` === filePath)[0];
     return {
       tab,
       index: sandpack.visibleFiles.indexOf(tab),
     };
-  };
+  };*/
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -161,7 +162,7 @@ const Tab: FC<TabProps> = ({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (item, monitor) => {
+    end: (_item, monitor) => {
       const { filePath: droppedId } = monitor.getItem();
       const didDrop = monitor.didDrop();
       if (!didDrop) {
