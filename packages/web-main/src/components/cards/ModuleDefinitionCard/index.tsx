@@ -1,12 +1,13 @@
 import { ModuleOutputDTO } from '@takaro/apiclient';
-import { Company, Tooltip, Dialog, Button, IconButton, Card } from '@takaro/lib-components';
+import { Company, Tooltip, Dialog, Button, IconButton, Card, Dropdown, PERMISSIONS } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
+import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { SpacedRow, ActionIconsContainer } from '../style';
 import { CardBody } from '../style';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -21,6 +22,16 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     e.stopPropagation();
     await mutateAsync({ id: mod.id });
     setOpenDialog(false);
+  };
+
+  const handleOnEditClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate(PATHS.modules.update(mod.id));
+  };
+
+  const handleOnDeleteClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenDialog(true);
   };
 
   return (
@@ -40,37 +51,26 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       iconColor="secondary"
                     />
                   </Tooltip.Trigger>
-                  <Tooltip.Content>This is a built-in module, you cannot edit or delete it</Tooltip.Content>
+                  <Tooltip.Content>
+                    This is a built-in module, you cannot edit or delete it.
+                    <br />
+                    You can however copy it and edit the copy.
+                    <br />
+                    Open the module by clicking on it.
+                  </Tooltip.Content>
                 </Tooltip>
               ) : (
-                <>
-                  <Tooltip>
-                    <Tooltip.Trigger>
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(PATHS.modules.update(mod.id));
-                        }}
-                        ariaLabel="Edit module"
-                        icon={<EditIcon key={`edit-module-icon-${mod.id}`} />}
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Edit module</Tooltip.Content>
-                  </Tooltip>
-                  <Tooltip>
-                    <Tooltip.Trigger>
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDialog(true);
-                        }}
-                        ariaLabel="Delete module"
-                        icon={<DeleteIcon key={`remove-module-icon-${mod.id}`} />}
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Delete module</Tooltip.Content>
-                  </Tooltip>
-                </>
+                <PermissionsGuard requiredPermissions={[[PERMISSIONS.MANAGE_MODULES]]}>
+                  <Dropdown>
+                    <Dropdown.Trigger asChild>
+                      <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                    </Dropdown.Trigger>
+                    <Dropdown.Menu>
+                      <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit module" />
+                      <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete module" />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </PermissionsGuard>
               )}
             </ActionIconsContainer>
           </SpacedRow>

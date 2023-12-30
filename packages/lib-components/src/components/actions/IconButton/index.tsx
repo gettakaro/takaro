@@ -8,7 +8,6 @@ export interface IconButtonProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon: ReactElement;
   disabled?: boolean;
-
   /// Label for screen readers, must be descriptive of the action.
   ariaLabel: string;
 }

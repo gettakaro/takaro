@@ -85,11 +85,8 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
       </Card>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
-          <Dialog.Heading>
-            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </Dialog.Heading>
+          <Dialog.Heading>Module uninstall</Dialog.Heading>
           <Dialog.Body>
-            <h2>Uninstall module</h2>
             <p>
               Are you sure you want to uninstall the module <strong>{mod.name}</strong>? This action is irreversible!
             </p>

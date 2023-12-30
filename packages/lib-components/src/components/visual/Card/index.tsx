@@ -9,6 +9,7 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
     variant === 'outline' ? theme.colors.background : theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   padding: ${({ theme }) => theme.spacing[2]};
+  cursor: ${({ canClick }) => (canClick ? 'pointer' : 'default')};
 
   &:focus-within {
     border-color: none;
