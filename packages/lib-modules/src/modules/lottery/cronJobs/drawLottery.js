@@ -18,20 +18,9 @@ async function drawWinner(takaro, gameServerId, tickets) {
   const randomIndex = Math.floor(Math.random() * tickets.length);
   const winnerTicket = tickets[randomIndex];
 
-  const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;
-  const winnerPog = (
-    await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: {
-        gameServerId: [gameServerId],
-        playerId: [winner.id],
-      },
-    })
-  ).data.data[0];
+  const winner = await takaro.player.playerControllerGetOne(winnerTicket.playerId);
 
-  return {
-    name: winner.name,
-    pogId: winnerPog.id,
-  };
+  return winner.data.data;
 }
 
 async function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {

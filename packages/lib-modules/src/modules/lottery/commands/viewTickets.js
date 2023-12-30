@@ -18,7 +18,7 @@ async function main() {
         gameServerId,
         key: varKey,
         moduleId: mod.id,
-        playerId: player.id,
+        playerId: player.playerId,
       },
     })
   ).data.data;

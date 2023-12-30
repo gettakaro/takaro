@@ -51,18 +51,9 @@ async function main() {
   }
 
   if (args.amount > 1) {
-    const pog = (
-      await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
-        filters: {
-          playerId: [player.playerId],
-          gameServerId: [gameServerId],
-        },
-      })
-    ).data.data[0];
-
     const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
 
-    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(pog.id, {
+    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(player.id, {
       currency: amount,
     });
   }

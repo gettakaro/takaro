@@ -141,20 +141,26 @@ const tests = [
     test: async function () {
       const wantAmount = 10;
 
+      const waitForBuyEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/buyTicket ${wantAmount}}`,
         playerId: this.setupData.players[0].id,
       });
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      await waitForBuyEvents;
+
+      const waitForViewEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/viewTickets',
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[1].data.msg).to.be.eq(`You have bought ${wantAmount} tickets.`);
+      const events = await waitForViewEvent;
+
+      expect(events.length).to.be.eq(1);
+      expect(events[0].data.msg).to.be.eq(`You have bought ${wantAmount} tickets.`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
