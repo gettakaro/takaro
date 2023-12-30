@@ -6,6 +6,7 @@ import {
   IEventQueueData,
   IHookJobData,
   IGameServerQueueData,
+  ICSMMImportData,
 } from './dataDefinitions.js';
 import { TakaroQueue } from './TakaroQueue.js';
 
@@ -40,6 +41,9 @@ class QueuesService {
     },
     playerSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
+    },
+    csmmImport: {
+      queue: new TakaroQueue<ICSMMImportData>(config.get('queues.csmmImport.name')),
     },
   };
 

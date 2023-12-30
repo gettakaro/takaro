@@ -49,7 +49,7 @@ class SteamApi {
         return config;
       });
 
-      axios.interceptors.request.use((request) => {
+      this._client.interceptors.request.use((request) => {
         this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
           method: request.method,
           url: request.url,

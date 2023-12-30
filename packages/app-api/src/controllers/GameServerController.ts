@@ -29,7 +29,19 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  UploadedFile,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -190,6 +202,16 @@ class BanPlayerOutputDTO extends APIOutput<BanDTO[]> {
   declare data: BanDTO[];
 }
 
+class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
+  @IsString()
+  id!: string;
+}
+
+class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
+  @Type(() => ImportOutputDTO)
+  @ValidateNested()
+  declare data: ImportOutputDTO;
+}
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -411,6 +433,27 @@ export class GameServerController {
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const result = await service.getPlayers(params.id);
+    return apiResponse(result);
+  }
+
+  @Get('/gameserver/import/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(ImportOutputDTOAPI)
+  async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getImport(params.id);
+    return apiResponse(result);
+  }
+
+  @Post('/gameserver/import')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Import a gameserver from CSMM',
+  })
+  @ResponseSchema(ImportOutputDTOAPI)
+  async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.import(_file);
     return apiResponse(result);
   }
 }

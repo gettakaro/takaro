@@ -171,9 +171,12 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
     case EventOutputDTOEventNameEnum.RoleCreated:
     case EventOutputDTOEventNameEnum.RoleDeleted:
     case EventOutputDTOEventNameEnum.RoleUpdated:
+    case EventOutputDTOEventNameEnum.RoleAssigned:
+    case EventOutputDTOEventNameEnum.RoleRemoved:
       properties = (
         <>
-          <EventProperty name="user" value={event.user?.name} />
+          {event.player ? <EventProperty name="player" value={event.player?.name} /> : null}
+          {event.user ? <EventProperty name="user" value={event.user?.name} /> : null}
           {event.meta && 'role' in event.meta && 'name' in (event.meta as any).role ? (
             <EventProperty name="role" value={(event.meta as any).role.name} />
           ) : null}
