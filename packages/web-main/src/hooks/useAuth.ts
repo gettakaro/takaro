@@ -52,9 +52,11 @@ export function useAuth() {
     cachedClient = createClient(config);
   }
 
-  async function logOut(): Promise<void> {
+  async function logOut(returnTo?: string): Promise<void> {
     if (!cachedClient) cachedClient = createClient(config);
-    const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    const logoutFlowRes = await cachedClient.createBrowserLogoutFlow({
+      ...(returnTo ? { returnTo } : {}),
+    });
     cachedClient = null;
     window.location.href = logoutFlowRes.data.logout_url;
     return Promise.resolve();
