@@ -57,7 +57,7 @@ export const RolesSelect: FC<CustomSelectProps> = ({
         {roles
           .filter((role) => !role.system)
           .map(({ name, id }) => (
-            <Select.Option key={`select-${name}`} value={id}>
+            <Select.Option key={`select-${name}-option`} value={id}>
               <Inner>
                 <span>{name}</span>
               </Inner>
@@ -69,7 +69,7 @@ export const RolesSelect: FC<CustomSelectProps> = ({
         {roles
           .filter((role) => role.system)
           .map(({ name, id }) => (
-            <Select.Option key={`select-${name}`} value={id}>
+            <Select.Option key={`select-${name}-option`} value={id}>
               <Inner>
                 <span>{name}</span>
               </Inner>
