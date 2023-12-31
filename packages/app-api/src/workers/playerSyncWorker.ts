@@ -45,11 +45,6 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       ...domains.results.map(async (domain) => {
         const promises = [];
 
-        const playerService = new PlayerService(domain.id);
-        promises.push(
-          playerService.handleSteamSync().then(() => job.log(`Synced steam players for domain: ${domain.id}`))
-        );
-
         const gameserverService = new GameServerService(domain.id);
         const gameServers = await gameserverService.find({});
         promises.push(
