@@ -7,7 +7,12 @@ const group = 'lottery suite';
 const ticketCost = 50;
 const playerStartBalance = 1000;
 
-async function expectNoTicketVars(client: Client, gameServerId: string, moduleId: string) {
+async function expectTicketAmountLengthToBe(
+  client: Client,
+  gameServerId: string,
+  moduleId: string,
+  expectedAmount = 0
+) {
   const ticketVars = await client.variable.variableControllerSearch({
     filters: {
       gameServerId: [gameServerId],
@@ -16,7 +21,11 @@ async function expectNoTicketVars(client: Client, gameServerId: string, moduleId
     },
   });
 
-  expect(ticketVars.data.data.length).to.be.eq(0);
+  const amount = ticketVars.data.data.reduce((acc, variable) => {
+    return acc + parseInt(JSON.parse(variable.value).amount, 10);
+  }, 0);
+
+  expect(expectedAmount).to.be.eq(amount);
 }
 
 const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
@@ -38,7 +47,7 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
     });
   });
 
-  await Promise.all(tasks);
+  await Promise.allSettled(tasks);
   await waitForEvents;
 
   await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.lotteryModule.id, {
@@ -106,8 +115,7 @@ const tests = [
       ).data.data[0];
 
       expect(pog.currency).to.be.eq(playerStartBalance - ticketPrice);
-
-      expectNoTicketVars(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
+      await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 1);
 
       events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -131,6 +139,7 @@ const tests = [
       ).data.data[0];
 
       expect(pog.currency).to.be.eq(playerStartBalance - 2 * ticketPrice);
+      await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 2);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -184,7 +193,7 @@ const tests = [
         });
       });
 
-      await Promise.all(asyncTasks);
+      await Promise.allSettled(asyncTasks);
       await ticketEvents;
 
       const lotteryEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
@@ -295,7 +304,7 @@ const tests = [
 
       expect(pog.currency).to.be.eq(playerStartBalance);
 
-      expectNoTicketVars(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
+      expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

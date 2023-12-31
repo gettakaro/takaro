@@ -18,7 +18,7 @@ async function drawWinner(takaro, gameServerId, tickets) {
   const randomIndex = Math.floor(Math.random() * tickets.length);
   const winnerTicket = tickets[randomIndex];
 
-  const winner = await takaro.player.playerControllerGetOne(winnerTicket.playerId);
+  const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;
   const pog = await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
     filters: {
       gameServerId: [gameServerId],
@@ -27,7 +27,7 @@ async function drawWinner(takaro, gameServerId, tickets) {
   });
 
   return {
-    name: winner.data.data.name,
+    name: winner.name,
     pogId: pog.data.data[0].id,
   };
 }
@@ -58,7 +58,7 @@ async function refundPlayer(takaro, gameServerId, playerId, amount, currencyName
 
 async function cleanUp(takaro, tickets) {
   const deleteTasks = tickets.map((ticket) => takaro.variable.variableControllerDelete(ticket.id));
-  await Promise.all(deleteTasks);
+  await Promise.allSettled(deleteTasks);
 }
 
 async function main() {
