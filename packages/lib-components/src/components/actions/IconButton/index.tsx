@@ -10,6 +10,7 @@ export interface IconButtonProps {
   disabled?: boolean;
   /// Label for screen readers, must be descriptive of the action.
   ariaLabel: string;
+  badge?: string;
 }
 
 const getSize = (size: Size) => {
@@ -28,10 +29,11 @@ const getSize = (size: Size) => {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ icon, color = 'primary', size = 'medium', disabled, onClick = () => {}, ariaLabel }, ref) => {
+  ({ icon, color = 'primary', size = 'medium', disabled, onClick = () => {}, ariaLabel, badge }, ref) => {
     return (
       <Default type="button" color={color} onClick={onClick} ref={ref} disabled={disabled} aria-label={ariaLabel}>
         {cloneElement(icon, { size: getSize(size) })}
+        {badge && <div>{badge}</div>}
       </Default>
     );
   }
