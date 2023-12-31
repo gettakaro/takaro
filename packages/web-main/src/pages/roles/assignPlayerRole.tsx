@@ -5,8 +5,8 @@ import {
   Button,
   Select,
   TextField,
-  Loading,
   DatePicker,
+  DrawerSkeleton,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayerRoleAssign, useRoles } from 'queries/roles';
@@ -38,7 +38,7 @@ export const AssignPlayerRole: FC = () => {
   const { data: gameservers, isLoading: isLoadingGameServers } = useGameServers();
 
   if (isLoadingRoles || isLoadingGameServers || !gameservers || !roles) {
-    return <Loading />;
+    return <DrawerSkeleton />;
   }
 
   const gameServerOptions = [
@@ -123,6 +123,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                   loading={isLoading}
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
+                  allowPastDates={false}
                   timePickerOptions={{ interval: 30 }}
                   format={DateTime.DATETIME_SHORT}
                 />

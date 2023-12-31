@@ -23,7 +23,7 @@ export const VariablesDeleteDialog: FC<VariablesDeleteProps> = ({ variableIds, o
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <Dialog.Content>
         <Dialog.Heading>
-          <span>delete variables</span>
+          <span>Delete: variables</span>
         </Dialog.Heading>
         <Dialog.Body>
           <p>

@@ -8,7 +8,7 @@ import {
   PlayerLocation,
   StatsResponse,
 } from './apiResponses.js';
-import { errors } from '@takaro/util';
+import { addCounterToAxios, errors } from '@takaro/util';
 
 export class SdtdApiClient {
   private client: Axios;
@@ -16,6 +16,11 @@ export class SdtdApiClient {
   constructor(private config: SdtdConnectionInfo) {
     this.client = axios.create({
       baseURL: this.url,
+    });
+
+    addCounterToAxios(this.client, {
+      name: 'sdtd_api_requests_total',
+      help: 'Total number of requests to the 7D2D API',
     });
 
     this.client.interceptors.request.use((req) => {

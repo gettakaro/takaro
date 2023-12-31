@@ -1,14 +1,16 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, PERMISSIONS } from '@takaro/lib-components';
-import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
+import { Header, TitleContainer } from './style';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 
-import { AiOutlineMenu as MenuIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { useGameServerRemove } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
+import { CardBody } from '../style';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -39,22 +41,18 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   return (
     <>
-      <Container
-        onClick={() => navigate(PATHS.gameServer.dashboard(id))}
-        tabIndex={0}
-        data-testid={`gameserver-${id}-card`}
-      >
-        <Body>
+      <Card role="link" onClick={() => navigate(PATHS.gameServer.dashboard(id))} data-testid={`gameserver-${id}-card`}>
+        <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.MANAGE_GAMESERVERS]]}>
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.ReadGameservers, PERMISSIONS.ManageGameservers]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
-                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit server" />
-                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete server" />
+                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit gameserver" />
+                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete gameserver" />
                 </Dropdown.Menu>
               </Dropdown>
             </PermissionsGuard>
@@ -70,15 +68,12 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               </Tooltip>
             </div>
           </TitleContainer>
-        </Body>
-      </Container>
+        </CardBody>
+      </Card>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
-          <Dialog.Heading>
-            gameserver: <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
-          </Dialog.Heading>
-          <StyledDialogBody size="medium">
-            <h2>Delete gameserver</h2>
+          <Dialog.Heading>delete: gameserver</Dialog.Heading>
+          <Dialog.Body size="medium">
             <p>
               Are you sure you want to delete <strong>{name}</strong>?
             </p>
@@ -89,23 +84,9 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               text={'Delete gameserver'}
               color="error"
             />
-          </StyledDialogBody>
+          </Dialog.Body>
         </Dialog.Content>
       </Dialog>
     </>
-  );
-};
-
-interface EmptyGameServerCardProps {
-  onClick: () => void;
-  title?: string;
-}
-
-export const EmptyGameServerCard: FC<EmptyGameServerCardProps> = ({ onClick, title }) => {
-  return (
-    <EmptyContainer onClick={onClick}>
-      <PlusIcon size={24} />
-      <h3>{title ? title : 'Gameserver'}</h3>
-    </EmptyContainer>
   );
 };

@@ -1,9 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import { styled } from '../../../styled';
-import {
-  AiOutlineCopy as CopyIcon,
-  AiOutlineCheck as CheckmarkIcon,
-} from 'react-icons/ai';
+import { AiOutlineCopy as CopyIcon, AiOutlineCheck as CheckmarkIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
 
 const Container = styled.div<{ maxWidth: number | undefined; copied: boolean }>`
@@ -16,11 +13,8 @@ const Container = styled.div<{ maxWidth: number | undefined; copied: boolean }>`
     width: ${({ maxWidth }): string => `${maxWidth}px`};
     padding: ${({ theme }) =>
       `${theme.spacing['0_75']} ${theme.spacing[4]} ${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
-    border: 0.1rem solid
-      ${({ copied, theme }): string =>
-        copied ? theme.colors.primary : theme.colors.background};
-    color: ${({ theme, copied }): string =>
-      copied ? theme.colors.primary : theme.colors.text};
+    border: 0.1rem solid ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.background)};
+    color: ${({ theme, copied }): string => (copied ? theme.colors.primary : theme.colors.text)};
     cursor: default;
 
     &:hover {
@@ -35,10 +29,8 @@ const IconContainer = styled.div<{ copied: boolean }>`
   right: 7px;
 
   svg {
-    fill: ${({ copied, theme }): string =>
-      copied ? theme.colors.primary : theme.colors.background};
-    stroke: ${({ copied, theme }): string =>
-      copied ? theme.colors.primary : theme.colors.background};
+    fill: ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.background)};
+    stroke: ${({ copied, theme }): string => (copied ? theme.colors.primary : theme.colors.background)};
     cursor: pointer;
   }
 `;
@@ -69,19 +61,9 @@ export const ClipBoard: FC<ClipBoardProps> = ({ text, maxWidth = 200 }) => {
 
   return (
     <Container copied={copied} maxWidth={maxWidth} role="button" tabIndex={-1}>
-      <input
-        aria-describedby="clipboard-input-error"
-        aria-invalid="false"
-        readOnly
-        type="text"
-        value={text}
-      />
+      <input aria-describedby="clipboard-input-error" aria-invalid="false" readOnly type="text" value={text} />
       <IconContainer copied={copied}>
-        {copied ? (
-          <CheckmarkIcon size={20} />
-        ) : (
-          <CopyIcon onClick={handleCopy} size={20} />
-        )}
+        {copied ? <CheckmarkIcon size={20} /> : <CopyIcon onClick={handleCopy} size={20} />}
       </IconContainer>
     </Container>
   );

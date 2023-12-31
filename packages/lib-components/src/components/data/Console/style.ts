@@ -2,13 +2,12 @@ import { styled } from '../../../styled';
 
 export const Wrapper = styled.div`
   height: 100%;
-
   font-weight: 500;
-
+  max-height: 700px;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   position: relative;
-
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border-top-right-radius: ${({ theme }) => theme.borderRadius.large};
+  border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 export const Header = styled.div`
@@ -26,4 +25,5 @@ export const Header = styled.div`
 export const MessageContainer = styled.div`
   min-height: 550px;
   height: calc(100% - 50px);
+  border-radius: 0;
 `;
