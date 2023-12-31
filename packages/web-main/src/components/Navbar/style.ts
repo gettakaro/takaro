@@ -87,12 +87,7 @@ export const Nav = styled.nav`
     }
 
     &.active {
-      svg {
-        fill: ${({ theme }) => theme.colors.primary};
-      }
-      p {
-        color: white;
-      }
+      background-color: ${({ theme }) => theme.colors.backgroundAccent};
     }
   }
 `;

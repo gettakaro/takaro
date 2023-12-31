@@ -38,7 +38,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
-    scrollbar-gutter: stable;
   }
 
   body{
