@@ -10,6 +10,7 @@ import {
   Dialog,
   Button,
   TextField,
+  DateFormatter,
 } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -161,6 +162,20 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
+    columnHelper.accessor('createdAt', {
+      header: 'Created at',
+      id: 'createdAt',
+      meta: { type: 'datetime' },
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('updatedAt', {
+      header: 'Updated at',
+      id: 'updatedAt',
+      meta: { type: 'datetime' },
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
+      enableSorting: true,
+    }),
 
     columnHelper.display({
       header: 'Actions',
@@ -286,7 +301,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
 
   return (
     <>
-      <Dropdown>
+      <Dropdown placement="left">
         <Dropdown.Trigger asChild>
           <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
         </Dropdown.Trigger>

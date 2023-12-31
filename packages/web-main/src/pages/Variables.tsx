@@ -1,5 +1,5 @@
 import { FC, Fragment, useMemo, useState } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, Button, Divider } from '@takaro/lib-components';
+import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useVariables } from 'queries/variables';
@@ -83,14 +83,14 @@ const Variables: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.display({
