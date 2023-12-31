@@ -36,7 +36,7 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <Dialog.Content>
         <Dialog.Heading>
-          <span>Delete User</span>
+          <span>Delete: user</span>
         </Dialog.Heading>
         <Dialog.Body>
           <p>

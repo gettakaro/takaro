@@ -15,7 +15,7 @@ const User = styled.div`
   align-items: center;
   width: 100%;
   gap: ${({ theme }) => theme.spacing['0_75']};
-  border: 1px solid ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   padding-right: ${({ theme }) => theme.spacing[1]};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 

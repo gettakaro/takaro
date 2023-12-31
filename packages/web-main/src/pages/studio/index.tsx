@@ -1,15 +1,13 @@
 import { FC } from 'react';
 import { styled, CollapseList } from '@takaro/lib-components';
-import { Editor } from 'components/modules/Editor';
+import { Editor } from './Editor';
 import { Resizable } from 're-resizable';
-import { FileExplorer } from 'components/modules/FileExplorer';
+import { FileExplorer } from './FileExplorer';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
-import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
-import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
-import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
-import { Header } from 'components/studio/Header';
+import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
+import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 

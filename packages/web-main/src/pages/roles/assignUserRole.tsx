@@ -85,6 +85,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
+                  allowPastDates={false}
                   format={DateTime.DATETIME_SHORT}
                 />
               </CollapseList.Item>

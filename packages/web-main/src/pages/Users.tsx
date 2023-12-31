@@ -10,9 +10,8 @@ import {
   Button,
   TextField,
   FormError,
-  PERMISSIONS,
 } from '@takaro/lib-components';
-import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
 import { useNavigate } from 'react-router-dom';
@@ -123,7 +122,7 @@ interface IFormInputs {
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const { hasPermission: hasManageUsersPermission, isLoading: isLoadingManageUserPermission } = useHasPermission([
-    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.ManageUsers,
   ]);
 
   const validationSchema = useMemo(
@@ -189,10 +188,10 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
-    PERMISSIONS.READ_USERS,
+    PERMISSIONS.ReadUsers,
   ]);
   const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
-    PERMISSIONS.MANAGE_ROLES,
+    PERMISSIONS.ManageRoles,
   ]);
 
   return (
