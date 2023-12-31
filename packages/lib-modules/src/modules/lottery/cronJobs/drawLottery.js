@@ -19,8 +19,17 @@ async function drawWinner(takaro, gameServerId, tickets) {
   const winnerTicket = tickets[randomIndex];
 
   const winner = await takaro.player.playerControllerGetOne(winnerTicket.playerId);
+  const pog = await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
+    filters: {
+      gameServerId: [gameServerId],
+      playerId: [winner.id],
+    },
+  });
 
-  return winner.data.data;
+  return {
+    name: winner.data.data.name,
+    pogId: pog.data.data[0].id,
+  };
 }
 
 async function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {
@@ -81,6 +90,7 @@ async function main() {
 
       return;
     }
+
     if (tickets.length === 1) {
       await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
         message: 'Only one person has bought a ticket. The lottery has been cancelled.',
