@@ -24,6 +24,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new ChatBridge(),
       new Gimme(),
       new HighPingKicker(),
+      // new Bounty(),
       new Economy(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));

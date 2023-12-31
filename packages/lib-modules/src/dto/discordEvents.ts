@@ -1,9 +1,17 @@
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
 
 export enum DiscordEvents {
   DISCORD_MESSAGE = 'discord-message',
+}
+
+export class BaseDiscordEvent<T> extends TakaroDTO<T> {
+  @IsDate()
+  timestamp: Date = new Date();
+
+  @IsEnum(DiscordEvents)
+  type: string;
 }
 
 export class EventDiscordUser extends TakaroDTO<EventDiscordUser> {
@@ -31,7 +39,7 @@ export class EventDiscordChannel extends TakaroDTO<EventDiscordChannel> {
   name: string;
 }
 
-export class HookEventDiscordMessage extends TakaroDTO<HookEventDiscordMessage> {
+export class HookEventDiscordMessage extends BaseDiscordEvent<HookEventDiscordMessage> {
   @IsString()
   type = DiscordEvents.DISCORD_MESSAGE;
 

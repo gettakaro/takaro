@@ -19,7 +19,6 @@ export type EventMapping = {
   [GameEvents.CHAT_MESSAGE]: EventChatMessage;
   [GameEvents.PLAYER_DEATH]: EventPlayerDeath;
   [GameEvents.ENTITY_KILLED]: EventEntityKilled;
-
   [DiscordEvents.DISCORD_MESSAGE]: HookEventDiscordMessage;
 };
 
