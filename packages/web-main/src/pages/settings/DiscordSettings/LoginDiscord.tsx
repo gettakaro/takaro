@@ -25,17 +25,10 @@ export const LoginDiscord: FC = () => {
 
   return (
     <Container>
-      <FaDiscord
-        size={48}
-        color={hasLinkedDiscord ? colors.primary : colors.background}
-      />
-      <span>
-        {hasLinkedDiscord ? `ID: ${session.discordId}` : 'Not connected yet'}
-      </span>
-      <a
-        href={`${config.apiUrl}/auth/discord?redirect=${window.location.href}`}
-      >
-        <Button text={hasLinkedDiscord ? `Update` : 'Connect'} />
+      <FaDiscord size={48} color={hasLinkedDiscord ? colors.primary : colors.background} />
+      <span>{hasLinkedDiscord ? `ID: ${session.discordId}` : 'Not connected yet'}</span>
+      <a href={`${config.apiUrl}/auth/discord?redirect=${window.location.href}`}>
+        <Button text={hasLinkedDiscord ? 'Update' : 'Connect'} />
       </a>
     </Container>
   );

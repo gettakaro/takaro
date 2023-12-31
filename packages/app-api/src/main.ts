@@ -35,6 +35,7 @@ import { ItemController } from './controllers/ItemController.js';
 import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
+import { kpi } from './lib/kpi.js';
 
 export const server = new HTTP(
   {
@@ -108,6 +109,8 @@ async function main() {
 
   await getSocketServer(server.server as HttpServer);
   await server.start();
+
+  await kpi.start();
 
   log.info('🚀 Server started');
 

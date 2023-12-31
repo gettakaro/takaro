@@ -1,8 +1,7 @@
 import { Loading, Skeleton, styled } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
-import { ModuleCards } from '../../components/modules/Cards/style';
-import { ModuleCardInstall } from '../../components/modules/Cards/ModuleCardInstall';
+import { ModuleInstallCard, CardList } from 'components/cards';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
 import { useInfiniteModules } from 'queries/modules';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
@@ -39,11 +38,11 @@ const GameServerModules: FC = () => {
 
   if (isLoading) {
     return (
-      <ModuleCards>
+      <CardList>
         {Array.from({ length: 10 }).map((_, i) => (
           <Skeleton key={i} variant="rectangular" height="100%" width="100%" />
         ))}
-      </ModuleCards>
+      </CardList>
     );
   }
 
@@ -57,17 +56,17 @@ const GameServerModules: FC = () => {
   return (
     <>
       <SubHeader>Installed</SubHeader>
-      <ModuleCards>
+      <CardList>
         {installedModules.map((mod) => (
-          <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
+          <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
         ))}
-      </ModuleCards>
+      </CardList>
       <SubHeader>Available</SubHeader>
-      <ModuleCards>
+      <CardList>
         {availableModules.map((mod) => (
-          <ModuleCardInstall key={mod.id} mod={mod} installation={mod.installation} />
+          <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
         ))}
-      </ModuleCards>
+      </CardList>
       <Outlet />
     </>
   );

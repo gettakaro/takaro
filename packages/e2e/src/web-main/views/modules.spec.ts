@@ -62,13 +62,8 @@ test('Creating module with config, saves the config', async ({ page, takaro }) =
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(moduleName)).toBeVisible();
-
-  await moduleDefinitionsPage.open(moduleName);
-  await page
-    .getByRole('link', { name: 'My new module Edit module Delete module No description provided.' })
-    .getByRole('button', { name: 'Edit module' })
-    .click();
-
+  await page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('menuitem', { name: 'Edit module' }).click();
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 

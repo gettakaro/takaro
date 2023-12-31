@@ -1,12 +1,13 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip } from '@takaro/lib-components';
-import { Body, Header, Container, EmptyContainer, TitleContainer, StyledDialogBody } from './style';
+import { Button, Card, Chip, Dialog, Dropdown, IconButton, Tooltip } from '@takaro/lib-components';
+import { Header, TitleContainer } from './style';
 import { useNavigate } from 'react-router-dom';
 
-import { AiOutlinePlus as PlusIcon, AiOutlineMenu as MenuIcon } from 'react-icons/ai';
+import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { PATHS } from 'paths';
 import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
+import { CardBody } from '../style';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -31,10 +32,20 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   return (
     <>
-      {/* TODO: we might want to add a click event here that when card is clicked user is navigated to list of player or users that have this role active */}
-      <Container>
-        <Body>
+      <Card>
+        <CardBody>
           <Header>
+            {system ? (
+              <Tooltip placement="top">
+                <Tooltip.Trigger asChild>
+                  <Chip label="system" color="primary" />
+                </Tooltip.Trigger>
+                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted</Tooltip.Content>
+              </Tooltip>
+            ) : (
+              <span />
+            )}
+
             <Dropdown>
               <Dropdown.Trigger asChild>
                 <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
@@ -46,28 +57,17 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
               </Dropdown.Menu>
             </Dropdown>
-            {system ? (
-              <Tooltip placement="top">
-                <Tooltip.Trigger asChild>
-                  <Chip label="system" color="primary" />
-                </Tooltip.Trigger>
-                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted</Tooltip.Content>
-              </Tooltip>
-            ) : null}
           </Header>
           <TitleContainer>
             <h3>Role: {name}</h3>
           </TitleContainer>
-        </Body>
-      </Container>
+        </CardBody>
+      </Card>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
-          <Dialog.Heading>
-            role: <span style={{ textTransform: 'capitalize' }}>{name}</span>{' '}
-          </Dialog.Heading>
-          <StyledDialogBody size="medium">
-            <h2>Delete role</h2>
+          <Dialog.Heading>Delete role</Dialog.Heading>
+          <Dialog.Body size="medium">
             <p>
               Are you sure you want to delete <strong>{name}</strong>?
             </p>
@@ -78,22 +78,9 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               text={'Delete role'}
               color="error"
             />
-          </StyledDialogBody>
+          </Dialog.Body>
         </Dialog.Content>
       </Dialog>
     </>
-  );
-};
-
-interface EmptyRolesCardProps {
-  onClick: () => void;
-}
-
-export const EmptyRolesCard: FC<EmptyRolesCardProps> = ({ onClick }) => {
-  return (
-    <EmptyContainer onClick={onClick}>
-      <PlusIcon size={24} />
-      <h3>role</h3>
-    </EmptyContainer>
   );
 };

@@ -27,8 +27,8 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     popOverPlacement,
     loading,
     description,
-    allowFutureDates,
-    allowPastDates,
+    allowFutureDates = true,
+    allowPastDates = true,
     customDateFilter,
   } = defaultsApplier(props);
 

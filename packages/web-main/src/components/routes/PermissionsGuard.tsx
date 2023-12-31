@@ -2,7 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { useHasPermission } from 'components/PermissionsGuard';
-import { Loading, PERMISSIONS } from '@takaro/lib-components';
+import { Loading } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 interface PermissionsRouteProps {
   permissions: PERMISSIONS[];

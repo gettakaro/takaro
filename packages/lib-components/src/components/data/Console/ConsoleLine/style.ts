@@ -1,6 +1,5 @@
 import { styled } from '../../../../styled';
 import { MessageType } from '../MessageModel';
-import { BsChevronExpand as EnterIcon } from 'react-icons/bs';
 
 export const Wrapper = styled.div<{
   messageType: MessageType;
@@ -24,13 +23,15 @@ export const Container = styled.div<{ isCollapsed: boolean }>`
 
   display: grid;
   align-content: start;
-  grid-template-columns: 4rem 20rem 1fr;
+  grid-template-columns: 4rem 18rem 1fr;
 
   margin: ${({ theme }) => theme.spacing[0]};
 `;
 
 export const IconContainer = styled.div<{ messageType: MessageType }>`
   padding-left: ${({ theme }) => theme.spacing['0_75']};
+  display: flex;
+  align-items: center;
   svg {
     fill: ${({ theme, messageType }) => {
       if (messageType === 'debug') return theme.colors.error;
@@ -42,7 +43,6 @@ export const IconContainer = styled.div<{ messageType: MessageType }>`
 
 export const TimestampContainer = styled.div`
   font-family: 'inconsolata';
-  margin-right: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const TextContainer = styled.div`
@@ -68,9 +68,10 @@ export const Header = styled.div<{ isCollapsed: boolean; type: MessageType }>`
 export const Body = styled.pre<{ isCollapsed: boolean; type: MessageType }>`
   display: ${({ isCollapsed }) => (isCollapsed ? 'none' : 'block')};
   font-family: 'inconsolata';
+  margin: 0;
 `;
 
-export const StyledExpandIcon = styled(EnterIcon)`
+export const ExpandIconContainer = styled.span`
   position: absolute;
   cursor: pointer;
   right: ${({ theme }) => theme.spacing['2']};

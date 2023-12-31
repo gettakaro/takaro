@@ -10,7 +10,7 @@ export const Container = styled.div`
   input {
     position: relative;
     width: 100%;
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.backgroundAccent};
     color: white;
     font-size: 110%;
     height: 40px;

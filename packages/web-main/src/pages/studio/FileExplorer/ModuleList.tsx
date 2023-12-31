@@ -48,15 +48,7 @@ export const ModuleList: FC<ModuleListProps> = ({
       ))}
 
       {modules.map((file) => {
-        return (
-          <File
-            key={file}
-            active={activeFile === file}
-            depth={depth}
-            filePath={file}
-            selectFile={selectFile}
-          />
-        );
+        return <File key={file} active={activeFile === file} depth={depth} filePath={file} selectFile={selectFile} />;
       })}
     </>
   );

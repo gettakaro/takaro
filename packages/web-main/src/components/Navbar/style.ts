@@ -67,6 +67,7 @@ export const Nav = styled.nav`
     transition: 0.2s transform ease-in-out;
     font-weight: 500;
     white-space: nowrap;
+    border: 1px solid transparent;
 
     span {
       display: flex;
@@ -74,7 +75,7 @@ export const Nav = styled.nav`
     }
 
     &:hover {
-      background-color: ${({ theme }) => theme.colors.background};
+      border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
     }
 
     p {
