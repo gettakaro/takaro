@@ -16,6 +16,7 @@ export interface IModuleTestsSetupData {
   onboardingModule: ModuleOutputDTO;
   economyModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
+  lotteryModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
   eventAwaiter: EventsAwaiter;
@@ -62,6 +63,9 @@ export const modulesTestSetup = async function (
   const onboardingModule = modules.find((m) => m.name === 'playerOnboarding');
   if (!onboardingModule) throw new Error('playerOnboarding module not found');
 
+  const lotteryModule = modules.find((m) => m.name === 'lottery');
+  if (!lotteryModule) throw new Error('lottery module not found');
+
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
 
@@ -91,6 +95,7 @@ export const modulesTestSetup = async function (
     onboardingModule,
     gimmeModule,
     economyModule,
+    lotteryModule,
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,
