@@ -50,6 +50,10 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         log.error(r.reason);
         await job.log(r.reason);
       }
+
+      if (r.status === 'fulfilled') {
+        await job.log(`Synced ${r.value.toString()} players`);
+      }
     }
 
     if (res.some((r) => r.status === 'rejected')) {

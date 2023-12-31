@@ -246,14 +246,18 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     );
   }
 
-  async handleSteamSync() {
+  /**
+   * Syncs steam data for all players that have steamId set
+   * @returns Number of players synced
+   */
+  async handleSteamSync(): Promise<number> {
     if (!config.get('steam.apiKey')) {
       this.log.warn('Steam API key not set, skipping sync');
-      return;
+      return 0;
     }
     const toRefresh = await this.repo.getPlayersToRefreshSteam();
 
-    if (!toRefresh.length) return;
+    if (!toRefresh.length) return 0;
 
     const [summaries, bans] = await Promise.all([
       steamApi.getPlayerSummaries(toRefresh),
@@ -282,5 +286,6 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     });
 
     await this.repo.setSteamData(fullData);
+    return toRefresh.length;
   }
 }
