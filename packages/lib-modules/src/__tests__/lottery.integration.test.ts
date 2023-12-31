@@ -38,17 +38,19 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
 
   await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.economyModule.id);
 
-  const waitForEvents = data.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, data.players.length);
+  const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+    filters: {
+      gameServerId: [data.gameserver.id],
+    },
+  });
 
-  const tasks = data.players.map(async (player) => {
-    return await this.client.command.commandControllerTrigger(data.gameserver.id, {
-      msg: `/grantcurrency ${player.name} ${playerStartBalance}`,
-      playerId: player.id,
+  const tasks = pogs.data.data.map((pog) => {
+    return this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, {
+      currency: playerStartBalance,
     });
   });
 
   await Promise.allSettled(tasks);
-  await waitForEvents;
 
   await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.lotteryModule.id, {
     systemConfig: JSON.stringify({

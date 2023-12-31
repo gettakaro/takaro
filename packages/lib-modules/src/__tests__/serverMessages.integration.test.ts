@@ -81,7 +81,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
 
       // Trigger it multiple times
-      await Promise.all(
+      await Promise.allSettled(
         Array.from({ length: numberOfEvents }).map(() => {
           return this.client.cronjob.cronJobControllerTrigger({
             cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
