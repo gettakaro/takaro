@@ -36,6 +36,7 @@ import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 import { kpi } from './lib/kpi.js';
+import { SteamSyncWorker } from './workers/steamSyncWorker.js';
 
 export const server = new HTTP(
   {
@@ -102,6 +103,9 @@ async function main() {
 
     new PlayerSyncWorker();
     log.info('👷 playerSync worker started');
+
+    new SteamSyncWorker();
+    log.info('👷 steamSync worker started');
 
     new CSMMImportWorker();
     log.info('👷 csmmImport worker started');
