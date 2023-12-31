@@ -78,6 +78,8 @@ class KPI {
                 domainInstalledModules += installedModules.length;
               }
 
+              this.gauges.installedModules.set({ domain: domainId }, domainInstalledModules);
+
               return {
                 gameServers: gameServers.total,
                 players: players.total,
