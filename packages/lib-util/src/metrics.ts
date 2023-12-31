@@ -86,7 +86,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           counterConfiguration.name,
           new Counter({
             ...counterConfiguration,
-            labelNames: ['status', 'domain', 'gameServer', 'method', 'url'],
+            labelNames: ['status', 'domain', 'gameServer', 'method', 'url', 'statusCode'],
           })
         );
       }
@@ -100,6 +100,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
         gameServer: ctx.data.gameServer,
         method: config.config.method?.toUpperCase(),
         url: sanitizeUrl(config.config),
+        statusCode: config.status,
       });
 
       return config;
@@ -110,7 +111,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           counterConfiguration.name,
           new Counter({
             ...counterConfiguration,
-            labelNames: ['status', 'domain', 'gameServer', 'method', 'url'],
+            labelNames: ['status', 'domain', 'gameServer', 'method', 'url', 'statusCode'],
           })
         );
       }
@@ -125,6 +126,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           gameServer: ctx.data.gameServer,
           method: error.config?.method?.toUpperCase(),
           url: sanitizeUrl(error.config),
+          statusCode: error.response?.status,
         });
       } else {
         counter.inc({
