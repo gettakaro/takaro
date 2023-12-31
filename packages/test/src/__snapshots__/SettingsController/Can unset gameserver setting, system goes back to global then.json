@@ -1,0 +1,17 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "commandPrefix": "global!"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Can unset gameserver setting, system goes back to global then",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

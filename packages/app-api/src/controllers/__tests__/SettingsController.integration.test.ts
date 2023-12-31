@@ -119,6 +119,34 @@ const tests = [
       return res;
     },
   }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Can unset gameserver setting, system goes back to global then',
+    setup: async function () {
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
+    },
+    test: async function () {
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: 'global!',
+      });
+
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: 'server!',
+        gameServerId: this.setupData.id,
+      });
+
+      const res = await this.client.settings.settingsControllerGet(['commandPrefix'], this.setupData.id);
+      expect(res.data.data.commandPrefix).to.be.eq('server!');
+
+      await this.client.settings.settingsControllerDelete('commandPrefix', this.setupData.id);
+
+      const res2 = await this.client.settings.settingsControllerGet(['commandPrefix'], this.setupData.id);
+      expect(res2.data.data.commandPrefix).to.be.eq('global!');
+
+      return res2;
+    },
+  }),
 ];
 
 describe(group, function () {
