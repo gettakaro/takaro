@@ -264,13 +264,15 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       steamApi.getPlayerBans(toRefresh),
     ]);
 
-    const fullData: (ISteamData | undefined)[] = toRefresh.map((steamId) => {
+    const fullData: (ISteamData | { steamId: string })[] = toRefresh.map((steamId) => {
       const summary = summaries.find((item) => item.steamid === steamId);
       const ban = bans.find((item) => item.SteamId === steamId);
 
       if (!summary || !ban) {
         this.log.warn('Steam data missing', { steamId, summary, ban });
-        return;
+        return {
+          steamId,
+        };
       }
 
       return {
