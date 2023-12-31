@@ -10,11 +10,11 @@ export class SettingsModel extends TakaroModel {
 
   key!: string;
   value!: string;
-  gameServerId?: string;
+  gameServerId: string | null = null;
 }
 @traceableClass('repo:settings')
 export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, never> {
-  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
+  constructor(public readonly domainId: string, public readonly gameServerId: string | null = null) {
     super(domainId);
   }
 
@@ -55,11 +55,15 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
     let data: SettingsModel | undefined;
     const { query } = await this.getModel();
+    const { query: query2 } = await this.getModel();
+
+    const domainSetting = await query.where({ key, gameServerId: null }).first();
+    const gameServerSetting = await query2.where({ key, gameServerId: this.gameServerId }).first();
 
     if (this.gameServerId) {
-      data = await query.where({ gameServerId: this.gameServerId, key }).first();
+      data = gameServerSetting?.value ? gameServerSetting : domainSetting;
     } else {
-      data = await query.where({ key, gameServerId: null }).first();
+      data = domainSetting;
     }
 
     if (!data) {
@@ -70,26 +74,35 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
   }
 
   async getAll(): Promise<Settings> {
-    let data: SettingsModel[];
     const { query } = await this.getModel();
+    const { query: query2 } = await this.getModel();
 
-    if (this.gameServerId) {
-      data = await query.where({ gameServerId: this.gameServerId });
-    } else {
-      data = await query.where({ gameServerId: null });
-    }
+    const domainSetting = await query.where({ gameServerId: null });
+    const gameServerSetting = await query2.where({ gameServerId: this.gameServerId });
 
     const toReturn = await new Settings().construct();
 
     for (const key of Object.values(SETTINGS_KEYS)) {
-      toReturn[key] = data.find((x) => x.key === key)?.value || DEFAULT_SETTINGS[key];
+      if (this.gameServerId) {
+        toReturn[key] =
+          gameServerSetting.find((x) => x.key === key)?.value ||
+          domainSetting.find((x) => x.key === key)?.value ||
+          DEFAULT_SETTINGS[key];
+      } else {
+        toReturn[key] = domainSetting.find((x) => x.key === key)?.value || DEFAULT_SETTINGS[key];
+      }
     }
 
     return toReturn;
   }
 
-  async set(key: SETTINGS_KEYS, value: string): Promise<Settings> {
+  async set(key: SETTINGS_KEYS, value: string | null): Promise<Settings> {
     const { query } = await this.getModel();
+
+    if (value === null) {
+      await query.where({ domain: this.domainId, gameServerId: this.gameServerId, key }).del();
+      return this.getAll();
+    }
 
     await query
       .insert({ domain: this.domainId, gameServerId: this.gameServerId, key, value })

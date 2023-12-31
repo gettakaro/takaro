@@ -73,7 +73,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     return value;
   }
 
-  async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS]): Promise<Settings[SETTINGS_KEYS]> {
+  async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS] | null): Promise<Settings[SETTINGS_KEYS]> {
     await this.repo.set(key, value);
 
     const eventsService = new EventService(this.domainId);
@@ -88,7 +88,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
       })
     );
 
-    return value;
+    return this.get(key);
   }
 
   async getMany(keys: Array<SETTINGS_KEYS>): Promise<Partial<Settings>> {
