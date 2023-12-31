@@ -19,7 +19,7 @@ const GridContainer = styled.div`
 `;
 
 const DashboardCard = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: 1rem;
   border-radius: 1rem;
 `;
