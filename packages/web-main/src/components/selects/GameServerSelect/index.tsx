@@ -79,6 +79,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       hint={hint}
       required={required}
       loading={loading}
+      hasMargin={false}
       render={(selectedIndex) => {
         if (selectedIndex === undefined || selectedIndex === -1) {
           return <div>Select...</div>;
