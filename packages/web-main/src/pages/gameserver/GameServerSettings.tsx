@@ -158,53 +158,59 @@ const GameServerSettings: FC = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <>
-        <SettingsContainer>
-          <div>Setting</div>
-          <div>Global setting</div>
-          <div>Override</div>
-          <div>Game Server setting</div>
-        </SettingsContainer>
-
-        {fields.map((field, index) => (
-          <SettingsContainer key={field.id}>
-            <div>{camelCaseToSpaces(watch(`settings.${index}.key`))}</div>
-            <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
-            <NoSpacing>
-              <Select
-                control={control}
-                name={`settings.${index}.behavior`}
-                render={(selectedIndex) => <div>{behaviorOptions[selectedIndex] ?? 'Select...'}</div>}
-              >
-                <Select.OptionGroup>
-                  {behaviorOptions.map((val) => (
-                    <Select.Option key={`select-${val}-option`} value={val}>
-                      <span>{val}</span>
-                    </Select.Option>
-                  ))}
-                </Select.OptionGroup>
-              </Select>
-            </NoSpacing>
-            {watch(`settings.${index}.behavior`) === 'inherit' ? (
-              <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
-            ) : (
-              gameServerSettings[watch(`settings.${index}.key`)](
-                `settings.${index}.value`,
-                watch(`settings.${index}.behavior`) === 'inherit'
-              )
-            )}
+    <>
+      <p style={{ marginBottom: '15px' }}>
+        Game servers use global settings by default, ensuring consistency across servers. However, individual game
+        servers can override these global settings with their own custom configurations
+      </p>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <>
+          <SettingsContainer>
+            <div>Setting</div>
+            <div>Global setting</div>
+            <div>Override</div>
+            <div>Game Server setting</div>
           </SettingsContainer>
-        ))}
-        <Button
-          disabled={!formState.isDirty}
-          isLoading={isLoadingGameServerSettings}
-          text="Save"
-          type="submit"
-          variant="default"
-        />
-      </>
-    </form>
+
+          {fields.map((field, index) => (
+            <SettingsContainer key={field.id}>
+              <div>{camelCaseToSpaces(watch(`settings.${index}.key`))}</div>
+              <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
+              <NoSpacing>
+                <Select
+                  control={control}
+                  name={`settings.${index}.behavior`}
+                  render={(selectedIndex) => <div>{behaviorOptions[selectedIndex] ?? 'Select...'}</div>}
+                >
+                  <Select.OptionGroup>
+                    {behaviorOptions.map((val) => (
+                      <Select.Option key={`select-${val}-option`} value={val}>
+                        <span>{val}</span>
+                      </Select.Option>
+                    ))}
+                  </Select.OptionGroup>
+                </Select>
+              </NoSpacing>
+              {watch(`settings.${index}.behavior`) === 'inherit' ? (
+                <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
+              ) : (
+                gameServerSettings[watch(`settings.${index}.key`)](
+                  `settings.${index}.value`,
+                  watch(`settings.${index}.behavior`) === 'inherit'
+                )
+              )}
+            </SettingsContainer>
+          ))}
+          <Button
+            disabled={!formState.isDirty}
+            isLoading={isLoadingGameServerSettings}
+            text="Save"
+            type="submit"
+            variant="default"
+          />
+        </>
+      </form>
+    </>
   );
 };
 export default GameServerSettings;
