@@ -3,7 +3,6 @@ import { styled, Button } from '@takaro/lib-components';
 export const CardList = styled.ul`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-  grid-auto-rows: 200px;
   gap: ${({ theme }) => theme.spacing['1_5']};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
