@@ -1,5 +1,5 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
-import { Tooltip, Dialog, Button, IconButton, Card } from '@takaro/lib-components';
+import { Tooltip, Dialog, Button, IconButton, Card, useTheme } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlineDelete as DeleteIcon, AiOutlineSetting as ConfigIcon } from 'react-icons/ai';
@@ -19,6 +19,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   const { mutateAsync: uninstallModule, isLoading: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
   const { selectedGameServerId } = useSelectedGameServer();
+  const theme = useTheme();
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
@@ -37,7 +38,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
           <h2>{mod.name}</h2>
           <p>{mod.description}</p>
           <SpacedRow>
-            <span>
+            <span style={{ color: `${theme.colors.primary} !important` }}>
               {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
               {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}

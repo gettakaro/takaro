@@ -49,7 +49,7 @@ const Header = styled.div`
 const Filters = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   padding: ${({ theme }) => `${theme.spacing[2]}`};
-  height: 600px;
+  min-height: 600px;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   min-width: 360px;
   display: flex;
