@@ -13,6 +13,7 @@ export default {
     showGrid: true,
     axisXLabel: 'Date',
     axisYLabel: 'Close Price',
+    unit: '$',
   },
 } as Meta<AreaChartProps<AppleStock>>;
 
@@ -38,6 +39,7 @@ export const Default: StoryFn<AreaChartProps<AppleStock>> = (args) => {
         showGrid={args.showGrid}
         axisXLabel={args.axisXLabel}
         axisYLabel={args.axisYLabel}
+        unit={args.unit}
       />
     </Wrapper>
   );

@@ -24,11 +24,13 @@ export interface AreaChartProps<T> extends ChartProps {
   xAccessor: (d: T) => Date;
   xBisector: (array: ArrayLike<T>, x: Date, lo?: number | undefined, hi?: number | undefined) => number;
   yAccessor: (d: T) => number;
-
+  unit?: string;
+  unitPosition?: 'left' | 'right';
   margin?: Margin;
   showBrush?: boolean;
   brushMargin?: Margin;
 }
+
 const formatDate = timeFormat("%b %d, '%y");
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
@@ -50,6 +52,8 @@ export const AreaChart = <T,>({
   showAxisY = defaultShowAxisY,
   axisXLabel,
   xBisector,
+  unit,
+  unitPosition,
   axisYLabel,
 }: AreaChartProps<T>) => {
   // TODO: handle empty data
@@ -58,29 +62,29 @@ export const AreaChart = <T,>({
   // TODO: handle loading state
 
   return (
-    <>
-      <ParentSize>
-        {(parent) => (
-          <Chart<T>
-            name={name}
-            xAccessor={xAccessor}
-            yAccessor={yAccessor}
-            data={data}
-            width={parent.width}
-            height={parent.height}
-            brushMargin={brushMargin}
-            showBrush={showBrush}
-            showGrid={showGrid}
-            margin={margin}
-            axisYLabel={axisYLabel}
-            axisXLabel={axisXLabel}
-            xBisector={xBisector}
-            showAxisX={showAxisX}
-            showAxisY={showAxisY}
-          />
-        )}
-      </ParentSize>
-    </>
+    <ParentSize>
+      {(parent) => (
+        <Chart<T>
+          name={name}
+          xAccessor={xAccessor}
+          yAccessor={yAccessor}
+          data={data}
+          width={parent.width}
+          height={parent.height}
+          brushMargin={brushMargin}
+          showBrush={showBrush}
+          showGrid={showGrid}
+          margin={margin}
+          axisYLabel={axisYLabel}
+          axisXLabel={axisXLabel}
+          xBisector={xBisector}
+          showAxisX={showAxisX}
+          showAxisY={showAxisY}
+          unit={unit}
+          unitPosition={unitPosition}
+        />
+      )}
+    </ParentSize>
   );
 };
 
@@ -100,6 +104,8 @@ const Chart = <T,>({
   showAxisX = defaultShowAxisX,
   showAxisY = defaultShowAxisY,
   axisYLabel,
+  unit,
+  unitPosition = 'left',
   xBisector,
   axisXLabel,
 }: InnerBarChartProps<T>) => {
@@ -344,6 +350,9 @@ const Chart = <T,>({
               fontSize: theme.fontSize.small,
               textAnchor: 'end',
             }}
+            tickFormat={(val) =>
+              `${unitPosition === 'left' && unit ? unit : ''}${val}${unitPosition === 'right' && unit ? unit : ''}`
+            }
             scale={yScale}
             label={axisYLabel}
           />
@@ -355,12 +364,16 @@ const Chart = <T,>({
             left={margin.left}
             strokeWidth={3}
             stroke={theme.colors.backgroundAlt}
+            hideZero
             tickLabelProps={{
               fill: theme.colors.textAlt,
               fontSize: theme.fontSize.small,
               textAnchor: 'middle',
             }}
             tickFormat={tickFormatDate}
+            labelProps={{
+              fill: theme.colors.textAlt,
+            }}
             scale={xScale}
             label={axisXLabel}
           />
@@ -375,12 +388,15 @@ const Chart = <T,>({
             style={{
               ...defaultStyles,
               background: theme.colors.background,
-              border: `1px solid ${theme.colors.text}`,
+              border: `1px solid ${theme.colors.backgroundAccent}`,
+              borderRadius: theme.borderRadius.small,
               color: theme.colors.text,
               fontSize: theme.fontSize.small,
             }}
           >
+            {unitPosition === 'left' && unit ? unit : ''}
             {yAccessor(tooltipData)}
+            {unitPosition === 'right' && unit ? unit : ''}
           </TooltipWithBounds>
           <Tooltip
             top={mainChartInnerHeight + margin.top - 14}
@@ -388,7 +404,12 @@ const Chart = <T,>({
             style={{
               ...defaultStyles,
               minWidth: 72,
+              backgroundColor: theme.colors.background,
               textAlign: 'center',
+              color: theme.colors.text,
+              border: `1px solid ${theme.colors.backgroundAccent}`,
+              borderRadius: theme.borderRadius.small,
+              fontSize: theme.fontSize.small,
               transform: 'translateX(-50%)',
             }}
           >

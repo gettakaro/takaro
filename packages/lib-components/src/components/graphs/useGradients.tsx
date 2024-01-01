@@ -10,11 +10,11 @@ export const useGradients = (name: string) => {
 
   // Gradient elements
   const backgroundGradient = (
-    <LinearGradient id={BACKGROUND_GRADIENT_ID} from={theme.colors.backgroundAccent} to={theme.colors.backgroundAlt} />
+    <LinearGradient id={BACKGROUND_GRADIENT_ID} from={theme.colors.background} to={theme.colors.background} />
   );
 
   const areaGradient = (
-    <LinearGradient id={AREA_GRADIENT_ID} from={theme.colors.primary} to={theme.colors.primary} toOpacity={0.05} />
+    <LinearGradient id={AREA_GRADIENT_ID} from={theme.colors.primary} to={theme.colors.primary} toOpacity={0.2} />
   );
 
   // Returning both gradient elements and their IDs

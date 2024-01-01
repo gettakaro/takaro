@@ -246,7 +246,7 @@ const Chart = <T,>({
                   y={yBrushMax - barHeight}
                   width={barWidth}
                   height={barHeight}
-                  fill={theme.colors.primary}
+                  fill={`url(#${gradients.chart.id})`}
                 />
               );
             })}
