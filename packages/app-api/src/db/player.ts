@@ -223,16 +223,22 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     return players.filter((item) => item.steamId).map((item) => item.steamId) as string[];
   }
 
-  async setSteamData(data: (ISteamData | undefined)[]) {
+  async setSteamData(data: (ISteamData | { steamId: string })[]) {
     await Promise.all(
       data.map(async (item) => {
         if (!item) return;
         const { query } = await this.getModel();
         const updateObj: Partial<PlayerModel> = {
           ...item,
-          steamAccountCreated: item.steamAccountCreated ? new Date(item.steamAccountCreated * 1000) : undefined,
+          steamAccountCreated: undefined,
           steamLastFetch: new Date(),
         };
+
+        if ('steamAccountCreated' in item) {
+          updateObj.steamAccountCreated = item.steamAccountCreated
+            ? new Date(item.steamAccountCreated * 1000)
+            : undefined;
+        }
 
         return query.update(updateObj).where('steamId', item.steamId);
       })
