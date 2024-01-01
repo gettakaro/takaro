@@ -1,7 +1,6 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField } from '@takaro/lib-components';
-import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
 import { useGlobalGameServerSettings, useSetGlobalSetting } from 'queries/settings';
 import { z } from 'zod';
@@ -127,9 +126,8 @@ export const GlobalGameServerSettings: FC = () => {
           {settings}
           <Button
             disabled={!formState.isDirty}
-            icon={<AiFillSave />}
             isLoading={isLoading}
-            text="Save"
+            text="Save settings"
             type="submit"
             variant="default"
           />
