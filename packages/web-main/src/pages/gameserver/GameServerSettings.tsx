@@ -3,7 +3,7 @@ import { booleanFields, camelCaseToSpaces, mapSettings } from 'pages/settings/Gl
 import { gameServerKeys, useGameServerSettings } from 'queries/gameservers';
 import { FC, ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
-import { Switch, TextField, Button, Select, styled } from '@takaro/lib-components';
+import { Switch, TextField, Button, Select, styled, Skeleton } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 import { useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
@@ -32,12 +32,14 @@ interface IFormInputs {
   settings: FormSetting[];
 }
 
-const options = ['override', 'inherit'];
+const behaviorOptions = ['override', 'inherit'];
 
 const GameServerSettings: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
-  const { data: gameServerSettingsData, isLoading } = useGameServerSettings(selectedGameServerId);
-  const { data: globalGameServerSettingsData } = useGameServerSettings();
+  const { data: gameServerSettingsData, isLoading: isLoadingGameServerSettings } =
+    useGameServerSettings(selectedGameServerId);
+  const { data: globalGameServerSettingsData, isLoading: isLoadingGlobalServerGameServerSettings } =
+    useGameServerSettings();
   const { enqueueSnackbar } = useSnackbar();
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
@@ -51,32 +53,26 @@ const GameServerSettings: FC = () => {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ settings }) => {
-    console.log(formState.dirtyFields);
-    console.log(Object.keys(formState.dirtyFields));
-
     if (!formState.dirtyFields.settings) {
       // TODO: reset
       return;
     }
 
     // dirtyFields.settings contains an array of all settings, but the unchanged ones are empty slots
-    const dirty = formState.dirtyFields.settings
+    const changedFields = formState.dirtyFields.settings
       .map((dirtySetting, idx) => {
         if (!dirtySetting) {
           return null;
         }
         return settings[idx];
       })
-      .filter((setting) => setting !== null);
+      .filter((setting) => setting != null);
 
     try {
-      const updates = dirty.map((setting) => {
-        // to reset the gameserver specific setting, we need to set the value to null
+      const updates = changedFields.map((setting) => {
+        // to reset the gameserver specific setting, we need to delete it
         if (setting!.behavior === 'inherit') {
-          return apiClient.settings.settingsControllerSet(setting!.key, {
-            gameServerId: selectedGameServerId,
-            value: '',
-          });
+          return apiClient.settings.settingsControllerDelete(setting!.key, selectedGameServerId);
         }
 
         apiClient.settings.settingsControllerSet(setting!.key, {
@@ -109,23 +105,28 @@ const GameServerSettings: FC = () => {
 
   const gameServerSettings = useMemo(() => {
     const settingsComponents: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = {};
-    if (gameServerSettingsData && globalGameServerSettings && fields.length === 0) {
+    if (gameServerSettingsData && globalGameServerSettings) {
       mapSettings(gameServerSettingsData, async (key, value) => {
         if (booleanFields.includes(key)) {
           // in case the value is not set, we want to use the global value
           // otherwise we want to use the value from the gameserver
-          value === null
-            ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] === 'true' ? true : false })
-            : append({ key, behavior: 'override', value: value === 'true' ? true : false });
+          if (fields.length !== Object.keys(gameServerSettingsData).length) {
+            value === null
+              ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] === 'true' ? true : false })
+              : append({ key, behavior: 'override', value: value === 'true' ? true : false });
+          }
+
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
               <Switch control={control} name={fieldName} key={key} disabled={disabled} />
             </NoSpacing>
           );
         } else {
-          value === null
-            ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] })
-            : append({ key, behavior: 'override', value: value! });
+          if (fields.length !== Object.keys(gameServerSettingsData).length) {
+            value === null
+              ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] })
+              : append({ key, behavior: 'override', value: value! });
+          }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
               <TextField control={control} name={fieldName} key={key} disabled={disabled} />
@@ -140,10 +141,26 @@ const GameServerSettings: FC = () => {
     return settingsComponents;
   }, [gameServerSettingsData, globalGameServerSettings]);
 
-  console.log(gameServerSettings);
+  if (
+    isLoadingGlobalServerGameServerSettings ||
+    isLoadingGameServerSettings ||
+    Object.keys(gameServerSettings).length === 0
+  ) {
+    return (
+      <div>
+        <SettingsContainer>
+          <div>Setting</div>
+          <div>Global setting</div>
+          <div>Override</div>
+          <div>Game Server setting</div>
 
-  if (Object.keys(gameServerSettings).length === 0) {
-    return <div>loading...</div>;
+          {/* Render 35 skeletons with random heights */}
+          {[...Array(20)].map((e, i) => (
+            <Skeleton key={i} variant="rectangular" width="100%" height="75px" />
+          ))}
+        </SettingsContainer>
+      </div>
+    );
   }
 
   return (
@@ -159,16 +176,15 @@ const GameServerSettings: FC = () => {
         {fields.map((field, index) => (
           <SettingsContainer key={field.id}>
             <div>{camelCaseToSpaces(watch(`settings.${index}.key`))}</div>
-            {/*<div ><TextField control={control} name={`settings.${index}.name`} readOnly /></div>*/}
             <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
             <NoSpacing>
               <Select
                 control={control}
                 name={`settings.${index}.behavior`}
-                render={(selectedIndex) => <div>{options[selectedIndex] ?? 'Select...'}</div>}
+                render={(selectedIndex) => <div>{behaviorOptions[selectedIndex] ?? 'Select...'}</div>}
               >
                 <Select.OptionGroup>
-                  {options.map((val) => (
+                  {behaviorOptions.map((val) => (
                     <Select.Option key={`select-${val}-option`} value={val}>
                       <span>{val}</span>
                     </Select.Option>
@@ -176,13 +192,23 @@ const GameServerSettings: FC = () => {
                 </Select.OptionGroup>
               </Select>
             </NoSpacing>
-            {gameServerSettings[watch(`settings.${index}.key`)](
-              `settings.${index}.value`,
-              watch(`settings.${index}.behavior`) === 'inherit'
+            {watch(`settings.${index}.behavior`) === 'inherit' ? (
+              <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
+            ) : (
+              gameServerSettings[watch(`settings.${index}.key`)](
+                `settings.${index}.value`,
+                watch(`settings.${index}.behavior`) === 'inherit'
+              )
             )}
           </SettingsContainer>
         ))}
-        <Button disabled={!formState.isDirty} isLoading={isLoading} text="Save" type="submit" variant="default" />
+        <Button
+          disabled={!formState.isDirty}
+          isLoading={isLoadingGameServerSettings}
+          text="Save"
+          type="submit"
+          variant="default"
+        />
       </>
     </form>
   );
