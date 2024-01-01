@@ -32,6 +32,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSnackbar } from 'notistack';
 import { FaBan as BanIcon } from 'react-icons/fa';
+import { Player } from 'components/Player';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -42,7 +43,6 @@ export const StyledDialogBody = styled(Dialog.Body)`
 const Players: FC = () => {
   useDocumentTitle('Players');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
-  const navigate = useNavigate();
 
   const { data, isLoading } = usePlayers({
     page: pagination.paginationState.pageIndex,
@@ -87,13 +87,7 @@ const Players: FC = () => {
             ) : (
               <Avatar size="tiny" src={avatar} alt="steam-avatar" />
             )}
-            <span
-              style={{ cursor: 'pointer' }}
-              role="link"
-              onClick={() => navigate(PATHS.player.profile(info.row.original.id))}
-            >
-              {name}
-            </span>
+            <Player playerId={info.row.original.id} />
           </div>
         );
       },
