@@ -11,6 +11,7 @@ import {
   TextField,
   FormError,
   DateFormatter,
+  CopyId,
 } from '@takaro/lib-components';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -61,7 +62,7 @@ const Users: FC = () => {
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
-      cell: (info) => info.getValue(),
+      cell: (info) => <CopyId placeholder="Discord id" id={info.getValue()} />,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',

@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface PlayerProps {
   playerId: string;
+  showIcon?: 'always' | 'hover';
 }
 
-export const Player: FC<PlayerProps> = ({ playerId }) => {
+export const Player: FC<PlayerProps> = ({ playerId, showIcon = 'hover' }) => {
   const navigate = useNavigate();
   const { data, isLoading, error } = usePlayer(playerId);
 
@@ -23,11 +24,11 @@ export const Player: FC<PlayerProps> = ({ playerId }) => {
 
   return (
     <Chip
-      showIcon="hover"
       onClick={() => {
         navigate(PATHS.player.profile(playerId));
       }}
       variant="outline"
+      showIcon={showIcon}
       color="backgroundAccent"
       label={data.name}
       icon={<LinkIcon />}
