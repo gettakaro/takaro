@@ -152,7 +152,7 @@ export function ColumnSettings<DataType extends object>({
             onClick={() => {
               header.column.toggleVisibility(false);
             }}
-            label="Hide field"
+            label="Hide column"
           />
         </Dropdown.Menu>
       </Dropdown>

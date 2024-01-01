@@ -80,7 +80,7 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
       >
         <BackgroundContainer
           size={size}
-          initial="unchecked"
+          initial={value ? 'checked' : 'unchecked'}
           animate={value ? 'checked' : 'unchecked'}
           variants={variants}
         >

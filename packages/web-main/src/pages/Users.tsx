@@ -10,6 +10,8 @@ import {
   Button,
   TextField,
   FormError,
+  DateFormatter,
+  CopyId,
 } from '@takaro/lib-components';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -60,20 +62,20 @@ const Users: FC = () => {
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
-      cell: (info) => info.getValue(),
+      cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      meta: { dataType: 'datetime', hiddenColumn: true },
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      meta: { dataType: 'datetime', hiddenColumn: true },
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -196,7 +198,7 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
 
   return (
     <>
-      <Dropdown>
+      <Dropdown placement="left">
         <Dropdown.Trigger asChild>
           <IconButton icon={<ActionIcon />} ariaLabel="user-actions" />
         </Dropdown.Trigger>

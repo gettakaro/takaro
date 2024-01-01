@@ -53,6 +53,7 @@ export const GenericRadio = forwardRef<HTMLDivElement, GenericRadioProps>((props
         ref={ref}
       >
         <Inner
+          initial={checked ? 'selected' : 'deselected'}
           animate={checked ? 'selected' : 'deselected'}
           isSelected={checked}
           readOnly={readOnly}
