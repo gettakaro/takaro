@@ -19,7 +19,7 @@ const GridContainer = styled.div`
 `;
 
 const DashboardCard = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: 1rem;
   border-radius: 1rem;
 `;
@@ -121,26 +121,26 @@ const GameServerDashboard: FC = () => {
         <ChatContainer>
           <ChatMessagesCard />
         </ChatContainer>
+        <ConsoleContainer>
+          <Console
+            messages={messages}
+            setMessages={setMessages}
+            listenerFactory={handleMessageFactory}
+            onExecuteCommand={async (command: string) => {
+              const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
+              return {
+                type: 'command',
+                data: command,
+                result: result.data.data.rawResult,
+                timestamp: new Date().toISOString(),
+              };
+            }}
+          />
+        </ConsoleContainer>
+        <EventsContainer>
+          <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
+        </EventsContainer>
       </GridContainer>
-      <ConsoleContainer>
-        <Console
-          messages={messages}
-          setMessages={setMessages}
-          listenerFactory={handleMessageFactory}
-          onExecuteCommand={async (command: string) => {
-            const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
-            return {
-              type: 'command',
-              data: command,
-              result: result.data.data.rawResult,
-              timestamp: new Date().toISOString(),
-            };
-          }}
-        />
-      </ConsoleContainer>
-      <EventsContainer>
-        <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
-      </EventsContainer>
     </Fragment>
   );
 };

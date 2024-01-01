@@ -29,7 +29,19 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  UploadedFile,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -172,7 +184,7 @@ class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
   reason!: string;
 }
 
-class BanInputDTO extends TakaroDTO<BanInputDTO> {
+class BanPlayerInputDTO extends TakaroDTO<BanPlayerInputDTO> {
   @IsString()
   @MinLength(1)
   @MaxLength(150)
@@ -184,15 +196,10 @@ class BanInputDTO extends TakaroDTO<BanInputDTO> {
   expiresAt!: string;
 }
 
-class BanOutputDTO extends APIOutput<BanDTO[]> {
+class BanPlayerOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
-}
-
-export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
-  @IsJSON()
-  csmmData: string;
 }
 
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
@@ -380,7 +387,11 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
   @Post('/gameserver/:gameserverId/player/:playerId/ban')
-  async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId, @Body() data: BanInputDTO) {
+  async banPlayer(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamIdAndPlayerId,
+    @Body() data: BanPlayerInputDTO
+  ) {
     const service = new GameServerService(req.domainId);
     const result = await service.banPlayer(params.gameserverId, params.playerId, data.reason, data.expiresAt);
     return apiResponse(result);
@@ -396,7 +407,7 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(BanOutputDTO)
+  @ResponseSchema(BanPlayerOutputDTO)
   @Get('/gameserver/:id/bans')
   async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -440,9 +451,9 @@ export class GameServerController {
     description: 'Import a gameserver from CSMM',
   })
   @ResponseSchema(ImportOutputDTOAPI)
-  async importFromCSMM(@Req() req: AuthenticatedRequest, @Body() data: ImportInputDTO) {
+  async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {
     const service = new GameServerService(req.domainId);
-    const result = await service.import(data);
+    const result = await service.import(_file);
     return apiResponse(result);
   }
 }

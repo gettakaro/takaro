@@ -3,8 +3,8 @@ import { InputContainer, ContentContainer } from './style';
 import { Size } from '../../../styled';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
-import { IconButton } from '../../../components';
-import { AiOutlineDelete as ClearIcon } from 'react-icons/ai';
+import { IconButton, Tooltip } from '../../../components';
+import { AiOutlineDelete as ClearIcon, AiOutlineUpload as UploadIcon } from 'react-icons/ai';
 
 function getFileNames(files: FileList) {
   return Array.from(files)
@@ -94,16 +94,36 @@ export const GenericFileField = forwardRef<HTMLInputElement, GenericFileFieldPro
         onClick={() => inputRef.current?.click()}
       >
         <span>{value && value.length > 0 ? getFileNames(value) : placeholder}</span>
-        {value && value.length > 0 && (
-          <IconButton
-            icon={<ClearIcon />}
-            ariaLabel="Remove files"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleClear();
-            }}
-          />
+        {value && value.length > 0 ? (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                icon={<ClearIcon />}
+                ariaLabel="Remove files"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClear();
+                }}
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>{`Remove file${value.length > 1 ? 's' : ''}`}</Tooltip.Content>
+          </Tooltip>
+        ) : (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                icon={<UploadIcon />}
+                ariaLabel="Upload files"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  inputRef.current?.click();
+                }}
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Upload file</Tooltip.Content>
+          </Tooltip>
         )}
       </ContentContainer>
     </InputContainer>

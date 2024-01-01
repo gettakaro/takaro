@@ -15,7 +15,7 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
   display: block;
   cursor: pointer;
   border-radius: 9999px;
-  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   margin: ${({ theme }) => theme.spacing[0]};
   background-color: ${({ theme, isChecked, hasError }) => {
     if (isChecked && hasError) {

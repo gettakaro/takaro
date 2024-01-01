@@ -20,9 +20,9 @@ const DropdownActionContainer = styled.div<{ isVisible: boolean }>`
   justify-content: center;
   cursor: pointer;
   width: 3.2rem;
-  border: .1rem solid ${({ theme, isVisible }) => (isVisible ? theme.colors.primary : theme.colors.backgroundAlt)}};
-  border-top-right-radius: .5rem;
-  border-bottom-right-radius: .5rem;
+  border: .1rem solid ${({ theme, isVisible }) => (isVisible ? theme.colors.primary : theme.colors.backgroundAccent)}};
+  border-top-right-radius: ${({ theme }) => theme.borderRadius.small}};
+  border-bottom-right-radius: ${({ theme }) => theme.borderRadius.small}};
   
 
   &:hover {
@@ -43,9 +43,9 @@ const CurrentAction = styled.div`
   min-width: 10rem;
   height: 100%;
   color: ${({ theme }) => theme.colors.text};
-  border-top: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
-  border-left: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
-  border-bottom: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-top: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-left: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-bottom: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-top-left-radius: ${({ theme }) => theme.borderRadius.small};
   border-bottom-left-radius: ${({ theme }) => theme.borderRadius.small};
 

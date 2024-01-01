@@ -1,11 +1,11 @@
 import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Company, PERMISSIONS, RequiredPermissions, Tooltip } from '@takaro/lib-components';
+import { Company, RequiredPermissions, Tooltip } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { PATHS } from 'paths';
 import { Nav, IconNav, Container } from './style';
-
+import { PERMISSIONS } from '@takaro/apiclient';
 import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
@@ -36,50 +36,50 @@ const domainLinks: NavbarLink[] = [
     label: 'Servers',
     path: PATHS.gameServers.overview(),
     icon: <GameServersIcon />,
-    requiredPermissions: [PERMISSIONS.READ_GAMESERVERS],
+    requiredPermissions: [PERMISSIONS.ReadGameservers],
   },
   {
     label: 'Events',
     path: PATHS.events(),
     icon: <EventsIcon />,
-    requiredPermissions: [PERMISSIONS.READ_EVENTS],
+    requiredPermissions: [PERMISSIONS.ReadEvents],
   },
   {
     label: 'Players',
     path: PATHS.players(),
     icon: <PlayersIcon />,
-    requiredPermissions: [PERMISSIONS.READ_PLAYERS],
+    requiredPermissions: [PERMISSIONS.ReadPlayers],
   },
   {
     label: 'Users',
     path: PATHS.users(),
     icon: <UsersIcon />,
-    requiredPermissions: [PERMISSIONS.READ_USERS],
+    requiredPermissions: [PERMISSIONS.ReadUsers],
   },
   {
     label: 'Roles',
     path: PATHS.roles.overview(),
     icon: <RolesIcon />,
-    requiredPermissions: [PERMISSIONS.READ_ROLES],
+    requiredPermissions: [PERMISSIONS.ReadRoles],
   },
   {
     label: 'Modules',
     path: PATHS.moduleDefinitions(),
     icon: <ModulesIcon />,
-    requiredPermissions: [PERMISSIONS.READ_MODULES],
+    requiredPermissions: [PERMISSIONS.ReadModules],
   },
   {
     label: 'Variables',
     path: PATHS.variables.overview(),
     icon: <VariablesIcon />,
-    requiredPermissions: [PERMISSIONS.READ_VARIABLES],
+    requiredPermissions: [PERMISSIONS.ReadVariables],
   },
   {
     label: 'Settings',
     path: PATHS.settings.overview(),
     icon: <SettingsIcon />,
     end: false,
-    requiredPermissions: [PERMISSIONS.READ_SETTINGS],
+    requiredPermissions: [PERMISSIONS.ReadSettings],
   },
 ];
 
@@ -105,7 +105,7 @@ export const renderLink = ({ path, icon, label, end, requiredPermissions }: Navb
 );
 
 export const Navbar: FC = () => {
-  const { hasPermission: hasReadGameServerPermission, isLoading } = useHasPermission([PERMISSIONS.READ_GAMESERVERS]);
+  const { hasPermission: hasReadGameServerPermission, isLoading } = useHasPermission([PERMISSIONS.ReadGameservers]);
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>

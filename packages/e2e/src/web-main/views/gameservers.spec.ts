@@ -100,11 +100,10 @@ test('Can edit gameserver', async ({ page, takaro }) => {
 });
 
 test('Can delete gameserver', async ({ page, takaro }) => {
-  const gameServerName = 'My gameserver';
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
   await GameServersPage.action('Delete');
-  await expect(page.getByText(gameServerName)).toHaveCount(0);
+  await expect(page.getByText(GameServersPage.gameServer.name)).toHaveCount(0);
 });
 
 test.describe('Dashboard', () => {

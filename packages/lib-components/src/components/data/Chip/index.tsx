@@ -1,29 +1,28 @@
-// TODO: refactor component
-// TODO: add boolean dot prop
-
-import { forwardRef, ReactNode } from 'react';
+import { forwardRef, ReactElement, cloneElement } from 'react';
 import { AiOutlineClose as Icon } from 'react-icons/ai';
 import { Container, Dot } from './style';
 import { AlertVariants, Color, Variant } from '../../../styled/types';
 
-export type ChipColor = Color | AlertVariants | 'gray';
+export type ChipColor = Color | AlertVariants | 'backgroundAccent';
+
+export type ShowIcon = 'always' | 'hover';
 
 export interface ChipProps {
   label: string;
   disabled?: boolean;
-  avatar?: ReactNode;
   dot?: boolean;
   onClick?: () => void;
   onDelete?: () => void;
   color: ChipColor;
   variant?: Variant;
   isLoading?: boolean;
+  icon?: ReactElement;
+  showIcon?: ShowIcon;
 }
 
 export const Chip = forwardRef<HTMLDivElement, ChipProps>(
   (
     {
-      avatar,
       color,
       variant = 'default',
       label,
@@ -32,6 +31,8 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       onDelete = undefined,
       isLoading = false,
       dot = false,
+      icon,
+      showIcon = 'always',
     },
     ref
   ) => {
@@ -42,13 +43,13 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
           clickable={onClick !== undefined}
           color={color}
           disabled={disabled}
-          hasAvatar={!!avatar}
           outline={false}
           onClick={onClick ? onClick : undefined}
           className="placeholder"
+          showIcon={showIcon}
         >
           {dot && <Dot color={color} outline={variant !== 'default'} />}
-          <span>{label}</span>
+          <span style={{ minWidth: '70px', minHeight: '15px' }}></span>
         </Container>
       );
     }
@@ -59,13 +60,13 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         clickable={onClick !== undefined}
         color={color}
         disabled={disabled}
-        hasAvatar={!!avatar}
         onClick={onClick ? onClick : undefined}
         outline={variant !== 'default'}
+        showIcon={showIcon}
       >
         {dot && <Dot color={color} outline={variant !== 'default'} />}
-        {avatar}
         <span>{label}</span>
+        {!onDelete && icon && cloneElement(icon, { size: 10, className: 'icon' })}
         {onDelete && <Icon onClick={onDelete} size={10} />}
       </Container>
     );

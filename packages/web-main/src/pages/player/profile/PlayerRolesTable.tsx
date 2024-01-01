@@ -153,7 +153,8 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       </Dialog>
 
       <Table
-        id="players"
+        title="Roles Management"
+        id="roles"
         columns={columnDefs}
         data={roles}
         renderToolbar={() => <AssignRole playerId={playerId} />}

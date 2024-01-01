@@ -42,6 +42,9 @@ class QueuesService {
     playerSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
     },
+    steamSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.steamSync.name')),
+    },
     csmmImport: {
       queue: new TakaroQueue<ICSMMImportData>(config.get('queues.csmmImport.name')),
     },

@@ -26,6 +26,10 @@ export interface IQueuesConfig extends IBaseConfig {
       name: string;
       interval: number;
     };
+    steamSync: {
+      name: string;
+      interval: number;
+    };
     playerSync: {
       name: string;
       interval: number;
@@ -147,6 +151,20 @@ export const queuesConfigSchema = {
         format: Number,
         default: ms('1hour'),
         env: 'ITEMS_SYNC_QUEUE_INTERVAL',
+      },
+    },
+    steamSync: {
+      name: {
+        doc: 'The name of the queue to use for steam sync',
+        format: String,
+        default: 'steamSync',
+        env: 'STEAM_SYNC_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the steam sync',
+        format: Number,
+        default: ms('10minutes'),
+        env: 'STEAM_SYNC_QUEUE_INTERVAL',
       },
     },
     playerSync: {

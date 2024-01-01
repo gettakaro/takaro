@@ -2,7 +2,7 @@ import { Job } from 'bullmq';
 import { TakaroWorker, ICSMMImportData } from '@takaro/queues';
 import { ctx, errors, logger } from '@takaro/util';
 import { config } from '../config.js';
-import { GameServerCreateDTO, GameServerService } from '../service/GameServerService.js';
+import { GameServerCreateDTO, GameServerService, GameServerUpdateDTO } from '../service/GameServerService.js';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { RoleCreateInputDTO, RoleService } from '../service/RoleService.js';
 import { PlayerService } from '../service/PlayerService.js';
@@ -52,6 +52,11 @@ async function process(job: Job<ICSMMImportData>) {
   });
 
   const data = job.data.csmmExport as unknown as ICSMMData;
+
+  if (!data) {
+    log.warn('No data found in job, skipping');
+    return;
+  }
 
   const gameserverService = new GameServerService(job.data.domainId);
   const roleService = new RoleService(job.data.domainId);
@@ -161,7 +166,25 @@ async function process(job: Job<ICSMMImportData>) {
     }
 
     if (player.currency) {
-      await pogService.setCurrency(pog[0].id, player.currency);
+      await pogService.setCurrency(pog[0].id, Math.floor(player.currency));
     }
   }
+
+  const res = await gameserverService.executeCommand(server.id, 'version');
+  if (res.rawResult.includes('1CSMM_Patrons')) {
+    await gameserverService.update(
+      server.id,
+      await new GameServerUpdateDTO().construct({
+        connectionInfo: JSON.stringify({
+          host: `${data.server.ip}:${data.server.webPort}`,
+          adminUser: data.server.authName,
+          adminToken: data.server.authToken,
+          useTls: data.server.webPort === 443,
+          useCPM: true,
+        }),
+      })
+    );
+  }
+
+  await job.update({} as ICSMMImportData);
 }

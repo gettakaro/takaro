@@ -30,7 +30,7 @@ export const Input = styled.input<{ hasError: boolean; isDisabled: boolean }>`
   padding: 0;
   text-align: center;
   cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
-  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.background)};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
 
   /* Disable arrow up and down */
   -moz-appearance: textfield;

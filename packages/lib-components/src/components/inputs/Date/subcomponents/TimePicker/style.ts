@@ -16,6 +16,7 @@ export const List = styled.ul`
   scrollbar-color: #69707d80 #0000;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
 export const Item = styled.li<{ isSelected: boolean }>`
@@ -23,4 +24,8 @@ export const Item = styled.li<{ isSelected: boolean }>`
   background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   padding: ${({ theme }) => theme.spacing['0_5']};
   border-radius: ${({ theme }) => theme.borderRadius.small};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.background};
+  }
 `;

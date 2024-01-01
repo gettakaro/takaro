@@ -1,0 +1,24 @@
+import { Callout } from 'nextra-theme-docs';
+
+# Frequently asked questions
+
+## What will happen to CSMM?
+
+CSMM will continue to be maintained for the foreseeable future. Once Takaro is more mature and becomes widely used, CSMM will be deprecated and eventually discontinued.
+There is no time frame for this at the moment, we plan to 'go with the flow', if we notice more people are using Takaro than CSMM, we will start the deprecation process.
+This will most likely coincide with the release of a new Alpha version of 7 Days to Die.
+
+## Can I transfer my CSMM data to Takaro?
+
+Yes, you can. We have created a tool to migrate your CSMM data to Takaro. In CSMM, go to your server settings, scroll down to the experiments section and click on the 'export' button. This will download a JSON data-dump.
+
+In Takaro, go to the servers overview and click the import from CSMM button. Paste the JSON and submit the form.
+
+<Callout type="warning" emoji="⚠️">
+  This data migration is a best-effort. Not everything in CSMM can map one-to-one to Takaro. Custom hooks, commands and
+  cronjobs from CSMM are not compatible with Takaro. No modules will be enabled by default, you will have to enable them.
+
+We recommend you to use this migration tool only if you have a lot of data in CSMM that you want to keep. If you are
+just starting out, we recommend you to start fresh with Takaro.
+
+</Callout>

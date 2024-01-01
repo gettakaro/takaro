@@ -45,11 +45,6 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       ...domains.results.map(async (domain) => {
         const promises = [];
 
-        const playerService = new PlayerService(domain.id);
-        promises.push(
-          playerService.handleSteamSync().then(() => job.log(`Synced steam players for domain: ${domain.id}`))
-        );
-
         const gameserverService = new GameServerService(domain.id);
         const gameServers = await gameserverService.find({});
         promises.push(
@@ -61,6 +56,8 @@ export async function processJob(job: Job<IGameServerQueueData>) {
                 { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
               );
               await job.log(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
+            } else {
+              await job.log(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
             }
           })
         );

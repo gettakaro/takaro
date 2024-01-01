@@ -33,6 +33,7 @@ interface IHttpConfig extends IBaseConfig {
     maxVariables: number;
     url: string;
     startWorkers: boolean;
+    kpiInterval: number;
   };
   steam: {
     apiKey: string;
@@ -146,6 +147,12 @@ const configSchema = {
       format: Boolean,
       default: true,
       env: 'START_WORKERS',
+    },
+    kpiInterval: {
+      doc: 'The interval at which to update the KPI metrics',
+      format: Number,
+      default: ms('1m'),
+      env: 'KPI_INTERVAL',
     },
   },
   steam: {

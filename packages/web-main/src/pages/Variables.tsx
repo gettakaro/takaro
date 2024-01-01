@@ -1,20 +1,21 @@
-import { FC, Fragment, useState } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, Dialog, Button, Divider } from '@takaro/lib-components';
+import { FC, Fragment, useMemo, useState } from 'react';
+import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { useVariableDelete, useVariables } from 'queries/variables';
+import { useVariables } from 'queries/variables';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PATHS } from 'paths';
 import { VariableValueDetail } from './variables/ValueDetail';
+import { VariableDeleteDialog } from './variables/VariableDeleteDialog';
+import { VariablesDeleteDialog } from './variables/VariablesDeleteDialog';
 
 const Variables: FC = () => {
   useDocumentTitle('Variables');
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<VariableOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [activeVar, setActiveVar] = useState<VariableOutputDTO | null>(null);
+  const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
 
   const { data, isLoading } = useVariables({
     page: pagination.paginationState.pageIndex,
@@ -82,14 +83,14 @@ const Variables: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -102,30 +103,18 @@ const Variables: FC = () => {
       enableGlobalFilter: false,
       enableResizing: false,
       maxSize: 50,
-      cell: (info) => (
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <IconButton icon={<ActionIcon />} ariaLabel="variable-actions" />
-          </Dropdown.Trigger>
-          <Dropdown.Menu>
-            <Dropdown.Menu.Item
-              label="Edit variable"
-              icon={<EditIcon />}
-              onClick={() => navigate(PATHS.variables.update(info.row.original.id))}
-            />
-            <Dropdown.Menu.Item
-              label="Delete variable"
-              icon={<DeleteIcon />}
-              onClick={() => {
-                setActiveVar(info.row.original);
-                setOpenDialog(true);
-              }}
-            />
-          </Dropdown.Menu>
-        </Dropdown>
-      ),
+      cell: (info) => <VariableMenu variable={info.row.original} />,
     }),
   ];
+
+  const selectedVariableIds = useMemo(() => {
+    if (!data || Object.keys(rowSelection.rowSelectionState).length === 0) return [];
+    const idxs = Object.keys(rowSelection.rowSelectionState).filter((key) => rowSelection.rowSelectionState[key]);
+    return idxs
+      .map((idx) => data.data.at(idx as unknown as number))
+      .filter((v) => v !== undefined)
+      .map((v) => v!.id);
+  }, [rowSelection.rowSelectionState, data]);
 
   // since pagination depends on data, we need to make sure that data is not undefined
   const p =
@@ -143,9 +132,9 @@ const Variables: FC = () => {
         Variables allow you to store data in a key-value format, which is persisted between module runs. For example,
         variables are the way that the teleports module stores the teleport locations.
       </p>
-
       <Divider size="large" />
       <Table
+        title="List of variables"
         renderToolbar={() => {
           return (
             <Button
@@ -156,8 +145,19 @@ const Variables: FC = () => {
             />
           );
         }}
+        renderRowSelectionActions={() => {
+          return (
+            <Button
+              text={`Delete variables (${selectedVariableIds.length})`}
+              onClick={() => {
+                setOpenVariablesDialog(true);
+              }}
+            />
+          );
+        }}
         id="variables"
         columns={columnDefs}
+        rowSelection={rowSelection}
         data={data ? data?.data : []}
         pagination={p}
         columnFiltering={columnFilters}
@@ -165,56 +165,42 @@ const Variables: FC = () => {
         sorting={sorting}
       />
 
-      <VariableDelete variable={activeVar} openDialog={openDialog} setOpenDialog={setOpenDialog} />
+      <VariablesDeleteDialog
+        variableIds={selectedVariableIds}
+        openDialog={openVariablesDialog}
+        setOpenDialog={setOpenVariablesDialog}
+      />
     </Fragment>
   );
 };
 
-interface IVariableDeleteProps {
-  variable: VariableOutputDTO | null;
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
-}
-
-const VariableDelete: FC<IVariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isLoading: isDeleting } = useVariableDelete();
-
-  const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    if (variable) {
-      await mutateAsync(variable.id);
-      setOpenDialog(false);
-    }
-  };
-
-  if (!variable) return null;
+const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
+  const [openVariableDialog, setOpenVariableDialog] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-      <Dialog.Content>
-        <Dialog.Heading>
-          <span>Delete variable</span>
-        </Dialog.Heading>
-        <Dialog.Body>
-          <h2>Delete variable</h2>
-          <ul>
-            {variable.module && <li>Module: {variable.module.name}</li>}
-            {variable.gameServer && <li>Game Server: {variable.gameServer.name}</li>}
-            {variable.player && <li>Player Name: {variable.player.name}</li>}
-          </ul>
-          <p>
-            Are you sure you want to delete the variable <strong>{variable.key}</strong>?
-          </p>
-          <Button
-            isLoading={isDeleting}
-            onClick={(e) => handleOnDelete(e)}
-            fullWidth
-            text={'Delete variable'}
-            color="error"
+    <>
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <IconButton icon={<ActionIcon />} ariaLabel="variable-actions" />
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          <Dropdown.Menu.Item
+            label="Edit variable"
+            icon={<EditIcon />}
+            onClick={() => navigate(PATHS.variables.update(variable.id))}
           />
-        </Dialog.Body>
-      </Dialog.Content>
-    </Dialog>
+          <Dropdown.Menu.Item
+            label="Delete variable"
+            icon={<DeleteIcon />}
+            onClick={() => {
+              setOpenVariableDialog(true);
+            }}
+          />
+        </Dropdown.Menu>
+      </Dropdown>
+      <VariableDeleteDialog variable={variable} openDialog={openVariableDialog} setOpenDialog={setOpenVariableDialog} />
+    </>
   );
 };
 

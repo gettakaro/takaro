@@ -19,7 +19,7 @@ export const Default: StoryFn<TimePickerProps> = () => {
   return (
     <>
       timepicker should not be used separately, instead use datepicker and select a time format
-      <TimePicker selectedDate={selectedTime} onChange={(newTime) => setSelectedTime(newTime)} />;
+      <TimePicker selectedDate={selectedTime} onChange={(newTime) => setSelectedTime(newTime)} />
     </>
   );
 };

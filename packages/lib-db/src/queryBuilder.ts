@@ -127,7 +127,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
   private pagination() {
     return {
       page: this.query.page ?? 0,
-      limit: this.query.limit ?? 10,
+      limit: this.query.limit ?? 100,
     };
   }
 }

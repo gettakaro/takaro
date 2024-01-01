@@ -1,11 +1,6 @@
 #!/bin/node
 
-import {
-  Client,
-  AdminClient,
-  isAxiosError,
-  GameServerCreateDTOTypeEnum,
-} from '@takaro/apiclient';
+import { Client, AdminClient, isAxiosError, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,6 +26,7 @@ const config = {
         host: process.env.TAKARO_DEV_SDTD_HOST,
         adminUser: process.env.TAKARO_DEV_SDTD_ADMIN_USER,
         adminToken: process.env.TAKARO_DEV_SDTD_ADMIN_PASSWORD,
+        useTls: true,
       },
     },
   },
@@ -39,8 +35,7 @@ const config = {
       enabled: process.env.TAKARO_DEV_CHAT_BRIDGE_ENABLED !== 'false',
       systemConfig: {
         hooks: {
-          ['DiscordToGame Discord channel ID']:
-            process.env.TAKARO_DEV_CHAT_BRIDGE_CHANNEL_ID,
+          ['DiscordToGame Discord channel ID']: process.env.TAKARO_DEV_CHAT_BRIDGE_CHANNEL_ID,
         },
       },
       userConfig: {
@@ -95,12 +90,8 @@ async function main() {
     name: process.env.TAKARO_DEV_DOMAIN_NAME,
   });
 
-  console.log(
-    `Created a domain with id ${domainRes.data.data.createdDomain.id}`
-  );
-  console.log(
-    `Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.password}`
-  );
+  console.log(`Created a domain with id ${domainRes.data.data.createdDomain.id}`);
+  console.log(`Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.password}`);
 
   const client = new Client({
     url: process.env.TAKARO_HOST,
@@ -119,14 +110,9 @@ async function main() {
     name: process.env.TAKARO_DEV_USER_NAME,
   });
 
-  console.log(
-    `Created a user: ${userRes.data.data.email} / ${process.env.TAKARO_DEV_USER_PASSWORD}`
-  );
+  console.log(`Created a user: ${userRes.data.data.email} / ${process.env.TAKARO_DEV_USER_PASSWORD}`);
 
-  await client.user.userControllerAssignRole(
-    userRes.data.data.id,
-    domainRes.data.data.rootRole.id
-  );
+  await client.user.userControllerAssignRole(userRes.data.data.id, domainRes.data.data.rootRole.id);
   /* 
     await client.settings.settingsControllerSet('commandPrefix', {
       value: '&'
@@ -153,11 +139,7 @@ async function main() {
         console.log(`Skipping module ${mod.name} because it is disabled`);
         continue;
       }
-      await client.gameserver.gameServerControllerInstallModule(
-        gameserver.id,
-        mod.id,
-        customConfig
-      );
+      await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, customConfig);
       console.log(`Installed module ${mod.name}`, customConfig);
     } catch (error) {
       console.error(`🔴 Error installing module ${mod.builtin}`, {

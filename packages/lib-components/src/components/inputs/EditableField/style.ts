@@ -5,7 +5,7 @@ export const Container = styled.div`
   width: 100%;
   input {
     width: 100%;
-    border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
+    border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
     padding: ${({ theme }) => `${theme.spacing['0_1']} ${theme.spacing['0_5']}`};
   }
 `;

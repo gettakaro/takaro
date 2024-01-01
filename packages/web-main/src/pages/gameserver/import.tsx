@@ -1,4 +1,4 @@
-import { Alert, Button, Drawer, FormError, Loading, TextAreaField } from '@takaro/lib-components';
+import { Alert, Button, Drawer, FileField, FormError, Loading } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -6,20 +6,27 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApiClient } from 'hooks/useApiClient';
+import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 
 export interface IFormInputs {
-  data: string;
+  importData: FileList;
 }
 
+const MAX_FILE_SIZE = 5000000; // 50MB
+const ACCEPTED_IMAGE_TYPES = ['application/json'];
 const validationSchema = z.object({
-  data: z.string(),
+  importData: z
+    .any()
+    .refine((files) => files?.length == 1, 'Import data is required')
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 50MB.')
+    .refine((files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
 });
-
 export const ImportGameServer: FC = () => {
   const [open, setOpen] = useState(true);
   const [importError, setError] = useState<Error | null>(null);
   const [jobStatus, setJobStatus] = useState<any | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const navigate = useNavigate();
   const api = useApiClient();
 
@@ -38,24 +45,53 @@ export const ImportGameServer: FC = () => {
   useEffect(() => {
     fetchJobStatus();
 
-    const refreshInterval = setInterval(() => {
-      fetchJobStatus();
-    }, 5000);
+    setRefreshInterval(
+      setInterval(() => {
+        fetchJobStatus();
+      }, 1000) as unknown as number
+    );
 
     return () => {
-      clearInterval(refreshInterval);
+      if (refreshInterval) clearInterval(refreshInterval);
     };
   }, [jobId]);
+
+  useEffect(() => {
+    const handleRedirect = async () => {
+      const newestServerRes = await api.gameserver.gameServerControllerSearch({
+        sortBy: 'createdAt',
+        sortDirection: GameServerSearchInputDTOSortDirectionEnum.Desc,
+        limit: 1,
+      });
+      navigate(PATHS.gameServer.dashboard(newestServerRes.data.data[0].id));
+    };
+
+    if (!jobStatus) return;
+
+    if (jobStatus.status === 'failed' || jobStatus.status === 'completed') {
+      clearInterval(refreshInterval as unknown as number);
+    }
+
+    if (jobStatus.status === 'completed') {
+      handleRedirect();
+    }
+  }, [jobStatus]);
 
   const { control, handleSubmit, watch } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ data }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ importData }) => {
     try {
+      const formData = new FormData();
+      formData.append('import.json', importData[0]);
+
       const res = await api.gameserver.gameServerControllerImportFromCSMM({
-        csmmData: data,
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       setJobId(res.data.data.id);
@@ -68,7 +104,7 @@ export const ImportGameServer: FC = () => {
     }
   };
 
-  const { data } = watch();
+  const { importData } = watch();
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -86,11 +122,14 @@ export const ImportGameServer: FC = () => {
             It will NOT import your custom commands, hooks or cronjobs as they are not compatible with Takaro.`}
           />
           <form onSubmit={handleSubmit(onSubmit)} id="import-game-server-form">
-            <TextAreaField
+            <FileField
+              name="importData"
+              label={'Import data'}
+              description={'Upload your CSMM export JSON here'}
+              required={true}
+              placeholder={'export.json'}
+              multiple={false}
               control={control}
-              name="data"
-              label="CSMM Data"
-              description="Paste your CSMM data JSON here."
             />
           </form>
           {<FormError error={importError} />}
@@ -103,7 +142,7 @@ export const ImportGameServer: FC = () => {
             text="Submit"
             onClick={() => {
               onSubmit({
-                data,
+                importData,
               });
             }}
             form="create-game-server-form"
