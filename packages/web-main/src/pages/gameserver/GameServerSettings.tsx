@@ -1,11 +1,10 @@
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { booleanFields, camelCaseToSpaces, mapSettings } from 'pages/settings/GlobalGameServerSettings';
-import { gameServerKeys, useGameServerSettings } from 'queries/gameservers';
+import { useDeleteGameServerSetting, useGameServerSettings, useGlobalGameServerSettings } from 'queries/settings';
 import { FC, ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, Select, styled, Skeleton } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
-import { useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 
 const SettingsContainer = styled.div`
@@ -39,10 +38,11 @@ const GameServerSettings: FC = () => {
   const { data: gameServerSettingsData, isLoading: isLoadingGameServerSettings } =
     useGameServerSettings(selectedGameServerId);
   const { data: globalGameServerSettingsData, isLoading: isLoadingGlobalServerGameServerSettings } =
-    useGameServerSettings();
+    useGlobalGameServerSettings();
+
+  const { mutateAsync: deleteGameServerSetting } = useDeleteGameServerSetting();
   const { enqueueSnackbar } = useSnackbar();
   const apiClient = useApiClient();
-  const queryClient = useQueryClient();
 
   const { control, handleSubmit, watch, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -58,32 +58,26 @@ const GameServerSettings: FC = () => {
       return;
     }
 
-    // dirtyFields.settings contains an array of all settings, but the unchanged ones are empty slots
-    const changedFields = formState.dirtyFields.settings
-      .map((dirtySetting, idx) => {
-        if (!dirtySetting) {
-          return null;
-        }
-        return settings[idx];
-      })
-      .filter((setting) => setting != null);
+    // dirtyFields.settings contains an ARRAY of all settings, but the unchanged ones are empty slots
+    const changedFields: FormSetting[] = formState.dirtyFields.settings.reduce((result, dirtySetting, idx) => {
+      if (dirtySetting) {
+        result.push(settings[idx]);
+      }
+      return result;
+    }, [] as FormSetting[]);
 
     try {
       const updates = changedFields.map((setting) => {
-        // to reset the gameserver specific setting, we need to delete it
-        if (setting!.behavior === 'inherit') {
-          return apiClient.settings.settingsControllerDelete(setting!.key, selectedGameServerId);
+        if (setting.behavior === 'inherit') {
+          return deleteGameServerSetting({ key: setting.key, gameServerId: selectedGameServerId });
         }
 
-        apiClient.settings.settingsControllerSet(setting!.key, {
-          value: setting!.value,
+        apiClient.settings.settingsControllerSet(setting.key, {
+          value: setting.value,
           gameServerId: selectedGameServerId,
         });
       });
       await Promise.all(updates);
-
-      // Reset settings from this gameserver
-      queryClient.invalidateQueries(gameServerKeys.detail(selectedGameServerId));
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });

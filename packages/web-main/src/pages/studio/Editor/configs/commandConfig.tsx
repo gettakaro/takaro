@@ -16,7 +16,7 @@ import {
 } from 'react-icons/ai';
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
 import { ModuleItemProperties } from 'context/moduleContext';
-import { useGameServerSettings } from 'queries/gameservers';
+import { useGlobalGameServerSettings } from 'queries/settings';
 import { useCommand, useCommandUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
@@ -76,7 +76,7 @@ const argumentTypeSelectOptions = [
 
 export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCommand(moduleItem.itemId);
-  const { data: settings } = useGameServerSettings();
+  const { data: settings } = useGlobalGameServerSettings();
   const { mutateAsync, error, isLoading } = useCommandUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({

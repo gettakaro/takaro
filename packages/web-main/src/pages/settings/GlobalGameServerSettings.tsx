@@ -3,13 +3,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField } from '@takaro/lib-components';
 import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
-import { useApiClient } from 'hooks/useApiClient';
-import { useGameServerSettings } from 'queries/gameservers';
+import { useGlobalGameServerSettings, useSetGlobalSetting } from 'queries/settings';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { useQueryClient } from '@tanstack/react-query';
 
 export function camelCaseToSpaces(str: string) {
   return (
@@ -61,11 +59,10 @@ export function mapSettings<T extends Promise<unknown>>(
 
 export const GlobalGameServerSettings: FC = () => {
   useDocumentTitle('Settings');
-  const apiClient = useApiClient();
   const { enqueueSnackbar } = useSnackbar();
-  const queryClient = useQueryClient();
+  const { mutateAsync: setGlobalSetting } = useSetGlobalSetting();
 
-  const { data, isLoading } = useGameServerSettings();
+  const { data, isLoading } = useGlobalGameServerSettings();
 
   const validationSchema = useMemo(() => {
     const schema = {};
@@ -87,16 +84,15 @@ export const GlobalGameServerSettings: FC = () => {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (values) => {
-    const dirty = dirtyValues(formState.dirtyFields, values);
-    try {
-      await mapSettings(dirty as unknown as Settings, async (key, value) =>
-        apiClient.settings.settingsControllerSet(key, {
-          value: value!,
-        })
-      );
+    const changedFields = dirtyValues(formState.dirtyFields, values) as Settings;
 
-      // Since all server settings are affected, we invalidate the entire settings query
-      queryClient.invalidateQueries(['settings']);
+    try {
+      await mapSettings(changedFields, async (key, value) => {
+        if (typeof value === 'boolean') {
+          return await setGlobalSetting({ key, value: value ? 'true' : 'false' });
+        }
+        return await setGlobalSetting({ key, value: value as string });
+      });
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
