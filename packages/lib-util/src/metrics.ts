@@ -135,6 +135,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           gameServer: ctx.data.gameServer,
           method: 'UNKNOWN',
           url: 'UNKNOWN',
+          statusCode: error.code,
         });
       }
 
