@@ -1,37 +1,8 @@
 import { FC } from 'react';
-import { styled } from '../../../styled';
 import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Block, NavBar, Underline } from './style';
 
-const NavBar = styled.nav`
-  display: flex;
-  position: relative;
-  flex-direction: row;
-  gap: 1rem;
-  width: 100%;
-  padding-bottom: ${({ theme }) => theme.spacing[1]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
-
-  a {
-    position: relative;
-    padding: ${({ theme }) => theme.spacing['0_75']};
-    border-radius: ${({ theme }) => theme.borderRadius.small};
-    &:hover {
-      background-color: ${({ theme }) => theme.colors.backgroundAlt};
-    }
-  }
-`;
-
-export const Underline = styled(motion.div)`
-  position: absolute;
-  bottom: -${({ theme }) => theme.spacing[1]};
-  left: 0px;
-  display: block;
-  height: 2px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  content: '';
-  width: 100%;
-`;
+export type HorizontalNavVariant = 'underline' | 'block';
 
 export interface HorizontalNavLink {
   to: string;
@@ -40,17 +11,19 @@ export interface HorizontalNavLink {
 
 export interface HorizontalNavProps {
   items: HorizontalNavLink[];
+  variant: HorizontalNavVariant;
 }
 
-export const HorizontalNav: FC<HorizontalNavProps> = ({ items }) => {
+export const HorizontalNav: FC<HorizontalNavProps> = ({ items, variant }) => {
   return (
-    <NavBar>
+    <NavBar variant={variant}>
       {items.map(({ to, text }) => (
         <NavLink key={to} to={to}>
           {({ isActive }) => (
             <>
-              {text}
-              {isActive && <Underline layoutId="underline" />}
+              {isActive && variant === 'block' && <Block layoutId="block" />}
+              {isActive && variant === 'underline' && <Underline layoutId="underline" />}
+              <span>{text}</span>
             </>
           )}
         </NavLink>
