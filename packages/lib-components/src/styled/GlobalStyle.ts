@@ -161,6 +161,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     position: relative;
     border-radius: ${({ theme }): string => theme.borderRadius.large};
     background-color: ${({ theme }): string => theme.colors.placeholder};
+    border: 1px solid ${({ theme }): string => theme.colors.backgroundAccent};
     &::before {
       content: '';
       width: 100%;

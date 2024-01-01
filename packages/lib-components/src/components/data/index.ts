@@ -23,3 +23,6 @@ export type { StatsProps } from './Stats/';
 
 export { LinkCard } from './LinkCard';
 export type { LinkCardProps } from './LinkCard';
+
+export { DateFormatter } from './DateFormatter';
+export type { DateFormatterProps } from './DateFormatter';
