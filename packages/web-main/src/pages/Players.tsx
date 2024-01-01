@@ -112,6 +112,7 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { hiddenColumn: true },
     }),
     columnHelper.accessor('xboxLiveId', {
       header: 'Xbox ID',
@@ -119,6 +120,7 @@ const Players: FC = () => {
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { hiddenColumn: true },
     }),
 
     columnHelper.accessor('steamAccountCreated', {

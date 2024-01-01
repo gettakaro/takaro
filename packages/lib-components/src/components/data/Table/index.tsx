@@ -1,3 +1,4 @@
+/// <reference path="./react-table.d.ts" />
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -82,7 +83,15 @@ export function Table<DataType extends object>({
   renderRowSelectionActions,
   isLoading = false,
 }: TableProps<DataType>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    return columns.reduce((acc, column) => {
+      if (column.id === undefined) {
+        throw new Error('ColumnDef must have an id');
+      }
+      acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
+      return acc;
+    }, {} as Record<string, boolean>);
+  });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
@@ -135,7 +144,6 @@ export function Table<DataType extends object>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     pageCount: pagination?.pageOptions.pageCount ?? -1,
-
     manualPagination: true,
     paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
     manualFiltering: true,
@@ -162,7 +170,7 @@ export function Table<DataType extends object>({
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
     initialState: {
-      columnVisibility,
+      columnVisibility: columnVisibility,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,

@@ -1,3 +1,4 @@
+/// <reference path="./react-table.d.ts" />
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
@@ -5,12 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/react';
-import {
-  useLocation,
-  useNavigationType,
-  createRoutesFromChildren,
-  matchRoutes,
-} from 'react-router-dom';
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 
 // styles required for slider component we rely on
 import 'rc-slider/assets/index.css';
