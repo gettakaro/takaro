@@ -30,7 +30,7 @@ const ContentContainer = styled(motion.div)`
 `;
 
 export const GlobalFrame: FC = () => {
-  const [gameServerId, setGameServerId] = useLocalStorage<string>('selectedGameServerId', '');
+  const { storedValue: gameServerId, setValue: setGameServerId } = useLocalStorage<string>('selectedGameServerId', '');
   const { serverId: pathServerId } = useParams();
 
   const { isLoading, data: gameserver } = useGameServer(gameServerId);
