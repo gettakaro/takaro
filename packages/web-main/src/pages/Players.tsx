@@ -88,7 +88,7 @@ const Players: FC = () => {
             ) : (
               <Avatar size="tiny" src={avatar} alt="steam-avatar" />
             )}
-            <Player showIcon="always" playerId={info.row.original.id} />
+            <Player playerId={info.row.original.id} />
           </div>
         );
       },
