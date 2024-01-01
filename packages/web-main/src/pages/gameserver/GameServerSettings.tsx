@@ -99,11 +99,13 @@ const GameServerSettings: FC = () => {
 
   const gameServerSettings = useMemo(() => {
     const settingsComponents: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = {};
+    // in case the value is not set, we want to use the global value
+    // otherwise we want to use the value from the gameserver
     if (gameServerSettingsData && globalGameServerSettings) {
       mapSettings(gameServerSettingsData, async (key, value) => {
         if (booleanFields.includes(key)) {
-          // in case the value is not set, we want to use the global value
-          // otherwise we want to use the value from the gameserver
+          // to make sure we only append the fields once
+          // All fields are strings, however, the Switch component requires a boolean value.
           if (fields.length !== Object.keys(gameServerSettingsData).length) {
             value === null
               ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] === 'true' ? true : false })
@@ -127,8 +129,7 @@ const GameServerSettings: FC = () => {
             </NoSpacing>
           );
         }
-
-        // By default append is considered as dirty, since we rely on the dirty state to define the required requests, we need to reset it.
+        // By default `append` is considered as dirty, since we rely on the dirty state to define the required requests, we need to reset it.
         reset({}, { keepValues: true });
       });
     }
@@ -149,7 +150,7 @@ const GameServerSettings: FC = () => {
           <div>Game Server setting</div>
 
           {/* Render 35 skeletons with random heights */}
-          {[...Array(20)].map((e, i) => (
+          {[...Array(20)].map((_e, i) => (
             <Skeleton key={i} variant="rectangular" width="100%" height="75px" />
           ))}
         </SettingsContainer>
