@@ -35,7 +35,7 @@ export const SettingsFrame: FC = () => {
 
   return (
     <Container>
-      <HorizontalNav items={links} />
+      <HorizontalNav items={links} variant="underline" />
       <ContentContainer>
         <Outlet />
       </ContentContainer>
