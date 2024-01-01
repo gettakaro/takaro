@@ -3,7 +3,11 @@
     "module": "esnext",
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["esnext", "dom", "DOM.Iterable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "DOM.Iterable"
+    ],
     "jsx": "react-jsx",
     "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
@@ -20,7 +24,12 @@
     "allowJs": true,
     "declaration": true,
     "composite": true,
-    "types": ["node", "react", "react-dom", "jest"]
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "jest"
+    ]
   },
   "exclude": [
     "**/build/",

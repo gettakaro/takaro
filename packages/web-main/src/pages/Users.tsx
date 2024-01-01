@@ -62,19 +62,19 @@ const Users: FC = () => {
     columnHelper.accessor('discordId', {
       header: 'Discord ID',
       id: 'discordId',
-      cell: (info) => <CopyId placeholder="Discord id" id={info.getValue()} />,
+      cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { type: 'datetime' },
+      meta: { dataType: 'datetime', hiddenColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { type: 'datetime' },
+      meta: { dataType: 'datetime', hiddenColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),

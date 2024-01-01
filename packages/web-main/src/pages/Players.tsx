@@ -108,6 +108,7 @@ const Players: FC = () => {
       cell: (info) => <CopyId placeholder="EOS ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { hiddenColumn: true },
     }),
     columnHelper.accessor('xboxLiveId', {
       header: 'Xbox ID',
@@ -115,6 +116,7 @@ const Players: FC = () => {
       cell: (info) => <CopyId placeholder="Xbox ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
+      meta: { hiddenColumn: true },
     }),
 
     columnHelper.accessor('steamAccountCreated', {
@@ -160,14 +162,14 @@ const Players: FC = () => {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { type: 'datetime' },
+      meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { type: 'datetime' },
+      meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
