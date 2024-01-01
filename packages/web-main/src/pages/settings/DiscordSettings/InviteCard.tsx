@@ -1,11 +1,11 @@
-import { styled, Card, Loading, Button } from '@takaro/lib-components';
+import { styled, Card, Button, Spinner } from '@takaro/lib-components';
 import { useDiscordInvite } from 'queries/discord';
 
-const StyledCard = styled(Card)`
+const Body = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  height: ${({ theme }) => theme.spacing[12]};
+  height: 50px;
 `;
 
 export const InviteCard = () => {
@@ -13,19 +13,23 @@ export const InviteCard = () => {
 
   if (isLoading)
     return (
-      <StyledCard>
-        <Loading />
-      </StyledCard>
+      <Card>
+        <Body>
+          <Spinner size="medium" />
+        </Body>
+      </Card>
     );
 
   return (
-    <StyledCard>
-      <a href={data?.botInvite} target="_blank" rel="noreferrer">
-        <Button text="Invite bot" />
-      </a>
-      <a href={data?.devServer} target="_blank" rel="noreferrer">
-        <Button text="Support server" />
-      </a>
-    </StyledCard>
+    <Card>
+      <Body>
+        <a href={data?.botInvite} target="_blank" rel="noreferrer">
+          <Button text="Invite bot" />
+        </a>
+        <a href={data?.devServer} target="_blank" rel="noreferrer">
+          <Button text="Join discord support server" />
+        </a>
+      </Body>
+    </Card>
   );
 };
