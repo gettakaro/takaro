@@ -30,6 +30,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     loading,
     enableFilter = false,
     inPortal = false,
+    hasMargin = true,
   } = defaultsApplier(props);
 
   const {
@@ -78,7 +79,7 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   }
 
   return (
-    <Wrapper>
+    <Wrapper marginBottom={hasMargin ? undefined : '0'}>
       <Container>
         {label && (
           <Label

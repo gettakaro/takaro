@@ -24,7 +24,7 @@ export default {
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
     label: 'Default chip',
-    color: 'secondary',
+    color: 'backgroundAccent',
     disabled: false,
     dot: false,
     variant: 'default',

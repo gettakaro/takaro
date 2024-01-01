@@ -19,12 +19,7 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
 const Container = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.background};
   width: 640px;
-  margin-top: ${({ theme }) => theme.spacing[1]};
-  margin-right: ${({ theme }) => theme.spacing['0_75']};
-  min-height: 98vh;
-  max-height: 98vh;
-  border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
-  border-top-right-radius: ${({ theme }) => theme.borderRadius.large};
+  height: 100%;
   z-index: ${({ theme }) => theme.zIndex.drawer};
   box-shadow: ${({ theme }) => theme.elevation[3]};
 `;

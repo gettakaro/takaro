@@ -12,8 +12,9 @@ export const ContentContainer = styled.div<{ hasError: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
 
-  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   border-width: 0.1rem;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
