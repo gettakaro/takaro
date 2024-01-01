@@ -38,6 +38,12 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
+
+    @supports (scrollbar-gutter: stable) {
+        scrollbar-gutter: stable;
+    }
+}
+
   }
 
   body{
