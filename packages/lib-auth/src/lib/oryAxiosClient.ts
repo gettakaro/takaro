@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { errors, logger } from '@takaro/util';
+import { addCounterToAxios, errors, logger } from '@takaro/util';
 
 const log = logger('ory:http');
 
@@ -10,6 +10,11 @@ export function createAxiosClient(baseURL: string) {
       'Content-Type': 'application/json',
       'User-Agent': 'Takaro-Agent',
     },
+  });
+
+  addCounterToAxios(client, {
+    name: 'ory_api_requests_total',
+    help: 'Total number of requests to the Ory API',
   });
 
   client.interceptors.request.use((request) => {
@@ -44,13 +49,10 @@ export function createAxiosClient(baseURL: string) {
       }
 
       log.error(`☠️ Request errored: [${error.response?.status}] ${details}`, {
-        error,
-        details,
         status: error.response?.status,
         statusText: error.response?.statusText,
         method: error.config?.method,
         url: error.config?.url,
-        headers: error.response?.headers,
         response: error.response?.data,
       });
 

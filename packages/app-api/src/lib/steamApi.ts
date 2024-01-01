@@ -1,7 +1,7 @@
 import { AxiosError, AxiosInstance } from 'axios';
 import axios from 'axios';
 import { config } from '../config.js';
-import { logger } from '@takaro/util';
+import { addCounterToAxios, logger } from '@takaro/util';
 
 interface IPlayerSummary {
   steamid: string;
@@ -43,6 +43,11 @@ class SteamApi {
         timeout: 1000,
       });
 
+      addCounterToAxios(this._client, {
+        name: 'steam_api_requests_total',
+        help: 'Total number of requests to the Steam API',
+      });
+
       this._client.interceptors.request.use((config) => {
         config.params = config.params || {};
         config.params.key = this.apiKey;
@@ -57,7 +62,7 @@ class SteamApi {
         return request;
       });
 
-      axios.interceptors.response.use(
+      this._client.interceptors.response.use(
         (response) => {
           this.log.info(
             `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
