@@ -12,10 +12,9 @@ import { EventFeedWidget } from 'components/events/EventFeedWidget';
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 200px 1fr;
   gap: 1rem;
-  min-height: 25vh;
-  max-height: 25vh;
+  height: 85vh;
 `;
 
 const DashboardCard = styled.div`
@@ -29,7 +28,8 @@ const ConsoleContainer = styled.div`
 `;
 
 const EventsContainer = styled.div`
-  margin-top: 5rem;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 const OnlinePlayerContainer = styled(DashboardCard)``;
