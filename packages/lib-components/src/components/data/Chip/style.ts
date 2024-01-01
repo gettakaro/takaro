@@ -58,6 +58,7 @@ export const Container = styled.div<{
       }
       switch (color) {
         case 'backgroundAccent':
+        case 'secondary':
           return `color: ${theme.colors.text};`;
         default:
           return `color: ${theme.colors[color]};`;
