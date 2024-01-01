@@ -8,7 +8,7 @@ const fontSize = {
   tiny: '1rem',
   small: '1.2rem',
   medium: '1.325rem',
-  mediumLarge: '1.825rem',
+  mediumLarge: '1.45rem',
   large: '2.425rem',
   huge: '4rem',
 };
