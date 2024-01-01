@@ -30,14 +30,14 @@ export const Node: FC<TreeNodeProps> = ({ name, addFilters, removeFilters, isBra
     <ListItem>
       <ListItemHeader>
         <ListItemName>
-          <p>{name}</p>
+          <label>{name}</label>
         </ListItemName>
         <UnControlledCheckBox
           size="tiny"
           onChange={handleCheckbox}
           name={'filter'}
           value={isEnabled}
-          id="1"
+          id={name}
           hasError={false}
           hasDescription={false}
         />
