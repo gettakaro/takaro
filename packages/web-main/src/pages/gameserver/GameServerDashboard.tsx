@@ -1,5 +1,5 @@
-import { Console, Message, Skeleton, styled } from '@takaro/lib-components';
-import { FC, Fragment, useEffect, useState } from 'react';
+import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
+import { FC, Fragment, useEffect } from 'react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
@@ -8,6 +8,8 @@ import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { ChatMessagesCard } from './cards/ChatMessages';
 import { OnlinePlayersCard } from './cards/OnlinePlayers';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { useSnackbar } from 'notistack';
+import { DateTime } from 'luxon';
 
 const GridContainer = styled.div`
   display: grid;
@@ -41,14 +43,34 @@ const GameServerDashboard: FC = () => {
   useGameServerDocumentTitle('dashboard');
   const apiClient = useApiClient();
   const { socket } = useSocket();
+  const { enqueueSnackbar } = useSnackbar();
   const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
+  const LOCAL_STORAGE_KEY = `console-${selectedGameServerId}`;
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const {
+    storedValue: messages,
+    setValue: setMessages,
+    error: localStorageError,
+  } = useLocalStorage<Message[]>(LOCAL_STORAGE_KEY, []);
 
-  // TODO: don't clear console on server change, so that you persist the console history for each gameserver
-  useEffect(() => {
+  if (localStorageError) {
+    enqueueSnackbar('Exceeded local storage quota, clearing console', { type: 'error' });
     setMessages([]);
-  }, [selectedGameServerId]);
+  }
+
+  useEffect(() => {
+    const fiveDaysAgo = DateTime.now().minus({ days: 5 });
+
+    const filteredMessages = messages.filter((message) => {
+      const messageTimestamp = DateTime.fromISO(message.timestamp);
+      return messageTimestamp > fiveDaysAgo;
+    });
+
+    // Update the messages if there are any old ones
+    if (filteredMessages.length !== messages.length) {
+      setMessages(filteredMessages);
+    }
+  }, []); // Empty dependency array to run only on mount
 
   if (isLoading) {
     return (
@@ -92,7 +114,7 @@ const GameServerDashboard: FC = () => {
         }
       }
 
-      setMessages((prev: Message[]) => [
+      setMessages((prev) => [
         ...prev,
         {
           type: 'info',
@@ -122,6 +144,7 @@ const GameServerDashboard: FC = () => {
           <ChatMessagesCard />
         </ChatContainer>
         <ConsoleContainer>
+          Messages are stored for 5 days
           <Console
             messages={messages}
             setMessages={setMessages}
