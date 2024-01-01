@@ -11,6 +11,7 @@ import {
   Button,
   TextField,
   DateFormatter,
+  CopyId,
 } from '@takaro/lib-components';
 import { PlayerOutputDTO, PlayerSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -97,21 +98,21 @@ const Players: FC = () => {
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
-      cell: (info) => info.getValue(),
+      cell: (info) => <CopyId placeholder="Steam ID" id={info.getValue()} />,
       enableColumnFilter: true,
     }),
 
     columnHelper.accessor('epicOnlineServicesId', {
       header: 'EOS ID',
       id: 'epicOnlineServicesId',
-      cell: (info) => info.getValue(),
+      cell: (info) => <CopyId placeholder="EOS ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('xboxLiveId', {
       header: 'Xbox ID',
       id: 'xboxLiveId',
-      cell: (info) => info.getValue(),
+      cell: (info) => <CopyId placeholder="Xbox ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
     }),
