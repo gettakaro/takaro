@@ -1,20 +1,16 @@
 import { Fragment, ReactNode } from 'react';
 import { Button, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { LoginDiscord } from './LoginDiscord';
+import { LoginDiscordCard } from './LoginDiscordCard';
 import { useDiscordGuilds } from 'queries/discord';
-import { ServerCard } from './ServerCard';
+import { GuildCard } from './GuildCard';
 import { InviteCard } from './InviteCard';
-
-const List = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: ${({ theme }) => theme.spacing[1]};
-`;
+import { CardList } from 'components/cards';
 
 const Flex = styled.div`
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 300px 400px;
   grid-gap: ${({ theme }) => theme.spacing[1]};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const DiscordSettings = () => {
@@ -38,7 +34,7 @@ export const DiscordSettings = () => {
           <Skeleton width="100%" height="60px" variant="rectangular" />
         </Flex>
         <h1>Guilds</h1>
-        <List>
+        <CardList>
           <Skeleton width="100%" height="85px" variant="rectangular" />
           <Skeleton width="100%" height="85px" variant="rectangular" />
           <Skeleton width="100%" height="85px" variant="rectangular" />
@@ -48,7 +44,7 @@ export const DiscordSettings = () => {
           <Skeleton width="100%" height="85px" variant="rectangular" />
           <Skeleton width="100%" height="85px" variant="rectangular" />
           <Skeleton width="100%" height="85px" variant="rectangular" />
-        </List>
+        </CardList>
       </>
     );
   }
@@ -69,20 +65,20 @@ export const DiscordSettings = () => {
     );
   } else {
     guildDisplay = (
-      <List>
+      <CardList>
         {guilds.pages
           .flatMap((page) => page.data)
           .map((guild) => (
-            <ServerCard key={guild.id} guild={guild} />
+            <GuildCard key={guild.id} guild={guild} />
           ))}
-      </List>
+      </CardList>
     );
   }
 
   return (
     <Fragment>
       <Flex>
-        <LoginDiscord />
+        <LoginDiscordCard />
         <InviteCard />
       </Flex>
       <h1> Guilds</h1>
