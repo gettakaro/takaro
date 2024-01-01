@@ -11,10 +11,11 @@ export const Container = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing['0_1']} ${theme.spacing['0_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing['0_5']}`};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
   width: fit-content;
+  height: 20px;
 
   svg {
     margin-left: ${({ theme }) => theme.spacing['0_5']};
