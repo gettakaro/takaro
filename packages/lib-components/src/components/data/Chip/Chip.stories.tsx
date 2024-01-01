@@ -1,7 +1,8 @@
 import React from 'react';
 import { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Avatar, Chip, ChipProps } from '../../data';
+import { AiOutlineArrowRight as LinkIcon } from 'react-icons/ai';
+import { Chip, ChipProps } from '../../data';
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,9 +24,7 @@ export default {
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
   args: {
     label: 'Default chip',
-    color: 'secondary',
-    onDelete: undefined,
-    onClick: undefined,
+    color: 'backgroundAccent',
     disabled: false,
     dot: false,
     variant: 'default',
@@ -59,13 +58,10 @@ export const LoadingChip: StoryObj<ChipProps> = {
   },
 };
 
-export const AvatarChip: StoryObj<ChipProps> = {
+export const IconChip: StoryObj<ChipProps> = {
   args: {
-    label: 'Avatar chip',
-    avatar: (
-      <Avatar alt="avatar" size="tiny">
-        NC
-      </Avatar>
-    ),
+    label: 'Chip with icon',
+    icon: <LinkIcon />,
+    showIcon: 'hover',
   },
 };

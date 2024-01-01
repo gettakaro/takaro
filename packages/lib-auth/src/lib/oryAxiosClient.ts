@@ -49,13 +49,10 @@ export function createAxiosClient(baseURL: string) {
       }
 
       log.error(`☠️ Request errored: [${error.response?.status}] ${details}`, {
-        error,
-        details,
         status: error.response?.status,
         statusText: error.response?.statusText,
         method: error.config?.method,
         url: error.config?.url,
-        headers: error.response?.headers,
         response: error.response?.data,
       });
 

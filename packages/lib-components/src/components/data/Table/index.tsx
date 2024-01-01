@@ -93,7 +93,7 @@ export function Table<DataType extends object>({
     }, {} as Record<string, boolean>);
   });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
-  const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
+  const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
