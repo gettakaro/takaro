@@ -10,6 +10,7 @@ import {
   Button,
   TextField,
   FormError,
+  DateFormatter,
 } from '@takaro/lib-components';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -66,14 +67,14 @@ const Users: FC = () => {
       header: 'Created at',
       id: 'createdAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
       meta: { type: 'datetime' },
-      cell: (info) => info.getValue(),
+      cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.display({
@@ -196,7 +197,7 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
 
   return (
     <>
-      <Dropdown>
+      <Dropdown placement="left">
         <Dropdown.Trigger asChild>
           <IconButton icon={<ActionIcon />} ariaLabel="user-actions" />
         </Dropdown.Trigger>

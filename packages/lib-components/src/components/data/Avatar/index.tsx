@@ -15,22 +15,23 @@ const Container = styled.div<{ src?: string; size: Size; isCircle: boolean }>`
   ${({ src, theme }): string => {
     return src
       ? `background-image: url(${src});`
-      : `background-color: ${theme.colors.primary};`;
+      : `background-color: ${theme.colors.background};
+         border: 1px solid ${theme.colors.backgroundAccent};`;
   }}
 
-  ${({ size }) => {
+  ${({ size, theme }) => {
     switch (size) {
       case 'tiny':
         return `
-          width: 1.825rem;
-          height: 1.825rem;
-          font-size: 1rem;
+          width: 1.6rem;
+          height: 1.6rem;
+          font-size: .8rem;
         `;
       case 'small':
         return `
           width: 3.125rem;
           height: 3.125rem;
-          font-size: 1.325rem;
+          font-size: ${theme.fontSize.small};
         `;
       case 'medium':
         return `
@@ -70,13 +71,7 @@ export const Avatar: FC<PropsWithChildren<AvatarProps>> = ({
   isCircle = true,
 }) => {
   return (
-    <Container
-      aria-label={alt}
-      isCircle={isCircle}
-      role="img"
-      size={size}
-      src={src}
-    >
+    <Container aria-label={alt} isCircle={isCircle} role="img" size={size} src={src}>
       {children}
     </Container>
   );
