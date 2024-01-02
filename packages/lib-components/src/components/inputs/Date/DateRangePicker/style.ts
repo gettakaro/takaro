@@ -27,6 +27,7 @@ export const Container = styled.div<{
   &:focus {
     border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   }
+
   flex-shrink: 0;
 `;
 
