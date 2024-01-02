@@ -32,8 +32,6 @@ export const lightTheme = {
   colors: {
     primary: '#664de5',
     secondary: '#030917',
-    tertiary: '#be81f6',
-    quaternary: '#e5cc4d',
     placeholder: '#f5f5f5',
     placeholderHighlight: '#ffffff',
     shade: '#eaf8f0',
@@ -64,8 +62,6 @@ export const darkTheme: ThemeType = {
   colors: {
     primary: '#664DE5',
     secondary: '#353535',
-    tertiary: '#be81f6',
-    quaternary: '#e5cc4d',
     placeholder: '#202020',
     placeholderHighlight: '#303030',
     white: '#ffffff',

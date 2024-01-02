@@ -126,23 +126,23 @@ export function defineTheme(monaco: Monaco) {
     },
 
     rules: [
-      { token: 'string', foreground: theme.colors.quaternary },
+      { token: 'string', foreground: theme.colors.primary },
       {
         token: 'punctuation.definition.string',
-        foreground: theme.colors.quaternary,
+        foreground: theme.colors.primary,
       },
       {
         token: 'constant.character.escape',
-        foreground: theme.colors.quaternary,
+        foreground: theme.colors.primary,
       },
       {
         token: 'text.html constant.character.entity.named',
-        foreground: theme.colors.quaternary,
+        foreground: theme.colors.primary,
       },
       { token: 'text.html.derivative', foreground: 'E5E5E5' },
       {
         token: 'punctuation.definition.entity.html',
-        foreground: theme.colors.quaternary,
+        foreground: theme.colors.primary,
       },
       { token: 'template.expression.begin', foreground: '7AD9FB' },
       { token: 'template.expression.end', foreground: '7AD9FB' },
