@@ -4,6 +4,7 @@ import { FilterInputType, IFormInputs } from '.';
 import { Operators } from '.';
 import { Column } from '@tanstack/react-table';
 import { useLayoutEffect } from 'react';
+import { camelCaseToSpaces } from '../../../../../helpers';
 
 interface FilterFieldProps<DataType> {
   index: number;
@@ -57,10 +58,10 @@ export function FilterRow<DataType extends object>({
 
   useLayoutEffect(() => {
     const column = getColumn(currentColumn.toString());
-    const meta = column?.columnDef?.meta as Record<string, unknown> | undefined;
+    const meta = column?.columnDef.meta;
 
     setValue(`filters.${index}.operator`, Operators.is);
-    setValue(`filters.${index}.type`, (meta?.type as string | undefined as FilterInputType) ?? 'string');
+    setValue(`filters.${index}.type`, (meta?.dataType as string | undefined as FilterInputType) ?? 'string');
   }, [currentColumn]);
 
   return (
@@ -71,21 +72,19 @@ export function FilterRow<DataType extends object>({
         name={`filters.${index}.column`}
         label="Column"
         inPortal
-        render={() => {
-          const col = currentColumn.toString();
-
-          if (col === '') {
+        render={(idx) => {
+          if (idx === -1) {
             return 'Select a column';
           }
-
-          return col;
+          const col = columnIds[idx];
+          return camelCaseToSpaces(col);
         }}
       >
         <Select.OptionGroup>
           {columnIds.map((col) => (
             <Select.Option key={col} value={col}>
               <div>
-                <span>{col}</span>
+                <span>{camelCaseToSpaces(col)}</span>
               </div>
             </Select.Option>
           ))}

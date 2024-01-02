@@ -11,24 +11,32 @@ const Container = styled.div`
 export default {
   title: 'Navigation/HorizontalNav',
   component: HorizontalNav,
+  args: {
+    variant: 'underline',
+  },
 } as Meta<HorizontalNavProps>;
 
-export const Default: StoryFn = () => {
+export const Default: StoryFn<HorizontalNavProps> = ({ variant }) => {
   return (
     <Container>
       <HorizontalNav
+        variant={variant}
         items={[
           {
-            text: 'option1',
+            text: 'overview',
             to: '/option1',
           },
           {
-            text: 'option2',
+            text: 'analytics',
             to: '/option2',
           },
           {
-            text: 'option3',
+            text: 'reports',
             to: '/option3',
+          },
+          {
+            text: 'Notifications',
+            to: '/option4',
           },
         ]}
       />
