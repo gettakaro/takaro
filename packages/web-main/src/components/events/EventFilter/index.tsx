@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, Divider, Popover, Select, TextField } from '@takaro/lib-components';
-import { HiFunnel as FilterIcon } from 'react-icons/hi2';
+import { Button, Divider, IconButton, Popover, Select, TextField } from '@takaro/lib-components';
+import { AiOutlineFilter as FilterIcon } from 'react-icons/ai';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
 import { Filter, Operator } from '../types';
 
@@ -106,7 +106,7 @@ export const EventFilter: FC<EventFilterProps> = ({ fields, addFilter }) => {
   return (
     <Popover open={open} onOpenChange={setOpen} placement="bottom-end">
       <Popover.Trigger asChild>
-        <Button icon={<FilterIcon />} text="Filter" onClick={() => setOpen(true)} />
+        <IconButton icon={<FilterIcon />} onClick={() => setOpen(true)} ariaLabel="Filter events" />
       </Popover.Trigger>
       <Popover.Content>
         <FilterPopup fields={fields} addFilter={addFilter} mode="add" setOpen={setOpen} />

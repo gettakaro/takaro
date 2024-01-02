@@ -36,7 +36,7 @@ export const HandleContainer = styled.div`
 
   /* handle */
   div {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    background-color: ${({ theme }) => theme.colors.backgroundAccent};
     height: 100px;
     width: 0.8rem;
     border-radius: 9999px;
