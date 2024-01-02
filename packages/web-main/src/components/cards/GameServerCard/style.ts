@@ -12,10 +12,17 @@ export const TitleContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   h3 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+    margin-bottom: ${({ theme }) => theme.spacing['0_25']};
   }
   p {
     width: fit-content;
     text-transform: lowercase;
   }
+`;
+
+export const DetailsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
 `;
