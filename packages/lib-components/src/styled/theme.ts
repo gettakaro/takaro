@@ -73,8 +73,8 @@ export const darkTheme: ThemeType = {
     shade: '#eaf8f0',
     text: '#c2c2c2',
     textAlt: '#818181',
-    background: '#151515',
-    backgroundAlt: '#202020',
+    background: '#080808',
+    backgroundAlt: '#121212',
     // this is basically for when it is unsure if the background is background or backgroundAlt
     // Often used for borders and such.
     backgroundAccent: '#353535',
