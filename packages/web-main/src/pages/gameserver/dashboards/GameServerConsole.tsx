@@ -1,15 +1,16 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 
-const ConsoleContainer = styled.div`
+const Container = styled.div`
   height: 100%;
+  max-height: 82vh;
+  width: 100%;
 `;
 
 const GameServerConsole: FC = () => {
@@ -31,20 +32,6 @@ const GameServerConsole: FC = () => {
     enqueueSnackbar('Exceeded local storage quota, clearing console', { type: 'error' });
     setMessages([]);
   }
-
-  useEffect(() => {
-    const fiveDaysAgo = DateTime.now().minus({ days: 5 });
-
-    const filteredMessages = messages.filter((message) => {
-      const messageTimestamp = DateTime.fromISO(message.timestamp);
-      return messageTimestamp > fiveDaysAgo;
-    });
-
-    // Update the messages if there are any old ones
-    if (filteredMessages.length !== messages.length) {
-      setMessages(filteredMessages);
-    }
-  }, []); // Empty dependency array to run only on mount
 
   if (isLoading) {
     return (
@@ -109,8 +96,7 @@ const GameServerConsole: FC = () => {
   }
 
   return (
-    <ConsoleContainer>
-      Messages are stored for 5 days
+    <Container>
       <Console
         messages={messages}
         setMessages={setMessages}
@@ -125,7 +111,7 @@ const GameServerConsole: FC = () => {
           };
         }}
       />
-    </ConsoleContainer>
+    </Container>
   );
 };
 

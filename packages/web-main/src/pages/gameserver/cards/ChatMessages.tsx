@@ -9,14 +9,13 @@ import { useSocket } from 'hooks/useSocket';
 import { PATHS } from 'paths';
 import { useEvents } from 'queries/events';
 import { FC, useEffect } from 'react';
+import { Scrollable, Card } from './style';
 
 const SteamAvatar = styled.img`
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
 `;
-
-const ChatContainer = styled.div``;
 
 const Message = styled.span`
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
@@ -88,5 +87,9 @@ export const ChatMessagesCard: FC = () => {
 
   const components = data?.pages[0].data?.map((event) => <ChatMessage key={event.id} chatMessage={event} />);
 
-  return <ChatContainer>{components}</ChatContainer>;
+  return (
+    <Card variant={'outline'}>
+      <Scrollable>{components}</Scrollable>
+    </Card>
+  );
 };

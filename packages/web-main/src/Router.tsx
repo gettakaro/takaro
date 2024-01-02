@@ -42,6 +42,8 @@ import { LogoutSuccess } from 'pages/LogoutSuccess';
 import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
 import { ImportGameServer } from 'pages/gameserver/ImportGameServer';
 import GameServerOverview from 'pages/gameserver/dashboards/GameServerOverview';
+import GameServerConsole from 'pages/gameserver/dashboards/GameServerConsole';
+import GameServerStatistics from 'pages/gameserver/dashboards/GameServerStatistics';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -72,8 +74,8 @@ export const Router: FC = () => (
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadGameservers]} />}>
             <Route element={<FrameLayoutRoute frame="gameServerDashboard" />}>
               <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.overview(':serverId')} />
-              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.console(':serverId')} />
-              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.statistics(':serverId')} />
+              <Route element={<GameServerConsole />} path={PATHS.gameServer.dashboard.console(':serverId')} />
+              <Route element={<GameServerStatistics />} path={PATHS.gameServer.dashboard.statistics(':serverId')} />
             </Route>
           </Route>
 

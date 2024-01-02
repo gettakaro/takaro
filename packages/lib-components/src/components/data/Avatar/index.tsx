@@ -23,8 +23,8 @@ const Container = styled.div<{ src?: string; size: Size; isCircle: boolean }>`
     switch (size) {
       case 'tiny':
         return `
-          width: 1.6rem;
-          height: 1.6rem;
+          width: 2rem;
+          height: 2rem;
           font-size: .8rem;
         `;
       case 'small':

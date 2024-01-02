@@ -24,7 +24,7 @@ const EventType = styled.div`
   }
 `;
 
-const ListItem = styled.div`
+const ListItem = styled.li`
   margin-bottom: ${({ theme }) => theme.spacing['7']};
   margin-left: ${({ theme }) => theme.spacing['2']};
 `;

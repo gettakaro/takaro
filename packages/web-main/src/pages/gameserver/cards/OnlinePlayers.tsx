@@ -5,8 +5,9 @@ import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { usePlayerOnGameServers, usePlayers } from 'queries/players/queries';
 import { FC, useEffect } from 'react';
+import { Scrollable, Card } from './style';
 
-const PlayerCards = styled.div`
+const Players = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[1]};
 `;
@@ -45,16 +46,20 @@ export const OnlinePlayersCard: FC = () => {
   const theme = useTheme();
 
   return (
-    <div style={{ display: 'flex', gap: theme.spacing[1], flexDirection: 'column' }}>
-      <h3>Online Players {data?.data.length} / 64</h3>
-      <PlayerCards>
-        {data?.data.map((playerOnGameServer) => {
-          const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
-          if (!player) return null;
+    <Card variant="outline">
+      <Scrollable>
+        <div style={{ display: 'flex', gap: theme.spacing[1], flexDirection: 'column' }}>
+          <h3>{data?.data.length} Players Online</h3>
+          <Players>
+            {data?.data.map((playerOnGameServer) => {
+              const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
+              if (!player) return null;
 
-          return <Player playerId={player.id} />;
-        })}
-      </PlayerCards>
-    </div>
+              return <Player playerId={player.id} />;
+            })}
+          </Players>
+        </div>
+      </Scrollable>
+    </Card>
   );
 };
