@@ -32,11 +32,18 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
         style={{
           ...floatingStyles,
           ...style,
+          border: `1px solid ${theme.colors.backgroundAccent}`,
         }}
         {...getFloatingProps(props)}
       >
         {props.children}
-        <FloatingArrow ref={arrowRef} context={context} fill={theme.colors.background} />
+        <FloatingArrow
+          ref={arrowRef}
+          context={context}
+          fill={theme.colors.background}
+          stroke={theme.colors.backgroundAccent}
+          strokeWidth={1}
+        />
       </Container>
     </FloatingPortal>
   );
