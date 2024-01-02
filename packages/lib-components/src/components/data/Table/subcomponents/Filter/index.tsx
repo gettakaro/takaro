@@ -173,7 +173,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
   return (
     <Popover open={open} onOpenChange={setOpen} placement="bottom-end">
       <Popover.Trigger asChild>
-        <IconButton icon={<FilterIcon />} onClick={() => setOpen(true)} size="large" ariaLabel="filter" />
+        <IconButton icon={<FilterIcon />} onClick={() => setOpen(!open)} size="large" ariaLabel="filter" />
       </Popover.Trigger>
       <Popover.Content>
         <Container>

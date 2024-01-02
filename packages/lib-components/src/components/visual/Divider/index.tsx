@@ -56,7 +56,7 @@ const Label = styled.label<{
 const Line = styled.div`
   width: 100%;
   height: 1px;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
 type LabelProps = {
