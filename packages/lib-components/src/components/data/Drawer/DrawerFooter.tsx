@@ -2,7 +2,8 @@ import { FC, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
 
 export const Container = styled.div`
-  width: 100%;
+  /* Should match width of drawercontent */
+  width: calc(700px - 1px);
   position: fixed;
   bottom: 0;
   /* should be shown above the rest of drawer (this is relative to DrawerContent) */
