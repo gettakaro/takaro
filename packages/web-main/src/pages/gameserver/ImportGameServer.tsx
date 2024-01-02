@@ -63,7 +63,7 @@ export const ImportGameServer: FC = () => {
         sortDirection: GameServerSearchInputDTOSortDirectionEnum.Desc,
         limit: 1,
       });
-      navigate(PATHS.gameServer.dashboard(newestServerRes.data.data[0].id));
+      navigate(PATHS.gameServer.dashboard.overview(newestServerRes.data.data[0].id));
     };
 
     if (!jobStatus) return;

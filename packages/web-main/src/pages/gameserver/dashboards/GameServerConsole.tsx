@@ -1,44 +1,18 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
-import { FC, Fragment, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
-import { ChatMessagesCard } from './cards/ChatMessages';
-import { OnlinePlayersCard } from './cards/OnlinePlayers';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 200px 1fr;
-  gap: 1rem;
-  height: 85vh;
-`;
-
-const DashboardCard = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: 1rem;
-  border-radius: 1rem;
-`;
 
 const ConsoleContainer = styled.div`
   height: 100%;
 `;
 
-const EventsContainer = styled.div`
-  height: 100%;
-  overflow-y: auto;
-`;
-
-const OnlinePlayerContainer = styled(DashboardCard)``;
-
-const ChatContainer = styled(DashboardCard)``;
-
-const GameServerDashboard: FC = () => {
+const GameServerConsole: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
   useGameServerDocumentTitle('dashboard');
   const apiClient = useApiClient();
@@ -135,37 +109,24 @@ const GameServerDashboard: FC = () => {
   }
 
   return (
-    <Fragment>
-      <GridContainer>
-        <OnlinePlayerContainer>
-          <OnlinePlayersCard />
-        </OnlinePlayerContainer>
-        <ChatContainer>
-          <ChatMessagesCard />
-        </ChatContainer>
-        <ConsoleContainer>
-          Messages are stored for 5 days
-          <Console
-            messages={messages}
-            setMessages={setMessages}
-            listenerFactory={handleMessageFactory}
-            onExecuteCommand={async (command: string) => {
-              const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
-              return {
-                type: 'command',
-                data: command,
-                result: result.data.data.rawResult,
-                timestamp: new Date().toISOString(),
-              };
-            }}
-          />
-        </ConsoleContainer>
-        <EventsContainer>
-          <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
-        </EventsContainer>
-      </GridContainer>
-    </Fragment>
+    <ConsoleContainer>
+      Messages are stored for 5 days
+      <Console
+        messages={messages}
+        setMessages={setMessages}
+        listenerFactory={handleMessageFactory}
+        onExecuteCommand={async (command: string) => {
+          const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
+          return {
+            type: 'command',
+            data: command,
+            result: result.data.data.rawResult,
+            timestamp: new Date().toISOString(),
+          };
+        }}
+      />
+    </ConsoleContainer>
   );
 };
 
-export default GameServerDashboard;
+export default GameServerConsole;

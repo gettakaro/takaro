@@ -3,7 +3,7 @@ import {
   EventSearchInputAllowedFiltersEventNameEnum,
   EventSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import { Loading, styled } from '@takaro/lib-components';
+import { Loading, styled, useTheme } from '@takaro/lib-components';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { PATHS } from 'paths';
@@ -16,22 +16,18 @@ const SteamAvatar = styled.img`
   border-radius: 50%;
 `;
 
-const ChatContainer = styled.div`
-  border-radius: 8px;
-  max-height: 20vh;
-  overflow-y: scroll;
-`;
+const ChatContainer = styled.div``;
 
 const Message = styled.span`
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
   display: grid;
-  grid-template-columns: 1.5fr 2fr 5fr;
+  grid-template-columns: auto 200px 1fr;
+  gap: ${({ theme }) => theme.spacing[1]};
+  padding: ${({ theme }) => theme.spacing['0_75']};
 `;
 
 const PlayerName = styled.span`
-  font-weight: bold;
-  margin-right: 10px;
-  margin-left: 10px;
+  margin-left: ${({ theme }) => theme.spacing['0_75']};
 `;
 
 const PlayerContainer = styled.span`
@@ -48,9 +44,11 @@ const ChatMessage: FC<{ chatMessage: EventOutputDTO }> = ({ chatMessage }) => {
 
   const friendlyTimeStamp = new Date(chatMessage.createdAt).toLocaleTimeString();
 
+  const theme = useTheme();
+
   return (
     <Message>
-      <span>{friendlyTimeStamp}</span>
+      <span style={{ color: theme.colors.textAlt }}>{friendlyTimeStamp}</span>
       <a href={PATHS.player.profile(chatMessage.player?.id as string)}>
         <PlayerContainer>
           <SteamAvatar src={avatarUrl} />

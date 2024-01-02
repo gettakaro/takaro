@@ -19,7 +19,6 @@ import { DiscordSettings } from './pages/settings/DiscordSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
-import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
 import { Recovery } from 'pages/auth/recovery';
@@ -42,6 +41,7 @@ import { LogOut } from 'pages/LogOut';
 import { LogoutSuccess } from 'pages/LogoutSuccess';
 import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
 import { ImportGameServer } from 'pages/gameserver/ImportGameServer';
+import GameServerOverview from 'pages/gameserver/dashboards/GameServerOverview';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -70,7 +70,11 @@ export const Router: FC = () => (
           {/* ======================== Game Server ======================== */}
 
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadGameservers]} />}>
-            <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+            <Route element={<FrameLayoutRoute frame="gameServerDashboard" />}>
+              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.overview(':serverId')} />
+              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.console(':serverId')} />
+              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.statistics(':serverId')} />
+            </Route>
           </Route>
 
           <Route
