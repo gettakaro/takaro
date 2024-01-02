@@ -120,14 +120,11 @@ const Players: FC = () => {
     }),
 
     columnHelper.accessor('steamAccountCreated', {
-      header: 'Account Created',
+      header: 'Steam Account Created at',
       id: 'steamAccountCreated',
-      cell: (info) => {
-        const date = info.getValue();
-        if (!date) return '';
-        return new Date(date).toLocaleDateString();
-      },
+      cell: (info) => (info.getValue() ? <DateFormatter ISODate={info.getValue()!} /> : ''),
       enableSorting: true,
+      meta: { hiddenColumn: true, dataType: 'datetime' },
     }),
     columnHelper.accessor('steamCommunityBanned', {
       header: 'Community Banned',
@@ -169,7 +166,7 @@ const Players: FC = () => {
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime' },
+      meta: { dataType: 'datetime', hiddenColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
