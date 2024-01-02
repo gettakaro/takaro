@@ -16,7 +16,6 @@ const gameTypeMap = {
 
 export const GameServerSelect: FC<CustomSelectProps> = ({
   readOnly = false,
-  label = 'Game Server',
   hint,
   name: selectName,
   size,
@@ -72,7 +71,6 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       control={control}
       name={selectName}
       readOnly={readOnly}
-      label={label}
       enableFilter={gameServers.length > 6}
       description={description}
       size={size}
@@ -81,6 +79,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       hint={hint}
       required={required}
       loading={loading}
+      hasMargin={false}
       render={(selectedIndex) => {
         if (selectedIndex === undefined || selectedIndex === -1) {
           return <div>Select...</div>;

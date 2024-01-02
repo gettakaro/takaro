@@ -1,21 +1,38 @@
 import { useState } from 'react';
 
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  const [error, setError] = useState<DOMException | null>(null);
+
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Error reading the local storage value', e);
       return initialValue;
     }
   });
 
-  const setValue = (value: T): void => {
+  const setValue = (value: T | ((prevValue: T) => T)): void => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (e) {}
+      setStoredValue((prevValue) => {
+        const valueToStore = value instanceof Function ? value(prevValue) : value;
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        return valueToStore;
+      });
+    } catch (e) {
+      // DOMException code 22 for QuotaExceededError
+      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+        // eslint-disable-next-line no-console
+        console.error('LocalStorage quota exceeded', e);
+        setError(e);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('Error setting the local storage value', e);
+      }
+    }
   };
-  return [storedValue, setValue];
+
+  return { storedValue, setValue, error };
 }

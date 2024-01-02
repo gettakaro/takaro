@@ -1,10 +1,9 @@
 import { FC, cloneElement, ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Company, RequiredPermissions, Tooltip } from '@takaro/lib-components';
+import { RequiredPermissions, Tooltip } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { PATHS } from 'paths';
-import { Nav, IconNav, Container } from './style';
+import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
 import {
   AiOutlineAppstore as DashboardIcon,
@@ -109,18 +108,14 @@ export const Navbar: FC = () => {
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
-      <div data-testid="takaro-icon-nav" style={{ width: '100%' }}>
-        <Link className="company-icon" to={PATHS.home()} style={{ display: 'block', marginLeft: '15px' }}>
-          <Company textVisible={false} />
-        </Link>
-
+      <IconNavContainer data-testid="takaro-icon-nav">
         {!isLoading && hasReadGameServerPermission && <GameServerNav />}
 
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}
           {domainLinks.map((link) => renderLink(link))}
         </Nav>
-      </div>
+      </IconNavContainer>
       <div style={{ width: '100%' }}>
         <UserDropdown />
         <IconNav>

@@ -1,4 +1,4 @@
-import { Loading, Skeleton, styled } from '@takaro/lib-components';
+import { Loading, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ModuleInstallCard, CardList } from 'components/cards';
@@ -53,22 +53,32 @@ const GameServerModules: FC = () => {
   const installedModules = mappedModules.filter((mod) => mod.installed);
   const availableModules = mappedModules.filter((mod) => !mod.installed);
 
+  const theme = useTheme();
+
   return (
-    <>
-      <SubHeader>Installed</SubHeader>
-      <CardList>
-        {installedModules.map((mod) => (
-          <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
-        ))}
-      </CardList>
-      <SubHeader>Available</SubHeader>
-      <CardList>
-        {availableModules.map((mod) => (
-          <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
-        ))}
-      </CardList>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2] }}>
+      {installedModules.length > 0 && (
+        <div>
+          <SubHeader>Installed</SubHeader>
+          <CardList>
+            {installedModules.map((mod) => (
+              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
+            ))}
+          </CardList>
+        </div>
+      )}
+      <div>
+        <SubHeader>Available</SubHeader>
+        <div style={{ overflowY: 'auto', height: '100%' }}>
+          <CardList>
+            {availableModules.map((mod) => (
+              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
+            ))}
+          </CardList>
+        </div>
+      </div>
       <Outlet />
-    </>
+    </div>
   );
 };
 

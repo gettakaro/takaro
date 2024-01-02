@@ -33,7 +33,7 @@ for (const { linkName, path, permission } of items) {
   test(`Can go to ${linkName}`, async ({ page }) => {
     const nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
     await nav.getByRole('link', { name: linkName }).click();
-    await expect(page.getByRole('heading', { name: linkName.toLowerCase(), exact: true })).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
 
   userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {

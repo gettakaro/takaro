@@ -1,26 +1,13 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Switch, TextField } from '@takaro/lib-components';
+import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
+import { AiFillSave } from 'react-icons/ai';
 import { Settings } from '@takaro/apiclient';
 import { useGlobalGameServerSettings, useSetGlobalSetting } from 'queries/settings';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-
-export function camelCaseToSpaces(str: string) {
-  return (
-    str
-      // Insert a space before all caps
-      .replace(/([A-Z])/g, ' $1')
-      // Uppercase the first character
-      .replace(/^./, function (str) {
-        return str.toUpperCase();
-      })
-      // Trim and convert the string to lowercase
-      .toLowerCase()
-  );
-}
 
 export function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   // If *any* item in an array was modified, the entire array must be submitted, because there's no way to indicate

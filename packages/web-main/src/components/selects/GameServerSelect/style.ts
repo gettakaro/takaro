@@ -11,7 +11,6 @@ export const Inner = styled.div`
     height: ${({ theme }) => theme.spacing[2]}!important;
     margin: 0 !important;
     margin-bottom: 0 !important;
-    margin-right: ${({ theme }) => theme.spacing['1']}!important;
     fill: ${({ theme }) => theme.colors.primary};
   }
 `;
