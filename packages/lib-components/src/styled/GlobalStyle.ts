@@ -77,6 +77,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 500;
   }
 
+
   strong {
     padding: ${({ theme }) => `0 ${theme.spacing['0_25']}`};
     border-radius: ${({ theme }) => theme.borderRadius.small};
@@ -106,6 +107,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
+    font-family: inherit;
     &[readOnly]{
       cursor: not-allowed;
       &:focus {
