@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Button, SelectField, SelectFieldProps } from '../../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../../styled';
-import { films } from './data';
+import { films } from '../data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 

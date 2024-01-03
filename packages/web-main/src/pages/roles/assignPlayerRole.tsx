@@ -3,7 +3,7 @@ import {
   CollapseList,
   FormError,
   Button,
-  Select,
+  SelectField,
   TextField,
   DatePicker,
   DrawerSkeleton,
@@ -95,24 +95,26 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
 
                 <RolesSelect control={control} name="roleId" />
 
-                <Select
+                <SelectField
                   control={control}
                   name="gameServerId"
                   label="Gameserver"
-                  render={(selectedIndex) => (
-                    <div>
-                      {selectedIndex !== -1 ? gameServers[selectedIndex].name : 'Global - applies to all gameservers'}
-                    </div>
-                  )}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      // in case nothing is selected, we default to global
+                      return <div>Global - applies to all gameservers</div>;
+                    }
+                    return <div>{selectedItems[0].label}</div>;
+                  }}
                 >
-                  <Select.OptionGroup label="gameservers">
+                  <SelectField.OptionGroup label="gameservers">
                     {gameServers.map((server) => (
-                      <Select.Option key={server.id} value={server.id}>
+                      <SelectField.Option key={server.id} value={server.id} label={server.name}>
                         {server.name}
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
 
                 <DatePicker
                   mode="absolute"

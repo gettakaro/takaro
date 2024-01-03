@@ -1,4 +1,4 @@
-import { Avatar, getInitials, Select, styled } from '@takaro/lib-components';
+import { Avatar, getInitials, SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { usePlayers } from 'queries/players';
@@ -41,7 +41,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
   const players = data.data;
 
   return (
-    <Select
+    <SelectField
       control={control}
       name={name}
       label={label}
@@ -54,27 +54,28 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
       inPortal={inPortal}
       enableFilter
       loading={loading}
-      render={(selectedIndex) => {
-        if (selectedIndex === undefined || selectedIndex === -1) {
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
+        const selectedPlayer = players.find((player) => player.id === selectedItems[0]?.value);
         return (
           <Inner>
-            {players[selectedIndex].steamAvatar ? (
-              <Avatar size="tiny" src={players[selectedIndex].steamAvatar} alt={`Steam avatar ${name}`} />
+            {selectedPlayer!.steamAvatar ? (
+              <Avatar size="tiny" src={selectedPlayer!.steamAvatar} alt={`Steam avatar ${name}`} />
             ) : (
               <Avatar size="tiny" alt={name}>
                 {getInitials(name)}
               </Avatar>
             )}
-            <div>{players[selectedIndex].name}</div>
+            <div>{selectedPlayer!.name}</div>
           </Inner>
         );
       }}
     >
-      <Select.OptionGroup>
+      <SelectField.OptionGroup>
         {players.map(({ name, id, steamAvatar }) => (
-          <Select.Option key={`select-${name}`} value={id} label={name}>
+          <SelectField.Option key={`select-${name}`} value={id} label={name}>
             <Inner>
               {steamAvatar ? (
                 <Avatar size="tiny" src={steamAvatar} alt={`Steam avatar ${name}`} />
@@ -85,9 +86,9 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
               )}
               <span>{name}</span>
             </Inner>
-          </Select.Option>
+          </SelectField.Option>
         ))}
-      </Select.OptionGroup>
-    </Select>
+      </SelectField.OptionGroup>
+    </SelectField>
   );
 };

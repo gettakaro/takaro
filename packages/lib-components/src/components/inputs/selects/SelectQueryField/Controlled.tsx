@@ -4,8 +4,8 @@ import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } fro
 import { SubComponentTypes } from '..';
 import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
 import { OptionGroup } from '../OptionGroup';
-import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
 import { Option } from '../Option';
+import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
 import { Container } from '../sharedStyle';
 
 export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;

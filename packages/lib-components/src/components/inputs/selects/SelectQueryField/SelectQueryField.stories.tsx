@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, SelectQueryField, SelectQueryFieldProps } from '../../../../components';
-import { films } from '../SelectField/data';
+import { films } from '../data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GenericSelectQueryField } from './Generic';
