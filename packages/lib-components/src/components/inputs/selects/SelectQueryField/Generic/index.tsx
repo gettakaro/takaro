@@ -23,10 +23,12 @@ import {
   offset,
   useClick,
 } from '@floating-ui/react';
+
+import { AiOutlineSearch as SearchIcon } from 'react-icons/ai';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
-import { Input, LoadingContainer } from '../style';
+import { FeedBackContainer } from '../style';
 import { SelectItem, SelectContext } from '../../';
 
 /* The SearchField depends on a few things of <Select/> */
@@ -34,6 +36,7 @@ import { GroupLabel } from '../../SelectField/style';
 
 import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
 import { Spinner } from '../../../../../components';
+import { GenericTextField } from '../../../TextField/Generic';
 
 interface SharedSelectQueryFieldProps {
   // Enables loading data feedback for user
@@ -182,7 +185,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
   }, [value, getLabel]);
 
   const renderSelect = () => {
-    const hasOptions = options && Children.count(options[0].props.children) > 1;
+    const hasOptions = options && Children.count(options[0].props.children) > 2;
 
     // initialFocus=-1 is used to prevent the first item from being focused when the list opens
     return (
@@ -199,23 +202,31 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             },
           })}
         >
-          <Input
+          <GenericTextField
             id={`${name}-input`}
+            name={`${name}-input`}
+            hasDescription={false}
+            icon={<SearchIcon />}
             hasError={hasError}
-            isLoading={isLoading}
+            value={inputValue.value}
             onChange={onInputChange}
             placeholder={placeholder}
             ref={ref}
           />
           {/* it will always contain 1 because of the group label */}
           {isLoading && (
-            <LoadingContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+            <FeedBackContainer>
               <Spinner size="small" />
               <span style={{ marginLeft: '10px' }}>loading results</span>
-            </LoadingContainer>
+            </FeedBackContainer>
           )}
           {hasOptions && options}
-          {!hasOptions && !isLoading && <div style={{ textAlign: 'center' }}>No results found</div>}
+          {/* Basically first interaction */}
+          {!hasOptions && inputValue.value === '' && <FeedBackContainer>Start typing to search</FeedBackContainer>}
+          {/* When there is no result */}
+          {!hasOptions && !isLoading && inputValue.value !== '' && (
+            <FeedBackContainer>No results found</FeedBackContainer>
+          )}
         </SelectContainer>
       </FloatingFocusManager>
     );
