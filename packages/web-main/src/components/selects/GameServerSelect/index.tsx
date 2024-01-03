@@ -84,12 +84,11 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-
-        const selected = gameServers.find((server) => server.id === selectedItems[0].value);
+        const selected = gameServers.find((server) => server.id === selectedItems[0].value)!;
         return (
           <Inner>
-            {gameTypeMap[selected!.type].icon}
-            {selected!.name}
+            {gameTypeMap[selected.type].icon}
+            {selected.name}
           </Inner>
         );
       }}
