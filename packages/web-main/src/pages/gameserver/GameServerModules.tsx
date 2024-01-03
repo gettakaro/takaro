@@ -56,7 +56,7 @@ const GameServerModules: FC = () => {
   const theme = useTheme();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2] }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2], overflowY: 'auto' }}>
       {installedModules.length > 0 && (
         <div>
           <SubHeader>Installed</SubHeader>

@@ -40,7 +40,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     background-color: ${({ theme }) => theme.colors.background};
 
     @supports (scrollbar-gutter: stable) {
-        scrollbar-gutter: stable;
+      scrollbar-gutter: stable;
     }
 }
 

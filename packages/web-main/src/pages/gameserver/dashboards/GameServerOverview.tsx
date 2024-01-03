@@ -1,10 +1,8 @@
-import { Card, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
-import { FC, useEffect } from 'react';
+import { Card, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { FC } from 'react';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
-import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 import { OnlinePlayersCard } from '../cards/OnlinePlayers';
 import { ChatMessagesCard } from '../cards/ChatMessages';
 import { Scrollable } from '../cards/style';
@@ -15,6 +13,7 @@ const GridContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-template-rows: minmax(50px, auto) 1fr;
   width: 100%;
+  height: 100%;
   gap: ${({ theme }) => theme.spacing[1]};
   max-height: 85vh;
 `;
@@ -26,44 +25,22 @@ const SpanCell = styled.div`
 `;
 
 const GameServerOverview: FC = () => {
-  const { selectedGameServerId } = useSelectedGameServer();
   useGameServerDocumentTitle('dashboard');
-  const { enqueueSnackbar } = useSnackbar();
+
+  const { selectedGameServerId } = useSelectedGameServer();
   const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
-  const LOCAL_STORAGE_KEY = `console-${selectedGameServerId}`;
-
-  const {
-    storedValue: messages,
-    setValue: setMessages,
-    error: localStorageError,
-  } = useLocalStorage<Message[]>(LOCAL_STORAGE_KEY, []);
-
-  if (localStorageError) {
-    enqueueSnackbar('Exceeded local storage quota, clearing console', { type: 'error' });
-    setMessages([]);
-  }
-
-  useEffect(() => {
-    const fiveDaysAgo = DateTime.now().minus({ days: 5 });
-
-    const filteredMessages = messages.filter((message) => {
-      const messageTimestamp = DateTime.fromISO(message.timestamp);
-      return messageTimestamp > fiveDaysAgo;
-    });
-
-    // Update the messages if there are any old ones
-    if (filteredMessages.length !== messages.length) {
-      setMessages(filteredMessages);
-    }
-  }, []); // Empty dependency array to run only on mount
+  const theme = useTheme();
 
   if (isLoading) {
     return (
-      <>
-        <Skeleton variant="rectangular" width="100%" height="30px" />
-        <br />
-        <Skeleton variant="rectangular" width="100%" height="80vh" />
-      </>
+      <GridContainer>
+        <SpanCell>
+          <Skeleton variant="rectangular" width="100%" height="100%" />
+        </SpanCell>
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+        <Skeleton variant="rectangular" width="100%" height="100%" />
+      </GridContainer>
     );
   }
 
@@ -79,8 +56,16 @@ const GameServerOverview: FC = () => {
       </SpanCell>
       <OnlinePlayersCard />
       <Card variant="outline">
+        <h2 style={{ marginBottom: theme.spacing[2] }}>Module Events</h2>
         <Scrollable>
-          <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
+          <EventFeedWidget
+            query={{
+              filters: {
+                gameserverId: [gameServer.id],
+                eventName: ['hook-executed', 'cronjob-executed', 'command-executed'],
+              },
+            }}
+          />
         </Scrollable>
       </Card>
     </GridContainer>

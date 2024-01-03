@@ -12,8 +12,9 @@ import { SelectedGameServerContext } from 'context/selectedGameServerContext';
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  height: calc(100vh - 1.2rem);
   background-color: ${({ theme }) => theme.colors.background};
+  overflow: hidden;
 `;
 
 const ContentContainer = styled(motion.div)`

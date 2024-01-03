@@ -49,13 +49,15 @@ export const OnlinePlayersCard: FC = () => {
     <Card variant="outline">
       <Scrollable>
         <div style={{ display: 'flex', gap: theme.spacing[1], flexDirection: 'column' }}>
-          <h3>{data?.data.length} Players Online</h3>
+          <h2>{data?.data.length} Players Online</h2>
           <Players>
             {data?.data.map((playerOnGameServer) => {
               const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
               if (!player) return null;
 
-              return <Player playerId={player.id} />;
+              return (
+                <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />
+              );
             })}
           </Players>
         </div>
