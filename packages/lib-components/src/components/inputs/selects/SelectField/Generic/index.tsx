@@ -11,7 +11,7 @@ import {
   useMemo,
   ReactElement,
 } from 'react';
-import { SelectContext } from './context';
+import { SelectFieldContext } from './context';
 import {
   GroupContainer,
   GroupLabel,
@@ -37,38 +37,37 @@ import {
   FloatingPortal,
 } from '@floating-ui/react';
 
-import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../../InputProps';
+import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../../../InputProps';
 import { Option } from './Option';
 import { OptionGroup } from './OptionGroup';
 import { SubComponentTypes } from '..';
-import { setAriaDescribedBy } from '../../layout';
+import { setAriaDescribedBy } from '../../../layout';
 
-interface MultiSelectProps {
+interface SharedSelectFieldProps {
+  enableFilter?: boolean;
+  /// Rendering in portal will render the selectDropdown independent from its parent container.
+  /// this is useful when select is rendered in other floating elements with limited space.
+  inPortal?: boolean;
+}
+
+interface MultiSelectFieldProps extends SharedSelectFieldProps {
   render: (selectIndex: number[]) => React.ReactNode;
   multiSelect: true;
-  enableFilter?: boolean;
-  /// Rendering in portal will render the selectDropdown independent from its parent container.
-  /// this is useful when select is rendered in other floating elements with limited space.
-  inPortal?: boolean;
 }
 
-interface SingleSelectProps {
+interface SingleSelectFieldProps extends SharedSelectFieldProps {
   render: (selectIndex: number) => React.ReactNode;
   multiSelect?: false;
-  enableFilter?: boolean;
-  /// Rendering in portal will render the selectDropdown independent from its parent container.
-  /// this is useful when select is rendered in other floating elements with limited space.
-  inPortal?: boolean;
 }
 
-export type SelectProps = MultiSelectProps | SingleSelectProps;
-export type GenericSelectProps = PropsWithChildren<SelectProps & GenericInputProps<string, HTMLDivElement>>;
+export type SelectFieldProps = MultiSelectFieldProps | SingleSelectFieldProps;
+export type GenericSelectFieldProps = PropsWithChildren<SelectFieldProps & GenericInputProps<string, HTMLDivElement>>;
 
-const defaultsApplier = defaultInputPropsFactory<GenericSelectProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericSelectFieldProps>(defaultInputProps);
 
 // TODO: implement required, test error display, add grouped example, implement setShowError
 // TODO: implement **required** (but this should only be done after the label reimplementation.
-export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props) => {
+export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes = (props) => {
   const {
     render,
     children,
@@ -81,7 +80,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
     hasError,
     hasDescription,
     name,
-    inPortal = true,
+    inPortal = false,
     disabled,
     enableFilter = false,
     multiSelect = false,
@@ -292,7 +291,7 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
   }, [selectedIndex]);
 
   return (
-    <SelectContext.Provider
+    <SelectFieldContext.Provider
       value={{
         selectedIndex,
         setSelectedIndex,
@@ -331,9 +330,9 @@ export const GenericSelect: FC<GenericSelectProps> & SubComponentTypes = (props)
         ) : (
           <FloatingPortal>{renderSelect()}</FloatingPortal>
         ))}
-    </SelectContext.Provider>
+    </SelectFieldContext.Provider>
   );
 };
 
-GenericSelect.Option = Option;
-GenericSelect.OptionGroup = OptionGroup;
+GenericSelectField.Option = Option;
+GenericSelectField.OptionGroup = OptionGroup;

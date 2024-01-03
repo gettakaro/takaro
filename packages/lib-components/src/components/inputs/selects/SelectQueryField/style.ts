@@ -1,4 +1,4 @@
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
 export const Container = styled.div`

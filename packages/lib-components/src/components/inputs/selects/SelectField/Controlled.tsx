@@ -1,19 +1,20 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Container, LoadingContainer } from './style';
-import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
+import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
 import { GenericSelect, SubComponentTypes } from '.';
-import { SelectProps } from './Generic';
+import { SelectFieldProps } from './Generic';
 import { Option } from './Generic/Option';
 import { OptionGroup } from './Generic/OptionGroup';
-import { ErrorMessage, Label, Wrapper, Description } from '../layout';
-import { Skeleton } from '../../../components';
+import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { Skeleton } from '../../../../components';
 
-export type ControlledSelectProps = PropsWithChildren<ControlledInputProps & SelectProps>;
+export type ControlledSelectFieldProps = PropsWithChildren<ControlledInputProps & SelectFieldProps>;
 
-const defaultsApplier = defaultInputPropsFactory<ControlledSelectProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledSelectFieldProps>(defaultInputProps);
 
-export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (props) => {
+export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponentTypes = (props) => {
+  // In most cases we don't want to set default values here, but rather in the generic component.
   const {
     required,
     size: componentSize,
@@ -24,12 +25,12 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
     disabled,
     hint,
     description,
-    multiSelect = false,
+    multiSelect,
     name,
     control,
     loading,
-    enableFilter = false,
-    inPortal = false,
+    enableFilter,
+    inPortal,
     hasMargin = true,
   } = defaultsApplier(props);
 
@@ -125,5 +126,5 @@ export const ControlledSelect: FC<ControlledSelectProps> & SubComponentTypes = (
   );
 };
 
-ControlledSelect.OptionGroup = OptionGroup;
-ControlledSelect.Option = Option;
+ControlledSelectField.OptionGroup = OptionGroup;
+ControlledSelectField.Option = Option;

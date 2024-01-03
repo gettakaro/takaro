@@ -1,5 +1,5 @@
 import { FloatingOverlay } from '@floating-ui/react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 export const Container = styled.div`
@@ -60,6 +60,7 @@ export const SelectContainer = styled.div`
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing['0_75']};
   outline: 0;
+  min-height: 250px;
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};

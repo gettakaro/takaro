@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren, useContext } from 'react';
-import { styled } from '../../../../styled';
-import { SelectContext } from './context';
+import { styled } from '../../../../../styled';
+import { SelectFieldContext } from './context';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
 import { OptionContainer } from '../style';
-import { GenericCheckBox } from '../../CheckBox';
+import { GenericCheckBox } from '../../../CheckBox';
 
 const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
@@ -15,7 +15,8 @@ export interface OptionProps extends PropsWithChildren {
 
   // This is required for filtering
   label?: string;
-  // Properties set by the Select component
+
+  // These properties are controlled by the Select component
   index?: number;
   isGrouped?: boolean;
   onChange?: (value: string | string[]) => unknown;
@@ -48,7 +49,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
     multiSelect,
     values,
     name,
-  } = useContext(SelectContext);
+  } = useContext(SelectFieldContext);
 
   function handleSelect() {
     if (multiSelect) {

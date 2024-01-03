@@ -1,9 +1,9 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useMemo, useState } from 'react';
-import { Button, SelectProps, Select } from '../../../components';
+import { Button, SelectField, SelectFieldProps } from '../../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { films } from './data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +20,7 @@ export default {
     hint: 'This is the hint',
     optionGroupLabel: 'Films',
   },
-} as Meta<SelectProps & ExtraStoryProps>;
+} as Meta<SelectFieldProps & ExtraStoryProps>;
 
 const OptionIcon = styled.img`
   width: 24px;
@@ -31,13 +31,13 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
+export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });
 
   return (
     <>
-      <Select
+      <SelectField
         description={args.description}
         label={args.label}
         control={control}
@@ -50,22 +50,22 @@ export const onChange: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
           </div>
         )}
       >
-        <Select.OptionGroup label={args.optionGroupLabel}>
+        <SelectField.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
-            <Select.Option key={name} value={name}>
+            <SelectField.Option key={name} value={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       <pre>result: {selectValue}</pre>
     </>
   );
 };
 
-export const OnSubmit: StoryFn<SelectProps> = (args) => {
+export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
   type FormFields = { film: string };
   const [result, setResult] = useState<string>('none');
 
@@ -90,7 +90,7 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
       NOTE: You can ignore the width changing when opening the select. This is due to the select being rendered in a
       storybook iframe which has incorrect gutter size.
       <form onSubmit={handleSubmit(submit)}>
-        <Select
+        <SelectField
           control={control}
           name="film"
           label={args.label}
@@ -102,16 +102,16 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
             </div>
           )}
         >
-          <Select.OptionGroup label="films">
+          <SelectField.OptionGroup label="films">
             {films.map(({ name }) => (
-              <Select.Option key={name} value={name}>
+              <SelectField.Option key={name} value={name}>
                 <div>
                   <span>{name}</span>
                 </div>
-              </Select.Option>
+              </SelectField.Option>
             ))}
-          </Select.OptionGroup>
-        </Select>
+          </SelectField.OptionGroup>
+        </SelectField>
         <Button type="submit" text="Submit" />
       </form>
       <pre>result: {result}</pre>
@@ -119,7 +119,7 @@ export const OnSubmit: StoryFn<SelectProps> = (args) => {
   );
 };
 
-export const MultiSelect: StoryFn<SelectProps> = (args) => {
+export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
   type FormFields = { film: string[] };
   const [result, setResult] = useState<string>('none');
 
@@ -144,7 +144,7 @@ export const MultiSelect: StoryFn<SelectProps> = (args) => {
       NOTE: You can ignore the width changing when opening the select. This is due to the select being rendered in a
       storybook iframe which has incorrect gutter size.
       <form onSubmit={handleSubmit(submit)}>
-        <Select
+        <SelectField
           control={control}
           name="film"
           label={args.label}
@@ -163,16 +163,16 @@ export const MultiSelect: StoryFn<SelectProps> = (args) => {
             </div>
           )}
         >
-          <Select.OptionGroup label="films">
+          <SelectField.OptionGroup label="films">
             {films.map(({ name }) => (
-              <Select.Option key={name} value={name} label={name}>
+              <SelectField.Option key={name} value={name} label={name}>
                 <div>
                   <span>{name}</span>
                 </div>
-              </Select.Option>
+              </SelectField.Option>
             ))}
-          </Select.OptionGroup>
-        </Select>
+          </SelectField.OptionGroup>
+        </SelectField>
         <Button type="submit" text="Submit" />
       </form>
       <pre>result: {result}</pre>
@@ -180,13 +180,13 @@ export const MultiSelect: StoryFn<SelectProps> = (args) => {
   );
 };
 
-export const Filter: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
+export const Filter: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });
 
   return (
     <>
-      <Select
+      <SelectField
         description={args.description}
         label={args.label}
         control={control}
@@ -200,16 +200,16 @@ export const Filter: StoryFn<SelectProps & ExtraStoryProps> = (args) => {
           </div>
         )}
       >
-        <Select.OptionGroup label={args.optionGroupLabel}>
+        <SelectField.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
-            <Select.Option key={name} value={name} label={name}>
+            <SelectField.Option key={name} value={name} label={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       <pre>result: {selectValue}</pre>
     </>
   );

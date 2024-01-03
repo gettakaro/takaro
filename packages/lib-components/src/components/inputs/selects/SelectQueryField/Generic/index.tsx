@@ -7,7 +7,6 @@ import {
   PropsWithChildren,
   isValidElement,
   cloneElement,
-  ReactNode,
   useMemo,
 } from 'react';
 import {
@@ -16,29 +15,31 @@ import {
   FloatingPortal,
   size,
   useDismiss,
-  useFocus,
   useFloating,
   useInteractions,
-  useListNavigation,
   useRole,
   offset,
+  useClick,
 } from '@floating-ui/react';
-import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../../InputProps';
-import { useDebounce } from '../../../../hooks';
-import { setAriaDescribedBy } from '../../layout';
-import { SearchFieldContext } from './context';
-import { Input, LoadingIcon, LoadingContainer } from '../style';
+import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
+import { useDebounce } from '../../../../../hooks';
+import { setAriaDescribedBy } from '../../../layout';
+import { SearchFieldItem as SelectQueryFieldItem, SearchFieldContext } from './context';
+import { Input, LoadingContainer } from '../style';
 
 /* The SearchField depends on a few things of <Select/> */
-import { GroupLabel, SelectContainer } from '../../Select/style';
-import { Spinner } from '../../../../components';
+import {
+  SelectButton,
+  StyledArrowIcon,
+  StyledFloatingOverlay,
+  GroupLabel,
+  SelectContainer,
+} from '../../SelectField/style';
+import { Spinner } from '../../../../../components';
 
-export interface SearchFieldProps {
+export interface SelectQueryFieldProps {
   // Enables loading data feedback for user
   isLoadingData?: boolean;
-
-  /// Not implemented: icon to show in the input field
-  icon?: ReactNode;
 
   /// The placeholder text to show when the input is empty
   placeholder?: string;
@@ -49,12 +50,16 @@ export interface SearchFieldProps {
   /// Triggered whenever the input value changes, debounced by 0.5 seconds.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange: (value: string) => void;
+
+  multiSelect?: boolean;
+
+  /// render inPortal
+  inPortal?: boolean;
 }
 
-export interface Item {
-  value: string;
-  label: string;
-}
+export type GenericSelectQueryFieldProps = PropsWithChildren<
+  SelectQueryFieldProps & GenericInputPropsFunctionHandlers<SelectQueryFieldItem[], HTMLInputElement>
+>;
 
 export interface InputValue {
   value: string;
@@ -63,22 +68,24 @@ export interface InputValue {
   shouldUpdate: boolean;
 }
 
-export type GenericSearchFieldProps = PropsWithChildren<GenericInputProps<string, HTMLInputElement> & SearchFieldProps>;
-const defaultsApplier = defaultInputPropsFactory<GenericSearchFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<GenericSelectQueryFieldProps>(defaultInputProps);
 
-export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFieldProps>((props, ref) => {
+export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>((props, ref) => {
   const {
     onBlur = () => {},
     onFocus = () => {},
     onChange,
     name,
     disabled,
-    required,
+    value,
+    id,
     placeholder = 'Search field',
     hasDescription,
+    inPortal = false,
     hasError,
     children,
     readOnly,
+    multiSelect = false,
     debounce = 250,
     isLoadingData: isLoading = false,
     handleInputValueChange,
@@ -87,28 +94,14 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
   const [open, setOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<InputValue>({ value: '', shouldUpdate: false, label: '' });
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [selectedItems, setSelectedItems] = useState<SelectQueryFieldItem[]>([]);
+
   const debouncedValue = useDebounce(inputValue.value, debounce);
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
 
   useEffect(() => {
     if (debouncedValue && inputValue.shouldUpdate) handleInputValueChange(debouncedValue);
   }, [debouncedValue]);
-
-  useEffect(() => {
-    // TODO: this is not perfect, it will not check if the current value in the input is a valid option.
-    if (open === false && inputValue.shouldUpdate == false) {
-      const event = {
-        target: { value: inputValue.value, name },
-        preventDefault: () => {},
-        stopPropagation: () => {},
-      } as unknown as React.ChangeEvent<HTMLInputElement>;
-      onChange(event);
-
-      // the user has typed but did not select an option from the list.
-    } else if (open === false && inputValue.shouldUpdate) {
-      setInputValue({ value: '', shouldUpdate: false, label: '' });
-    }
-  }, [open, inputValue, name, onChange]);
 
   const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
     whileElementsMounted: autoUpdate,
@@ -129,36 +122,44 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+    useClick(context),
     useRole(context, { role: 'listbox' }),
     useDismiss(context),
-    useFocus(context, { enabled: open }),
-    useListNavigation(context, {
-      listRef: listItemsRef,
-      onNavigate: setActiveIndex,
-      focusItemOnHover: false,
-      loop: true,
-      activeIndex,
-    }),
   ]);
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-
     setInputValue({ value, shouldUpdate: true, label: value });
-
     if (value) {
-      setOpen(true);
-      // automatically select the first item in the list (because this should be the best match)
       setActiveIndex(0);
-    } else {
-      setOpen(false);
     }
   }
 
+  /* This handles the case where the value is changed externally (e.g. from a parent component) */
+  /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
+   * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
+   */
+  useEffect(() => {
+    // ensure that the values arrays is fully populated
+    if (value && value.length === 0) {
+      setSelectedItems([]);
+    }
+
+    // TODO
+    /*if (value) {
+        // add values that are in value (from the parent component) but potentially not in selectedValues
+        const newValues = selectedValues.filter((v) => !value.includes(v));
+        setSelectedValues((prev) => [...prev, ...newValues]);
+      }
+      */
+  }, [value]);
+
   const renderSelect = () => {
-    const hasOptions = Children.count(options[0].props.children) > 1;
+    const hasOptions = options && Children.count(options[0].props.children) > 1;
+
+    // initialFocus=-1 is used to prevent the first item from being focused when the list opens
     return (
-      <FloatingFocusManager context={context} initialFocus={-1} visuallyHiddenDismiss>
+      <FloatingFocusManager context={context} visuallyHiddenDismiss initialFocus={-1}>
         <SelectContainer
           {...getFloatingProps({
             ref: refs.setFloating,
@@ -171,6 +172,14 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
             },
           })}
         >
+          <Input
+            id={`${name}-input`}
+            hasError={hasError}
+            isLoading={isLoading}
+            onChange={onInputChange}
+            placeholder={placeholder}
+            ref={ref}
+          />
           {/* it will always contain 1 because of the group label */}
           {isLoading && (
             <LoadingContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
@@ -186,7 +195,6 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
   };
 
   const options = useMemo(() => {
-    let optionIndex = 0;
     return [
       ...(Children.map(
         children,
@@ -198,11 +206,11 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
                   {child.props.label}
                 </GroupLabel>
               )}
-              {Children.map(child.props.children, (child) =>
-                cloneElement(child, {
-                  index: 1 + optionIndex++,
-                })
-              )}
+              {Children.map(child.props.children, (option) => {
+                return cloneElement(option, {
+                  onChange: onChange,
+                });
+              })}
             </ul>
           )
       ) ?? []),
@@ -217,45 +225,37 @@ export const GenericSearchField = forwardRef<HTMLInputElement, GenericSearchFiel
         getItemProps,
         setActiveIndex,
         activeIndex,
-        setInputValue,
-        inputValue: inputValue,
         dataRef: context.dataRef,
+        multiSelect,
+        selectedItems,
+        setSelectedItems,
+        name,
       }}
     >
-      <div ref={ref} style={{ position: 'relative' }}>
-        <Input
-          hasError={hasError}
-          isLoading={isLoading}
-          {...getReferenceProps({
-            ref: refs.setReference,
-            onChange: onInputChange,
-            value: inputValue.label,
-            placeholder: placeholder,
-            name: name,
-            onBlur: onBlur,
-            onFocus: onFocus,
-            readOnly: readOnly,
-            disabled: disabled,
-            autoComplete: 'off',
-            'aria-describedby': setAriaDescribedBy(name, hasDescription),
-            'aria-autocomplete': 'list',
-            'aria-required': required,
-            onKeyDown: (e) => {
-              if (e.ctrlKey && e.key === ' ') {
-                e.preventDefault();
-                setOpen(true);
-              }
-            },
-          })}
-        />
-        {isLoading && (
-          <LoadingIcon>
-            <Spinner size="small" />
-          </LoadingIcon>
-        )}
-
-        {open && !readOnly && <FloatingPortal>{renderSelect()}</FloatingPortal>}
-      </div>
+      <SelectButton
+        id={id}
+        ref={refs.setReference}
+        readOnly={readOnly}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        isOpen={open}
+        tabIndex={disabled ? -1 : 0}
+        hasError={hasError}
+        aria-describedby={setAriaDescribedBy(name, hasDescription)}
+        {...getReferenceProps()}
+      >
+        <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
+        {!readOnly && <StyledArrowIcon size={16} />}
+      </SelectButton>
+      {open &&
+        !readOnly &&
+        (!inPortal ? (
+          <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
+            {renderSelect()}
+          </StyledFloatingOverlay>
+        ) : (
+          <FloatingPortal>{renderSelect()}</FloatingPortal>
+        ))}
     </SearchFieldContext.Provider>
   );
 });
