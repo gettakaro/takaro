@@ -1,12 +1,5 @@
 import { createContext } from 'react';
 import { ContextData } from '@floating-ui/react';
-import { Option } from './Option';
-import { OptionGroup } from './OptionGroup';
-
-export type SubComponentTypes = {
-  Option: typeof Option;
-  OptionGroup: typeof OptionGroup;
-};
 
 export interface SelectItem {
   value: string;

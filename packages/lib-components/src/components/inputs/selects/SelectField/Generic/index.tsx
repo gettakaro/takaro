@@ -9,6 +9,7 @@ import {
   useEffect,
   useMemo,
   ReactElement,
+  useCallback,
 } from 'react';
 import { GroupContainer, GroupLabel } from '../style';
 import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
@@ -30,24 +31,38 @@ import {
 } from '@floating-ui/react';
 
 import { defaultInputPropsFactory, defaultInputProps, GenericInputPropsFunctionHandlers } from '../../../InputProps';
-import { Option } from '../../Option';
-import { OptionGroup } from '../../OptionGroup';
+import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 import { setAriaDescribedBy } from '../../../layout';
-import { SelectItem, SelectContext, SubComponentTypes } from '../../';
+import { SelectItem, SelectContext } from '../../';
 
-export interface SelectFieldProps {
+interface SharedSelectFieldProps {
+  render: (selectedItems: SelectItem[]) => React.ReactNode;
   enableFilter?: boolean;
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
-  render: (selectedItems: SelectItem[]) => React.ReactNode;
-  multiSelect?: boolean;
 }
 
-export type GenericSelectFieldProps = PropsWithChildren<
-  SelectFieldProps & GenericInputPropsFunctionHandlers<SelectItem[], HTMLInputElement>
->;
+interface MultiSelectFieldProps extends SharedSelectFieldProps {
+  multiSelect: true;
+}
 
+interface SingleSelectFieldProps extends SharedSelectFieldProps {
+  multiSelect?: false;
+}
+
+interface SingleSelectFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
+  onChange: (val: string) => void;
+}
+
+interface MultiSelectFieldHandlers extends GenericInputPropsFunctionHandlers<string[], HTMLDivElement> {
+  onChange: (val: string[]) => void;
+}
+
+export type SelectFieldProps = SingleSelectFieldProps | MultiSelectFieldProps;
+export type GenericSelectFieldProps = PropsWithChildren<
+  (SingleSelectFieldProps & SingleSelectFieldHandlers) | (MultiSelectFieldProps & MultiSelectFieldHandlers)
+>;
 const defaultsApplier = defaultInputPropsFactory<GenericSelectFieldProps>(defaultInputProps);
 
 // TODO: implement required, test error display, add grouped example, implement setShowError
@@ -125,19 +140,40 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     }),
   ]);
 
+  const getLabel = useCallback(
+    (value: string) => {
+      return Children.map(children, (group) => {
+        if (!isValidElement(group)) return null;
+
+        const matchedOption = Children.toArray(group.props.children)
+          .filter(isValidElement) // Ensures that only valid elements are processed
+          .find((option: ReactElement) => {
+            return option.props.value === value;
+          });
+
+        if (matchedOption) {
+          return (matchedOption as ReactElement).props.label;
+        }
+        return null;
+      });
+    },
+    [children]
+  );
+
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
+
   useEffect(() => {
-    // ensure that the values arrays is fully populated
-    if (value && value.length === 0) {
-      setSelectedItems([]);
-    }
-    if (value) {
-      // add values that are in value (from the parent component) but potentially not in selectedValues
-      const newItems = selectedItems.filter((item) => !value.map((v) => v.value).includes(item.value));
-      setSelectedItems((prev) => [...prev, ...newItems]);
+    // Function to create an item with a value and label
+    const createItem = (v: any) => ({ value: v, label: getLabel(v) as unknown as string });
+
+    if (Array.isArray(value)) {
+      const items = value.map(createItem);
+      setSelectedItems(items);
+    } else if (typeof value === 'string') {
+      setSelectedItems([createItem(value)]);
     }
   }, [value]);
 

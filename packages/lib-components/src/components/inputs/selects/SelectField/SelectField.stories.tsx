@@ -44,13 +44,16 @@ export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         name="film"
         hint={args.hint}
         render={(selectedItems) => {
+          if (selectedItems.length === 0) {
+            return <div>Select...</div>;
+          }
           // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
           const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
 
           return (
             <div>
               {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
-              {selectedFilm?.name ?? 'Select...'}
+              {selectedFilm?.name}
             </div>
           );
         }}
@@ -101,12 +104,16 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
           label={args.label}
           description={args.description}
           render={(selectedItems) => {
+            if (selectedItems.length === 0) {
+              return <div>Select...</div>;
+            }
             // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
             const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
+
             return (
               <div>
                 {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
-                {selectedFilm?.name ?? 'Select...'}
+                {selectedFilm?.name}
               </div>
             );
           }}
@@ -207,12 +214,16 @@ export const Filter: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         hint={args.hint}
         enableFilter
         render={(selectedItems) => {
+          if (selectedItems.length === 0) {
+            return <div>Select...</div>;
+          }
           // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
           const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
+
           return (
             <div>
               {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
-              {selectedFilm?.name ?? 'Select...'}
+              {selectedFilm?.name}
             </div>
           );
         }}

@@ -8,6 +8,8 @@ import {
   isValidElement,
   cloneElement,
   useMemo,
+  ReactElement,
+  useCallback,
 } from 'react';
 import {
   autoUpdate,
@@ -33,29 +35,41 @@ import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
 import { Spinner } from '../../../../../components';
 
-export interface SelectQueryFieldProps {
+interface SharedSelectQueryFieldProps {
   // Enables loading data feedback for user
   isLoadingData?: boolean;
-
   /// The placeholder text to show when the input is empty
   placeholder?: string;
-
   /// Debounce time in milliseconds (when clientside data it should be 0)
   debounce: number;
-
   /// Triggered whenever the input value changes, debounced by 0.5 seconds.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange: (value: string) => void;
-
-  multiSelect?: boolean;
-
   /// render inPortal
   inPortal?: boolean;
 }
 
+interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
+  multiSelect?: false;
+}
+interface MultiSelectQueryFieldProps extends SharedSelectQueryFieldProps {
+  multiSelect: true;
+}
+
+interface SingleSelectQueryFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
+  onChange: (val: string) => void;
+}
+
+interface MultiSelectQueryFieldHandlers extends GenericInputPropsFunctionHandlers<string[], HTMLDivElement> {
+  onChange: (val: string[]) => void;
+}
+
+export type SelectQueryFieldProps = SingleSelectQueryFieldProps | MultiSelectQueryFieldProps;
 export type GenericSelectQueryFieldProps = PropsWithChildren<
-  SelectQueryFieldProps & GenericInputPropsFunctionHandlers<SelectItem[], HTMLInputElement>
+  | (SingleSelectQueryFieldProps & SingleSelectQueryFieldHandlers)
+  | (MultiSelectQueryFieldProps & MultiSelectQueryFieldHandlers)
 >;
+const defaultsApplier = defaultInputPropsFactory<GenericSelectQueryFieldProps>(defaultInputProps);
 
 export interface InputValue {
   value: string;
@@ -63,8 +77,6 @@ export interface InputValue {
   /// When the user selects an option from the list, there is no need to do another API call
   shouldUpdate: boolean;
 }
-
-const defaultsApplier = defaultInputPropsFactory<GenericSelectQueryFieldProps>(defaultInputProps);
 
 export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>((props, ref) => {
   const {
@@ -131,21 +143,43 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     }
   }
 
+  const getLabel = useCallback(
+    (value: string) => {
+      return Children.map(children, (group) => {
+        if (!isValidElement(group)) return null;
+
+        const matchedOption = Children.toArray(group.props.children)
+          .filter(isValidElement) // Ensures that only valid elements are processed
+          .find((option: ReactElement) => {
+            return option.props.value === value;
+          });
+
+        if (matchedOption) {
+          return (matchedOption as ReactElement).props.label;
+        }
+        return null;
+      });
+    },
+    [children]
+  );
+
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
   useEffect(() => {
-    // ensure that the values arrays is fully populated
-    if (value && value.length === 0) {
-      setSelectedItems([]);
-    }
-    if (value) {
-      // add values that are in value (from the parent component) but potentially not in selectedValues
-      const newItems = selectedItems.filter((item) => !value.map((v) => v.value).includes(item.value));
-      setSelectedItems((prev) => [...prev, ...newItems]);
-    }
-  }, [value]);
+    // Function to create an item with a value and label
+    const createItem = (v: any) => ({ value: v, label: getLabel(v) as unknown as string });
+
+    // Handle both string and string[] types of 'value'
+    const newSelectedItems = Array.isArray(value)
+      ? value.map(createItem)
+      : typeof value === 'string'
+      ? [createItem(value)]
+      : [];
+
+    setSelectedItems(newSelectedItems);
+  }, [value, getLabel]);
 
   const renderSelect = () => {
     const hasOptions = options && Children.count(options[0].props.children) > 1;

@@ -1,10 +1,8 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
-import { SubComponentTypes } from '..';
 import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
-import { OptionGroup } from '../OptionGroup';
-import { Option } from '../Option';
+import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
 import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
 import { Container } from '../sharedStyle';
 
@@ -78,9 +76,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           required={required}
           size={componentSize}
           inPortal={inPortal}
-          onChange={(items) => {
-            field.onChange(items.map((item) => item.value));
-          }}
+          onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
           value={field.value}

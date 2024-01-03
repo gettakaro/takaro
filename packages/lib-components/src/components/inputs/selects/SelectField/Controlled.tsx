@@ -5,11 +5,9 @@ import { Container } from '../sharedStyle';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
 import { GenericSelectField } from '.';
 import { SelectFieldProps } from './Generic';
-import { Option } from '../Option';
-import { OptionGroup } from '../OptionGroup';
+import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
 import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
 import { Skeleton } from '../../../../components';
-import { SubComponentTypes } from '../';
 
 export type ControlledSelectFieldProps = PropsWithChildren<ControlledInputProps & SelectFieldProps>;
 
@@ -110,9 +108,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           size={componentSize}
           enableFilter={enableFilter}
           multiSelect={multiSelect}
-          onChange={(e) => {
-            field.onChange(e);
-          }}
+          onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
           render={render}

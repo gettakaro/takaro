@@ -6,7 +6,6 @@ import { films } from '../data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GenericSelectQueryField } from './Generic';
-import { SelectItem } from '..';
 
 interface Film {
   name: string;
@@ -208,7 +207,7 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = () =>
 
 export const Generic: StoryFn<SelectQueryFieldProps> = () => {
   const [options, setOptions] = useState<Film[]>();
-  const [result, setResult] = useState<SelectItem[]>([]);
+  const [result, setResult] = useState<string[]>([]);
 
   // Function to handle the simulated API call
   // This function will be called each time the input changes
@@ -218,7 +217,7 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
     setOptions(filteredOptions);
   };
 
-  const onChange = (values: SelectItem[]) => {
+  const onChange = (values: string[]) => {
     setResult(values);
   };
 
@@ -232,10 +231,10 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
         handleInputValueChange={handleInputChange}
         required={false}
         debounce={0}
+        multiSelect
         hasError={false}
         hasDescription={false}
         value={result}
-        multiSelect
         name="film"
       >
         {/* In this case the label is the same as the value but ofcourse that can differ*/}
@@ -251,7 +250,7 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
         </SelectQueryField.OptionGroup>
       </GenericSelectQueryField>
       Selected films:
-      <div>{result.map((film) => film.label).join(',')}</div>
+      <div>{result.map((film) => film).join(',')}</div>
     </>
   );
 };

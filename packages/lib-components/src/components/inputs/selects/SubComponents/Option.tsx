@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren, useContext } from 'react';
-import { styled } from '../../../styled';
+import { styled } from '../../../../styled';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
-import { GenericCheckBox } from '../CheckBox';
-import { OptionContainer } from './sharedStyle';
-import { SelectContext, SelectItem } from '.';
+import { GenericCheckBox } from '../../CheckBox';
+import { OptionContainer } from './style';
+import { SelectContext, SelectItem } from '..';
 
 const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
@@ -15,7 +15,7 @@ interface OptionProps extends PropsWithChildren {
   disabled?: boolean;
   // These values are controlled by the SearchField component
   index?: number;
-  onChange?: (values: SelectItem[]) => unknown;
+  onChange?: (values: string | string[]) => unknown;
 }
 
 // check if the index is already selected, if so remove it, otherwise add it.
@@ -41,13 +41,15 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
     useContext(SelectContext);
 
   const handleSelect = () => {
+    // array of values
     if (multiSelect) {
       const updatedItems = toggleSelectedItem(selectedItems, { value, label });
       setSelectedItems(updatedItems);
-      if (onChange) onChange(updatedItems);
+      if (onChange) onChange(updatedItems.map((item) => item.value));
     } else {
+      // single value
       setSelectedItems([{ value, label }]);
-      if (onChange) onChange([{ value, label }]);
+      if (onChange) onChange(value);
       setOpen(false);
     }
   };
