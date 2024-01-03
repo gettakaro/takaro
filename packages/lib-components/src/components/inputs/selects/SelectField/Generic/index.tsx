@@ -7,19 +7,11 @@ import {
   useState,
   PropsWithChildren,
   useEffect,
-  ReactNode,
   useMemo,
   ReactElement,
 } from 'react';
-import { SelectFieldContext } from './context';
-import {
-  GroupContainer,
-  GroupLabel,
-  SelectButton,
-  SelectContainer,
-  StyledFloatingOverlay,
-  StyledArrowIcon,
-} from '../style';
+import { GroupContainer, GroupLabel } from '../style';
+import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
 import { FilterInput } from './FilterInput';
 
 import {
@@ -37,31 +29,24 @@ import {
   FloatingPortal,
 } from '@floating-ui/react';
 
-import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../../../InputProps';
-import { Option } from './Option';
-import { OptionGroup } from './OptionGroup';
-import { SubComponentTypes } from '..';
+import { defaultInputPropsFactory, defaultInputProps, GenericInputPropsFunctionHandlers } from '../../../InputProps';
+import { Option } from '../../Option';
+import { OptionGroup } from '../../OptionGroup';
 import { setAriaDescribedBy } from '../../../layout';
+import { SelectItem, SelectContext, SubComponentTypes } from '../../';
 
-interface SharedSelectFieldProps {
+export interface SelectFieldProps {
   enableFilter?: boolean;
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
+  render: (selectedItems: SelectItem[]) => React.ReactNode;
+  multiSelect?: boolean;
 }
 
-interface MultiSelectFieldProps extends SharedSelectFieldProps {
-  render: (selectIndex: number[]) => React.ReactNode;
-  multiSelect: true;
-}
-
-interface SingleSelectFieldProps extends SharedSelectFieldProps {
-  render: (selectIndex: number) => React.ReactNode;
-  multiSelect?: false;
-}
-
-export type SelectFieldProps = MultiSelectFieldProps | SingleSelectFieldProps;
-export type GenericSelectFieldProps = PropsWithChildren<SelectFieldProps & GenericInputProps<string, HTMLDivElement>>;
+export type GenericSelectFieldProps = PropsWithChildren<
+  SelectFieldProps & GenericInputPropsFunctionHandlers<SelectItem[], HTMLInputElement>
+>;
 
 const defaultsApplier = defaultInputPropsFactory<GenericSelectFieldProps>(defaultInputProps);
 
@@ -90,13 +75,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
 
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | number[]>(() => {
-    // if the select is a multiSelect, the default value should be an empty array.
-    if (multiSelect) {
-      return [];
-    }
-    return -1;
-  });
+  const [selectedItems, setSelectedItems] = useState<SelectItem[]>([]);
 
   const [filterText, setFilterText] = useState<string>('');
   const filterInputRef = useRef<HTMLInputElement>(null);
@@ -139,23 +118,12 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     useListNavigation(context, {
       listRef: listItemsRef,
       activeIndex: activeIndex,
-      selectedIndex: multiSelect ? null : (selectedIndex as number),
+      // TODO
+      // selectedIndex: multiSelect ? null : (selectedIndex as number),
       onNavigate: setActiveIndex,
       scrollItemIntoView: multiSelect ? false : true,
     }),
   ]);
-
-  const values = useMemo(() => {
-    return (
-      Children.map(children, (child) => {
-        if (!isValidElement(child)) return;
-        return Children.map(child.props.children, (child: ReactNode) => {
-          if (!isValidElement(child)) return;
-          return child.props.value as string;
-        });
-      })?.flat() ?? []
-    );
-  }, [children]);
 
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
@@ -163,40 +131,15 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
    */
   useEffect(() => {
     // ensure that the values arrays is fully populated
-    if (values.length === 0 || !value) {
-      return;
+    if (value && value.length === 0) {
+      setSelectedItems([]);
     }
-
     if (value) {
-      if (multiSelect) {
-        if (Array.isArray(value)) {
-          // convert value to values since it is an array of values
-          const valuesThatNeedToBeSelected = value as unknown as string[];
-
-          // get the indices of the values that need to be selected
-          const indices = valuesThatNeedToBeSelected.map((value) => values.indexOf(value));
-
-          // set these indices as the selected indices
-          setSelectedIndex(indices);
-        }
-      } else {
-        // Selected value is singular value
-        // get the index of the value
-        const index = values.indexOf(value);
-
-        // if the index is -1, the value is not in the list of values
-        // if the index is not -1, set the index as the selected index
-        // Otherwise we should set the selected index to null
-        // TODO: when set value is not in the list of values, we should throw an error.
-        // if (index === -1) {
-        //   // throw new Error('The value that is set is not in the list of values');
-        // }
-
-        // for now just set the selected index to null (this should result in an empty select)
-        setSelectedIndex(index);
-      }
+      // add values that are in value (from the parent component) but potentially not in selectedValues
+      const newItems = selectedItems.filter((item) => !value.map((v) => v.value).includes(item.value));
+      setSelectedItems((prev) => [...prev, ...newItems]);
     }
-  }, [value, values]);
+  }, [value]);
 
   const options = useMemo(() => {
     let optionIndex = -1;
@@ -258,7 +201,8 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     return (
       <FloatingFocusManager
         context={context}
-        initialFocus={multiSelect ? (selectedIndex as number[])[0] : (selectedIndex as number) || filterInputRef}
+        // TODO
+        // initialFocus={selectedItems && selectedItems.length > 0 ? selectedItems[0].label : filterInputRef}
       >
         <SelectContainer
           ref={refs.setFloating}
@@ -278,23 +222,11 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     );
   };
 
-  const renderedContent = useMemo(() => {
-    if (Array.isArray(selectedIndex)) {
-      // sort
-      const sorted = selectedIndex.sort((a, b) => a - b);
-      // Typescript does not infer the correct type for render here
-      return render(sorted as number[] & number);
-    } else {
-      // Typescript does not infer the correct type for render here
-      return render(selectedIndex as number[] & number);
-    }
-  }, [selectedIndex]);
-
   return (
-    <SelectFieldContext.Provider
+    <SelectContext.Provider
       value={{
-        selectedIndex,
-        setSelectedIndex,
+        selectedItems,
+        setSelectedItems,
         activeIndex,
         setActiveIndex,
         listRef: listItemsRef,
@@ -303,7 +235,6 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         dataRef: context.dataRef,
         name,
         multiSelect,
-        values,
       }}
     >
       <SelectButton
@@ -318,7 +249,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
-        {renderedContent}
+        {render(selectedItems)}
         {!readOnly && <StyledArrowIcon size={16} />}
       </SelectButton>
       {open &&
@@ -330,7 +261,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         ) : (
           <FloatingPortal>{renderSelect()}</FloatingPortal>
         ))}
-    </SelectFieldContext.Provider>
+    </SelectContext.Provider>
   );
 };
 

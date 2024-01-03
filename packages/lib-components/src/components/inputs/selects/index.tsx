@@ -1,14 +1,21 @@
 import { createContext } from 'react';
 import { ContextData } from '@floating-ui/react';
+import { Option } from './Option';
+import { OptionGroup } from './OptionGroup';
 
-export interface SearchFieldItem {
+export type SubComponentTypes = {
+  Option: typeof Option;
+  OptionGroup: typeof OptionGroup;
+};
+
+export interface SelectItem {
   value: string;
   label: string;
 }
 
-interface SearchFieldContextValue {
-  selectedItems: SearchFieldItem[];
-  setSelectedItems: (item: SearchFieldItem[]) => void;
+interface ContextValue {
+  selectedItems: SelectItem[];
+  setSelectedItems: (item: SelectItem[]) => void;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
   listRef: React.MutableRefObject<Array<HTMLLIElement | null>>;
@@ -19,4 +26,4 @@ interface SearchFieldContextValue {
   name: string;
 }
 
-export const SearchFieldContext = createContext<SearchFieldContextValue>({} as SearchFieldContextValue);
+export const SelectContext = createContext<ContextValue>({} as ContextValue);

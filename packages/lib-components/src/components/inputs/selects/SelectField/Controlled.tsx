@@ -1,13 +1,15 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Container, LoadingContainer } from './style';
+import { LoadingContainer } from './style';
+import { Container } from '../sharedStyle';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
-import { GenericSelect, SubComponentTypes } from '.';
+import { GenericSelectField } from '.';
 import { SelectFieldProps } from './Generic';
-import { Option } from './Generic/Option';
-import { OptionGroup } from './Generic/OptionGroup';
+import { Option } from '../Option';
+import { OptionGroup } from '../OptionGroup';
 import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
 import { Skeleton } from '../../../../components';
+import { SubComponentTypes } from '../';
 
 export type ControlledSelectFieldProps = PropsWithChildren<ControlledInputProps & SelectFieldProps>;
 
@@ -97,7 +99,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
         {/* Typescript cannot infer the correct types here*/}
         {/*eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore */}
-        <GenericSelect
+        <GenericSelectField
           name={name}
           id={name}
           hasError={!!error}
@@ -118,7 +120,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           inPortal={inPortal}
         >
           {children}
-        </GenericSelect>
+        </GenericSelectField>
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}

@@ -1,12 +1,9 @@
 import { FC, PropsWithChildren, useContext } from 'react';
-import { styled } from '../../../../../styled';
-import { SearchFieldContext } from './context';
+import { styled } from '../../../styled';
 import { AiOutlineCheck as CheckIcon } from 'react-icons/ai';
-import { GenericCheckBox } from '../../../CheckBox';
-
-// uses the same styling as the Select component
-import { OptionContainer } from '../../SelectField/style';
-import { SearchFieldItem } from './context';
+import { GenericCheckBox } from '../CheckBox';
+import { OptionContainer } from './sharedStyle';
+import { SelectContext, SelectItem } from '.';
 
 const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
@@ -18,11 +15,11 @@ interface OptionProps extends PropsWithChildren {
   disabled?: boolean;
   // These values are controlled by the SearchField component
   index?: number;
-  onChange?: (values: SearchFieldItem[]) => unknown;
+  onChange?: (values: SelectItem[]) => unknown;
 }
 
 // check if the index is already selected, if so remove it, otherwise add it.
-function toggleSelectedItem(selectedValues: SearchFieldItem[], itemToToggle: SearchFieldItem) {
+function toggleSelectedItem(selectedValues: SelectItem[], itemToToggle: SelectItem) {
   // Check if the value already exists in the selectedValues
   const existingIndex = selectedValues.findIndex((item) => item.value === itemToToggle.value);
 
@@ -35,13 +32,13 @@ function toggleSelectedItem(selectedValues: SearchFieldItem[], itemToToggle: Sea
   }
 }
 
-function hasSelectedItem(selectedItems: SearchFieldItem[], itemToCheck: SearchFieldItem) {
+function hasSelectedItem(selectedItems: SelectItem[], itemToCheck: SelectItem) {
   return selectedItems.some((item) => item.value === itemToCheck.value);
 }
 
 export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, disabled = false, label }) => {
   const { getItemProps, selectedItems, setSelectedItems, setOpen, listRef, activeIndex, dataRef, name, multiSelect } =
-    useContext(SearchFieldContext);
+    useContext(SelectContext);
 
   const handleSelect = () => {
     if (multiSelect) {

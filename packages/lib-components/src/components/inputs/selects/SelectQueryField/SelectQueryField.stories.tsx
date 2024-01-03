@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, SelectQueryField, SelectQueryFieldProps } from '../../../../components';
-import { films } from '../Select/data';
+import { films } from '../SelectField/data';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GenericSelectQueryField } from './Generic';
-import { SearchFieldItem } from './Generic/context';
+import { SelectItem } from '..';
 
 interface Film {
   name: string;
@@ -208,7 +208,7 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = () =>
 
 export const Generic: StoryFn<SelectQueryFieldProps> = () => {
   const [options, setOptions] = useState<Film[]>();
-  const [result, setResult] = useState<SearchFieldItem[]>([]);
+  const [result, setResult] = useState<SelectItem[]>([]);
 
   // Function to handle the simulated API call
   // This function will be called each time the input changes
@@ -218,7 +218,7 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
     setOptions(filteredOptions);
   };
 
-  const onChange = (values: SearchFieldItem[]) => {
+  const onChange = (values: SelectItem[]) => {
     setResult(values);
   };
 

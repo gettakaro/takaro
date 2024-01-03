@@ -24,17 +24,13 @@ import {
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
-import { SearchFieldItem as SelectQueryFieldItem, SearchFieldContext } from './context';
 import { Input, LoadingContainer } from '../style';
+import { SelectItem, SelectContext } from '../../';
 
 /* The SearchField depends on a few things of <Select/> */
-import {
-  SelectButton,
-  StyledArrowIcon,
-  StyledFloatingOverlay,
-  GroupLabel,
-  SelectContainer,
-} from '../../SelectField/style';
+import { GroupLabel } from '../../SelectField/style';
+
+import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
 import { Spinner } from '../../../../../components';
 
 export interface SelectQueryFieldProps {
@@ -58,7 +54,7 @@ export interface SelectQueryFieldProps {
 }
 
 export type GenericSelectQueryFieldProps = PropsWithChildren<
-  SelectQueryFieldProps & GenericInputPropsFunctionHandlers<SelectQueryFieldItem[], HTMLInputElement>
+  SelectQueryFieldProps & GenericInputPropsFunctionHandlers<SelectItem[], HTMLInputElement>
 >;
 
 export interface InputValue {
@@ -94,7 +90,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
   const [open, setOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<InputValue>({ value: '', shouldUpdate: false, label: '' });
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedItems, setSelectedItems] = useState<SelectQueryFieldItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SelectItem[]>([]);
 
   const debouncedValue = useDebounce(inputValue.value, debounce);
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -144,14 +140,11 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     if (value && value.length === 0) {
       setSelectedItems([]);
     }
-
-    // TODO
-    /*if (value) {
-        // add values that are in value (from the parent component) but potentially not in selectedValues
-        const newValues = selectedValues.filter((v) => !value.includes(v));
-        setSelectedValues((prev) => [...prev, ...newValues]);
-      }
-      */
+    if (value) {
+      // add values that are in value (from the parent component) but potentially not in selectedValues
+      const newItems = selectedItems.filter((item) => !value.map((v) => v.value).includes(item.value));
+      setSelectedItems((prev) => [...prev, ...newItems]);
+    }
   }, [value]);
 
   const renderSelect = () => {
@@ -218,7 +211,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
   }, [children]);
 
   return (
-    <SearchFieldContext.Provider
+    <SelectContext.Provider
       value={{
         listRef: listItemsRef,
         setOpen,
@@ -256,6 +249,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         ) : (
           <FloatingPortal>{renderSelect()}</FloatingPortal>
         ))}
-    </SearchFieldContext.Provider>
+    </SelectContext.Provider>
   );
 });

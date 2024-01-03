@@ -1,12 +1,12 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Container } from './style';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
-import { SubComponentTypes } from '.';
+import { SubComponentTypes } from '..';
 import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
-import { OptionGroup } from '../SelectField/Generic/OptionGroup';
+import { OptionGroup } from '../OptionGroup';
 import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
-import { Option } from './Generic/Option';
+import { Option } from '../Option';
+import { Container } from '../sharedStyle';
 
 export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;
 

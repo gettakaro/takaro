@@ -13,7 +13,7 @@ interface ExtraStoryProps {
 }
 
 export default {
-  title: 'Inputs/Select',
+  title: 'Inputs/SelectField',
   args: {
     label: 'Film',
     description: 'This is the description',
@@ -43,16 +43,21 @@ export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         control={control}
         name="film"
         hint={args.hint}
-        render={(selectedIndex) => (
-          <div>
-            {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
-            {films[selectedIndex]?.name ?? 'Select...'}
-          </div>
-        )}
+        render={(selectedItems) => {
+          // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
+          const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
+
+          return (
+            <div>
+              {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
+              {selectedFilm?.name ?? 'Select...'}
+            </div>
+          );
+        }}
       >
         <SelectField.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
-            <SelectField.Option key={name} value={name}>
+            <SelectField.Option key={name} value={name} label={name}>
               <div>
                 <span>{name}</span>
               </div>
@@ -60,7 +65,7 @@ export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
           ))}
         </SelectField.OptionGroup>
       </SelectField>
-      <pre>result: {selectValue}</pre>
+      <pre>result: {selectValue && selectValue.length > 0 && selectValue[0].value}</pre>
     </>
   );
 };
@@ -95,16 +100,20 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
           name="film"
           label={args.label}
           description={args.description}
-          render={(selectedIndex) => (
-            <div>
-              {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
-              {films[selectedIndex]?.name ?? 'Select...'}
-            </div>
-          )}
+          render={(selectedItems) => {
+            // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
+            const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
+            return (
+              <div>
+                {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
+                {selectedFilm?.name ?? 'Select...'}
+              </div>
+            );
+          }}
         >
           <SelectField.OptionGroup label="films">
             {films.map(({ name }) => (
-              <SelectField.Option key={name} value={name}>
+              <SelectField.Option key={name} value={name} label={name}>
                 <div>
                   <span>{name}</span>
                 </div>
@@ -150,18 +159,22 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
           label={args.label}
           multiSelect
           description={args.description}
-          render={(selectedIndices) => (
-            <div>
-              {selectedIndices.length === 0
-                ? 'Select...'
-                : selectedIndices.length <= 3
-                ? selectedIndices.map((index) => films[index]?.name).join(', ')
-                : `${selectedIndices
-                    .slice(0, 3)
-                    .map((index) => films[index]?.name)
-                    .join(', ')} and ${selectedIndices.length - 3} more`}
-            </div>
-          )}
+          render={(selectedItems) => {
+            const selectedFilms = films.filter((film) => selectedItems.some((item) => item.value === film.name));
+
+            return (
+              <div>
+                {selectedFilms.length === 0
+                  ? 'Select...'
+                  : selectedFilms.length <= 3
+                  ? selectedFilms.map((film) => film.name).join(', ')
+                  : `${selectedFilms
+                      .slice(0, 3)
+                      .map((film) => film.name)
+                      .join(', ')} and ${selectedFilms.length - 3} more`}
+              </div>
+            );
+          }}
         >
           <SelectField.OptionGroup label="films">
             {films.map(({ name }) => (
@@ -193,12 +206,16 @@ export const Filter: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         name="film"
         hint={args.hint}
         enableFilter
-        render={(selectedIndex) => (
-          <div>
-            {films[selectedIndex] && <OptionIcon alt="Poster" src={films[selectedIndex]?.icon} />}
-            {films[selectedIndex]?.name ?? 'Select...'}
-          </div>
-        )}
+        render={(selectedItems) => {
+          // selected items is an array { label: string, value: string }. In this case it will always only contain 1 value since we are not using multiSelect.
+          const selectedFilm = films.find((film) => film.name === selectedItems[0]?.value);
+          return (
+            <div>
+              {selectedFilm && <OptionIcon alt="Poster" src={selectedFilm?.icon} />}
+              {selectedFilm?.name ?? 'Select...'}
+            </div>
+          );
+        }}
       >
         <SelectField.OptionGroup label={args.optionGroupLabel}>
           {films.map(({ name }) => (
