@@ -8,9 +8,10 @@ export const Container = styled.div`
   bottom: 0;
   /* should be shown above the rest of drawer (this is relative to DrawerContent) */
   z-index: 1;
+  border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
   padding: ${({ theme }) => theme.spacing[2]};
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 export const DrawerFooter: FC<PropsWithChildren> = ({ children }) => {
