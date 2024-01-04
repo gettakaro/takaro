@@ -1,10 +1,14 @@
 import { createContext } from 'react';
 import { ContextData } from '@floating-ui/react';
 
-interface SelectContextValue {
-  selectedIndex: number | number[];
-  setSelectedIndex: (index: number | number[]) => void;
-  values: string[];
+export interface SelectItem {
+  value: string;
+  label: string;
+}
+
+interface ContextValue {
+  selectedItems: SelectItem[];
+  setSelectedItems: (item: SelectItem[]) => void;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
   listRef: React.MutableRefObject<Array<HTMLLIElement | null>>;
@@ -15,4 +19,4 @@ interface SelectContextValue {
   name: string;
 }
 
-export const SelectContext = createContext<SelectContextValue>({} as SelectContextValue);
+export const SelectContext = createContext<ContextValue>({} as ContextValue);

@@ -1,4 +1,4 @@
-import { Select } from '@takaro/lib-components';
+import { SelectField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 
@@ -45,7 +45,7 @@ export const TimePeriodSelect: FC<TimePeriodSelectProps> = ({
   options = defaultOptions,
 }) => {
   return (
-    <Select
+    <SelectField
       label={label}
       control={control}
       name={name}
@@ -57,17 +57,22 @@ export const TimePeriodSelect: FC<TimePeriodSelectProps> = ({
       description={description}
       size={size}
       inPortal={inPortal}
-      render={(selectedIndex) => <div>{options[selectedIndex]?.label ?? selectedIndex}</div>}
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
+          return <div>Select...</div>;
+        }
+        return <div>{selectedItems[0].label}</div>;
+      }}
     >
-      <Select.OptionGroup>
+      <SelectField.OptionGroup>
         {options.map(({ label, value }) => (
-          <Select.Option key={value} value={value}>
+          <SelectField.Option key={value} value={value} label={label}>
             <div>
               <span>{label}</span>
             </div>
-          </Select.Option>
+          </SelectField.Option>
         ))}
-      </Select.OptionGroup>
-    </Select>
+      </SelectField.OptionGroup>
+    </SelectField>
   );
 };

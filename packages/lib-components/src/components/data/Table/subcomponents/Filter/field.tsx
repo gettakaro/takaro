@@ -1,5 +1,5 @@
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
-import { Select, TextField } from '../../../../../components';
+import { SelectField, TextField } from '../../../../../components';
 import { FilterInputType, IFormInputs } from '.';
 import { Operators } from '.';
 import { Column } from '@tanstack/react-table';
@@ -66,32 +66,32 @@ export function FilterRow<DataType extends object>({
 
   return (
     <>
-      <Select
+      <SelectField
         key={`column-${id}`}
         control={control}
         name={`filters.${index}.column`}
         label="Column"
         inPortal
-        render={(idx) => {
-          if (idx === -1) {
+        render={(selectedItems) => {
+          if (selectedItems.length === 0) {
             return 'Select a column';
           }
-          const col = columnIds[idx];
+          const col = columnIds.find((col) => col === selectedItems[0].value);
           return camelCaseToSpaces(col);
         }}
       >
-        <Select.OptionGroup>
+        <SelectField.OptionGroup>
           {columnIds.map((col) => (
-            <Select.Option key={col} value={col}>
+            <SelectField.Option key={col} value={col} label={col}>
               <div>
                 <span>{camelCaseToSpaces(col)}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
 
-      <Select
+      <SelectField
         key={`operator-${id}`}
         control={control}
         name={`filters.${index}.operator`}
@@ -107,16 +107,16 @@ export function FilterRow<DataType extends object>({
           return operator;
         }}
       >
-        <Select.OptionGroup>
+        <SelectField.OptionGroup>
           {operators.map((operator) => (
-            <Select.Option key={operator} value={operator}>
+            <SelectField.Option key={operator} value={operator} label={operator}>
               <div>
                 <span>{operator}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       <TextField
         key={`value-${id}`}
         control={control}

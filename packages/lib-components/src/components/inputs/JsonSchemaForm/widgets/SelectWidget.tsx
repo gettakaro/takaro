@@ -1,18 +1,8 @@
-import {
-  enumOptionsValueForIndex,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
-} from '@rjsf/utils';
-import { GenericSelect } from '../../Select/Generic';
+import { enumOptionsValueForIndex, FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
+import { GenericSelectField } from '../../selects/SelectField/Generic';
 
 // TODO: implement multiselect
-export function SelectWidget<
-  T = unknown,
-  S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = any
->({
+export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   options,
   disabled,
@@ -27,7 +17,7 @@ export function SelectWidget<
   const { enumOptions, emptyValue } = options;
 
   return (
-    <GenericSelect
+    <GenericSelectField
       id={id}
       name={name}
       disabled={disabled}
@@ -37,23 +27,20 @@ export function SelectWidget<
       value={value}
       hasDescription={!!schema.description}
       onChange={onChange}
-      render={(selectedIndex) => (
-        <div>
-          {enumOptionsValueForIndex(selectedIndex, enumOptions, emptyValue) ??
-            'Select...'}
-        </div>
+      render={(selectedItems) => (
+        <div>{enumOptionsValueForIndex(selectedItems[0].value, enumOptions, emptyValue) ?? 'Select...'}</div>
       )}
     >
-      <GenericSelect.OptionGroup label="options">
+      <GenericSelectField.OptionGroup label="options">
         {enumOptions &&
           enumOptions.map(({ value, label }) => (
-            <GenericSelect.Option key={`select-${value}`} value={value}>
+            <GenericSelectField.Option key={`select-${value}`} value={value} label={value}>
               <div>
                 <span>{label}</span>
               </div>
-            </GenericSelect.Option>
+            </GenericSelectField.Option>
           ))}
-      </GenericSelect.OptionGroup>
-    </GenericSelect>
+      </GenericSelectField.OptionGroup>
+    </GenericSelectField>
   );
 }
