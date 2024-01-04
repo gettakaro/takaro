@@ -208,7 +208,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                   </Fields>
                   {!readOnly && (
                     <Column>
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             disabled={index === 0}
@@ -222,7 +222,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                         <Tooltip.Content>Move up</Tooltip.Content>
                       </Tooltip>
 
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             onClick={() => remove(index)}
@@ -233,7 +233,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                         <Tooltip.Content>Remove argument</Tooltip.Content>
                       </Tooltip>
 
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             disabled={index === fields.length - 1}
@@ -256,7 +256,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                 addField({
                   name: '',
                   helpText: '',
-                  type: '',
+                  type: 'string',
                   defaultValue: '',
                   position: fields.length,
                   commandId,
