@@ -142,20 +142,27 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
 
   const getLabel = useCallback(
     (value: string) => {
-      return Children.map(children, (group) => {
-        if (!isValidElement(group)) return null;
+      const matchedGroup = Children.toArray(children).find((group) => {
+        if (!isValidElement(group)) return false;
 
         const matchedOption = Children.toArray(group.props.children)
-          .filter(isValidElement) // Ensures that only valid elements are processed
-          .find((option: ReactElement) => {
-            return option.props.value === value;
-          });
+          .filter(isValidElement)
+          .find((option: ReactElement) => option.props.value === value);
+
+        return Boolean(matchedOption);
+      });
+
+      if (matchedGroup && isValidElement(matchedGroup)) {
+        const matchedOption = Children.toArray(matchedGroup.props.children)
+          .filter(isValidElement)
+          .find((option: ReactElement) => option.props.value === value);
 
         if (matchedOption) {
           return (matchedOption as ReactElement).props.label;
         }
-        return null;
-      });
+      }
+
+      return null;
     },
     [children]
   );
@@ -167,12 +174,12 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
 
   useEffect(() => {
     // Function to create an item with a value and label
-    const createItem = (v: any) => ({ value: v, label: getLabel(v) as unknown as string });
+    const createItem = (v: string) => ({ value: v, label: getLabel(v) as unknown as string });
 
     if (Array.isArray(value)) {
       const items = value.map(createItem);
       setSelectedItems(items);
-    } else if (typeof value === 'string') {
+    } else if (typeof value === 'string' && value !== '') {
       setSelectedItems([createItem(value)]);
     }
   }, [value]);

@@ -186,7 +186,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                           if (selectedItems.length === 0) {
                             return <div>Select...</div>;
                           }
-                          return <div>selectedItems[0].label</div>;
+                          return <div>{selectedItems[0].label}</div>;
                         }}
                       >
                         <SelectField.OptionGroup label="Options">
@@ -261,7 +261,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                 addField({
                   name: '',
                   helpText: '',
-                  type: '',
+                  type: 'string',
                   defaultValue: '',
                   position: fields.length,
                   commandId,
