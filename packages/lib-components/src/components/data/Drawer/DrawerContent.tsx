@@ -55,20 +55,15 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
   }
 
   const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    // This prevents the drawer from being dragged more than its width to the left
-    if (info.point.x < -700) {
-      setDragPosition(-700);
-    } else {
-      const newPosition = Math.min(Math.max(info.offset.x / 650, 0), 1);
-      setDragPosition(newPosition);
-    }
+    const newPosition = Math.min(Math.max(info.offset.x / 650, 0), 1);
+    setDragPosition(newPosition);
   };
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     // Snap back to position if dragged to the right
     if (info.offset.x > 450) {
       setOpen(false);
-    } else if (info.point.x >= 0) {
+    } else if (info.offset.x >= 0) {
       setDragPosition(0);
     }
   };
@@ -92,10 +87,10 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                   x: '100%',
                 }}
                 drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
+                dragConstraints={{ left: 0, right: -20 }}
                 onDrag={handleDrag}
                 onDragEnd={handleDragEnd}
-                dragElastic={0.5}
+                dragElastic={{ left: 0, right: 0.4 }}
                 layout
               >
                 <HandleContainer>
