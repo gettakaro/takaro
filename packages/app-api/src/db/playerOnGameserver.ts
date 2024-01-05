@@ -258,7 +258,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return player;
   }
 
-  async getRef(playerId: string, gameServerId: string) {
+  async getRef(playerId: string, gameServerId: string): Promise<PlayerOnGameserverOutputDTO> {
     const { query } = await this.getModel();
 
     const foundProfiles = await query.where({ playerId, gameServerId });
@@ -267,7 +267,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
-    return new IPlayerReferenceDTO().construct(foundProfiles[0]);
+    return this.findOne(foundProfiles[0].id);
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {
