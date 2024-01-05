@@ -1,7 +1,11 @@
-import { SelectFieldProps } from '@takaro/lib-components';
+import { SelectFieldProps, SelectQueryFieldProps } from '@takaro/lib-components';
 
 // TODO: implement multiSelect
-export type CustomSelectProps = Omit<SelectFieldProps, 'render' | 'children' | 'enableFilter' | 'multiSelect'>;
+export type CustomSelectProps = Omit<SelectFieldProps, 'render' | 'children' | 'enableFilter'>;
+export type CustomQuerySelectProps = Omit<
+  SelectQueryFieldProps,
+  'children' | 'handleInputValueChange' | 'isLoadingData' | 'debounce'
+>;
 
 export { GameServerSelect } from './GameServerSelect';
 export { RolesSelect } from './RolesSelect';
