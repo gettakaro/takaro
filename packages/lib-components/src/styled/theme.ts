@@ -8,7 +8,7 @@ const fontSize = {
   tiny: '1rem',
   small: '1.2rem',
   medium: '1.325rem',
-  mediumLarge: '1.825rem',
+  mediumLarge: '1.45rem',
   large: '2.425rem',
   huge: '4rem',
 };
@@ -32,8 +32,6 @@ export const lightTheme = {
   colors: {
     primary: '#664de5',
     secondary: '#030917',
-    tertiary: '#be81f6',
-    quaternary: '#e5cc4d',
     placeholder: '#f5f5f5',
     placeholderHighlight: '#ffffff',
     shade: '#eaf8f0',
@@ -64,8 +62,6 @@ export const darkTheme: ThemeType = {
   colors: {
     primary: '#664DE5',
     secondary: '#353535',
-    tertiary: '#be81f6',
-    quaternary: '#e5cc4d',
     placeholder: '#202020',
     placeholderHighlight: '#303030',
     white: '#ffffff',
@@ -73,8 +69,8 @@ export const darkTheme: ThemeType = {
     shade: '#eaf8f0',
     text: '#c2c2c2',
     textAlt: '#818181',
-    background: '#151515',
-    backgroundAlt: '#202020',
+    background: '#080808',
+    backgroundAlt: '#121212',
     // this is basically for when it is unsure if the background is background or backgroundAlt
     // Often used for borders and such.
     backgroundAccent: '#353535',

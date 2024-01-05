@@ -3,7 +3,9 @@ import { useDrawerContext } from './DrawerContext';
 import { styled } from '../../../styled';
 
 const Container = styled.div`
-  padding: ${({ theme }) => `0 ${theme.spacing['2_5']} ${theme.spacing[2]} ${theme.spacing['2_5']}`};
+  position: relative;
+  /* Large left padding is for the drawer handle */
+  padding: ${({ theme }) => `0 ${theme.spacing['2_5']} ${theme.spacing[2]} ${theme.spacing['4']}`};
 `;
 
 export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {

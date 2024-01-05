@@ -4,8 +4,8 @@ import { usePlayer } from 'queries/players';
 import { FC } from 'react';
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { DateTime } from 'luxon';
-import { SiEpicgames as EpicGamesIcon } from 'react-icons/si';
-import { FaSteam as SteamIcon, FaXbox as XboxIcon, FaLeaf as TakaroIcon } from 'react-icons/fa';
+// import { SiEpicgames as EpicGamesIcon } from 'react-icons/si';
+// import { FaSteam as SteamIcon, FaXbox as XboxIcon, FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { PlayerRolesTable } from './PlayerRolesTable';
 import { PlayerInventoryTable } from './PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
@@ -122,23 +122,18 @@ export const PlayerProfile: FC = () => {
           </Stats>
         </div>
         <ChipContainer>
-          {data?.id && <Chip color="secondary" avatar={<TakaroIcon />} label={`Takaro ID: ${data.id}`} />}
+          {data?.id && <Chip color="secondary" label={`Takaro ID: ${data.id}`} />}
           {data?.steamId && (
             <Chip
               color="secondary"
-              avatar={<SteamIcon />}
               onClick={() => {
                 window.open(`https://steamcommunity.com/profiles/${data?.steamId}`, '_blank');
               }}
               label={`Steam ID: ${data.steamId}`}
             />
           )}
-          {data.epicOnlineServicesId && (
-            <Chip color="secondary" avatar={<EpicGamesIcon />} onClick={() => {}} label={data.epicOnlineServicesId} />
-          )}
-          {data.xboxLiveId && (
-            <Chip color="secondary" avatar={<XboxIcon />} onClick={() => {}} label={data.xboxLiveId} />
-          )}
+          {data.epicOnlineServicesId && <Chip color="secondary" onClick={() => {}} label={data.epicOnlineServicesId} />}
+          {data.xboxLiveId && <Chip color="secondary" onClick={() => {}} label={data.xboxLiveId} />}
         </ChipContainer>
       </Columns>
 

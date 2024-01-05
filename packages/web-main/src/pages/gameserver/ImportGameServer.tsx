@@ -1,4 +1,4 @@
-import { Alert, Button, Drawer, FileField, FormError, Loading } from '@takaro/lib-components';
+import { Alert, Button, Drawer, FileField, FormError, Spinner } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -133,7 +133,7 @@ export const ImportGameServer: FC = () => {
             />
           </form>
           {<FormError error={importError} />}
-          {jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed' && <Loading />}
+          {jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed' && <Spinner size="medium" />}
           {jobStatus && <pre>{JSON.stringify(jobStatus, null, 2)}</pre>}
         </Drawer.Body>
         <Drawer.Footer>

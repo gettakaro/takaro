@@ -74,7 +74,7 @@ export const ResizeHandle = styled.span<{ isResizing: boolean }>`
   /* prevents from scrolling while dragging on touch devices */
   touch-action: none;
   opacity: ${({ isResizing }) => (isResizing ? 1 : 0)};
-  background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.tertiary)};
+  background-color: ${({ theme, isResizing }) => (isResizing ? theme.colors.primary : theme.colors.backgroundAccent)};
   transition: opacity 0.1s ease-out;
 
   &:hover {

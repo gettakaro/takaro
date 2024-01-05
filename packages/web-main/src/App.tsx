@@ -58,7 +58,7 @@ function App() {
       muted: darkTheme.colors.primary,
       emphasis: darkTheme.colors.primary,
       disabled: darkTheme.colors.disabled,
-      subtle: darkTheme.colors.tertiary,
+      subtle: darkTheme.colors.backgroundAccent,
     },
     foreground: {
       def: darkTheme.colors.text,

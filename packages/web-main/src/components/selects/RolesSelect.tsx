@@ -1,4 +1,4 @@
-import { Select, styled } from '@takaro/lib-components';
+import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useRoles } from 'queries/roles';
@@ -38,7 +38,7 @@ export const RolesSelect: FC<CustomSelectProps> = ({
   }
 
   return (
-    <Select
+    <SelectField
       control={control}
       name={name}
       label={label}
@@ -51,31 +51,37 @@ export const RolesSelect: FC<CustomSelectProps> = ({
       required={required}
       enableFilter={roles.length > 10}
       loading={loading}
-      render={(selectedIndex) => <div>{roles[selectedIndex]?.name ?? 'Select...'}</div>}
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
+          return <div>Select...</div>;
+        }
+        const selectedRole = roles.find((role) => role.id === selectedItems[0]?.value)!;
+        return <div>{selectedRole.name}</div>;
+      }}
     >
-      <Select.OptionGroup label="Custom">
+      <SelectField.OptionGroup label="Custom">
         {roles
           .filter((role) => !role.system)
           .map(({ name, id }) => (
-            <Select.Option key={`select-${name}-option`} value={id}>
+            <SelectField.Option key={`select-${name}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-      </Select.OptionGroup>
+      </SelectField.OptionGroup>
 
-      <Select.OptionGroup label="System">
+      <SelectField.OptionGroup label="System">
         {roles
           .filter((role) => role.system)
           .map(({ name, id }) => (
-            <Select.Option key={`select-${name}-option`} value={id}>
+            <SelectField.Option key={`select-${name}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-      </Select.OptionGroup>
-    </Select>
+      </SelectField.OptionGroup>
+    </SelectField>
   );
 };

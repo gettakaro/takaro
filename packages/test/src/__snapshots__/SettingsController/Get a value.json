@@ -1,9 +1,11 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-10-20T19:40:23.213Z"
-    },
-    "data": "/"
+    "meta": {},
+    "data": {
+      "key": "commandPrefix",
+      "value": "/",
+      "type": "default"
+    }
   },
   "status": 200,
   "test": {

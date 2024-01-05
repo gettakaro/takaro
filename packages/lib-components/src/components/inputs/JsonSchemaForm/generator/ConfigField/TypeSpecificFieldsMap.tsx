@@ -1,6 +1,6 @@
 import { Control, useWatch } from 'react-hook-form';
 import { Input, InputType } from '../InputTypes';
-import { TextField, TagField, CheckBox, Select } from '../../../../../components';
+import { TextField, TagField, CheckBox, SelectField } from '../../../../../components';
 import { IFormInputs } from '..';
 
 export const TypeSpecificFieldsMap = (control: Control<IFormInputs>, input: Input, index: number, id: string) => {
@@ -95,21 +95,23 @@ export const TypeSpecificFieldsMap = (control: Control<IFormInputs>, input: Inpu
         placeholder="Press enter to add a value."
       />,
       enumValues && (
-        <Select
+        <SelectField
           key={`${input.type}-default-${id}`}
           control={control}
           name={`configFields.${index}.default`}
           label="Default value"
-          render={(selectedIndex) => <div>{selectedIndex !== -1 ? enumValues[selectedIndex] : enumValues[0]}</div>}
+          render={(selectedItems) => (
+            <div>{selectedItems.length > 0 ? enumValues.find((e) => e === selectedItems[0].value) : enumValues[0]}</div>
+          )}
         >
-          <Select.OptionGroup>
+          <SelectField.OptionGroup>
             {enumValues.map((enumValue: string) => (
-              <Select.Option key={`${enumValue}-${id}`} value={enumValue}>
+              <SelectField.Option key={`${enumValue}-${id}`} value={enumValue} label={enumValue}>
                 <span>{enumValue}</span>
-              </Select.Option>
+              </SelectField.Option>
             ))}
-          </Select.OptionGroup>
-        </Select>
+          </SelectField.OptionGroup>
+        </SelectField>
       ),
     ],
     [InputType.array]: [

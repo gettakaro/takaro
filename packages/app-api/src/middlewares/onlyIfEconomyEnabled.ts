@@ -32,7 +32,7 @@ export async function onlyIfEconomyEnabledMiddleware(
 
     const economyEnabled = await settingsService.get(SETTINGS_KEYS.economyEnabled);
 
-    if (economyEnabled === 'false') {
+    if (economyEnabled.value === 'false') {
       return next(new errors.BadRequestError('Economy is not enabled'));
     }
 

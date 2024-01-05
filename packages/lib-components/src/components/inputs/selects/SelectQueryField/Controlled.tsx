@@ -1,18 +1,16 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Container } from './style';
-import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
-import { SubComponentTypes } from '.';
-import { GenericSearchField, SearchFieldProps } from './Generic';
-import { OptionGroup } from '../Select/Generic/OptionGroup';
-import { ErrorMessage, Label, Wrapper, Description } from '../layout';
-import { Option } from './Generic/Option';
+import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
+import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
+import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
+import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { Container } from '../sharedStyle';
 
-export type ControlledSearchFieldProps = PropsWithChildren<ControlledInputProps & SearchFieldProps>;
+export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;
 
-const defaultsApplier = defaultInputPropsFactory<ControlledSearchFieldProps>(defaultInputProps);
+const defaultsApplier = defaultInputPropsFactory<ControlledSelectQueryFieldProps>(defaultInputProps);
 
-export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponentTypes = (props) => {
+export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & SubComponentTypes = (props) => {
   const {
     required,
     size: componentSize,
@@ -23,9 +21,10 @@ export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponen
     disabled,
     hint,
     description,
-    // TODO: form loading
     name,
+    multiSelect,
     control,
+    inPortal,
     debounce,
     isLoadingData,
     handleInputValueChange,
@@ -64,7 +63,7 @@ export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponen
             hint={hint}
           />
         )}
-        <GenericSearchField
+        <GenericSelectQueryField
           name={name}
           id={name}
           isLoadingData={isLoadingData}
@@ -73,8 +72,10 @@ export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponen
           hasDescription={!!description}
           readOnly={readOnly}
           disabled={disabled}
+          multiSelect={multiSelect}
           required={required}
           size={componentSize}
+          inPortal={inPortal}
           onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
@@ -83,7 +84,7 @@ export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponen
           handleInputValueChange={handleInputValueChange}
         >
           {children}
-        </GenericSearchField>
+        </GenericSelectQueryField>
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
@@ -91,5 +92,5 @@ export const ControlledSearchField: FC<ControlledSearchFieldProps> & SubComponen
   );
 };
 
-ControlledSearchField.OptionGroup = OptionGroup;
-ControlledSearchField.Option = Option;
+ControlledSelectQueryField.OptionGroup = OptionGroup;
+ControlledSelectQueryField.Option = Option;

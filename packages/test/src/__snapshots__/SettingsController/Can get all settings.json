@@ -1,12 +1,28 @@
 {
   "body": {
     "meta": {},
-    "data": {
-      "commandPrefix": "/",
-      "serverChatName": "Takaro",
-      "economyEnabled": "false",
-      "currencyName": "Takaro coins"
-    }
+    "data": [
+      {
+        "key": "commandPrefix",
+        "value": "/",
+        "type": "default"
+      },
+      {
+        "key": "serverChatName",
+        "value": "Takaro",
+        "type": "default"
+      },
+      {
+        "key": "economyEnabled",
+        "value": "false",
+        "type": "default"
+      },
+      {
+        "key": "currencyName",
+        "value": "Takaro coins",
+        "type": "default"
+      }
+    ]
   },
   "status": 200,
   "test": {

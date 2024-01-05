@@ -1,4 +1,4 @@
-import { Select, styled } from '@takaro/lib-components';
+import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
@@ -46,7 +46,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
   }
 
   return (
-    <Select
+    <SelectField
       control={control}
       name={name}
       label={label}
@@ -58,22 +58,22 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
       required={required}
       inPortal={inPortal}
       loading={loading}
-      render={(selectedIndex) => {
-        if (selectedIndex === undefined || selectedIndex === -1) {
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-        return <div>{modules[selectedIndex].moduleId}</div>;
+        return <div>{selectedItems[0].label}</div>;
       }}
     >
-      <Select.OptionGroup>
+      <SelectField.OptionGroup>
         {modules.map(({ id, moduleId }) => (
-          <Select.Option key={`select-${name}-${id}`} value={moduleId}>
+          <SelectField.Option key={`select-${name}-${id}`} value={moduleId} label={moduleId}>
             <Inner>
               <span>{moduleId}</span>
             </Inner>
-          </Select.Option>
+          </SelectField.Option>
         ))}
-      </Select.OptionGroup>
-    </Select>
+      </SelectField.OptionGroup>
+    </SelectField>
   );
 };

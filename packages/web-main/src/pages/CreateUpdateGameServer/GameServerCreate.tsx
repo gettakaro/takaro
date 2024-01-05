@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -104,24 +104,29 @@ const CreateGameServer: FC = () => {
                   required
                 />
 
-                <Select
+                <SelectField
                   control={control}
                   name="type"
                   label="Game Server"
                   required
                   loading={isLoading}
-                  render={(selectedIndex) => <div>{gameTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</div>}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      return <div>Select...</div>;
+                    }
+                    return <div>{selectedItems[0].label}</div>;
+                  }}
                 >
-                  <Select.OptionGroup label="Games">
+                  <SelectField.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Select.Option key={`select-${name}`} value={value}>
+                      <SelectField.Option key={`select-${name}`} value={value} label={name}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </CollapseList.Item>
               {type !== undefined && (
                 <CollapseList.Item title="Connection info">

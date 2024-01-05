@@ -32,7 +32,8 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   min-height: 4rem;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   margin-bottom: ${({ theme, isCollapsed }) => (isCollapsed ? theme.spacing['0_75'] : 0)};
 
   svg {
@@ -73,7 +74,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
               transition={{ duration: 0.125, ease: 'linear' }}
               style={{
                 transformOrigin: 'top center',
-                padding: `${theme.spacing['0_75']} ${theme.spacing['0']} ${theme.spacing['1_5']} ${theme.spacing['0']}`,
+                padding: `${theme.spacing['0_75']} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['1']}`,
               }}
             >
               {children}

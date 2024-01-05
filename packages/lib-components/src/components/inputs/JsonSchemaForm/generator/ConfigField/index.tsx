@@ -1,5 +1,5 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
-import { Select, TextField, Chip, TextAreaField, IconButton, Tooltip } from '../../../../../components';
+import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip } from '../../../../../components';
 import { Header } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from '../InputTypes';
@@ -94,22 +94,26 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
         placeholder="Enables you to ..."
         required
       />
-      <Select
+      <SelectField
         control={control}
         name={`configFields.${index}.type`}
         label="Type"
-        render={(selectedIndex) => (
-          <div>{selectedIndex !== -1 ? Object.values(InputType)[selectedIndex] : Object.values(InputType)[0]}</div>
+        render={(selectedItems) => (
+          <div>
+            {selectedItems.length > 0
+              ? Object.values(InputType).find((i) => i == selectedItems[0].value)
+              : Object.values(InputType)[0]}
+          </div>
         )}
       >
-        <Select.OptionGroup label="type">
+        <SelectField.OptionGroup label="type">
           {Object.values(InputType).map((type) => (
-            <Select.Option key={`${type}-${id}`} value={type}>
+            <SelectField.Option key={`${type}-${id}`} value={type} label={type}>
               <span>{type}</span>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       {typeSpecificFields(control, input, index, id)[fieldType]}
     </>
   );

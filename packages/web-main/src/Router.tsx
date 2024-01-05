@@ -41,7 +41,7 @@ import Forbidden from 'pages/Forbidden';
 import { LogOut } from 'pages/LogOut';
 import { LogoutSuccess } from 'pages/LogoutSuccess';
 import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
-import { ImportGameServer } from 'pages/gameserver/import';
+import { ImportGameServer } from 'pages/gameserver/ImportGameServer';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 

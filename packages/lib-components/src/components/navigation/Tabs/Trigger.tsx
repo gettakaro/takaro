@@ -9,15 +9,24 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   color: ${({ theme }) => theme.colors.text};
   padding: ${({ theme }) => `${theme.spacing['1']} 0`};
   border-radius: 0;
-  border-bottom: 1px solid ${({ theme, isActive }) => (isActive ? theme.colors.background : theme.colors.backgroundAlt)};
+  border-bottom: 1px solid
+    ${({ theme, isActive }) => (isActive ? theme.colors.background : theme.colors.backgroundAccent)};
+
+  &:first-child {
+    border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
+  }
+  &:last-child {
+    border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+  }
+
   color: ${({ theme, isActive }) => (isActive ? theme.colors.text : theme.colors.textAlt)};
 
   ${({ theme, isActive }) => {
     if (!isActive) return;
 
     return `
-        border-left: 1px solid ${theme.colors.backgroundAlt};
-        border-right: 1px solid ${theme.colors.backgroundAlt};
+        border-left: 1px solid ${theme.colors.backgroundAccent};
+        border-right: 1px solid ${theme.colors.backgroundAccent};
       `;
   }}
 `;
