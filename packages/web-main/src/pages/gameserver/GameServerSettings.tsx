@@ -1,11 +1,12 @@
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
-import { booleanFields, camelCaseToSpaces, mapSettings } from 'pages/settings/GlobalGameServerSettings';
+import { booleanFields } from 'pages/settings/GlobalGameServerSettings';
 import { useDeleteGameServerSetting, useGameServerSettings, useGlobalGameServerSettings } from 'queries/settings';
 import { FC, ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
-import { Switch, TextField, Button, Select, styled, Skeleton } from '@takaro/lib-components';
+import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 import { useApiClient } from 'hooks/useApiClient';
+import { SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
 
 const SettingsContainer = styled.div`
   display: grid;
@@ -21,8 +22,9 @@ const NoSpacing = styled.div`
   }
 `;
 
+// Should be a one-to-one mapping of the SettingsOutputDTO with the exception that values can be booleans
 interface FormSetting {
-  behavior: string;
+  type: SettingsOutputDTOTypeEnum;
   key: string;
   value: string | boolean;
 }
@@ -31,13 +33,13 @@ interface IFormInputs {
   settings: FormSetting[];
 }
 
-const behaviorOptions = ['override', 'inherit'];
+const typeOptions = [SettingsOutputDTOTypeEnum.Inherit, SettingsOutputDTOTypeEnum.Override];
 
 const GameServerSettings: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
-  const { data: gameServerSettingsData, isLoading: isLoadingGameServerSettings } =
+  const { data: gameServerSettings, isLoading: isLoadingGameServerSettings } =
     useGameServerSettings(selectedGameServerId);
-  const { data: globalGameServerSettingsData, isLoading: isLoadingGlobalServerGameServerSettings } =
+  const { data: globalGameServerSettings, isLoading: isLoadingGlobalServerGameServerSettings } =
     useGlobalGameServerSettings();
 
   const { mutateAsync: deleteGameServerSetting } = useDeleteGameServerSetting();
@@ -59,17 +61,22 @@ const GameServerSettings: FC = () => {
     }
 
     // dirtyFields.settings contains an ARRAY of all settings, but the unchanged ones are empty slots
-    const changedFields: FormSetting[] = formState.dirtyFields.settings.reduce((result, dirtySetting, idx) => {
+    const changedFields: FormSetting[] = formState.dirtyFields.settings.reduce((acc, dirtySetting, idx) => {
       if (dirtySetting) {
-        result.push(settings[idx]);
+        acc.push(settings[idx]);
       }
-      return result;
+      return acc;
     }, [] as FormSetting[]);
 
     try {
       const updates = changedFields.map((setting) => {
-        if (setting.behavior === 'inherit') {
+        if (setting.type === 'inherit') {
           return deleteGameServerSetting({ key: setting.key, gameServerId: selectedGameServerId });
+        }
+
+        // if the value is a boolean, we need to convert it to a string
+        if (typeof setting.value === 'boolean') {
+          setting.value = setting.value ? 'true' : 'false';
         }
 
         apiClient.settings.settingsControllerSet(setting.key, {
@@ -87,41 +94,30 @@ const GameServerSettings: FC = () => {
     }
   };
 
-  const globalGameServerSettings = useMemo(() => {
-    const settingsKeyValues: Record<string, string> = {};
-    if (globalGameServerSettingsData) {
-      mapSettings(globalGameServerSettingsData, async (key, value) => {
-        settingsKeyValues[key] = value!;
-      });
-    }
-    return settingsKeyValues;
-  }, [globalGameServerSettingsData]);
-
-  const gameServerSettings = useMemo(() => {
+  const gameServerSettingComponents = useMemo(() => {
     const settingsComponents: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = {};
     // in case the value is not set, we want to use the global value
     // otherwise we want to use the value from the gameserver
-    if (gameServerSettingsData && globalGameServerSettings) {
-      mapSettings(gameServerSettingsData, async (key, value) => {
+    if (gameServerSettings && globalGameServerSettings) {
+      gameServerSettings.forEach(({ key, value, type }) => {
         if (booleanFields.includes(key)) {
           // to make sure we only append the fields once
           // All fields are strings, however, the Switch component requires a boolean value.
-          if (fields.length !== Object.keys(gameServerSettingsData).length) {
-            value === null
-              ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] === 'true' ? true : false })
-              : append({ key, behavior: 'override', value: value === 'true' ? true : false });
+          if (fields.length !== Object.keys(gameServerSettings).length) {
+            type !== SettingsOutputDTOTypeEnum.Inherit
+              ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false })
+              : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
           }
-
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
               <Switch control={control} name={fieldName} key={key} disabled={disabled} />
             </NoSpacing>
           );
         } else {
-          if (fields.length !== Object.keys(gameServerSettingsData).length) {
-            value === null
-              ? append({ key, behavior: 'inherit', value: globalGameServerSettings[key] })
-              : append({ key, behavior: 'override', value: value! });
+          if (fields.length !== Object.keys(gameServerSettings).length) {
+            type !== SettingsOutputDTOTypeEnum.Inherit
+              ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value })
+              : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
           }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
@@ -134,13 +130,9 @@ const GameServerSettings: FC = () => {
       });
     }
     return settingsComponents;
-  }, [gameServerSettingsData, globalGameServerSettings]);
+  }, [gameServerSettings, globalGameServerSettings]);
 
-  if (
-    isLoadingGlobalServerGameServerSettings ||
-    isLoadingGameServerSettings ||
-    Object.keys(gameServerSettings).length === 0
-  ) {
+  if (isLoadingGlobalServerGameServerSettings || isLoadingGameServerSettings) {
     return (
       <div>
         <SettingsContainer>
@@ -156,6 +148,11 @@ const GameServerSettings: FC = () => {
         </SettingsContainer>
       </div>
     );
+  }
+
+  // if we can't find the settings, something went wrong
+  if (!gameServerSettings || !globalGameServerSettings) {
+    return <div>Something went wrong</div>;
   }
 
   return (
@@ -176,29 +173,32 @@ const GameServerSettings: FC = () => {
           {fields.map((field, index) => (
             <SettingsContainer key={field.id}>
               <div>{camelCaseToSpaces(watch(`settings.${index}.key`))}</div>
-              <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
+              <div>
+                {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
+              </div>
               <NoSpacing>
-                <Select
+                <SelectField
                   control={control}
-                  name={`settings.${index}.behavior`}
-                  render={(selectedIndex) => <div>{behaviorOptions[selectedIndex] ?? 'Select...'}</div>}
+                  name={`settings.${index}.type`}
+                  render={(selectedItems) =>
+                    selectedItems.length === 0 ? <div>Select...</div> : <div>{selectedItems[0].label}</div>
+                  }
                 >
-                  <Select.OptionGroup>
-                    {behaviorOptions.map((val) => (
-                      <Select.Option key={`select-${val}-option`} value={val}>
+                  <SelectField.OptionGroup>
+                    {typeOptions.map((val) => (
+                      <SelectField.Option key={`select-${val}-option`} value={val} label={val}>
                         <span>{val}</span>
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </NoSpacing>
-              {watch(`settings.${index}.behavior`) === 'inherit' ? (
-                <div>{globalGameServerSettings[watch(`settings.${index}.key`)]}</div>
+              {watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Inherit ? (
+                <div>
+                  {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
+                </div>
               ) : (
-                gameServerSettings[watch(`settings.${index}.key`)](
-                  `settings.${index}.value`,
-                  watch(`settings.${index}.behavior`) === 'inherit'
-                )
+                gameServerSettingComponents[watch(`settings.${index}.key`)](`settings.${index}.value`, false)
               )}
             </SettingsContainer>
           ))}

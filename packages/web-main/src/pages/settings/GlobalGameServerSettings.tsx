@@ -50,17 +50,15 @@ export const GlobalGameServerSettings: FC = () => {
   const { data, isLoading } = useGlobalGameServerSettings();
 
   const validationSchema = useMemo(() => {
-    const schema = {};
     if (data) {
-      mapSettings(data, async (key) => {
-        if (booleanFields.includes(key)) {
-          schema[key] = z.boolean();
-        } else {
-          schema[key] = z.string();
-        }
-      });
+      const res = data.reduce((acc, { key }) => {
+        booleanFields.includes(key) ? (acc[key] = z.boolean()) : (acc[key] = z.string());
+        return acc;
+      }, {});
+      return z.object(res);
     }
-    return z.object(schema);
+
+    return z.object({});
   }, [data]);
 
   const { control, handleSubmit, setValue, formState, reset } = useForm<IFormInputs>({
@@ -91,7 +89,7 @@ export const GlobalGameServerSettings: FC = () => {
     const settingsComponents: ReactElement[] = [];
     if (data) {
       // TODO: this should be mapped using the new config generator
-      mapSettings(data, async (key, value) => {
+      data.forEach(({ key, value }) => {
         if (booleanFields.includes(key)) {
           settingsComponents.push(<Switch control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
           setValue(key, value === 'true');
