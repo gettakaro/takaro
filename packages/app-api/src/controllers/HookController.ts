@@ -57,7 +57,7 @@ class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
 })
 @JsonController()
 export class HookController {
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(HookOutputArrayDTOAPI)
   @Post('/hook/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: HookSearchInputDTO) {
@@ -74,7 +74,7 @@ export class HookController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(HookOutputDTOAPI)
   @Get('/hook/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -82,7 +82,7 @@ export class HookController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Post('/hook')
   async create(@Req() req: AuthenticatedRequest, @Body() data: HookCreateDTO) {
@@ -90,7 +90,7 @@ export class HookController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Put('/hook/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: HookUpdateDTO) {
@@ -98,7 +98,7 @@ export class HookController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -107,7 +107,7 @@ export class HookController {
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_HOOKS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @Post('/hook/trigger')
   async trigger(@Req() req: AuthenticatedRequest, @Body() data: HookTriggerDTO) {
     const service = new HookService(req.domainId);
