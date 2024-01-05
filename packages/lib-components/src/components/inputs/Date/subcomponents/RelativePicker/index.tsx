@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { Button, Divider, Select, TextField } from '../../../../../components';
+import { Button, Divider, SelectField, TextField } from '../../../../../components';
 import { useForm } from 'react-hook-form';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
@@ -98,40 +98,48 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
         {/* Relative manual selection */}
         <StyledForm onSubmit={handleSubmit(handleChange)}>
           <InputsContainer>
-            <Select
+            <SelectField
               inPortal
               control={control}
               readOnly={timeDirection !== 'pastAndFuture'}
               name="tense"
-              render={(selectedIndex) => (
-                <div>{selectedIndex !== -1 ? Object.values(Tense)[selectedIndex] : Tense.Last}</div>
+              render={(selectedItems) => (
+                <div>
+                  {selectedItems.length > 0
+                    ? Object.values(Tense).find((v) => v === selectedItems[0].value)
+                    : Tense.Last}
+                </div>
               )}
             >
-              <Select.OptionGroup>
+              <SelectField.OptionGroup>
                 {Object.values(Tense).map((val: string) => (
-                  <Select.Option key={`relative-tense-${val}-${id}`} value={val}>
+                  <SelectField.Option key={`relative-tense-${val}-${id}`} value={val} label={val}>
                     <span>{val}</span>
-                  </Select.Option>
+                  </SelectField.Option>
                 ))}
-              </Select.OptionGroup>
-            </Select>
+              </SelectField.OptionGroup>
+            </SelectField>
             <TextField control={control} type="number" name="step" />
-            <Select
+            <SelectField
               inPortal
               control={control}
               name="unit"
-              render={(selectedIndex) => (
-                <div>{selectedIndex !== -1 ? Object.values(Unit)[selectedIndex] : Unit.Minutes}</div>
+              render={(selectedItems) => (
+                <div>
+                  {selectedItems.length > 0
+                    ? Object.values(Unit).find((v) => v === selectedItems[0].value)
+                    : Unit.Minutes}
+                </div>
               )}
             >
-              <Select.OptionGroup>
+              <SelectField.OptionGroup>
                 {Object.values(Unit).map((val: string) => (
-                  <Select.Option key={`relative-unit-${val}-${id}`} value={val}>
+                  <SelectField.Option key={`relative-unit-${val}-${id}`} value={val} label={val}>
                     <span>{val}</span>
-                  </Select.Option>
+                  </SelectField.Option>
                 ))}
-              </Select.OptionGroup>
-            </Select>
+              </SelectField.OptionGroup>
+            </SelectField>
           </InputsContainer>
           <Button type="submit" text="Apply" />
         </StyledForm>

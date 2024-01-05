@@ -4,7 +4,7 @@ import {
   CollapseList,
   FormError,
   IconButton,
-  Select,
+  SelectField,
   TextAreaField,
   TextField,
   Tooltip,
@@ -177,21 +177,26 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                   <Fields>
                     <Flex>
                       <TextField label="Name" control={control} name={`arguments.${index}.name`} readOnly={readOnly} />
-                      <Select
+                      <SelectField
                         control={control}
                         name={`arguments.${index}.type`}
                         label="Type"
                         readOnly={readOnly}
-                        render={(selectedIndex) => <>{argumentTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</>}
+                        render={(selectedItems) => {
+                          if (selectedItems.length === 0) {
+                            return <div>Select...</div>;
+                          }
+                          return <div>{selectedItems[0].label}</div>;
+                        }}
                       >
-                        <Select.OptionGroup label="Options">
+                        <SelectField.OptionGroup label="Options">
                           {argumentTypeSelectOptions.map(({ name, value }) => (
-                            <Select.Option key={`${field.id}-select-${name}`} value={value}>
+                            <SelectField.Option key={`${field.id}-select-${name}`} value={value} label={name}>
                               {name}
-                            </Select.Option>
+                            </SelectField.Option>
                           ))}
-                        </Select.OptionGroup>
-                      </Select>
+                        </SelectField.OptionGroup>
+                      </SelectField>
                     </Flex>
                     <TextField
                       control={control}
@@ -208,7 +213,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                   </Fields>
                   {!readOnly && (
                     <Column>
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             disabled={index === 0}
@@ -222,7 +227,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                         <Tooltip.Content>Move up</Tooltip.Content>
                       </Tooltip>
 
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             onClick={() => remove(index)}
@@ -233,7 +238,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                         <Tooltip.Content>Remove argument</Tooltip.Content>
                       </Tooltip>
 
-                      <Tooltip>
+                      <Tooltip placement="right">
                         <Tooltip.Trigger asChild>
                           <IconButton
                             disabled={index === fields.length - 1}
@@ -256,7 +261,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                 addField({
                   name: '',
                   helpText: '',
-                  type: '',
+                  type: 'string',
                   defaultValue: '',
                   position: fields.length,
                   commandId,

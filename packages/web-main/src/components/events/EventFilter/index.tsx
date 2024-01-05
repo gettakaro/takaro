@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, Divider, IconButton, Popover, Select, TextField } from '@takaro/lib-components';
+import { Button, Divider, IconButton, Popover, SelectField, TextField } from '@takaro/lib-components';
 import { AiOutlineFilter as FilterIcon } from 'react-icons/ai';
 import { ButtonContainer, FilterContainer, Box, OperatorSelect } from './style';
 import { Filter, Operator } from '../types';
@@ -50,25 +50,25 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
       <Divider fullWidth />
       <form onSubmit={handleSubmit(onSubmit)}>
         <FilterContainer hasMultipleFields={false}>
-          <Select
+          <SelectField
             control={control}
             name="filter.field"
             inPortal
-            render={(selectedIndex) => {
+            render={(selectedItems) => {
               if (selectedFilter) return selectedFilter.field;
-              return fields[selectedIndex] ?? 'Select a field';
+              return fields.find((f) => f === selectedItems[0].value) ?? 'Select a field';
             }}
           >
-            <Select.OptionGroup>
+            <SelectField.OptionGroup>
               {fields.map((col) => (
-                <Select.Option key={col} value={col}>
+                <SelectField.Option key={col} value={col} label={col}>
                   <div>
                     <span>{col}</span>
                   </div>
-                </Select.Option>
+                </SelectField.Option>
               ))}
-            </Select.OptionGroup>
-          </Select>
+            </SelectField.OptionGroup>
+          </SelectField>
 
           <OperatorSelect
             control={control}
@@ -78,15 +78,15 @@ export const FilterPopup: FC<FilterPopupProps> = ({ selectedFilter, fields, addF
               return Object.keys(Operator)[0];
             }}
           >
-            <Select.OptionGroup>
+            <SelectField.OptionGroup>
               {Object.keys(Operator).map((operator) => (
-                <Select.Option key={operator} value={operator}>
+                <SelectField.Option key={operator} value={operator} label={operator}>
                   <div>
                     <span>{operator}</span>
                   </div>
-                </Select.Option>
+                </SelectField.Option>
               ))}
-            </Select.OptionGroup>
+            </SelectField.OptionGroup>
           </OperatorSelect>
           <TextField control={control} name="filter.value" placeholder="Select a value" />
         </FilterContainer>

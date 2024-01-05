@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Select, TextField, Button } from '@takaro/lib-components';
+import { SelectField, TextField, Button } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useHook, useHookUpdate } from 'queries/modules';
 import { FC, useEffect } from 'react';
@@ -48,25 +48,28 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <TextField control={control} name="regex" label="Regex" readOnly={readOnly} />
-      <Select
+      <SelectField
         control={control}
         name="eventType"
         label="Event Type"
-        render={(selectedIndex) => {
-          return Object.values(HookCreateDTOEventTypeEnum)[selectedIndex] ?? 'Select...';
+        render={(selectedItems) => {
+          if (selectedItems.length === 0) {
+            return <div>'Select...'</div>;
+          }
+          return selectedItems[0].label;
         }}
         readOnly={readOnly}
       >
-        <Select.OptionGroup label="eventType">
+        <SelectField.OptionGroup label="eventType">
           {Object.values(HookCreateDTOEventTypeEnum).map((name) => (
-            <Select.Option key={name} value={name}>
+            <SelectField.Option key={name} value={name} label={name}>
               <div>
                 <span>{name}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save hook config" />}
     </form>
   );

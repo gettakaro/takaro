@@ -1,4 +1,4 @@
-import { Select, Tooltip } from '@takaro/lib-components';
+import { SelectField, Tooltip } from '@takaro/lib-components';
 import { useGameServers } from 'queries/gameservers';
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
@@ -42,14 +42,14 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
 
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
-      <Select.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
+      <SelectField.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
         {gameServers.map(({ id, type, name: serverName, reachable }) => {
           if (type !== typeEnum) {
             return null;
           }
 
           return type === typeEnum ? (
-            <Select.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
+            <SelectField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
                 <Tooltip>
@@ -59,15 +59,15 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
                   <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
                 </Tooltip>
               </Inner>
-            </Select.Option>
+            </SelectField.Option>
           ) : null;
         })}
-      </Select.OptionGroup>
+      </SelectField.OptionGroup>
     );
   };
 
   return (
-    <Select
+    <SelectField
       control={control}
       name={selectName}
       readOnly={readOnly}
@@ -80,14 +80,15 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       required={required}
       loading={loading}
       hasMargin={false}
-      render={(selectedIndex) => {
-        if (selectedIndex === undefined || selectedIndex === -1) {
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
+        const selected = gameServers.find((server) => server.id === selectedItems[0].value)!;
         return (
           <Inner>
-            {gameTypeMap[gameServers[selectedIndex]?.type].icon}
-            {gameServers[selectedIndex]?.name}
+            {gameTypeMap[selected.type].icon}
+            {selected.name}
           </Inner>
         );
       }}
@@ -98,6 +99,6 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       {renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
       {renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
       {renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
-    </Select>
+    </SelectField>
   );
 };
