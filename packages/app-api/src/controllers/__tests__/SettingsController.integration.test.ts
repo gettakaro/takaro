@@ -147,6 +147,34 @@ const tests = [
       return res2;
     },
   }),
+  new IntegrationTest<GameServerOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Setting for gameserver multiple times overwrites properly',
+    setup: async function () {
+      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
+    },
+    test: async function () {
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: '$',
+        gameServerId: this.setupData.id,
+      });
+      await this.client.settings.settingsControllerSet('commandPrefix', {
+        value: '!',
+        gameServerId: this.setupData.id,
+      });
+
+      const res = await this.client.settings.settingsControllerGet(undefined, this.setupData.id);
+      expect(res.data.data.commandPrefix).to.be.eq('!');
+      expect(res.data.data.serverChatName).to.be.eq('Takaro');
+
+      const globalRes = await this.client.settings.settingsControllerGet();
+      expect(globalRes.data.data.commandPrefix).to.be.eq('/');
+      expect(globalRes.data.data.serverChatName).to.be.eq('Takaro');
+
+      return res;
+    },
+  }),
 ];
 
 describe(group, function () {

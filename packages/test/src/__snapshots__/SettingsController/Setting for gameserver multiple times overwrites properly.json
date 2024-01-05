@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "commandPrefix": "!",
+      "serverChatName": "Takaro",
+      "economyEnabled": "false",
+      "currencyName": "Takaro coins"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Setting for gameserver multiple times overwrites properly",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

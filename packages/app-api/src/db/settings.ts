@@ -107,7 +107,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     await query
       .insert({ domain: this.domainId, gameServerId: this.gameServerId, key, value })
       .onConflict(['domain', 'key', 'gameServerId'])
-      .merge({ value });
+      .merge(['value']);
 
     return this.getAll();
   }
