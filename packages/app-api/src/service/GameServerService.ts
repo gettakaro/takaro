@@ -288,7 +288,11 @@ export class GameServerService extends TakaroService<
     }
 
     const settingsService = new SettingsService(this.domainId, id);
-    const settings = await settingsService.getAll();
+    const settingsArr = await settingsService.getAll();
+    const settings = settingsArr.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
 
     gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
 
