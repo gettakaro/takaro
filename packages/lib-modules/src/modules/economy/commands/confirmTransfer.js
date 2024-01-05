@@ -26,6 +26,7 @@ async function main() {
   const pendingTransfer = JSON.parse(variables[0].value);
 
   await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+    sender.gameServerId,
     sender.id,
     pendingTransfer.receiver.id,
     {

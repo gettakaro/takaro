@@ -4353,32 +4353,13 @@ export interface ParamIdAndModuleId {
    * @type {string}
    * @memberof ParamIdAndModuleId
    */
-  gameserverId: string;
+  gameServerId: string;
   /**
    *
    * @type {string}
    * @memberof ParamIdAndModuleId
    */
   moduleId: string;
-}
-/**
- *
- * @export
- * @interface ParamIdAndPlayerId
- */
-export interface ParamIdAndPlayerId {
-  /**
-   *
-   * @type {string}
-   * @memberof ParamIdAndPlayerId
-   */
-  gameserverId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ParamIdAndPlayerId
-   */
-  playerId: string;
 }
 /**
  *
@@ -5527,6 +5508,25 @@ export interface PlayerUpdateDTO {
    * @memberof PlayerUpdateDTO
    */
   name: string;
+}
+/**
+ *
+ * @export
+ * @interface PogParam
+ */
+export interface PogParam {
+  /**
+   *
+   * @type {string}
+   * @memberof PogParam
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PogParam
+   */
+  playerId: string;
 }
 /**
  *
@@ -14626,19 +14626,25 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerAddCurrency: async (
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('playerOnGameServerControllerAddCurrency', 'id', id);
-      const localVarPath = `/gameserver/player/{id}/add-currency`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerAddCurrency', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerAddCurrency', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/add-currency`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -14671,22 +14677,25 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerDeductCurrency: async (
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('playerOnGameServerControllerDeductCurrency', 'id', id);
-      const localVarPath = `/gameserver/player/{id}/deduct-currency`.replace(
-        `{${'id'}}`,
-        encodeURIComponent(String(id))
-      );
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerDeductCurrency', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerDeductCurrency', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/deduct-currency`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -14719,17 +14728,23 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerGetOne: async (
-      id: string,
+      gameServerId: string,
+      playerId: string,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('playerOnGameServerControllerGetOne', 'id', id);
-      const localVarPath = `/gameserver/player/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerGetOne', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerGetOne', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -14796,19 +14811,25 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerSetCurrency: async (
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('playerOnGameServerControllerSetCurrency', 'id', id);
-      const localVarPath = `/gameserver/player/{id}/currency`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerSetCurrency', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerSetCurrency', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/currency`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -14841,6 +14862,7 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
+     * @param {string} gameServerId
      * @param {string} sender
      * @param {string} receiver
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -14848,16 +14870,20 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
      * @throws {RequiredError}
      */
     playerOnGameServerControllerTransactBetweenPlayers: async (
+      gameServerId: string,
       sender: string,
       receiver: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'gameServerId', gameServerId);
       // verify required parameter 'sender' is not null or undefined
       assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'sender', sender);
       // verify required parameter 'receiver' is not null or undefined
       assertParamExists('playerOnGameServerControllerTransactBetweenPlayers', 'receiver', receiver);
-      const localVarPath = `/gameserver/player/{sender}/{receiver}/transfer`
+      const localVarPath = `/gameserver/{gameServerId}/player/{sender}/{receiver}/transfer`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
         .replace(`{${'sender'}}`, encodeURIComponent(String(sender)))
         .replace(`{${'receiver'}}`, encodeURIComponent(String(receiver)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -14902,18 +14928,21 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async playerOnGameServerControllerAddCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerAddCurrency(
-        id,
+        gameServerId,
+        playerId,
         playerOnGameServerSetCurrencyInputDTO,
         options
       );
@@ -14931,18 +14960,21 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async playerOnGameServerControllerDeductCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerDeductCurrency(
-        id,
+        gameServerId,
+        playerId,
         playerOnGameServerSetCurrencyInputDTO,
         options
       );
@@ -14960,15 +14992,21 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async playerOnGameServerControllerGetOne(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerGetOne(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerGetOne(
+        gameServerId,
+        playerId,
+        options
+      );
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath =
         operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerGetOne']?.[index]?.url;
@@ -15009,18 +15047,21 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async playerOnGameServerControllerSetCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerSetCurrency(
-        id,
+        gameServerId,
+        playerId,
         playerOnGameServerSetCurrencyInputDTO,
         options
       );
@@ -15038,6 +15079,7 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
+     * @param {string} gameServerId
      * @param {string} sender
      * @param {string} receiver
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -15045,12 +15087,14 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
      * @throws {RequiredError}
      */
     async playerOnGameServerControllerTransactBetweenPlayers(
+      gameServerId: string,
       sender: string,
       receiver: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerTransactBetweenPlayers(
+        gameServerId,
         sender,
         receiver,
         playerOnGameServerSetCurrencyInputDTO,
@@ -15084,46 +15128,62 @@ export const PlayerOnGameServerApiFactory = function (
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Add currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerAddCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: any
     ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp
-        .playerOnGameServerControllerAddCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Deduct currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerDeductCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: any
     ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp
-        .playerOnGameServerControllerDeductCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .playerOnGameServerControllerDeductCurrency(
+          gameServerId,
+          playerId,
+          playerOnGameServerSetCurrencyInputDTO,
+          options
+        )
         .then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    playerOnGameServerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
-      return localVarFp.playerOnGameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
+    playerOnGameServerControllerGetOne(
+      gameServerId: string,
+      playerId: string,
+      options?: any
+    ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp
+        .playerOnGameServerControllerGetOne(gameServerId, playerId, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `READ_PLAYERS`
@@ -15143,23 +15203,26 @@ export const PlayerOnGameServerApiFactory = function (
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Set currency
-     * @param {string} id
+     * @param {string} gameServerId
+     * @param {string} playerId
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     playerOnGameServerControllerSetCurrency(
-      id: string,
+      gameServerId: string,
+      playerId: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
       options?: any
     ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp
-        .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+        .playerOnGameServerControllerSetCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_PLAYERS`
      * @summary Transact between players
+     * @param {string} gameServerId
      * @param {string} sender
      * @param {string} receiver
      * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -15167,6 +15230,7 @@ export const PlayerOnGameServerApiFactory = function (
      * @throws {RequiredError}
      */
     playerOnGameServerControllerTransactBetweenPlayers(
+      gameServerId: string,
       sender: string,
       receiver: string,
       playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
@@ -15174,6 +15238,7 @@ export const PlayerOnGameServerApiFactory = function (
     ): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
       return localVarFp
         .playerOnGameServerControllerTransactBetweenPlayers(
+          gameServerId,
           sender,
           receiver,
           playerOnGameServerSetCurrencyInputDTO,
@@ -15194,52 +15259,62 @@ export class PlayerOnGameServerApi extends BaseAPI {
   /**
    *  Required permissions: `MANAGE_PLAYERS`
    * @summary Add currency
-   * @param {string} id
+   * @param {string} gameServerId
+   * @param {string} playerId
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PlayerOnGameServerApi
    */
   public playerOnGameServerControllerAddCurrency(
-    id: string,
+    gameServerId: string,
+    playerId: string,
     playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
     options?: RawAxiosRequestConfig
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
-      .playerOnGameServerControllerAddCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *  Required permissions: `MANAGE_PLAYERS`
    * @summary Deduct currency
-   * @param {string} id
+   * @param {string} gameServerId
+   * @param {string} playerId
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PlayerOnGameServerApi
    */
   public playerOnGameServerControllerDeductCurrency(
-    id: string,
+    gameServerId: string,
+    playerId: string,
     playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
     options?: RawAxiosRequestConfig
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
-      .playerOnGameServerControllerDeductCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .playerOnGameServerControllerDeductCurrency(
+        gameServerId,
+        playerId,
+        playerOnGameServerSetCurrencyInputDTO,
+        options
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *  Required permissions: `READ_PLAYERS`
    * @summary Get one
-   * @param {string} id
+   * @param {string} gameServerId
+   * @param {string} playerId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PlayerOnGameServerApi
    */
-  public playerOnGameServerControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+  public playerOnGameServerControllerGetOne(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig) {
     return PlayerOnGameServerApiFp(this.configuration)
-      .playerOnGameServerControllerGetOne(id, options)
+      .playerOnGameServerControllerGetOne(gameServerId, playerId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -15263,25 +15338,28 @@ export class PlayerOnGameServerApi extends BaseAPI {
   /**
    *  Required permissions: `MANAGE_PLAYERS`
    * @summary Set currency
-   * @param {string} id
+   * @param {string} gameServerId
+   * @param {string} playerId
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PlayerOnGameServerApi
    */
   public playerOnGameServerControllerSetCurrency(
-    id: string,
+    gameServerId: string,
+    playerId: string,
     playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
     options?: RawAxiosRequestConfig
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
-      .playerOnGameServerControllerSetCurrency(id, playerOnGameServerSetCurrencyInputDTO, options)
+      .playerOnGameServerControllerSetCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *  Required permissions: `MANAGE_PLAYERS`
    * @summary Transact between players
+   * @param {string} gameServerId
    * @param {string} sender
    * @param {string} receiver
    * @param {PlayerOnGameServerSetCurrencyInputDTO} [playerOnGameServerSetCurrencyInputDTO] PlayerOnGameServerSetCurrencyInputDTO
@@ -15290,6 +15368,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
    * @memberof PlayerOnGameServerApi
    */
   public playerOnGameServerControllerTransactBetweenPlayers(
+    gameServerId: string,
     sender: string,
     receiver: string,
     playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO,
@@ -15297,6 +15376,7 @@ export class PlayerOnGameServerApi extends BaseAPI {
   ) {
     return PlayerOnGameServerApiFp(this.configuration)
       .playerOnGameServerControllerTransactBetweenPlayers(
+        gameServerId,
         sender,
         receiver,
         playerOnGameServerSetCurrencyInputDTO,
