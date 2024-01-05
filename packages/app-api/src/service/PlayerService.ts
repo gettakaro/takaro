@@ -202,7 +202,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return this.findOne(playerOnGameServer.playerId);
   }
 
-  async getRef(playerId: string, gameserverId: string) {
+  async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     return playerOnGameServerService.getRef(playerId, gameserverId);
   }

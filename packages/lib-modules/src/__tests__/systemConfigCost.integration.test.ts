@@ -46,9 +46,13 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
       })
     ).data.data;
     if (playerOnGameServer.length === 0) throw new Error('player not found');
-    return this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(playerOnGameServer[0].id, {
-      currency: 100,
-    });
+    return this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+      playerOnGameServer[0].gameServerId,
+      playerOnGameServer[0].playerId,
+      {
+        currency: 100,
+      }
+    );
   });
   await Promise.all(giveCurrencies);
 
@@ -162,9 +166,13 @@ const tests = [
       ).data.data;
 
       if (playerOnGameServer.length === 0) throw new Error('player not found');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(playerOnGameServer[0].id, {
-        currency: 5,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        playerOnGameServer[0].gameServerId,
+        playerOnGameServer[0].playerId,
+        {
+          currency: 5,
+        }
+      );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
