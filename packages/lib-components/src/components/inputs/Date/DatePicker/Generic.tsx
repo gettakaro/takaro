@@ -30,6 +30,14 @@ export interface DatePickerProps {
 
   popOverPlacement?: Placement;
 
+  customDateFilter?: (date: DateTime) => boolean;
+
+  /// Allow date selection in the past
+  allowPastDates?: boolean;
+
+  /// Allow date selection in the future
+  allowFutureDates?: boolean;
+
   /// Determines the format of the selected date/time
   format?: DateTimeFormatOptions;
 
@@ -51,6 +59,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   readOnly = false,
   hasError,
   onChange,
+  name,
   onFocus,
   onBlur,
   timePickerOptions,
@@ -58,10 +67,38 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   placeholder,
   popOverPlacement = 'bottom',
   format = DateTime.DATE_SHORT,
+  allowPastDates = true,
+  allowFutureDates = true,
+  customDateFilter,
   mode,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(value ? DateTime.fromISO(value) : DateTime.now());
+
+  // Function to determine if a date is allowed
+  const isDateAllowed = (date: DateTime) => {
+    const isPastAllowed = allowPastDates ? true : date >= DateTime.local().startOf('day');
+    const isFutureAllowed = allowFutureDates ? true : date <= DateTime.local().startOf('day');
+    const isCustomFilterPassed = customDateFilter ? customDateFilter(date) : true;
+    return isPastAllowed && isFutureAllowed && isCustomFilterPassed;
+  };
+
+  // Function to find the first allowed date
+  const findFirstAllowedDate = () => {
+    let dateToCheck = DateTime.local().startOf('day');
+    while (!isDateAllowed(dateToCheck)) {
+      dateToCheck = dateToCheck.plus({ days: 1 });
+    }
+    return dateToCheck;
+  };
+
+  // Initialize the selectedDateTime with either today's date or the first allowed date
+  const initialSelectedDateTime = value
+    ? DateTime.fromISO(value)
+    : isDateAllowed(DateTime.local().startOf('day'))
+    ? DateTime.local().startOf('day')
+    : findFirstAllowedDate();
+
+  const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(initialSelectedDateTime);
   const [friendlyName, setFriendlyName] = useState<string | undefined>(undefined);
 
   const isDateOnly = !timeFormats.includes(format);
@@ -144,6 +181,9 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   id={`calendar-${id}`}
                   // should be start of day to not update the time when only selecting a date
                   selectedDate={selectedDateTime}
+                  allowedFutureDates={allowFutureDates}
+                  allowedPastDates={allowPastDates}
+                  customDateFilter={customDateFilter}
                   onDateClick={(date) => {
                     setSelectedDateTime(date);
                     relativePickerOptions?.showFriendlyName && setFriendlyName(undefined);
@@ -191,11 +231,13 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                 onClick={() => {
                   setOpen(false);
                 }}
-                variant="clear"
+                fullWidth
+                variant="default"
                 color="secondary"
                 text="Cancel"
               />
               <Button
+                fullWidth
                 onClick={() => {
                   handleOnChange(selectedDateTime!);
                   setOpen(false);

@@ -38,6 +38,7 @@ export const InputContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: row;
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
 export const Input = styled.input`

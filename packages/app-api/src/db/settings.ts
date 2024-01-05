@@ -8,35 +8,19 @@ export const SETTINGS_TABLE_NAME = 'settings';
 export class SettingsModel extends TakaroModel {
   static tableName = SETTINGS_TABLE_NAME;
 
-  commandPrefix!: string;
-  serverChatName!: string;
-  economyEnabled!: string;
-  currencyName!: string;
+  key!: string;
+  value!: string;
+  gameServerId: string | null = null;
 }
-
-export class GameServerSettingsModel extends SettingsModel {
-  static tableName = 'gameServerSettings';
-  gameServerId!: string;
-}
-
 @traceableClass('repo:settings')
 export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, never> {
-  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
+  constructor(public readonly domainId: string, public readonly gameServerId: string | null = null) {
     super(domainId);
   }
 
   async getModel() {
     const knex = await this.getKnex();
     const model = SettingsModel.bindKnex(knex);
-    return {
-      model,
-      query: model.query().modify('domainScoped', this.domainId),
-    };
-  }
-
-  async getGameServerModel() {
-    const knex = await this.getKnex();
-    const model = GameServerSettingsModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
@@ -64,76 +48,67 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
   }
 
   async create(): Promise<Settings> {
-    if (this.gameServerId) {
-      const { query } = await this.getGameServerModel();
-      const data = await query
-        .insert({
-          gameServerId: this.gameServerId,
-          domain: this.domainId,
-          ...DEFAULT_SETTINGS,
-        })
-        .returning('*');
-      return new Settings().construct(data);
-    }
-
-    const { query } = await this.getModel();
-    const res = await query
-      .insert({
-        domain: this.domainId,
-        ...DEFAULT_SETTINGS,
-      })
-      .returning('*');
-    return new Settings().construct(res);
+    // Use the "set" method instead
+    throw new errors.NotImplementedError();
   }
 
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
-    let data: SettingsModel[] | GameServerSettingsModel[];
+    let data: SettingsModel | undefined;
+    const { query } = await this.getModel();
+    const { query: query2 } = await this.getModel();
+
+    const domainSetting = await query.where({ key, gameServerId: null }).first();
+    const gameServerSetting = await query2.where({ key, gameServerId: this.gameServerId }).first();
 
     if (this.gameServerId) {
-      const { query } = await this.getGameServerModel();
-      data = await query.where({ gameServerId: this.gameServerId });
+      data = gameServerSetting?.value ? gameServerSetting : domainSetting;
     } else {
-      const { query } = await this.getModel();
-      data = await query.where({ domain: this.domainId });
+      data = domainSetting;
     }
 
-    if (!data.length) {
+    if (!data) {
       return DEFAULT_SETTINGS[key] as string;
     }
 
-    return data[0][key];
+    return data.value;
   }
 
   async getAll(): Promise<Settings> {
-    let data: SettingsModel[] | GameServerSettingsModel[];
+    const { query } = await this.getModel();
+    const { query: query2 } = await this.getModel();
 
-    if (this.gameServerId) {
-      const { query } = await this.getGameServerModel();
-      data = await query.where({ gameServerId: this.gameServerId });
-    } else {
-      const { query } = await this.getModel();
-      data = await query.where({ domain: this.domainId });
-    }
-    if (!data.length) {
-      return this.create();
+    const domainSetting = await query.where({ gameServerId: null });
+    const gameServerSetting = await query2.where({ gameServerId: this.gameServerId });
+
+    const toReturn = await new Settings().construct();
+
+    for (const key of Object.values(SETTINGS_KEYS)) {
+      if (this.gameServerId) {
+        toReturn[key] =
+          gameServerSetting.find((x) => x.key === key)?.value ||
+          domainSetting.find((x) => x.key === key)?.value ||
+          DEFAULT_SETTINGS[key];
+      } else {
+        toReturn[key] = domainSetting.find((x) => x.key === key)?.value || DEFAULT_SETTINGS[key];
+      }
     }
 
-    return new Settings().construct({
-      commandPrefix: data[0].commandPrefix,
-      serverChatName: data[0].serverChatName,
-      economyEnabled: data[0].economyEnabled,
-      currencyName: data[0].currencyName,
-    });
+    return toReturn;
   }
 
-  async set(key: SETTINGS_KEYS, value: string): Promise<void> {
-    if (this.gameServerId) {
-      const { query } = await this.getGameServerModel();
-      await query.where({ gameServerId: this.gameServerId }).update({ [key]: value });
-      return;
+  async set(key: SETTINGS_KEYS, value: string | null): Promise<Settings> {
+    const { query } = await this.getModel();
+
+    if (value === null) {
+      await query.where({ domain: this.domainId, gameServerId: this.gameServerId, key }).del();
+      return this.getAll();
     }
 
-    const { query } = await this.getModel();
-    await query.update({ [key]: value }).where({ domain: this.domainId });
+    await query
+      .insert({ domain: this.domainId, gameServerId: this.gameServerId, key, value })
+      .onConflict(['domain', 'key', 'gameServerId'])
+      .merge({ value });
+
+    return this.getAll();
   }
 }

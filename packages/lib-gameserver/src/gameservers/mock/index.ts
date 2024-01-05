@@ -1,5 +1,5 @@
 import { logger, traceableClass } from '@takaro/util';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
@@ -7,7 +7,6 @@ import {
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
-  IPosition,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
@@ -138,7 +137,15 @@ export class Mock implements IGameServer {
     return this.requestFromServer('listBans');
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    return this.requestFromServer('giveItem', player, item);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
+    return this.requestFromServer('giveItem', player, item, amount);
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    return this.requestFromServer('listItems');
+  }
+
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    return this.requestFromServer('getPlayerInventory', player);
   }
 }

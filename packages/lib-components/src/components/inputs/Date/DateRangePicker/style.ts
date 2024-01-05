@@ -21,12 +21,13 @@ export const Container = styled.div<{
   border: 0.1rem solid
     ${({ theme, isOpen, hasError }) => {
       if (hasError) return theme.colors.error;
-      return isOpen ? theme.colors.primary : theme.colors.background;
+      return isOpen ? theme.colors.primary : theme.colors.backgroundAccent;
     }};
 
   &:focus {
     border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   }
+
   flex-shrink: 0;
 `;
 
@@ -44,6 +45,7 @@ export const QuickSelectContainer = styled.div<{ readOnly: boolean }>`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => `0 ${theme.spacing['0_75']}`};
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border-right: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   flex-shrink: 0;
 `;

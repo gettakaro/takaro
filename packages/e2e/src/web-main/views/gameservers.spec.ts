@@ -5,20 +5,18 @@ const { expect } = playwright;
 
 test('Can use call to action if there are no gameservers', async ({ page, takaro }) => {
   // by default we always create 1 gameserver in the test setup
-  // lets delete it so we can test the call to action
+  // lets delete it so we can test the call to action popup in navbar
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
   await GameServersPage.action('Delete');
   await expect(page.getByText(takaro.gameServer.name)).toHaveCount(0);
-
-  const button = page.getByRole('button').getByText('Add a server');
-  await button.click();
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/create`);
+  await page.getByRole('button').getByText('Add a server').click();
+  expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/servers/create`);
 });
 
 // currently broken because when server is created the selectedGameServerId is set to the newly created server
 // But for some reason this redirects the page to the server specific dashboard instead of staying on the gameservers page.
-test.fixme('Can create gameserver', async ({ page, takaro }) => {
+test('Can create gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
 
   const serverName = 'My new server';
@@ -35,7 +33,55 @@ test.fixme('Can create gameserver', async ({ page, takaro }) => {
   await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
 
-  await expect(page.getByText(serverName)).toBeVisible();
+  await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+});
+
+test('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
+  const { GameServersPage } = takaro;
+  const serverName = 'My new server';
+
+  await GameServersPage.create();
+  await GameServersPage.nameCreateEdit(serverName);
+  await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  await hostInputs1.click();
+  await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+  await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+
+  await GameServersPage.create();
+  await GameServersPage.nameCreateEdit(serverName);
+  await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  const hostInputs2 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  await hostInputs2.click();
+  await hostInputs2.fill(integrationConfig.get('mockGameserver.host'));
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+  await expect(page.getByText('A server with this name already exists.')).toBeVisible();
+});
+
+test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
+  const { GameServersPage } = takaro;
+  const serverName = 'My new server';
+
+  // create secondary server
+  await GameServersPage.create();
+  await GameServersPage.nameCreateEdit(serverName);
+  await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  await hostInputs1.click();
+  await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+  await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+
+  // this will edit the first server and try to set the name to the same as the second server
+  await GameServersPage.action('Edit');
+  await GameServersPage.nameCreateEdit(serverName);
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+  await expect(page.getByText('A server with this name already exists.')).toBeVisible();
 });
 
 test('Can edit gameserver', async ({ page, takaro }) => {
@@ -54,21 +100,17 @@ test('Can edit gameserver', async ({ page, takaro }) => {
 });
 
 test('Can delete gameserver', async ({ page, takaro }) => {
-  const gameServerName = 'My gameserver';
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
   await GameServersPage.action('Delete');
-  await expect(page.getByText(gameServerName)).toHaveCount(0);
+  await expect(page.getByText(GameServersPage.gameServer.name)).toHaveCount(0);
 });
 
 test.describe('Dashboard', () => {
   test.describe('Command history', () => {
     test('Pressing arrow up should show last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
-
-      await GameServersPage.goto();
-
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
+      await GameServersPage.gotoGameServer();
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
@@ -82,9 +124,7 @@ test.describe('Dashboard', () => {
     test('Pressing up arrow twice should show the command before the last', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -101,9 +141,7 @@ test.describe('Dashboard', () => {
     test('Pressing down arrow after pressing up arrow should return to last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -117,9 +155,7 @@ test.describe('Dashboard', () => {
     test('Reaching top of history and pressing up arrow again should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -133,9 +169,7 @@ test.describe('Dashboard', () => {
     test('Reaching bottom or empty command and pressing down arrow should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
-
+      await GameServersPage.gotoGameServer();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
       await GameServersPage.page.keyboard.press('ArrowDown');
 
@@ -145,8 +179,7 @@ test.describe('Dashboard', () => {
     test('Command history should have a cap of 50 commands', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.goto();
-      await GameServersPage.page.getByText('onlineTest serverMOCK').click();
+      await GameServersPage.gotoGameServer();
 
       for (let i = 1; i <= 52; i++) {
         await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type(`Command ${i}`);

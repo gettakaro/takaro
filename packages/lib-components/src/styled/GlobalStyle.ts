@@ -38,7 +38,12 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
-    scrollbar-gutter: stable;
+
+    @supports (scrollbar-gutter: stable) {
+        scrollbar-gutter: stable;
+    }
+}
+
   }
 
   body{
@@ -72,6 +77,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 500;
   }
 
+
   strong {
     padding: ${({ theme }) => `0 ${theme.spacing['0_25']}`};
     border-radius: ${({ theme }) => theme.borderRadius.small};
@@ -101,6 +107,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
+    font-family: inherit;
     &[readOnly]{
       cursor: not-allowed;
       &:focus {
@@ -161,6 +168,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     position: relative;
     border-radius: ${({ theme }): string => theme.borderRadius.large};
     background-color: ${({ theme }): string => theme.colors.placeholder};
+    border: 1px solid ${({ theme }): string => theme.colors.backgroundAccent};
     &::before {
       content: '';
       width: 100%;

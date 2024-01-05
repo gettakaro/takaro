@@ -74,25 +74,31 @@ export interface CommandEntry {
 export interface InventoryResponse {
   playername: string;
   userid: string;
-  steamid: string;
-  bag: Array<any>; // eslint-disable-line
-  belt: Array<any>; // eslint-disable-line
+  crossplatformid: string;
+  bag: Array<InventoryItem>;
+  belt: Array<InventoryItem>;
   equipment: PlayerEquipment;
 }
 
-// TODO: some generic interface for this perhaps?
-/* eslint-disable */
-export interface PlayerEquipment {
-  head: any;
-  eyes: any;
-  face: any;
-  armor: any;
-  jacket: any;
-  shirt: any;
-  legarmor: any;
-  pants: any;
-  boots: any;
-  gloves: any;
+export interface InventoryItem {
+  count: number;
+  name: string;
+  icon: string;
+  iconcolor: string;
+  quality: number;
+}
+
+export interface PlayerEquipment extends Record<string, InventoryItem> {
+  head: InventoryItem;
+  eyes: InventoryItem;
+  face: InventoryItem;
+  armor: InventoryItem;
+  jacket: InventoryItem;
+  shirt: InventoryItem;
+  legarmor: InventoryItem;
+  pants: InventoryItem;
+  boots: InventoryItem;
+  gloves: InventoryItem;
 }
 /* eslint-enable */
 

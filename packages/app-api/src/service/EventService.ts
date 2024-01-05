@@ -16,11 +16,20 @@ export enum EVENT_TYPES {
   PLAYER_CONNECTED = 'player-connected',
   PLAYER_DISCONNECTED = 'player-disconnected',
   CHAT_MESSAGE = 'chat-message',
+  PLAYER_DEATH = 'player-death',
+  ENTITY_KILLED = 'entity-killed',
   ROLE_ASSIGNED = 'role-assigned',
   ROLE_REMOVED = 'role-removed',
+  ROLE_CREATED = 'role-created',
+  ROLE_UPDATED = 'role-updated',
+  ROLE_DELETED = 'role-deleted',
   COMMAND_EXECUTED = 'command-executed',
   HOOK_EXECUTED = 'hook-executed',
   CRONJOB_EXECUTED = 'cronjob-executed',
+  CURRENCY_ADDED = 'currency-added',
+  CURRENCY_DEDUCTED = 'currency-deducted',
+  SETTINGS_SET = 'settings-set',
+  PLAYER_NEW_IP_DETECTED = 'player-new-ip-detected',
 }
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {

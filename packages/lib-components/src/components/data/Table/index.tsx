@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+/// <reference path="./react-table.d.ts" />
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
+import { Th } from './subcomponents/ColumnHeader/style';
 
 import {
   flexRender,
@@ -16,7 +18,7 @@ import {
   ColumnPinningState,
   RowSelectionState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex } from './style';
+import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex, TableWrapper } from './style';
 import { Empty, Spinner, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
@@ -35,12 +37,19 @@ export interface TableProps<DataType extends object> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<DataType, any>[];
 
+  /// Renders actions that are always visible
   renderToolbar?: () => JSX.Element;
+
+  /// Renders actions that are only visible when one or more rows are selected.
+  renderRowSelectionActions?: () => JSX.Element;
+
+  title?: string;
 
   rowSelection?: {
     rowSelectionState: RowSelectionState;
     setRowSelectionState: OnChangeFn<RowSelectionState>;
   };
+
   sorting: {
     sortingState: SortingState;
     setSortingState?: OnChangeFn<SortingState>;
@@ -67,14 +76,24 @@ export function Table<DataType extends object>({
   sorting,
   pagination,
   columnFiltering,
+  title,
   rowSelection,
   columnSearch,
   renderToolbar,
+  renderRowSelectionActions,
   isLoading = false,
 }: TableProps<DataType>) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
+    return columns.reduce((acc, column) => {
+      if (column.id === undefined) {
+        throw new Error('ColumnDef must have an id');
+      }
+      acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
+      return acc;
+    }, {} as Record<string, boolean>);
+  });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
-  const [density, setDensity] = useLocalStorage<Density>(`table-density-${id}`, 'tight');
+  const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
@@ -113,12 +132,18 @@ export function Table<DataType extends object>({
     }
   }, [columnVisibility, hasShownColumnVisibilityTooltip]);
 
+  useEffect(() => {
+    // whenever the data changes, remove the selection
+    if (rowSelection) {
+      rowSelection.setRowSelectionState({});
+    }
+  }, [data]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     pageCount: pagination?.pageOptions.pageCount ?? -1,
-
     manualPagination: true,
     paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
     manualFiltering: true,
@@ -145,7 +170,7 @@ export function Table<DataType extends object>({
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
     initialState: {
-      columnVisibility,
+      columnVisibility: columnVisibility,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
@@ -165,13 +190,24 @@ export function Table<DataType extends object>({
     },
   });
 
+  // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
+  const hasRowSelection = useMemo(() => {
+    return (
+      rowSelection &&
+      Object.keys(rowSelection.rowSelectionState).filter((key) => rowSelection.rowSelectionState[key]).length > 0
+    );
+  }, [rowSelection?.rowSelectionState]);
+
   return (
     <Wrapper>
       <Toolbar role="toolbar">
         {/* custom toolbar is rendered on left side*/}
-        <Flex>{renderToolbar && renderToolbar()}</Flex>
-
         <Flex>
+          {!hasRowSelection && title && <h2>{title}</h2>}
+          {hasRowSelection && renderRowSelectionActions && renderRowSelectionActions()}
+        </Flex>
+        <Flex>
+          {renderToolbar && renderToolbar()}
           {!isLoading && <Filter table={table} />}
           <ColumnVisibility
             table={table}
@@ -198,118 +234,131 @@ export function Table<DataType extends object>({
 
       {/* table */}
       <DndProvider backend={HTML5Backend}>
-        <StyledTable density={density}>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {rowSelection && !isLoading && (
-                  <th style={{ width: '10px' }}>
-                    <CheckBox
-                      hasDescription={false}
-                      hasError={false}
-                      id={`select-all-header-${headerGroup.id}`}
-                      name={`select-all-header-${headerGroup.id}`}
-                      onChange={() => table.toggleAllRowsSelected()}
-                      size="small"
-                      value={table.getIsAllRowsSelected()}
+        <TableWrapper>
+          <StyledTable density={density}>
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {rowSelection && table.getRowModel().rows.length !== 0 && !isLoading && (
+                    <Th
+                      isActive={false}
+                      isRight={false}
+                      isDragging={false}
+                      canDrag={false}
+                      isRowSelection={true}
+                      width={10}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CheckBox
+                          hasDescription={false}
+                          hasError={false}
+                          id={`select-all-header-${headerGroup.id}`}
+                          name={`select-all-header-${headerGroup.id}`}
+                          onChange={() => table.toggleAllRowsSelected()}
+                          size="small"
+                          value={table.getIsAllRowsSelected()}
+                        />
+                      </div>
+                    </Th>
+                  )}
+                  {headerGroup.headers.map((header) => (
+                    <ColumnHeader
+                      header={header}
+                      table={table}
+                      isLoading={isLoading}
+                      key={`draggable-column-header-${header.id}`}
                     />
-                  </th>
-                )}
-                {headerGroup.headers.map((header) => (
-                  <ColumnHeader
-                    header={header}
-                    table={table}
-                    isLoading={isLoading}
-                    key={`draggable-column-header-${header.id}`}
-                  />
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {/* loading state */}
-            {isLoading && (
-              <tr>
-                <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '15px' }}>
-                    <Spinner size="small" />
-                  </div>
-                </td>
-              </tr>
-            )}
-
-            {/* empty state */}
-            {!isLoading && table.getRowModel().rows.length === 0 && (
-              <tr>
-                <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
-                  <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
-                  </div>
-                </td>
-              </tr>
-            )}
-
-            {!isLoading &&
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getCanSelect() && (
-                    <td style={{ paddingRight: '10px', width: '15px' }}>
-                      <CheckBox
-                        value={row.getIsSelected()}
-                        id={row.id}
-                        name={row.id}
-                        hasError={false}
-                        disabled={!row.getCanSelect()}
-                        onChange={() => row.toggleSelected()}
-                        hasDescription={false}
-                        size="small"
-                      />
-                    </td>
-                  )}
-                  {row.getVisibleCells().map(({ column, id, getContext }) => (
-                    <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
                   ))}
-                  {row.getIsExpanded() && (
-                    <tr>
-                      <td colSpan={table.getVisibleLeafColumns().length} />
-                    </tr>
-                  )}
                 </tr>
               ))}
-          </tbody>
-          {!isLoading && table.getRowModel().rows.length > 1 && (
-            <tfoot>
-              <tr>
-                {pagination && (
-                  <td
-                    colSpan={
-                      columns.length +
-                      ROW_SELECTION_COL_SPAN /* +1 here is because we have an extra column for the selection */
-                    }
-                  >
-                    <PaginationContainer>
-                      <span>
-                        showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
-                        {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                          table.getRowModel().rows.length}{' '}
-                        of {pagination.pageOptions.total} entries
-                      </span>
-                      <Pagination
-                        pageCount={table.getPageCount()}
-                        hasNext={table.getCanNextPage()}
-                        hasPrevious={table.getCanPreviousPage()}
-                        previousPage={table.previousPage}
-                        nextPage={table.nextPage}
-                        pageIndex={table.getState().pagination.pageIndex}
-                        setPageIndex={table.setPageIndex}
-                      />
-                    </PaginationContainer>
+            </thead>
+            <tbody>
+              {/* loading state */}
+              {isLoading && (
+                <tr>
+                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '15px' }}>
+                      <Spinner size="small" />
+                    </div>
                   </td>
-                )}
-              </tr>
-            </tfoot>
-          )}
-        </StyledTable>
+                </tr>
+              )}
+
+              {/* empty state */}
+              {!isLoading && table.getRowModel().rows.length === 0 && (
+                <tr>
+                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                    <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
+                    </div>
+                  </td>
+                </tr>
+              )}
+
+              {!isLoading &&
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getCanSelect() && (
+                      <td style={{ paddingRight: '10px', width: '15px' }}>
+                        <CheckBox
+                          value={row.getIsSelected()}
+                          id={row.id}
+                          name={row.id}
+                          hasError={false}
+                          disabled={!row.getCanSelect()}
+                          onChange={() => row.toggleSelected()}
+                          hasDescription={false}
+                          size="small"
+                        />
+                      </td>
+                    )}
+                    {row.getVisibleCells().map(({ column, id, getContext }) => (
+                      <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
+                    ))}
+                    {row.getIsExpanded() && (
+                      <tr>
+                        <td colSpan={table.getVisibleLeafColumns().length} />
+                      </tr>
+                    )}
+                  </tr>
+                ))}
+            </tbody>
+            {!isLoading && table.getRowModel().rows.length > 1 && (
+              <tfoot>
+                <tr>
+                  <td colSpan={1} />
+                  {pagination && (
+                    <td
+                      colSpan={
+                        columns.length +
+                        ROW_SELECTION_COL_SPAN /* +1 here is because we have an extra column for the selection */ -
+                        2 /* We use 2 columns for padding (1 start one at end) */
+                      }
+                    >
+                      <PaginationContainer>
+                        <span>
+                          showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+                          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                            table.getRowModel().rows.length}{' '}
+                          of {pagination.pageOptions.total} entries
+                        </span>
+                        <Pagination
+                          pageCount={table.getPageCount()}
+                          hasNext={table.getCanNextPage()}
+                          hasPrevious={table.getCanPreviousPage()}
+                          previousPage={table.previousPage}
+                          nextPage={table.nextPage}
+                          pageIndex={table.getState().pagination.pageIndex}
+                          setPageIndex={table.setPageIndex}
+                        />
+                      </PaginationContainer>
+                    </td>
+                  )}
+                </tr>
+              </tfoot>
+            )}
+          </StyledTable>
+        </TableWrapper>
       </DndProvider>
     </Wrapper>
   );

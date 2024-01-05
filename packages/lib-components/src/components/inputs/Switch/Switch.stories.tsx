@@ -41,7 +41,6 @@ export const onSubmit: StoryFn<SwitchProps> = (args) => {
   const { control, handleSubmit } = useForm<FormFields>();
 
   const onSubmit: SubmitHandler<FormFields> = ({ hasCar }) => {
-    console.log('this fired', hasCar);
     setValue(hasCar);
   };
 

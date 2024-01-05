@@ -5,6 +5,7 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[2]};
+  margin-top: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const DrawerSkeleton = () => {

@@ -50,6 +50,10 @@ export const FormError: FC<FormErrorProps> = ({ message, error }) => {
     containerRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [containerRef, message]);
 
+  if (!error && !message) {
+    return null;
+  }
+
   // If error provided and no custom message
   // Try to parse error message from error object
   if (error && !message) {

@@ -4,10 +4,15 @@ export const PATHS = {
   users: () => '/users',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
-  variables: () => '/variables',
-
+  variables: {
+    overview: () => '/variables',
+    create: () => '/variables/create',
+    update: (variableId: string) => `/variables/update/${variableId}`,
+  },
   notFound: () => '/not-found',
   forbidden: () => '/forbidden',
+  logout: () => '/logout',
+  logoutReturn: () => '/logout-return',
   events: () => '/events',
 
   roles: {
@@ -30,6 +35,7 @@ export const PATHS = {
   gameServers: {
     overview: () => '/servers',
     create: () => '/servers/create',
+    import: () => '/servers/import',
     update: (serverId: string) => `/servers/update/${serverId}`,
   },
 

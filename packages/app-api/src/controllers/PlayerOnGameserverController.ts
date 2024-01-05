@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -8,19 +8,22 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
+import {
+  PlayerOnGameServerService,
+  PlayerOnGameserverOutputWithRolesDTO,
+} from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 
-export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO> {
-  @Type(() => PlayerOnGameserverOutputDTO)
+export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
+  @Type(() => PlayerOnGameserverOutputWithRolesDTO)
   @ValidateNested()
-  declare data: PlayerOnGameserverOutputDTO;
+  declare data: PlayerOnGameserverOutputWithRolesDTO;
 }
 
-export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGameserverOutputDTO[]> {
-  @Type(() => PlayerOnGameserverOutputDTO)
+export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO[]> {
+  @Type(() => PlayerOnGameserverOutputWithRolesDTO)
   @ValidateNested({ each: true })
-  declare data: PlayerOnGameserverOutputDTO[];
+  declare data: PlayerOnGameserverOutputWithRolesDTO[];
 }
 
 class PlayerOnGameServerSearchInputAllowedFilters {
@@ -39,6 +42,10 @@ class PlayerOnGameServerSearchInputAllowedFilters {
   @IsUUID(4, { each: true })
   @IsOptional()
   playerId!: string;
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  online!: boolean;
 }
 
 class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSearchInputAllowedFilters> {

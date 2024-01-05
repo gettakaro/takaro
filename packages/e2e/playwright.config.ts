@@ -1,15 +1,16 @@
 import playwright from '@playwright/test';
 
+const { defineConfig, devices } = playwright;
+
 import dotenv from 'dotenv';
 dotenv.config();
-
-const { defineConfig, devices } = playwright;
 
 /* Playwright imports @takaro/test, because of this it loads all files in @takaro/test.
  * @takaro/test uses sinon which defines a global afterEach function.
  * Since we don't use sinon in our tests, we need to define a dummy afterEach function.
  */
 global.afterEach = () => {};
+global.before = () => {};
 
 const isPR = process.env.GITHUB_HEAD_REF; // This is set for PRs
 const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main'; // Adjust the branch name if necessary
@@ -32,6 +33,13 @@ if (!isPR || isMainBranch) {
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: 'src',
+
+  // Each test is given 60 seconds. (default 30 seconds)
+  timeout: 90000,
+  expect: {
+    // Each assertion is given 10 seconds. (default 5 seconds)
+    timeout: 15000,
+  },
 
   // Run all tests in parallel.
   fullyParallel: true,

@@ -24,21 +24,6 @@ const StyledLink = styled(Link)`
   }
 `;
 
-// const Header = styled.header`
-//   width: 100%;
-//   height: 60px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: flex-end;
-//   padding: 2rem;
-//   margin-bottom: 5rem;
-//
-//   p {
-//     margin-right: 1rem;
-//     font-weight: 600;
-//   }
-// `;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;

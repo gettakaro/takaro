@@ -1,0 +1,94 @@
+import { Avatar, getInitials, SelectField, styled } from '@takaro/lib-components';
+import { FC } from 'react';
+import { CustomSelectProps } from '.';
+import { usePlayers } from 'queries/players';
+
+const Inner = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+
+  span {
+    margin-left: ${({ theme }) => theme.spacing['1']};
+  }
+`;
+
+export const PlayerSelect: FC<CustomSelectProps> = ({
+  control,
+  name,
+  label = 'Player',
+  loading,
+  description,
+  readOnly,
+  inPortal,
+  disabled,
+  size,
+  required,
+  hint,
+}) => {
+  const { data, isLoading: isLoadingData } = usePlayers();
+
+  if (isLoadingData) {
+    // TODO: better loading state
+    return <div>loading...</div>;
+  }
+
+  if (!data?.data) {
+    return <div>no players found</div>;
+  }
+
+  const players = data.data;
+
+  return (
+    <SelectField
+      control={control}
+      name={name}
+      label={label}
+      description={description}
+      readOnly={readOnly}
+      hint={hint}
+      required={required}
+      disabled={disabled}
+      size={size}
+      inPortal={inPortal}
+      enableFilter
+      loading={loading}
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
+          return <div>Select...</div>;
+        }
+        const selectedPlayer = players.find((player) => player.id === selectedItems[0]?.value);
+        return (
+          <Inner>
+            {selectedPlayer!.steamAvatar ? (
+              <Avatar size="tiny" src={selectedPlayer!.steamAvatar} alt={`Steam avatar ${name}`} />
+            ) : (
+              <Avatar size="tiny" alt={name}>
+                {getInitials(name)}
+              </Avatar>
+            )}
+            <div>{selectedPlayer!.name}</div>
+          </Inner>
+        );
+      }}
+    >
+      <SelectField.OptionGroup>
+        {players.map(({ name, id, steamAvatar }) => (
+          <SelectField.Option key={`select-${name}`} value={id} label={name}>
+            <Inner>
+              {steamAvatar ? (
+                <Avatar size="tiny" src={steamAvatar} alt={`Steam avatar ${name}`} />
+              ) : (
+                <Avatar size="tiny" alt={name}>
+                  {getInitials(name)}
+                </Avatar>
+              )}
+              <span>{name}</span>
+            </Inner>
+          </SelectField.Option>
+        ))}
+      </SelectField.OptionGroup>
+    </SelectField>
+  );
+};

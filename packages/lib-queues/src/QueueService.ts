@@ -5,6 +5,8 @@ import {
   ICronJobData,
   IEventQueueData,
   IHookJobData,
+  IGameServerQueueData,
+  ICSMMImportData,
 } from './dataDefinitions.js';
 import { TakaroQueue } from './TakaroQueue.js';
 
@@ -33,6 +35,18 @@ class QueuesService {
     },
     connector: {
       queue: new TakaroQueue<IConnectorQueueData>(config.get('queues.connector.name')),
+    },
+    itemsSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.itemsSync.name')),
+    },
+    playerSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
+    },
+    steamSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.steamSync.name')),
+    },
+    csmmImport: {
+      queue: new TakaroQueue<ICSMMImportData>(config.get('queues.csmmImport.name')),
     },
   };
 

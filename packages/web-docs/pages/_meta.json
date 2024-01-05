@@ -10,5 +10,12 @@
   },
   "development": {
     "title": "Development"
+  },
+  "data": {
+    "title": "Data",
+    "theme": {
+      "toc": false,
+      "layout": "full"
+    }
   }
 }

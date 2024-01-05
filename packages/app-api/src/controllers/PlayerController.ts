@@ -1,4 +1,4 @@
-import { IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
@@ -50,6 +50,14 @@ class PlayerSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   xboxLiveId!: string[];
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamCommunityBanned!: boolean[];
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamVacBanned!: boolean[];
 }
 
 class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {

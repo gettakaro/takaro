@@ -2,7 +2,8 @@ import { FC } from 'react';
 import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
-import { EventOutputDTO } from '@takaro/apiclient';
+import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
+import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 
 const Header = styled.div`
   display: flex;
@@ -76,7 +77,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   let properties = <></>;
 
   switch (event.eventName) {
-    case 'chat-message':
+    case EventOutputDTOEventNameEnum.ChatMessage:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
@@ -85,7 +86,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'command-executed':
+    case EventOutputDTOEventNameEnum.CommandExecuted:
       properties = (
         <>
           <EventProperty name="module" value={event.module?.name} />
@@ -96,8 +97,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'hook-executed':
-    case 'cronjob-executed':
+    case EventOutputDTOEventNameEnum.HookExecuted:
+    case EventOutputDTOEventNameEnum.CronjobExecuted:
       properties = (
         <>
           <EventProperty name="module" value={event?.module?.name} />
@@ -105,8 +106,27 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-    case 'player-connected':
-    case 'player-disconnected':
+    case EventOutputDTOEventNameEnum.PlayerNewIpDetected:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty
+            name="country"
+            value={
+              <>
+                <CountryCodeToEmoji countryCode={(event.meta as any).new.country} />
+                {(event.meta as any).new.country}
+              </>
+            }
+          />
+
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.PlayerConnected:
+    case EventOutputDTOEventNameEnum.PlayerDisconnected:
+    case EventOutputDTOEventNameEnum.PlayerDeath:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
@@ -114,6 +134,55 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           <EventProperty name="player" value={event.player?.name} />
         </>
       );
+      break;
+    case EventOutputDTOEventNameEnum.EntityKilled:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="game" value={event.gameServer?.type} />
+          <EventProperty name="player" value={event.player?.name} />
+          {event.meta && 'weapon' in event.meta ? (
+            <EventProperty name="weapon" value={(event.meta as any).weapon} />
+          ) : null}
+          {event.meta && 'entity' in event.meta ? (
+            <EventProperty name="entity" value={(event.meta as any).entity} />
+          ) : null}
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.CurrencyAdded:
+    case EventOutputDTOEventNameEnum.CurrencyDeducted:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="game" value={event.gameServer?.type} />
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.SettingsSet:
+      properties = (
+        <>
+          <EventProperty name="user" value={event.user?.name} />
+          {event.gameServer ? <EventProperty name="gameserver" value={event.gameServer?.name} /> : null}
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.RoleCreated:
+    case EventOutputDTOEventNameEnum.RoleDeleted:
+    case EventOutputDTOEventNameEnum.RoleUpdated:
+    case EventOutputDTOEventNameEnum.RoleAssigned:
+    case EventOutputDTOEventNameEnum.RoleRemoved:
+      properties = (
+        <>
+          {event.player ? <EventProperty name="player" value={event.player?.name} /> : null}
+          {event.user ? <EventProperty name="user" value={event.user?.name} /> : null}
+          {event.meta && 'role' in event.meta && 'name' in (event.meta as any).role ? (
+            <EventProperty name="role" value={(event.meta as any).role.name} />
+          ) : null}
+        </>
+      );
+      break;
   }
 
   return (

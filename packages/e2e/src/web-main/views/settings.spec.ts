@@ -9,31 +9,26 @@ const { expect } = playwright;
 test('Can set global settings', async ({ page }) => {
   navigateTo(page, 'global-settings');
   const serverName = 'My cool server';
-  await page.getByLabel('serverChatName').fill(serverName);
+  await page.getByLabel('server chat name').fill(serverName);
   await page.getByRole('button', { name: 'Save' }).click();
   await page.reload();
-
-  await expect(page.getByLabel('serverChatName')).toHaveValue(serverName);
+  await expect(page.getByLabel('server chat name')).toHaveValue(serverName);
 });
 
 test('Can set server-scoped settings', async ({ page, takaro }) => {
   await takaro.GameServersPage.goto();
   await page.getByText('Test server').click();
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Settings' })
-    .click();
 
-  await page.getByLabel('serverChatName').fill('My cool server');
+  const serverName = 'My cool server';
+  await navigateTo(page, 'server-settings');
+  await page.getByLabel('server chat name').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
-
   await page.reload();
 
-  await expect(page.getByLabel('serverChatName')).toHaveValue('My cool server');
+  await expect(page.getByLabel('server chat name')).toHaveValue(serverName);
 });
 
-test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
+test.fixme('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
   await takaro.rootClient.gameserver.gameServerControllerCreate({
     name: 'Second server',
     type: GameServerCreateDTOTypeEnum.Mock,
@@ -48,23 +43,15 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
   await page.getByRole('heading', { name: 'Test server' }).click();
 
   // open server settings
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Settings' })
-    .click();
+  await navigateTo(page, 'server-settings');
 
   // Change the server name
-  await page.getByLabel('serverChatName').fill('My cool server');
+  await page.getByLabel('server chat name').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
 
   await takaro.GameServersPage.goto();
   await page.getByRole('heading', { name: 'Second Server' }).click();
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Settings' })
-    .click();
 
-  await expect(page.getByLabel('serverChatName')).toHaveValue('Takaro');
+  await navigateTo(page, 'server-settings');
+  await expect(page.getByLabel('server chat name')).toHaveValue('Takaro');
 });

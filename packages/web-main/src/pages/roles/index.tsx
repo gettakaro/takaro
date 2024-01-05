@@ -1,17 +1,10 @@
 import { FC } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { EmptyPage, Skeleton, styled, Empty, Button } from '@takaro/lib-components';
+import { EmptyPage, Skeleton, Empty, Button } from '@takaro/lib-components';
 import { useRoles } from 'queries/roles';
 import { PATHS } from 'paths';
-import { EmptyRolesCard, RoleCard } from 'components/roles/RoleCard';
+import { RoleCard, AddCard, CardList } from 'components/cards';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-auto-rows: 160px;
-  gap: ${({ theme }) => theme.spacing['1_5']};
-`;
 
 export const Roles: FC = () => {
   useDocumentTitle('Roles');
@@ -20,12 +13,12 @@ export const Roles: FC = () => {
 
   if (isLoading) {
     return (
-      <Grid>
+      <CardList>
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
-      </Grid>
+      </CardList>
     );
   }
 
@@ -48,14 +41,14 @@ export const Roles: FC = () => {
 
   return (
     <>
-      <Grid>
+      <CardList>
         {roles.pages
           .flatMap((page) => page.data)
           .map((role) => (
             <RoleCard key={role.id} {...role} />
           ))}
-        <EmptyRolesCard onClick={() => navigate(PATHS.roles.create())} />
-      </Grid>
+        <AddCard title="Role" onClick={() => navigate(PATHS.roles.create())} />
+      </CardList>
       {InfiniteScroll}
       {/* show rolesCreate and rolesUpdate drawers above this listView */}
       <Outlet />

@@ -1,7 +1,8 @@
 import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
-import { PERMISSIONS, PermissionsGuard as Guard, RequiredPermissions } from '@takaro/lib-components';
-import { useUser } from 'hooks/useUser';
+import { PermissionsGuard as Guard, RequiredPermissions } from '@takaro/lib-components';
 import { hasPermissionHelper } from '@takaro/lib-components/src/components/other/PermissionsGuard';
+import { PERMISSIONS } from '@takaro/apiclient';
+import { useAuth } from 'hooks/useAuth';
 
 interface PermissionsGuardProps {
   requiredPermissions: RequiredPermissions;
@@ -13,21 +14,29 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
   children,
   fallback,
 }) => {
-  const { userData } = useUser();
+  const { session, isLoadingSession } = useAuth();
 
   const userPermissions = useMemo(() => {
-    if (!userData || !userData.roles) {
+    if (!session || isLoadingSession) {
+      return []; // unreachable
+    }
+
+    if (session.roles === undefined || session.roles.length === 0) {
       return [];
     }
 
-    const permissionsFromRoles = userData.roles
+    const permissionsFromRoles = session.roles
       .flatMap((assignments) =>
         assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS)
       )
       .filter((permission) => Object.values(PERMISSIONS).includes(permission));
 
     return Array.from(new Set(permissionsFromRoles as PERMISSIONS[]));
-  }, [userData]); // only recalculated when userData changes
+  }, [session, isLoadingSession]); // only recalculated when userData changes
+
+  if (isLoadingSession) {
+    return <></>;
+  }
 
   return (
     <Guard requiredPermissions={requiredPermissions} userPermissions={userPermissions} fallback={fallback}>
@@ -37,22 +46,26 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
 };
 
 export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
-  const { userData } = useUser();
+  const { session, isLoadingSession } = useAuth();
 
   const userPermissions = useMemo(() => {
-    if (!userData || !userData.roles) {
+    if (!session || isLoadingSession) {
+      return;
+    }
+
+    if (session.roles === undefined || session.roles.length === 0) {
       return new Set() as Set<PERMISSIONS>;
     }
 
-    return userData.roles
+    return session.roles
       .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
       .reduce((acc, permission) => acc.add(permission), new Set());
-  }, [userData]) as Set<PERMISSIONS>;
+  }, [session, isLoadingSession]) as Set<PERMISSIONS>;
 
   const hasPermission = useMemo(() => {
     return hasPermissionHelper(Array.from(userPermissions), requiredPermissions);
   }, [requiredPermissions, userPermissions]);
 
-  return hasPermission;
+  return { hasPermission, isLoading: isLoadingSession };
 };

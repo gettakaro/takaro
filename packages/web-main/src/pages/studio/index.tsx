@@ -1,19 +1,18 @@
 import { FC } from 'react';
 import { styled, CollapseList } from '@takaro/lib-components';
-import { Editor } from 'components/modules/Editor';
+import { Editor } from './Editor';
 import { Resizable } from 're-resizable';
-import { FileExplorer } from 'components/modules/FileExplorer';
+import { FileExplorer } from './FileExplorer';
 import { useSandpack } from '@codesandbox/sandpack-react';
 import { useModule } from 'hooks/useModule';
 import { FunctionType } from 'context/moduleContext';
-import { HookConfig } from 'components/modules/Editor/configs/hookConfig';
-import { CommandConfig } from 'components/modules/Editor/configs/commandConfig';
-import { CronJobConfig } from 'components/modules/Editor/configs/cronjobConfig';
-import { Header } from 'components/studio/Header';
+import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
+import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
 const Wrapper = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}} ${theme.spacing[2]} 0`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[2]} 0`};
 `;
 
 const Container = styled.div`
@@ -90,6 +89,11 @@ const Studio: FC = () => {
             </CollapseList.Item>
             <CollapseList.Item title={configMap[activeModule.type]}>
               <ConfigWrapper>{getConfigComponent(activeModule.type)}</ConfigWrapper>
+            </CollapseList.Item>
+            <CollapseList.Item title={'Last executions'}>
+              <ConfigWrapper>
+                <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
+              </ConfigWrapper>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>

@@ -1,5 +1,5 @@
 import { logger, traceableClass } from '@takaro/util';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
@@ -7,7 +7,6 @@ import {
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
-  IPosition,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
@@ -15,6 +14,11 @@ import { SdtdApiClient } from './sdtdAPIClient.js';
 import { Settings } from '@takaro/apiclient';
 
 import { SdtdConnectionInfo } from './connectionInfo.js';
+import { InventoryItem } from './apiResponses.js';
+import { Worker } from 'worker_threads';
+import path from 'path';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 @traceableClass('game:7d2d')
 export class SevenDaysToDie implements IGameServer {
@@ -42,15 +46,24 @@ export class SevenDaysToDie implements IGameServer {
 
     const players = await Promise.all(
       onlinePlayersRes.data.map((p) => {
-        return new IGamePlayer().construct({
+        const data: Partial<IGamePlayer> = {
           gameId: p.crossplatformid.replace('EOS_', ''),
           ip: p.ip,
           name: p.name,
-          steamId: p.steamid.replace('Steam_', ''),
-          epicOnlineServicesId: p.crossplatformid,
+          epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
           platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
-        });
+        };
+
+        if (p.steamid.startsWith('XBL_')) {
+          data.xboxLiveId = p.steamid.replace('XBL_', '');
+        }
+
+        if (p.steamid.startsWith('Steam_')) {
+          data.steamId = p.steamid.replace('Steam_', '');
+        }
+
+        return new IGamePlayer().construct(data);
       })
     );
 
@@ -58,6 +71,8 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
+    if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
     const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
     return player;
@@ -78,12 +93,12 @@ export class SevenDaysToDie implements IGameServer {
     };
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
     if (this.connectionInfo.useCPM) {
-      const command = `giveplus EOS_${player.gameId} ${item.name} ${item.amount}`;
+      const command = `giveplus EOS_${player.gameId} ${item} ${amount}`;
       await this.executeConsoleCommand(command);
     } else {
-      const command = `give EOS_${player.gameId} ${item.name} ${item.amount}`;
+      const command = `give EOS_${player.gameId} ${item} ${amount}`;
       await this.executeConsoleCommand(command);
     }
   }
@@ -101,7 +116,6 @@ export class SevenDaysToDie implements IGameServer {
       if (error instanceof Object && 'details' in error) {
         reason =
           'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
-        console.log(error);
         if (error.details instanceof Object) {
           if ('status' in error.details) {
             if (error.details.status === 403 || error.details.status === 401) {
@@ -209,5 +223,60 @@ export class SevenDaysToDie implements IGameServer {
     }
 
     return bans;
+  }
+
+  async listItems(): Promise<IItemDTO[]> {
+    const itemsRes = await this.executeConsoleCommand('li *');
+    const itemLines = itemsRes.rawResult.split('\n').slice(0, -2);
+
+    return new Promise((resolve, reject) => {
+      const workerPath = path.join(__dirname, 'itemWorker.js');
+
+      const worker = new Worker(workerPath);
+      worker.postMessage(itemLines);
+
+      worker.on('message', (parsedItems) => {
+        if (parsedItems.error) {
+          reject(parsedItems.error);
+        } else {
+          resolve(parsedItems);
+        }
+        worker.terminate();
+      });
+
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0) {
+          reject(new Error(`Worker stopped with exit code ${code}`));
+        }
+      });
+    });
+  }
+
+  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    const inventoryRes = await this.apiClient.getPlayerInventory(`EOS_${player.gameId}`);
+    const resp: IItemDTO[] = [];
+
+    const mapSdtdItemToDto = async (item: InventoryItem | null) => {
+      if (!item) return null;
+      return new IItemDTO().construct({ code: item.name, amount: item.count });
+    };
+
+    const dtos = await Promise.all([
+      ...inventoryRes.data.bag.map(mapSdtdItemToDto),
+      ...inventoryRes.data.belt.map(mapSdtdItemToDto),
+    ]);
+
+    const filteredDTOs = dtos.filter((item) => item !== null) as IItemDTO[];
+    resp.push(...filteredDTOs);
+
+    for (const slot in inventoryRes.data.equipment) {
+      if (Object.prototype.hasOwnProperty.call(inventoryRes.data.equipment, slot)) {
+        const element = inventoryRes.data.equipment[slot];
+        if (element) resp.push(await new IItemDTO().construct({ code: element.name, amount: element.count }));
+      }
+    }
+
+    return resp;
   }
 }

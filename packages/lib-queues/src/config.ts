@@ -1,4 +1,5 @@
 import { Config, IBaseConfig } from '@takaro/config';
+import ms from 'ms';
 
 export interface IQueuesConfig extends IBaseConfig {
   queues: {
@@ -19,6 +20,22 @@ export interface IQueuesConfig extends IBaseConfig {
       concurrency: number;
     };
     connector: {
+      name: string;
+    };
+    itemsSync: {
+      name: string;
+      interval: number;
+    };
+    steamSync: {
+      name: string;
+      interval: number;
+    };
+    playerSync: {
+      name: string;
+      interval: number;
+      concurrency: number;
+    };
+    csmmImport: {
       name: string;
     };
   };
@@ -120,6 +137,62 @@ export const queuesConfigSchema = {
         format: String,
         default: 'connector',
         env: 'CONNECTOR_QUEUE_NAME',
+      },
+    },
+    itemsSync: {
+      name: {
+        doc: 'The name of the queue to use for items sync',
+        format: String,
+        default: 'itemsSync',
+        env: 'ITEMS_SYNC_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the items sync',
+        format: Number,
+        default: ms('1hour'),
+        env: 'ITEMS_SYNC_QUEUE_INTERVAL',
+      },
+    },
+    steamSync: {
+      name: {
+        doc: 'The name of the queue to use for steam sync',
+        format: String,
+        default: 'steamSync',
+        env: 'STEAM_SYNC_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the steam sync',
+        format: Number,
+        default: ms('10minutes'),
+        env: 'STEAM_SYNC_QUEUE_INTERVAL',
+      },
+    },
+    playerSync: {
+      name: {
+        doc: 'The name of the queue to use for player sync',
+        format: String,
+        default: 'playerSync',
+        env: 'PLAYER_SYNC_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the player sync',
+        format: Number,
+        default: ms('30seconds'),
+        env: 'PLAYER_SYNC_QUEUE_INTERVAL',
+      },
+      concurrency: {
+        doc: 'Job concurrency',
+        format: Number,
+        default: 5,
+        env: 'PLAYER_SYNC_QUEUE_CONCURRENCY',
+      },
+    },
+    csmmImport: {
+      name: {
+        doc: 'The name of the queue to use for csmm import',
+        format: String,
+        default: 'csmmImport',
+        env: 'CSMM_IMPORT_QUEUE_NAME',
       },
     },
   },

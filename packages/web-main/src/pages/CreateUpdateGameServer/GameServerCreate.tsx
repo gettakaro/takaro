@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -26,10 +26,10 @@ export interface IFormInputs {
 
 const CreateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [reachabilityError, setReachabilityError] = useState<string | null>(null);
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useGameServerCreate();
+  const { mutateAsync, isLoading, error: gameServerCreateError } = useGameServerCreate();
   const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
   const { setSelectedGameServerId } = useSelectedGameServer();
 
@@ -43,6 +43,17 @@ const CreateGameServer: FC = () => {
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
+
+  const parsedGameServerCreateError = useMemo(() => {
+    if (gameServerCreateError) {
+      const err = errors.defineErrorType(gameServerCreateError);
+
+      if (err instanceof errors.UniqueConstraintError) {
+        return 'A server with this name already exists.';
+      }
+      return;
+    }
+  }, [gameServerCreateError]);
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
     try {
@@ -70,9 +81,9 @@ const CreateGameServer: FC = () => {
 
     if (response.connectable) {
       setConnectionOk(true);
-      setError(null);
+      setReachabilityError(null);
     } else {
-      setError(response.reason || 'Connection error');
+      setReachabilityError(response.reason || 'Connection error');
     }
   };
 
@@ -93,31 +104,37 @@ const CreateGameServer: FC = () => {
                   required
                 />
 
-                <Select
+                <SelectField
                   control={control}
                   name="type"
                   label="Game Server"
                   required
                   loading={isLoading}
-                  render={(selectedIndex) => <div>{gameTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</div>}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      return <div>Select...</div>;
+                    }
+                    return <div>{selectedItems[0].label}</div>;
+                  }}
                 >
-                  <Select.OptionGroup label="Games">
+                  <SelectField.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Select.Option key={`select-${name}`} value={value}>
+                      <SelectField.Option key={`select-${name}`} value={value} label={name}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </CollapseList.Item>
               {type !== undefined && (
                 <CollapseList.Item title="Connection info">
                   {connectionInfoFieldsMap(isLoading, control)[type]}
                 </CollapseList.Item>
               )}
-              {error && <FormError message={error} />}
+              {reachabilityError && <FormError message={reachabilityError} />}
+              {parsedGameServerCreateError && <FormError message={parsedGameServerCreateError} />}
             </form>
           </CollapseList>
         </Drawer.Body>

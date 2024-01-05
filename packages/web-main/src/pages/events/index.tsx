@@ -49,7 +49,7 @@ const Header = styled.div`
 const Filters = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   padding: ${({ theme }) => `${theme.spacing[2]}`};
-  height: 600px;
+  min-height: 600px;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   min-width: 360px;
   display: flex;
@@ -80,6 +80,15 @@ const treeData = [
       {
         name: EventOutputDTOEventNameEnum.ChatMessage,
       },
+      {
+        name: EventOutputDTOEventNameEnum.PlayerDeath,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.EntityKilled,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.PlayerNewIpDetected,
+      },
     ],
   },
   {
@@ -98,6 +107,17 @@ const treeData = [
     ],
   },
   {
+    name: 'Economy',
+    children: [
+      {
+        name: EventOutputDTOEventNameEnum.CurrencyAdded,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.CurrencyDeducted,
+      },
+    ],
+  },
+  {
     name: 'Global',
     children: [
       {
@@ -105,6 +125,18 @@ const treeData = [
       },
       {
         name: EventOutputDTOEventNameEnum.RoleRemoved,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.RoleCreated,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.RoleUpdated,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.RoleDeleted,
+      },
+      {
+        name: EventOutputDTOEventNameEnum.SettingsSet,
       },
     ],
   },

@@ -3,10 +3,10 @@ import {
   CollapseList,
   FormError,
   Button,
-  Select,
+  SelectField,
   TextField,
-  Loading,
   DatePicker,
+  DrawerSkeleton,
 } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayerRoleAssign, useRoles } from 'queries/roles';
@@ -19,6 +19,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
+import { RolesSelect } from 'components/selects';
 
 interface IFormInputs {
   id: string;
@@ -37,7 +38,7 @@ export const AssignPlayerRole: FC = () => {
   const { data: gameservers, isLoading: isLoadingGameServers } = useGameServers();
 
   if (isLoadingRoles || isLoadingGameServers || !gameservers || !roles) {
-    return <Loading />;
+    return <DrawerSkeleton />;
   }
 
   const gameServerOptions = [
@@ -92,41 +93,28 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="Player" />
 
-                <Select
-                  control={control}
-                  name="roleId"
-                  label="Role"
-                  render={(selectedIndex) => (
-                    <div>{selectedIndex !== -1 ? roles[selectedIndex].name : roles[0].name}</div>
-                  )}
-                >
-                  <Select.OptionGroup label="Roles">
-                    {roles.map((role) => (
-                      <Select.Option key={role.id} value={role.id}>
-                        {role.name}
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
+                <RolesSelect control={control} name="roleId" />
 
-                <Select
+                <SelectField
                   control={control}
                   name="gameServerId"
                   label="Gameserver"
-                  render={(selectedIndex) => (
-                    <div>
-                      {selectedIndex !== -1 ? gameServers[selectedIndex].name : 'Global - applies to all gameservers'}
-                    </div>
-                  )}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      // in case nothing is selected, we default to global
+                      return <div>Global - applies to all gameservers</div>;
+                    }
+                    return <div>{selectedItems[0].label}</div>;
+                  }}
                 >
-                  <Select.OptionGroup label="gameservers">
+                  <SelectField.OptionGroup label="gameservers">
                     {gameServers.map((server) => (
-                      <Select.Option key={server.id} value={server.id}>
+                      <SelectField.Option key={server.id} value={server.id} label={server.name}>
                         {server.name}
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
 
                 <DatePicker
                   mode="absolute"
@@ -137,6 +125,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                   loading={isLoading}
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
+                  allowPastDates={false}
                   timePickerOptions={{ interval: 30 }}
                   format={DateTime.DATETIME_SHORT}
                 />

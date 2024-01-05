@@ -48,11 +48,12 @@ export const GenericRadio = forwardRef<HTMLDivElement, GenericRadioProps>((props
         onBlur={onBlur}
         onFocus={onFocus}
         isError={hasError}
-        tabIndex={readOnly || disabled ? -1 : 0}
+        tabIndex={disabled ? -1 : 0}
         role="radio"
         ref={ref}
       >
         <Inner
+          initial={checked ? 'selected' : 'deselected'}
           animate={checked ? 'selected' : 'deselected'}
           isSelected={checked}
           readOnly={readOnly}

@@ -3,7 +3,7 @@ import { APIOutput, apiResponse } from '@takaro/http';
 import { errors, TakaroDTO } from '@takaro/util';
 import { Settings, SettingsService, SETTINGS_KEYS } from '../service/SettingsService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, QueryParams } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, QueryParams, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
@@ -45,7 +45,6 @@ class ParamKey {
   @IsString()
   @Reflect.metadata('design:type', { name: 'string' })
   @IsEnum(SETTINGS_KEYS, {
-    each: true,
     message: `key must be one of: ${Object.values(SETTINGS_KEYS).join(', ')}`,
   })
   key!: SETTINGS_KEYS;
@@ -104,5 +103,18 @@ export class SettingsController {
   async set(@Req() req: AuthenticatedRequest, @Body() body: SettingsSetDTO, @Params() params: ParamKey) {
     const service = new SettingsService(req.domainId, body.gameServerId);
     return apiResponse(await service.set(params.key, body.value));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
+  @ResponseSchema(SettingsOutputObjectDTOAPI)
+  @Delete('/settings/:key')
+  async delete(
+    @Req() req: AuthenticatedRequest,
+    @QueryParams() query: GetSettingsOneInput,
+    @Params() params: ParamKey
+  ) {
+    const service = new SettingsService(req.domainId, query.gameServerId);
+    await service.set(params.key, null);
+    return apiResponse(service.getAll());
   }
 }

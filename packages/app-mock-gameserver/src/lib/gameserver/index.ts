@@ -2,15 +2,7 @@ import { errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 
 import { getSocketServer } from '../socket/index.js';
-import {
-  IPosition,
-  IPlayerReferenceDTO,
-  IGameServer,
-  IMessageOptsDTO,
-  CommandOutput,
-  BanDTO,
-  IItemDTO,
-} from '@takaro/gameserver';
+import { IPlayerReferenceDTO, IGameServer, IMessageOptsDTO, CommandOutput, BanDTO, IItemDTO } from '@takaro/gameserver';
 import {
   EventLogLine,
   GameEvents,
@@ -19,13 +11,13 @@ import {
   EventPlayerConnected,
   EventTypes,
   EventPlayerDisconnected,
+  IPosition,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
 import { playScenario } from './scenario.js';
 
-// Welcome to omit-hell 😇
-export type IMockGameServer = Omit<Omit<Omit<IGameServer, 'getEventEmitter'>, 'connectionInfo'>, 'testReachability'>;
+export type IMockGameServer = Omit<IGameServer, 'getEventEmitter' | 'connectionInfo' | 'testReachability'>;
 
 const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
 
@@ -62,8 +54,8 @@ class MockGameserver implements IMockGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void> {
-    this.sendLog(`Giving ${player.gameId} ${item.name}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
@@ -271,12 +263,40 @@ class MockGameserver implements IMockGameServer {
     return banDataWithPlayer.filter(Boolean) as BanDTO[];
   }
 
+  async listItems(): Promise<IItemDTO[]> {
+    return [
+      await new IItemDTO().construct({
+        code: 'wood',
+        name: 'Wood',
+        description: 'Wood is good',
+      }),
+      await new IItemDTO().construct({
+        code: 'stone',
+        name: 'Stone',
+        description: 'Stone can get you stoned',
+      }),
+    ];
+  }
+
   private async sendLog(msg: string) {
     const logLine = await new EventLogLine().construct({
       msg,
       timestamp: new Date(),
     });
     this.socketServer.io.emit(GameEvents.LOG_LINE, logLine);
+  }
+
+  async getPlayerInventory(/* playerRef: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
+    return [
+      await new IItemDTO().construct({
+        code: 'wood',
+        amount: parseInt(faker.random.numeric(2), 10),
+      }),
+      await new IItemDTO().construct({
+        code: 'stone',
+        amount: parseInt(faker.random.numeric(2), 10),
+      }),
+    ];
   }
 }
 

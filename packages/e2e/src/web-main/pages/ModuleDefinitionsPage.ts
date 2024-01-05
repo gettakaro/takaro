@@ -16,7 +16,8 @@ export class ModuleDefinitionsPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/modules', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/modules');
+    await this.page.waitForLoadState();
   }
 
   async open(name: string) {
@@ -40,7 +41,8 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: oldName }).getByRole('button', { name: 'Edit module' }).click();
+    await this.page.getByRole('link', { name: oldName }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'Edit module' }).click();
 
     if (name) {
       await this.fillName(name);
@@ -62,7 +64,8 @@ export class ModuleDefinitionsPage extends BasePage {
   }
 
   async delete(name: string) {
-    await this.page.getByRole('link', { name }).getByRole('button', { name: 'Delete module' }).click();
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'Delete module' }).click();
     await this.page.getByRole('button', { name: 'Delete module' }).click();
     await expect(this.page.getByText(name)).toHaveCount(0);
     // TOOD: expect (module to be deleted)
@@ -80,7 +83,7 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByText('new module').click();
+    await this.page.getByRole('link', { name: 'Module', exact: true }).click();
 
     if (name) {
       await this.fillName(name);

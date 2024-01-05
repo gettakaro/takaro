@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
-import { PlayerModel, PlayerRepo } from '../db/player.js';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -11,6 +11,8 @@ import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { steamApi } from '../lib/steamApi.js';
+import { config } from '../config.js';
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -25,6 +27,34 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+
+  @IsString()
+  @IsOptional()
+  steamAvatar?: string;
+
+  @IsISO8601()
+  @IsOptional()
+  steamAccountCreated?: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  steamCommunityBanned?: boolean;
+
+  @IsString()
+  @IsOptional()
+  steamEconomyBan?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  steamVacBanned?: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  steamsDaysSinceLastBan?: number;
+
+  @IsNumber()
+  @IsOptional()
+  steamNumberOfVACBans?: number;
 
   @IsOptional()
   @ValidateNested({ each: true })
@@ -125,13 +155,27 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     let player: PlayerOutputDTO;
 
     if (!existingAssociations.length) {
-      const existingPlayers = await this.find({
+      const findOpts: ITakaroQuery<PlayerOutputDTO> & { filters: Record<string, unknown> } = {
         filters: {
-          steamId: [playerData.steamId],
-          epicOnlineServicesId: [playerData.epicOnlineServicesId],
-          xboxLiveId: [playerData.xboxLiveId],
+          steamId: [],
+          epicOnlineServicesId: [],
+          xboxLiveId: [],
         },
-      });
+      };
+
+      if (playerData.steamId) {
+        findOpts.filters.steamId = [playerData.steamId];
+      }
+
+      if (playerData.epicOnlineServicesId) {
+        findOpts.filters.epicOnlineServicesId = [playerData.epicOnlineServicesId];
+      }
+
+      if (playerData.xboxLiveId) {
+        findOpts.filters.xboxLiveId = [playerData.xboxLiveId];
+      }
+
+      const existingPlayers = await this.find(findOpts);
       if (!existingPlayers.results.length) {
         // Main player profile does not exist yet!
         this.log.debug('No existing associations found, creating new global player');
@@ -165,6 +209,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async assignRole(roleId: string, targetId: string, gameserverId?: string, expiresAt?: string) {
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+
+    const role = await roleService.findOne(roleId);
 
     this.log.info('Assigning role to player');
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
@@ -174,7 +221,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         gameserverId,
         playerId: targetId,
         meta: {
-          roleId: roleId,
+          role,
         },
       })
     );
@@ -183,6 +230,9 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
     this.log.info('Removing role from player');
     const eventService = new EventService(this.domainId);
+    const roleService = new RoleService(this.domainId);
+
+    const role = await roleService.findOne(roleId);
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
       await new EventCreateDTO().construct({
@@ -190,9 +240,54 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: targetId,
         gameserverId,
         meta: {
-          roleId: roleId,
+          role,
         },
       })
     );
+  }
+
+  /**
+   * Syncs steam data for all players that have steamId set
+   * @returns Number of players synced
+   */
+  async handleSteamSync(): Promise<number> {
+    if (!config.get('steam.apiKey')) {
+      this.log.warn('Steam API key not set, skipping sync');
+      return 0;
+    }
+    const toRefresh = await this.repo.getPlayersToRefreshSteam();
+
+    if (!toRefresh.length) return 0;
+
+    const [summaries, bans] = await Promise.all([
+      steamApi.getPlayerSummaries(toRefresh),
+      steamApi.getPlayerBans(toRefresh),
+    ]);
+
+    const fullData: (ISteamData | { steamId: string })[] = toRefresh.map((steamId) => {
+      const summary = summaries.find((item) => item.steamid === steamId);
+      const ban = bans.find((item) => item.SteamId === steamId);
+
+      if (!summary || !ban) {
+        this.log.warn('Steam data missing', { steamId, summary, ban });
+        return {
+          steamId,
+        };
+      }
+
+      return {
+        steamId,
+        steamAvatar: summary.avatarfull,
+        steamAccountCreated: summary.timecreated,
+        steamCommunityBanned: ban.CommunityBanned,
+        steamEconomyBan: ban.EconomyBan,
+        steamVacBanned: ban.VACBanned,
+        steamsDaysSinceLastBan: ban.DaysSinceLastBan,
+        steamNumberOfVACBans: ban.NumberOfVACBans,
+      };
+    });
+
+    await this.repo.setSteamData(fullData);
+    return toRefresh.length;
   }
 }

@@ -1,23 +1,28 @@
 import { styled } from '../../../styled';
-import { ChipColor } from '.';
+import { ChipColor, ShowIcon } from '.';
 
 export const Container = styled.div<{
   disabled: boolean;
   color: ChipColor;
   outline: boolean;
-  hasAvatar: boolean;
   clickable: boolean;
+  showIcon: ShowIcon;
 }>`
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing['0_1']} ${theme.spacing['0_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing['0_5']}`};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
+  width: fit-content;
+  height: 20px;
 
   svg {
     margin-left: ${({ theme }) => theme.spacing['0_5']};
     cursor: pointer;
+    transition: width 0.2s ease-in-out;
+    will-change: width;
+    display: ${({ showIcon }): string => (showIcon === 'always' ? 'inline-block' : 'none')};
     ${({ theme, color, outline }) => {
       if (!outline) {
         return 'fill: white; stroke: white;';
@@ -33,18 +38,32 @@ export const Container = styled.div<{
     return `border: 0.1rem solid ${theme.colors[color]};`;
   }}
 
+  &:hover {
+    svg {
+      display: inline-block;
+    }
+  }
+
   span {
     display: block;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    margin-left: ${({ hasAvatar, theme }) => (hasAvatar ? theme.spacing['0_5'] : 0)};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     font-size: ${({ theme }) => theme.fontSize.tiny};
+    user-select: none;
 
     ${({ theme, color, outline }) => {
       if (!outline) {
         return 'color: white;';
       }
-      return `color: ${theme.colors[color]};`;
+      switch (color) {
+        case 'backgroundAccent':
+        case 'secondary':
+          return `color: ${theme.colors.text};`;
+        default:
+          return `color: ${theme.colors[color]};`;
+      }
     }}
   }
 

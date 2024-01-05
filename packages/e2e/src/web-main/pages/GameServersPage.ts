@@ -10,16 +10,21 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/servers', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/servers');
   }
+
+  async gotoGameServer() {
+    await this.page.goto(`/server/${this.gameServer.id}/dashboard`);
+  }
+
   async create() {
-    await this.page.goto('/servers/create', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/servers/create');
   }
 
   async action(action: 'Edit' | 'Delete') {
     const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
     await card.getByRole('button', { name: 'Settings' }).click();
-    await this.page.getByText(`${action} server`).click();
+    await this.page.getByText(`${action} gameserver`).click();
 
     if (action === 'Delete') {
       await expect(this.page.getByRole('dialog')).toBeVisible();

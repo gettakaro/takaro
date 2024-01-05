@@ -1,10 +1,11 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Button, Select, Stats, styled } from '@takaro/lib-components';
+import { Button, Stats, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useEvents } from 'queries/events';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
+import { TimePeriodSelect } from 'components/selects';
 
 export const Container = styled.div`
   h1 {
@@ -19,25 +20,6 @@ const Flex = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing[4]};
 `;
-
-const options = [
-  {
-    label: 'Last 24 hours',
-    value: 'last24Hours',
-  },
-  {
-    label: 'Last 7 days',
-    value: 'last7Days',
-  },
-  {
-    label: 'Last 30 days',
-    value: 'last30Days',
-  },
-  {
-    label: 'Last 90 days',
-    value: 'last90Days',
-  },
-];
 
 const Dashboard: FC = () => {
   useDocumentTitle('Dashboard');
@@ -134,24 +116,8 @@ const Dashboard: FC = () => {
     <>
       <Container>
         <div style={{ width: '200px', marginLeft: 'auto' }}>
-          <Select
-            label="Time period"
-            control={control}
-            name="period"
-            render={(selectedIndex) => <div>{options[selectedIndex]?.label ?? selectedIndex}</div>}
-          >
-            {options.map(({ label, value }) => (
-              <Select.OptionGroup>
-                <Select.Option key={value} value={value}>
-                  <div>
-                    <span>{label}</span>
-                  </div>
-                </Select.Option>
-              </Select.OptionGroup>
-            ))}
-          </Select>
+          <TimePeriodSelect control={control} name="period" />
         </div>
-
         <Stats border={false} direction="horizontal">
           <Stats.Stat
             isLoading={isLoadingPlayerConnected}

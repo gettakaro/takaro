@@ -3,13 +3,15 @@ import playwright from '@playwright/test';
 import { BasePage } from './BasePage.js';
 const { expect } = playwright;
 
+type Actions = 'profile' | 'editRoles' | 'delete';
+
 export class UsersPage extends BasePage {
   constructor(public readonly page: Page) {
     super(page);
   }
 
   async goto() {
-    await this.page.goto('/users', { waitUntil: 'domcontentloaded' });
+    await this.page.goto('/users');
   }
 
   async inviteUser(email: string) {
@@ -19,8 +21,7 @@ export class UsersPage extends BasePage {
     await this.page.getByRole('button', { name: 'Send Invitation' }).click();
   }
 
-  async action({ action, email }: { action: 'profile' | 'editRoles'; email: string }) {
-    // select correct row
+  async action({ action, email }: { action: Actions; email: string }) {
     const tr = this.page.getByRole('row', { name: email });
     await tr.getByRole('button', { name: 'user-actions' }).click();
 
@@ -31,6 +32,8 @@ export class UsersPage extends BasePage {
       case 'editRoles':
         await this.page.getByRole('menuitem', { name: 'Edit roles' }).click();
         break;
+      case 'delete':
+        await this.page.getByRole('menuitem', { name: 'Delete user' }).click();
     }
   }
 }

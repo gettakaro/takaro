@@ -3,11 +3,11 @@ export type { ControlledCheckBoxProps as CheckBoxProps } from './CheckBox';
 
 export { GenericCheckBox as UnControlledCheckBox } from './CheckBox/Generic';
 
-export { ControlledSelect as Select } from './Select';
-export type { ControlledSelectProps as SelectProps } from './Select';
+export { ControlledSelect as SelectField } from './selects/SelectField';
+export type { ControlledSelectProps as SelectFieldProps } from './selects/SelectField';
 
-export { ControlledSearchField as SearchField } from './SearchField';
-export type { SearchFieldProps } from './SearchField';
+export { ControlledSelectQueryField as SelectQueryField } from './selects/SelectQueryField';
+export type { ControlledSelectQueryFieldProps as SelectQueryFieldProps } from './selects/SelectQueryField';
 
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';
@@ -16,6 +16,9 @@ export { GenericSwitch as UnControlledSwitch } from './Switch/Generic';
 
 export { ControlledTextField as TextField } from './TextField';
 export type { ControlledTextFieldProps as TextFieldProps } from './TextField';
+
+export { ControlledFileField as FileField } from './FileField';
+export type { ControlledFileFieldProps as FileFieldProps } from './FileField';
 
 export { ControlledTextAreaField as TextAreaField } from './TextAreaField';
 export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField';

@@ -14,7 +14,9 @@ export interface IModuleTestsSetupData {
   teleportsModule: ModuleOutputDTO;
   gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
+  economyModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
+  lotteryModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
   eventAwaiter: EventsAwaiter;
@@ -46,6 +48,9 @@ export const modulesTestSetup = async function (
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
 
+  const economyModule = modules.find((m) => m.name === 'economy');
+  if (!economyModule) throw new Error('economy module not found');
+
   const gimmeModule = modules.find((m) => m.name === 'gimme');
   if (!gimmeModule) throw new Error('gimme module not found');
 
@@ -57,6 +62,9 @@ export const modulesTestSetup = async function (
 
   const onboardingModule = modules.find((m) => m.name === 'playerOnboarding');
   if (!onboardingModule) throw new Error('playerOnboarding module not found');
+
+  const lotteryModule = modules.find((m) => m.name === 'lottery');
+  if (!lotteryModule) throw new Error('lottery module not found');
 
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
@@ -71,7 +79,7 @@ export const modulesTestSetup = async function (
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
-  const playersRes = await this.client.player.playerControllerSearch();
+  const playersRes = await this.client.player.playerControllerSearch({ extend: ['playerOnGameServers'] });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
@@ -86,6 +94,8 @@ export const modulesTestSetup = async function (
     serverMessagesModule,
     onboardingModule,
     gimmeModule,
+    economyModule,
+    lotteryModule,
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,

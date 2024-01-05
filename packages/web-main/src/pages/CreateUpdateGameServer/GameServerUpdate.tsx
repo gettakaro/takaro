@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Select, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -50,9 +50,21 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading } = useGameServerUpdate();
+  const { mutateAsync, isLoading, error: gameServerUpdateError } = useGameServerUpdate();
   const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
+
+  // TODO: should merge this with similar memo in CreateGameServer.tsx
+  const parsedGameServerUpdateError = useMemo(() => {
+    if (gameServerUpdateError) {
+      const err = errors.defineErrorType(gameServerUpdateError);
+
+      if (err instanceof errors.UniqueConstraintError) {
+        return 'A server with this name already exists.';
+      }
+      return;
+    }
+  }, [gameServerUpdateError]);
 
   useEffect(() => {
     if (!open) {
@@ -72,7 +84,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
     try {
-      mutateAsync({
+      await mutateAsync({
         gameServerId: serverId!,
         gameServerDetails: {
           name,
@@ -118,25 +130,30 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                   placeholder="My cool server"
                   required
                 />
-                <Select
+                <SelectField
                   control={control}
                   name="type"
                   label="Game Server"
                   required
                   loading={isLoading}
                   readOnly
-                  render={(selectedIndex) => <div>{gameTypeSelectOptions[selectedIndex]?.name ?? 'Select...'}</div>}
+                  render={(selectedItems) => {
+                    if (selectedItems.length === 0) {
+                      return <div>Select...</div>;
+                    }
+                    return <div>{selectedItems[0].label}</div>;
+                  }}
                 >
-                  <Select.OptionGroup label="Games">
+                  <SelectField.OptionGroup label="Games">
                     {gameTypeSelectOptions.map(({ name, value }) => (
-                      <Select.Option key={`select-${name}`} value={value}>
+                      <SelectField.Option key={`select-${name}`} value={value} label={name}>
                         <div>
                           <span>{name}</span>
                         </div>
-                      </Select.Option>
+                      </SelectField.Option>
                     ))}
-                  </Select.OptionGroup>
-                </Select>
+                  </SelectField.OptionGroup>
+                </SelectField>
               </CollapseList.Item>
               <CollapseList.Item title="Connection info">
                 {connectionInfoFieldsMap(isLoading, control)[data.type]}
@@ -144,6 +161,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
             </form>
           </CollapseList>
           {error && <FormError message={error} />}
+          {parsedGameServerUpdateError && <FormError message={parsedGameServerUpdateError} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
