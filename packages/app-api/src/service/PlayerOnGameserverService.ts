@@ -208,7 +208,7 @@ export class PlayerOnGameServerService extends TakaroService<
     return this.findOne(player.id);
   }
 
-  async getRef(playerId: string, gameserverId: string) {
+  async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
     return this.repo.getRef(playerId, gameserverId);
   }
 

@@ -29,7 +29,10 @@ const tests = [
 
       const player = res.data.data[0];
 
-      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player.gameServerId,
+        player.playerId
+      );
       expect(playerRes.data.data.id).to.be.eq(player.id);
     },
   }),
@@ -47,10 +50,17 @@ const tests = [
         gameServerId: player.gameServerId,
         value: 'true',
       });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
-        currency: 100,
-      });
-      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: 100,
+        }
+      );
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player.gameServerId,
+        player.playerId
+      );
 
       expect(playerRes.data.data.currency).to.be.eq(100);
     },
@@ -70,9 +80,13 @@ const tests = [
         gameServerId: player.gameServerId,
         value: 'true',
       });
-      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
-        currency: -100,
-      });
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: -100,
+        }
+      );
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Currency must be positive');
 
@@ -94,9 +108,13 @@ const tests = [
         gameServerId: player.gameServerId,
         value: 'false',
       });
-      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
-        currency: -100,
-      });
+      const rejectedRes = await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: -100,
+        }
+      );
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Economy is not enabled');
 
@@ -122,19 +140,38 @@ const tests = [
         gameServerId: player1.gameServerId,
         value: 'true',
       });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player1.id, {
-        currency: 100,
-      });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player2.id, {
-        currency: 100,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player1.gameServerId,
+        player1.playerId,
+        {
+          currency: 100,
+        }
+      );
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player2.gameServerId,
+        player2.playerId,
+        {
+          currency: 100,
+        }
+      );
 
-      await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(player1.id, player2.id, {
-        currency: 50,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+        player1.gameServerId,
+        player1.id,
+        player2.id,
+        {
+          currency: 50,
+        }
+      );
 
-      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player1.id);
-      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player2.id);
+      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player1.gameServerId,
+        player1.playerId
+      );
+      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player2.gameServerId,
+        player2.playerId
+      );
 
       expect(player1Res.data.data.currency).to.be.eq(50);
       expect(player2Res.data.data.currency).to.be.eq(150);
@@ -160,15 +197,24 @@ const tests = [
         gameServerId: player1.gameServerId,
         value: 'true',
       });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player1.id, {
-        currency: 100,
-      });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player2.id, {
-        currency: 100,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player1.gameServerId,
+        player1.playerId,
+        {
+          currency: 100,
+        }
+      );
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player2.gameServerId,
+        player2.playerId,
+        {
+          currency: 100,
+        }
+      );
 
       try {
         await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+          player1.gameServerId,
           player1.id,
           player2.id,
           {
@@ -181,8 +227,14 @@ const tests = [
         expect(error.response.data.meta.error.message).to.be.eq('Insufficient funds');
       }
 
-      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player1.id);
-      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player2.id);
+      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player1.gameServerId,
+        player1.playerId
+      );
+      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player2.gameServerId,
+        player2.playerId
+      );
 
       expect(player1Res.data.data.currency).to.be.eq(100);
       expect(player2Res.data.data.currency).to.be.eq(100);
@@ -216,6 +268,7 @@ const tests = [
 
       try {
         await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+          player1.gameServerId,
           player1.id,
           player2.id,
           {
@@ -248,24 +301,43 @@ const tests = [
         gameServerId: player1.gameServerId,
         value: 'true',
       });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player1.id, {
-        currency: 100,
-      });
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player2.id, {
-        currency: 100,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player1.gameServerId,
+        player1.playerId,
+        {
+          currency: 100,
+        }
+      );
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player2.gameServerId,
+        player2.playerId,
+        {
+          currency: 100,
+        }
+      );
 
       // Send 10 times 10 from player 1 to player 2
       const transactions = [...Array(10).keys()].map(() =>
-        this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(player1.id, player2.id, {
-          currency: 10,
-        })
+        this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+          player1.gameServerId,
+          player1.id,
+          player2.id,
+          {
+            currency: 10,
+          }
+        )
       );
 
       await Promise.all(transactions);
 
-      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player1.id);
-      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player2.id);
+      const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player1.gameServerId,
+        player1.playerId
+      );
+      const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player2.gameServerId,
+        player2.playerId
+      );
 
       expect(player1Res.data.data.currency).to.be.eq(0);
       expect(player2Res.data.data.currency).to.be.eq(200);
@@ -288,14 +360,17 @@ const tests = [
 
       // Add 10 times 10 concurrently, to check for concurrency issues
       const adds = [...Array(10).keys()].map(() =>
-        this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(player.id, {
+        this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(player.gameServerId, player.playerId, {
           currency: 10,
         })
       );
 
       await Promise.all(adds);
 
-      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player.gameServerId,
+        player.playerId
+      );
 
       expect(playerRes.data.data.currency).to.be.eq(100);
     },
@@ -315,20 +390,31 @@ const tests = [
         value: 'true',
       });
 
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(player.id, {
-        currency: 100,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        player.gameServerId,
+        player.playerId,
+        {
+          currency: 100,
+        }
+      );
 
       // Deduct 10 times 10 concurrently, to check for concurrency issues
       const deducts = [...Array(10).keys()].map(() =>
-        this.client.playerOnGameserver.playerOnGameServerControllerDeductCurrency(player.id, {
-          currency: 10,
-        })
+        this.client.playerOnGameserver.playerOnGameServerControllerDeductCurrency(
+          player.gameServerId,
+          player.playerId,
+          {
+            currency: 10,
+          }
+        )
       );
 
       await Promise.all(deducts);
 
-      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(player.id);
+      const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        player.gameServerId,
+        player.playerId
+      );
 
       expect(playerRes.data.data.currency).to.be.eq(0);
     },

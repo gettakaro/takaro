@@ -45,7 +45,7 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
   });
 
   const tasks = pogs.data.data.map((pog) => {
-    return this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, {
+    return this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.gameServerId, pog.playerId, {
       currency: playerStartBalance,
     });
   });
