@@ -44,7 +44,7 @@ interface SharedSelectQueryFieldProps {
   /// The placeholder text to show when the input is empty
   placeholder?: string;
   /// Debounce time in milliseconds (when clientside data it should be 0)
-  debounce: number;
+  debounce?: number;
   /// Triggered whenever the input value changes, debounced by 0.5 seconds.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange: (value: string) => void;
