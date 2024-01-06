@@ -5,7 +5,7 @@ export const Container = styled(motion.div)`
   width: 0;
   position: relative;
   height: 100vh;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -97,7 +97,7 @@ export const Nav = styled.nav`
     }
 
     &.active {
-      background-color: ${({ theme }) => theme.colors.backgroundAccent};
+      background-color: ${({ theme }) => theme.colors.backgroundAlt};
     }
   }
 `;

@@ -36,7 +36,7 @@ export const GameServerNav: FC = () => {
       {
         label: 'Dashboard',
         // If serverId is not valid it will be directed by the failed requests.
-        path: PATHS.gameServer.dashboard(selectedGameServerId),
+        path: PATHS.gameServer.dashboard.overview(selectedGameServerId),
         icon: <DashboardIcon />,
         requiredPermissions: [PERMISSIONS.ReadGameservers],
       },

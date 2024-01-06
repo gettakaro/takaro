@@ -50,7 +50,7 @@ export const Container = styled.div<{
     overflow: hidden;
     text-overflow: ellipsis;
 
-    font-size: ${({ theme }) => theme.fontSize.tiny};
+    font-size: ${({ theme }) => theme.fontSize.medium};
     user-select: none;
 
     ${({ theme, color, outline }) => {

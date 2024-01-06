@@ -40,7 +40,11 @@ export const PATHS = {
   },
 
   gameServer: {
-    dashboard: (serverId: string) => `/server/${serverId}/dashboard`,
+    dashboard: {
+      overview: (serverId: string) => `/server/dashboard/${serverId}`,
+      console: (serverId: string) => `/server/dashboard/${serverId}/console`,
+      statistics: (serverId: string) => `/server/dashboard/${serverId}/statistics`,
+    },
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
     update: (serverId: string) => `/server/${serverId}/update`,
