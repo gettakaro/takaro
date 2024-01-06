@@ -53,7 +53,7 @@ async function main() {
   if (args.amount > 1) {
     const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
 
-    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(player.id, {
+    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, player.id, {
       currency: amount,
     });
   }

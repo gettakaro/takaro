@@ -16,6 +16,14 @@ export class ParamId {
   id!: string;
 }
 
+export class PogParam {
+  @IsUUID('4')
+  gameServerId!: string;
+
+  @IsUUID('4')
+  playerId!: string;
+}
+
 export class IdUuidDTO extends TakaroDTO<IdUuidDTO> {
   @IsUUID('4')
   id!: string;

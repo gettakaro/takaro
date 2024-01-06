@@ -41,9 +41,14 @@ async function main() {
   }
 
   try {
-    await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(sender.id, receiver.id, {
-      currency: args.amount,
-    });
+    await takaro.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
+      sender.gameServerId,
+      sender.id,
+      receiver.id,
+      {
+        currency: args.amount,
+      }
+    );
   } catch (e) {
     throw new TakaroUserError(
       `Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`
