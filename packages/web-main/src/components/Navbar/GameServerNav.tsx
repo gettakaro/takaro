@@ -21,7 +21,7 @@ export const GameServerNav: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data } = useGameServers();
+  const { data, isLoading } = useGameServers();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export const GameServerNav: FC = () => {
     if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
       setSelectedGameServerId(data.pages[0].data[0].id);
     }
-  }, [selectedGameServerId]);
+  }, [isLoading]);
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
