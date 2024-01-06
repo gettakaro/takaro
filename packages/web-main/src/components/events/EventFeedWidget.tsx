@@ -1,4 +1,5 @@
 import { EventOutputDTO, EventSearchInputDTO } from '@takaro/apiclient';
+import { Skeleton } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { useEvents } from 'queries/events';
 import { FC, useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ export const EventFeedWidget: FC<IProps> = ({ query }) => {
     }
   }, [rawEvents]);
 
-  if (isLoading || !rawEvents) return <div>Loading...</div>;
+  if (isLoading || !rawEvents) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   return (
     <EventFeed>

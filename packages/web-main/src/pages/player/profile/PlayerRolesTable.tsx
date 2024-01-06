@@ -6,7 +6,7 @@ import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'rea
 import { usePlayerRoleUnassign } from 'queries/roles';
 import { useNavigate } from 'react-router-dom';
 import { StyledDialogBody } from './style';
-import { Loading, useTableActions, Table, Button, Dropdown, IconButton, Dialog } from '@takaro/lib-components';
+import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { DateTime } from 'luxon';
 
@@ -37,7 +37,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
   });
 
   if (isLoading || !data) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   const gameServers = data?.pages.flatMap((page) => page.data);

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Divider, Loading, styled, useTheme } from '@takaro/lib-components';
+import { Divider, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useInfiniteModules } from 'queries/modules';
 import { Outlet } from 'react-router-dom';
@@ -25,7 +25,7 @@ export const ModuleDefinitions: FC = () => {
   const { data: modules, isLoading, InfiniteScroll } = useInfiniteModules();
 
   if (isLoading) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   if (!modules) {
