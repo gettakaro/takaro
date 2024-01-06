@@ -3,7 +3,7 @@ import {
   EventSearchInputAllowedFiltersEventNameEnum,
   EventSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import { Loading, styled, useTheme } from '@takaro/lib-components';
+import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { useEvents } from 'queries/events';
@@ -14,7 +14,7 @@ import { Player } from 'components/Player';
 const Message = styled.span`
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
   display: grid;
-  grid-template-columns: auto 200px 1fr;
+  grid-template-columns: 50px 200px 1fr;
   gap: ${({ theme }) => theme.spacing[1]};
   align-items: center;
   padding: ${({ theme }) => theme.spacing['0_5']};
@@ -66,7 +66,7 @@ export const ChatMessagesCard: FC = () => {
     };
   }, []);
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   const components = data?.pages[0].data?.map((event) => <ChatMessage key={event.id} chatMessage={event} />);
 

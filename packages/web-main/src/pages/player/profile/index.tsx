@@ -1,4 +1,4 @@
-import { Stats, styled, Loading, Divider, Chip, Tooltip } from '@takaro/lib-components';
+import { Stats, styled, Divider, Chip, Tooltip, Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -80,7 +80,7 @@ export const PlayerProfile: FC = () => {
   const navigate = useNavigate();
   if (!playerId) {
     navigate(PATHS.players());
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   const { data, isLoading } = usePlayer(playerId);
@@ -94,7 +94,7 @@ export const PlayerProfile: FC = () => {
   useDocumentTitle(data?.name || 'Player Profile');
 
   if (isLoading || isLoadingPogs || !data || !pogs) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   return (

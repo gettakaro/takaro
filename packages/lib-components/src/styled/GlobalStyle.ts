@@ -42,8 +42,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     @supports (scrollbar-gutter: stable) {
       scrollbar-gutter: stable;
     }
-}
-
   }
 
   body{
@@ -178,10 +176,13 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       bottom: 0;
       left: 0;
       transform: translateX(-100%);
-      background-image: linear-gradient( 90deg, ${({ theme }): string => theme.colors.placeholderHighlight}d3 0, ${({
-  theme,
-}): string => theme.colors.placeholderHighlight}4d 20%, ${({ theme }): string =>
-  theme.colors.placeholderHighlight}66 60%, ${({ theme }): string => theme.colors.placeholderHighlight}d3);
+      background-image: linear-gradient(
+        90deg, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}d3 0, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}4d 20%, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}66 60%, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}d3
+      );
       animation: ${skeletonLoading} 2.5s infinite ease-in-out;
     }
   }

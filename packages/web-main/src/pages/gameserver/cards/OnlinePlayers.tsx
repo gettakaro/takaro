@@ -1,5 +1,5 @@
 import { EventOutputDTO } from '@takaro/apiclient';
-import { Loading, styled, useTheme } from '@takaro/lib-components';
+import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Player } from 'components/Player';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
@@ -9,6 +9,7 @@ import { Scrollable, Card } from './style';
 
 const Players = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: ${({ theme }) => theme.spacing[1]};
 `;
 
@@ -41,7 +42,7 @@ export const OnlinePlayersCard: FC = () => {
     };
   }, []);
 
-  if (isLoading || isLoadingPlayers) return <Loading />;
+  if (isLoading || isLoadingPlayers) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   const theme = useTheme();
 
