@@ -12,7 +12,7 @@ export async function login(page: playwright.Page, username: string, password: s
   await emailInput.press('Tab');
   await page.getByLabel('PasswordRequired').fill(password);
   await page.getByRole('button', { name: 'Log in with Email' }).click();
-  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('networkidle');
 }
 
 type toOptions =
