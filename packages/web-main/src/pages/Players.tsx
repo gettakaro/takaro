@@ -78,16 +78,12 @@ const Players: FC = () => {
         const name = info.getValue();
         if (!name) return '';
 
-        const avatar = info.row.original.steamAvatar;
         return (
           <div style={{ display: 'flex', gap: '10px' }}>
-            {!avatar ? (
-              <Avatar size="tiny" alt="steam-avatar">
-                {getInitials(name)}
-              </Avatar>
-            ) : (
-              <Avatar size="tiny" src={avatar} alt="steam-avatar" />
-            )}
+            <Avatar size="tiny">
+              <Avatar.Image src={info.row.original.steamAvatar} alt={`Steam avatar ${name}`} />
+              <Avatar.FallBack>{getInitials(name)}</Avatar.FallBack>
+            </Avatar>
             <Player playerId={info.row.original.id} />
           </div>
         );
