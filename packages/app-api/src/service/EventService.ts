@@ -16,6 +16,8 @@ export enum EVENT_TYPES {
   PLAYER_CONNECTED = 'player-connected',
   PLAYER_DISCONNECTED = 'player-disconnected',
   CHAT_MESSAGE = 'chat-message',
+  PLAYER_DEATH = 'player-death',
+  ENTITY_KILLED = 'entity-killed',
   ROLE_ASSIGNED = 'role-assigned',
   ROLE_REMOVED = 'role-removed',
   ROLE_CREATED = 'role-created',
@@ -27,6 +29,7 @@ export enum EVENT_TYPES {
   CURRENCY_ADDED = 'currency-added',
   CURRENCY_DEDUCTED = 'currency-deducted',
   SETTINGS_SET = 'settings-set',
+  PLAYER_NEW_IP_DETECTED = 'player-new-ip-detected',
 }
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {

@@ -33,7 +33,7 @@ for (const { linkName, path, permission } of items) {
   test(`Can go to ${linkName}`, async ({ page }) => {
     const nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
     await nav.getByRole('link', { name: linkName }).click();
-    await expect(page.getByRole('heading', { name: linkName.toLowerCase(), exact: true })).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
 
   userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
@@ -54,8 +54,6 @@ for (const { linkName, path, permission } of items) {
     await rootClient.role.roleControllerUpdate(testUser.role.id, {
       permissions,
     });
-
-    console.log('updated role', (await rootClient.role.roleControllerGetOne(testUser.role.id)).data.data);
 
     // because we are adding a role using the api, react query will not know about this change
     // we need to get rid of the cached user data. We do this by logging out.

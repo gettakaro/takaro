@@ -9,7 +9,16 @@ export type GenericSwitchProps = GenericInputProps<boolean, HTMLInputElement>;
 const defaultsApplier = defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
 
 export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((props, ref) => {
-  const { readOnly, onChange, value: isChecked, id, hasDescription, name, disabled, hasError } = defaultsApplier(props);
+  const {
+    readOnly,
+    onChange,
+    value: isChecked = false,
+    id,
+    hasDescription,
+    name,
+    disabled,
+    hasError,
+  } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleOnClick(): void {
@@ -44,7 +53,8 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         type="button"
       >
         <Dot
-          animate={{ right: isChecked ? '0px' : '27px' }}
+          initial={{ right: isChecked ? '2px' : '25px' }}
+          animate={{ right: isChecked ? '2px' : '25px' }}
           readOnly={readOnly}
           isChecked={isChecked}
           layout

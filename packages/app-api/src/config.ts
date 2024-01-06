@@ -3,6 +3,7 @@ import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 import { IDbConfig, configSchema as dbConfigSchema } from '@takaro/db';
 import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
+import ms from 'ms';
 
 enum CLUSTER_MODE {
   SINGLE = 'single',
@@ -31,6 +32,13 @@ interface IHttpConfig extends IBaseConfig {
     clusterMode: CLUSTER_MODE;
     maxVariables: number;
     url: string;
+    startWorkers: boolean;
+    kpiInterval: number;
+  };
+  steam: {
+    apiKey: string;
+    refreshOlderThanMs: number;
+    refreshBatchSize: number;
   };
 }
 
@@ -133,6 +141,38 @@ const configSchema = {
       format: String,
       default: 'http://localhost:3000',
       env: 'TAKARO_HOST',
+    },
+    startWorkers: {
+      doc: 'Whether to start the workers, this can be used to separate the workers from the API processes',
+      format: Boolean,
+      default: true,
+      env: 'START_WORKERS',
+    },
+    kpiInterval: {
+      doc: 'The interval at which to update the KPI metrics',
+      format: Number,
+      default: ms('1m'),
+      env: 'KPI_INTERVAL',
+    },
+  },
+  steam: {
+    apiKey: {
+      doc: 'The Steam API key',
+      format: String,
+      default: '',
+      env: 'STEAM_API_KEY',
+    },
+    refreshOlderThanMs: {
+      doc: 'Players whose Steam data is older than this will be refreshed',
+      format: Number,
+      default: ms('1day'),
+      env: 'STEAM_REFRESH_OLDER_THAN_MS',
+    },
+    refreshBatchSize: {
+      doc: 'The amount of players to refresh per time the sync runs',
+      format: Number,
+      default: 100,
+      env: 'STEAM_REFRESH_BATCH_SIZE',
     },
   },
 };

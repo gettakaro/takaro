@@ -14,23 +14,23 @@ export const Container = styled.div<{
   button {
     padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing[1]}`};
     flex-basis: ${({ fullWidth }) => (fullWidth ? '100%' : '')};
-    border: 0.1rem solid ${({ theme }): string => theme.colors.backgroundAlt};
+    border: 0.1rem solid ${({ theme }): string => theme.colors.backgroundAccent};
     border-bottom: ${({ orientation, theme }) =>
-      orientation === 'horizontal' ? `0.1rem solid ${theme.colors.backgroundAlt}` : 'none'};
+      orientation === 'horizontal' ? `0.1rem solid ${theme.colors.backgroundAccent}` : 'none'};
     border-right: ${({ orientation, theme }) =>
-      orientation === 'vertical' ? `0.1rem solid ${theme.colors.backgroundAlt}` : 'none'};
+      orientation === 'vertical' ? `0.1rem solid ${theme.colors.backgroundAccent}` : 'none'};
 
     &:first-child {
       ${({ orientation, theme }) => {
         if (orientation == 'horizontal') {
           return `
-            border-top-left-radius: ${theme.borderRadius.medium};
-            border-bottom-left-radius: ${theme.borderRadius.medium};
+            border-top-left-radius: ${theme.borderRadius.small};
+            border-bottom-left-radius: ${theme.borderRadius.small};
           `;
         } else {
           return `
-        border-top-left-radius: ${theme.borderRadius.medium};
-        border-top-right-radius: ${theme.borderRadius.medium};
+        border-top-left-radius: ${theme.borderRadius.small};
+        border-top-right-radius: ${theme.borderRadius.small};
           `;
         }
       }}
@@ -40,15 +40,15 @@ export const Container = styled.div<{
       ${({ orientation, theme }) => {
         if (orientation == 'horizontal') {
           return `
-            border-top-right-radius: ${theme.borderRadius.medium};
-            border-bottom-right-radius: ${theme.borderRadius.medium};
-            border-right: 0.1rem solid ${theme.colors.backgroundAlt};
+            border-top-right-radius: ${theme.borderRadius.small};
+            border-bottom-right-radius: ${theme.borderRadius.small};
+            border-right: 0.1rem solid ${theme.colors.backgroundAccent};
           `;
         } else {
           return `
-            border-bottom-right-radius: ${theme.borderRadius.medium};
-            border-bottom-left-radius: ${theme.borderRadius.medium};
-            border-bottom: 0.1rem solid ${theme.colors.backgroundAlt};
+            border-bottom-right-radius: ${theme.borderRadius.small};
+            border-bottom-left-radius: ${theme.borderRadius.small};
+            border-bottom: 0.1rem solid ${theme.colors.backgroundAccent};
       `;
         }
       }}

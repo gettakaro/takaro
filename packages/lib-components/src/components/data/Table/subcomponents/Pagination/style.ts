@@ -27,8 +27,7 @@ export const PaginationContainer = styled.div<{ border?: boolean }>`
     }
 
     &.active {
-      background-color: ${({ theme }) => theme.colors.primary};
-      border-color: ${({ theme }) => theme.colors.primary};
+      border: 1px solid ${({ theme }) => theme.colors.primary};
       span {
         color: ${({ theme }) => theme.colors.text};
       }

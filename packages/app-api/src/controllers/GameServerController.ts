@@ -29,10 +29,22 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  UploadedFile,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId, PogParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
@@ -95,18 +107,10 @@ class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachab
 
 class ParamIdAndModuleId {
   @IsUUID('4')
-  gameserverId!: string;
+  gameServerId!: string;
 
   @IsUUID('4')
   moduleId!: string;
-}
-
-class ParamIdAndPlayerId {
-  @IsUUID('4')
-  gameserverId!: string;
-
-  @IsUUID('4')
-  playerId!: string;
 }
 
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
@@ -172,7 +176,7 @@ class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
   reason!: string;
 }
 
-class BanInputDTO extends TakaroDTO<BanInputDTO> {
+class BanPlayerInputDTO extends TakaroDTO<BanPlayerInputDTO> {
   @IsString()
   @MinLength(1)
   @MaxLength(150)
@@ -184,12 +188,22 @@ class BanInputDTO extends TakaroDTO<BanInputDTO> {
   expiresAt!: string;
 }
 
-class BanOutputDTO extends APIOutput<BanDTO[]> {
+class BanPlayerOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
 }
 
+class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
+  @IsString()
+  id!: string;
+}
+
+class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
+  @Type(() => ImportOutputDTO)
+  @ValidateNested()
+  declare data: ImportOutputDTO;
+}
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -273,10 +287,10 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @Get('/gameserver/:gameserverId/module/:moduleId')
+  @Get('/gameserver/:gameServerId/module/:moduleId')
   async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
-    const res = await service.getModuleInstallation(params.gameserverId, params.moduleId);
+    const res = await service.getModuleInstallation(params.gameServerId, params.moduleId);
     return apiResponse(res);
   }
 
@@ -291,7 +305,7 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @Post('/gameserver/:gameserverId/modules/:moduleId')
+  @Post('/gameserver/:gameServerId/modules/:moduleId')
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
@@ -299,15 +313,15 @@ export class GameServerController {
   ) {
     const service = new GameServerService(req.domainId);
 
-    return apiResponse(await service.installModule(params.gameserverId, params.moduleId, data));
+    return apiResponse(await service.installModule(params.gameServerId, params.moduleId, data));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @Delete('/gameserver/:gameserverId/modules/:moduleId')
+  @Delete('/gameserver/:gameServerId/modules/:moduleId')
   async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(await service.uninstallModule(params.gameserverId, params.moduleId));
+    return apiResponse(await service.uninstallModule(params.gameServerId, params.moduleId));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -334,14 +348,14 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:gameserverId/player/:playerId/teleport')
+  @Post('/gameserver/:gameServerId/player/:playerId/teleport')
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndPlayerId,
+    @Params() params: PogParam,
     @Body() data: TeleportPlayerInputDTO
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(params.gameserverId, params.playerId, {
+    const result = await service.teleportPlayer(params.gameServerId, params.playerId, {
       x: data.x,
       y: data.y,
       z: data.z,
@@ -351,37 +365,33 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:gameserverId/player/:playerId/kick')
-  async kickPlayer(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndPlayerId,
-    @Body() data: KickPlayerInputDTO
-  ) {
+  @Post('/gameserver/:gameServerId/player/:playerId/kick')
+  async kickPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: KickPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.kickPlayer(params.gameserverId, params.playerId, data.reason);
+    const result = await service.kickPlayer(params.gameServerId, params.playerId, data.reason);
     return apiResponse(result);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:gameserverId/player/:playerId/ban')
-  async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId, @Body() data: BanInputDTO) {
+  @Post('/gameserver/:gameServerId/player/:playerId/ban')
+  async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: BanPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.banPlayer(params.gameserverId, params.playerId, data.reason, data.expiresAt);
+    const result = await service.banPlayer(params.gameServerId, params.playerId, data.reason, data.expiresAt);
     return apiResponse(result);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
-  @Post('/gameserver/:gameserverId/player/:playerId/unban')
-  async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndPlayerId) {
+  @Post('/gameserver/:gameServerId/player/:playerId/unban')
+  async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
     const service = new GameServerService(req.domainId);
-    const result = await service.unbanPlayer(params.gameserverId, params.playerId);
+    const result = await service.unbanPlayer(params.gameServerId, params.playerId);
     return apiResponse(result);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(BanOutputDTO)
+  @ResponseSchema(BanPlayerOutputDTO)
   @Get('/gameserver/:id/bans')
   async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -389,15 +399,11 @@ export class GameServerController {
     return apiResponse(result);
   }
 
-  @Post('/gameserver/:gameserverId/player/:playerId/giveItem')
+  @Post('/gameserver/:gameServerId/player/:playerId/giveItem')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  async giveItem(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndPlayerId,
-    @Body() data: GiveItemInputDTO
-  ) {
+  async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.giveItem(params.gameserverId, params.playerId, data);
+    const result = await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount);
     return apiResponse(result);
   }
 
@@ -407,6 +413,27 @@ export class GameServerController {
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     const result = await service.getPlayers(params.id);
+    return apiResponse(result);
+  }
+
+  @Get('/gameserver/import/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @ResponseSchema(ImportOutputDTOAPI)
+  async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getImport(params.id);
+    return apiResponse(result);
+  }
+
+  @Post('/gameserver/import')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Import a gameserver from CSMM',
+  })
+  @ResponseSchema(ImportOutputDTOAPI)
+  async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.import(_file);
     return apiResponse(result);
   }
 }

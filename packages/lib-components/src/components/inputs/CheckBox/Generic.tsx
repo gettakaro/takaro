@@ -2,7 +2,6 @@ import { forwardRef, useRef } from 'react';
 import { BackgroundContainer, CheckboxContainer, CheckMarkContainer } from './style';
 
 import { AiOutlineCheck as Icon } from 'react-icons/ai';
-import { getTransition } from '../../../helpers';
 
 import { defaultInputPropsFactory, defaultInputProps, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
@@ -81,9 +80,8 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
       >
         <BackgroundContainer
           size={size}
-          initial="unchecked"
+          initial={value ? 'checked' : 'unchecked'}
           animate={value ? 'checked' : 'unchecked'}
-          transition={getTransition()}
           variants={variants}
         >
           <CheckMarkContainer isChecked={value}>

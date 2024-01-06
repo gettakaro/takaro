@@ -11,7 +11,7 @@ import { Button } from '../../../components';
 
 const DEFAULT_LINE_HEIGHT = 25;
 export const GUTTER_SIZE = 10;
-/*  TODO: this does not work the scrollitemto because it has no knowledge of the padding.
+/*  TODO: this does not work with the scrollitemto because it has no knowledge of the padding.
  *  https://gist.github.com/ValentinJS/4f3738ed426cac183e8446c869b162dd might be an option.
  */
 export const LIST_PADDING_SIZE = 0;
@@ -87,7 +87,7 @@ export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, s
       </Header>
       <MessageContainer>
         <Autosizer>
-          {({ width, height }) => {
+          {({ width, height }: { width: number | undefined; height: number | undefined }) => {
             if (width == undefined || height == undefined) {
               return <>Could not render list</>;
             }
@@ -109,7 +109,7 @@ export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, s
                       index={index}
                       message={data[index]}
                       style={style}
-                      collapsed={rowHeights.current[index] ? rowHeights.current[index].collapsed : true}
+                      collapsed={rowHeights.current[index] ? rowHeights.current[index].collapsed : false}
                       setRowState={setRowState}
                     />
                   );

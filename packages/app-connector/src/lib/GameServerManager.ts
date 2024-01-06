@@ -136,6 +136,26 @@ class GameServerManager {
         gameServerId,
       });
     });
+
+    emitter.on(GameEvents.PLAYER_DEATH, async (death) => {
+      this.log.debug('Received a playerDeath event', death);
+      await this.eventsQueue.add({
+        type: GameEvents.PLAYER_DEATH,
+        event: death,
+        domainId,
+        gameServerId,
+      });
+    });
+
+    emitter.on(GameEvents.ENTITY_KILLED, async (entityKilled) => {
+      this.log.debug('Received a entityKilled event', entityKilled);
+      await this.eventsQueue.add({
+        type: GameEvents.ENTITY_KILLED,
+        event: entityKilled,
+        domainId,
+        gameServerId,
+      });
+    });
   }
 }
 

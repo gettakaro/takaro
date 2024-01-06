@@ -14,8 +14,11 @@ export class GameServersPage extends BasePage {
   }
 
   async gotoGameServer() {
-    // TODO: navigate using the servers list
-    await this.page.goto(`/server/${this.gameServer.id}/dashboard`);
+    await this.page.goto(`/server/dashboard/${this.gameServer.id}`);
+  }
+
+  async gotoGameServerConsole() {
+    await this.page.goto(`/server/dashboard/${this.gameServer.id}/console`);
   }
 
   async create() {
@@ -25,7 +28,7 @@ export class GameServersPage extends BasePage {
   async action(action: 'Edit' | 'Delete') {
     const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
     await card.getByRole('button', { name: 'Settings' }).click();
-    await this.page.getByText(`${action} server`).click();
+    await this.page.getByText(`${action} gameserver`).click();
 
     if (action === 'Delete') {
       await expect(this.page.getByRole('dialog')).toBeVisible();

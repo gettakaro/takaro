@@ -12,6 +12,13 @@ export enum SETTINGS_KEYS {
   economyEnabled = 'economyEnabled',
   currencyName = 'currencyName',
 }
+
+export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
+  commandPrefix: '/',
+  serverChatName: 'Takaro',
+  economyEnabled: 'false',
+  currencyName: 'Takaro coins',
+};
 export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   commandPrefix: string;
@@ -25,13 +32,6 @@ export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   currencyName: string;
 }
-
-export const DEFAULT_SETTINGS: Partial<Settings> = {
-  commandPrefix: '/',
-  serverChatName: 'Takaro',
-  economyEnabled: 'false',
-  currencyName: 'Takaro coins',
-};
 
 @traceableClass('service:settings')
 export class SettingsService extends TakaroService<SettingsModel, Settings, never, never> {
@@ -68,16 +68,12 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     throw new errors.NotImplementedError();
   }
 
-  init(): Promise<Settings> {
-    return this.repo.create();
-  }
-
   async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
     const value = await this.repo.get(key);
     return value;
   }
 
-  async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS]): Promise<Settings[SETTINGS_KEYS]> {
+  async set(key: SETTINGS_KEYS, value: Settings[SETTINGS_KEYS] | null): Promise<Settings[SETTINGS_KEYS]> {
     await this.repo.set(key, value);
 
     const eventsService = new EventService(this.domainId);
@@ -92,7 +88,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
       })
     );
 
-    return value;
+    return this.get(key);
   }
 
   async getMany(keys: Array<SETTINGS_KEYS>): Promise<Partial<Settings>> {

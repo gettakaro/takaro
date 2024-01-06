@@ -1,11 +1,10 @@
 import { TakaroService } from './Base.js';
 
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import { IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
-  IPosition,
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
@@ -13,12 +12,12 @@ import {
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
-  IItemDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
+import { IPosition } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -30,6 +29,8 @@ import { CronJobService } from './CronJobService.js';
 import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
+import { ItemCreateDTO, ItemsService } from './ItemsService.js';
+import { randomUUID } from 'crypto';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -52,6 +53,8 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsBoolean()
+  reachable: boolean;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -74,6 +77,9 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsBoolean()
+  @IsOptional()
+  reachable: boolean;
 }
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
@@ -129,15 +135,21 @@ export class GameServerService extends TakaroService<
 
     const createdServer = await this.repo.create(item);
 
-    const settingsService = new SettingsService(this.domainId, createdServer.id);
-
-    await settingsService.init();
-
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: createdServer.id,
       operation: 'create',
     });
+
+    await queueService.queues.itemsSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
+
+    await queueService.queues.playerSync.queue.add(
+      { domainId: this.domainId, gameServerId: createdServer.id },
+      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+    );
     return createdServer;
   }
 
@@ -171,7 +183,15 @@ export class GameServerService extends TakaroService<
   async testReachability(id?: string, connectionInfo?: Record<string, unknown>, type?: GAME_SERVER_TYPE) {
     if (id) {
       const instance = await this.getGame(id);
-      return instance.testReachability();
+      const reachability = await instance.testReachability();
+
+      if (reachability.connectable) {
+        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: true }));
+      } else {
+        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: false }));
+      }
+
+      return reachability;
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
       return instance.testReachability();
@@ -361,11 +381,11 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, item: IItemDTO) {
+  async giveItem(gameServerId: string, playerId: string, item: string, amount: number) {
     const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
     const playerRef = await playerService.getRef(playerId, gameServerId);
-    return gameInstance.giveItem(playerRef, item);
+    return gameInstance.giveItem(playerRef, item, amount);
   }
 
   async getPlayers(gameServerId: string) {
@@ -414,5 +434,75 @@ export class GameServerService extends TakaroService<
     );
 
     return location;
+  }
+
+  async syncItems(gameServerId: string) {
+    const itemsService = new ItemsService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const items = await gameInstance.listItems();
+
+    const toInsert = await Promise.all(
+      items.map((item) =>
+        new ItemCreateDTO().construct({
+          ...item,
+          gameserverId: gameServerId,
+        })
+      )
+    );
+
+    await itemsService.upsertMany(toInsert);
+  }
+
+  async syncInventories(gameServerId: string) {
+    const onlinePlayers = await this.getPlayers(gameServerId);
+    const gameInstance = await this.getGame(gameServerId);
+    const pogService = new PlayerOnGameServerService(this.domainId);
+    const pogRepo = pogService.repo;
+
+    await Promise.all(
+      onlinePlayers.map(async (p) => {
+        const inventory = await gameInstance.getPlayerInventory(p);
+        const pog = await pogService.resolveRef(p, gameServerId);
+        if (!pog) throw new errors.NotFoundError('Player not found');
+        await pogRepo.syncInventory(pog.id, gameServerId, inventory);
+      })
+    );
+  }
+
+  async getImport(id: string) {
+    const job = await queueService.queues.csmmImport.queue.bullQueue.getJob(id);
+
+    if (!job) {
+      throw new errors.NotFoundError('Job not found');
+    }
+
+    return {
+      jobId: job.id,
+      status: await job.getState(),
+      failedReason: job.failedReason,
+    };
+  }
+
+  async import(data: Express.Multer.File) {
+    let parsed;
+
+    const raw = data.buffer.toString();
+
+    try {
+      parsed = JSON.parse(raw);
+    } catch (error) {
+      throw new errors.BadRequestError('Invalid JSON');
+    }
+
+    const job = await queueService.queues.csmmImport.queue.add(
+      { csmmExport: parsed, domainId: this.domainId },
+      {
+        jobId: randomUUID(),
+      }
+    );
+
+    return {
+      id: job.id,
+    };
   }
 }

@@ -58,7 +58,7 @@ class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilter
 })
 @JsonController()
 export class CronJobController {
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(CronJobOutputArrayDTOAPI)
   @Post('/cronjob/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: CronJobSearchInputDTO) {
@@ -75,7 +75,7 @@ export class CronJobController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(CronJobOutputDTOAPI)
   @Get('/cronjob/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -83,7 +83,7 @@ export class CronJobController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(CronJobOutputDTOAPI)
   @Post('/cronjob')
   async create(@Req() req: AuthenticatedRequest, @Body() data: CronJobCreateDTO) {
@@ -91,7 +91,7 @@ export class CronJobController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(CronJobOutputDTOAPI)
   @Put('/cronjob/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: CronJobUpdateDTO) {
@@ -99,7 +99,7 @@ export class CronJobController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/cronjob/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -108,7 +108,7 @@ export class CronJobController {
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_CRONJOBS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @Post('/cronjob/trigger')
   async trigger(@Req() req: AuthenticatedRequest, @Body() data: CronJobTriggerDTO) {
     const service = new CronJobService(req.domainId);

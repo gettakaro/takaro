@@ -12,6 +12,7 @@ import {
   ModuleInstallationOutputDTO,
 } from '../service/GameServerService.js';
 import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
+import { ITEMS_TABLE_NAME, ItemsModel } from './items.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
 const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
@@ -21,6 +22,7 @@ export class GameServerModel extends TakaroModel {
   name!: string;
 
   connectionInfo!: Record<string, unknown>;
+  reachable!: boolean;
 
   type!: GAME_SERVER_TYPE;
 
@@ -32,6 +34,14 @@ export class GameServerModel extends TakaroModel {
         join: {
           from: `${GAMESERVER_TABLE_NAME}.id`,
           to: `${PLAYER_ON_GAMESERVER_TABLE_NAME}.gameServerId`,
+        },
+      },
+      items: {
+        relation: Model.HasManyRelation,
+        modelClass: ItemsModel,
+        join: {
+          from: `${GAMESERVER_TABLE_NAME}.id`,
+          to: `${ITEMS_TABLE_NAME}.gameserverId`,
         },
       },
     };
@@ -141,16 +151,25 @@ export class GameServerRepo extends ITakaroRepo<
 
   async update(id: string, item: GameServerUpdateDTO): Promise<GameServerOutputDTO> {
     const { query } = await this.getModel();
-    const encryptedConnectionInfo = await encrypt(item.connectionInfo);
-    const data = {
+
+    const updateData: Record<string, unknown> = {
       ...item.toJSON(),
-      connectionInfo: encryptedConnectionInfo,
-    } as unknown as Partial<GameServerModel>;
-    const res = await query.updateAndFetchById(id, data).returning('*');
-    return new GameServerOutputDTO().construct({
-      ...res,
-      connectionInfo: JSON.parse(item.connectionInfo),
+    };
+
+    if (item.connectionInfo) {
+      const encryptedConnectionInfo = await encrypt(item.connectionInfo);
+      updateData.connectionInfo = encryptedConnectionInfo as unknown as Record<string, unknown>;
+    }
+
+    // Remove all undefined values
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] === undefined) {
+        delete updateData[key];
+      }
     });
+
+    await query.updateAndFetchById(id, updateData);
+    return this.findOne(id);
   }
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {

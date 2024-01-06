@@ -1,5 +1,5 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, IPosition } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -35,8 +35,14 @@ export class IPlayerReferenceDTO extends TakaroDTO<IPlayerReferenceDTO> {
 export class IItemDTO extends TakaroDTO<IItemDTO> {
   @IsString()
   name: string;
+  @IsString()
+  code: string;
+  @IsString()
+  @IsOptional()
+  description: string;
   @IsNumber()
-  amount: number;
+  @IsOptional()
+  amount?: number;
 }
 
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
@@ -44,12 +50,6 @@ export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
   @ValidateNested()
   /** When specified, will send a DM to this player instead of a global message */
   recipient?: IPlayerReferenceDTO;
-}
-
-export interface IPosition {
-  x: number;
-  y: number;
-  z: number;
 }
 
 export class BanDTO extends TakaroDTO<BanDTO> {
@@ -72,8 +72,10 @@ export interface IGameServer {
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;
   getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
+  getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]>;
 
-  giveItem(player: IPlayerReferenceDTO, item: IItemDTO): Promise<void>;
+  giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void>;
+  listItems(): Promise<IItemDTO[]>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;

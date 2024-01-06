@@ -1,8 +1,10 @@
 import { DiscordEvents, HookEventDiscordMessage } from './discordEvents.js';
 import {
   EventChatMessage,
+  EventEntityKilled,
   EventLogLine,
   EventPlayerConnected,
+  EventPlayerDeath,
   EventPlayerDisconnected,
   GameEvents,
 } from './gameEvents.js';
@@ -15,6 +17,8 @@ export type EventMapping = {
   [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected;
   [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
   [GameEvents.CHAT_MESSAGE]: EventChatMessage;
+  [GameEvents.PLAYER_DEATH]: EventPlayerDeath;
+  [GameEvents.ENTITY_KILLED]: EventEntityKilled;
 
   [DiscordEvents.DISCORD_MESSAGE]: HookEventDiscordMessage;
 };

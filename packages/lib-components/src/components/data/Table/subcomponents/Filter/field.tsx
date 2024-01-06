@@ -1,9 +1,10 @@
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
-import { Select, TextField } from '../../../../../components';
+import { SelectField, TextField } from '../../../../../components';
 import { FilterInputType, IFormInputs } from '.';
 import { Operators } from '.';
 import { Column } from '@tanstack/react-table';
 import { useLayoutEffect } from 'react';
+import { camelCaseToSpaces } from '../../../../../helpers';
 
 interface FilterFieldProps<DataType> {
   index: number;
@@ -57,42 +58,40 @@ export function FilterRow<DataType extends object>({
 
   useLayoutEffect(() => {
     const column = getColumn(currentColumn.toString());
-    const meta = column?.columnDef?.meta as Record<string, unknown> | undefined;
+    const meta = column?.columnDef.meta;
 
     setValue(`filters.${index}.operator`, Operators.is);
-    setValue(`filters.${index}.type`, (meta?.type as string | undefined as FilterInputType) ?? 'string');
+    setValue(`filters.${index}.type`, (meta?.dataType as string | undefined as FilterInputType) ?? 'string');
   }, [currentColumn]);
 
   return (
     <>
-      <Select
+      <SelectField
         key={`column-${id}`}
         control={control}
         name={`filters.${index}.column`}
         label="Column"
         inPortal
-        render={() => {
-          const col = currentColumn.toString();
-
-          if (col === '') {
+        render={(selectedItems) => {
+          if (selectedItems.length === 0) {
             return 'Select a column';
           }
-
-          return col;
+          const col = columnIds.find((col) => col === selectedItems[0].value);
+          return camelCaseToSpaces(col);
         }}
       >
-        <Select.OptionGroup>
+        <SelectField.OptionGroup>
           {columnIds.map((col) => (
-            <Select.Option key={col} value={col}>
+            <SelectField.Option key={col} value={col} label={col}>
               <div>
-                <span>{col}</span>
+                <span>{camelCaseToSpaces(col)}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
 
-      <Select
+      <SelectField
         key={`operator-${id}`}
         control={control}
         name={`filters.${index}.operator`}
@@ -108,16 +107,16 @@ export function FilterRow<DataType extends object>({
           return operator;
         }}
       >
-        <Select.OptionGroup>
+        <SelectField.OptionGroup>
           {operators.map((operator) => (
-            <Select.Option key={operator} value={operator}>
+            <SelectField.Option key={operator} value={operator} label={operator}>
               <div>
                 <span>{operator}</span>
               </div>
-            </Select.Option>
+            </SelectField.Option>
           ))}
-        </Select.OptionGroup>
-      </Select>
+        </SelectField.OptionGroup>
+      </SelectField>
       <TextField
         key={`value-${id}`}
         control={control}

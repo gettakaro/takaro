@@ -15,17 +15,26 @@ export const DayButton = styled.button<{ isSelected: boolean; isToday: boolean; 
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 999999px;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   height: 2rem;
   width: 2rem;
   margin-left: auto;
   margin-right: auto;
   background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   color: white;
-  padding: ${({ theme }) => theme.spacing['1']};
+  padding: ${({ theme }) => theme.spacing['1_5']};
+  margin: 0;
 
   &:hover {
     background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : theme.colors.secondary)};
+  }
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.textAlt};
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 `;
 

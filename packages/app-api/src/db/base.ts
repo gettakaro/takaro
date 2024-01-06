@@ -1,5 +1,5 @@
 import { getKnex, ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from '@takaro/db';
-import { TakaroDTO } from '@takaro/util';
+import { TakaroDTO, logger } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
 export interface PaginatedOutput<T> {
@@ -12,6 +12,8 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
   UpdateDTO extends TakaroDTO<UpdateDTO>
 > {
+  log = logger(this.constructor.name);
+
   async getKnex() {
     return getKnex();
   }

@@ -1,12 +1,4 @@
-import {
-  CSSProperties,
-  FC,
-  ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AiFillWarning as WarningIcon,
   AiFillCloseCircle as ErrorIcon,
@@ -14,6 +6,8 @@ import {
   AiFillInfoCircle as InfoIcon,
   AiFillMacCommand as CommandIcon,
 } from 'react-icons/ai';
+import { Tooltip } from '../../../../components';
+import { BsChevronExpand as EnterIcon } from 'react-icons/bs';
 import {
   Wrapper,
   Container,
@@ -23,7 +17,7 @@ import {
   TimestampContainer,
   TextContainer,
   CollapsedContainer,
-  StyledExpandIcon,
+  ExpandIconContainer,
 } from './style';
 import { Message, MessageType } from '../MessageModel';
 import { GUTTER_SIZE, LIST_PADDING_SIZE } from '../Console';
@@ -38,13 +32,7 @@ interface ConsoleLineProps {
   setRowState: (i: number, height: number, collapsed: boolean) => void;
 }
 
-export const ConsoleLine: FC<ConsoleLineProps> = ({
-  message,
-  collapsed,
-  style,
-  index,
-  setRowState,
-}) => {
+export const ConsoleLine: FC<ConsoleLineProps> = ({ message, collapsed, style, index, setRowState }) => {
   const { data, type, timestamp } = message;
 
   const canCollapse = useMemo(() => {
@@ -87,10 +75,14 @@ export const ConsoleLine: FC<ConsoleLineProps> = ({
         <Header isCollapsed={isCollapsed} type={type}>
           <p>{header}</p>
           {body && (
-            <StyledExpandIcon
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              size={14}
-            />
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <ExpandIconContainer>
+                  <EnterIcon onClick={() => setIsCollapsed(!isCollapsed)} size={14} />
+                </ExpandIconContainer>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{isCollapsed ? 'show body' : 'collapse body'}</Tooltip.Content>
+            </Tooltip>
           )}
         </Header>
         <Body isCollapsed={isCollapsed} type={type}>
@@ -128,11 +120,7 @@ export const ConsoleLine: FC<ConsoleLineProps> = ({
       <Container isCollapsed={isCollapsed} ref={containerRef}>
         <IconContainer messageType={type}>{setIcon(type)}</IconContainer>
         <TimestampContainer>[{timestamp}]</TimestampContainer>
-        {canCollapse ? (
-          defineCollapsableMessageLayout()
-        ) : (
-          <TextContainer>{data}</TextContainer>
-        )}
+        {canCollapse ? defineCollapsableMessageLayout() : <TextContainer>{data}</TextContainer>}
       </Container>
     </Wrapper>
   );

@@ -1,8 +1,14 @@
 import { Axios, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
-import { CommandResponse, OnlinePlayerResponse, PlayerLocation, StatsResponse } from './apiResponses.js';
-import { errors } from '@takaro/util';
+import {
+  CommandResponse,
+  InventoryResponse,
+  OnlinePlayerResponse,
+  PlayerLocation,
+  StatsResponse,
+} from './apiResponses.js';
+import { addCounterToAxios, errors } from '@takaro/util';
 
 export class SdtdApiClient {
   private client: Axios;
@@ -10,6 +16,11 @@ export class SdtdApiClient {
   constructor(private config: SdtdConnectionInfo) {
     this.client = axios.create({
       baseURL: this.url,
+    });
+
+    addCounterToAxios(this.client, {
+      name: 'sdtd_api_requests_total',
+      help: 'Total number of requests to the 7D2D API',
     });
 
     this.client.interceptors.request.use((req) => {
@@ -63,5 +74,9 @@ export class SdtdApiClient {
 
   async getOnlinePlayers(): Promise<AxiosResponse<Array<OnlinePlayerResponse>>> {
     return this.client.get('/api/getplayersonline');
+  }
+
+  async getPlayerInventory(id: string): Promise<AxiosResponse<InventoryResponse>> {
+    return this.client.get(`/api/getplayerinventory?userid=${id}`);
   }
 }

@@ -7,6 +7,8 @@ export enum GameEvents {
   PLAYER_CONNECTED = 'player-connected',
   PLAYER_DISCONNECTED = 'player-disconnected',
   CHAT_MESSAGE = 'chat-message',
+  PLAYER_DEATH = 'player-death',
+  ENTITY_KILLED = 'entity-killed',
 }
 
 export class IGamePlayer extends TakaroDTO<IGamePlayer> {
@@ -57,6 +59,12 @@ export class BaseGameEvent<T> extends TakaroDTO<T> {
   msg: string;
 }
 
+export interface IPosition {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export class EventLogLine extends BaseGameEvent<EventLogLine> {
   type = GameEvents.LOG_LINE;
 }
@@ -84,6 +92,45 @@ export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
   declare msg: string;
 }
 
+export class IPosition {
+  @IsNumber()
+  x: number;
+  @IsNumber()
+  y: number;
+  @IsNumber()
+  z: number;
+}
+
+export class EventPlayerDeath extends BaseGameEvent<EventPlayerDeath> {
+  type = GameEvents.PLAYER_DEATH;
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  player: IGamePlayer;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  attacker?: IGamePlayer;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => IPosition)
+  position: IPosition;
+}
+
+export class EventEntityKilled extends BaseGameEvent<EventEntityKilled> {
+  type = GameEvents.ENTITY_KILLED;
+  @ValidateNested()
+  @Type(() => IGamePlayer)
+  player: IGamePlayer;
+
+  @IsString()
+  entity: string;
+
+  @IsString()
+  weapon: string;
+}
+
 export function isConnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerConnected {
   return a.type === GameEvents.PLAYER_CONNECTED;
 }
@@ -94,4 +141,12 @@ export function isDisconnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayer
 
 export function isChatMessageEvent(a: BaseGameEvent<unknown>): a is EventChatMessage {
   return a.type === GameEvents.CHAT_MESSAGE;
+}
+
+export function isPlayerDeathEvent(a: BaseGameEvent<unknown>): a is EventPlayerDeath {
+  return a.type === GameEvents.PLAYER_DEATH;
+}
+
+export function isEntityKilledEvent(a: BaseGameEvent<unknown>): a is EventEntityKilled {
+  return a.type === GameEvents.ENTITY_KILLED;
 }
