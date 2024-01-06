@@ -1,18 +1,12 @@
 import { FC, Fragment } from 'react';
-import { Button, Empty, EmptyPage, PERMISSIONS, Skeleton, styled } from '@takaro/lib-components';
-import { EmptyGameServerCard, GameServerCard } from '../components/GameServerCard';
+import { Button, Empty, EmptyPage, Skeleton } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { PATHS } from 'paths';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useGameServers } from 'queries/gameservers';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-
-const List = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  grid-auto-rows: 160px;
-  gap: ${({ theme }) => theme.spacing['1_5']};
-`;
+import { AddCard, CardList, GameServerCard } from 'components/cards';
 
 const GameServers: FC = () => {
   useDocumentTitle('Game Servers');
@@ -28,12 +22,12 @@ const GameServers: FC = () => {
 
   if (isLoading) {
     return (
-      <List>
+      <CardList>
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
         <Skeleton variant="rectangular" height="100%" width="100%" />
-      </List>
+      </CardList>
     );
   }
 
@@ -56,16 +50,19 @@ const GameServers: FC = () => {
 
   return (
     <Fragment>
-      <List>
+      <CardList>
         {gameServers.pages
           .flatMap((page) => page.data)
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
-        <PermissionsGuard requiredPermissions={[PERMISSIONS.MANAGE_GAMESERVERS]}>
-          <EmptyGameServerCard onClick={() => navigate(PATHS.gameServers.create())} />
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
+          <AddCard title="Gameserver" onClick={() => navigate(PATHS.gameServers.create())} />
         </PermissionsGuard>
-      </List>
+        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
+          <AddCard title="Import from CSMM" onClick={() => navigate(PATHS.gameServers.import())} />
+        </PermissionsGuard>
+      </CardList>
       {InfiniteScroll}
       {/* show editGameServer and newGameServer drawers above this listView*/}
       <Outlet />

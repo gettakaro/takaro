@@ -1,13 +1,4 @@
-import {
-  Drawer,
-  CollapseList,
-  FormError,
-  Button,
-  Select,
-  TextField,
-  Loading,
-  DatePicker,
-} from '@takaro/lib-components';
+import { Drawer, CollapseList, FormError, Button, TextField, Loading, DatePicker } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
@@ -19,6 +10,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { useUserAssignRole } from 'queries/users';
 import { DateTime } from 'luxon';
+import { RolesSelect } from 'components/selects';
 
 interface IFormInputs {
   id: string;
@@ -82,24 +74,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="User" />
-
-                <Select
-                  control={control}
-                  name="roleId"
-                  label="Role"
-                  render={(selectedIndex) => (
-                    <div>{selectedIndex !== -1 ? roles[selectedIndex].name : roles[0].name}</div>
-                  )}
-                >
-                  <Select.OptionGroup label="Roles">
-                    {roles.map((role) => (
-                      <Select.Option key={role.id} value={role.id}>
-                        {role.name}
-                      </Select.Option>
-                    ))}
-                  </Select.OptionGroup>
-                </Select>
-
+                <RolesSelect control={control} name="roleId" label="Role" />
                 <DatePicker
                   mode="absolute"
                   control={control}
@@ -110,6 +85,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
+                  allowPastDates={false}
                   format={DateTime.DATETIME_SHORT}
                 />
               </CollapseList.Item>

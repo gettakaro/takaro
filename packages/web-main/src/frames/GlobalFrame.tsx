@@ -2,20 +2,19 @@ import { FC } from 'react';
 import { motion } from 'framer-motion';
 import { ErrorFallback, styled, useLocalStorage } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
-import { Header } from 'components/Header';
 import { Navbar } from 'components/Navbar';
 import { useParams } from 'react-router-dom';
 
 import { Page } from '../pages/Page';
 import { ErrorBoundary } from '@sentry/react';
-import { useGameServer } from 'queries/gameservers';
 import {} from 'hooks/useSelectedGameServerContext';
 import { SelectedGameServerContext } from 'context/selectedGameServerContext';
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  height: calc(100vh - 1.2rem);
+  background-color: ${({ theme }) => theme.colors.background};
+  overflow: hidden;
 `;
 
 const ContentContainer = styled(motion.div)`
@@ -30,10 +29,8 @@ const ContentContainer = styled(motion.div)`
 `;
 
 export const GlobalFrame: FC = () => {
-  const [gameServerId, setGameServerId] = useLocalStorage<string>('selectedGameServerId', '');
+  const { storedValue: gameServerId, setValue: setGameServerId } = useLocalStorage<string>('selectedGameServerId', '');
   const { serverId: pathServerId } = useParams();
-
-  const { isLoading, data: gameserver } = useGameServer(gameServerId);
 
   if (pathServerId && pathServerId !== gameServerId) {
     setGameServerId(pathServerId);
@@ -46,7 +43,6 @@ export const GlobalFrame: FC = () => {
       <Container>
         <Navbar />
         <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
-          <Header isLoading={isLoading} idToNameMap={gameserver ? { [gameServerId]: gameserver.name } : undefined} />
           <ErrorBoundary fallback={<ErrorFallback />}>
             <Page>
               <Outlet context={{ gameServerId: gameServerId, setGameServerId }} />

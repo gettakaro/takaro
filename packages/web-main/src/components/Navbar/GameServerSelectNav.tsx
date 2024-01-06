@@ -1,9 +1,10 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
-import { Select, styled } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PATHS } from 'paths';
+import { GameServerSelect } from 'components/selects';
 
 export const StyledForm = styled.form`
   div {
@@ -43,7 +44,7 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
 
         // in case you are  in the global nav and you change the server, you should navigate to the dashboard of that server.
         if (!isInGameServerNav) {
-          navigate(PATHS.gameServer.dashboard(gameServerId));
+          navigate(PATHS.gameServer.dashboard.overview(gameServerId));
           return;
         }
 
@@ -63,23 +64,5 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
   // if there is there is only 1 server, don't show the dropdown
   if (!data || !gameServers || (gameServers && gameServers.length === 1)) return null;
 
-  return (
-    <Select
-      loading={isLoading}
-      control={control}
-      name="gameServerId"
-      enableFilter={data.pages[0].meta.total! > 5 ? true : false}
-      render={(selectedIndex) => <div>{gameServers[selectedIndex]?.name ?? gameServers[0]?.name}</div>}
-    >
-      <Select.OptionGroup>
-        {gameServers.map(({ name, id }) => (
-          <Select.Option key={id} value={id} label={name}>
-            <div>
-              <span>{name}</span>
-            </div>
-          </Select.Option>
-        ))}
-      </Select.OptionGroup>
-    </Select>
-  );
+  return <GameServerSelect loading={isLoading} control={control} name="gameServerId" />;
 };

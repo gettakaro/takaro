@@ -4,8 +4,11 @@ export const PATHS = {
   users: () => '/users',
   players: () => '/players',
   moduleDefinitions: () => '/modules',
-  variables: () => '/variables',
-
+  variables: {
+    overview: () => '/variables',
+    create: () => '/variables/create',
+    update: (variableId: string) => `/variables/update/${variableId}`,
+  },
   notFound: () => '/not-found',
   forbidden: () => '/forbidden',
   logout: () => '/logout',
@@ -32,11 +35,16 @@ export const PATHS = {
   gameServers: {
     overview: () => '/servers',
     create: () => '/servers/create',
+    import: () => '/servers/import',
     update: (serverId: string) => `/servers/update/${serverId}`,
   },
 
   gameServer: {
-    dashboard: (serverId: string) => `/server/${serverId}/dashboard`,
+    dashboard: {
+      overview: (serverId: string) => `/server/dashboard/${serverId}`,
+      console: (serverId: string) => `/server/dashboard/${serverId}/console`,
+      statistics: (serverId: string) => `/server/dashboard/${serverId}/statistics`,
+    },
     settings: (serverId: string) => `/server/${serverId}/settings`,
     modules: (serverId: string) => `/server/${serverId}/modules`,
     update: (serverId: string) => `/server/${serverId}/update`,

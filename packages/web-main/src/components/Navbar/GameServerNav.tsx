@@ -1,7 +1,8 @@
 import { FC, useEffect, useMemo } from 'react';
 import { NavbarLink, renderLink } from '.';
 import { GameServerSelectNav } from './GameServerSelectNav';
-import { PERMISSIONS, Button } from '@takaro/lib-components';
+import { Button } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   AiOutlineAppstore as DashboardIcon,
@@ -35,21 +36,21 @@ export const GameServerNav: FC = () => {
       {
         label: 'Dashboard',
         // If serverId is not valid it will be directed by the failed requests.
-        path: PATHS.gameServer.dashboard(selectedGameServerId),
+        path: PATHS.gameServer.dashboard.overview(selectedGameServerId),
         icon: <DashboardIcon />,
-        requiredPermissions: [PERMISSIONS.READ_GAMESERVERS],
+        requiredPermissions: [PERMISSIONS.ReadGameservers],
       },
       {
         label: 'Modules',
         path: PATHS.gameServer.modules(selectedGameServerId),
         icon: <ModulesIcon />,
-        requiredPermissions: [PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_MODULES],
+        requiredPermissions: [PERMISSIONS.ReadGameservers, PERMISSIONS.ReadModules],
       },
       {
         label: 'Settings',
         path: PATHS.gameServer.settings(selectedGameServerId),
         icon: <SettingsIcon />,
-        requiredPermissions: [PERMISSIONS.READ_SETTINGS, PERMISSIONS.READ_GAMESERVERS],
+        requiredPermissions: [PERMISSIONS.ReadSettings, PERMISSIONS.ReadGameservers],
       },
     ];
   }, [selectedGameServerId]);
