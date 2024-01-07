@@ -14,7 +14,11 @@ export class GameServersPage extends BasePage {
   }
 
   async gotoGameServer() {
-    await this.page.goto(`/server/${this.gameServer.id}/dashboard`);
+    await this.page.goto(`/server/dashboard/${this.gameServer.id}`);
+  }
+
+  async gotoGameServerConsole() {
+    await this.page.goto(`/server/dashboard/${this.gameServer.id}/console`);
   }
 
   async create() {

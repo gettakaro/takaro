@@ -1,5 +1,5 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
-import { Button, Divider, Dropdown, IconButton, Loading, Table, useTableActions } from '@takaro/lib-components';
+import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
 import { useUser, useUserRemoveRole } from 'queries/users';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
@@ -13,7 +13,7 @@ export const UserProfile: FC = () => {
   const { data, isLoading } = useUser(userId!);
 
   if (isLoading) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   return <UserProfilePage user={data!} />;

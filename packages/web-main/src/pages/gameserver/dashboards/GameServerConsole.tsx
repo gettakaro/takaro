@@ -1,44 +1,19 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
-import { FC, Fragment, useEffect } from 'react';
+import { FC } from 'react';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSocket } from 'hooks/useSocket';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
-import { ChatMessagesCard } from './cards/ChatMessages';
-import { OnlinePlayersCard } from './cards/OnlinePlayers';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 200px 1fr;
-  gap: 1rem;
-  height: 85vh;
-`;
-
-const DashboardCard = styled.div`
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  padding: 1rem;
-  border-radius: 1rem;
-`;
-
-const ConsoleContainer = styled.div`
+const Container = styled.div`
   height: 100%;
+  max-height: 82vh;
+  width: 100%;
 `;
 
-const EventsContainer = styled.div`
-  height: 100%;
-  overflow-y: auto;
-`;
-
-const OnlinePlayerContainer = styled(DashboardCard)``;
-
-const ChatContainer = styled(DashboardCard)``;
-
-const GameServerDashboard: FC = () => {
+const GameServerConsole: FC = () => {
   const { selectedGameServerId } = useSelectedGameServer();
   useGameServerDocumentTitle('dashboard');
   const apiClient = useApiClient();
@@ -57,20 +32,6 @@ const GameServerDashboard: FC = () => {
     enqueueSnackbar('Exceeded local storage quota, clearing console', { type: 'error' });
     setMessages([]);
   }
-
-  useEffect(() => {
-    const fiveDaysAgo = DateTime.now().minus({ days: 5 });
-
-    const filteredMessages = messages.filter((message) => {
-      const messageTimestamp = DateTime.fromISO(message.timestamp);
-      return messageTimestamp > fiveDaysAgo;
-    });
-
-    // Update the messages if there are any old ones
-    if (filteredMessages.length !== messages.length) {
-      setMessages(filteredMessages);
-    }
-  }, []); // Empty dependency array to run only on mount
 
   if (isLoading) {
     return (
@@ -135,37 +96,23 @@ const GameServerDashboard: FC = () => {
   }
 
   return (
-    <Fragment>
-      <GridContainer>
-        <OnlinePlayerContainer>
-          <OnlinePlayersCard />
-        </OnlinePlayerContainer>
-        <ChatContainer>
-          <ChatMessagesCard />
-        </ChatContainer>
-        <ConsoleContainer>
-          Messages are stored for 5 days
-          <Console
-            messages={messages}
-            setMessages={setMessages}
-            listenerFactory={handleMessageFactory}
-            onExecuteCommand={async (command: string) => {
-              const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
-              return {
-                type: 'command',
-                data: command,
-                result: result.data.data.rawResult,
-                timestamp: new Date().toISOString(),
-              };
-            }}
-          />
-        </ConsoleContainer>
-        <EventsContainer>
-          <EventFeedWidget query={{ filters: { gameserverId: [gameServer.id] } }} />
-        </EventsContainer>
-      </GridContainer>
-    </Fragment>
+    <Container>
+      <Console
+        messages={messages}
+        setMessages={setMessages}
+        listenerFactory={handleMessageFactory}
+        onExecuteCommand={async (command: string) => {
+          const result = await apiClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, { command });
+          return {
+            type: 'command',
+            data: command,
+            result: result.data.data.rawResult,
+            timestamp: new Date().toISOString(),
+          };
+        }}
+      />
+    </Container>
   );
 };
 
-export default GameServerDashboard;
+export default GameServerConsole;

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Loading, Tooltip, styled } from '@takaro/lib-components';
+import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 
@@ -39,7 +39,7 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pogs }) => {
     },
   });
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   if (!pogs.length) return <p>No inventory data</p>;
 

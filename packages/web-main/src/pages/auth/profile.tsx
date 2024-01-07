@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-import { styled, Loading } from '@takaro/lib-components';
+import { styled, Skeleton } from '@takaro/lib-components';
 import { gridStyle, NodeMessages, UserSettingsCard, UserSettingsFlowType } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
@@ -82,7 +82,7 @@ export const AuthSettings: FC = () => {
     createFlow();
   }, []);
 
-  if (!flow) return <Loading />;
+  if (!flow) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   return (
     <>
