@@ -1,4 +1,4 @@
-import { Drawer, CollapseList, FormError, Button, TextField, Loading, DatePicker } from '@takaro/lib-components';
+import { Drawer, CollapseList, FormError, Button, TextField, DatePicker, Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useRoles } from 'queries/roles';
 import { FC, useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ export const AssignUserRole: FC = () => {
   const { data: roles, isLoading: isLoadingRoles } = useRoles();
 
   if (isLoadingRoles || !roles) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   const roleOptions = roles.pages.flatMap((page) => page.data);
