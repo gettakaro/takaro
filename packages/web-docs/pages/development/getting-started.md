@@ -28,7 +28,7 @@ Run the init script from the root of the repo. This will install all development
 Start the development environment:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 There is a dashboard available where all the services are listed. You can access it at http://localhost:13337
@@ -36,12 +36,12 @@ There is a dashboard available where all the services are listed. You can access
 You will need to create an admin client for the following configuration scripts. Set the `ADMIN_CLIENT_ID` and `ADMIN_CLIENT_SECRET` in your .env file. Give the containers a restart after you've done this.
 
 ```bash
-docker-compose exec hydra hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
+docker compose exec hydra hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
 ```
 
 Optionally (but recommended!), you can set up some testing data automatically.
 
 ```bash
 # Generate data for the standard development setup
-docker-compose exec takaro node scripts/dev-data.mjs
+docker compose exec takaro node scripts/dev-data.mjs
 ```
