@@ -16,7 +16,9 @@ async function main() {
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
   const revokerName = (await takaro.player.playerControllerGetOne(revoker.playerId)).data.data.name;
   const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;
-  await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(receiver.id, { currency: args.amount });
+  await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(receiver.gameServerId, receiver.playerId, {
+    currency: args.amount,
+  });
 
   const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
     message: `${args.amount} ${currencyName} were revoked by ${revokerName}`,

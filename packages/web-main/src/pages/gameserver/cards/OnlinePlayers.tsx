@@ -1,15 +1,16 @@
 import { EventOutputDTO } from '@takaro/apiclient';
-import { Loading, styled } from '@takaro/lib-components';
+import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Player } from 'components/Player';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { usePlayerOnGameServers, usePlayers } from 'queries/players/queries';
 import { FC, useEffect } from 'react';
+import { Scrollable, Card } from './style';
 
-const PlayerCards = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  overflow-y: scroll;
+const Players = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const OnlinePlayersCard: FC = () => {
@@ -41,19 +42,27 @@ export const OnlinePlayersCard: FC = () => {
     };
   }, []);
 
-  if (isLoading || isLoadingPlayers) return <Loading />;
+  if (isLoading || isLoadingPlayers) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+
+  const theme = useTheme();
 
   return (
-    <>
-      <h1>Online Players</h1>
-      <PlayerCards>
-        {data?.data.map((playerOnGameServer) => {
-          const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
-          if (!player) return null;
+    <Card variant="outline">
+      <Scrollable>
+        <div style={{ display: 'flex', gap: theme.spacing[1], flexDirection: 'column' }}>
+          <h2>{data?.data.length} Players Online</h2>
+          <Players>
+            {data?.data.map((playerOnGameServer) => {
+              const player = players?.data.find((player) => player.id === playerOnGameServer.playerId);
+              if (!player) return null;
 
-          return <Player playerId={player.id} />;
-        })}
-      </PlayerCards>
-    </>
+              return (
+                <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />
+              );
+            })}
+          </Players>
+        </div>
+      </Scrollable>
+    </Card>
   );
 };

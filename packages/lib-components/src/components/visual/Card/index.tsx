@@ -15,17 +15,15 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
     border-color: none;
   }
 
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  }
-
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme, canClick }) => (canClick ? theme.colors.primary : theme.colors.backgroundAccent)};
   }
 
   &:active {
     border-color: ${({ theme, canClick }) => (canClick ? theme.colors.primary : theme.colors.backgroundAccent)};
   }
+
+  overflow: hidden; /* Ensure the container hides content overflow */
 `;
 
 // Extend HTMLProps for standard HTML attributes and add custom props
@@ -37,11 +35,15 @@ export interface CardProps extends HTMLProps<HTMLDivElement> {
 export const Card = forwardRef<HTMLDivElement, CardProps>(({ children, variant = 'default', ...props }, ref) => {
   const canClick = 'onClick' in props;
 
+  // Extract the className prop, if present
+  const { className, ...restProps } = props;
+
   return (
-    <div {...props}>
-      <Container ref={ref} canClick={canClick} variant={variant}>
-        {children}
-      </Container>
-    </div>
+    // TODO: type this properly
+    //eslint-disable-next-line
+    //@ts-ignore
+    <Container ref={ref} canClick={canClick} variant={variant} className={className} {...restProps}>
+      {children}
+    </Container>
   );
 });

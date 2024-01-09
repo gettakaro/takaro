@@ -61,7 +61,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   return (
     <>
-      <Card role="link" onClick={() => navigate(PATHS.gameServer.dashboard(id))} data-testid={`gameserver-${id}-card`}>
+      <Card
+        role="link"
+        onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+        data-testid={`gameserver-${id}-card`}
+      >
         <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}

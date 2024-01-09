@@ -44,7 +44,7 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
 
         // in case you are  in the global nav and you change the server, you should navigate to the dashboard of that server.
         if (!isInGameServerNav) {
-          navigate(PATHS.gameServer.dashboard(gameServerId));
+          navigate(PATHS.gameServer.dashboard.overview(gameServerId));
           return;
         }
 

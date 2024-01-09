@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, FormError, Switch, Loading } from '@takaro/lib-components';
+import { Button, TextField, Drawer, CollapseList, FormError, Switch, Skeleton } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import { PermissionOutputDTO } from '@takaro/apiclient';
 export const RolesCreate = () => {
   const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
 
-  if (isLoadingPermissions || !permissions) return <Loading />;
+  if (isLoadingPermissions || !permissions) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   return <RolesCreateForm permissions={permissions} />;
 };
