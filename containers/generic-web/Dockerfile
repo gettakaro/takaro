@@ -9,6 +9,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY scripts ./scripts
+COPY .storybook ./.storybook
 COPY packages ./packages
 
 RUN ./scripts/dev-init.sh
