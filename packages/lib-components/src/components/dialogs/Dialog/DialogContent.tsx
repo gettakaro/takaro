@@ -1,10 +1,6 @@
 import { styled } from '../../../styled';
-import {
-  FloatingFocusManager,
-  FloatingOverlay,
-  FloatingPortal,
-  useMergeRefs,
-} from '@floating-ui/react';
+import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useMergeRefs } from '@floating-ui/react';
+import { Card } from '../../../components';
 import { forwardRef } from 'react';
 import { useDialogContext } from './DialogContext';
 
@@ -14,20 +10,11 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
   place-items: center;
 `;
 
-const Container = styled.div`
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: ${({ theme }) => theme.spacing['1_5']};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
-  box-shadow: ${({ theme }) => theme.elevation[4]};
-  margin: ${({ theme }) => theme.spacing['1_5']};
+const CardBody = styled.div`
   min-width: 300px;
-  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
-export const DialogContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLProps<HTMLDivElement>
->((props, propRef) => {
+export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, propRef) => {
   const { context: floatingContext, ...context } = useDialogContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
@@ -41,14 +28,16 @@ export const DialogContent = forwardRef<
       {context.open && (
         <StyledFloatingOverlay lockScroll>
           <FloatingFocusManager context={floatingContext}>
-            <Container
+            <Card
               ref={ref}
               aria-labelledby={context.labelId}
               aria-describedby={context.descriptionId}
-              {...context.getFloatingProps(props)}
+              {...context.getFloatingProps({
+                ...props,
+              })}
             >
-              {props.children}
-            </Container>
+              <CardBody>{props.children}</CardBody>
+            </Card>
           </FloatingFocusManager>
         </StyledFloatingOverlay>
       )}

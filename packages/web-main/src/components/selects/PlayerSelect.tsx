@@ -61,13 +61,10 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
         const selectedPlayer = players.find((player) => player.id === selectedItems[0]?.value);
         return (
           <Inner>
-            {selectedPlayer!.steamAvatar ? (
-              <Avatar size="tiny" src={selectedPlayer!.steamAvatar} alt={`Steam avatar ${name}`} />
-            ) : (
-              <Avatar size="tiny" alt={name}>
-                {getInitials(name)}
-              </Avatar>
-            )}
+            <Avatar size="tiny">
+              <Avatar.Image src={selectedPlayer?.steamAvatar} alt={`Steam avatar ${name}`} />
+              <Avatar.FallBack>{getInitials(selectedPlayer!.name)}</Avatar.FallBack>
+            </Avatar>
             <div>{selectedPlayer!.name}</div>
           </Inner>
         );
@@ -77,13 +74,10 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
         {players.map(({ name, id, steamAvatar }) => (
           <SelectField.Option key={`select-${name}`} value={id} label={name}>
             <Inner>
-              {steamAvatar ? (
-                <Avatar size="tiny" src={steamAvatar} alt={`Steam avatar ${name}`} />
-              ) : (
-                <Avatar size="tiny" alt={name}>
-                  {getInitials(name)}
-                </Avatar>
-              )}
+              <Avatar size="tiny">
+                <Avatar.Image src={steamAvatar} alt={`Steam avatar ${name}`} />
+                <Avatar.FallBack>{getInitials(name)}</Avatar.FallBack>
+              </Avatar>
               <span>{name}</span>
             </Inner>
           </SelectField.Option>
