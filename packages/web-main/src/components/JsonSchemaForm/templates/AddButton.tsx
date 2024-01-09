@@ -1,5 +1,5 @@
 import { AiOutlinePlus as AddIcon } from 'react-icons/ai';
-import { Button } from '../../../../components';
+import { Button } from '@takaro/lib-components';
 import { FormContextType, IconButtonProps, RJSFSchema, StrictRJSFSchema, TranslatableString } from '@rjsf/utils';
 
 /** The `AddButton` renders a button that represent the `Add` action on a form

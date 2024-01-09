@@ -1,5 +1,5 @@
 import { errorId, FieldErrorProps, FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ErrorMessage } from '../../layout';
+import { ErrorMessage } from '@takaro/lib-components';
 
 /** The `FieldErrorTemplate` component renders the errors local to the particular field
  *

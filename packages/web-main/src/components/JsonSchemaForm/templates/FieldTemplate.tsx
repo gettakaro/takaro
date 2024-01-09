@@ -1,6 +1,4 @@
-import { Label } from '../../../../components';
-import { styled } from '../../../../styled';
-import { Wrapper } from '../../layout';
+import { styled, Label, InputWrapper } from '@takaro/lib-components';
 
 const Container = styled.div`
   width: 100%;
@@ -43,7 +41,7 @@ export function FieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, 
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {displayLabel && (
           <Label
@@ -60,6 +58,6 @@ export function FieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, 
         {errors}
       </Container>
       {displayLabel && rawDescription && description}
-    </Wrapper>
+    </InputWrapper>
   );
 }

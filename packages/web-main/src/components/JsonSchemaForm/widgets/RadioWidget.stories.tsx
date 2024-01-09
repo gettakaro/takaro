@@ -1,8 +1,7 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import React from 'react';
 import { JsonSchemaForm } from '..';
-import { styled } from '../../../../styled';
-import { Button } from '../../../actions';
+import { styled, Button } from '@takaro/lib-components';
 
 const Container = styled.div`
   width: 100%;

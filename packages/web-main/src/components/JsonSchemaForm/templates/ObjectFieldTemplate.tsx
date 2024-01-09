@@ -10,7 +10,7 @@ import {
   titleId,
 } from '@rjsf/utils';
 
-import { styled } from '.././../../../styled';
+import { styled } from '@takaro/lib-components';
 
 const Container = styled.div`
   padding-left: ${({ theme }) => theme.spacing['0_5']};

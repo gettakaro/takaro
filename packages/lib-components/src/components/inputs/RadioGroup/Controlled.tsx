@@ -4,7 +4,7 @@ import { Option } from '.';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Container, FieldSet } from './style';
 import { GenericRadio } from './Radio';
-import { Wrapper, ErrorMessage, Label, Description } from '../layout';
+import { InputWrapper, ErrorMessage, Label, Description } from '../layout';
 
 export interface ControlledRadioGroupProps extends ControlledInputProps {
   options: Option[];
@@ -52,7 +52,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
   return (
     <FieldSet>
       <legend>{label}</legend>
-      <Wrapper>
+      <InputWrapper>
         {options.map(({ label, labelPosition, value }) => {
           return (
             <Container key={`radiogroup-container-${name}-${value}`} onClick={() => handleChange(value)}>
@@ -106,7 +106,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> = (props) => {
           );
         })}
         {error && showError && error.message && <ErrorMessage message={error.message} />}
-      </Wrapper>
+      </InputWrapper>
       {description && <Description description={description} inputName={name} />}
     </FieldSet>
   );

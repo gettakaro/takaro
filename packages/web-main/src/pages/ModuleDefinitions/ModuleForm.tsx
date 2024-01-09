@@ -6,7 +6,6 @@ import {
   Drawer,
   CollapseList,
   styled,
-  SchemaGenerator,
   TextAreaField,
   Tooltip,
   IconButton,
@@ -14,6 +13,7 @@ import {
   Chip,
   Alert,
 } from '@takaro/lib-components';
+import { SchemaGenerator } from 'components/JsonSchemaForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useNavigate } from 'react-router-dom';

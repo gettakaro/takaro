@@ -47,8 +47,9 @@ export type { EditableFieldProps } from './EditableField';
 export { Label } from './layout/Label';
 export type { LabelProps } from './layout/Label';
 
-export { Wrapper as InputWrapper } from './layout/Wrapper';
+export { ErrorMessage } from './layout/ErrorMessage';
 
+export { InputWrapper } from './layout/InputWrapper';
 export { Description } from './layout/Description';
 
 export { DateRangePicker } from './Date/DateRangePicker';

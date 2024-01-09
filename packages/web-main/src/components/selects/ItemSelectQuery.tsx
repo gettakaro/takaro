@@ -54,19 +54,15 @@ export const ItemSelect: FC<ItemsSelectProps> = ({
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
       return (
-        <Avatar
-          size="tiny"
-          src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
-          alt={`Item icon of ${item.name}`}
-        />
+        <Avatar size="tiny">
+          <Avatar.Image
+            src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
+            alt={`Item icon of ${item.name}`}
+          />
+          <Avatar.FallBack>{getInitials(item.name)}</Avatar.FallBack>
+        </Avatar>
       );
     }
-
-    return (
-      <Avatar size="tiny" alt={item.name}>
-        {getInitials('unknown')}
-      </Avatar>
-    );
   };
 
   if (!gameServer) {

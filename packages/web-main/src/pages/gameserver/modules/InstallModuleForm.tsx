@@ -1,14 +1,7 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Drawer,
-  CollapseList,
-  styled,
-  JsonSchemaForm,
-  DrawerSkeleton,
-  FormError,
-} from '@takaro/lib-components';
+import { Button, Drawer, CollapseList, styled, DrawerSkeleton, FormError } from '@takaro/lib-components';
 import Form from '@rjsf/core';
+import { JsonSchemaForm } from 'components/JsonSchemaForm';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';

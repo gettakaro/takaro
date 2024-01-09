@@ -1,4 +1,4 @@
-import { Button } from '../../../../components';
+import { Button } from '@takaro/lib-components';
 import { getSubmitButtonOptions, FormContextType, RJSFSchema, StrictRJSFSchema, SubmitButtonProps } from '@rjsf/utils';
 
 /** The `SubmitButton` renders a button that represent the `Submit` action on a form

@@ -1,5 +1,4 @@
-import { styled } from '../../../../styled';
-import { Divider } from '../../../../components';
+import { Divider, styled } from '@takaro/lib-components';
 import { FormContextType, TitleFieldProps, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
 
 const Container = styled.div`

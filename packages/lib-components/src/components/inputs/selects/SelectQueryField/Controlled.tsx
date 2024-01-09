@@ -3,7 +3,7 @@ import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
 import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
 import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
-import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { ErrorMessage, Label, InputWrapper, Description } from '../../layout';
 import { Container } from '../sharedStyle';
 
 export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;
@@ -50,7 +50,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
   };
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -88,7 +88,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };
 

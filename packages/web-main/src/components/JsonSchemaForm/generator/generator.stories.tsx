@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StoryFn } from '@storybook/react';
-import { styled } from '../../../../styled';
+import { styled } from '@takaro/lib-components';
 import { SchemaGenerator } from './index';
 import { JsonSchemaForm } from '..';
 

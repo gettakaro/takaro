@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from '../../../../components';
+import { IconButton, Tooltip } from '@takaro/lib-components';
 import {
   AiOutlineArrowUp as ArrowUpIcon,
   AiOutlineArrowDown as ArrowDownIcon,

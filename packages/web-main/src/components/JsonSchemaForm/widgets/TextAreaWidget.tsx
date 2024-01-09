@@ -1,5 +1,5 @@
 import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
-import { GenericTextAreaField } from '../../TextAreaField';
+import { UnControlledTextAreaField } from '@takaro/lib-components';
 
 export function TextareaWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   options,
@@ -18,7 +18,7 @@ export function TextareaWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
   }
 
   return (
-    <GenericTextAreaField
+    <UnControlledTextAreaField
       id={id}
       name={name}
       onChange={onChange}

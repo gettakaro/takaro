@@ -6,7 +6,7 @@ import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } fro
 import { GenericSelectField } from '.';
 import { SelectFieldProps } from './Generic';
 import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
-import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { ErrorMessage, Label, InputWrapper, Description } from '../../layout';
 import { Skeleton } from '../../../../components';
 
 export type ControlledSelectFieldProps = PropsWithChildren<ControlledInputProps & SelectFieldProps>;
@@ -55,7 +55,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
 
   if (loading) {
     return (
-      <Wrapper>
+      <InputWrapper>
         <Container>
           {label && (
             <Label
@@ -75,12 +75,12 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           </LoadingContainer>
         </Container>
         {description && <Description description={description} inputName={name} />}
-      </Wrapper>
+      </InputWrapper>
     );
   }
 
   return (
-    <Wrapper marginBottom={hasMargin ? undefined : '0'}>
+    <InputWrapper marginBottom={hasMargin ? undefined : '0'}>
       <Container>
         {label && (
           <Label
@@ -120,7 +120,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };
 

@@ -1,4 +1,4 @@
-import { styled } from '../../../../../styled';
+import { styled } from '@takaro/lib-components';
 
 export const Header = styled.div`
   margin: ${({ theme }) => `${theme.spacing[2]} 0 ${theme.spacing[1]} 0`};
