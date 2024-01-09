@@ -29,7 +29,7 @@ export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar
   );
 };
 
-export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar, isLoading, hasError }) => {
+export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar = true, isLoading, hasError }) => {
   if (isLoading) {
     return <Chip color="backgroundAccent" isLoading label="" />;
   }
@@ -38,12 +38,11 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
     return <Chip variant="outline" color="backgroundAccent" label="unknown" />;
   }
 
-  const avatar = !avatarUrl ? (
-    <Avatar size="tiny" alt="steam-avatar">
-      {getInitials(name)}
+  const avatar = (
+    <Avatar size="tiny">
+      <Avatar.Image src={avatarUrl} alt={`steam-avatar-${name}`} />
+      <Avatar.FallBack>{getInitials(name)}</Avatar.FallBack>
     </Avatar>
-  ) : (
-    <Avatar size="tiny" src={avatarUrl} alt="steam-avatar" />
   );
 
   return (
