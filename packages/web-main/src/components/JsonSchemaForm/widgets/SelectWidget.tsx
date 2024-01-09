@@ -27,9 +27,12 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
       value={value}
       hasDescription={!!schema.description}
       onChange={onChange}
-      render={(selectedItems) => (
-        <div>{enumOptionsValueForIndex(selectedItems[0].value, enumOptions, emptyValue) ?? 'Select...'}</div>
-      )}
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
+          return <div>Select...</div>;
+        }
+        return <div>{enumOptionsValueForIndex(selectedItems[0].value, enumOptions, emptyValue)}</div>;
+      }}
     >
       <UnControlledSelectField.OptionGroup label="options">
         {enumOptions &&

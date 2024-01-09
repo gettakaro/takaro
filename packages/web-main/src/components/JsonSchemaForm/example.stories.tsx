@@ -1,13 +1,9 @@
-export {};
-
-/*
 import React, { useRef, useState } from 'react';
 import { StoryFn } from '@storybook/react';
 import { RJSFSchema } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from './index';
-import { styled } from '../../../styled';
-import { Button } from '../../../components';
+import { Button, styled } from '@takaro/lib-components';
 
 const Container = styled.div`
   width: 100%;
@@ -124,4 +120,4 @@ export const ModuleServerMessages: StoryFn = () => {
       </JsonSchemaForm>
     </Container>
   );
-};*/
+};

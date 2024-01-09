@@ -3,9 +3,9 @@ import { Avatar, getInitials, SelectQueryField, styled } from '@takaro/lib-compo
 import { useGameServer } from 'queries/gameservers';
 import { useItems } from 'queries/items';
 import { FC, useState } from 'react';
-import { CustomQuerySelectProps } from '.';
+import { CustomQuerySelectProps } from '..';
 
-interface ItemsSelectProps extends CustomQuerySelectProps {
+export interface ItemSelectProps extends CustomQuerySelectProps {
   gameServerId: string;
 }
 
@@ -26,7 +26,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
 };
 
-export const ItemSelect: FC<ItemsSelectProps> = ({
+export const ItemSelect: FC<ItemSelectProps> = ({
   control,
   name,
   hint,
