@@ -5,5 +5,6 @@ export { useOnScreen } from './useOnScreen';
 export { useLocalStorage } from './useLocalStorage';
 export { useTheme } from './useTheme';
 export { useTableActions } from './useTableActions';
+export { useCallbackRef } from './useCallbackRef';
 export { useQueryParams } from './useQueryParams';
 export { useFocus } from './useFocus';

@@ -5,6 +5,7 @@ export const OptionContainer = styled.li<{ isActive: boolean; isMultiSelect: boo
   min-height: ${({ theme }) => theme.spacing[4]};
   cursor: default;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAlt};
   text-align: left;
   display: flex;
   align-items: center;
@@ -15,13 +16,11 @@ export const OptionContainer = styled.li<{ isActive: boolean; isMultiSelect: boo
   padding-left: ${({ isGrouped, theme }) => (isGrouped ? `calc(1.7 * ${theme.spacing['2']})` : theme.spacing['1'])}};
 
   &:focus {
-    background-color: ${({ theme }) => theme.colors.background};
-    color: rgba(255, 255, 255, 0.9);
-    position: relative;
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    border-color: ${({ theme }) => theme.colors.backgroundAccent};
     span {
       color: white;
     }

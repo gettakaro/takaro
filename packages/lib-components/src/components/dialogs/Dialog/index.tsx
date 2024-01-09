@@ -1,4 +1,4 @@
-import { DialogOptions, useDialog } from '../../../hooks/useDialog';
+import { DialogOptions, useDialog } from './useDialog';
 import { FC, PropsWithChildren } from 'react';
 import { DialogContext } from './DialogContext';
 import { DialogContent } from './DialogContent';
@@ -11,14 +11,9 @@ interface SubComponentTypes {
   Heading: typeof DialogHeading;
 }
 
-export const Dialog: FC<PropsWithChildren<DialogOptions>> & SubComponentTypes =
-  ({ children, ...options }) => {
-    return (
-      <DialogContext.Provider value={useDialog(options)}>
-        {children}
-      </DialogContext.Provider>
-    );
-  };
+export const Dialog: FC<PropsWithChildren<DialogOptions>> & SubComponentTypes = ({ children, ...options }) => {
+  return <DialogContext.Provider value={useDialog(options)}>{children}</DialogContext.Provider>;
+};
 
 Dialog.Content = DialogContent;
 Dialog.Body = DialogBody;
