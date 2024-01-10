@@ -52,7 +52,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
             <SelectField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
-                <Tooltip>
+                <Tooltip placement="right">
                   <Tooltip.Trigger asChild>
                     <StatusDot isReachable={reachable} />
                   </Tooltip.Trigger>
