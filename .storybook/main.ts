@@ -1,4 +1,6 @@
 import { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 const config: StorybookConfig = {
   stories: [
@@ -9,11 +11,15 @@ const config: StorybookConfig = {
   addons: ['@storybook/addon-essentials', '@storybook/addon-links', '@storybook/addon-a11y'],
   staticDirs: ['../packages/lib-components/public', '../packages/web-main/public'],
   viteFinal: async (config) => {
+    const buildSourceMap = config.build ? true : false;
+
     // related to storybook out of memory: https://github.com/storybookjs/storybook/issues/12348
-    if (config.build) {
-      config.build.sourcemap = false;
-    }
-    return config;
+    return mergeConfig(config, {
+      build: {
+        sourcemap: buildSourceMap,
+      },
+      plugins: [tsconfigPaths({ root: '..', projects: ['packages/lib-components', 'packages/web-main'] })],
+    });
   },
 };
 
