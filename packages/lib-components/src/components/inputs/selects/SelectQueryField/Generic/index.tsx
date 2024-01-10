@@ -8,8 +8,6 @@ import {
   isValidElement,
   cloneElement,
   useMemo,
-  ReactElement,
-  useCallback,
 } from 'react';
 import {
   autoUpdate,
@@ -29,7 +27,7 @@ import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionH
 import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
 import { FeedBackContainer } from '../style';
-import { SelectItem, SelectContext } from '../../';
+import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
@@ -146,40 +144,13 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     }
   }
 
-  const getLabel = useCallback(
-    (value: string) => {
-      const matchedGroup = Children.toArray(children).find((group) => {
-        if (!isValidElement(group)) return false;
-
-        const matchedOption = Children.toArray(group.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        return Boolean(matchedOption);
-      });
-
-      if (matchedGroup && isValidElement(matchedGroup)) {
-        const matchedOption = Children.toArray(matchedGroup.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        if (matchedOption) {
-          return (matchedOption as ReactElement).props.label;
-        }
-      }
-
-      return null;
-    },
-    [children]
-  );
-
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
   useEffect(() => {
     // Function to create an item with a value and label
-    const createItem = (v: string) => ({ value: v, label: getLabel(v) as unknown as string });
+    const createItem = (v: string) => ({ value: v, label: getLabelFromChildren(children, v) as unknown as string });
 
     if (Array.isArray(value)) {
       const items = value.map(createItem);
@@ -187,7 +158,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     } else if (typeof value === 'string' && value !== '') {
       setSelectedItems([createItem(value)]);
     }
-  }, [value]);
+  }, [value, children]);
 
   const renderSelect = () => {
     const hasOptions = options && Children.count(options[0].props.children) > 2;

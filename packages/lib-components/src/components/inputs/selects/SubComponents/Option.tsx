@@ -9,7 +9,7 @@ const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
 `;
 
-interface OptionProps extends PropsWithChildren {
+export interface OptionProps extends PropsWithChildren {
   value: string;
   label: string;
   disabled?: boolean;

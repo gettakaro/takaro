@@ -9,7 +9,6 @@ import {
   useEffect,
   useMemo,
   ReactElement,
-  useCallback,
 } from 'react';
 import { GroupContainer, GroupLabel } from '../style';
 import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
@@ -33,7 +32,7 @@ import {
 import { defaultInputPropsFactory, defaultInputProps, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 import { setAriaDescribedBy } from '../../../layout';
-import { SelectItem, SelectContext } from '../../';
+import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
 
 interface SharedSelectFieldProps {
   render: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -140,41 +139,13 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     }),
   ]);
 
-  const getLabel = useCallback(
-    (value: string) => {
-      const matchedGroup = Children.toArray(children).find((group) => {
-        if (!isValidElement(group)) return false;
-
-        const matchedOption = Children.toArray(group.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        return Boolean(matchedOption);
-      });
-
-      if (matchedGroup && isValidElement(matchedGroup)) {
-        const matchedOption = Children.toArray(matchedGroup.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        if (matchedOption) {
-          return (matchedOption as ReactElement).props.label;
-        }
-      }
-
-      return null;
-    },
-    [children]
-  );
-
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
-
   useEffect(() => {
     // Function to create an item with a value and label
-    const createItem = (v: string) => ({ value: v, label: getLabel(v) as unknown as string });
+    const createItem = (v: string) => ({ value: v, label: getLabelFromChildren(children, v) as unknown as string });
 
     if (Array.isArray(value)) {
       const items = value.map(createItem);
