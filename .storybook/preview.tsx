@@ -9,7 +9,14 @@ import { MemoryRouter } from 'react-router-dom';
 import 'rc-slider/assets/index.css';
 import { Preview } from '@storybook/react';
 
-export default {
+const preview: Preview = {
+  parameters: {
+    options: {
+      storySort: {
+        order: ['Design System', ['Introduction', 'Colors', 'Spacing', 'Elevation'], 'Lib Components', 'Web Main'],
+      },
+    },
+  },
   decorators: [
     (Story) => (
       <ThemeProvider theme={darkTheme}>
@@ -24,4 +31,6 @@ export default {
       </ThemeProvider>
     ),
   ],
-} as Preview;
+};
+
+export default preview;

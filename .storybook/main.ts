@@ -4,8 +4,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 const config: StorybookConfig = {
   stories: [
-    { directory: '../packages/lib-components/src', files: '**/*.stories.@(tsx|ts)', titlePrefix: 'Lib-components' },
-    { directory: '../packages/web-main/src', files: '**/*.stories.@(tsx|ts)', titlePrefix: 'Web-main' },
+    { directory: '../packages/lib-components/src', files: '**/*.stories.@(tsx|ts)', titlePrefix: 'Lib Components' },
+    { directory: '../packages/web-main/src', files: '**/*.stories.@(mdx|tsx|ts)', titlePrefix: 'Web Main' },
+    { directory: '../packages/lib-components/src', files: '**/*.stories.@(mdx)', titlePrefix: 'Design System' },
   ],
   framework: { name: '@storybook/react-vite', options: {} },
   addons: ['@storybook/addon-essentials', '@storybook/addon-links', '@storybook/addon-a11y'],
