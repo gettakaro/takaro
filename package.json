@@ -81,14 +81,14 @@
     "vitest": "^0.31.1",
     "vite-tsconfig-paths": "^4.2.1",
     "zx": "^7.2.1",
-    "@storybook/addon-a11y": "7.5.3",
-    "@storybook/addon-essentials": "7.5.3",
-    "@storybook/addon-links": "7.5.3",
-    "@storybook/builder-vite": "7.5.3",
-    "@storybook/cli": "7.5.3",
-    "@storybook/react": "7.5.3",
-    "@storybook/react-vite": "7.5.3",
-    "storybook": "7.5.3"
+    "@storybook/addon-a11y": "7.6.7",
+    "@storybook/addon-essentials": "7.6.7",
+    "@storybook/addon-links": "7.6.7",
+    "@storybook/builder-vite": "7.6.7",
+    "@storybook/cli": "7.6.7",
+    "@storybook/react": "7.6.7",
+    "@storybook/react-vite": "7.6.7",
+    "storybook": "7.6.7"
   },
   "keywords": [],
   "workspaces": [
