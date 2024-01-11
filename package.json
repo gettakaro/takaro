@@ -5,7 +5,7 @@
   "scripts": {
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
     "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
-    "shell": "docker-compose exec takaro bash",
+    "shell": "docker compose exec takaro bash",
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
     "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
     "test": "npm --workspaces --if-present run test",
