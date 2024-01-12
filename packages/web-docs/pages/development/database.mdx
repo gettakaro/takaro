@@ -14,10 +14,10 @@ To run migrations, you can use the following commands:
 
 ```bash
 # Run migrations up to the latest
-docker-compose exec takaro npm -w packages/app-api run db:migrate
+docker compose exec takaro npm -w packages/app-api run db:migrate
 
 # Roll back the latest migration
-docker-compose exec takaro npm -w packages/app-api run db:rollback
+docker compose exec takaro npm -w packages/app-api run db:rollback
 ```
 
 ## Encryption
