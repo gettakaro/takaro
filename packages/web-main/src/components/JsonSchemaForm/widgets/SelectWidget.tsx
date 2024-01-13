@@ -1,4 +1,4 @@
-import { enumOptionsValueForIndex, FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
+import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
 import { UnControlledSelectField } from '@takaro/lib-components';
 
 // TODO: implement multiselect
@@ -14,7 +14,7 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { enumOptions, emptyValue } = options;
+  const { enumOptions } = options;
 
   return (
     <UnControlledSelectField
@@ -31,7 +31,7 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-        return <div>{enumOptionsValueForIndex(selectedItems[0].value, enumOptions, emptyValue)}</div>;
+        return <div>{selectedItems[0].label}</div>;
       }}
     >
       <UnControlledSelectField.OptionGroup label="options">
