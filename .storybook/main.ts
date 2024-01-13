@@ -19,7 +19,9 @@ const config: StorybookConfig = {
       build: {
         sourcemap: buildSourceMap,
       },
-      plugins: [tsconfigPaths({ root: '..', projects: ['packages/lib-components', 'packages/web-main'] })],
+      plugins: [
+        tsconfigPaths({ projects: ['packages/lib-components/tsconfig.json', 'packages/web-main/tsconfig.json'] }),
+      ],
     });
   },
 };
