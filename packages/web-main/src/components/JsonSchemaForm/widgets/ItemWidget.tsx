@@ -1,13 +1,16 @@
+import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
-import { Avatar, getInitials, SelectQueryField, styled } from '@takaro/lib-components';
-import { useGameServer } from '../../../queries/gameservers';
-import { useItems } from '../../../queries/items';
-import { FC, useState } from 'react';
-import { CustomQuerySelectProps } from '..';
+import { styled, Avatar, SelectQueryField, UnControlledSelectQueryField, getInitials } from '@takaro/lib-components';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { useGameServer } from 'queries/gameservers';
+import { useItems } from 'queries/items';
+import { useState } from 'react';
 
-export interface ItemSelectProps extends CustomQuerySelectProps {
-  gameServerId: string;
-}
+const gameServerTypeToIconFolderMap = {
+  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
+  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
+  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+};
 
 const Inner = styled.div`
   display: flex;
@@ -20,28 +23,19 @@ const Inner = styled.div`
   }
 `;
 
-const gameServerTypeToIconFolderMap = {
-  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
-  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
-  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
-};
-
-export const ItemSelect: FC<ItemSelectProps> = ({
-  control,
+// TODO: implement multiselect
+export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
-  hint,
-  size,
-  label,
-  loading,
   disabled,
-  inPortal,
-  readOnly,
+  rawErrors = [],
   required,
-  hasMargin,
-  description,
-  placeholder,
-  gameServerId,
-}) => {
+  id,
+  readonly,
+  schema,
+  value,
+  onChange,
+}: WidgetProps<T, S, F>) {
+  const { selectedGameServerId: gameServerId } = useSelectedGameServer();
   const [itemName, setItemName] = useState<string>('');
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
@@ -70,22 +64,19 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   }
 
   return (
-    <SelectQueryField
+    <UnControlledSelectQueryField
+      id={id}
       name={name}
-      hint={hint}
-      label={label}
-      size={size}
-      loading={loading}
       disabled={disabled}
-      inPortal={inPortal}
-      readOnly={readOnly}
+      hasError={!!rawErrors.length}
       required={required}
-      hasMargin={hasMargin}
-      description={description}
-      placeholder={placeholder}
+      readOnly={readonly}
+      value={value}
       handleInputValueChange={(value) => setItemName(value)}
       isLoadingData={isLoadingGameServer || isLoadingItems}
-      control={control}
+      multiSelect={false}
+      hasDescription={!!schema.description}
+      onChange={onChange}
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (
@@ -97,6 +88,6 @@ export const ItemSelect: FC<ItemSelectProps> = ({
           </SelectQueryField.Option>
         ))}
       </SelectQueryField.OptionGroup>
-    </SelectQueryField>
+    </UnControlledSelectQueryField>
   );
-};
+}

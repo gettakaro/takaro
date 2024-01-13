@@ -1,7 +1,6 @@
 import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
 import { UnControlledRadioGroup } from '@takaro/lib-components';
 
-// TODO: implement multiselect
 export function RadioWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   options,
