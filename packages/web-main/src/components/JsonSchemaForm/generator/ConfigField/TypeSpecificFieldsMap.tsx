@@ -1,24 +1,65 @@
 import { Control } from 'react-hook-form';
-import { Input, InputType } from '../inputTypes';
+import { Input, InputType, SubType } from '../inputTypes';
 import { TextField, TagField, CheckBox, SelectField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
+import { useWatch } from 'react-hook-form';
 
-/*
-export const SubTypeToFieldsMap = (control: Control<IFormInputs>, input: Input, index: number, id: string) => {
+export const SubTypeToFieldsMap = (
+  control: Control<IFormInputs>,
+  input: Input,
+  index: number,
+  id: string,
+  enumValues: string[]
+) => {
+  console.log('fired', enumValues);
+
   return {
-    [SubType.item]: []
-
+    [SubType.item]: [
+      /* We cannot ask to set default value(s) since when the module is written the game is unknown */
+    ],
+    [SubType.custom]: [
+      <TagField
+        name={`configFields.${index}.values`}
+        key={`${input.type}-enum-${id}`}
+        control={control}
+        label="Possible values"
+        isEditOnRemove
+        placeholder="Press enter to add a value."
+      />,
+      enumValues && (
+        <SelectField
+          key={`${input.type}-default-${id}`}
+          control={control}
+          name={`configFields.${index}.default`}
+          label="Default value"
+          render={(selectedItems) => (
+            <div>{selectedItems.length > 0 ? enumValues.find((e) => e === selectedItems[0].value) : enumValues[0]}</div>
+          )}
+        >
+          <SelectField.OptionGroup>
+            {enumValues.map((enumValue: string) => (
+              <SelectField.Option key={`${enumValue}-${id}`} value={enumValue} label={enumValue}>
+                <span>{enumValue}</span>
+              </SelectField.Option>
+            ))}
+          </SelectField.OptionGroup>
+        </SelectField>
+      ),
+    ],
   };
 };
-*/
 
 export const InputTypeToFieldsMap = (control: Control<IFormInputs>, input: Input, index: number, id: string) => {
-  /*
+  const selectedSubType = useWatch<IFormInputs>({
+    name: `configFields.${index}.subType`,
+    control,
+  }) as SubType;
+
+  // In case selectSubType is `custom`, we need to pass the enum values to the SubTypeToFieldsMap
   const enumValues = useWatch<IFormInputs>({
-    name: `configFields.${index}.enum`,
+    name: `configFields.${index}.values`,
     control,
   }) as string[];
-  */
 
   return {
     [InputType.string]: [
@@ -104,38 +145,15 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, input: Input
         label="Subtype"
         render={(selectedItems) => <div>{selectedItems.length > 0 ? selectedItems[0].value : 'Select a subtype'}</div>}
       >
-        <SelectField.OptionGroup></SelectField.OptionGroup>
+        <SelectField.OptionGroup>
+          {Object.keys(SubType).map((subType: string) => (
+            <SelectField.Option key={`${subType}-${id}`} value={subType} label={subType}>
+              <span>{subType}</span>
+            </SelectField.Option>
+          ))}
+        </SelectField.OptionGroup>
       </SelectField>,
-
-      <TagField
-        name={`configFields.${index}.enum`}
-        key={`${input.type}-enum-${id}`}
-        control={control}
-        label="Possible values"
-        isEditOnRemove
-        placeholder="Press enter to add a value."
-      />,
-      /*
-      enumValues && (
-        <SelectField
-          key={`${input.type}-default-${id}`}
-          control={control}
-          name={`configFields.${index}.default`}
-          label="Default value"
-          render={(selectedItems) => (
-            <div>{selectedItems.length > 0 ? enumValues.find((e) => e === selectedItems[0].value) : enumValues[0]}</div>
-          )}
-        >
-          <SelectField.OptionGroup>
-            {enumValues.map((enumValue: string) => (
-              <SelectField.Option key={`${enumValue}-${id}`} value={enumValue} label={enumValue}>
-                <span>{enumValue}</span>
-              </SelectField.Option>
-            ))}
-          </SelectField.OptionGroup>
-        </SelectField>
-      ),
-      */
+      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues)[selectedSubType],
     ],
     [InputType.array]: [
       <TagField
