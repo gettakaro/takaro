@@ -87,7 +87,7 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                   x: '100%',
                 }}
                 drag="x"
-                dragConstraints={{ left: 0, right: -20 }}
+                dragConstraints={{ left: 0, right: 0 }}
                 onDrag={handleDrag}
                 onDragEnd={handleDragEnd}
                 dragElastic={{ left: 0, right: 0.4 }}
