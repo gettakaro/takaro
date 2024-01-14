@@ -145,6 +145,6 @@
   },
   "overrides": {
     "class-validator": "0.13.2",
-    "esbuild": "0.19.8"
+    "esbuild": "0.19.11"
   }
 }
