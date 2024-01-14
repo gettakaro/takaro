@@ -61,8 +61,10 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
     setValue('gameServerId', serverId);
   }, [serverId]);
 
-  // if there is there is only 1 server, don't show the dropdown
-  if (!data || !gameServers || (gameServers && gameServers.length === 1)) return null;
+  // if there is there < 1 server, don't show the dropdown
+  if (!data || !gameServers || (gameServers && gameServers.length <= 1)) {
+    return null;
+  }
 
   return <GameServerSelect loading={isLoading} control={control} name="gameServerId" />;
 };

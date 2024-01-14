@@ -33,6 +33,7 @@ import { hasNextPage } from '../util';
 import * as Sentry from '@sentry/react';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -251,11 +252,17 @@ interface GameServerRemove {
 export const useGameServerRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
+  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, GameServerRemove>({
     mutationFn: async ({ id }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: async (removedGameServer: IdUuidDTO) => {
       try {
+        if (selectedGameServerId === removedGameServer.id) {
+          // unset selected game server id
+          setSelectedGameServerId('');
+        }
+
         // remove all cached information of game server list.
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         // remove all cached information about specific game server.

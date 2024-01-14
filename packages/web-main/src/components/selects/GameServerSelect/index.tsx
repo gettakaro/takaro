@@ -84,7 +84,13 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-        const selected = gameServers.find((server) => server.id === selectedItems[0].value)!;
+        const selected = gameServers.find((server) => server.id === selectedItems[0].value);
+
+        if (!selected) {
+          // TODO: throw sentry error because this should never happen
+          return <div>Select...</div>;
+        }
+
         return (
           <Inner>
             {gameTypeMap[selected.type].icon}
