@@ -32,6 +32,7 @@ const ListItem = styled.li`
 
 const Data = styled.div`
   display: grid;
+  gap: ${({ theme }) => theme.spacing[2]};
   grid-template-columns: 0.5fr 0.5fr 2fr;
 `;
 

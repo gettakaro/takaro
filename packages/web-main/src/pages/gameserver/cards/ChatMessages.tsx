@@ -14,8 +14,8 @@ import { Player } from 'components/Player';
 const Message = styled.span`
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
   display: grid;
-  grid-template-columns: 50px 200px 1fr;
-  gap: ${({ theme }) => theme.spacing[1]};
+  grid-template-columns: 55px auto 1fr;
+  gap: ${({ theme }) => theme.spacing['0_75']};
   align-items: center;
   padding: ${({ theme }) => theme.spacing['0_5']};
 `;
@@ -36,7 +36,9 @@ const ChatMessage: FC<{ chatMessage: EventOutputDTO }> = ({ chatMessage }) => {
   return (
     <Message>
       <span style={{ color: theme.colors.textAlt }}>{friendlyTimeStamp}</span>
-      <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />
+      <div style={{ fontWeight: 'bold' }}>
+        <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />
+      </div>
       <span>{chatMessage.meta.message as string}</span>
     </Message>
   );
