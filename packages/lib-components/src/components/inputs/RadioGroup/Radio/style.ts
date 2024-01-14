@@ -24,7 +24,7 @@ export const RadioContainer = styled.div<{
       return theme.colors.backgroundAccent;
     }};
 
-  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.gray : theme.colors.background)};
+  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.backgroundAccent : theme.colors.background)};
   border-radius: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   overflow: visible;
@@ -47,7 +47,7 @@ export const Inner = styled(motion.div)<{
   height: ${({ theme }) => theme.spacing['1_5']};
   border-radius: 100%;
   background-color: ${({ theme, readOnly, isError }) => {
-    if (readOnly) return theme.colors.gray;
+    if (readOnly) return theme.colors.backgroundAlt;
     if (isError) return theme.colors.error;
     /* No need to check if selected here since opacity is only 1 if isSelected*/
     return theme.colors.primary;
