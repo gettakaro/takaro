@@ -51,12 +51,15 @@ test('Setting server-scoped setting for server A does not affect server B', asyn
   await navigateTo(page, 'server-settings');
 
   // Change the server name
-  await page.getByLabel('server chat name').fill('My cool server');
+  const inheritSelect = page.getByRole('combobox').nth(2);
+  await inheritSelect.click();
+  await page.getByRole('option', { name: 'override' }).click();
+  await page.getByLabel('Server Chat Name').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
 
   await takaro.GameServersPage.goto();
   await page.getByRole('heading', { name: 'Second Server' }).click();
 
   await navigateTo(page, 'server-settings');
-  await expect(page.getByLabel('server chat name')).toHaveValue('Takaro');
+  await expect(page.getByText('Takaro').nth(1)).toBeVisible();
 });
