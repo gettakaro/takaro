@@ -86,6 +86,53 @@ test('Should show error when updating a gameserver with name that already exists
   await expect(page.getByText('A server with this name already exists.')).toBeVisible();
 });
 
+test('Should switch to other gameserver when the currently selected is deleted', async ({ takaro, page }) => {
+  const { rootClient, GameServersPage } = takaro;
+
+  // add second server
+  const secondServerName = 'My second server';
+  await GameServersPage.create();
+  await GameServersPage.nameCreateEdit(secondServerName);
+  await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  let hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  await hostInputs1.click();
+  await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+  // second server should be selected
+  await expect(page.getByTestId('server-nav').getByText(secondServerName)).toBeAttached();
+
+  // We need to have 3 servers, because the server select dropdown will not show if there are less than 2 servers.
+  // add third server
+  const thirdServerName = 'My third server';
+  await GameServersPage.create();
+  await GameServersPage.nameCreateEdit(thirdServerName);
+  await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  await hostInputs1.click();
+  await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  await GameServersPage.clickTestConnection();
+  await GameServersPage.clickSave();
+
+  // currently third server should be selected
+  await expect(page.getByTestId('server-nav').getByText(secondServerName)).toBeAttached();
+
+  const gameServers = (await rootClient.gameserver.gameServerControllerSearch()).data.data;
+  const thirdServer = gameServers.find((server) => server.name === thirdServerName);
+
+  if (!thirdServer) {
+    throw new Error('Third server not found');
+  }
+
+  // delete currently selected server
+  GameServersPage.gameServer = thirdServer;
+  await GameServersPage.goto();
+  await GameServersPage.action('Delete');
+
+  await expect(page.getByTestId('server-nav').getByText(thirdServerName)).not.toBeAttached();
+  await expect(page.getByTestId('server-nav').getByText(secondServerName)).toBeAttached();
+});
+
 test('Can edit gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
