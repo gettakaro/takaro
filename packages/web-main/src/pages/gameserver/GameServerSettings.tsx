@@ -104,7 +104,7 @@ const GameServerSettings: FC = () => {
           // to make sure we only append the fields once
           // All fields are strings, however, the Switch component requires a boolean value.
           if (fields.length !== Object.keys(gameServerSettings).length) {
-            type !== SettingsOutputDTOTypeEnum.Inherit
+            type === SettingsOutputDTOTypeEnum.Override
               ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false })
               : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
           }
@@ -115,7 +115,7 @@ const GameServerSettings: FC = () => {
           );
         } else {
           if (fields.length !== Object.keys(gameServerSettings).length) {
-            type !== SettingsOutputDTOTypeEnum.Inherit
+            type === SettingsOutputDTOTypeEnum.Override // other cases are `inherit` or `default` but we both consider them as `inherit`
               ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value })
               : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
           }
@@ -172,7 +172,15 @@ const GameServerSettings: FC = () => {
 
           {fields.map((field, index) => (
             <SettingsContainer key={field.id}>
-              <div>{camelCaseToSpaces(watch(`settings.${index}.key`))}</div>
+              <label
+                style={{
+                  cursor:
+                    watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Override ? 'pointer' : 'default',
+                }}
+                htmlFor={`settings.${index}.value`}
+              >
+                {camelCaseToSpaces(watch(`settings.${index}.key`))}
+              </label>
               <div>
                 {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
               </div>
@@ -194,7 +202,7 @@ const GameServerSettings: FC = () => {
                 </SelectField>
               </NoSpacing>
               {watch(`settings.${index}.type`) === SettingsOutputDTOTypeEnum.Inherit ? (
-                <div>
+                <div id={`settings.${index}.value`}>
                   {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
                 </div>
               ) : (
