@@ -11,7 +11,7 @@ interface IServerCardProps {
 
 const CardBody = styled.div`
   display: grid;
-  grid-template-columns: 50px 5fr 1fr;
+  grid-template-columns: 80px 5fr 1fr;
   align-items: center;
 `;
 
@@ -19,9 +19,6 @@ export const GuildCard: FC<IServerCardProps> = ({ guild }) => {
   const { mutate, isError } = useDiscordGuildUpdate();
   const [takaroEnabled, setTakaroEnabled] = useState<boolean>(guild.takaroEnabled);
   const { enqueueSnackbar } = useSnackbar();
-
-  const iconUrl = guild.icon ? `https://cdn.discordapp.com/icons/${guild.discordId}/${guild.icon}.png?size=32` : null;
-  const iconElement = iconUrl ? <Avatar size="small" src={iconUrl} alt={guild.name} /> : <FaDiscord size={32} />;
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     mutate({ id: guild.id, input: { takaroEnabled: e.target.checked } });
@@ -43,7 +40,12 @@ export const GuildCard: FC<IServerCardProps> = ({ guild }) => {
   return (
     <Card>
       <CardBody>
-        {iconElement}
+        <Avatar size="medium">
+          <Avatar.Image src={`https://cdn.discordapp.com/icons/${guild.discordId}/${guild.icon}.png?size=32`} />
+          <Avatar.FallBack>
+            <FaDiscord />
+          </Avatar.FallBack>
+        </Avatar>
         <h2>{guild.name}</h2>
         <form>
           <UnControlledSwitch

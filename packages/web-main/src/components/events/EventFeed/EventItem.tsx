@@ -13,6 +13,7 @@ const Header = styled.div`
 
 const EventType = styled.div`
   display: flex;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing['0_5']};
 
   p:first-child {
@@ -24,13 +25,14 @@ const EventType = styled.div`
   }
 `;
 
-const ListItem = styled.div`
+const ListItem = styled.li`
   margin-bottom: ${({ theme }) => theme.spacing['7']};
   margin-left: ${({ theme }) => theme.spacing['2']};
 `;
 
 const Data = styled.div`
   display: grid;
+  gap: ${({ theme }) => theme.spacing[2]};
   grid-template-columns: 0.5fr 0.5fr 2fr;
 `;
 
@@ -42,16 +44,15 @@ const DataItem = styled.div`
 `;
 
 const Circle = styled.div`
-  width: 11px;
-  height: 11px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   margin-top: 5px;
-  left: -6px;
+  left: -5px;
 
   position: absolute;
-  border: 1px solid #474747;
 
-  background-color: ${({ theme }) => theme.colors.textAlt};
+  background-color: ${({ theme }) => theme.colors.backgroundAccent};
 `;
 const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) => {
   const val = (value as string) === '' ? '-' : value;

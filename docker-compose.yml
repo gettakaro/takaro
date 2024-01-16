@@ -54,6 +54,7 @@ services:
       - ./packages/lib-util:/app/packages/lib-util
 
       - ./packages/test:/app/packages/test
+      - ./.storybook:/app/.storybook
 
       - ./reports:/app/reports
       - ./scripts:/app/scripts

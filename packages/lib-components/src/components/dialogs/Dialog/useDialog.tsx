@@ -1,11 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  useClick,
-  useDismiss,
-  useFloating,
-  useInteractions,
-  useRole,
-} from '@floating-ui/react';
+import { useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 
 export interface DialogOptions {
   open?: boolean;

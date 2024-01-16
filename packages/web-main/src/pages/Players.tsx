@@ -5,8 +5,6 @@ import {
   useTableActions,
   IconButton,
   Dropdown,
-  Avatar,
-  getInitials,
   Dialog,
   Button,
   TextField,
@@ -78,19 +76,9 @@ const Players: FC = () => {
         const name = info.getValue();
         if (!name) return '';
 
-        const avatar = info.row.original.steamAvatar;
-        return (
-          <div style={{ display: 'flex', gap: '10px' }}>
-            {!avatar ? (
-              <Avatar size="tiny" alt="steam-avatar">
-                {getInitials(name)}
-              </Avatar>
-            ) : (
-              <Avatar size="tiny" src={avatar} alt="steam-avatar" />
-            )}
-            <Player playerId={info.row.original.id} />
-          </div>
-        );
+        const player = info.row.original;
+
+        return <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />;
       },
       enableColumnFilter: true,
       enableSorting: true,
