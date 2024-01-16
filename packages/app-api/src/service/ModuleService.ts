@@ -26,6 +26,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   configSchema: string;
 
   @IsJSON()
+  uiSchema: string;
+
+  @IsJSON()
   systemConfigSchema: string;
 
   @IsString()
@@ -62,6 +65,10 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsOptional()
   configSchema: string;
 
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
@@ -80,6 +87,10 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
 
   @IsString()
   @IsOptional()
@@ -105,6 +116,10 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
 
   @IsOptional()
   @ValidateNested({ each: true })
