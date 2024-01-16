@@ -5,6 +5,12 @@ import { TextareaWidget } from './TextAreaWidget';
 import { CheckBoxWidget } from './CheckboxWidget';
 import { ItemWidget } from './ItemWidget';
 
+// UI names
+export enum UIWidgets {
+  item = 'item',
+  radio = 'radio',
+}
+
 export const customWidgets: RegistryWidgetsType = {
   selectWidget: SelectWidget,
   radioWidget: RadioWidget,

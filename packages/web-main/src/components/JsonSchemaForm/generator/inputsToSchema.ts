@@ -1,6 +1,8 @@
 import { TakaroConfigSchema } from '.';
 import { SchemaObject } from 'ajv';
-import { Input, AnyInput, InputType } from './inputTypes';
+import { UiSchema } from '@rjsf/utils';
+import { Input, AnyInput, InputType, SubType } from './inputTypes';
+import { UIWidgets } from '../widgets';
 
 export function inputsToSchema(inputs: Array<Input>): TakaroConfigSchema {
   const schema: TakaroConfigSchema = {
@@ -15,8 +17,24 @@ export function inputsToSchema(inputs: Array<Input>): TakaroConfigSchema {
     }
     schema.properties[input.name] = getJsonSchemaElement(input);
   }
-
   return schema;
+}
+
+export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
+  const uiSchema: UiSchema = {};
+
+  for (const input of inputs) {
+    switch (input.type) {
+      case InputType.enum:
+        if (input.subType === SubType.item) {
+          uiSchema[input.name] = {
+            'ui:widget': UIWidgets.item,
+          };
+        }
+    }
+  }
+
+  return uiSchema;
 }
 
 function getJsonSchemaElement(input: AnyInput) {

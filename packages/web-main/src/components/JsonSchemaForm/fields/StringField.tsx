@@ -1,5 +1,6 @@
 import { EnumOptionsType, FieldProps, RJSFSchema } from '@rjsf/utils';
 import { UnControlledTextField } from '@takaro/lib-components';
+import { UIWidgets } from '../widgets';
 import { ItemWidget } from '../widgets/ItemWidget';
 import { RadioWidget } from '../widgets/RadioWidget';
 import { SelectWidget } from '../widgets/SelectWidget';
@@ -20,7 +21,7 @@ export const StringField = ({
   uiSchema,
   registry,
 }: FieldProps) => {
-  if (schema.enum && schema.enum.length && uiSchema && uiSchema['ui:widget'] === 'radioWidget') {
+  if (schema.enum && schema.enum.length && uiSchema && uiSchema['ui:widget'] === UIWidgets.radio) {
     return (
       <RadioWidget
         name={name}
@@ -47,9 +48,7 @@ export const StringField = ({
     );
   }
 
-  console.log(uiSchema);
-
-  if (uiSchema && uiSchema['ui:widget'] === 'itemWidget') {
+  if (uiSchema && uiSchema['ui:widget'] === UIWidgets.item) {
     return (
       <ItemWidget
         name={name}
