@@ -1,5 +1,5 @@
-import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import React from 'react';
+import { RJSFSchema } from '@rjsf/utils';
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
 
@@ -24,16 +24,10 @@ export const Default = () => {
     },
   };
 
-  const uiSchema: UiSchema = {
-    type: {
-      'ui:widget': 'selectWidget',
-    },
-  };
-
   return (
     <Container>
-      <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-        <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+      <JsonSchemaForm schema={schema} initialData={{}} uiSchema={{}}>
+        <Button type="submit" text="Submit" />
       </JsonSchemaForm>
     </Container>
   );

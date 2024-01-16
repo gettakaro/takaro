@@ -1,5 +1,6 @@
 import { EnumOptionsType, FieldProps, RJSFSchema } from '@rjsf/utils';
 import { UnControlledTextField } from '@takaro/lib-components';
+import { ItemWidget } from '../widgets/ItemWidget';
 import { RadioWidget } from '../widgets/RadioWidget';
 import { SelectWidget } from '../widgets/SelectWidget';
 
@@ -46,6 +47,29 @@ export const StringField = ({
     );
   }
 
+  console.log(uiSchema);
+
+  if (uiSchema && uiSchema['ui:widget'] === 'itemWidget') {
+    return (
+      <ItemWidget
+        name={name}
+        id={idSchema.$id}
+        // Placeholder since options depend on api resp
+        options={{}}
+        schema={schema}
+        value={undefined}
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        disabled={disabled}
+        placeholder={placeholder}
+        label={schema.title || name}
+        registry={registry}
+      />
+    );
+  }
+
+  // If enum is defined in schema, select default select widget
   if (schema.enum) {
     return (
       <SelectWidget
