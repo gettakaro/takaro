@@ -1,7 +1,7 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
 import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip } from '@takaro/lib-components';
 import { Header } from './style';
-import { IFormInputs } from '../ModuleForm';
+import { IFormInputs } from '..';
 import { Input, InputType, SubType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';

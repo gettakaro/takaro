@@ -12,10 +12,9 @@ import {
   Chip,
   Alert,
 } from '@takaro/lib-components';
-import { zodResolver } from '@hookform/resolvers/zod';
+// import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { moduleValidationSchema } from './moduleValidationSchema';
 import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
 import { Title, Fields, PermissionCard, PermissionList, ButtonContainer } from './style';
 import { AiOutlineDelete as RemoveIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
@@ -61,7 +60,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
 
   const { handleSubmit, control, resetField } = useForm<IFormInputs>({
     mode: 'onSubmit',
-    resolver: zodResolver(moduleValidationSchema),
     defaultValues: {
       name: mod?.name ?? undefined,
       description: mod?.description ?? undefined,

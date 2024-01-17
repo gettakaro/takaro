@@ -1,7 +1,7 @@
 import { Control } from 'react-hook-form';
 import { Input, InputType, SubType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { TextField, TagField, CheckBox, SelectField } from '@takaro/lib-components';
-import { IFormInputs } from '../ModuleForm';
+import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
 
 export const SubTypeToFieldsMap = (
