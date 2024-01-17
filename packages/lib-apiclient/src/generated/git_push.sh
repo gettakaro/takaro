@@ -29,7 +29,17 @@ if [ "$release_note" = "" ]; then
 fi
 
 # Initialize the local directory as a Git repository
-git init
+git_remote=$(git remote)
+if [ "$git_remote" = "" ]; then
+    if [ "$GIT_TOKEN" = "" ]; then
+        echo "[ERROR] Remote repository is not defined and \$GIT_TOKEN (environment variable) is not set. Please set the remote repository URL manually or provide the \$GIT_TOKEN environment variable."
+        exit 1
+    else
+        git remote add origin https://${git_user_id}:"${GIT_TOKEN}"@${git_host}/${git_user_id}/${git_repo_id}.git
+    fi
+fi
+
+&
 
 # Adds the files in the local repository and stages them for commit.
 git add .
@@ -39,6 +49,12 @@ git commit -m "$release_note"
 
 # Sets the new remote
 git_remote=$(git remote)
+if [ "$git_remote" = "" ]; then
+    if [ "$GIT_TOKEN" = "" ]; then
+        echo "[ERROR] Remote repository is not defined and \$GIT_TOKEN (environment variable) is not set. Please set the remote repository URL manually or provide the \$GIT_TOKEN environment variable."
+        exit 1
+    else
+        git remote add origin https://${git_host}/${git_user_id}:\
 if [ "$git_remote" = "" ]; then # git remote not defined
 
     if [ "$GIT_TOKEN" = "" ]; then
