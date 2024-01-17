@@ -1,10 +1,15 @@
-import { z } from 'zod';
-// This is a temporary workaround until zod.discriminatedUnion is deprecated and replaced by zod.switch
-// New features for zod.discriminatedUnion were set on hold since it will be replaced.
+export {};
+//import { z } from 'zod';
+// import { InputType, SubType } from './inputTypes';
+
+/* 
+
+// Validationschema is temporarily disabled since nesting discriminatedUnions is not supported.
+// New features for zod.discriminatedUnion were set on hold since it will be replaced by zod.switch.
 // https://github.com/colinhacks/zod/issues/1618
 // https://github.com/colinhacks/zod/issues/2106#issuecomment-1836566278
-import { InputType, SubType } from './inputTypes';
 
+based on selected value in select field (with name type)
 const baseShape = z.object({
   name: z
     .string()
@@ -26,14 +31,12 @@ const baseShape = z.object({
     .nonempty('Description cannot be empty'),
 });
 
-/* based on selected value in select field (with name type)
+
+
  a different subschema will be used
-*/
 export const validationSchema = z.object({
   configFields: z
     .array(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       z
         .discriminatedUnion('type', [
           z.object({
@@ -115,3 +118,4 @@ export const validationSchema = z.object({
       });
     }),
 });
+*/
