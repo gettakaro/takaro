@@ -13,6 +13,7 @@ test('Can set global settings', async ({ page }) => {
   await page.getByRole('button', { name: 'Save' }).click();
   await page.reload();
   await expect(page.getByLabel('server chat name')).toHaveValue(serverName);
+  // TODO: check if the server chat name is also updated in the server settings
 });
 
 test('Can set server-scoped settings', async ({ page, takaro }) => {
@@ -21,14 +22,18 @@ test('Can set server-scoped settings', async ({ page, takaro }) => {
 
   const serverName = 'My cool server';
   await navigateTo(page, 'server-settings');
-  await page.getByLabel('server chat name').fill('My cool server');
+
+  const inheritSelect = page.getByRole('combobox').nth(1);
+  await inheritSelect.click();
+  await page.getByRole('option', { name: 'override' }).click();
+  await page.getByLabel('Server Chat Name').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
   await page.reload();
 
   await expect(page.getByLabel('server chat name')).toHaveValue(serverName);
 });
 
-test.fixme('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
+test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
   await takaro.rootClient.gameserver.gameServerControllerCreate({
     name: 'Second server',
     type: GameServerCreateDTOTypeEnum.Mock,
@@ -46,12 +51,15 @@ test.fixme('Setting server-scoped setting for server A does not affect server B'
   await navigateTo(page, 'server-settings');
 
   // Change the server name
-  await page.getByLabel('server chat name').fill('My cool server');
+  const inheritSelect = page.getByRole('combobox').nth(2);
+  await inheritSelect.click();
+  await page.getByRole('option', { name: 'override' }).click();
+  await page.getByLabel('Server Chat Name').fill('My cool server');
   await page.getByRole('button', { name: 'Save' }).click();
 
   await takaro.GameServersPage.goto();
   await page.getByRole('heading', { name: 'Second Server' }).click();
 
   await navigateTo(page, 'server-settings');
-  await expect(page.getByLabel('server chat name')).toHaveValue('Takaro');
+  await expect(page.getByText('Takaro').nth(1)).toBeVisible();
 });

@@ -52,7 +52,7 @@ export const Default = styled.button<{
 
   &:disabled {
     cursor: default;
-    background: ${({ theme }) => theme.colors.gray};
+    background: ${({ theme }) => theme.colors.backgroundAlt};
     border-color: white;
   }
 
@@ -121,8 +121,8 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
       color: ${({ theme }): string => theme.colors.text};
     }
     svg {
-      fill: ${({ theme }): string => theme.colors.gray};
-      stroke: ${({ theme }): string => theme.colors.gray};
+      fill: ${({ theme }): string => theme.colors.backgroundAlt};
+      stroke: ${({ theme }): string => theme.colors.backgroundAlt};
     }
   }
 

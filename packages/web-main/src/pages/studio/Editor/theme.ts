@@ -85,7 +85,7 @@ export function defineTheme(monaco: Monaco) {
       'menu.selectionBorder': '#00000000',
       'menu.border': '#00000000',
 
-      'editor.background': '#151515',
+      'editor.background': '#0F0F0F',
       'editorLineNumber.foreground': '#858585',
       'editorLineNumber.activeForeground': '#c6c6c6',
 

@@ -4,8 +4,8 @@
     "data": [
       {
         "key": "commandPrefix",
-        "value": "/",
-        "type": "default"
+        "value": "!",
+        "type": "override"
       },
       {
         "key": "serverChatName",
@@ -28,7 +28,7 @@
   "test": {
     "group": "SettingsController",
     "snapshot": true,
-    "name": "Can get all settings",
+    "name": "Setting for gameserver multiple times overwrites properly",
     "expectedStatus": 200,
     "filteredFields": [],
     "standardEnvironment": true

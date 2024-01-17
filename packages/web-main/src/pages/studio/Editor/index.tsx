@@ -78,7 +78,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
 
   return (
     <SandpackThemeProvider theme="auto" style={{ width: '100%' }}>
-      <SandpackStack style={{ height: '100vh', margin: 0 }}>
+      <SandpackStack style={{ height: '100%', margin: 0 }}>
         <FileTabs closableTabs dirtyFiles={dirtyFiles} setDirtyFiles={setDirtyFiles} />
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <MonacoEditor

@@ -1,11 +1,13 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-10-20T20:04:26.095Z"
-    },
-    "data": {
-      "commandPrefix": "/"
-    }
+    "meta": {},
+    "data": [
+      {
+        "key": "commandPrefix",
+        "value": "/",
+        "type": "default"
+      }
+    ]
   },
   "status": 200,
   "test": {
