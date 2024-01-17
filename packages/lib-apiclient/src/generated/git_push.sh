@@ -13,7 +13,8 @@ if [ "$git_host" = "" ]; then
     echo "[INFO] No command line input provided. Set \$git_host to $git_host"
 fi
 
-if [ "$git_user_id" = "" ]; then
+# Parse command line inputs
+while [[ $# -gt 0 ]]; do
     git_user_id="GIT_USER_ID"
     echo "[INFO] No command line input provided. Set \$git_user_id to $git_user_id"
 fi
@@ -29,10 +30,14 @@ if [ "$release_note" = "" ]; then
 fi
 
 # Initialize the local directory as a Git repository
-git init
+# Parse command line inputs
+while [[ $# -gt 0 ]]; do
 
 # Adds the files in the local repository and stages them for commit.
-git add .
+git_user_id="$2"
+            shift
+            shift
+            ;;
 
 # Commits the tracked changes and prepares them to be pushed to a remote repository.
 git commit -m "$release_note"
@@ -54,4 +59,19 @@ git pull origin master
 
 # Pushes (Forces) the changes in the local repository up to the remote repository
 echo "Git pushing to https://${git_host}/${git_user_id}/${git_repo_id}.git"
-git push origin master 2>&1 | grep -v 'To https'
+# Set default values if not provided
+if [ -z "$git_host" ]; then
+    git_host="github.com"
+fi
+
+if [ -z "$git_user_id" ]; then
+    git_user_id="GIT_USER_ID"
+fi
+
+if [ -z "$git_repo_id" ]; then
+    git_repo_id="GIT_REPO_ID"
+fi
+
+if [ -z "$release_note" ]; then
+    release_note="Minor update"
+fi
