@@ -1,5 +1,6 @@
 #!/bin/sh
-# ref: https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/
+# This script is used for pushing changes to a remote Git repository.
+# Usage example: /bin/sh ./git_push.sh wing328 openapi-petstore-perl "minor update" "gitlab.com"
 #
 # Usage example: /bin/sh ./git_push.sh wing328 openapi-petstore-perl "minor update" "gitlab.com"
 
@@ -29,6 +30,8 @@ if [ "$release_note" = "" ]; then
 fi
 
 # Initialize the local directory as a Git repository
+# Add files to the local repository and stage them for commit
+# Commit the tracked changes and prepare them to be pushed to a remote repository
 git init
 
 # Adds the files in the local repository and stages them for commit.
@@ -41,9 +44,9 @@ git commit -m "$release_note"
 git_remote=$(git remote)
 if [ "$git_remote" = "" ]; then # git remote not defined
 
-    if [ "$GIT_TOKEN" = "" ]; then
-        echo "[INFO] \$GIT_TOKEN (environment variable) is not set. Using the git credential in your environment."
-        git remote add origin https://${git_host}/${git_user_id}/${git_repo_id}.git
+    if [ -z "$GIT_TOKEN" ]; then
+        echo "[INFO] Git token not found. Using the git credential in your environment."
+        git remote add origin https://${git_user_id}:
     else
         git remote add origin https://${git_user_id}:"${GIT_TOKEN}"@${git_host}/${git_user_id}/${git_repo_id}.git
     fi
@@ -52,6 +55,6 @@ fi
 
 git pull origin master
 
-# Pushes (Forces) the changes in the local repository up to the remote repository
+# Push the changes in the local repository up to the remote repository
 echo "Git pushing to https://${git_host}/${git_user_id}/${git_repo_id}.git"
-git push origin master 2>&1 | grep -v 'To https'
+git push origin master
