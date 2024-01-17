@@ -10,7 +10,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { useUserAssignRole } from 'queries/users';
 import { DateTime } from 'luxon';
-import { RolesSelect } from 'components/selects';
+import { RoleSelect } from 'components/selects';
 
 interface IFormInputs {
   id: string;
@@ -74,7 +74,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="User" />
-                <RolesSelect control={control} name="roleId" label="Role" />
+                <RoleSelect control={control} name="roleId" label="Role" />
                 <DatePicker
                   mode="absolute"
                   control={control}

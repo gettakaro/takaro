@@ -2,6 +2,7 @@ import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useRoles } from 'queries/roles';
+import { RoleOutputDTO } from '@takaro/apiclient';
 
 const Inner = styled.div`
   display: flex;
@@ -10,7 +11,7 @@ const Inner = styled.div`
   width: 100%;
 `;
 
-export const RolesSelect: FC<CustomSelectProps> = ({
+export const RoleSelect: FC<CustomSelectProps> = ({
   control,
   name,
   loading,
@@ -38,9 +39,42 @@ export const RolesSelect: FC<CustomSelectProps> = ({
   }
 
   return (
-    <SelectField
+    <RoleSelectView
       control={control}
       name={name}
+      roles={roles}
+      readOnly={readOnly}
+      description={description}
+      size={size}
+      disabled={disabled}
+      inPortal={inPortal}
+      hint={hint}
+      required={required}
+      loading={loading}
+      label={label}
+    />
+  );
+};
+
+export type RoleSelectViewProps = CustomSelectProps & { roles: RoleOutputDTO[] };
+export const RoleSelectView: FC<RoleSelectViewProps> = ({
+  control,
+  roles,
+  name: selectName,
+  readOnly,
+  description,
+  size,
+  disabled,
+  inPortal,
+  hint,
+  required,
+  loading,
+  label,
+}) => {
+  return (
+    <SelectField
+      control={control}
+      name={selectName}
       label={label}
       readOnly={readOnly}
       hint={hint}
