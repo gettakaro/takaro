@@ -3,7 +3,7 @@ import { ThemeProvider as OryThemeProvider } from '@ory/elements';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
-import { oryThemeOverrides } from './OryThemeOverrides';
+// No changes needed
 import { Router } from './Router';
 import { useState } from 'react';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
@@ -75,7 +75,7 @@ function App() {
     background: {
       surface: darkTheme.colors.background,
       canvas: darkTheme.colors.backgroundAlt,
-      subtle: darkTheme.colors.background,
+      subtle: darkTheme.colors.gray,
     },
     error: {
       def: darkTheme.colors.error,
