@@ -18,6 +18,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     children,
     placeholder,
     readOnly,
+    render,
     disabled,
     hint,
     description,
@@ -71,6 +72,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           placeholder={placeholder}
           hasDescription={!!description}
           readOnly={readOnly}
+          render={render}
           disabled={disabled}
           multiSelect={multiSelect}
           required={required}

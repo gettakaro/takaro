@@ -48,6 +48,9 @@ interface SharedSelectQueryFieldProps {
   handleInputValueChange: (value: string) => void;
   /// render inPortal
   inPortal?: boolean;
+
+  /// The selected items shown in the select field
+  render?: (selectedItems: SelectItem[]) => React.ReactNode;
 }
 
 interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
@@ -94,6 +97,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     hasError,
     children,
     readOnly,
+    render,
     multiSelect = false,
     debounce = 250,
     isLoadingData: isLoading = false,
@@ -258,7 +262,11 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
-        <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
+        {render ? (
+          render(selectedItems)
+        ) : (
+          <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
+        )}
         {!readOnly && <StyledArrowIcon size={16} />}
       </SelectButton>
       {open &&
