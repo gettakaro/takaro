@@ -5936,38 +5936,81 @@ export interface Settings {
 /**
  *
  * @export
- * @interface SettingsOutputDTOAPI
+ * @interface SettingsOutputArrayDTOAPI
  */
-export interface SettingsOutputDTOAPI {
+export interface SettingsOutputArrayDTOAPI {
   /**
    *
-   * @type {string}
-   * @memberof SettingsOutputDTOAPI
+   * @type {Array<SettingsOutputDTO>}
+   * @memberof SettingsOutputArrayDTOAPI
    */
-  data: string;
+  data: Array<SettingsOutputDTO>;
   /**
    *
    * @type {MetadataOutput}
-   * @memberof SettingsOutputDTOAPI
+   * @memberof SettingsOutputArrayDTOAPI
    */
   meta: MetadataOutput;
 }
 /**
  *
  * @export
- * @interface SettingsOutputObjectDTOAPI
+ * @interface SettingsOutputDTO
  */
-export interface SettingsOutputObjectDTOAPI {
+export interface SettingsOutputDTO {
   /**
    *
-   * @type {Settings}
-   * @memberof SettingsOutputObjectDTOAPI
+   * @type {string}
+   * @memberof SettingsOutputDTO
    */
-  data: Settings;
+  key: SettingsOutputDTOKeyEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsOutputDTO
+   */
+  value: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SettingsOutputDTO
+   */
+  type: SettingsOutputDTOTypeEnum;
+}
+
+export const SettingsOutputDTOKeyEnum = {
+  CommandPrefix: 'commandPrefix',
+  ServerChatName: 'serverChatName',
+  EconomyEnabled: 'economyEnabled',
+  CurrencyName: 'currencyName',
+} as const;
+
+export type SettingsOutputDTOKeyEnum = (typeof SettingsOutputDTOKeyEnum)[keyof typeof SettingsOutputDTOKeyEnum];
+export const SettingsOutputDTOTypeEnum = {
+  Override: 'override',
+  Inherit: 'inherit',
+  Global: 'global',
+  Default: 'default',
+} as const;
+
+export type SettingsOutputDTOTypeEnum = (typeof SettingsOutputDTOTypeEnum)[keyof typeof SettingsOutputDTOTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface SettingsOutputDTOAPI
+ */
+export interface SettingsOutputDTOAPI {
+  /**
+   *
+   * @type {SettingsOutputDTO}
+   * @memberof SettingsOutputDTOAPI
+   */
+  data: SettingsOutputDTO;
   /**
    *
    * @type {MetadataOutput}
-   * @memberof SettingsOutputObjectDTOAPI
+   * @memberof SettingsOutputDTOAPI
    */
   meta: MetadataOutput;
 }
@@ -16092,7 +16135,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
       key: string,
       gameServerId?: string,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputObjectDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputArrayDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerDelete(key, gameServerId, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['SettingsApi.settingsControllerDelete']?.[index]?.url;
@@ -16116,7 +16159,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
       keys?: Array<SettingsControllerGetKeysEnum>,
       gameServerId?: string,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputObjectDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputArrayDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerGet(keys, gameServerId, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['SettingsApi.settingsControllerGet']?.[index]?.url;
@@ -16198,7 +16241,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
       key: string,
       gameServerId?: string,
       options?: any
-    ): AxiosPromise<SettingsOutputObjectDTOAPI> {
+    ): AxiosPromise<SettingsOutputArrayDTOAPI> {
       return localVarFp
         .settingsControllerDelete(key, gameServerId, options)
         .then((request) => request(axios, basePath));
@@ -16215,7 +16258,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
       keys?: Array<SettingsControllerGetKeysEnum>,
       gameServerId?: string,
       options?: any
-    ): AxiosPromise<SettingsOutputObjectDTOAPI> {
+    ): AxiosPromise<SettingsOutputArrayDTOAPI> {
       return localVarFp.settingsControllerGet(keys, gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
