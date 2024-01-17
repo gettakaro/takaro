@@ -8,7 +8,7 @@ import {
   ReactElement,
 } from 'react';
 import { useCollapsibleContext } from './CollapsibleContext';
-import { AiOutlineCaretRight as ArrowRight } from 'react-icons/ai';
+import { AiOutlineCaretRight as ArrowRight, AiOutlineCaretDown as ArrowDown } from 'react-icons/ai';
 import { styled } from '../../../styled';
 
 const Container = styled.button`
@@ -52,7 +52,8 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
   return (
     <Container onClick={handleClick} aria-expanded={open} tabIndex={0} ref={ref as ForwardedRef<HTMLButtonElement>}>
       {children}
-      <ArrowRight size={12} />
+      {open === false && <ArrowRight size={12} />}
+      {open === true && <ArrowDown size={12} />}
     </Container>
   );
 });
