@@ -96,7 +96,7 @@ const InstallModule: FC = () => {
             <CollapseList.Item title="User config">
               <JsonSchemaForm
                 schema={JSON.parse(mod?.configSchema as string)}
-                uiSchema={{}}
+                uiSchema={JSON.parse(mod?.uiSchema as string)}
                 initialData={modInstallation?.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
@@ -106,7 +106,7 @@ const InstallModule: FC = () => {
             <CollapseList.Item title="System config">
               <JsonSchemaForm
                 schema={JSON.parse(mod?.systemConfigSchema as string)}
-                uiSchema={{}}
+                uiSchema={{}} /* System config does not have uiSchema*/
                 initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}

@@ -15,6 +15,7 @@ import {
 } from '@takaro/lib-components';
 import { SchemaGenerator } from 'components/JsonSchemaForm';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { UiSchema } from '@rjsf/utils';
 
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
@@ -34,6 +35,7 @@ interface IFormInputs {
 
 export interface ModuleFormSubmitFields extends IFormInputs {
   schema: string;
+  uiSchema: string;
 }
 
 const ButtonContainer = styled.div`
@@ -55,6 +57,8 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
 
   const [generalData, setGeneralData] = useState<IFormInputs>();
   const [schema, setSchema] = useState<AnySchema>({});
+  const [uiSchema, setUiSchema] = useState<UiSchema>({});
+
   const [canSubmit, setCanSubmit] = useState(false);
   const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
@@ -89,8 +93,9 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     setGeneralData({ name, description, permissions });
   };
 
-  const onGeneratorSubmit = async (schema: AnySchema) => {
+  const onGeneratorSubmit = async (schema: AnySchema, uiSchema: UiSchema) => {
     setSchema(schema);
+    setUiSchema(uiSchema);
   };
 
   useEffect(() => {
@@ -100,7 +105,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
   }, [isSuccess]);
 
   useEffect(() => {
-    console.log('canSubmit', canSubmit);
     try {
       if (canSubmit && generalData && Object.keys(generalData).length !== 0 && Object.keys(schema).length !== 0) {
         setCanSubmit(false);
@@ -109,6 +113,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
           description: generalData.description,
           permissions: generalData.permissions,
           schema: JSON.stringify(schema),
+          uiSchema: JSON.stringify(uiSchema),
         });
       }
     } catch (error) {
@@ -190,7 +195,8 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
 
             <CollapseList.Item title="Config">
               <SchemaGenerator
-                initialSchema={(mod?.configSchema && JSON.parse(mod.configSchema)) || undefined}
+                initialUiSchema={(mod?.uiSchema && JSON.parse(mod.uiSchema)) || undefined}
+                initialConfigSchema={(mod?.configSchema && JSON.parse(mod.configSchema)) || undefined}
                 onSubmit={onGeneratorSubmit}
                 ref={SchemaGeneratorFormRef}
               />

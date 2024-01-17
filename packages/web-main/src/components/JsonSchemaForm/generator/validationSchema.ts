@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { InputType } from './inputTypes';
+// This is a temporary workaround until zod.discriminatedUnion is deprecated and replaced by zod.switch
+// New features for zod.discriminatedUnion were set on hold since it will be replaced.
+// https://github.com/colinhacks/zod/issues/1618
+// https://github.com/colinhacks/zod/issues/2106#issuecomment-1836566278
+import { InputType, SubType } from './inputTypes';
 
 const baseShape = z.object({
   name: z
@@ -28,8 +32,9 @@ const baseShape = z.object({
 export const validationSchema = z.object({
   configFields: z
     .array(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       z
-
         .discriminatedUnion('type', [
           z.object({
             type: z.literal(InputType.string.valueOf()),
@@ -45,11 +50,18 @@ export const validationSchema = z.object({
             maximum: z.number().min(1).optional().nullable(),
             required: z.boolean(),
           }),
-          z.object({
-            type: z.literal(InputType.enum.valueOf()),
-            enum: z.array(z.string()).nonempty(),
-            default: z.string().nonempty(),
-          }),
+          z.discriminatedUnion('subType', [
+            z.object({
+              type: z.literal(InputType.enum.valueOf()),
+              subType: z.literal(SubType.custom.valueOf()),
+              enum: z.array(z.string()).nonempty(),
+              default: z.string().nonempty(),
+            }),
+            z.object({
+              type: z.literal(InputType.enum.valueOf()),
+              subType: z.literal(SubType.item.valueOf()),
+            }),
+          ]),
           z.object({
             type: z.literal(InputType.boolean.valueOf()),
             default: z.boolean(),

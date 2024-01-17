@@ -8,7 +8,8 @@ const CreateModule: FC = () => {
     mutate({
       name: fields.name,
       description: fields.description,
-      configSchema: fields.schema,
+      configSchema: fields.schema, // this is already stringified
+      uiSchema: fields.uiSchema, // this is already stringified
       permissions: fields.permissions,
     });
   };

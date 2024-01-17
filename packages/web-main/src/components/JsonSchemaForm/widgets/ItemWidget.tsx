@@ -1,6 +1,13 @@
 import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
-import { styled, Avatar, SelectQueryField, UnControlledSelectQueryField, getInitials } from '@takaro/lib-components';
+import {
+  styled,
+  Avatar,
+  SelectQueryField,
+  UnControlledSelectQueryField,
+  getInitials,
+  Skeleton,
+} from '@takaro/lib-components';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useGameServer } from 'queries/gameservers';
 import { useItems } from 'queries/items';
@@ -37,12 +44,14 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
 }: WidgetProps<T, S, F>) {
   const { selectedGameServerId: gameServerId } = useSelectedGameServer();
   const [itemName, setItemName] = useState<string>('');
+  const enabled = itemName !== '';
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
   const { data, isLoading: isLoadingItems } = useItems(
     { search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } },
-    { enabled: itemName !== '' }
+    { enabled }
   );
+
   const items = data?.pages.flatMap((page) => page.data) ?? [];
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
@@ -59,6 +68,10 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     }
   };
 
+  if (isLoadingGameServer) {
+    return <Skeleton variant="rectangular" width="100%" height="40px" />;
+  }
+
   if (!gameServer) {
     return <div>unable to show items</div>;
   }
@@ -73,9 +86,30 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       readOnly={readonly}
       value={value}
       handleInputValueChange={(value) => setItemName(value)}
-      isLoadingData={isLoadingGameServer || isLoadingItems}
+      isLoadingData={!enabled ? false : isLoadingItems}
       multiSelect={false}
       hasDescription={!!schema.description}
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
+          return <div>Select item...</div>;
+        }
+
+        // multiselect with 1 item and single select
+        if (selectedItems.length === 1) {
+          // find item in list of items
+          const item = items.find((item) => item.id === selectedItems[0].value);
+          if (!item) {
+            return <div>{selectedItems[0].label}</div>;
+          }
+          return (
+            <Inner>
+              {renderIcon(gameServer, item)} {selectedItems[0].label}
+            </Inner>
+          );
+        }
+
+        return <div>{selectedItems.map((item) => item.label).join(',')}</div>;
+      }}
       onChange={onChange}
     >
       <SelectQueryField.OptionGroup label="options">

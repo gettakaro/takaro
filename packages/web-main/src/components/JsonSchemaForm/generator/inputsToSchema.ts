@@ -56,6 +56,11 @@ function getJsonSchemaElement(input: AnyInput) {
 
   switch (input.type) {
     case InputType.enum:
+      // switch from subType.custom to subType.item does not get rid of default value
+      if (input.subType === SubType.item) {
+        delete res.default;
+      }
+
       res.enum = input.values ?? [];
       res.type = 'string';
       break;

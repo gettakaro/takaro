@@ -11,11 +11,10 @@ export const SubTypeToFieldsMap = (
   id: string,
   enumValues: string[]
 ) => {
-  console.log('fired', enumValues);
-
   return {
     [SubType.item]: [
       /* We cannot ask to set default value(s) since when the module is written the game is unknown */
+      /* We could potentially let the user set default values per game, but that seems a bit weird */
     ],
     [SubType.custom]: [
       <TagField

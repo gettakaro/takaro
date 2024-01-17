@@ -30,6 +30,7 @@ const EditModule: FC = () => {
         name: fields.name,
         description: fields.description,
         configSchema: fields.schema, // this is already stringified
+        uiSchema: fields.uiSchema, // this is already stringified
         permissions: fields.permissions,
       },
     });

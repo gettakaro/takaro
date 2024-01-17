@@ -1,14 +1,15 @@
 import { forwardRef, Fragment } from 'react';
+import { UiSchema } from '@rjsf/utils';
 import { AnySchema } from 'ajv';
 import { Button, Divider, Alert } from '@takaro/lib-components';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ConfigField } from './ConfigField';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { validationSchema } from './validationSchema';
+//import { zodResolver } from '@hookform/resolvers/zod';
+//import { validationSchema } from './validationSchema';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { InputType, Input } from './inputTypes';
 import { Form } from './style';
-import { inputsToSchema } from './inputsToSchema';
+import { inputsToSchema, inputsToUiSchema } from './inputsToSchema';
 import { schemaToInputs } from './SchemaToInputs';
 
 export interface TakaroConfigSchema {
@@ -25,18 +26,19 @@ export interface IFormInputs {
 
 interface ISchemaGeneratorProps {
   // e.g. when a user edits a module config, we start from an existing schema
-  initialSchema?: TakaroConfigSchema;
-  onSubmit?: (schema: AnySchema) => unknown;
+  initialConfigSchema?: TakaroConfigSchema;
+  initialUiSchema?: UiSchema;
+  onSubmit?: (configSchema: AnySchema, uiSchema: UiSchema) => unknown;
   onSchemaChange?: (schema: AnySchema) => void;
+  onUiSchemaChange?: (uiSchema: UiSchema) => void;
 }
 
 export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps>(
-  ({ initialSchema, onSubmit, onSchemaChange }, ref) => {
+  ({ initialConfigSchema, onSubmit, onSchemaChange, initialUiSchema = {}, onUiSchemaChange }, ref) => {
     const { control, handleSubmit, getValues, resetField } = useForm<IFormInputs>({
       mode: 'onChange',
-      resolver: zodResolver(validationSchema),
       defaultValues: {
-        configFields: initialSchema ? schemaToInputs(initialSchema) : [],
+        configFields: initialConfigSchema ? schemaToInputs(initialConfigSchema, initialUiSchema) : [],
       },
     });
 
@@ -45,10 +47,13 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
       name: 'configFields',
     });
 
-    const onSubmitWrapper: SubmitHandler<IFormInputs> = ({ configFields }) => {
+    const submitHandler: SubmitHandler<IFormInputs> = ({ configFields }) => {
       const schema = inputsToSchema(configFields);
-      onSubmit && onSubmit(schema);
+      const uiSchema = inputsToUiSchema(configFields);
+      console.log('this fired');
+      onSubmit && onSubmit(schema, uiSchema);
       onSchemaChange && onSchemaChange(schema);
+      onUiSchemaChange && onUiSchemaChange(uiSchema);
     };
 
     const formValues = getValues();
@@ -78,7 +83,7 @@ export const SchemaGenerator = forwardRef<HTMLFormElement, ISchemaGeneratorProps
         )}
 
         {fields.length > 0 && <Alert text="Every config field name should be unique!" variant="warning" />}
-        <Form onSubmit={handleSubmit(onSubmitWrapper)} ref={ref}>
+        <Form onSubmit={handleSubmit(submitHandler)} ref={ref}>
           {formValues.configFields
             ? fields.map((field, index) => {
                 return (
