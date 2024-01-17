@@ -1,11 +1,10 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import { Control, UseFieldArrayRemove, useForm, useWatch, useFieldArray, SubmitHandler } from 'react-hook-form';
 import {
   Button,
   TextField,
   Drawer,
   CollapseList,
-  styled,
   TextAreaField,
   Tooltip,
   IconButton,
@@ -13,54 +12,45 @@ import {
   Chip,
   Alert,
 } from '@takaro/lib-components';
-import { SchemaGenerator } from 'components/JsonSchemaForm';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UiSchema } from '@rjsf/utils';
-
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { moduleValidationSchema } from './moduleValidationSchema';
 import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
-import { AnySchema } from 'ajv';
-import { Title, Fields, PermissionCard, PermissionList } from './style';
+import { Title, Fields, PermissionCard, PermissionList, ButtonContainer } from './style';
 import { AiOutlineDelete as RemoveIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AxiosError } from 'axios';
+import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
+import { schemaToInputs } from 'components/JsonSchemaForm/generator/SchemaToInputs';
+import { inputsToSchema, inputsToUiSchema } from 'components/JsonSchemaForm/generator/inputsToSchema';
+import { ConfigField } from './ConfigField';
+import { Divider } from '@ory/elements';
 
-interface IFormInputs {
+export interface IFormInputs {
   name: string;
   description?: string;
   permissions: PermissionCreateDTO[];
+  configFields: Input[];
 }
 
-export interface ModuleFormSubmitFields extends IFormInputs {
+export interface ModuleFormSubmitProps {
+  name: string;
+  description?: string;
+  permissions: PermissionCreateDTO[];
   schema: string;
   uiSchema: string;
 }
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing[2]};
-`;
-
 interface ModuleFormProps {
   mod?: ModuleOutputDTO;
-  onSubmit: (fields: ModuleFormSubmitFields) => void;
   isLoading: boolean;
   isSuccess: boolean;
+  onSubmit: (data: ModuleFormSubmitProps) => void;
   error: AxiosError<ModuleOutputDTOAPI, any> | null;
 }
 
 export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLoading, error }) => {
   const [open, setOpen] = useState(true);
-
-  const [generalData, setGeneralData] = useState<IFormInputs>();
-  const [schema, setSchema] = useState<AnySchema>({});
-  const [uiSchema, setUiSchema] = useState<UiSchema>({});
-
-  const [canSubmit, setCanSubmit] = useState(false);
-  const SchemaGeneratorFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,34 +59,34 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { handleSubmit, control, resetField } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(moduleValidationSchema),
     defaultValues: {
       name: mod?.name ?? undefined,
       description: mod?.description ?? undefined,
       permissions: mod?.permissions ?? undefined,
+      configFields: mod ? schemaToInputs(JSON.parse(mod.configSchema), JSON.parse(mod.uiSchema)) : [],
     },
   });
 
   const {
-    fields,
-    append: addField,
-    remove: removeField,
+    fields: permissionFields,
+    append: addPermissionField,
+    remove: removePermissionField,
   } = useFieldArray({
     control: control,
     name: 'permissions',
   });
 
-  // submit of the general form
-  const onGeneralSubmit: SubmitHandler<IFormInputs> = async ({ name, description, permissions }) => {
-    setGeneralData({ name, description, permissions });
-  };
-
-  const onGeneratorSubmit = async (schema: AnySchema, uiSchema: UiSchema) => {
-    setSchema(schema);
-    setUiSchema(uiSchema);
-  };
+  const {
+    append: addConfigField,
+    fields: configFields,
+    remove: removeConfigField,
+  } = useFieldArray({
+    control: control,
+    name: 'configFields',
+  });
 
   useEffect(() => {
     if (isSuccess) {
@@ -104,31 +94,26 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     }
   }, [isSuccess]);
 
-  useEffect(() => {
-    try {
-      if (canSubmit && generalData && Object.keys(generalData).length !== 0 && Object.keys(schema).length !== 0) {
-        setCanSubmit(false);
-        onSubmit({
-          name: generalData.name,
-          description: generalData.description,
-          permissions: generalData.permissions,
-          schema: JSON.stringify(schema),
-          uiSchema: JSON.stringify(uiSchema),
-        });
-      }
-    } catch (error) {
-      Sentry.captureException(error);
-    }
-  }, [canSubmit, generalData, schema]);
+  const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
+    const schema = inputsToSchema(configFields);
+    const uiSchema = inputsToUiSchema(configFields);
+    onSubmit({
+      name,
+      description,
+      permissions,
+      schema: JSON.stringify(schema),
+      uiSchema: JSON.stringify(uiSchema),
+    });
+  };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
         <Drawer.Heading>Edit Module</Drawer.Heading>
         <Drawer.Body>
-          <CollapseList>
-            <CollapseList.Item title="General">
-              <form>
+          <form onSubmit={handleSubmit(submitHandler)}>
+            <CollapseList>
+              <CollapseList.Item title="General">
                 <TextField
                   control={control}
                   label="Name"
@@ -144,78 +129,126 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   loading={isLoading}
                   name="description"
                 />
-              </form>
-            </CollapseList.Item>
+              </CollapseList.Item>
 
-            <CollapseList.Item title="Permissions">
-              {fields.length === 0 && (
-                <Alert
-                  variant="info"
-                  title="What are permissions?"
-                  action={{
-                    execute: () => addField({ permission: 'My_Permission', description: '', friendlyName: '' }),
-                    text: 'Add first permission',
-                  }}
-                  text={`
+              <CollapseList.Item title="Permissions">
+                {permissionFields.length === 0 && (
+                  <Alert
+                    variant="info"
+                    title="What are permissions?"
+                    action={{
+                      execute: () =>
+                        addPermissionField({ permission: 'My_Permission', description: '', friendlyName: '' }),
+                      text: 'Add first permission',
+                    }}
+                    text={`
                   Permissions are a way to control who can use the items inside your module or control the behavior of
                   functions inside your module. For example, if you have a command that only admins should be able to
                   use, you can create a permission for it and then check for it to the command. Or, you might want to
                   have different behavior for different groups of players (e.g. regular players vs donators)`}
-                />
-              )}
-              {fields.length > 0 && (
-                <PermissionList>
-                  {fields.map((field, index: number) => (
-                    <PermissionField
-                      control={control}
-                      id={field.id}
-                      remove={removeField}
-                      key={field.id}
-                      index={index}
-                    />
-                  ))}
-                </PermissionList>
-              )}
-              {fields.length > 0 && (
-                <Button
-                  onClick={(_e) => {
-                    addField({
-                      permission: 'My_Permission',
-                      description: '',
-                      friendlyName: '',
-                    });
-                  }}
-                  type="button"
-                  icon={<PlusIcon />}
-                  fullWidth
-                  text="New permission"
-                ></Button>
-              )}
-            </CollapseList.Item>
+                  />
+                )}
+                {permissionFields.length > 0 && (
+                  <PermissionList>
+                    {permissionFields.map((field, index: number) => (
+                      <PermissionField
+                        control={control}
+                        id={field.id}
+                        remove={removePermissionField}
+                        key={field.id}
+                        index={index}
+                      />
+                    ))}
+                  </PermissionList>
+                )}
+                {permissionFields.length > 0 && (
+                  <Button
+                    onClick={(_e) => {
+                      addPermissionField({
+                        permission: 'My_Permission',
+                        description: '',
+                        friendlyName: '',
+                      });
+                    }}
+                    type="button"
+                    icon={<PlusIcon />}
+                    fullWidth
+                    text="New permission"
+                  ></Button>
+                )}
+              </CollapseList.Item>
 
-            <CollapseList.Item title="Config">
-              <SchemaGenerator
-                initialUiSchema={(mod?.uiSchema && JSON.parse(mod.uiSchema)) || undefined}
-                initialConfigSchema={(mod?.configSchema && JSON.parse(mod.configSchema)) || undefined}
-                onSubmit={onGeneratorSubmit}
-                ref={SchemaGeneratorFormRef}
-              />
-            </CollapseList.Item>
-          </CollapseList>
-          {error && <FormError error={error} />}
+              <CollapseList.Item title="Config">
+                {configFields.length === 0 && (
+                  <Alert
+                    variant="info"
+                    title="What are Config fields?"
+                    action={{
+                      execute: () =>
+                        addConfigField({
+                          name: `Config field ${configFields.length + 1}`,
+                          type: InputType.string,
+                          description: '',
+                          required: false,
+                        }),
+                      text: 'Add first config field',
+                    }}
+                    text={`Config fields are a way to control the behavior of your module. When a module is installed
+                  on a game server, Config fields can be tweaked to change the behavior of the module. For example,
+                  if you want to write a module that allows players to teleport to each other, you might want to have a config
+                  field that controls the cooldown of the command.
+                `}
+                  />
+                )}
+
+                {configFields.length > 0 && (
+                  <Alert text="Every config field name should be unique!" variant="warning" />
+                )}
+                {configFields.map((field, index) => {
+                  return (
+                    <Fragment key={`config-field-wrapper-${field.id}`}>
+                      <ConfigField
+                        key={`config-field-${field.id}`}
+                        id={field.id}
+                        input={field as any} /* TODO: fix this type*/
+                        control={control}
+                        index={index}
+                        remove={removeConfigField}
+                        resetField={resetField}
+                      />
+                      {index != configFields.length - 1 && <Divider key={`config-field-divider-${field.id}`} />}
+                    </Fragment>
+                  );
+                })}
+                {configFields.length > 0 && (
+                  <Button
+                    text="Config Field"
+                    type="button"
+                    fullWidth
+                    icon={<PlusIcon />}
+                    onClick={() => {
+                      addConfigField({
+                        name: `Config field ${configFields.length + 1}`,
+                        type: InputType.string,
+                        description: '',
+                        required: false,
+                      });
+                    }}
+                  />
+                )}
+                {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
+        unique name validation. So for now we just add note to the user that the name must be unique 
+        issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
+        */}
+              </CollapseList.Item>
+            </CollapseList>
+            {error && <FormError error={error} />}
+          </form>
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button
-              fullWidth
-              text="Save changes"
-              onClick={() => {
-                handleSubmit(onGeneralSubmit)();
-                SchemaGeneratorFormRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                setCanSubmit(true);
-              }}
-            />
+            <Button fullWidth text="Save changes" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

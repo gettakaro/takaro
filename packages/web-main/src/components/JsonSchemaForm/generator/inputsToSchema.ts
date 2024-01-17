@@ -24,13 +24,12 @@ export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
   const uiSchema: UiSchema = {};
 
   for (const input of inputs) {
-    switch (input.type) {
-      case InputType.enum:
-        if (input.subType === SubType.item) {
-          uiSchema[input.name] = {
-            'ui:widget': UIWidgets.item,
-          };
-        }
+    if (input.type === InputType.array || input.type === InputType.enum) {
+      if (input.subType === SubType.item) {
+        uiSchema[input.name] = {
+          'ui:widget': UIWidgets.item,
+        };
+      }
     }
   }
 
@@ -80,18 +79,16 @@ function getJsonSchemaElement(input: AnyInput) {
       if (input.minLength) {
         res.minLength = input.minLength;
       }
-
       if (input.maxLength) {
         res.maxLength = input.maxLength;
       }
-
       break;
 
     case InputType.boolean:
       break;
 
     case InputType.array:
-      res.items = { type: 'string' };
+      res.items = { type: 'string', enum: input.values ?? [], uniqueItems: true };
       break;
 
     default:

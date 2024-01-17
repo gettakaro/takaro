@@ -61,6 +61,4 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
     );
   }
 );
-
-export { SchemaGenerator } from './generator';
 export { inputsToSchema as generateJsonSchema } from './generator/inputsToSchema';

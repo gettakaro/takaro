@@ -1,8 +1,8 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
 import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip } from '@takaro/lib-components';
 import { Header } from './style';
-import { IFormInputs } from '..';
-import { Input, InputType } from '../inputTypes';
+import { IFormInputs } from '../ModuleForm';
+import { Input, InputType, SubType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 import { InputTypeToFieldsMap } from './TypeSpecificFieldsMap';
@@ -23,18 +23,26 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
     name: `configFields.${index}.name`,
   });
 
-  const fieldType = useWatch<IFormInputs>({
+  const inputType = useWatch<IFormInputs>({
     control,
     name: `configFields.${index}.type`,
   }) as InputType;
+
+  const subType = useWatch<IFormInputs>({
+    control,
+    name: `configFields.${index}.subType`,
+  });
+
+  console.log('inputType', inputType);
+  console.log('subType', subType);
 
   /* whenever the field type changes we swap all type dependent fields.
     `configFields.${index}.default` has the same name across different inputTypes.
     We need to reset the default value to the new type default value.
   */
   useEffect(() => {
-    if (fieldType && initialised) {
-      switch (fieldType) {
+    if (inputType && initialised) {
+      switch (inputType) {
         case InputType.boolean:
           resetField(`configFields.${index}.default`, {
             defaultValue: true,
@@ -50,16 +58,35 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
             defaultValue: 0,
           });
           break;
+        case InputType.enum:
         case InputType.array:
-          resetField(`configFields.${index}.default`, { defaultValue: [] });
+          resetField(`configFields.${index}.default`, {
+            defaultValue: undefined,
+          });
           break;
       }
     } else {
       setInitialised(true);
     }
-  }, [fieldType]);
+  }, [inputType]);
 
-  const typeSpecificFields = useCallback(InputTypeToFieldsMap, [fieldType, index, id]);
+  /*  Whenever the field's subType changes we swap all type dependent fields.
+      `configFields.${index}.subType` has the same name across different inputTypes.
+      We need to reset the subType to undefined.
+    */
+  useEffect(() => {
+    console.log('subType', subType);
+    if ((subType === SubType.custom && initialised && inputType == InputType.enum) || inputType == InputType.array) {
+      console.log('did this fire');
+      resetField(`configFields.${index}.subType`, {
+        defaultValue: undefined,
+      });
+    } else {
+      setInitialised(true);
+    }
+  }, [subType, inputType]);
+
+  const typeSpecificFields = useCallback(InputTypeToFieldsMap, [inputType, index, id]);
 
   return (
     <>
@@ -114,7 +141,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
           ))}
         </SelectField.OptionGroup>
       </SelectField>
-      {typeSpecificFields(control, input, index, id)[fieldType]}
+      {typeSpecificFields(control, input, index, id)[inputType]}
     </>
   );
 };

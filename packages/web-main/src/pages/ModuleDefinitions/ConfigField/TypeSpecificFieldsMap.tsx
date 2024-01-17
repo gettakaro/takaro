@@ -1,7 +1,7 @@
 import { Control } from 'react-hook-form';
-import { Input, InputType, SubType } from '../inputTypes';
+import { Input, InputType, SubType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { TextField, TagField, CheckBox, SelectField } from '@takaro/lib-components';
-import { IFormInputs } from '..';
+import { IFormInputs } from '../ModuleForm';
 import { useWatch } from 'react-hook-form';
 
 export const SubTypeToFieldsMap = (
@@ -9,7 +9,8 @@ export const SubTypeToFieldsMap = (
   input: Input,
   index: number,
   id: string,
-  enumValues: string[]
+  enumValues: string[],
+  inputType: InputType
 ) => {
   return {
     [SubType.item]: [
@@ -30,6 +31,7 @@ export const SubTypeToFieldsMap = (
           key={`${input.type}-default-${id}`}
           control={control}
           name={`configFields.${index}.default`}
+          multiSelect={inputType === InputType.array}
           label="Default value"
           render={(selectedItems) => (
             <div>{selectedItems.length > 0 ? enumValues.find((e) => e === selectedItems[0].value) : enumValues[0]}</div>
@@ -152,17 +154,33 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, input: Input
           ))}
         </SelectField.OptionGroup>
       </SelectField>,
-      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues)[selectedSubType],
+      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
+      <CheckBox
+        key={`${input.type}-required-${id}`}
+        control={control}
+        label="Is Field required?"
+        labelPosition="left"
+        name={`configFields.${index}.required`}
+        description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
+      />,
     ],
     [InputType.array]: [
-      <TagField
-        name={`configFields.${index}.default`}
-        key={`${input.type}-default-${id}`}
+      <SelectField
+        name={`configFields.${index}.subType`}
+        key={`${input.type}-subType-${id}`}
         control={control}
-        label="Default value"
-        isEditOnRemove
-        placeholder="Press enter to add a value."
-      />,
+        label="Subtype"
+        render={(selectedItems) => <div>{selectedItems.length > 0 ? selectedItems[0].value : 'Select a subtype'}</div>}
+      >
+        <SelectField.OptionGroup>
+          {Object.keys(SubType).map((subType: string) => (
+            <SelectField.Option key={`${subType}-${id}`} value={subType} label={subType}>
+              <span>{subType}</span>
+            </SelectField.Option>
+          ))}
+        </SelectField.OptionGroup>
+      </SelectField>,
+      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
       <CheckBox
         key={`${input.type}-required-${id}`}
         control={control}

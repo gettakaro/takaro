@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import { useModule, useModuleUpdate } from 'queries/modules';
-import { ModuleForm, ModuleFormSubmitFields } from './ModuleForm';
+import { ModuleForm, ModuleFormSubmitProps } from './ModuleForm';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
@@ -22,7 +22,7 @@ const EditModule: FC = () => {
     navigate(PATHS.moduleDefinitions());
   }
 
-  const onSubmit = async (fields: ModuleFormSubmitFields) => {
+  const onSubmit = async (fields: ModuleFormSubmitProps) => {
     mutate({
       // if moduleId is not present it will have failed before this point.
       id: moduleId!,

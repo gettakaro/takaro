@@ -59,6 +59,13 @@ export function schemaToInputs(schema: TakaroConfigSchema, uiSchema: UiSchema): 
         break;
 
       case InputType.array:
+        if (uiSchema[name] && uiSchema[name]['ui:widget']) {
+          input.subType = uiSchema[name]['ui:widget'];
+        } else {
+          input.subType = SubType.custom;
+          input.values = property.items.enum;
+        }
+        break;
       case InputType.boolean:
         break;
 

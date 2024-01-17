@@ -1,7 +1,3 @@
-export * from './enum';
-
-import { EnumInput } from './enum';
-
 export enum InputType {
   string = 'string',
   number = 'number',
@@ -42,12 +38,21 @@ interface BooleanInput extends BaseObject {
   default?: boolean;
 }
 
-interface ArrayInput extends BaseObject {
-  type: InputType.array;
-  items: AnyInputExceptArray;
-  default?: string[];
+export interface EnumInput extends BaseObject {
+  type: InputType.enum;
+  subType: SubType;
+  values: string[];
+  // Item cannot have default value because the items will be different for each game
+  // and potentially server (mods)
+  default?: this['subType'] extends 'custom' ? string : never;
 }
 
-type AnyInputExceptArray = EnumInput | NumberInput | StringInput | BooleanInput;
-export type AnyInput = AnyInputExceptArray | ArrayInput;
+interface ArrayInput extends BaseObject {
+  type: InputType.array;
+  subType: SubType;
+  values: string[];
+  default?: this['subType'] extends 'custom' ? string[] : never;
+}
+
+export type AnyInput = EnumInput | NumberInput | StringInput | BooleanInput | ArrayInput;
 export type Input = AnyInput & { name: string };

@@ -56,3 +56,9 @@ export const Flex = styled.div`
     flex-grow: 1;
   }
 `;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
