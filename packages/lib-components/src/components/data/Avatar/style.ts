@@ -57,10 +57,12 @@ export const Container = styled.div<{ size: Size }>`
     align-items: center;
     justify-content: center;
     width: 100%;
+    aspect-ratio: 1;
     height: 100%;
     border-radius: 50%;
     background-color: ${({ theme }) => theme.colors.background};
     border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+    margin-left: 0;
   }
 
   ${({ size, theme }) => {
