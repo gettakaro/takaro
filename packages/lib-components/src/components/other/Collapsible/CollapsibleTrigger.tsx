@@ -14,10 +14,11 @@ import { styled } from '../../../styled';
 const Container = styled.button`
   display: flex;
   align-items: center;
-  background-color: transparent;
+  justify-content: space-between;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  width: 100%;
   color: ${({ theme }) => theme.colors.text};
-  margin-right: ${({ theme }) => theme.spacing[1]};
-  padding: ${({ theme }) => theme.spacing['0_5']};
+  padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1']}`};
   margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
@@ -50,9 +51,8 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
 
   return (
     <Container onClick={handleClick} aria-expanded={open} tabIndex={0} ref={ref as ForwardedRef<HTMLButtonElement>}>
-      {' '}
       {children}
-      <ArrowRight size={15} />
+      <ArrowRight size={12} />
     </Container>
   );
 });
