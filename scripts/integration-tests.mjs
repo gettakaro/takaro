@@ -7,7 +7,7 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitUntilHealthyHttp(url, maxRetries = 5) {
+async function waitUntilHealthyHttp(url, maxRetries = 10) {
   try {
     const { stdout } = await $`curl -s -o /dev/null -w "%{http_code}" ${url}`;
     if (stdout === '200') {
@@ -94,7 +94,7 @@ async function main() {
   await pullAll({ ...composeOpts, log: false });
 
   console.log('Running Takaro SQL migrations...');
-  await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+  await run('takaro_api', 'npm run db:migrate', composeOpts);
 
   console.log('Starting all containers...');
   await upAll(composeOpts);
