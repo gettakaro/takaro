@@ -36,7 +36,6 @@ export const lightTheme = {
     placeholderHighlight: '#ffffff',
     shade: '#eaf8f0',
     white: '#ffffff',
-    gray: '#4e525c',
     background: '#f9f9f9',
     backgroundAlt: '#e9e9e9',
     // not set correctly yet.
@@ -65,7 +64,6 @@ export const darkTheme: ThemeType = {
     placeholder: '#202020',
     placeholderHighlight: '#303030',
     white: '#ffffff',
-    gray: '#0e0e0e',
     shade: '#eaf8f0',
     text: '#c2c2c2',
     textAlt: '#818181',

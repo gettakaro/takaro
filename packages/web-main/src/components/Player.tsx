@@ -29,7 +29,7 @@ export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar
   );
 };
 
-export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar = true, isLoading, hasError }) => {
+export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar, isLoading, hasError }) => {
   if (isLoading) {
     return <Chip color="backgroundAccent" isLoading label="" />;
   }
@@ -48,7 +48,7 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar 
   return (
     <Link
       to={PATHS.player.profile(playerId)}
-      style={{ display: 'flex', alignItems: 'center', gap: '5px', width: 'fit-content' }}
+      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
     >
       {showAvatar && avatar}
       <span>{name}</span>

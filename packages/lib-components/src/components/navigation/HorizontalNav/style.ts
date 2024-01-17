@@ -32,7 +32,7 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
     border-radius: ${({ theme }) => theme.borderRadius.small};
     text-color: ${({ theme }) => theme.colors.textAlt};
     font-weight: ${({ variant }) => (variant === 'block' ? 'bold' : 'normal')};
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    font-size: ${({ theme }) => theme.fontSize.medium};
 
     &.active {
       color: ${({ theme }) => theme.colors.text};

@@ -52,10 +52,10 @@ const Container = styled.div`
     li {
       position: relative;
       &:first-child {
-        border-top: 1px solid ${({ theme }) => theme.colors.gray};
+        border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
       }
 
-      border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
+      border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
       width: 100%;
       padding: 2.5rem .5rem;
 
