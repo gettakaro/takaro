@@ -11,8 +11,8 @@ import { EventFeedWidget } from 'components/events/EventFeedWidget';
 const GridContainer = styled.div`
   display: grid;
 
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: minmax(auto, 15%) 1fr;
+  grid-template-columns: 1fr 0.4fr;
+  grid-template-rows: minmax(auto, 40%) 1fr;
 
   width: 100%;
   height: 100%;
