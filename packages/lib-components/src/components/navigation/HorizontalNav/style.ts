@@ -44,6 +44,22 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
       }
     }}
     border-radius: ${({ theme }) => theme.borderRadius.small};
+    ${({ variant, theme }) => {
+      switch (variant) {
+        case 'underline':
+          return `
+            font-weight: 500;
+            padding: 0 ${theme.spacing['0_75']};
+          `;
+        case 'block':
+          return `
+            font-size: ${theme.fontSize.medium};
+            font-weight: bold;
+            padding: ${theme.spacing['0_75']};
+          `;
+      }
+    }}
+color: ${({ theme }) => theme.colors.textAlt};
 <<<<<<< HEAD
     color: ${({ theme }) => theme.colors.textAlt};
 =======
