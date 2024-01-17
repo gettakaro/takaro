@@ -31,7 +31,7 @@ echo "PermitRootLogin yes" >>/etc/ssh/sshd_config
 rc-update add sshd
 
 # # Start our agent service on boot
-rc-update add agent boot
+rc-update add agent default
 
 # Then, copy the newly configured system to the rootfs image:
 for d in bin etc lib root sbin usr app; do
