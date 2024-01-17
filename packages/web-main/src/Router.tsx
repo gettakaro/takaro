@@ -44,6 +44,7 @@ import { ImportGameServer } from 'pages/gameserver/ImportGameServer';
 import GameServerOverview from 'pages/gameserver/dashboards/GameServerOverview';
 import GameServerConsole from 'pages/gameserver/dashboards/GameServerConsole';
 import GameServerStatistics from 'pages/gameserver/dashboards/GameServerStatistics';
+import { PlayerProfileGameServer } from 'pages/player/profile/gameserver/PlayerProfileGameserver';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -107,10 +108,13 @@ export const Router: FC = () => (
           {/* ======================== PLayer ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadPlayers]} />}>
             <Route element={<Players />} path={PATHS.players()} />
-            <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManagePlayers]} />}>
-                <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
+            <Route element={<FrameLayoutRoute frame="playerProfile" />}>
+              <Route element={<PlayerProfile />} path={PATHS.player.global.overview(':playerId')}>
+                <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManagePlayers]} />}>
+                  <Route element={<AssignPlayerRole />} path={PATHS.player.global.assignRole(':playerId')} />
+                </Route>
               </Route>
+              <Route element={<PlayerProfileGameServer />} path={PATHS.player.gameServer.overview(':playerId')} />
             </Route>
           </Route>
 

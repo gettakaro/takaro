@@ -1,4 +1,4 @@
-import { Stats, styled, Divider, Chip, Tooltip, Skeleton } from '@takaro/lib-components';
+import { styled, Tooltip, Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -7,17 +7,20 @@ import { DateTime } from 'luxon';
 // import { SiEpicgames as EpicGamesIcon } from 'react-icons/si';
 // import { FaSteam as SteamIcon, FaXbox as XboxIcon, FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { PlayerRolesTable } from './PlayerRolesTable';
-import { PlayerInventoryTable } from './PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+`;
 
 export const ChipContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['1']};
 `;
@@ -38,15 +41,6 @@ const IpInfoLine = styled.div`
 const IpWhoisLink = styled.a`
   color: ${({ theme }) => theme.colors.primary};
   text-decoration: underline;
-`;
-
-const EventWidgetContainer = styled.div`
-  height: 100px;
-`;
-
-const Columns = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 `;
 
 const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
@@ -83,7 +77,7 @@ export const PlayerProfile: FC = () => {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
-  const { data, isLoading } = usePlayer(playerId);
+  const { data: player, isLoading } = usePlayer(playerId);
 
   const { data: pogs, isLoading: isLoadingPogs } = usePlayerOnGameServers({
     filters: {
@@ -91,69 +85,22 @@ export const PlayerProfile: FC = () => {
     },
   });
 
-  useDocumentTitle(data?.name || 'Player Profile');
+  useDocumentTitle(player?.name || 'Player Profile');
 
-  if (isLoading || isLoadingPogs || !data || !pogs) {
+  if (isLoading || isLoadingPogs || !player || !pogs) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   return (
-    <div>
-      <h1>{data?.name}</h1>
-      <Columns>
-        <div style={{ maxWidth: '800px' }}>
-          <Stats border={false} direction="horizontal">
-            <Stats.Stat
-              description="Member since"
-              value={DateTime.fromISO(data?.createdAt).toLocaleString({
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            />
-            <Stats.Stat
-              description="Last seen"
-              value={DateTime.fromISO(data?.updatedAt).toLocaleString({
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            />
-          </Stats>
-        </div>
-        <ChipContainer>
-          {data?.id && <Chip color="secondary" label={`Takaro ID: ${data.id}`} />}
-          {data?.steamId && (
-            <Chip
-              color="secondary"
-              onClick={() => {
-                window.open(`https://steamcommunity.com/profiles/${data?.steamId}`, '_blank');
-              }}
-              label={`Steam ID: ${data.steamId}`}
-            />
-          )}
-          {data.epicOnlineServicesId && <Chip color="secondary" onClick={() => {}} label={data.epicOnlineServicesId} />}
-          {data.xboxLiveId && <Chip color="secondary" onClick={() => {}} label={data.xboxLiveId} />}
-        </ChipContainer>
-      </Columns>
+    <>
+      <Section>
+        <h2>IP History</h2>
+        <IpInfo ipInfo={pogs.data.map((pog) => pog.ipHistory).flat()} />
+      </Section>
 
-      <Divider />
-
-      <h2>IP History</h2>
-      <IpInfo ipInfo={pogs.data.map((pog) => pog.ipHistory).flat()} />
-
-      <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} playerName={data?.name} />
-
-      <Columns>
-        <h2>Inventory</h2>
-        <PlayerInventoryTable pogs={pogs.data} />
-
-        <EventWidgetContainer>
-          <EventFeedWidget query={{ filters: { playerId: [playerId] } }} />
-        </EventWidgetContainer>
-      </Columns>
+      <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
 
       <Outlet />
-    </div>
+    </>
   );
 };

@@ -12,7 +12,7 @@ import { DateTime } from 'luxon';
 
 const AssignRole: FC<{ playerId: string }> = ({ playerId }) => {
   const navigate = useNavigate();
-  return <Button onClick={() => navigate(PATHS.player.assignRole(playerId))} text="Assign role" />;
+  return <Button onClick={() => navigate(PATHS.player.global.assignRole(playerId))} text="Assign role" />;
 };
 
 interface IPlayerRolesTableProps {

@@ -6,7 +6,7 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
   display: flex;
   position: relative;
   flex-direction: row;
-  gap: 1rem;
+  gap: ${({ theme }) => theme.spacing[1]};
 
   ${({ variant, theme }) => {
     switch (variant) {
@@ -19,20 +19,32 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
         `;
       case 'underline':
         return `
-          border-bottom: 1px solid ${theme.colors.backgroundAlt};
+          border-bottom: 1px solid ${theme.colors.backgroundAccent};
           width: 100%;
-          padding-bottom: ${theme.spacing[1]};
+          padding-bottom: ${theme.spacing['0_75']};
         `;
     }
   }}
 
   a {
     position: relative;
-    padding: ${({ theme }) => theme.spacing['0_75']};
+    ${({ variant, theme }) => {
+      switch (variant) {
+        case 'block':
+          return `
+            font-size: ${theme.fontSize.mediumLarge};
+            font-weight: bold;
+            padding: ${theme.spacing['0_75']};
+          `;
+        case 'underline':
+          return `
+            font-weight: 500;
+            padding: 0 ${theme.spacing['0_75']};
+          `;
+      }
+    }}
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    text-color: ${({ theme }) => theme.colors.textAlt};
-    font-weight: ${({ variant }) => (variant === 'block' ? 'bold' : 'normal')};
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    color: ${({ theme }) => theme.colors.textAlt};
 
     &.active {
       color: ${({ theme }) => theme.colors.text};
@@ -42,18 +54,15 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
       position: relative;
       z-index: 10;
     }
-    &:hover {
-      background-color: ${({ theme, variant }) => (variant === 'underline' ? theme.colors.backgroundAlt : 'none')};
-    }
   }
 `;
 
 export const Underline = styled(motion.div)`
   position: absolute;
-  bottom: -${({ theme }) => theme.spacing[1]};
+  bottom: -${({ theme }) => theme.spacing['0_75']};
   left: 0px;
   display: block;
-  height: 2px;
+  height: 1px;
   background-color: ${({ theme }) => theme.colors.primary};
   content: '';
   width: 100%;

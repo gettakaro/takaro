@@ -291,7 +291,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate(`${PATHS.player.profile(player.id)}`)}
+            onClick={() => navigate(`${PATHS.player.global(player.id)}`)}
           />
 
           <Dropdown.Menu.Item
