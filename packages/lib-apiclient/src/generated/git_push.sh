@@ -3,10 +3,10 @@
 #
 # Usage example: /bin/sh ./git_push.sh wing328 openapi-petstore-perl "minor update" "gitlab.com"
 
-git_user_id=$1
-git_repo_id=$2
-release_note=$3
-git_host=$4
+git_user_id=$1 # Git user ID
+git_repo_id=$2 # Git repository ID
+release_note=$3 # Release note
+git_host=$4 # Git host
 
 if [ "$git_host" = "" ]; then
     git_host="github.com"
@@ -14,17 +14,17 @@ if [ "$git_host" = "" ]; then
 fi
 
 if [ "$git_user_id" = "" ]; then
-    git_user_id="GIT_USER_ID"
+    echo "[ERROR] Git user ID is not provided. Please provide the Git user ID as a command line argument." exit 1
     echo "[INFO] No command line input provided. Set \$git_user_id to $git_user_id"
 fi
 
 if [ "$git_repo_id" = "" ]; then
-    git_repo_id="GIT_REPO_ID"
+    echo "[ERROR] Git repository ID is not provided. Please provide the Git repository ID as a command line argument." exit 1
     echo "[INFO] No command line input provided. Set \$git_repo_id to $git_repo_id"
 fi
 
 if [ "$release_note" = "" ]; then
-    release_note="Minor update"
+    echo "[ERROR] Release note is not provided. Please provide the release note as a command line argument." exit 1
     echo "[INFO] No command line input provided. Set \$release_note to $release_note"
 fi
 
