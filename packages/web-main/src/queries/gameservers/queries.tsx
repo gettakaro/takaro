@@ -15,8 +15,6 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallDTO,
-  Settings,
-  SettingsOutputDTOAPI,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
@@ -38,8 +36,6 @@ export const gameServerKeys = {
   all: ['gameservers'] as const,
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
-
-  settings: (id?: string) => [...gameServerKeys.all, 'settings', id] as const,
   reachability: (id: string) => [...gameServerKeys.all, 'reachable', id] as const,
 };
 
@@ -202,17 +198,6 @@ export const useGameServerModuleUninstall = () => {
       );
     },
     useErrorBoundary: (error) => error.response!.status >= 500,
-  });
-};
-
-// SERVER SETTINGS
-export const useGameServerSettings = (id?: string) => {
-  const apiClient = useApiClient();
-
-  return useQuery<Settings, AxiosError<SettingsOutputDTOAPI>>({
-    queryKey: gameServerKeys.settings(id),
-    queryFn: async () => (await apiClient.settings.settingsControllerGet(undefined, id)).data.data,
-    cacheTime: 0,
   });
 };
 

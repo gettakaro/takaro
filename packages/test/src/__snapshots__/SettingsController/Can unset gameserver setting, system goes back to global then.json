@@ -1,9 +1,13 @@
 {
   "body": {
     "meta": {},
-    "data": {
-      "commandPrefix": "global!"
-    }
+    "data": [
+      {
+        "key": "commandPrefix",
+        "value": "global!",
+        "type": "inherit"
+      }
+    ]
   },
   "status": 200,
   "test": {

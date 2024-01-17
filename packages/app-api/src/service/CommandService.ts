@@ -252,13 +252,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
     const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
-    if (!chatMessage.msg.startsWith(prefix)) {
+    if (!chatMessage.msg.startsWith(prefix.value)) {
       // Message doesn't start with configured prefix
       // Ignore it
       return;
     }
 
-    const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
+    const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
 

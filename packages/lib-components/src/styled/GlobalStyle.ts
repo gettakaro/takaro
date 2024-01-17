@@ -112,6 +112,15 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
         border-color: none!important;
       }
     }
+
+    &:disabled {
+      cursor: not-allowed;
+      &:focus {
+        border-color: none!important;
+      }
+    }
+
+
     &:focus {
       outline: 0;
     }
