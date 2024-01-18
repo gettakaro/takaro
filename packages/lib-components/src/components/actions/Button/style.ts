@@ -28,7 +28,7 @@ export const Default = styled.button<{
   }
   &:hover {
     background-position: right center;
-    background-color: ${({ theme, color }) => lighten(0.1, theme.colors[color])};
+    background-color: ${({ theme, color }) => lighten(0.05, theme.colors[color])};
   }
 
   span {
@@ -44,6 +44,7 @@ export const Default = styled.button<{
           return 'white';
       }
     }};
+
     margin-left: ${({ icon, isLoading, iconPosition }): string =>
       iconPosition === 'left' && (icon || isLoading) ? '10px' : '0px'};
     margin-right: ${({ icon, isLoading, iconPosition }): string =>
@@ -110,8 +111,7 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
 
   &:hover {
     background-position: right center;
-    background-color: ${({ theme, color }) => shade(0.65, theme.colors[color])};
-    border-color: ${({ theme, color }): string => lighten(0.1, theme.colors[color])};
+    background-color: ${({ theme, color }): string => shade(0.8, theme.colors[color])};
   }
 
   &:disabled {

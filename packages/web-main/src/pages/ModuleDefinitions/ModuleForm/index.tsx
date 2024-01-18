@@ -9,6 +9,7 @@ import {
   FormError,
   Alert,
   QuestionTooltip,
+  useTheme,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
@@ -16,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
+import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AxiosError } from 'axios';
 import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { schemaToInputs } from 'components/JsonSchemaForm/generator/SchemaToInputs';
@@ -50,6 +52,7 @@ interface ModuleFormProps {
 export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLoading, error }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   useEffect(() => {
     if (!open) {
@@ -57,7 +60,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     }
   }, [open, navigate]);
 
-  const { handleSubmit, control, resetField, formState } = useForm<IFormInputs>({
+  const { handleSubmit, control, resetField } = useForm<IFormInputs>({
     mode: 'onChange',
     defaultValues: {
       name: mod?.name ?? undefined,
@@ -67,8 +70,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     },
     resolver: zodResolver(validationSchema),
   });
-
-  console.log(formState.errors);
 
   const {
     fields: permissionFields,
@@ -159,19 +160,30 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                     ))}
                   </PermissionList>
                 )}
-                <Button
-                  variant="outline"
-                  onClick={(_e) => {
-                    addPermissionField({
-                      permission: `Permission ${permissionFields.length + 1}`,
-                      description: '',
-                      friendlyName: '',
-                    });
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: theme.spacing['1'],
+                    marginBottom: theme.spacing['2'],
                   }}
-                  fullWidth
-                  type="button"
-                  text="Create new permission"
-                ></Button>
+                >
+                  <Button
+                    variant="outline"
+                    fullWidth
+                    icon={<PlusIcon />}
+                    onClick={(_e) => {
+                      addPermissionField({
+                        permission: `Permission ${permissionFields.length + 1}`,
+                        description: '',
+                        friendlyName: '',
+                      });
+                    }}
+                    type="button"
+                    text="Create new permission"
+                  />
+                </div>
               </CollapseList.Item>
 
               <CollapseList.Item
@@ -206,20 +218,32 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                     </Fragment>
                   );
                 })}
-                <Button
-                  text="Create new config field"
-                  type="button"
-                  fullWidth
-                  variant="outline"
-                  onClick={() => {
-                    addConfigField({
-                      name: `Config field ${configFields.length + 1}`,
-                      type: InputType.string,
-                      description: '',
-                      required: false,
-                    });
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: theme.spacing['1'],
+                    marginBottom: theme.spacing['2'],
                   }}
-                />
+                >
+                  <Button
+                    text="Create new config field"
+                    type="button"
+                    icon={<PlusIcon />}
+                    variant="outline"
+                    color="primary"
+                    fullWidth
+                    onClick={() => {
+                      addConfigField({
+                        name: `Config field ${configFields.length + 1}`,
+                        type: InputType.string,
+                        description: '',
+                        required: false,
+                      });
+                    }}
+                  />
+                </div>
                 {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
         unique name validation. So for now we just add note to the user that the name must be unique 
         issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
