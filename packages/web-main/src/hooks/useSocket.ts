@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useConfig } from './useConfig';
 
-let socket: Socket<never, never> | null = null;
+let socket: Socket<never, any> | null = null;
 
 export const useSocket = () => {
   const cfg = useConfig();
