@@ -11,7 +11,7 @@ import { useCollapsibleContext } from './CollapsibleContext';
 import { AiOutlineCaretRight as ArrowRight, AiOutlineCaretDown as ArrowDown } from 'react-icons/ai';
 import { styled } from '../../../styled';
 
-const Container = styled.button`
+const Container = styled.button<{ open: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,11 +19,12 @@ const Container = styled.button`
   width: 100%;
   color: ${({ theme }) => theme.colors.text};
   padding: ${({ theme }) => `${theme.spacing['0_5']} ${theme.spacing['1']}`};
-  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  margin-bottom: ${({ theme, open }) => (!open ? theme.spacing['1'] : theme.spacing['0_5'])};
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  color: ${({ theme }) => theme.colors.textAlt};
 
   svg {
-    fill: ${({ theme }) => theme.colors.text};
+    fill: ${({ theme }) => theme.colors.textAlt};
   }
 `;
 
@@ -51,6 +52,7 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
 
   return (
     <Container
+      open={open}
       type="button"
       onClick={handleClick}
       aria-expanded={open}
