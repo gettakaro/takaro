@@ -25,7 +25,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
     disabled,
     hint,
     description,
-    multiSelect,
+    multiple,
     name,
     control,
     loading,
@@ -107,7 +107,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           required={required}
           size={componentSize}
           enableFilter={enableFilter}
-          multiSelect={multiSelect}
+          multiple={multiple}
           onChange={field.onChange}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}

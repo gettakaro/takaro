@@ -16,7 +16,7 @@ interface ContextValue {
   setOpen: (open: boolean) => void;
   getItemProps: (userProps?: React.HTMLProps<HTMLElement>) => any;
   dataRef: ContextData;
-  multiSelect: boolean;
+  multiple: boolean;
   name: string;
 }
 

@@ -54,10 +54,10 @@ interface SharedSelectQueryFieldProps {
 }
 
 interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
-  multiSelect?: false;
+  multiple?: false;
 }
 interface MultiSelectQueryFieldProps extends SharedSelectQueryFieldProps {
-  multiSelect: true;
+  multiple: true;
 }
 
 interface SingleSelectQueryFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
@@ -98,7 +98,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     children,
     readOnly,
     render,
-    multiSelect = false,
+    multiple = false,
     debounce = 250,
     isLoadingData: isLoading = false,
     handleInputValueChange,
@@ -244,7 +244,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         setActiveIndex,
         activeIndex,
         dataRef: context.dataRef,
-        multiSelect,
+        multiple,
         selectedItems,
         setSelectedItems,
         name,

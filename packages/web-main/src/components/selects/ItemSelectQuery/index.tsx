@@ -41,7 +41,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   description,
   placeholder = 'Select an item',
   gameServerId,
-  multiSelect,
+  multiple,
 }) => {
   const [itemName, setItemName] = useState<string>('');
 
@@ -71,7 +71,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       disabled={disabled}
       inPortal={inPortal}
       hint={hint}
-      multiSelect={multiSelect}
+      multiple={multiple}
       hasMargin={hasMargin}
       placeholder={placeholder}
       required={required}
@@ -100,7 +100,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   disabled,
   placeholder,
   hasMargin,
-  multiSelect,
+  multiple,
   inPortal,
   hint,
   required,
@@ -135,7 +135,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       inPortal={inPortal}
       readOnly={readOnly}
       required={required}
-      multiSelect={multiSelect}
+      multiple={multiple}
       hasMargin={hasMargin}
       description={description}
       render={(selectedItems) => {

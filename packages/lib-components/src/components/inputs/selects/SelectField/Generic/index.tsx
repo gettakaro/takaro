@@ -43,11 +43,11 @@ interface SharedSelectFieldProps {
 }
 
 interface MultiSelectFieldProps extends SharedSelectFieldProps {
-  multiSelect: true;
+  multiple: true;
 }
 
 interface SingleSelectFieldProps extends SharedSelectFieldProps {
-  multiSelect?: false;
+  multiple?: false;
 }
 
 interface SingleSelectFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
@@ -82,7 +82,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     inPortal = false,
     disabled,
     enableFilter = false,
-    multiSelect = false,
+    multiple = false,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -133,9 +133,9 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       listRef: listItemsRef,
       activeIndex: activeIndex,
       // TODO
-      // selectedIndex: multiSelect ? null : (selectedIndex as number),
+      // selectedIndex: multiple ? null : (selectedIndex as number),
       onNavigate: setActiveIndex,
-      scrollItemIntoView: multiSelect ? false : true,
+      scrollItemIntoView: multiple ? false : true,
     }),
   ]);
 
@@ -216,7 +216,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       <FloatingFocusManager
         context={context}
         // TODO
-        // initialFocus={selectedItems && selectedItems.length > 0 ? selectedItems[0].label : filterInputRef}
+        //initialFocus={selectedItems && selectedItems.length > 0 ? selectedItems[0].label : filterInputRef}
       >
         <SelectContainer
           ref={refs.setFloating}
@@ -248,7 +248,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         getItemProps,
         dataRef: context.dataRef,
         name,
-        multiSelect,
+        multiple,
       }}
     >
       <SelectButton

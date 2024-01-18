@@ -23,7 +23,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     hint,
     description,
     name,
-    multiSelect,
+    multiple,
     control,
     inPortal,
     debounce,
@@ -74,7 +74,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           readOnly={readOnly}
           render={render}
           disabled={disabled}
-          multiSelect={multiSelect}
+          multiple={multiple}
           required={required}
           size={componentSize}
           inPortal={inPortal}
