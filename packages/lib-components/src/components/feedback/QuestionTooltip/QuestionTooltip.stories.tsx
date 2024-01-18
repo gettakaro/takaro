@@ -3,7 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import { QuestionTooltip } from '.';
 
 export default {
-  title: 'Feedback/Tooltip',
+  title: 'Feedback/QuestionTooltip',
   component: QuestionTooltip,
   args: {
     placement: 'bottom',
