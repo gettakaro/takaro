@@ -85,12 +85,12 @@ const InstallModule: FC = () => {
   }
 
   const isInstalled = modInstallation?.createdAt !== undefined;
-  const actionType = isInstalled ? 'Update module' : 'Install module';
+  const actionType = isInstalled ? 'Update' : 'Install';
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{actionType} Module</Drawer.Heading>
+        <Drawer.Heading>{actionType} module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
