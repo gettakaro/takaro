@@ -21,7 +21,7 @@ export const oryThemeOverrides = {
   background: {
     surface: darkTheme.colors.background,
     canvas: darkTheme.colors.backgroundAlt,
-    subtle: darkTheme.colors.gray,
+    subtle: darkTheme.colors.background,
   },
   error: {
     def: darkTheme.colors.error,
