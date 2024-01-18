@@ -24,6 +24,8 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
       disabled={disabled}
       hasError={!!rawErrors.length}
       required={required}
+      /* if it is not required it means it can be set to undefined ? or should we set it to the default value? */
+      canClear={!required}
       readOnly={readonly}
       value={value || defaultValue}
       multiple={multiple}

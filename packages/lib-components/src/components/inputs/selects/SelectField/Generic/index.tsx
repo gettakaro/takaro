@@ -137,7 +137,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     e.stopPropagation();
     setSelectedItems([]);
 
-    if (onChange) onChange(multiple ? ([] as string[]) : ('' as any));
+    if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
   };
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([

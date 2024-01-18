@@ -155,7 +155,9 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     e.preventDefault();
     e.stopPropagation();
     setSelectedItems([]);
-    if (onChange) onChange(multiple ? ([] as string[]) : ('' as any));
+
+    // the undefined is an expection
+    if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
   };
 
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
