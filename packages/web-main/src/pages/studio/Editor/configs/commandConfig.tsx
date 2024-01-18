@@ -8,6 +8,7 @@ import {
   TextAreaField,
   TextField,
   Tooltip,
+  Collapsible,
 } from '@takaro/lib-components';
 import {
   AiOutlineClose as CloseIcon,
@@ -157,19 +158,19 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
       />
       <CollapseList.Item title="Arguments">
         <ContentContainer>
-          <details>
-            <summary>What are arguments?</summary>
-            <p>
+          <Collapsible>
+            <Collapsible.Trigger>What are arguments?</Collapsible.Trigger>
+            <Collapsible.Content>
               Arguments are how players can control the behavior of commands. For example, if you have a command that
               spawns a vehicle, you might want to allow players to specify the color of the vehicle. You can do this by
               adding an argument with the name "color" and the type "string". Players can then use the command like{' '}
               <code>{settings?.value}spawn red</code>
-            </p>
-            <p>
+            </Collapsible.Content>
+            <Collapsible.Content>
               The order of arguments is important! The first argument will be the first word after the command trigger,
               the second argument will be the second word, and so on.
-            </p>
-          </details>
+            </Collapsible.Content>
+          </Collapsible>
           {fields.length > 0 && (
             <ArgumentList>
               {fields.map((field, index) => (
